@@ -12,6 +12,7 @@
 #define BUFLEN 13		// Length of buffer
 #define PORT_SEND 15731		//The port on which to send data
 #define PORT_RECV 15730		//The port on which to receive data
+//#define PORT_RECV 1030		//The port on which to receive data
 
 static volatile unsigned char run;
 
@@ -69,7 +70,7 @@ void hexlog(const char* hex, const size_t size) {
 }
 
 // create a UDP connection to a server on a port
-int create_udp_connection(struct sockaddr* sockaddr, unsigned int sockaddr_len, char* server, unsigned short port) {
+int create_udp_connection(const struct sockaddr* sockaddr, const unsigned int sockaddr_len, const char* server, const unsigned short port) {
   int sock;
 
   if ((sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
@@ -80,8 +81,7 @@ int create_udp_connection(struct sockaddr* sockaddr, unsigned int sockaddr_len, 
   memset ((char*)sockaddr, 0, sockaddr_len);
   struct sockaddr_in* sockaddr_in = (struct sockaddr_in*)sockaddr;
   sockaddr_in->sin_family = AF_INET;
-  sockaddr_in->sin_port = htons (port);
-
+  sockaddr_in->sin_port = htons(port);
   if (inet_aton (server, &sockaddr_in->sin_addr) == 0) {
     fprintf(stderr, "inet_aton() failed\n");
     return -1;
@@ -94,11 +94,18 @@ void* cs2_receiver(void* params) {
   xlog("Receiver started");
   struct sockaddr_in sockaddr_in;
   int sock;
-  sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), SERVER, PORT_RECV);
+  sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), "0.0.0.0", PORT_RECV);
   if (sock < 0) {
     fprintf(stderr, "Unable to create UDP connection for receiving data from CS2\n");
     return NULL;
-  };
+  }
+
+  //int broadcast=1;
+  //setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast, sizeof(broadcast));
+
+  if (bind(sock, (struct sockaddr*)&sockaddr_in, sizeof(sockaddr_in)) == -1) {
+    xlog("Unable to bind the socket");
+  }
   char buffer[BUFLEN];
   while(run) {
     //try to receive some data, this is a blocking call
@@ -113,8 +120,6 @@ void* cs2_receiver(void* params) {
       xlog("Receiver %i bytes received", datalen);
       hexlog(buffer, datalen);
     }
-
-    hexlog(buffer, sizeof(buffer));
   }
   close(sock);
   xlog("Receiver ended");
@@ -133,7 +138,7 @@ void* cs2_sender(void* params) {
 
   char buffer[BUFLEN];
   memset (buffer, 0, sizeof (buffer));
-  unsigned char prio = 1;
+  unsigned char prio = 0;
   unsigned char command = 0;
   unsigned char response = 0;
   unsigned short hash = 0x7337;
@@ -142,14 +147,54 @@ void* cs2_sender(void* params) {
   buffer[2] = (hash >> 8);
   buffer[3] = (hash & 0xff);
   buffer[4] = 5;
+  buffer[9] = 1;
 
   //send the message
+  hexlog(buffer, sizeof(buffer));
   if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
     fprintf(stderr, "sendto()");
   }
-  sleep(1);
-  buffer[9] = 1;
+
+  command = 0x04;
+  buffer[0] = (prio << 1) | (command >> 7);
+  buffer[1] = (command << 1) | (response & 0x01);
+  buffer[2] = (hash >> 8);
+  buffer[3] = (hash & 0xff);
+  buffer[4] = 6;
+  buffer[7] = 0xc4;
+  buffer[8] = 0x68;
+  buffer[9] = 0;
+  buffer[10] = 0x50;
+
   //send the message
+  hexlog(buffer, sizeof(buffer));
+  if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
+    fprintf(stderr, "sendto()");
+  }
+
+  sleep(1);
+  buffer[10] = 0x0;
+
+  //send the message
+  hexlog(buffer, sizeof(buffer));
+  if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
+    fprintf(stderr, "sendto()");
+  }
+
+  sleep(1);
+
+  command = 0;
+  buffer[0] = (prio << 1) | (command >> 7);
+  buffer[1] = (command << 1) | (response & 0x01);
+  buffer[2] = (hash >> 8);
+  buffer[3] = (hash & 0xff);
+  buffer[4] = 5;
+  buffer[7] = 0;
+  buffer[8] = 0;
+  buffer[9] = 0;
+  buffer[10] = 0;
+  //send the message
+  hexlog(buffer, sizeof(buffer));
   if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
     fprintf(stderr, "sendto()");
   }
@@ -168,7 +213,7 @@ int main (int argc, char* argv[]) {
   pthread_join(thread_cs2_sender, NULL);
   run = false;
   pthread_join(thread_cs2_receiver, NULL);
-  sleep(2);
+//  sleep(2);
   return 0;
 }
 
