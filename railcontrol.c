@@ -6,6 +6,7 @@
 #include <sys/socket.h>
 #include <pthread.h>
 #include <stdbool.h>
+#include <stdarg.h>             // va_* in xlog
 
 #define SERVER "192.168.0.190"
 #define BUFLEN 13		// Length of buffer
@@ -14,12 +15,24 @@
 
 static volatile unsigned char run;
 
-void die (char *s) {
-  perror (s);
-  exit (1);
+
+// create log text
+void xlog(const char* logtext, ...) {
+  char buffer[128];
+  va_list ap;
+  va_start(ap, logtext);
+  vsnprintf(buffer, sizeof(buffer), logtext, ap);
+  // we ignore text more then length of buffer
+  // prevent reading more then the buffer size
+  buffer[sizeof(buffer) - 1] = 0;
+
+  printf("%s\n", buffer);
+  fflush(stdout);
+  va_end(ap);
 }
 
-void hexlog(char* hex, size_t size) {
+// log data in hex format
+void hexlog(const char* hex, const size_t size) {
     char buffer[128];
     int num = 16;
     int pos = 0;
@@ -45,21 +58,23 @@ void hexlog(char* hex, size_t size) {
         pos++;
         bufpos++;
         if (pos % num == 0) {
-            printf("%s\n", buffer);
+            xlog(buffer);
             memset(buffer, ' ', sizeof(buffer));
             bufpos = 0;
         }
     }
     if (bufpos) {
-        printf("%s\n", buffer);
+        xlog(buffer);
     }
 }
 
+// create a UDP connection to a server on a port
 int create_udp_connection(struct sockaddr* sockaddr, unsigned int sockaddr_len, char* server, unsigned short port) {
   int sock;
 
   if ((sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
-    die ("socket");
+    fprintf(stderr, "Unable to create UDP socket\n");
+    return -1;
   }
 
   memset ((char*)sockaddr, 0, sockaddr_len);
@@ -68,42 +83,52 @@ int create_udp_connection(struct sockaddr* sockaddr, unsigned int sockaddr_len, 
   sockaddr_in->sin_port = htons (port);
 
   if (inet_aton (server, &sockaddr_in->sin_addr) == 0) {
-    fprintf (stderr, "inet_aton() failed\n");
-    exit (1);
+    fprintf(stderr, "inet_aton() failed\n");
+    return -1;
   }
   return sock;
 }
 
+// the receiver thread of the CS2
 void* cs2_receiver(void* params) {
-  printf("Receiver started");
+  xlog("Receiver started");
   struct sockaddr_in sockaddr_in;
   int sock;
   sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), SERVER, PORT_RECV);
   if (sock < 0) {
-    die("create udp connection");
+    fprintf(stderr, "Unable to create UDP connection for receiving data from CS2\n");
+    return NULL;
   };
   char buffer[BUFLEN];
   while(run) {
     //try to receive some data, this is a blocking call
-    printf("Receiver waiting for data");
-    if (recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL) == -1) {
-      die("recvfrom()");
+    xlog("Receiver waiting for data");
+    ssize_t datalen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
+    if (datalen <= 0) {
+      fprintf(stderr, "recvfrom()");
+      close(sock);
+      return NULL;
     }
-    printf("Receiver data received");
+    else {
+      xlog("Receiver %i bytes received", datalen);
+      hexlog(buffer, datalen);
+    }
 
     hexlog(buffer, sizeof(buffer));
   }
   close(sock);
-  printf("Receiver ended");
+  xlog("Receiver ended");
   return NULL;
 }
 
+// the sender thread of the CS2
 void* cs2_sender(void* params) {
-  printf("Sender started");
+  xlog("Sender started");
   struct sockaddr_in sockaddr_in;
   int sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), SERVER, PORT_SEND);
   if (sock < 0) {
-    die("create udp connection");
+    fprintf(stderr, "Unable to create UDP connection for sending data to CS2\n");
+    return NULL;
   };
 
   char buffer[BUFLEN];
@@ -120,20 +145,21 @@ void* cs2_sender(void* params) {
 
   //send the message
   if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-    die ("sendto()");
+    fprintf(stderr, "sendto()");
   }
   sleep(1);
   buffer[9] = 1;
   //send the message
   if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-    die ("sendto()");
+    fprintf(stderr, "sendto()");
   }
   close (sock);
-  printf("Sender ended");
+  xlog("Sender ended");
   return NULL;
 }
 
-int main (void) {
+int main (int argc, char* argv[]) {
+  xlog("OK");
   run = true;
   pthread_t thread_cs2_sender;
   pthread_t thread_cs2_receiver;
@@ -142,6 +168,7 @@ int main (void) {
   pthread_join(thread_cs2_sender, NULL);
   run = false;
   pthread_join(thread_cs2_receiver, NULL);
+  sleep(2);
   return 0;
 }
 
