@@ -1,8 +1,7 @@
 
-CC=gcc
+CC=g++
 
-CFLAGS=-g -O2 -Wall
-#CFLAGS=-g -O0 -Wall
+CPPFLAGS=-g -O2 -Wall -std=c++11
 LDFLAGS=-g
 
 OBJ=railcontrol.o

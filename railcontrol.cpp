@@ -1,18 +1,19 @@
-#include <stdio.h>		//printf
-#include <string.h>		//memset
-#include <stdlib.h>		//exit(0);
+#include <iostream>
+#include <cstdio>		//printf
+#include <cstring>		//memset
+#include <cstdlib>		//exit(0);
 #include <unistd.h>		//close;
 #include <arpa/inet.h>
-#include <sys/socket.h>
-#include <pthread.h>
-#include <stdbool.h>
-#include <stdarg.h>             // va_* in xlog
+#include <thread>
+#include <cstdarg>             // va_* in xlog
 
 #define SERVER "192.168.0.190"
 #define BUFLEN 13		// Length of buffer
 #define PORT_SEND 15731		//The port on which to send data
 #define PORT_RECV 15730		//The port on which to receive data
-//#define PORT_RECV 1030		//The port on which to receive data
+
+using std::cout;
+using std::endl;
 
 static volatile unsigned char run;
 
@@ -27,8 +28,7 @@ void xlog(const char* logtext, ...) {
   // prevent reading more then the buffer size
   buffer[sizeof(buffer) - 1] = 0;
 
-  printf("%s\n", buffer);
-  fflush(stdout);
+  cout << buffer << endl;
   va_end(ap);
 }
 
@@ -74,7 +74,7 @@ int create_udp_connection(const struct sockaddr* sockaddr, const unsigned int so
   int sock;
 
   if ((sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
-    fprintf(stderr, "Unable to create UDP socket\n");
+    xlog("Unable to create UDP socket");
     return -1;
   }
 
@@ -83,21 +83,21 @@ int create_udp_connection(const struct sockaddr* sockaddr, const unsigned int so
   sockaddr_in->sin_family = AF_INET;
   sockaddr_in->sin_port = htons(port);
   if (inet_aton (server, &sockaddr_in->sin_addr) == 0) {
-    fprintf(stderr, "inet_aton() failed\n");
+    xlog("inet_aton() failed");
     return -1;
   }
   return sock;
 }
 
 // the receiver thread of the CS2
-void* cs2_receiver(void* params) {
+void cs2_receiver() {
   xlog("Receiver started");
   struct sockaddr_in sockaddr_in;
   int sock;
   sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), "0.0.0.0", PORT_RECV);
   if (sock < 0) {
-    fprintf(stderr, "Unable to create UDP connection for receiving data from CS2\n");
-    return NULL;
+    xlog("Unable to create UDP connection for receiving data from CS2");
+    return;
   }
 
   //int broadcast=1;
@@ -112,9 +112,9 @@ void* cs2_receiver(void* params) {
     xlog("Receiver waiting for data");
     ssize_t datalen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
     if (datalen <= 0) {
-      fprintf(stderr, "recvfrom()");
+      xlog("Unable to receive data");
       close(sock);
-      return NULL;
+      return;
     }
     else {
       xlog("Receiver %i bytes received", datalen);
@@ -123,17 +123,16 @@ void* cs2_receiver(void* params) {
   }
   close(sock);
   xlog("Receiver ended");
-  return NULL;
 }
 
 // the sender thread of the CS2
-void* cs2_sender(void* params) {
+void cs2_sender() {
   xlog("Sender started");
   struct sockaddr_in sockaddr_in;
   int sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), SERVER, PORT_SEND);
   if (sock < 0) {
-    fprintf(stderr, "Unable to create UDP connection for sending data to CS2\n");
-    return NULL;
+    xlog("Unable to create UDP connection for sending data to CS2");
+    return;
   };
 
   char buffer[BUFLEN];
@@ -152,7 +151,7 @@ void* cs2_sender(void* params) {
   //send the message
   hexlog(buffer, sizeof(buffer));
   if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-    fprintf(stderr, "sendto()");
+    xlog("Unable to send data");
   }
 
   command = 0x04;
@@ -169,7 +168,7 @@ void* cs2_sender(void* params) {
   //send the message
   hexlog(buffer, sizeof(buffer));
   if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-    fprintf(stderr, "sendto()");
+    xlog("Unable to send data");
   }
 
   sleep(1);
@@ -178,7 +177,7 @@ void* cs2_sender(void* params) {
   //send the message
   hexlog(buffer, sizeof(buffer));
   if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-    fprintf(stderr, "sendto()");
+    xlog("Unable to send data");
   }
 
   sleep(1);
@@ -196,24 +195,22 @@ void* cs2_sender(void* params) {
   //send the message
   hexlog(buffer, sizeof(buffer));
   if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-    fprintf(stderr, "sendto()");
+    xlog("Unable to send data");
   }
   close (sock);
   xlog("Sender ended");
-  return NULL;
 }
 
 int main (int argc, char* argv[]) {
-  xlog("OK");
+  xlog("Starting");
   run = true;
-  pthread_t thread_cs2_sender;
-  pthread_t thread_cs2_receiver;
-  pthread_create(&thread_cs2_receiver, NULL, cs2_receiver, NULL);
-  pthread_create(&thread_cs2_sender, NULL, cs2_sender, NULL);
-  pthread_join(thread_cs2_sender, NULL);
+  std::thread thread_cs2_receiver(cs2_receiver);
+  std::thread thread_cs2_sender(cs2_sender);
+  thread_cs2_sender.join();
   run = false;
-  pthread_join(thread_cs2_receiver, NULL);
+  thread_cs2_receiver.join();
 //  sleep(2);
+  xlog("Ending");
   return 0;
 }
 
