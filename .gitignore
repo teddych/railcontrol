@@ -1,2 +1,3 @@
 railcontrol
 *.o
+*.so
