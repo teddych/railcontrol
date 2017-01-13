@@ -1,5 +1,5 @@
-#ifndef HARDWARE_CS2_H
-#define HARDWARE_CS2_H
+#ifndef HARDWARE_VIRTUAL_H
+#define HARDWARE_VIRTUAL_H
 
 #include <cstring>
 
@@ -7,18 +7,14 @@
 
 namespace hardware {
 
-  class cs2 {
+  class virt : hardware {
     public:
       int start(struct params &params);
       int stop();
       std::string name();
-    private:
-      void receiver();
-      void sender();
-      volatile unsigned char run;
   };
 
 } // namespace
 
-#endif // HARDWARE_CS2_H
+#endif // HARDWARE_VIRTUAL_H
 
