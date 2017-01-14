@@ -1,19 +1,15 @@
-#include <iostream>
-#include <cstdio>		//printf
-#include <cstring>		//memset
-#include <cstdlib>		//exit(0);
-#include <unistd.h>		//close;
 #include <arpa/inet.h>
-//#include <thread>
 #include <cstdarg>             // va_* in xlog
-
-#define SERVER "192.168.0.190"
-#define BUFLEN 13		// Length of buffer
-#define PORT_SEND 15731		//The port on which to send data
-#define PORT_RECV 15730		//The port on which to receive data
+#include <cstdio>		//printf
+#include <cstdlib>		//exit(0);
+#include <cstring>		//memset
+#include <iostream>
+#include <sstream>
+#include <unistd.h>		//close;
 
 using std::cout;
 using std::endl;
+using std::stringstream;
 
 
 // create log text

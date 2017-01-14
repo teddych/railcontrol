@@ -1,3 +1,4 @@
+#include <string>
 
 // create log text
 void xlog(const char* logtext, ...);
