@@ -22,24 +22,24 @@ int main (int argc, char* argv[]) {
     exit(1);
   }
 
-  cs2_create_t* create_cs2 = (cs2_create_t*)dlsym(dlhandle, "create_cs2");
+  create_t* create_hardware = (create_t*)dlsym(dlhandle, "create_cs2");
   error = dlerror();
   if (error) {
     printf("Unable to find symbol create_cs2\n");
     exit(1);
   }
 
-  cs2_destroy_t* destroy_cs2 = (cs2_destroy_t*)dlsym(dlhandle, "destroy_cs2");
+  destroy_t* destroy_hardware = (destroy_t*)dlsym(dlhandle, "destroy_cs2");
   error = dlerror();
   if (error) {
     printf("Unable to find symbol destroy_cs2\n");
     exit(1);
   }
 
-  cs2* cs2 = create_cs2();
-  std::string name = cs2->name();
+  hardware::hardware* hardware = create_hardware();
+  std::string name = hardware->name();
   xlog(name.c_str());
-  destroy_cs2(cs2);
+  destroy_hardware(hardware);
 
   dlclose(dlhandle);
   return 0;
