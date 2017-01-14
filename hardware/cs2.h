@@ -7,7 +7,7 @@
 
 namespace hardware {
 
-  class cs2 : public hardware::hardware {
+  class cs2 : hardware {
     public:
       int start(struct params &params) override;
       int stop() override;

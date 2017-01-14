@@ -15,6 +15,16 @@
 
 namespace hardware {
 
+	// create instance of cs2
+  extern "C" cs2* create_cs2() {
+    return new cs2();
+  }
+
+	// delete instance of cs2
+  extern "C" void destroy_cs2(cs2* cs2) {
+    delete(cs2);
+  }
+
   // start the thing
   int cs2::start(struct params &params) {
     return 0;
@@ -137,14 +147,6 @@ namespace hardware {
     }
     close (sock);
     xlog("Sender ended");
-  }
-
-  extern "C" cs2* create_cs2() {
-    return new cs2();
-  }
-
-  extern "C" void destroy_cs2(cs2* cs2) {
-    delete(cs2);
   }
 
 } // namespace

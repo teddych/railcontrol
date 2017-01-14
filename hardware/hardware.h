@@ -11,8 +11,9 @@ namespace hardware {
 
 	class hardware {
 		public:
-			// pure virtual destructor prevents polymorphism in derived class
+		  // non virtual default constructor is needed
 			hardware() {};
+			// pure virtual destructor prevents polymorphism in derived class
 			virtual ~hardware() {};
 			virtual int start(struct params &params);
 			virtual int stop();
