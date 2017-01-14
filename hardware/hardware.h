@@ -5,18 +5,33 @@
 
 namespace hardware {
 
-  struct params {
-    std::string ip;
-  };
+	struct params {
+		std::string ip;
+	};
 
-  class hardware {
-    public:
-      virtual int start(struct params &params);
-      virtual int stop();
-      virtual std::string name() const = 0;
-  };
+	class hardware {
+		public:
+			// pure virtual destructor prevents polymorphism in derived class
+			hardware() {};
+			virtual ~hardware() {};
+			virtual int start(struct params &params);
+			virtual int stop();
+			virtual std::string name() const = 0;
+	};
+
+  // start the thing
+  inline int hardware::start(struct params &params) {
+    return 0;
+  }
+
+  // stop the thing
+  inline int hardware::stop() {
+    return 0;
+  }
 
 } // namespace
+
+
 
   // the types of the class factories
   typedef hardware::hardware* create_t();

@@ -26,7 +26,7 @@ namespace hardware {
   }
 
   // return the name
-  std::string cs2::name() {
+  std::string cs2::name() const {
     return "Maerklin Central Station 2 (CS2)";
   }
 

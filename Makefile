@@ -1,10 +1,10 @@
 
 CC=g++
 
-CPPFLAGS=-g -O2 -Wall
-#CPPFLAGS=-g -O2 -Wall -std=c++11
+#CPPFLAGS=-g -O2 -Wall
+CPPFLAGS=-g -O2 -Wall -std=c++11
 LDFLAGS=-g -Wl,--whole-archive hardware/cs2.so -Wl,--no-whole-archive
-LIBS=-lpthread -ldl
+LIBS=-ldl
 
 OBJ=util.o railcontrol.o
 

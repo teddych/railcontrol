@@ -7,11 +7,11 @@
 
 namespace hardware {
 
-  class cs2 {
+  class cs2 : public hardware::hardware {
     public:
-      int start(struct params &params);
-      int stop();
-      std::string name();
+      int start(struct params &params) override;
+      int stop() override;
+      std::string name() const override;
     private:
       void receiver();
       void sender();

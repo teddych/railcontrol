@@ -10,7 +10,7 @@
 
 
 #include "util.h"
-#include "hardware/cs2.h"
+#include "hardware/hardware.h"
 
 int main (int argc, char* argv[]) {
   char* error;
@@ -18,7 +18,7 @@ int main (int argc, char* argv[]) {
 
   void* dlhandle = dlopen("hardware/cs2.so", RTLD_LAZY);
   if (!dlhandle) {
-    printf("Can not open library\n");
+    printf("Can not open library: %s\n", dlerror());
     exit(1);
   }
 

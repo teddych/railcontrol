@@ -8,11 +8,11 @@ LIBS= \
 	cs2.so \
 	virt.so
 
-%.o: %.cpp %.h hardware.h
-	$(CC) -c -o $@ $< $(CPPFLAGS)
+%.so: %.cpp %.h hardware.h
+	$(CC) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
-%.so: %.o
-	$(CC) -o $@ $< $(LDFLAGS)$@
+#%.so: %.o
+#	$(CC) -o $@ $< $(LDFLAGS)$@
 
 all: $(LIBS)
 
