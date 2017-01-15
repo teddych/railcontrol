@@ -9,9 +9,17 @@ namespace hardware {
 
   class virt : hardware {
     public:
-      int start(struct params &params) override;
-      int stop() override;
+			// name() must be implemented
       std::string name() const override;
+
+		  // All possible methods that can be implemented
+			// if not the method of the abstract class hardware is used
+
+			// This method is called at startup to initialize the control
+      //int start(struct params &params) override;
+
+			// this method is called at shutdown to clean up the control
+      //int stop() override;
   };
 
 } // namespace

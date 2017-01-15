@@ -1,8 +1,9 @@
-#include <cstring>		//memset
-
 #include "virt.h"
 
 namespace hardware {
+
+	// create_virt and destroy_virt are used to instantiate
+	// and delete the command station in main program
 
 	// create instance of virt
 	extern "C" virt* create_virt() {
@@ -18,7 +19,5 @@ namespace hardware {
 	std::string virt::name() const {
 		return "Virtual Command Station";
 	}
-
-	// have a look at hardware.h to find other methods that can be overwritten
 
 } // namespace
