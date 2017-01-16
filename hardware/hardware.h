@@ -33,9 +33,5 @@ namespace hardware {
 } // namespace
 
 
-// the types of the class factories
-typedef hardware::hardware* create_hardware_t();
-typedef void destroy_hardware_t(hardware::hardware*);
-
 #endif // HARDWARE_HARDWARE_H
 

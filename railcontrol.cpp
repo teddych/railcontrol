@@ -6,36 +6,31 @@
 #include <unistd.h>		//close;
 #include <vector>
 
-#include "dynamic.h"
 #include "hardware/hardware.h"
+#include "hardware_properties.h"
 #include "logging.h"
 #include "util.h"
 
 using std::vector;
 using std::string;
 
-
 int main (int argc, char* argv[]) {
   xlog("Starting railcontrol");
 
-	vector<int> used_hardware;
-	used_hardware.push_back(HARDWARE_ID_CS2);
-	used_hardware.push_back(HARDWARE_ID_VIRT);
-	dynamic hardware_loader;
-	void* dlhandle;
-	create_hardware_t* create_hardware;
-	destroy_hardware_t* destroy_hardware;
-	int symbols_valid = !hardware_loader.symbols(HARDWARE_ID_CS2, &dlhandle, &create_hardware, &destroy_hardware);
-	if (symbols_valid) {
-		hardware::hardware* hardware = create_hardware();
-		std::string name = hardware->name();
+	vector<hardware_properties> hardware;
+	hardware.push_back(hardware_properties(HARDWARE_ID_VIRT, 1));
+	hardware.push_back(hardware_properties(HARDWARE_ID_CS2, 2));
+
+	for(auto property : hardware) {
+		property.start();
+		std::string name = property.name();
 		xlog("Starting %s", name.c_str());
-		xlog("Ending %s", name.c_str());
-		destroy_hardware(hardware);
-		dlclose(dlhandle);
 	}
-	else {
-		xlog("Unable to load library");
+
+	for(auto property : hardware) {
+		std::string name = property.name();
+		xlog("Stopping %s", name.c_str());
+		property.stop();
 	}
 
   xlog("Ending railcontrol");
