@@ -57,6 +57,10 @@ hardware_properties::hardware_properties(hardware_id_t hardware_id, control_id_t
 }
 
 hardware_properties::~hardware_properties() {
+	if (instance) {
+		destroy_hardware(instance);
+		instance = NULL;
+	}
 	if (dlhandle) {
 		dlclose(dlhandle);
 		dlhandle = NULL;
@@ -70,17 +74,15 @@ std::string hardware_properties::name() const {
 	return "Unknown, not running";
 }
 
-int hardware_properties::start() {
-	instance = create_hardware();
-	xlog("X");
-	return 0;
+void hardware_properties::start() {
+	if (create_hardware) {
+		instance = create_hardware();
+	}
 }
 
-int hardware_properties::stop() {
-	xlog("Y");
+void hardware_properties::stop() {
 	if (instance) {
 		destroy_hardware(instance);
 		instance = NULL;
 	}
-	return 0;
 }

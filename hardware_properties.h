@@ -16,6 +16,7 @@ enum hardware_ids {
 };
 
 static std::string hardware_symbols[] = {
+	"none",
 	"virt",
 	"cs2"
 };
@@ -29,8 +30,8 @@ class hardware_properties {
 		hardware_properties(hardware_id_t hardware_id, control_id_t control_id);
 		~hardware_properties();
 		std::string name() const;
-		int start();
-		int stop();
+		void start();
+		void stop();
 	private:
 		hardware_id_t hardware_id;
 		control_id_t control_id;

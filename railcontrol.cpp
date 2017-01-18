@@ -8,7 +8,6 @@
 
 #include "hardware/hardware.h"
 #include "hardware_properties.h"
-#include "logging.h"
 #include "util.h"
 
 using std::vector;
@@ -17,20 +16,20 @@ using std::string;
 int main (int argc, char* argv[]) {
   xlog("Starting railcontrol");
 
-	vector<hardware_properties> hardware;
-	hardware.push_back(hardware_properties(HARDWARE_ID_VIRT, 1));
-	hardware.push_back(hardware_properties(HARDWARE_ID_CS2, 2));
+	vector<hardware_properties*> hardware;
+	hardware.push_back(new hardware_properties(HARDWARE_ID_VIRT, 1));
+	hardware.push_back(new hardware_properties(HARDWARE_ID_CS2, 2));
 
 	for(auto property : hardware) {
-		property.start();
-		std::string name = property.name();
+		property->start();
+		std::string name = property->name();
 		xlog("Starting %s", name.c_str());
 	}
 
 	for(auto property : hardware) {
-		std::string name = property.name();
+		std::string name = property->name();
 		xlog("Stopping %s", name.c_str());
-		property.stop();
+		property->stop();
 	}
 
   xlog("Ending railcontrol");
