@@ -16,20 +16,24 @@ using std::string;
 int main (int argc, char* argv[]) {
   xlog("Starting railcontrol");
 
+	// initializing hardware
 	vector<hardware_properties*> hardware;
 	hardware.push_back(new hardware_properties(HARDWARE_ID_VIRT, 1));
 	hardware.push_back(new hardware_properties(HARDWARE_ID_CS2, 2));
 
+	// Starting hardware
 	for(auto property : hardware) {
 		property->start();
 		std::string name = property->name();
 		xlog("Starting %s", name.c_str());
 	}
 
+	// Stopping hardware
 	for(auto property : hardware) {
 		std::string name = property->name();
 		xlog("Stopping %s", name.c_str());
 		property->stop();
+		delete property;
 	}
 
   xlog("Ending railcontrol");
