@@ -9,6 +9,7 @@
 #include "hardware/hardware.h"
 #include "hardware_properties.h"
 #include "util.h"
+#include "webserver.h"
 
 using std::vector;
 using std::string;
@@ -27,6 +28,13 @@ int main (int argc, char* argv[]) {
 		std::string name = property->name();
 		xlog("Starting %s", name.c_str());
 	}
+
+	/*
+	webserver webserver(8080);
+	webserver.start();
+	sleep(3);
+	webserver.stop();
+	*/
 
 	// Stopping hardware
 	for(auto property : hardware) {

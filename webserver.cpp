@@ -48,7 +48,7 @@ void webserver::worker() {
 int webserver::start() {
 	struct sockaddr_in6 server_addr;
 
-	xlog("Starting client server on port %i", port);
+	xlog("Starting webserver on port %i", port);
 	socket_server = socket(AF_INET6, SOCK_STREAM, 0);
 	if (socket_server < 0) {
 		xlog("Unable to create socket for webserver. Unable to serve clients.");
@@ -77,14 +77,14 @@ int webserver::start() {
 		close(socket_server);
 		return 1;
 	}
-	//webserver_thread(worker);
+	webserver_thread = thread([this] { worker(); });
 	xlog("Client server is up and listening on port %i", port);
 	return 0;
 }
 
 int webserver::stop() {
+	xlog("Stopping webserver");
 	run = false;
-	//webserver_thread.join();
-	xlog("Webserver stopped");
+	webserver_thread.join();
 	return 0;
 }
