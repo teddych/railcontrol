@@ -17,7 +17,7 @@ class webserver_client {
 		int socket;
 		unsigned char run;
 		webserver &server;
-		std::thread *client_thread;
+		std::thread client_thread;
 };
 
 class webserver {
@@ -33,7 +33,7 @@ class webserver {
 		int socket_client;
 		unsigned char run;
 		unsigned int last_client_id;
-		std::thread *webserver_thread;
+		std::thread webserver_thread;
 		std::vector<webserver_client*> clients;
 };
 

@@ -16,11 +16,10 @@ webserver_client::webserver_client(unsigned int id, int socket, webserver &webse
 	socket(socket),
 	run(false),
 	server(webserver),
-	client_thread(new thread([this] { worker(); })) {
+	client_thread(thread([this] { worker(); })) {
 }
 
 webserver_client::~webserver_client() {
-	delete client_thread;
 }
 
 void webserver_client::worker() {
@@ -35,7 +34,7 @@ void webserver_client::worker() {
 
 int webserver_client::stop() {
 	run = false;
-	client_thread->join();
+	client_thread.join();
 	return 0;
 }
 
@@ -46,8 +45,7 @@ webserver::webserver(unsigned short port) :
 	port(port),
 	socket_server(0),
 	run(false),
-	last_client_id(0),
-	webserver_thread(NULL) {
+	last_client_id(0) {
 }
 
 webserver::~webserver() {
@@ -116,7 +114,7 @@ int webserver::start() {
 		close(socket_server);
 		return 1;
 	}
-	webserver_thread = new thread([this] { worker(); });
+	webserver_thread = thread([this] { worker(); });
 	xlog("webserver is up and listening on port %i", port);
 	return 0;
 }
@@ -130,7 +128,6 @@ int webserver::stop() {
 		client->stop();
 	}
 
-	webserver_thread->join();
-	delete webserver_thread;
+	webserver_thread.join();
 	return 0;
 }
