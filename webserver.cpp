@@ -8,11 +8,49 @@
 
 using std::thread;
 
+
+// Client part
+// ***********
+webserver_client::webserver_client(unsigned int id, int socket, webserver &webserver) :
+	id(id),
+	socket(socket),
+	run(false),
+	server(webserver),
+	client_thread(new thread([this] { worker(); })) {
+}
+
+webserver_client::~webserver_client() {
+	delete client_thread;
+}
+
+void webserver_client::worker() {
+	xlog("Executing new client");
+	run = true;
+	do {
+		sleep(1);
+	} while(run);
+	xlog("Terminating client");
+	close(socket);
+}
+
+int webserver_client::stop() {
+	run = false;
+	client_thread->join();
+	return 0;
+}
+
+
+// Server part
+// ***********
 webserver::webserver(unsigned short port) :
 	port(port),
 	socket_server(0),
-	socket_client(0),
-	run(false) {
+	run(false),
+	last_client_id(0),
+	webserver_thread(NULL) {
+}
+
+webserver::~webserver() {
 }
 
 void webserver::worker() {
@@ -25,7 +63,7 @@ void webserver::worker() {
 		int ret;
 		do {
 			FD_ZERO(&set);
-			FD_SET(socket_client, &set);
+			FD_SET(socket_server, &set);
 			tv.tv_sec = 1;
 			tv.tv_usec = 0;
 			ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
@@ -38,14 +76,15 @@ void webserver::worker() {
 			}
 			else {
 				// do work
-				xlog("Client connected");
-				close(socket_client);
+				xlog("Webserver client connected");
+				clients.push_back(new webserver_client(++last_client_id, socket_client, *this));
 			}
 		}
 	}
 }
 
 int webserver::start() {
+	run = true;
 	struct sockaddr_in6 server_addr;
 
 	xlog("Starting webserver on port %i", port);
@@ -77,14 +116,21 @@ int webserver::start() {
 		close(socket_server);
 		return 1;
 	}
-	webserver_thread = thread([this] { worker(); });
-	xlog("Client server is up and listening on port %i", port);
+	webserver_thread = new thread([this] { worker(); });
+	xlog("webserver is up and listening on port %i", port);
 	return 0;
 }
 
 int webserver::stop() {
 	xlog("Stopping webserver");
 	run = false;
-	webserver_thread.join();
+
+	// stopping all clients
+	for(auto client : clients) {
+		client->stop();
+	}
+
+	webserver_thread->join();
+	delete webserver_thread;
 	return 0;
 }

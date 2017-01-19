@@ -29,12 +29,10 @@ int main (int argc, char* argv[]) {
 		xlog("Starting %s", name.c_str());
 	}
 
-	/*
 	webserver webserver(8080);
 	webserver.start();
-	sleep(3);
+	sleep(10);
 	webserver.stop();
-	*/
 
 	// Stopping hardware
 	for(auto property : hardware) {
