@@ -11,6 +11,7 @@ using std::thread;
 
 // Client part
 // ***********
+
 webserver_client::webserver_client(unsigned int id, int socket, webserver &webserver) :
 	id(id),
 	socket(socket),
@@ -22,18 +23,34 @@ webserver_client::webserver_client(unsigned int id, int socket, webserver &webse
 webserver_client::~webserver_client() {
 }
 
+// worker is the thread that handles client requests
 void webserver_client::worker() {
-	xlog("Executing new client");
+	xlog("Executing webclient");
 	run = true;
+
+	char buffer_in[1024];
+	char buffer_out[1024];
+	recv(socket, buffer_in, sizeof(buffer_in), 0);
+
+	//sleep(1);
+
+	snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Test</h1><p>%s</p></body></html>", buffer_in);
+	send(socket, buffer_out, strlen(buffer_out), 0);
+	sleep(1);
+
+	/*
 	do {
 		sleep(1);
 	} while(run);
-	xlog("Terminating client");
+	xlog("Terminating webclient");
+	*/
 	close(socket);
 }
 
 int webserver_client::stop() {
+	// inform thread to stop
 	run = false;
+	// join thread
 	client_thread.join();
 	return 0;
 }
@@ -41,6 +58,7 @@ int webserver_client::stop() {
 
 // Server part
 // ***********
+
 webserver::webserver(unsigned short port) :
 	port(port),
 	socket_server(0),
@@ -51,6 +69,8 @@ webserver::webserver(unsigned short port) :
 webserver::~webserver() {
 }
 
+
+// worker is a seperate thread listening on the server socket
 void webserver::worker() {
 	fd_set set;
 	struct timeval tv;
@@ -67,14 +87,13 @@ void webserver::worker() {
 			ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
 		} while (ret == 0 && run);
 		if (ret > 0 && run) {
-			// accept conneciton
+			// accept connection
 			int socket_client = accept(socket_server, (struct sockaddr *) &client_addr, &client_addr_len);
 			if (socket_client < 0) {
 				xlog("Unable to accept client connection: %i, %i", socket_client, errno);
 			}
 			else {
-				// do work
-				xlog("Webserver client connected");
+				// create client and fill into vector
 				clients.push_back(new webserver_client(++last_client_id, socket_client, *this));
 			}
 		}
@@ -86,11 +105,15 @@ int webserver::start() {
 	struct sockaddr_in6 server_addr;
 
 	xlog("Starting webserver on port %i", port);
+
+	// create server socket
 	socket_server = socket(AF_INET6, SOCK_STREAM, 0);
 	if (socket_server < 0) {
 		xlog("Unable to create socket for webserver. Unable to serve clients.");
 		return 1;
 	}
+
+	// bind socket to an address (in6addr_any)
 	memset((char *) &server_addr, 0, sizeof(server_addr));
 	server_addr.sin6_family = AF_INET6;
 	server_addr.sin6_addr = in6addr_any;
@@ -109,13 +132,16 @@ int webserver::start() {
 		close(socket_server);
 		return 1;
 	}
+
+	// listen on the socket
 	if (listen(socket_server, 5) != 0) {
 		xlog("Unable to listen on socket for client server on port %i. Unable to serve clients.", port);
 		close(socket_server);
 		return 1;
 	}
+
+	// create seperate thread that handles the client requests
 	webserver_thread = thread([this] { worker(); });
-	xlog("webserver is up and listening on port %i", port);
 	return 0;
 }
 
@@ -128,6 +154,14 @@ int webserver::stop() {
 		client->stop();
 	}
 
+	// delete all client memory
+	while (clients.size()) {
+		webserver_client* client = clients.back();
+		clients.pop_back();
+		delete client;
+	}
+
+	// join server thread
 	webserver_thread.join();
 	return 0;
 }
