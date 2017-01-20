@@ -1,4 +1,11 @@
 #include <string>
+#include <vector>
+
+// replace string from with to in str
+void str_replace(std::string& str, const std::string& from, const std::string& to);
+
+// split string in vector<string>
+void str_split(const std::string& str, const std::string& delimiter, std::vector<std::string>& list);
 
 // create log text
 void xlog(const char* logtext, ...);

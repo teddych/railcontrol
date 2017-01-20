@@ -2,6 +2,7 @@
 #define WEBSERVER_H
 
 #include <thread>
+#include <string>
 #include <vector>
 
 class webserver;
@@ -9,10 +10,11 @@ class webserver;
 class webserver_client {
 	public:
 		webserver_client(unsigned int id, int socket, webserver &webserver);
-	~webserver_client();
+		~webserver_client();
 		void worker();
 		int stop();
 	private:
+		void getCommand(const std::string& str, std::string& method, std::string& uri, std::string& protocol);
 		unsigned int id;
 		int socket;
 		volatile unsigned char run;

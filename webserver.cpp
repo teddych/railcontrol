@@ -1,12 +1,16 @@
+#include <algorithm>
 #include <cstring>		//memset
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "railcontrol.h"
 #include "util.h"
 #include "webserver.h"
 
 using std::thread;
+using std::string;
+using std::vector;
 
 
 // Client part
@@ -23,6 +27,16 @@ webserver_client::webserver_client(unsigned int id, int socket, webserver &webse
 webserver_client::~webserver_client() {
 }
 
+void webserver_client::getCommand(const string& str, string& method, string& uri, string& protocol) {
+	vector<string> list;
+	str_split(str, string(" "), list);
+	if (list.size() == 3) {
+		method = list[0];
+		uri = list[1];
+		protocol = list[2];
+	}
+}
+
 // worker is the thread that handles client requests
 void webserver_client::worker() {
 	xlog("Executing webclient");
@@ -30,20 +44,55 @@ void webserver_client::worker() {
 
 	char buffer_in[1024];
 	char buffer_out[1024];
+
 	recv(socket, buffer_in, sizeof(buffer_in), 0);
+	string s(buffer_in);
+	str_replace(s, string("\r\n"), string("\n"));
+	str_replace(s, string("\r"), string("\n"));
+	vector<string> lines;
+	str_split(s, string("\n"), lines);
 
-	//sleep(1);
+	if (lines.size() < 1) {
+		xlog("Invalid request");
+		close(socket);
+		return;
+	}
+	string method;
+	string uri;
+	string protocol;
+	getCommand(lines[0], method, uri, protocol);
 
-	snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Test</h1><p>%s</p></body></html>", buffer_in);
-	send(socket, buffer_out, strlen(buffer_out), 0);
-	sleep(1);
+	std::transform(method.begin(), method.end(), method.begin(), ::toupper);
+
+	if (method.compare("GET") != 0) {
+		xlog("Method not implemented");
+		snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Method not implemented</h1></body></html>");
+		send(socket, buffer_out, strlen(buffer_out), 0);
+		close(socket);
+		return;
+	}
 
 	/*
-	do {
-		sleep(1);
-	} while(run);
-	xlog("Terminating webclient");
+	for (auto line : lines) {
+		xlog(line.c_str());
+	}
 	*/
+
+	if (uri.compare("/") == 0) {
+		snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>RailControl</h1><p>RailControl start page</p></body></html>");
+		send(socket, buffer_out, strlen(buffer_out), 0);
+	}
+	else if (uri.compare("/quit/") == 0) {
+		snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>RailControl</h1><p>RailControl stoppted</p></body></html>");
+		send(socket, buffer_out, strlen(buffer_out), 0);
+		stop_all();
+	}
+	else {
+		snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 404 Not found\r\nContent-Type: text/html\r\n\r\n<html><body><h1>RailControl</h1><p>File %s not found</p></body></html>", uri.c_str());
+		send(socket, buffer_out, strlen(buffer_out), 0);
+	}
+
+	xlog("Terminating webclient");
 	close(socket);
 }
 

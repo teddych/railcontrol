@@ -8,13 +8,21 @@
 
 #include "hardware/hardware.h"
 #include "hardware_properties.h"
+#include "railcontrol.h"
 #include "util.h"
 #include "webserver.h"
 
 using std::vector;
 using std::string;
 
+static unsigned int run;
+
+void stop_all() {
+	run = false;
+}
+
 int main (int argc, char* argv[]) {
+	run = true;
   xlog("Starting railcontrol");
 
 	// initializing hardware
@@ -31,7 +39,9 @@ int main (int argc, char* argv[]) {
 
 	webserver webserver(8080);
 	webserver.start();
-	sleep(10);
+	while(run) {
+		sleep(1);
+	}
 	webserver.stop();
 
 	// Stopping hardware
