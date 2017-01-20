@@ -37,6 +37,8 @@ void webserver_client::getCommand(const string& str, string& method, string& uri
 	}
 }
 
+static const char* html_header_template = "HTTP/1.0 %s\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<!DOCTYPE html><html><head><title>RailControl</title></head><body><h1>%s</h1>%s<p><a href=\"/quit/\">Shut down RailControl</a></p></body></html>";
+
 // worker is the thread that handles client requests
 void webserver_client::worker() {
 	xlog("Executing webclient");
@@ -61,12 +63,14 @@ void webserver_client::worker() {
 	string uri;
 	string protocol;
 	getCommand(lines[0], method, uri, protocol);
+	xlog(method.c_str());
+	xlog(uri.c_str());
 
 	std::transform(method.begin(), method.end(), method.begin(), ::toupper);
 
 	if (method.compare("GET") != 0) {
 		xlog("Method not implemented");
-		snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>Method not implemented</h1></body></html>");
+		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "501 Not implemented", "Not implemented", "<p>This request method is not implemented</p>");
 		send(socket, buffer_out, strlen(buffer_out), 0);
 		close(socket);
 		return;
@@ -79,16 +83,36 @@ void webserver_client::worker() {
 	*/
 
 	if (uri.compare("/") == 0) {
-		snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>RailControl</h1><p>RailControl start page</p></body></html>");
+		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Railcontrol is running</p>");
 		send(socket, buffer_out, strlen(buffer_out), 0);
 	}
 	else if (uri.compare("/quit/") == 0) {
-		snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n<html><body><h1>RailControl</h1><p>RailControl stoppted</p></body></html>");
+		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Railcontrol is shutting down</p>");
 		send(socket, buffer_out, strlen(buffer_out), 0);
 		stop_all();
 	}
+	else if (uri.substr(0, 6).compare("/loco/") == 0) {
+		vector<string> uri_parts;
+		str_split(uri, "/", uri_parts);
+		if (uri_parts.size() == 3) {
+			snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>List of locos</p>");
+			send(socket, buffer_out, strlen(buffer_out), 0);
+		}
+		else if (uri_parts.size() == 4) {
+			snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Loco x is:</p>");
+			send(socket, buffer_out, strlen(buffer_out), 0);
+		}
+		else if (uri_parts.size() == 5) {
+			snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>loco x is now:</p>");
+			send(socket, buffer_out, strlen(buffer_out), 0);
+		}
+		else {
+			snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Unknown loco command</p>");
+			send(socket, buffer_out, strlen(buffer_out), 0);
+		}
+	}
 	else {
-		snprintf(buffer_out, sizeof(buffer_out), "HTTP/1.0 404 Not found\r\nContent-Type: text/html\r\n\r\n<html><body><h1>RailControl</h1><p>File %s not found</p></body></html>", uri.c_str());
+		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "404 Not found", "RailControl", "<p>The file can not be found</p>");
 		send(socket, buffer_out, strlen(buffer_out), 0);
 	}
 
