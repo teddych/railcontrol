@@ -39,6 +39,55 @@ void webserver_client::getCommand(const string& str, string& method, string& uri
 
 static const char* html_header_template = "HTTP/1.0 %s\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<!DOCTYPE html><html><head><title>RailControl</title></head><body><h1>%s</h1>%s<p><a href=\"/quit/\">Shut down RailControl</a></p></body></html>";
 
+void webserver_client::deliver_file(const int socket, const string& file) {
+	char buffer[1024];
+	snprintf(buffer, sizeof(buffer), html_header_template, "200 OK", "RailControl", file.c_str());
+	send(socket, buffer, strlen(buffer), 0);
+	/*
+	FILE* f = fopen(file.c_str(), "r");
+	if (f) {
+		fclose(f);
+	}
+	*/
+}
+
+void webserver_client::handle_loco_list(const int socket, const vector<string>& uri_parts) {
+	char buffer_out[1024];
+	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>List of locos</p>");
+	send(socket, buffer_out, strlen(buffer_out), 0);
+}
+
+void webserver_client::handle_loco_properties(const int socket, const vector<string>& uri_parts) {
+	char buffer_out[1024];
+	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Properties of loco</p>");
+	send(socket, buffer_out, strlen(buffer_out), 0);
+}
+
+void webserver_client::handle_loco_command(const int socket, const vector<string>& uri_parts) {
+	char buffer_out[1024];
+	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Loco is now set to</p>");
+	send(socket, buffer_out, strlen(buffer_out), 0);
+}
+
+void webserver_client::handle_loco(const int socket, const string& uri) {
+	vector<string> uri_parts;
+	str_split(uri, "/", uri_parts);
+	if (uri_parts.size() == 3) {
+		handle_loco_list(socket, uri_parts);
+	}
+	else if (uri_parts.size() == 4) {
+		handle_loco_properties(socket, uri_parts);
+	}
+	else if (uri_parts.size() == 5) {
+		handle_loco_command(socket, uri_parts);
+	}
+	else {
+		char buffer_out[1024];
+		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "404 Not found", "RailControl", "<p>Unknown loco command</p>");
+		send(socket, buffer_out, strlen(buffer_out), 0);
+	}
+}
+
 // worker is the thread that handles client requests
 void webserver_client::worker() {
 	xlog("Executing webclient");
@@ -66,6 +115,7 @@ void webserver_client::worker() {
 	xlog(method.c_str());
 	xlog(uri.c_str());
 
+	// transform method to uppercase
 	std::transform(method.begin(), method.end(), method.begin(), ::toupper);
 
 	if (method.compare("GET") != 0) {
@@ -77,10 +127,10 @@ void webserver_client::worker() {
 	}
 
 	/*
-	for (auto line : lines) {
-		xlog(line.c_str());
-	}
-	*/
+		 for (auto line : lines) {
+		 xlog(line.c_str());
+		 }
+	 */
 
 	if (uri.compare("/") == 0) {
 		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Railcontrol is running</p>");
@@ -91,25 +141,11 @@ void webserver_client::worker() {
 		send(socket, buffer_out, strlen(buffer_out), 0);
 		stop_all();
 	}
+	else if ((uri.compare("/favicon.ico") == 0) || (uri.substr(0, 5).compare("/css/") == 0)) {
+		deliver_file(socket, uri);
+	}
 	else if (uri.substr(0, 6).compare("/loco/") == 0) {
-		vector<string> uri_parts;
-		str_split(uri, "/", uri_parts);
-		if (uri_parts.size() == 3) {
-			snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>List of locos</p>");
-			send(socket, buffer_out, strlen(buffer_out), 0);
-		}
-		else if (uri_parts.size() == 4) {
-			snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Loco x is:</p>");
-			send(socket, buffer_out, strlen(buffer_out), 0);
-		}
-		else if (uri_parts.size() == 5) {
-			snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>loco x is now:</p>");
-			send(socket, buffer_out, strlen(buffer_out), 0);
-		}
-		else {
-			snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Unknown loco command</p>");
-			send(socket, buffer_out, strlen(buffer_out), 0);
-		}
+		handle_loco(socket, uri);
 	}
 	else {
 		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "404 Not found", "RailControl", "<p>The file can not be found</p>");
