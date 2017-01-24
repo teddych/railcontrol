@@ -76,7 +76,7 @@ void webserver_client::handle_loco_command(const int socket, const vector<string
 	else if (uri_parts[3].substr(0, 1).compare("f") == 0) {
 		unsigned char fx = std::stoi(uri_parts[3].substr(1));
 		bool fon = (uri_parts[4].compare("on") == 0);
-		snprintf(buffer, sizeof(buffer), "<p>loco %u f%i is now set to %i</p>", loco_id, fx, (fon ? "on" : "off");
+		snprintf(buffer, sizeof(buffer), "<p>loco %u f%i is now set to %s</p>", loco_id, fx, (fon ? "on" : "off"));
 	}
 	char buffer_out[1024];
 	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", buffer);
