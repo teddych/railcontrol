@@ -58,14 +58,28 @@ void webserver_client::handle_loco_list(const int socket, const vector<string>& 
 }
 
 void webserver_client::handle_loco_properties(const int socket, const vector<string>& uri_parts) {
+	unsigned int loco_id = std::stoi(uri_parts[2]);
+	char buffer[1024];
+	snprintf(buffer, sizeof(buffer), "<p>Properties of loco %u</p>", loco_id);
 	char buffer_out[1024];
-	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Properties of loco</p>");
+	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", buffer);
 	send(socket, buffer_out, strlen(buffer_out), 0);
 }
 
 void webserver_client::handle_loco_command(const int socket, const vector<string>& uri_parts) {
+	unsigned int loco_id = std::stoi(uri_parts[2]);
+	char buffer[1024];
+	if (uri_parts[3].compare("speed") == 0) {
+		int loco_speed = std::stoi(uri_parts[4]);
+		snprintf(buffer, sizeof(buffer), "<p>loco %u speed is now set to %i</p>", loco_id, loco_speed);
+	}
+	else if (uri_parts[3].substr(0, 1).compare("f") == 0) {
+		unsigned char fx = std::stoi(uri_parts[3].substr(1));
+		bool fon = (uri_parts[4].compare("on") == 0);
+		snprintf(buffer, sizeof(buffer), "<p>loco %u f%i is now set to %i</p>", loco_id, fx, (fon ? "on" : "off");
+	}
 	char buffer_out[1024];
-	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Loco is now set to</p>");
+	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", buffer);
 	send(socket, buffer_out, strlen(buffer_out), 0);
 }
 
@@ -78,7 +92,7 @@ void webserver_client::handle_loco(const int socket, const string& uri) {
 	else if (uri_parts.size() == 4) {
 		handle_loco_properties(socket, uri_parts);
 	}
-	else if (uri_parts.size() == 5) {
+	else if (uri_parts.size() == 6) {
 		handle_loco_command(socket, uri_parts);
 	}
 	else {
