@@ -7,7 +7,7 @@ CPPFLAGS=-g -O2 -Wall -std=c++11
 LDFLAGS=-g -Wl,--whole-archive hardware/cs2.so -Wl,--no-whole-archive
 LIBS=-lpthread -ldl
 
-OBJ=util.o hardware_properties.o railcontrol.o webserver.o
+OBJ=util.o hardware_properties.o railcontrol.o webserver.o manager.o control.o
 
 all: $(OBJ)
 	make -C hardware
