@@ -5,11 +5,14 @@
 #include <string>
 #include <vector>
 
+#include "control.h"
+#include "manager.h"
+
 class webserver;
 
 class webserver_client {
 	public:
-		webserver_client(unsigned int id, int socket, webserver &webserver);
+		webserver_client(const unsigned int id, int socket, webserver &webserver, manager& m);
 		~webserver_client();
 		void worker();
 		int stop();
@@ -25,11 +28,12 @@ class webserver_client {
 		volatile unsigned char run;
 		webserver &server;
 		std::thread client_thread;
+		manager& m;
 };
 
-class webserver {
+class webserver : public control {
 	public:
-		webserver(unsigned short port);
+		webserver(manager& m, const unsigned short port);
 		~webserver();
 		int start();
 		int stop();
@@ -42,6 +46,7 @@ class webserver {
 		unsigned int last_client_id;
 		std::thread webserver_thread;
 		std::vector<webserver_client*> clients;
+		manager& m;
 };
 
 #endif // WEBSERVER_H

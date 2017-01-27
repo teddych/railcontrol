@@ -16,12 +16,13 @@ using std::vector;
 // Client part
 // ***********
 
-webserver_client::webserver_client(unsigned int id, int socket, webserver &webserver) :
+webserver_client::webserver_client(const unsigned int id, int socket, webserver& webserver, manager& m) :
 	id(id),
 	socket(socket),
 	run(false),
 	server(webserver),
-	client_thread(thread([this] { worker(); })) {
+	client_thread(thread([this] { worker(); })),
+	m(m) {
 }
 
 webserver_client::~webserver_client() {
@@ -70,8 +71,9 @@ void webserver_client::handle_loco_command(const int socket, const vector<string
 	unsigned int loco_id = std::stoi(uri_parts[2]);
 	char buffer[1024];
 	if (uri_parts[3].compare("speed") == 0) {
-		int loco_speed = std::stoi(uri_parts[4]);
-		snprintf(buffer, sizeof(buffer), "<p>loco %u speed is now set to %i</p>", loco_id, loco_speed);
+		int speed = std::stoi(uri_parts[4]);
+		snprintf(buffer, sizeof(buffer), "<p>loco %u speed is now set to %i</p>", loco_id, speed);
+		//webserver.set_loco_speed(loco_id, speed);
 	}
 	else if (uri_parts[3].substr(0, 1).compare("f") == 0) {
 		unsigned char fx = std::stoi(uri_parts[3].substr(1));
@@ -182,14 +184,19 @@ int webserver_client::stop() {
 // Server part
 // ***********
 
-webserver::webserver(unsigned short port) :
+webserver::webserver(manager& m, const unsigned short port) :
+  control(CONTROL_ID_WEBSERVER),
 	port(port),
 	socket_server(0),
 	run(false),
-	last_client_id(0) {
+	last_client_id(0),
+	m(m) {
+
+  start();
 }
 
 webserver::~webserver() {
+  stop();
 }
 
 
@@ -217,7 +224,7 @@ void webserver::worker() {
 			}
 			else {
 				// create client and fill into vector
-				clients.push_back(new webserver_client(++last_client_id, socket_client, *this));
+				clients.push_back(new webserver_client(++last_client_id, socket_client, *this, m));
 			}
 		}
 	}

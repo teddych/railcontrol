@@ -1,15 +1,17 @@
 #include <dlfcn.h>              // dl*
 #include <sstream>
 
+#include "control.h"
 #include "hardware_properties.h"
 #include "util.h"
 
 using std::string;
 
 
-hardware_properties::hardware_properties(hardware_id_t hardware_id, control_id_t control_id) :
+hardware_properties::hardware_properties(const hardware_id_t hardware_id, const hardware_control_id_t hardware_control_id) :
+  control(CONTROL_ID_HARDWARE),
 	hardware_id(hardware_id),
-	control_id(control_id),
+	hardware_control_id(hardware_control_id),
 	create_hardware(NULL),
 	destroy_hardware(NULL),
 	instance(NULL),
@@ -86,3 +88,4 @@ void hardware_properties::stop() {
 		instance = NULL;
 	}
 }
+

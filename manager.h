@@ -10,8 +10,8 @@ class manager {
     manager();
     ~manager();
 	private:
-		void loco_speed(unsigned int control_id, unsigned char protocol, unsigned short address, int speed);
-    std::vector<control> controllers;
+		void loco_speed(const control_id_t control_id, const loco_id_t loco_id, const speed_t speed);
+    std::vector<control*> controllers;
 };
 
 #endif // MANAGER_H

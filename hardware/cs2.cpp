@@ -62,7 +62,8 @@ namespace hardware {
 
 
 	// set the speed of a loco
-	void cs2::loco_speed(unsigned char protocol, unsigned short address, int speed) {
+	void cs2::loco_speed(protocol_t protocol, address_t address, speed_t speed) {
+		xlog("Setting speed of loco %u/%u to %u", protocol, address, speed);
 	}
 
   // the receiver thread of the CS2

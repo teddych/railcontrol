@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "../control.h"
+
 namespace hardware {
 
 	struct params {
@@ -27,7 +29,7 @@ namespace hardware {
 			virtual std::string name() const = 0;
 
 			// set the speed of a loco
-			virtual void loco_speed(unsigned char protocol, unsigned short address, int speed) {};
+			virtual void loco_speed(protocol_t protocol, address_t address, speed_t speed) {};
 	};
 
   // start the thing
