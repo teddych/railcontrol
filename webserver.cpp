@@ -16,19 +16,19 @@ using std::vector;
 // Client part
 // ***********
 
-webserver_client::webserver_client(const unsigned int id, int socket, webserver& webserver, manager& m) :
+WebClient::WebClient(const unsigned int id, int socket, WebServer& webserver, Manager& m) :
 	id(id),
-	socket(socket),
+	clientSocket(socket),
 	run(false),
 	server(webserver),
-	client_thread(thread([this] { worker(); })),
-	m(m) {
+	clientThread(thread([this] { worker(); })),
+	manager(m) {
 }
 
-webserver_client::~webserver_client() {
+WebClient::~WebClient() {
 }
 
-void webserver_client::getCommand(const string& str, string& method, string& uri, string& protocol) {
+void WebClient::getCommand(const string& str, string& method, string& uri, string& protocol) {
 	vector<string> list;
 	str_split(str, string(" "), list);
 	if (list.size() == 3) {
@@ -40,7 +40,7 @@ void webserver_client::getCommand(const string& str, string& method, string& uri
 
 static const char* html_header_template = "HTTP/1.0 %s\r\nContent-Type: text/html; charset=utf-8\r\n\r\n<!DOCTYPE html><html><head><title>RailControl</title></head><body><h1>%s</h1>%s<p><a href=\"/quit/\">Shut down RailControl</a></p></body></html>";
 
-void webserver_client::deliver_file(const int socket, const string& file) {
+void WebClient::deliverFile(const int socket, const string& file) {
 	char buffer[1024];
 	snprintf(buffer, sizeof(buffer), html_header_template, "200 OK", "RailControl", file.c_str());
 	send(socket, buffer, strlen(buffer), 0);
@@ -52,13 +52,13 @@ void webserver_client::deliver_file(const int socket, const string& file) {
 	*/
 }
 
-void webserver_client::handle_loco_list(const int socket, const vector<string>& uri_parts) {
+void WebClient::handleLocoList(const int socket, const vector<string>& uri_parts) {
 	char buffer_out[1024];
 	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>List of locos</p>");
 	send(socket, buffer_out, strlen(buffer_out), 0);
 }
 
-void webserver_client::handle_loco_properties(const int socket, const vector<string>& uri_parts) {
+void WebClient::handleLocoProperties(const int socket, const vector<string>& uri_parts) {
 	unsigned int loco_id = std::stoi(uri_parts[2]);
 	char buffer[1024];
 	snprintf(buffer, sizeof(buffer), "<p>Properties of loco %u</p>", loco_id);
@@ -67,35 +67,35 @@ void webserver_client::handle_loco_properties(const int socket, const vector<str
 	send(socket, buffer_out, strlen(buffer_out), 0);
 }
 
-void webserver_client::handle_loco_command(const int socket, const vector<string>& uri_parts) {
-	unsigned int loco_id = std::stoi(uri_parts[2]);
+void WebClient::handleLocoCommand(const int socket, const vector<string>& uri_parts) {
+	unsigned int locoID = std::stoi(uri_parts[2]);
 	char buffer[1024];
 	if (uri_parts[3].compare("speed") == 0) {
 		int speed = std::stoi(uri_parts[4]);
-		snprintf(buffer, sizeof(buffer), "<p>loco %u speed is now set to %i</p>", loco_id, speed);
-		//webserver.set_loco_speed(loco_id, speed);
+		snprintf(buffer, sizeof(buffer), "<p>loco %u speed is now set to %i</p>", locoID, speed);
+		manager.locoSpeed(CONTROL_ID_WEBSERVER, locoID, speed);
 	}
 	else if (uri_parts[3].substr(0, 1).compare("f") == 0) {
 		unsigned char fx = std::stoi(uri_parts[3].substr(1));
 		bool fon = (uri_parts[4].compare("on") == 0);
-		snprintf(buffer, sizeof(buffer), "<p>loco %u f%i is now set to %s</p>", loco_id, fx, (fon ? "on" : "off"));
+		snprintf(buffer, sizeof(buffer), "<p>loco %u f%i is now set to %s</p>", locoID, fx, (fon ? "on" : "off"));
 	}
 	char buffer_out[1024];
 	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", buffer);
 	send(socket, buffer_out, strlen(buffer_out), 0);
 }
 
-void webserver_client::handle_loco(const int socket, const string& uri) {
+void WebClient::handleLoco(const int socket, const string& uri) {
 	vector<string> uri_parts;
 	str_split(uri, "/", uri_parts);
 	if (uri_parts.size() == 3) {
-		handle_loco_list(socket, uri_parts);
+		handleLocoList(socket, uri_parts);
 	}
 	else if (uri_parts.size() == 4) {
-		handle_loco_properties(socket, uri_parts);
+		handleLocoProperties(socket, uri_parts);
 	}
 	else if (uri_parts.size() == 6) {
-		handle_loco_command(socket, uri_parts);
+		handleLocoCommand(socket, uri_parts);
 	}
 	else {
 		char buffer_out[1024];
@@ -105,14 +105,14 @@ void webserver_client::handle_loco(const int socket, const string& uri) {
 }
 
 // worker is the thread that handles client requests
-void webserver_client::worker() {
+void WebClient::worker() {
 	xlog("Executing webclient");
 	run = true;
 
 	char buffer_in[1024];
 	char buffer_out[1024];
 
-	recv(socket, buffer_in, sizeof(buffer_in), 0);
+	recv(clientSocket, buffer_in, sizeof(buffer_in), 0);
 	string s(buffer_in);
 	str_replace(s, string("\r\n"), string("\n"));
 	str_replace(s, string("\r"), string("\n"));
@@ -121,7 +121,7 @@ void webserver_client::worker() {
 
 	if (lines.size() < 1) {
 		xlog("Invalid request");
-		close(socket);
+		close(clientSocket);
 		return;
 	}
 	string method;
@@ -137,8 +137,8 @@ void webserver_client::worker() {
 	if (method.compare("GET") != 0) {
 		xlog("Method not implemented");
 		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "501 Not implemented", "Not implemented", "<p>This request method is not implemented</p>");
-		send(socket, buffer_out, strlen(buffer_out), 0);
-		close(socket);
+		send(clientSocket, buffer_out, strlen(buffer_out), 0);
+		close(clientSocket);
 		return;
 	}
 
@@ -150,33 +150,33 @@ void webserver_client::worker() {
 
 	if (uri.compare("/") == 0) {
 		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Railcontrol is running</p>");
-		send(socket, buffer_out, strlen(buffer_out), 0);
+		send(clientSocket, buffer_out, strlen(buffer_out), 0);
 	}
 	else if (uri.compare("/quit/") == 0) {
 		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Railcontrol is shutting down</p>");
-		send(socket, buffer_out, strlen(buffer_out), 0);
-		stop_all();
+		send(clientSocket, buffer_out, strlen(buffer_out), 0);
+		stopRailControl();
 	}
 	else if ((uri.compare("/favicon.ico") == 0) || (uri.substr(0, 5).compare("/css/") == 0)) {
-		deliver_file(socket, uri);
+		deliverFile(clientSocket, uri);
 	}
 	else if (uri.substr(0, 6).compare("/loco/") == 0) {
-		handle_loco(socket, uri);
+		handleLoco(clientSocket, uri);
 	}
 	else {
 		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "404 Not found", "RailControl", "<p>The file can not be found</p>");
-		send(socket, buffer_out, strlen(buffer_out), 0);
+		send(clientSocket, buffer_out, strlen(buffer_out), 0);
 	}
 
 	xlog("Terminating webclient");
-	close(socket);
+	close(clientSocket);
 }
 
-int webserver_client::stop() {
+int WebClient::stop() {
 	// inform thread to stop
 	run = false;
 	// join thread
-	client_thread.join();
+	clientThread.join();
 	return 0;
 }
 
@@ -184,24 +184,24 @@ int webserver_client::stop() {
 // Server part
 // ***********
 
-webserver::webserver(manager& m, const unsigned short port) :
-  control(CONTROL_ID_WEBSERVER),
+WebServer::WebServer(Manager& m, const unsigned short port) :
+  Control(CONTROL_ID_WEBSERVER),
 	port(port),
-	socket_server(0),
+	serverSocket(0),
 	run(false),
-	last_client_id(0),
-	m(m) {
+	lastClientID(0),
+	manager(m) {
 
   start();
 }
 
-webserver::~webserver() {
+WebServer::~WebServer() {
   stop();
 }
 
 
 // worker is a seperate thread listening on the server socket
-void webserver::worker() {
+void WebServer::worker() {
 	fd_set set;
 	struct timeval tv;
 	struct sockaddr_in6 client_addr;
@@ -211,34 +211,34 @@ void webserver::worker() {
 		int ret;
 		do {
 			FD_ZERO(&set);
-			FD_SET(socket_server, &set);
+			FD_SET(serverSocket, &set);
 			tv.tv_sec = 1;
 			tv.tv_usec = 0;
 			ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
 		} while (ret == 0 && run);
 		if (ret > 0 && run) {
 			// accept connection
-			int socket_client = accept(socket_server, (struct sockaddr *) &client_addr, &client_addr_len);
+			int socket_client = accept(serverSocket, (struct sockaddr *) &client_addr, &client_addr_len);
 			if (socket_client < 0) {
 				xlog("Unable to accept client connection: %i, %i", socket_client, errno);
 			}
 			else {
 				// create client and fill into vector
-				clients.push_back(new webserver_client(++last_client_id, socket_client, *this, m));
+				clients.push_back(new WebClient(++lastClientID, socket_client, *this, manager));
 			}
 		}
 	}
 }
 
-int webserver::start() {
+int WebServer::start() {
 	run = true;
 	struct sockaddr_in6 server_addr;
 
 	xlog("Starting webserver on port %i", port);
 
 	// create server socket
-	socket_server = socket(AF_INET6, SOCK_STREAM, 0);
-	if (socket_server < 0) {
+	serverSocket = socket(AF_INET6, SOCK_STREAM, 0);
+	if (serverSocket < 0) {
 		xlog("Unable to create socket for webserver. Unable to serve clients.");
 		return 1;
 	}
@@ -250,32 +250,32 @@ int webserver::start() {
 	server_addr.sin6_port = htons(port);
 
 	int on = 1;
-	if (setsockopt(socket_server, SOL_SOCKET, SO_REUSEADDR, (const void*)&on, sizeof(on)) < 0) {
+	if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (const void*)&on, sizeof(on)) < 0) {
 		xlog("Unable to set webserver socket option SO_REUSEADDR.");
 	}
 
-	while (run && bind(socket_server, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
+	while (run && bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
 		xlog("Unable to bind socket for webserver to port %i. Retrying later.", port);
 		sleep(1);
 	}
 	if (!run) {
-		close(socket_server);
+		close(serverSocket);
 		return 1;
 	}
 
 	// listen on the socket
-	if (listen(socket_server, 5) != 0) {
+	if (listen(serverSocket, 5) != 0) {
 		xlog("Unable to listen on socket for client server on port %i. Unable to serve clients.", port);
-		close(socket_server);
+		close(serverSocket);
 		return 1;
 	}
 
 	// create seperate thread that handles the client requests
-	webserver_thread = thread([this] { worker(); });
+	serverThread = thread([this] { worker(); });
 	return 0;
 }
 
-int webserver::stop() {
+int WebServer::stop() {
 	xlog("Stopping webserver");
 	run = false;
 
@@ -286,12 +286,12 @@ int webserver::stop() {
 
 	// delete all client memory
 	while (clients.size()) {
-		webserver_client* client = clients.back();
+		WebClient* client = clients.back();
 		clients.pop_back();
 		delete client;
 	}
 
 	// join server thread
-	webserver_thread.join();
+	serverThread.join();
 	return 0;
 }

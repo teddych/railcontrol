@@ -18,32 +18,32 @@
 namespace hardware {
 
 	// create instance of cs2
-  extern "C" cs2* create_cs2() {
-    return new cs2();
+  extern "C" CS2* create_cs2() {
+    return new CS2();
   }
 
 	// delete instance of cs2
-  extern "C" void destroy_cs2(cs2* cs2) {
+  extern "C" void destroy_cs2(CS2* cs2) {
     delete(cs2);
   }
 
   // start the thing
-  int cs2::start(struct params &params) {
+  int CS2::start(struct params &params) {
     return 0;
   }
 
   // stop the thing
-  int cs2::stop() {
+  int CS2::stop() {
     return 0;
   }
 
   // return the name
-  std::string cs2::name() const {
+  std::string CS2::name() const {
     return "Maerklin Central Station 2 (CS2)";
   }
 
 	// send a command to the CS2
-	void cs2::send_command(const int sock, const struct sockaddr* sockaddr_in, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length, const char* data) {
+	void CS2::sendCommand(const int sock, const struct sockaddr* sockaddr_in, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length, const char* data) {
     static unsigned short hash = 0x7337;
 		char buffer[CS2_BUFLEN];
     memset (buffer + 5, 0, CS2_BUFLEN - 5);
@@ -62,12 +62,12 @@ namespace hardware {
 
 
 	// set the speed of a loco
-	void cs2::loco_speed(protocol_t protocol, address_t address, speed_t speed) {
+	void CS2::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
 		xlog("Setting speed of loco %u/%u to %u", protocol, address, speed);
 	}
 
   // the receiver thread of the CS2
-  void cs2::receiver() {
+  void CS2::receiver() {
     xlog("Receiver started");
     struct sockaddr_in sockaddr_in;
     int sock;
@@ -100,7 +100,7 @@ namespace hardware {
   }
 
   // the sender thread of the CS2
-  void cs2::sender() {
+  void CS2::sender() {
     static unsigned short hash = 0x7337;
     xlog("Sender started");
     struct sockaddr_in sockaddr_in;
@@ -125,7 +125,7 @@ namespace hardware {
     buffer[4] = 5;
 		*/
     buffer[9] = 1;
-		send_command(sock, (struct sockaddr*)&sockaddr_in, prio, command, response, length, buffer + 5);
+		sendCommand(sock, (struct sockaddr*)&sockaddr_in, prio, command, response, length, buffer + 5);
 		/*
     //send the message
     hexlog(buffer, sizeof(buffer));
@@ -147,7 +147,7 @@ namespace hardware {
     buffer[8] = 0x68;
     buffer[9] = 0;
     buffer[10] = 0x50;
-		send_command(sock, (struct sockaddr*)&sockaddr_in, prio, command, response, length, buffer + 5);
+		sendCommand(sock, (struct sockaddr*)&sockaddr_in, prio, command, response, length, buffer + 5);
 
     //send the message
 		/*

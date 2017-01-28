@@ -8,45 +8,44 @@
 #include "control.h"
 #include "manager.h"
 
-class webserver;
+class WebServer;
 
-class webserver_client {
+class WebClient {
 	public:
-		webserver_client(const unsigned int id, int socket, webserver &webserver, manager& m);
-		~webserver_client();
+		WebClient(const unsigned int id, int socket, WebServer &webserver, Manager& manager);
+		~WebClient();
 		void worker();
 		int stop();
 	private:
 		void getCommand(const std::string& str, std::string& method, std::string& uri, std::string& protocol);
-    void deliver_file(const int socket, const std::string& file);
-		void handle_loco_list(const int socket, const std::vector<std::string>& uri_parts);
-		void handle_loco_properties(const int socket, const std::vector<std::string>& uri_parts);
-		void handle_loco_command(const int socket, const std::vector<std::string>& uri_parts);
-		void handle_loco(const int socket, const std::string& uri);
+    void deliverFile(const int socket, const std::string& file);
+		void handleLocoList(const int socket, const std::vector<std::string>& uri_parts);
+		void handleLocoProperties(const int socket, const std::vector<std::string>& uri_parts);
+		void handleLocoCommand(const int socket, const std::vector<std::string>& uri_parts);
+		void handleLoco(const int socket, const std::string& uri);
 		unsigned int id;
-		int socket;
+		int clientSocket;
 		volatile unsigned char run;
-		webserver &server;
-		std::thread client_thread;
-		manager& m;
+		WebServer &server;
+		std::thread clientThread;
+		Manager& manager;
 };
 
-class webserver : public control {
+class WebServer : public Control {
 	public:
-		webserver(manager& m, const unsigned short port);
-		~webserver();
+		WebServer(Manager& manager, const unsigned short port);
+		~WebServer();
 		int start();
 		int stop();
 	private:
 	  void worker();
 		unsigned short port;
-		int socket_server;
-		int socket_client;
+		int serverSocket;
 		volatile unsigned char run;
-		unsigned int last_client_id;
-		std::thread webserver_thread;
-		std::vector<webserver_client*> clients;
-		manager& m;
+		unsigned int lastClientID;
+		std::thread serverThread;
+		std::vector<WebClient*> clients;
+		Manager& manager;
 };
 
 #endif // WEBSERVER_H

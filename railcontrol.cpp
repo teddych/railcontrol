@@ -6,11 +6,12 @@
 #include <unistd.h>		//close;
 #include <vector>
 
+#include "railcontrol.h"
+
 #include "control.h"
-#include "hardware/hardware.h"
+#include "hardware/control_interface.h"
 #include "hardware_properties.h"
 #include "manager.h"
-#include "railcontrol.h"
 #include "util.h"
 #include "webserver.h"
 
@@ -19,7 +20,7 @@ using std::string;
 
 static unsigned int run;
 
-void stop_all() {
+void stopRailControl() {
 	run = false;
 }
 
@@ -28,7 +29,7 @@ int main (int argc, char* argv[]) {
   xlog("Starting railcontrol");
 
 	// init manager
-	manager m;
+	Manager m;
 
 	while(run) {
 		sleep(1);

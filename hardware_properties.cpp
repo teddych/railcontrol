@@ -1,25 +1,26 @@
+#include "hardware_properties.h"
+
 #include <dlfcn.h>              // dl*
 #include <sstream>
 
 #include "control.h"
-#include "hardware_properties.h"
 #include "util.h"
 
 using std::string;
 
 
-hardware_properties::hardware_properties(const hardware_id_t hardware_id, const hardware_control_id_t hardware_control_id) :
-  control(CONTROL_ID_HARDWARE),
-	hardware_id(hardware_id),
-	hardware_control_id(hardware_control_id),
-	create_hardware(NULL),
-	destroy_hardware(NULL),
+HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const hardwareControlID_t hardware_control_id) :
+  Control(CONTROL_ID_HARDWARE),
+	hardwareID(hardware_id),
+	hardwareControlID(hardware_control_id),
+	createHardware(NULL),
+	destroyHardware(NULL),
 	instance(NULL),
 	dlhandle(NULL) {
 
   // generate symbol and library names
   char* error;
-	string symbol = hardware_symbols[hardware_id];
+	string symbol = hardwareSymbols[hardware_id];
 	std::stringstream ss;
 	ss << "hardware/" << symbol << ".so";
   xlog("ID: %i Symbol: %s", hardware_id, symbol.c_str());
@@ -53,14 +54,14 @@ hardware_properties::hardware_properties(const hardware_id_t hardware_id, const 
   }
 
 	// return valid symbols
-	create_hardware = new_create_hardware;
-	destroy_hardware = new_destroy_hardware;
+	createHardware = new_create_hardware;
+	destroyHardware = new_destroy_hardware;
 	return;
 }
 
-hardware_properties::~hardware_properties() {
+HardwareProperties::~HardwareProperties() {
 	if (instance) {
-		destroy_hardware(instance);
+		destroyHardware(instance);
 		instance = NULL;
 	}
 	if (dlhandle) {
@@ -69,22 +70,22 @@ hardware_properties::~hardware_properties() {
 	}
 }
 
-std::string hardware_properties::name() const {
+std::string HardwareProperties::name() const {
 	if (instance) {
 		return instance->name();
 	}
 	return "Unknown, not running";
 }
 
-void hardware_properties::start() {
-	if (create_hardware) {
-		instance = create_hardware();
+void HardwareProperties::start() {
+	if (createHardware) {
+		instance = createHardware();
 	}
 }
 
-void hardware_properties::stop() {
+void HardwareProperties::stop() {
 	if (instance) {
-		destroy_hardware(instance);
+		destroyHardware(instance);
 		instance = NULL;
 	}
 }

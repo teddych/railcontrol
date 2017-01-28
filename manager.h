@@ -5,13 +5,13 @@
 
 #include "control.h"
 
-class manager {
+class Manager {
 	public:
-    manager();
-    ~manager();
+    Manager();
+    ~Manager();
+		void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed);
 	private:
-		void loco_speed(const control_id_t control_id, const loco_id_t loco_id, const speed_t speed);
-    std::vector<control*> controllers;
+    std::vector<Control*> controllers;
 };
 
 #endif // MANAGER_H

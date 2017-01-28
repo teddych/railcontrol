@@ -6,9 +6,9 @@ LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \
 	cs2.so \
-	virt.so
+	virtual.so
 
-%.so: %.cpp %.h hardware.h
+%.so: %.cpp %.h control_interface.h
 	$(CC) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
 #%.so: %.o

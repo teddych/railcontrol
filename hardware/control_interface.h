@@ -1,5 +1,5 @@
-#ifndef HARDWARE_HARDWARE_H
-#define HARDWARE_HARDWARE_H
+#ifndef HARDWARE_CONTROL_INTERFACE_H
+#define HARDWARE_CONTROL_INTERFACE_H
 
 #include <string>
 
@@ -11,13 +11,13 @@ namespace hardware {
 		std::string ip;
 	};
 
-	class hardware {
+	class ControlInterface {
 		public:
 		  // non virtual default constructor is needed to prevent polymorphism
-			hardware() {};
+			ControlInterface() {};
 
 			// pure virtual destructor prevents polymorphism in derived class
-			virtual ~hardware() {};
+			virtual ~ControlInterface() {};
 
 			// start the needed threads to serve the hardware
 			virtual int start(struct params &params);
@@ -29,21 +29,21 @@ namespace hardware {
 			virtual std::string name() const = 0;
 
 			// set the speed of a loco
-			virtual void loco_speed(protocol_t protocol, address_t address, speed_t speed) {};
+			virtual void locoSpeed(protocol_t protocol, address_t address, speed_t speed) {};
 	};
 
   // start the thing
-  inline int hardware::start(struct params &params) {
+  inline int ControlInterface::start(struct params &params) {
     return 0;
   }
 
   // stop the thing
-  inline int hardware::stop() {
+  inline int ControlInterface::stop() {
     return 0;
   }
 
 } // namespace
 
 
-#endif // HARDWARE_HARDWARE_H
+#endif // HARDWARE_CONTROL_INTERFACE_H
 

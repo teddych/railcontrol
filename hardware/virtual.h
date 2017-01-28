@@ -3,11 +3,11 @@
 
 #include <cstring>
 
-#include "hardware.h"
+#include "control_interface.h"
 
 namespace hardware {
 
-  class virt : hardware {
+  class Virtual : ControlInterface {
     public:
 			// name() must be implemented
       std::string name() const override;
