@@ -1,7 +1,8 @@
 
 CC=g++
 
-CPPFLAGS=-g -fpic -O2 -Wall -std=c++11
+CPPFLAGS=-g -fpic -O0 -Wall -std=c++11
+#CPPFLAGS=-g -fpic -O2 -Wall -std=c++11
 LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \

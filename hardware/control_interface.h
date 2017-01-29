@@ -7,7 +7,7 @@
 
 namespace hardware {
 
-	struct params {
+	struct Params {
 		std::string ip;
 	};
 
@@ -20,7 +20,7 @@ namespace hardware {
 			virtual ~ControlInterface() {};
 
 			// start the needed threads to serve the hardware
-			virtual int start(struct params &params);
+			virtual int start(struct Params &params);
 
 			// stop the threads
 			virtual int stop();
@@ -33,7 +33,7 @@ namespace hardware {
 	};
 
   // start the thing
-  inline int ControlInterface::start(struct params &params) {
+  inline int ControlInterface::start(struct Params &params) {
     return 0;
   }
 

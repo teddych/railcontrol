@@ -17,8 +17,10 @@ enum controlIDs : controlID_t {
 };
 
 enum protocols : protocol_t {
-	PROTOCOL_MM1 = 0,
+	PROTOCOL_CONTROL = 0,
+	PROTOCOL_MM1,
 	PROTOCOL_MM2,
+	PROTOCOL_MFX,
 	PROTOCOL_DCC,
 	PROTOCOL_SX1,
 	PROTOCOL_SX2

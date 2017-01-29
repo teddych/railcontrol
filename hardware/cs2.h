@@ -3,25 +3,32 @@
 
 #include <cstring>
 #include <string>
+#include <thread>
 
 #include "control_interface.h"
 
 namespace hardware {
 
-  class CS2 : ControlInterface {
-    public:
+	class CS2: ControlInterface {
+		public:
 			CS2(std::string& name2);
-      int start(struct params &params) override;
-      int stop() override;
+			~CS2();
+			int start(struct Params &params) override;
+			int stop() override;
 			std::string getName() const override;
 			std::string locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
-    private:
-			void sendCommand(const int sock, const struct sockaddr* sockaddr_in, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length, const char* data);
-      void receiver();
-      void sender();
-      volatile unsigned char run;
-      std::string name;
-  };
+		private:
+			void createCommandHeader(char* buffer, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length);
+			void createLocID(char* buffer, const protocol_t protocol, address_t address);
+			void receiver();
+			void sender();
+			volatile unsigned char run;
+			std::string name;
+			struct sockaddr_in sockaddr_inSender;
+			int senderSocket;
+			std::thread senderThread;
+			static const unsigned short hash = 0x7337;
+	};
 
 } // namespace
 
