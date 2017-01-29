@@ -107,7 +107,7 @@ namespace hardware {
 		// fill up header & locid
 		createCommandHeader(buffer, 0, 0x04, 0, 6);
 		// set data buffer to 0
-		int64_t* buffer_data = (int64_t*)(buffer + 5);
+		int64_t* buffer_data = (int64_t*) (buffer + 5);
 		*buffer_data = 0L;
 		// set locID
 		createLocID(buffer + 5, protocol, address);
@@ -116,18 +116,19 @@ namespace hardware {
 		buffer[11] = (speed & 0xFF);
 
 //    hexlog(buffer, sizeof(buffer));
-    if (sendto(senderSocket, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
-      return "Unable to send data";
-    }
-    return "";
+		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in))
+		    == -1) {
+			return "Unable to send data";
+		}
+		return "";
 
-    /*
-		return sendCommand(clientSocket, )
-		std::stringstream ss;
-		ss << "Setting speed in CS2 of loco " << (unsigned int)protocol << "/" << address << " to speed " << speed;
-		std::string s = ss.str();
-		return s;
-		*/
+		/*
+		 return sendCommand(clientSocket, )
+		 std::stringstream ss;
+		 ss << "Setting speed in CS2 of loco " << (unsigned int)protocol << "/" << address << " to speed " << speed;
+		 std::string s = ss.str();
+		 return s;
+		 */
 	}
 
   // the receiver thread of the CS2
@@ -173,9 +174,9 @@ namespace hardware {
       return;
     };
 
-    while(run) {
-    	sleep(1);
-    }
+		while (run) {
+			sleep(1);
+		}
 
 //    char buffer[CS2_CMD_BUF_LEN];
 //    memset (buffer, 0, sizeof (buffer));
