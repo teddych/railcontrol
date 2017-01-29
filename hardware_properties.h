@@ -5,6 +5,7 @@
 
 #include "control.h"
 #include "hardware/control_interface.h"
+#include "util.h"
 
 typedef unsigned char hardware_id_t;
 
@@ -22,14 +23,14 @@ static std::string hardwareSymbols[] = {
 };
 
 // the types of the class factories
-typedef hardware::ControlInterface* create_hardware_t();
+typedef hardware::ControlInterface* create_hardware_t(std::string);
 typedef void destroy_hardware_t(hardware::ControlInterface*);
 
 class HardwareProperties : public Control {
 	public:
-		HardwareProperties(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID);
+		HardwareProperties(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const std::string name);
 		~HardwareProperties();
-		std::string name() const;
+		std::string getName() const;
 		void start();
 		void stop();
 		void locoSpeed(protocol_t protocol, address_t address, speed_t speed);
@@ -40,10 +41,14 @@ class HardwareProperties : public Control {
 		destroy_hardware_t* destroyHardware;
 		hardware::ControlInterface* instance;
 		void* dlhandle;
+		std::string name;
 };
 
 inline void HardwareProperties::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
-	instance->locoSpeed(protocol, address, speed);
+	std::string logText = instance->locoSpeed(protocol, address, speed);
+	if (logText.size()) {
+		xlog(logText.c_str());
+	}
 }
 
 #endif // HARDWARE_PROPERTIES_H

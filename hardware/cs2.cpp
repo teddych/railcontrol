@@ -4,6 +4,7 @@
 #include <cstdlib>    //exit(0);
 #include <cstring>    //memset
 #include <iostream>
+#include <sstream>
 #include <thread>
 #include <unistd.h>   //close;
 
@@ -18,14 +19,20 @@
 namespace hardware {
 
 	// create instance of cs2
-  extern "C" CS2* create_cs2() {
-    return new CS2();
+	extern "C" CS2* create_cs2(std::string& name) {
+		return new CS2(name);
   }
 
 	// delete instance of cs2
   extern "C" void destroy_cs2(CS2* cs2) {
     delete(cs2);
   }
+
+	CS2::CS2(std::string& name2) {
+		std::stringstream ss;
+		ss << "Maerklin Central Station 2 (CS2) / " << name2;
+		name = ss.str();
+	}
 
   // start the thing
   int CS2::start(struct params &params) {
@@ -38,8 +45,8 @@ namespace hardware {
   }
 
   // return the name
-  std::string CS2::name() const {
-    return "Maerklin Central Station 2 (CS2)";
+	std::string CS2::getName() const {
+		return name;
   }
 
 	// send a command to the CS2
@@ -62,8 +69,10 @@ namespace hardware {
 
 
 	// set the speed of a loco
-	void CS2::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
-		xlog("Setting speed of loco %u/%u to %u", protocol, address, speed);
+	std::string CS2::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
+		std::stringstream ss;
+		ss << "Setting speed of loco " << protocol << "/" << address << " to speed " << speed;
+		return ss.str();
 	}
 
   // the receiver thread of the CS2

@@ -37,6 +37,7 @@ class WebServer : public Control {
 		~WebServer();
 		int start();
 		int stop();
+		void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) override;
 	private:
 	  void worker();
 		unsigned short port;

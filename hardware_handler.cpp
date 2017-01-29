@@ -3,19 +3,19 @@
 
 using std::string;
 
-HardwareHandler::HardwareHandler(Manager& m) :
+HardwareHandler::HardwareHandler(Manager& manager) :
 	Control(CONTROL_ID_HARDWARE),
 	nextHardwareControlID(0),
-	m(m) {
+	manager(manager) {
 
 	// create hardware
-	hardware.push_back(new HardwareProperties(HARDWARE_ID_VIRT, nextHardwareControlID++));
-	hardware.push_back(new HardwareProperties(HARDWARE_ID_CS2, nextHardwareControlID++));
+	hardware.push_back(new HardwareProperties(HARDWARE_ID_VIRT, nextHardwareControlID++, "Virtuelle Zentrale"));
+	hardware.push_back(new HardwareProperties(HARDWARE_ID_CS2, nextHardwareControlID++, "Reelle Zentrale"));
 
 	// starting hardware
 	for(auto property : hardware) {
 		property->start();
-		std::string name = property->name();
+		std::string name = property->getName();
 		xlog("Starting %s", name.c_str());
 	}
 }
@@ -23,7 +23,7 @@ HardwareHandler::HardwareHandler(Manager& m) :
 HardwareHandler::~HardwareHandler() {
 	// Stopping hardware
 	for(auto property : hardware) {
-		std::string name = property->name();
+		std::string name = property->getName();
 		xlog("Stopping %s", name.c_str());
 		property->stop();
 		delete property;
@@ -41,13 +41,13 @@ hardware_control_id_t hardware_handler::get_hardware_control_id(loco_id_t loco_i
 }
 */
 
-hardwareControlID_t HardwareHandler::getHardwareControlID(protocol_t protocol, address_t address) {
-  return 0;
-}
 
-void HardwareHandler::locoSpeed(const controlID_t controlID, const protocol_t protocol, const address_t address, const speed_t speed) {
+void HardwareHandler::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
   if (controlID != CONTROL_ID_HARDWARE) {
-    hardwareControlID_t hardwareControlID = getHardwareControlID(protocol, address);
-		hardware[hardwareControlID]->locoSpeed(protocol, address, speed);
+    hardwareControlID_t hardwareControlID;
+    protocol_t protocol;
+    address_t address;
+    manager.getProtocolAddress(locoID, hardwareControlID, protocol, address);
+    hardware[hardwareControlID]->locoSpeed(protocol, address, speed);
   }
 }

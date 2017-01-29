@@ -9,14 +9,15 @@
 using std::string;
 
 
-HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const hardwareControlID_t hardware_control_id) :
+HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const hardwareControlID_t hardware_control_id, const std::string name) :
   Control(CONTROL_ID_HARDWARE),
 	hardwareID(hardware_id),
 	hardwareControlID(hardware_control_id),
 	createHardware(NULL),
 	destroyHardware(NULL),
 	instance(NULL),
-	dlhandle(NULL) {
+	dlhandle(NULL),
+	name(name) {
 
   // generate symbol and library names
   char* error;
@@ -70,16 +71,16 @@ HardwareProperties::~HardwareProperties() {
 	}
 }
 
-std::string HardwareProperties::name() const {
+std::string HardwareProperties::getName() const {
 	if (instance) {
-		return instance->name();
+		return instance->getName();
 	}
 	return "Unknown, not running";
 }
 
 void HardwareProperties::start() {
 	if (createHardware) {
-		instance = createHardware();
+		instance = createHardware(name);
 	}
 }
 

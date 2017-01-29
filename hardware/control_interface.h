@@ -26,10 +26,10 @@ namespace hardware {
 			virtual int stop();
 
 			// get the name of the hardware
-			virtual std::string name() const = 0;
+			virtual std::string getName() const = 0;
 
 			// set the speed of a loco
-			virtual void locoSpeed(protocol_t protocol, address_t address, speed_t speed) {};
+			virtual std::string locoSpeed(protocol_t protocol, address_t address, speed_t speed) = 0;
 	};
 
   // start the thing

@@ -2,6 +2,7 @@
 #include <cstring>		//memset
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <thread>
 #include <unistd.h>
 
 #include "railcontrol.h"
@@ -294,4 +295,10 @@ int WebServer::stop() {
 	// join server thread
 	serverThread.join();
 	return 0;
+}
+
+void WebServer::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
+	if (controlID != CONTROL_ID_WEBSERVER) {
+		xlog("locoSpeed not yet implemented in Webserver");
+	}
 }

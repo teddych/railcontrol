@@ -1,8 +1,7 @@
-#include "manager.h"
-
 #include <iostream>
 
 #include "hardware_handler.h"
+#include "manager.h"
 #include "util.h"
 #include "webserver.h"
 
@@ -15,6 +14,12 @@ Manager::~Manager() {
   for (auto control : controllers) {
     delete control;
   }
+}
+
+void Manager::getProtocolAddress(const locoID_t locoID, hardwareControlID_t& hardwareControlID, protocol_t& protocol, address_t& address) {
+	hardwareControlID = 1;
+	protocol = PROTOCOL_DCC;
+	address = 1228;
 }
 
 void Manager::locoSpeed(const controlID_t control_id, const locoID_t loco_id, const speed_t speed) {

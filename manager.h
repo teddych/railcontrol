@@ -9,6 +9,7 @@ class Manager {
 	public:
     Manager();
     ~Manager();
+    void getProtocolAddress(const locoID_t locoID, hardwareControlID_t& hardwareControlID, protocol_t& protocol, address_t& address);
 		void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed);
 	private:
     std::vector<Control*> controllers;
