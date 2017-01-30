@@ -6,14 +6,15 @@
 #include <thread>
 
 #include "control_interface.h"
+#include "../hardware_params.h"
 
 namespace hardware {
 
 	class CS2: ControlInterface {
 		public:
-			CS2(std::string& name2);
+			CS2(struct Params &params);
 			~CS2();
-			int start(struct Params &params) override;
+			int start() override;
 			int stop() override;
 			std::string getName() const override;
 			std::string locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;

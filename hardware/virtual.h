@@ -4,13 +4,14 @@
 #include <cstring>
 
 #include "control_interface.h"
+#include "../hardware_params.h"
 
 namespace hardware {
 
   class Virtual : ControlInterface {
     public:
 			// Constructor
-			Virtual(std::string& name2);
+			Virtual(struct Params &params);
 
 			// name() must be implemented
 			std::string getName() const override;

@@ -7,10 +7,6 @@
 
 namespace hardware {
 
-	struct Params {
-		std::string ip;
-	};
-
 	class ControlInterface {
 		public:
 		  // non virtual default constructor is needed to prevent polymorphism
@@ -20,7 +16,7 @@ namespace hardware {
 			virtual ~ControlInterface() {};
 
 			// start the needed threads to serve the hardware
-			virtual int start(struct Params &params);
+			virtual int start();
 
 			// stop the threads
 			virtual int stop();
@@ -33,7 +29,7 @@ namespace hardware {
 	};
 
   // start the thing
-  inline int ControlInterface::start(struct Params &params) {
+  inline int ControlInterface::start() {
     return 0;
   }
 

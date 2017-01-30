@@ -9,8 +9,12 @@ HardwareHandler::HardwareHandler(Manager& manager) :
 	manager(manager) {
 
 	// create hardware
-	hardware.push_back(new HardwareProperties(HARDWARE_ID_VIRT, nextHardwareControlID++, "Virtuelle Zentrale"));
-	hardware.push_back(new HardwareProperties(HARDWARE_ID_CS2, nextHardwareControlID++, "Reelle Zentrale"));
+	struct Params params;
+	params.name = "Virtuelle Zentrale";
+	params.ip = "";
+	hardware.push_back(new HardwareProperties(HARDWARE_ID_VIRT, nextHardwareControlID++, params));
+	params.name = "Reelle Zentrale";
+	hardware.push_back(new HardwareProperties(HARDWARE_ID_CS2, nextHardwareControlID++, params));
 
 	// starting hardware
 	for(auto property : hardware) {

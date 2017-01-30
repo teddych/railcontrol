@@ -9,8 +9,8 @@ namespace hardware {
 	// and delete the command station in main program
 
 	// create instance of virtual
-	extern "C" Virtual* create_virtual(std::string& name) {
-		return new Virtual(name);
+	extern "C" Virtual* create_virtual(struct Params &params) {
+		return new Virtual(params);
 	}
 
 	// delete instance of virtual
@@ -19,9 +19,9 @@ namespace hardware {
 	}
 
 
-  Virtual::Virtual(std::string& name2) {
+  Virtual::Virtual(struct Params &params) {
 		std::stringstream ss;
-		ss << "Virtual Command Station / " << name2;
+		ss << "Virtual Command Station / " << params.name;
 		name = ss.str();
 	}
 	// return the name

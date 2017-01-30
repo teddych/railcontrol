@@ -9,7 +9,7 @@
 using std::string;
 
 
-HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const hardwareControlID_t hardware_control_id, const std::string name) :
+HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const hardwareControlID_t hardware_control_id, const struct Params& params) :
   Control(CONTROL_ID_HARDWARE),
 	hardwareID(hardware_id),
 	hardwareControlID(hardware_control_id),
@@ -17,7 +17,7 @@ HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const ha
 	destroyHardware(NULL),
 	instance(NULL),
 	dlhandle(NULL),
-	name(name) {
+	params(params) {
 
   // generate symbol and library names
   char* error;
@@ -80,7 +80,7 @@ std::string HardwareProperties::getName() const {
 
 void HardwareProperties::start() {
 	if (createHardware) {
-		instance = createHardware(name);
+		instance = createHardware(params);
 	}
 }
 

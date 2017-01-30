@@ -5,11 +5,12 @@
 
 #include "control.h"
 #include "hardware/control_interface.h"
+#include "hardware_params.h"
 #include "util.h"
 
 typedef unsigned char hardware_id_t;
 
-enum hardwareIDs {
+enum hardwareIDs : hardware_id_t {
 	HARDWARE_ID_NONE = 0,
   HARDWARE_ID_VIRT,
 	HARDWARE_ID_CS2,
@@ -23,12 +24,12 @@ static std::string hardwareSymbols[] = {
 };
 
 // the types of the class factories
-typedef hardware::ControlInterface* create_hardware_t(std::string);
+typedef hardware::ControlInterface* create_hardware_t(struct Params params);
 typedef void destroy_hardware_t(hardware::ControlInterface*);
 
 class HardwareProperties : public Control {
 	public:
-		HardwareProperties(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const std::string name);
+		HardwareProperties(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const struct Params& params);
 		~HardwareProperties();
 		std::string getName() const;
 		void start();
@@ -41,7 +42,7 @@ class HardwareProperties : public Control {
 		destroy_hardware_t* destroyHardware;
 		hardware::ControlInterface* instance;
 		void* dlhandle;
-		std::string name;
+		struct Params params;
 };
 
 inline void HardwareProperties::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {

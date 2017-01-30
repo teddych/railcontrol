@@ -5,12 +5,13 @@
 #include <vector>
 
 #include "control.h"
+#include "hardware_params.h"
 #include "hardware_properties.h"
 #include "manager.h"
 
 class HardwareHandler : public Control {
 	public:
-		HardwareHandler(Manager& m);
+		HardwareHandler(Manager& manager);
 		~HardwareHandler();
 		//loco_id_t get_loco_id(protocol_t protocol, address_t address);
 		//hardware_control_id_t get_hardware_control_id(loco_id_t loco_id);

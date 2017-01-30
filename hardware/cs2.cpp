@@ -20,8 +20,8 @@
 namespace hardware {
 
 	// create instance of cs2
-	extern "C" CS2* create_cs2(std::string& name) {
-		return new CS2(name);
+	extern "C" CS2* create_cs2(struct Params& params) {
+		return new CS2(params);
   }
 
 	// delete instance of cs2
@@ -29,12 +29,11 @@ namespace hardware {
     delete(cs2);
   }
 
-	CS2::CS2(std::string& name2) {
+	CS2::CS2(struct Params& params) {
 		std::stringstream ss;
-		ss << "Maerklin Central Station 2 (CS2) / " << name2;
+		ss << "Maerklin Central Station 2 (CS2) / " << params.name;
 		name = ss.str();
-		struct Params p;
-		start(p);
+		start();
 	}
 
 	CS2::~CS2() {
@@ -42,7 +41,7 @@ namespace hardware {
 	}
 
   // start the thing
-  int CS2::start(struct Params &params) {
+  int CS2::start() {
 		run = true;
 		senderThread = std::thread([this] {sender();});
 		return 0;
@@ -133,7 +132,7 @@ namespace hardware {
 
   // the receiver thread of the CS2
   void CS2::receiver() {
-    xlog("Receiver started");
+//    xlog("Receiver started");
     struct sockaddr_in sockaddr_in;
     int sock;
     sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), "0.0.0.0", CS2_PORT_RECV);
@@ -161,7 +160,7 @@ namespace hardware {
 //      }
     }
     close(sock);
-    xlog("Receiver ended");
+//    xlog("Receiver ended");
   }
 
   // the sender thread of the CS2
