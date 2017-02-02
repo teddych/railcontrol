@@ -29,10 +29,8 @@ namespace hardware {
 		return name;
 	}
 
-	std::string Virtual::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
-		std::stringstream ss;
-		ss << "Setting speed of loco " << protocol << "/" << address << " to speed " << speed;
-		return ss.str();
+	void Virtual::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
+		xlog("Setting speed of virtual loco %i/%i to speed %i", protocol, address, speed);
 	}
 
 } // namespace

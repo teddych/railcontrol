@@ -17,7 +17,7 @@ Manager::~Manager() {
 }
 
 void Manager::getProtocolAddress(const locoID_t locoID, hardwareControlID_t& hardwareControlID, protocol_t& protocol, address_t& address) {
-	hardwareControlID = 1;
+	hardwareControlID = 0;
 	protocol = PROTOCOL_DCC;
 	address = 1228;
 }

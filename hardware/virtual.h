@@ -25,9 +25,8 @@ namespace hardware {
 			// this method is called at shutdown to clean up the control
       //int stop() override;
 
-			std::string locoSpeed(protocol_t protocol, address_t address,
-			    speed_t speed) override;
-			private:
+			void locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
+		private:
 			std::string name;
   };
 

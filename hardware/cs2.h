@@ -17,7 +17,7 @@ namespace hardware {
 			int start() override;
 			int stop() override;
 			std::string getName() const override;
-			std::string locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
+			void locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
 		private:
 			void createCommandHeader(char* buffer, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length);
 			void createLocID(char* buffer, const protocol_t protocol, address_t address);

@@ -101,7 +101,7 @@ namespace hardware {
 	}
 
 	// set the speed of a loco
-	std::string CS2::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
+	void CS2::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
 		char buffer[CS2_CMD_BUF_LEN];
 		// fill up header & locid
 		createCommandHeader(buffer, 0, 0x04, 0, 6);
@@ -117,9 +117,8 @@ namespace hardware {
 //    hexlog(buffer, sizeof(buffer));
 		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in))
 		    == -1) {
-			return "Unable to send data";
+			xlog("Unable to send data to CS2");
 		}
-		return "";
 
 		/*
 		 return sendCommand(clientSocket, )
@@ -132,17 +131,17 @@ namespace hardware {
 
   // the receiver thread of the CS2
   void CS2::receiver() {
-//    xlog("Receiver started");
+    xlog("CS2 receiver started");
     struct sockaddr_in sockaddr_in;
     int sock;
     sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), "0.0.0.0", CS2_PORT_RECV);
     if (sock < 0) {
-//      xlog("Unable to create UDP connection for receiving data from CS2");
+      xlog("Unable to create UDP connection for receiving data from CS2");
       return;
     }
 
     if (bind(sock, (struct sockaddr*)&sockaddr_in, sizeof(sockaddr_in)) == -1) {
-//      xlog("Unable to bind the socket");
+      xlog("Unable to bind the socket for CS2 receiver");
     }
 //    char buffer[CS2_CMD_BUF_LEN];
     while(run) {
@@ -160,13 +159,12 @@ namespace hardware {
 //      }
     }
     close(sock);
-//    xlog("Receiver ended");
+    xlog("CS2 receiver ended");
   }
 
   // the sender thread of the CS2
   void CS2::sender() {
-//    static unsigned short hash = 0x7337;
-//    xlog("Sender started");
+    xlog("CS2 sender started");
     senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), CS2_IP, CS2_PORT_SEND);
     if (senderSocket < 0) {
 //      xlog("Unable to create UDP connection for sending data to CS2");
@@ -251,7 +249,7 @@ namespace hardware {
 //      xlog("Unable to send data");
 //    }
     close (senderSocket);
-//    xlog("Sender ended");
+    xlog("CS2 sender ended");
   }
 
 } // namespace

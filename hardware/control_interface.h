@@ -25,7 +25,7 @@ namespace hardware {
 			virtual std::string getName() const = 0;
 
 			// set the speed of a loco
-			virtual std::string locoSpeed(protocol_t protocol, address_t address, speed_t speed) = 0;
+			virtual void locoSpeed(protocol_t protocol, address_t address, speed_t speed) = 0;
 	};
 
   // start the thing

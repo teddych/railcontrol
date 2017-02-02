@@ -46,10 +46,7 @@ class HardwareProperties : public Control {
 };
 
 inline void HardwareProperties::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
-	std::string logText = instance->locoSpeed(protocol, address, speed);
-	if (logText.size()) {
-		xlog(logText.c_str());
-	}
+	instance->locoSpeed(protocol, address, speed);
 }
 
 #endif // HARDWARE_PROPERTIES_H

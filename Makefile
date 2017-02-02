@@ -4,7 +4,7 @@ CC=g++
 #CPPFLAGS=-g -O2 -Wall
 #CPPFLAGS=-g -O0 -Wall -std=c++11
 CPPFLAGS=-g -O2 -Wall -std=c++11
-LDFLAGS=-g -Wl,--whole-archive hardware/cs2.so -Wl,--no-whole-archive
+LDFLAGS=-g -Wl,--whole-archive hardware/cs2.so -Wl,--no-whole-archive -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
