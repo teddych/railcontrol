@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cstring>		//memset
 #include <netinet/in.h>
+#include <signal.h>
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
@@ -156,7 +157,7 @@ void WebClient::worker() {
 	else if (uri.compare("/quit/") == 0) {
 		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Railcontrol is shutting down</p>");
 		send(clientSocket, buffer_out, strlen(buffer_out), 0);
-		stopRailControl();
+		stopRailControl(SIGINT);
 	}
 	else if ((uri.compare("/favicon.ico") == 0) || (uri.substr(0, 5).compare("/css/") == 0)) {
 		deliverFile(clientSocket, uri);

@@ -3,6 +3,7 @@
 #include <cstring>		//memset
 #include <dlfcn.h>              // dlclose
 #include <iostream>
+#include <signal.h>
 #include <unistd.h>		//close;
 #include <vector>
 
@@ -20,11 +21,13 @@ using std::string;
 
 static unsigned int run;
 
-void stopRailControl() {
+void stopRailControl(__attribute__((unused))int signo) {
 	run = false;
 }
 
 int main (int argc, char* argv[]) {
+	signal(SIGINT, stopRailControl);
+	signal(SIGTERM, stopRailControl);
 	run = true;
   xlog("Starting railcontrol");
 
@@ -35,7 +38,7 @@ int main (int argc, char* argv[]) {
 		sleep(1);
 	}
 
-  xlog("Ending railcontrol");
+  xlog("Stopping railcontrol");
 
 	// manager is cleaned up implicitly while leaving scope
 
