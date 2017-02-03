@@ -35,21 +35,17 @@ HardwareHandler::~HardwareHandler() {
 
 void HardwareHandler::go(const controlID_t controlID) {
   if (controlID != CONTROL_ID_HARDWARE) {
-	/*
 		for(auto property : hardware) {
-			property->go();
+			property->go(controlID);
 		}
-	*/
 	}
 }
 
 void HardwareHandler::stop(const controlID_t controlID) {
   if (controlID != CONTROL_ID_HARDWARE) {
-	/*
 		for(auto property : hardware) {
-			property->go();
+			property->stop(controlID);
 		}
-	*/
 	}
 }
 

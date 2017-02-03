@@ -34,6 +34,7 @@ Manager::~Manager() {
 }
 
 void Manager::go(const controlID_t controlID) {
+	xlog("manager.go");
   for (auto control : controllers) {
 		control->go(controlID);
 	}

@@ -153,7 +153,16 @@ void WebClient::worker() {
 	else if (uri.compare("/quit/") == 0) {
 		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Railcontrol is shutting down</p>");
 		send(clientSocket, buffer_out, strlen(buffer_out), 0);
-		stopRailControl(SIGINT);
+	}
+	else if (uri.compare("/on/") == 0) {
+		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Turning on Booster</p>");
+		send(clientSocket, buffer_out, strlen(buffer_out), 0);
+		manager.go(CONTROL_ID_WEBSERVER);
+	}
+	else if (uri.compare("/off/") == 0) {
+		snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Turning off Booster</p>");
+		send(clientSocket, buffer_out, strlen(buffer_out), 0);
+		manager.stop(CONTROL_ID_WEBSERVER);
 	}
 	else if ((uri.compare("/favicon.ico") == 0) || (uri.substr(0, 5).compare("/css/") == 0)) {
 		deliverFile(clientSocket, uri);
