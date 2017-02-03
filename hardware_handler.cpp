@@ -18,7 +18,6 @@ HardwareHandler::HardwareHandler(Manager& manager) :
 
 	// starting hardware
 	for(auto property : hardware) {
-		property->start();
 		std::string name = property->getName();
 		xlog("Starting %s", name.c_str());
 	}
@@ -29,22 +28,30 @@ HardwareHandler::~HardwareHandler() {
 	for(auto property : hardware) {
 		std::string name = property->getName();
 		xlog("Stopping %s", name.c_str());
-		property->stop();
 		delete property;
 	}
 	// vector hardware is cleaned up implicitly while leaving scope (class hardware_handler)
 }
 
-/*
-loco_id_t hardware_handler::get_loco_id(protocol_t protocol, address_t address) {
-  return 1;
+void HardwareHandler::go(const controlID_t controlID) {
+  if (controlID != CONTROL_ID_HARDWARE) {
+	/*
+		for(auto property : hardware) {
+			property->go();
+		}
+	*/
+	}
 }
 
-hardware_control_id_t hardware_handler::get_hardware_control_id(loco_id_t loco_id) {
-  return 1;
+void HardwareHandler::stop(const controlID_t controlID) {
+  if (controlID != CONTROL_ID_HARDWARE) {
+	/*
+		for(auto property : hardware) {
+			property->go();
+		}
+	*/
+	}
 }
-*/
-
 
 void HardwareHandler::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
   if (controlID != CONTROL_ID_HARDWARE) {

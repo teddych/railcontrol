@@ -14,9 +14,9 @@ namespace hardware {
 		public:
 			CS2(struct Params &params);
 			~CS2();
-			int start() override;
-			int stop() override;
 			std::string getName() const override;
+			void go() override;
+			void stop() override;
 			void locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
 		private:
 			void createCommandHeader(char* buffer, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length);

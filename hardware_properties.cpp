@@ -54,17 +54,25 @@ HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const ha
 		return;
   }
 
-	// return valid symbols
+	// register  valid symbols
 	createHardware = new_create_hardware;
 	destroyHardware = new_destroy_hardware;
+
+	// start control
+	if (createHardware) {
+		instance = createHardware(params);
+	}
+
 	return;
 }
 
 HardwareProperties::~HardwareProperties() {
+	// stop control
 	if (instance) {
 		destroyHardware(instance);
 		instance = NULL;
 	}
+	// close library
 	if (dlhandle) {
 		dlclose(dlhandle);
 		dlhandle = NULL;
@@ -78,16 +86,26 @@ std::string HardwareProperties::getName() const {
 	return "Unknown, not running";
 }
 
-void HardwareProperties::start() {
-	if (createHardware) {
-		instance = createHardware(params);
+void HardwareProperties::go(const controlID_t controlID) {
+  if (controlID != CONTROL_ID_HARDWARE) {
+		instance->go();
 	}
 }
 
-void HardwareProperties::stop() {
-	if (instance) {
-		destroyHardware(instance);
-		instance = NULL;
+void HardwareProperties::stop(const controlID_t controlID) {
+  if (controlID != CONTROL_ID_HARDWARE) {
+		instance->stop();
 	}
 }
 
+void HardwareProperties::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
+  if (controlID != CONTROL_ID_HARDWARE) {
+    //hardwareControlID_t hardwareControlID = 0;
+    protocol_t protocol = PROTOCOL_DCC;
+    address_t address = 1028;
+	/*
+    manager.getProtocolAddress(locoID, hardwareControlID, protocol, address);
+		*/
+		instance->locoSpeed(protocol, address, speed);
+  }
+}

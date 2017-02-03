@@ -24,6 +24,17 @@ namespace hardware {
 		ss << "Virtual Command Station / " << params.name;
 		name = ss.str();
 	}
+
+	// GO-command (turn on booster)
+  void Virtual::go() {
+		xlog("Turning virtual booster on");
+  }
+
+	// Stop-command (turn off booster)
+  void Virtual::stop() {
+		xlog("Turning virtual booster off");
+  }
+
 	// return the name
 	std::string Virtual::getName() const {
 		return name;

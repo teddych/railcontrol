@@ -1,12 +1,13 @@
-#ifndef WEBSERVER_H
-#define WEBSERVER_H
+#ifndef WEBSERVER_WEBCLIENT_H
+#define WEBSERVER_WEBCLIENT_H
 
 #include <thread>
 #include <string>
 #include <vector>
 
-#include "control.h"
-#include "manager.h"
+#include "../manager.h"
+
+namespace webserver {
 
 class WebServer;
 
@@ -31,23 +32,7 @@ class WebClient {
 		Manager& manager;
 };
 
-class WebServer : public Control {
-	public:
-		WebServer(Manager& manager, const unsigned short port);
-		~WebServer();
-		int start();
-		int stop();
-		void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) override;
-	private:
-	  void worker();
-		unsigned short port;
-		int serverSocket;
-		volatile unsigned char run;
-		unsigned int lastClientID;
-		std::thread serverThread;
-		std::vector<WebClient*> clients;
-		Manager& manager;
-};
+}; // namespace webserver
 
-#endif // WEBSERVER_H
+#endif // WEBSERVER_WEBCLIENT_H
 

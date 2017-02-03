@@ -29,34 +29,32 @@ namespace hardware {
     delete(cs2);
   }
 
+  // start the thing
 	CS2::CS2(struct Params& params) {
 		std::stringstream ss;
 		ss << "Maerklin Central Station 2 (CS2) / " << params.name;
 		name = ss.str();
-		start();
-	}
-
-	CS2::~CS2() {
-		stop();
-	}
-
-  // start the thing
-  int CS2::start() {
 		run = true;
 		senderThread = std::thread([this] {sender();});
-		return 0;
-  }
+	}
 
   // stop the thing
-  int CS2::stop() {
+	CS2::~CS2() {
 		run = false;
 		senderThread.join();
-		return 0;
-  }
+	}
 
   // return the name
 	std::string CS2::getName() const {
 		return name;
+  }
+
+	// GO-command (turn on booster)
+  void CS2::go() {
+  }
+
+	// Stop-command (turn off booster)
+  void CS2::stop() {
   }
 
 	/*

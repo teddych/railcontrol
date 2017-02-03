@@ -19,12 +19,13 @@ namespace hardware {
 		  // All possible methods that can be implemented
 			// if not the method of the abstract class hardware is used
 
-			// This method is called at startup to initialize the control
-      //int start(struct params &params) override;
+			// GO-command (turn on booster)
+      void go() override;
 
-			// this method is called at shutdown to clean up the control
-      //int stop() override;
+			// Stop-command (turn off booster)
+      void stop() override;
 
+			// set loco speed
 			void locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
 		private:
 			std::string name;

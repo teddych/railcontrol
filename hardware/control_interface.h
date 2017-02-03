@@ -15,28 +15,18 @@ namespace hardware {
 			// pure virtual destructor prevents polymorphism in derived class
 			virtual ~ControlInterface() {};
 
-			// start the needed threads to serve the hardware
-			virtual int start();
-
-			// stop the threads
-			virtual int stop();
-
 			// get the name of the hardware
 			virtual std::string getName() const = 0;
 
-			// set the speed of a loco
+			// GO-command (turn on booster)
+			virtual void go() = 0;
+
+			// Stop-command (turn off booster)
+			virtual void stop() = 0;
+
+			// set loco speed
 			virtual void locoSpeed(protocol_t protocol, address_t address, speed_t speed) = 0;
 	};
-
-  // start the thing
-  inline int ControlInterface::start() {
-    return 0;
-  }
-
-  // stop the thing
-  inline int ControlInterface::stop() {
-    return 0;
-  }
 
 } // namespace
 

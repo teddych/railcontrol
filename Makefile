@@ -14,7 +14,8 @@ OBJ= \
 	manager.o \
 	railcontrol.o \
 	util.o \
-	webserver.o
+	webserver/webserver.o \
+	webserver/webclient.o
 
 all: $(OBJ)
 	make -C hardware
@@ -25,6 +26,6 @@ install:
 
 clean:
 	make -C hardware clean
-	rm -f *.o
+	rm -f *.o webserver/*.o
 	rm -f railcontrol
 
