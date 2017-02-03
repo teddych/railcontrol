@@ -3,28 +3,7 @@
 
 #include <string>
 
-typedef unsigned char controlID_t;
-typedef unsigned char hardwareControlID_t;
-typedef unsigned char protocol_t;
-typedef unsigned short address_t;
-typedef short speed_t;
-typedef unsigned short locoID_t;
-
-enum controlIDs : controlID_t {
-  CONTROL_ID_CONSOLE = 0,
-  CONTROL_ID_HARDWARE,
-  CONTROL_ID_WEBSERVER
-};
-
-enum protocols : protocol_t {
-	PROTOCOL_CONTROL = 0,
-	PROTOCOL_MM1,
-	PROTOCOL_MM2,
-	PROTOCOL_MFX,
-	PROTOCOL_DCC,
-	PROTOCOL_SX1,
-	PROTOCOL_SX2
-};
+#include "datatypes.h"
 
 class Control {
   public:

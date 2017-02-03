@@ -9,10 +9,12 @@ LIBS=-lpthread -ldl
 
 OBJ= \
 	control.o \
+	datamodel/loco.o \
 	hardware_handler.o \
 	hardware_properties.o \
 	manager.o \
 	railcontrol.o \
+	storage/storage.o \
 	util.o \
 	webserver/webserver.o \
 	webserver/webclient.o

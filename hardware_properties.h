@@ -3,25 +3,11 @@
 
 #include <string>
 
+#include "datatypes.h"
 #include "control.h"
 #include "hardware/control_interface.h"
 #include "hardware_params.h"
 #include "util.h"
-
-typedef unsigned char hardware_id_t;
-
-enum hardwareIDs : hardware_id_t {
-	HARDWARE_ID_NONE = 0,
-  HARDWARE_ID_VIRT,
-	HARDWARE_ID_CS2,
-	HARDWARE_ID_NUM
-};
-
-static std::string hardwareSymbols[] = {
-	"none",
-	"virtual",
-	"cs2"
-};
 
 // the types of the class factories
 typedef hardware::ControlInterface* create_hardware_t(struct Params params);

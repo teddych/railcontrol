@@ -5,17 +5,32 @@
 #include "util.h"
 #include "webserver/webserver.h"
 
+using datamodel::Loco;
+using storage::Storage;
 using webserver::WebServer;
 
-Manager::Manager() {
+Manager::Manager() :
+	storage(NULL) {
+
   controllers.push_back(new WebServer(*this, 8080));
 	controllers.push_back(new HardwareHandler(*this));
+
+	storage = new Storage();
+	locos = storage->allLocos();
+	for (auto loco : locos) {
+		xlog("Loco %s loaded", loco->name.c_str());
+	}
 }
 
 Manager::~Manager() {
   for (auto control : controllers) {
     delete control;
   }
+	for (auto loco : locos) {
+		delete loco;
+	}
+	delete storage;
+	storage = NULL;
 }
 
 void Manager::go(const controlID_t controlID) {

@@ -1,9 +1,9 @@
-#include "hardware_properties.h"
-
 #include <dlfcn.h>              // dl*
 #include <sstream>
 
 #include "control.h"
+#include "datatypes.h"
+#include "hardware_properties.h"
 #include "util.h"
 
 using std::string;

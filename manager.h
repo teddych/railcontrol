@@ -4,6 +4,8 @@
 #include <vector>
 
 #include "control.h"
+#include "datamodel/datamodel.h"
+#include "storage/storage.h"
 
 class Manager {
 	public:
@@ -15,6 +17,8 @@ class Manager {
 		void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed);
 	private:
     std::vector<Control*> controllers;
+		std::vector<datamodel::Loco*> locos;
+		storage::Storage* storage;
 };
 
 #endif // MANAGER_H

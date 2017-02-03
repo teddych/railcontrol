@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "../control.h"
+#include "../datatypes.h"
 
 namespace hardware {
 

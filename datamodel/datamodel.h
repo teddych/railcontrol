@@ -1,0 +1,6 @@
+#ifndef DATAMODEL_DATAMODEL_H
+#define DATAMODEL_DATAMODEL_H
+
+#include "loco.h"
+
+#endif // DATAMODEL_DATAMODEL_H
