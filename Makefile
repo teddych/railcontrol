@@ -20,6 +20,7 @@ OBJ= \
 
 all: $(OBJ)
 	make -C hardware
+	make -C storage
 	$(CC) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 
 install:
@@ -27,6 +28,7 @@ install:
 
 clean:
 	make -C hardware clean
+	make -C storage clean
 	rm -f *.o webserver/*.o
 	rm -f railcontrol
 

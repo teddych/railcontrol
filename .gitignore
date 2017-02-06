@@ -1,3 +1,4 @@
 railcontrol
+storage/sqlite/sqlite3
 *.o
 *.so
