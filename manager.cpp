@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "hardware_handler.h"
+#include "hardware_properties.h"
 #include "manager.h"
 #include "util.h"
 #include "webserver/webserver.h"
@@ -13,7 +13,13 @@ Manager::Manager() :
 	storage(NULL) {
 
   controllers.push_back(new WebServer(*this, 8080));
-	controllers.push_back(new HardwareHandler(*this));
+	//controllers.push_back(new HardwareHandler(*this));
+
+	struct Params params;
+	params.name = "Virtuelle Zentrale";
+	params.ip = "";
+	hardwareControlID_t nextControlID = 0;
+	controllers.push_back(new HardwareProperties(HARDWARE_ID_VIRT, nextControlID++, params));
 
 	storage = new Storage();
 	locos = storage->allLocos();
@@ -34,7 +40,6 @@ Manager::~Manager() {
 }
 
 void Manager::go(const controlID_t controlID) {
-	xlog("manager.go");
   for (auto control : controllers) {
 		control->go(controlID);
 	}

@@ -13,7 +13,7 @@
 typedef hardware::ControlInterface* create_hardware_t(struct Params params);
 typedef void destroy_hardware_t(hardware::ControlInterface*);
 
-class HardwareProperties : Control {
+class HardwareProperties : public Control {
 	public:
 		HardwareProperties(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const struct Params& params);
 		~HardwareProperties();
