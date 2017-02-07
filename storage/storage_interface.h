@@ -3,6 +3,7 @@
 
 #include <string>
 
+#include "../datamodel/datamodel.h"
 #include "../datatypes.h"
 
 namespace storage {
@@ -16,10 +17,10 @@ namespace storage {
 			virtual ~StorageInterface() {};
 
 			// save loco
-			void loco(const datamodel::Loco& loco);
+			virtual void loco(const datamodel::Loco& loco) = 0;
 
 			// read all locos
-			std::vector<datamodel::Loco*> allLocos();
+			virtual std::vector<datamodel::Loco*> allLocos() = 0;
 	};
 
 } // namespace

@@ -4,11 +4,12 @@
 #include <vector>
 
 #include "../datamodel/datamodel.h"
+#include "storage_interface.h"
 #include "storage_params.h"
 
 namespace storage {
 
-	class SQLite {
+	class SQLite : public StorageInterface {
 		public:
 			SQLite(StorageParams& params);
 

@@ -36,7 +36,7 @@ HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const ha
   ss.str(std::string());
 	ss << "create_" << symbol;
 	const char* s = ss.str().c_str();
-  create_hardware_t* new_create_hardware = (create_hardware_t*)dlsym(dlhandle, s);
+  createHardware_t* new_create_hardware = (createHardware_t*)dlsym(dlhandle, s);
   error = dlerror();
   if (error) {
     xlog("Unable to find symbol %s", s);
@@ -47,7 +47,7 @@ HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const ha
   ss.str(std::string());
 	ss << "destroy_" << symbol;
 	s = ss.str().c_str();
-  destroy_hardware_t* new_destroy_hardware = (destroy_hardware_t*)dlsym(dlhandle, ss.str().c_str());
+  destroyHardware_t* new_destroy_hardware = (destroyHardware_t*)dlsym(dlhandle, ss.str().c_str());
   error = dlerror();
   if (error) {
     xlog("Unable to find symbol %s", s);

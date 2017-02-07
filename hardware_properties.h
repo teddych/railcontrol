@@ -10,8 +10,8 @@
 #include "util.h"
 
 // the types of the class factories
-typedef hardware::ControlInterface* create_hardware_t(struct Params params);
-typedef void destroy_hardware_t(hardware::ControlInterface*);
+typedef hardware::ControlInterface* createHardware_t(struct Params params);
+typedef void destroyHardware_t(hardware::ControlInterface*);
 
 class HardwareProperties : public Control {
 	public:
@@ -25,8 +25,8 @@ class HardwareProperties : public Control {
 	private:
 		hardware_id_t hardwareID;
 		hardwareControlID_t hardwareControlID;
-		create_hardware_t* createHardware;
-		destroy_hardware_t* destroyHardware;
+		createHardware_t* createHardware;
+		destroyHardware_t* destroyHardware;
 		hardware::ControlInterface* instance;
 		void* dlhandle;
 		struct Params params;

@@ -21,7 +21,8 @@ Manager::Manager() :
 	hardwareControlID_t nextControlID = 0;
 	controllers.push_back(new HardwareProperties(HARDWARE_ID_VIRT, nextControlID++, params));
 
-	storage = new Storage();
+	struct StorageParams storageParams;
+	storage = new Storage(storageParams);
 	locos = storage->allLocos();
 	for (auto loco : locos) {
 		xlog("Loco %s loaded", loco->name.c_str());

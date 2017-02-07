@@ -28,5 +28,5 @@ sqlite/sqlite3.o: sqlite/sqlite3.c
 
 clean:
 	rm -f *.o *.so
-	make -C sqlite
+	make -C sqlite clean
 
