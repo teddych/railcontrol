@@ -10,10 +10,10 @@ using std::string;
 
 namespace hardware {
 
-HardwareHandler::HardwareHandler(const hardware_id_t hardware_id, const hardwareControlID_t hardware_control_id, const struct HardwareParams& params) :
+HardwareHandler::HardwareHandler(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const struct HardwareParams& params) :
   Control(CONTROL_ID_HARDWARE),
-	hardwareID(hardware_id),
-	hardwareControlID(hardware_control_id),
+	hardwareID(hardwareID),
+	hardwareControlID(hardwareControlID),
 	createHardware(NULL),
 	destroyHardware(NULL),
 	instance(NULL),
@@ -22,16 +22,16 @@ HardwareHandler::HardwareHandler(const hardware_id_t hardware_id, const hardware
 
   // generate symbol and library names
   char* error;
-	string symbol = hardwareSymbols[hardware_id];
+	string symbol = hardwareSymbols[hardwareID];
 	std::stringstream ss;
 	ss << "hardware/" << symbol << ".so";
-  xlog("ID: %i Symbol: %s", hardware_id, symbol.c_str());
 
   dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
   if (!dlhandle) {
     xlog("Can not open library: %s", dlerror());
 		return;
   }
+  xlog("Hardware library %s loaded", symbol.c_str());
 
 	// look for symbol create_*
   ss.str(std::string());
@@ -78,6 +78,7 @@ HardwareHandler::~HardwareHandler() {
 		dlclose(dlhandle);
 		dlhandle = NULL;
 	}
+  xlog("Hardware library %s unloaded", hardwareSymbols[hardwareID].c_str());
 }
 
 std::string HardwareHandler::getName() const {

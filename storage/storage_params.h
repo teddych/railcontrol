@@ -7,6 +7,7 @@ namespace storage {
 
 	struct StorageParams {
 			std::string name;
+			std::string filename;
 	};
 
 } // namespace storage

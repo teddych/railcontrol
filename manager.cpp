@@ -19,13 +19,15 @@ Manager::Manager() :
 
   controllers.push_back(new WebServer(*this, 8080));
 
-	struct HardwareParams hardwareParams;
-	hardwareParams.name = "Virtuelle Zentrale";
-	hardwareParams.ip = "";
+	struct HardwareParams hardwareParamsVirt;
+	hardwareParamsVirt.name = "Virtuelle Zentrale";
+	hardwareParamsVirt.ip = "";
 	hardwareControlID_t nextControlID = 0;
-	controllers.push_back(new HardwareHandler(HARDWARE_ID_VIRT, nextControlID++, hardwareParams));
+	controllers.push_back(new HardwareHandler(HARDWARE_ID_VIRT, nextControlID++, hardwareParamsVirt));
 
 	struct StorageParams storageParams;
+	storageParams.name = "sqlite";
+	storageParams.filename = "/tmp/railcontrol.db";
 	storage = new StorageHandler(storageParams);
 	locos = storage->allLocos();
 	for (auto loco : locos) {

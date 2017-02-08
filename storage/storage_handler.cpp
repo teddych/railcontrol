@@ -20,13 +20,13 @@ namespace storage {
 		char* error;
 		std::stringstream ss;
 		ss << "storage/" << params.name << ".so";
-		xlog("Trying to load storage engine %s", params.name.c_str());
 
 		dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
 		if (!dlhandle) {
 			xlog("Can not open storage library: %s", dlerror());
 			return;
 		}
+		xlog("Storage engine %s loaded", params.name.c_str());
 
 		// look for symbol create_*
 		ss.str(std::string());
@@ -55,14 +55,14 @@ namespace storage {
 		createStorage = newCreateStorage;
 		destroyStorage = newDestroyStorage;
 
-		// start control
+		// start storage
 		if (createStorage) {
 			instance = createStorage(params);
 		}
 	}
 
 	StorageHandler::~StorageHandler() {
-		// stop control
+		// stop storage
 		if (instance) {
 			destroyStorage(instance);
 			instance = NULL;
@@ -72,6 +72,7 @@ namespace storage {
 			dlclose(dlhandle);
 			dlhandle = NULL;
 		}
+		xlog("Storage engine %s unloaded", params.name.c_str());
 	}
 
 	void StorageHandler::loco(const Loco& loco) {

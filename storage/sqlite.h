@@ -18,6 +18,9 @@ namespace storage {
 
 			// read all locos
 			std::vector<datamodel::Loco*> allLocos();
+
+		private:
+			StorageParams params;
 	};
 
 } // namespace storage
