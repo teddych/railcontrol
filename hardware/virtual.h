@@ -3,12 +3,12 @@
 
 #include <cstring>
 
-#include "control_interface.h"
+#include "hardware_interface.h"
 #include "hardware_params.h"
 
 namespace hardware {
 
-  class Virtual : ControlInterface {
+  class Virtual : HardwareInterface {
     public:
 			// Constructor
 			Virtual(struct HardwareParams &params);

@@ -7,13 +7,13 @@
 
 namespace hardware {
 
-	class ControlInterface {
+	class HardwareInterface {
 		public:
 		  // non virtual default constructor is needed to prevent polymorphism
-			ControlInterface() {};
+			HardwareInterface() {};
 
 			// pure virtual destructor prevents polymorphism in derived class
-			virtual ~ControlInterface() {};
+			virtual ~HardwareInterface() {};
 
 			// get the name of the hardware
 			virtual std::string getName() const = 0;

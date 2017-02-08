@@ -5,12 +5,12 @@
 #include <string>
 #include <thread>
 
-#include "control_interface.h"
+#include "hardware_interface.h"
 #include "hardware_params.h"
 
 namespace hardware {
 
-	class CS2: ControlInterface {
+	class CS2: HardwareInterface {
 		public:
 			CS2(struct HardwareParams &params);
 			~CS2();

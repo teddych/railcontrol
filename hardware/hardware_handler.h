@@ -5,15 +5,15 @@
 
 #include "datatypes.h"
 #include "control.h"
-#include "control_interface.h"
+#include "hardware_interface.h"
 #include "hardware_params.h"
 #include "util.h"
 
 namespace hardware {
 
 	// the types of the class factories
-	typedef hardware::ControlInterface* createHardware_t(struct HardwareParams params);
-	typedef void destroyHardware_t(hardware::ControlInterface*);
+	typedef hardware::HardwareInterface* createHardware_t(struct HardwareParams params);
+	typedef void destroyHardware_t(hardware::HardwareInterface*);
 
 	class HardwareHandler: public Control {
 		public:
@@ -29,7 +29,7 @@ namespace hardware {
 			hardwareControlID_t hardwareControlID;
 			createHardware_t* createHardware;
 			destroyHardware_t* destroyHardware;
-			hardware::ControlInterface* instance;
+			hardware::HardwareInterface* instance;
 			void* dlhandle;
 			struct HardwareParams params;
 	};
