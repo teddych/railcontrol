@@ -8,7 +8,7 @@ using datamodel::Loco;
 namespace storage {
 
 	// create instance of sqlite
-	extern "C" SQLite* create_sqlite(struct StorageParams& params) {
+	extern "C" SQLite* create_sqlite(const StorageParams& params) {
 		return new SQLite(params);
   }
 
@@ -17,10 +17,14 @@ namespace storage {
     delete(sqlite);
   }
 
-	SQLite::SQLite(StorageParams& params) /*:
-		params(params)*/ {
+	SQLite::SQLite(const StorageParams& params) :
+		params(params) {
 
 		xlog("Loading SQLite database with filename %s", params.filename.c_str());
+	}
+
+	SQLite::~SQLite() {
+		xlog("Closing SQLite database with filename %s", params.filename.c_str());
 	}
 
 	// save loco

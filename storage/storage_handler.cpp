@@ -9,7 +9,7 @@ using std::vector;
 
 namespace storage {
 
-	StorageHandler::StorageHandler(StorageParams& params) :
+	StorageHandler::StorageHandler(const StorageParams& params) :
 		createStorage(NULL),
 		destroyStorage(NULL),
 		instance(NULL),

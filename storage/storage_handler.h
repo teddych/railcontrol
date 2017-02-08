@@ -15,7 +15,7 @@ namespace storage {
 
 	class StorageHandler {
 		public:
-			StorageHandler(struct StorageParams& params);
+			StorageHandler(const StorageParams& params);
 			~StorageHandler();
 			void loco(const datamodel::Loco& loco);
 			std::vector<datamodel::Loco*> allLocos();
@@ -24,7 +24,7 @@ namespace storage {
 			destroyStorage_t* destroyStorage;
 			storage::StorageInterface* instance;
 			void* dlhandle;
-			struct StorageParams& params;
+			const StorageParams& params;
 
 	};
 

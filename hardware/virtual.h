@@ -11,7 +11,7 @@ namespace hardware {
   class Virtual : HardwareInterface {
     public:
 			// Constructor
-			Virtual(struct HardwareParams &params);
+			Virtual(const HardwareParams &params);
 
 			// name() must be implemented
 			std::string getName() const override;

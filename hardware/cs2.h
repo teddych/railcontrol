@@ -12,7 +12,7 @@ namespace hardware {
 
 	class CS2: HardwareInterface {
 		public:
-			CS2(struct HardwareParams &params);
+			CS2(const HardwareParams &params);
 			~CS2();
 			std::string getName() const override;
 			void go() override;

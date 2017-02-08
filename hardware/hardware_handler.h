@@ -17,7 +17,7 @@ namespace hardware {
 
 	class HardwareHandler: public Control {
 		public:
-			HardwareHandler(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const struct HardwareParams& params);
+			HardwareHandler(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const HardwareParams& params);
 			~HardwareHandler();
 			std::string getName() const;
 			void go(const controlID_t controlID) override;
@@ -31,7 +31,7 @@ namespace hardware {
 			destroyHardware_t* destroyHardware;
 			hardware::HardwareInterface* instance;
 			void* dlhandle;
-			struct HardwareParams params;
+			const HardwareParams& params;
 	};
 
 }

@@ -11,7 +11,8 @@ namespace storage {
 
 	class SQLite : public StorageInterface {
 		public:
-			SQLite(StorageParams& params);
+			SQLite(const StorageParams& params);
+			~SQLite();
 
 			// save loco
 			void loco(const datamodel::Loco& loco);
@@ -20,7 +21,7 @@ namespace storage {
 			std::vector<datamodel::Loco*> allLocos();
 
 		private:
-			StorageParams params;
+			const StorageParams params;
 	};
 
 } // namespace storage

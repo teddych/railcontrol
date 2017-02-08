@@ -10,7 +10,7 @@ using std::string;
 
 namespace hardware {
 
-HardwareHandler::HardwareHandler(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const struct HardwareParams& params) :
+HardwareHandler::HardwareHandler(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const HardwareParams& params) :
   Control(CONTROL_ID_HARDWARE),
 	hardwareID(hardwareID),
 	hardwareControlID(hardwareControlID),
