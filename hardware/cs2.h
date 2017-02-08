@@ -6,13 +6,13 @@
 #include <thread>
 
 #include "control_interface.h"
-#include "../hardware_params.h"
+#include "hardware_params.h"
 
 namespace hardware {
 
 	class CS2: ControlInterface {
 		public:
-			CS2(struct Params &params);
+			CS2(struct HardwareParams &params);
 			~CS2();
 			std::string getName() const override;
 			void go() override;

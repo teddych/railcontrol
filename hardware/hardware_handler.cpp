@@ -3,13 +3,14 @@
 
 #include "control.h"
 #include "datatypes.h"
-#include "hardware_properties.h"
+#include "hardware_handler.h"
 #include "util.h"
 
 using std::string;
 
+namespace hardware {
 
-HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const hardwareControlID_t hardware_control_id, const struct Params& params) :
+HardwareHandler::HardwareHandler(const hardware_id_t hardware_id, const hardwareControlID_t hardware_control_id, const struct HardwareParams& params) :
   Control(CONTROL_ID_HARDWARE),
 	hardwareID(hardware_id),
 	hardwareControlID(hardware_control_id),
@@ -66,7 +67,7 @@ HardwareProperties::HardwareProperties(const hardware_id_t hardware_id, const ha
 	return;
 }
 
-HardwareProperties::~HardwareProperties() {
+HardwareHandler::~HardwareHandler() {
 	// stop control
 	if (instance) {
 		destroyHardware(instance);
@@ -79,26 +80,26 @@ HardwareProperties::~HardwareProperties() {
 	}
 }
 
-std::string HardwareProperties::getName() const {
+std::string HardwareHandler::getName() const {
 	if (instance) {
 		return instance->getName();
 	}
 	return "Unknown, not running";
 }
 
-void HardwareProperties::go(const controlID_t controlID) {
+void HardwareHandler::go(const controlID_t controlID) {
   if (controlID != CONTROL_ID_HARDWARE) {
 		instance->go();
 	}
 }
 
-void HardwareProperties::stop(const controlID_t controlID) {
+void HardwareHandler::stop(const controlID_t controlID) {
   if (controlID != CONTROL_ID_HARDWARE) {
 		instance->stop();
 	}
 }
 
-void HardwareProperties::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
+void HardwareHandler::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
   if (controlID != CONTROL_ID_HARDWARE) {
     //hardwareControlID_t hardwareControlID = 0;
     protocol_t protocol = PROTOCOL_DCC;
@@ -109,3 +110,5 @@ void HardwareProperties::locoSpeed(const controlID_t controlID, const locoID_t l
 		instance->locoSpeed(protocol, address, speed);
   }
 }
+
+} // namespace hardware

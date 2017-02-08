@@ -3,8 +3,12 @@
 
 #include <string>
 
-struct StorageParams {
-	std::string name;
-};
+namespace storage {
+
+	struct StorageParams {
+			std::string name;
+	};
+
+} // namespace storage
 
 #endif // STORAGE_STORAGE_PARAMS_H

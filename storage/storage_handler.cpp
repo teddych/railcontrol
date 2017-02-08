@@ -2,14 +2,14 @@
 #include <sstream>
 
 #include "../util.h"
-#include "storage.h"
+#include "storage_handler.h"
 
 using datamodel::Loco;
 using std::vector;
 
 namespace storage {
 
-	Storage::Storage(StorageParams& params) :
+	StorageHandler::StorageHandler(StorageParams& params) :
 		createStorage(NULL),
 		destroyStorage(NULL),
 		instance(NULL),
@@ -61,7 +61,7 @@ namespace storage {
 		}
 	}
 
-	Storage::~Storage() {
+	StorageHandler::~StorageHandler() {
 		// stop control
 		if (instance) {
 			destroyStorage(instance);
@@ -74,10 +74,10 @@ namespace storage {
 		}
 	}
 
-	void Storage::loco(const Loco& loco) {
+	void StorageHandler::loco(const Loco& loco) {
 	}
 
-	vector<Loco*> Storage::allLocos() {
+	vector<Loco*> StorageHandler::allLocos() {
 		return instance->allLocos();
 	}
 

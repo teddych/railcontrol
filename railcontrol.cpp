@@ -9,8 +9,7 @@
 
 #include "railcontrol.h"
 
-#include "hardware/control_interface.h"
-#include "hardware_properties.h"
+#include "hardware/hardware_handler.h"
 #include "manager.h"
 #include "util.h"
 #include "webserver/webserver.h"

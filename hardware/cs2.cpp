@@ -20,7 +20,7 @@
 namespace hardware {
 
 	// create instance of cs2
-	extern "C" CS2* create_cs2(struct Params& params) {
+	extern "C" CS2* create_cs2(struct HardwareParams& params) {
 		return new CS2(params);
   }
 
@@ -30,7 +30,7 @@ namespace hardware {
   }
 
   // start the thing
-	CS2::CS2(struct Params& params) {
+	CS2::CS2(struct HardwareParams& params) {
 		std::stringstream ss;
 		ss << "Maerklin Central Station 2 (CS2) / " << params.name;
 		name = ss.str();

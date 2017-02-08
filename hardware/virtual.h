@@ -4,14 +4,14 @@
 #include <cstring>
 
 #include "control_interface.h"
-#include "../hardware_params.h"
+#include "hardware_params.h"
 
 namespace hardware {
 
   class Virtual : ControlInterface {
     public:
 			// Constructor
-			Virtual(struct Params &params);
+			Virtual(struct HardwareParams &params);
 
 			// name() must be implemented
 			std::string getName() const override;
@@ -27,6 +27,7 @@ namespace hardware {
 
 			// set loco speed
 			void locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
+
 		private:
 			std::string name;
   };

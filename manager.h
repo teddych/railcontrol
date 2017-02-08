@@ -5,7 +5,7 @@
 
 #include "control.h"
 #include "datamodel/datamodel.h"
-#include "storage/storage.h"
+#include "storage/storage_handler.h"
 
 class Manager {
 	public:
@@ -18,7 +18,7 @@ class Manager {
 	private:
     std::vector<Control*> controllers;
 		std::vector<datamodel::Loco*> locos;
-		storage::Storage* storage;
+		storage::StorageHandler* storage;
 };
 
 #endif // MANAGER_H

@@ -1,28 +1,32 @@
 #include <iostream>
 
-#include "hardware_properties.h"
 #include "manager.h"
+
+#include "hardware/hardware_handler.h"
+#include "hardware/hardware_params.h"
 #include "util.h"
 #include "webserver/webserver.h"
 
 using datamodel::Loco;
-using storage::Storage;
+using hardware::HardwareHandler;
+using hardware::HardwareParams;
+using storage::StorageHandler;
+using storage::StorageParams;
 using webserver::WebServer;
 
 Manager::Manager() :
 	storage(NULL) {
 
   controllers.push_back(new WebServer(*this, 8080));
-	//controllers.push_back(new HardwareHandler(*this));
 
-	struct Params params;
-	params.name = "Virtuelle Zentrale";
-	params.ip = "";
+	struct HardwareParams hardwareParams;
+	hardwareParams.name = "Virtuelle Zentrale";
+	hardwareParams.ip = "";
 	hardwareControlID_t nextControlID = 0;
-	controllers.push_back(new HardwareProperties(HARDWARE_ID_VIRT, nextControlID++, params));
+	controllers.push_back(new HardwareHandler(HARDWARE_ID_VIRT, nextControlID++, hardwareParams));
 
 	struct StorageParams storageParams;
-	storage = new Storage(storageParams);
+	storage = new StorageHandler(storageParams);
 	locos = storage->allLocos();
 	for (auto loco : locos) {
 		xlog("Loco %s loaded", loco->name.c_str());

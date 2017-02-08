@@ -13,10 +13,10 @@ namespace storage {
 	typedef storage::StorageInterface* createStorage_t(struct StorageParams params);
 	typedef void destroyStorage_t(storage::StorageInterface*);
 
-	class Storage {
+	class StorageHandler {
 		public:
-			Storage(struct StorageParams& params);
-			~Storage();
+			StorageHandler(struct StorageParams& params);
+			~StorageHandler();
 			void loco(const datamodel::Loco& loco);
 			std::vector<datamodel::Loco*> allLocos();
 		private:
