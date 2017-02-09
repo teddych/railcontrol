@@ -3,9 +3,10 @@
 
 #include <vector>
 
-#include "../datamodel/datamodel.h"
+#include "datamodel/datamodel.h"
 #include "storage_interface.h"
 #include "storage_params.h"
+#include "sqlite/sqlite3.h"
 
 namespace storage {
 
@@ -14,6 +15,8 @@ namespace storage {
 			SQLite(const StorageParams& params);
 			~SQLite();
 
+			static int callbackListTables(void *v, int argc, char **argv, char **colName);
+
 			// save loco
 			void loco(const datamodel::Loco& loco);
 
@@ -21,7 +24,8 @@ namespace storage {
 			std::vector<datamodel::Loco*> allLocos();
 
 		private:
-			const StorageParams params;
+			const StorageParams& params;
+			sqlite3 *db;
 	};
 
 } // namespace storage
