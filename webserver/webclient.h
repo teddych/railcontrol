@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "../manager.h"
+#include "manager.h"
 
 namespace webserver {
 
@@ -20,10 +20,13 @@ class WebClient {
 	private:
 		void getCommand(const std::string& str, std::string& method, std::string& uri, std::string& protocol);
     void deliverFile(const int socket, const std::string& file);
+		/*
 		void handleLocoList(const int socket, const std::vector<std::string>& uri_parts);
 		void handleLocoProperties(const int socket, const std::vector<std::string>& uri_parts);
 		void handleLocoCommand(const int socket, const std::vector<std::string>& uri_parts);
-		void handleLoco(const int socket, const std::string& uri);
+		*/
+		void handleLocoList(const int socket);
+		void handleLocoSpeed(const int socket, const std::map<std::string,std::string>& arguments);
 		unsigned int id;
 		int clientSocket;
 		volatile unsigned char run;

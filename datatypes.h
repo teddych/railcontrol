@@ -35,6 +35,8 @@ enum hardwareIDs : hardware_id_t {
 	HARDWARE_ID_NUM
 };
 
+#define ADDRESS_NONE 0
+
 static std::string hardwareSymbols[] = {
 	"none",
 	"virtual",

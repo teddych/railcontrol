@@ -23,7 +23,7 @@ Manager::Manager() :
 	hardwareParamsVirt.name = "Virtuelle Zentrale";
 	hardwareParamsVirt.ip = "";
 	hardwareControlID_t nextControlID = 0;
-	controllers.push_back(new HardwareHandler(HARDWARE_ID_VIRT, nextControlID++, hardwareParamsVirt));
+	controllers.push_back(new HardwareHandler(*this, HARDWARE_ID_VIRT, nextControlID++, hardwareParamsVirt));
 
 	StorageParams storageParams;
 	storageParams.module = "sqlite";
@@ -62,14 +62,14 @@ void Manager::stop(const controlID_t controlID) {
 	}
 }
 
-bool Manager::getProtocolAddress(const locoID_t locoID, hardwareControlID_t& hardwareControlID, protocol_t& protocol, address_t& address) {
+bool Manager::getProtocolAddress(const locoID_t locoID, hardwareControlID_t& hardwareControlID, protocol_t& protocol, address_t& address) const {
 	if (locos.count(locoID) < 1) {
 		hardwareControlID = 0;
 		protocol = PROTOCOL_NONE;
 		address = 0;
 		return false;
 	}
-	Loco* loco = locos[locoID];
+	Loco* loco = locos.at(locoID);
 	hardwareControlID = loco->hardwareControlID;
 	protocol = loco->protocol;
 	address = loco->address;
@@ -82,3 +82,6 @@ void Manager::locoSpeed(const controlID_t controlID, const locoID_t locoID, cons
   }
 }
 
+const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
+	return locos;
+}

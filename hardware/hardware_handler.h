@@ -7,6 +7,7 @@
 #include "control.h"
 #include "hardware_interface.h"
 #include "hardware_params.h"
+#include "manager.h"
 #include "util.h"
 
 namespace hardware {
@@ -17,7 +18,7 @@ namespace hardware {
 
 	class HardwareHandler: public Control {
 		public:
-			HardwareHandler(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const HardwareParams& params);
+			HardwareHandler(const Manager& manager, const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const HardwareParams& params);
 			~HardwareHandler();
 			std::string getName() const;
 			void go(const controlID_t controlID) override;
@@ -25,6 +26,7 @@ namespace hardware {
 			void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) override;
 			hardwareControlID_t getHardwareControlID(const locoID_t locoID);
 		private:
+			const Manager& manager;
 			hardware_id_t hardwareID;
 			hardwareControlID_t hardwareControlID;
 			createHardware_t* createHardware;

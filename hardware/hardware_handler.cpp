@@ -10,8 +10,9 @@ using std::string;
 
 namespace hardware {
 
-HardwareHandler::HardwareHandler(const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const HardwareParams& params) :
+HardwareHandler::HardwareHandler(const Manager& manager, const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const HardwareParams& params) :
   Control(CONTROL_ID_HARDWARE),
+	manager(manager),
 	hardwareID(hardwareID),
 	hardwareControlID(hardwareControlID),
 	createHardware(NULL),
@@ -102,12 +103,10 @@ void HardwareHandler::stop(const controlID_t controlID) {
 
 void HardwareHandler::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
   if (controlID != CONTROL_ID_HARDWARE) {
-    //hardwareControlID_t hardwareControlID = 0;
-    protocol_t protocol = PROTOCOL_DCC;
-    address_t address = 1028;
-	/*
+    hardwareControlID_t hardwareControlID = 0;
+    protocol_t protocol = PROTOCOL_NONE;
+    address_t address = ADDRESS_NONE;
     manager.getProtocolAddress(locoID, hardwareControlID, protocol, address);
-		*/
 		instance->locoSpeed(protocol, address, speed);
   }
 }
