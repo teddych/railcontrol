@@ -15,8 +15,6 @@ namespace storage {
 			SQLite(const StorageParams& params);
 			~SQLite();
 
-			static int callbackListTables(void *v, int argc, char **argv, char **colName);
-
 			// save loco
 			void loco(const datamodel::Loco& loco);
 
@@ -26,6 +24,9 @@ namespace storage {
 		private:
 			const StorageParams& params;
 			sqlite3 *db;
+
+			static int callbackListTables(void *v, int argc, char **argv, char **colName);
+			static int callbackAllLocos(void* v, int argc, char **argv, char **colName);
 	};
 
 } // namespace storage

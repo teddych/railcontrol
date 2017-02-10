@@ -76,10 +76,17 @@ namespace storage {
 	}
 
 	void StorageHandler::loco(const Loco& loco) {
+		if (instance) {
+			instance->loco(loco);
+		}
 	}
 
 	vector<Loco*> StorageHandler::allLocos() {
-		return instance->allLocos();
+		if (instance) {
+			return instance->allLocos();
+		}
+		vector<Loco*> v;
+		return v;
 	}
 
 } // namespace storage

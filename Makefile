@@ -22,8 +22,10 @@ OBJ= \
 all: $(OBJ)
 	make -C hardware
 	make -C storage
-	make -C storage/sqlite
 	$(CC) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
+
+sqlite-shell:
+	make -C storage/sqlite
 
 %.o: %.cpp %.h
 	$(CC) $(CPPFLAGS) -c -o $@ $<
@@ -34,7 +36,8 @@ install:
 clean:
 	make -C hardware clean
 	make -C storage clean
-	make -C storage/sqlite clean
 	rm -f *.o webserver/*.o
 	rm -f railcontrol
 
+clean-sqlite-shell:
+	make -C storage/sqlite clean

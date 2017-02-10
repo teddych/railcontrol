@@ -10,13 +10,14 @@ namespace datamodel {
 class Loco {
 	public:
 		Loco(locoID_t locoID);
+		Loco(locoID_t locoID, std::string name, protocol_t protocol, address_t address);
 		~Loco();
 
 		hardwareControlID_t hardwareControlID;
 		locoID_t locoID;
+		std::string name;
 		protocol_t protocol;
 		address_t address;
-		std::string name;
 		speed_t speed;
 };
 

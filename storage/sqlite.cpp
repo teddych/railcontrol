@@ -1,5 +1,5 @@
 #include <map>
-#include <iostream>
+#include <sstream>
 
 #include "sqlite.h"
 #include "util.h"
@@ -49,7 +49,7 @@ namespace storage {
 
 		if (tablenames["locos"] != true) {
 			xlog("Creating table locos");
-			rc = sqlite3_exec(db, "CREATE TABLE locos (locoid UNSIGNED INT, name VARCHAR(50), protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT);", NULL, NULL, &dbError);
+			rc = sqlite3_exec(db, "CREATE TABLE locos (locoid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT);", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -70,47 +70,45 @@ namespace storage {
 
 	int SQLite::callbackListTables(void* v, int argc, char **argv, char **colName) {
 		map<string, bool>* tablenames = static_cast<map<string, bool>*>(v);
-		int i;
-		for (i = 0; i < argc; ++i) {
-			xlog("%s = %s", colName[i], argv[i]);
-			(*tablenames)[argv[i]] = true;
-		}
+		(*tablenames)[argv[0]] = true;
 		return 0;
 	}
 
-	// save loco
+	// save loco (locoID is primary key)
 	void SQLite::loco(const datamodel::Loco& loco) {
 		if (db) {
-		/*
 			stringstream ss;
-			ss << "INSERT INTO locos VALUES (" << loco.id << ", '" << loco.name << "', " << loco.protocol << ", " << loco.address << ");";
+			char* dbError = NULL;
+			ss << "INSERT OR REPLACE INTO locos VALUES (" << loco.locoID << ", '" << loco.name << "', " << (int)loco.protocol << ", " << loco.address << ");";
 			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
 			}
-			*/
 		}
 	}
 
 	// read all locos
 	std::vector<datamodel::Loco*> SQLite::allLocos() {
-		int i = 1;
 		vector<Loco*> locos;
-
-		Loco* l = new Loco(i++);
-		l->name = "my Loco";
-		l->address = 1200;
-		l->protocol = PROTOCOL_DCC;
-		locos.push_back(l);
-
-		l = new Loco(i++);
-		l->name = "your Loco";
-		l->address = 1201;
-		l->protocol = PROTOCOL_DCC;
-		locos.push_back(l);
-
+		if (db) {
+			char* dbError = 0;
+			int rc = sqlite3_exec(db, "SELECT locoid, name, protocol, address FROM locos ORDER BY locoid;", callbackAllLocos, &locos, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
 		return locos;
+	}
+
+	int SQLite::callbackAllLocos(void* v, int argc, char **argv, char **colName) {
+		vector<Loco*>* locos = static_cast<vector<Loco*>*>(v);
+		if (argc != 4) {
+			return 0;
+		}
+		locos->push_back(new Loco(atoi(argv[0]), argv[1], atoi(argv[2]), atoi(argv[3])));
+		return 0;
 	}
 
 } // namespace storage

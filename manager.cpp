@@ -29,6 +29,10 @@ Manager::Manager() :
 	storageParams.name = "sqlite";
 	storageParams.filename = "/tmp/railcontrol.db";
 	storage = new StorageHandler(storageParams);
+
+	Loco newloco(1, "My Loco", 4, 1200);
+	storage->loco(newloco);
+
 	locos = storage->allLocos();
 	for (auto loco : locos) {
 		xlog("Loco %s loaded", loco->name.c_str());
