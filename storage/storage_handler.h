@@ -1,11 +1,12 @@
 #ifndef STORAGE_STORAGE_H
 #define STORAGE_STORAGE_H
 
-#include <vector>
+#include <map>
 
+#include "datamodel/datamodel.h"
+#include "datatypes.h"
 #include "storage_interface.h"
 #include "storage_params.h"
-#include "../datamodel/datamodel.h"
 
 namespace storage {
 
@@ -18,7 +19,7 @@ namespace storage {
 			StorageHandler(const StorageParams& params);
 			~StorageHandler();
 			void loco(const datamodel::Loco& loco);
-			std::vector<datamodel::Loco*> allLocos();
+			void allLocos(std::map<locoID_t,datamodel::Loco*>& locos);
 		private:
 			createStorage_t* createStorage;
 			destroyStorage_t* destroyStorage;

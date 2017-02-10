@@ -89,8 +89,7 @@ namespace storage {
 	}
 
 	// read all locos
-	std::vector<datamodel::Loco*> SQLite::allLocos() {
-		vector<Loco*> locos;
+	void SQLite::allLocos(std::map<locoID_t, datamodel::Loco*>& locos) {
 		if (db) {
 			char* dbError = 0;
 			int rc = sqlite3_exec(db, "SELECT locoid, name, protocol, address FROM locos ORDER BY locoid;", callbackAllLocos, &locos, &dbError);
@@ -99,15 +98,22 @@ namespace storage {
 				sqlite3_free(dbError);
 			}
 		}
-		return locos;
 	}
 
 	int SQLite::callbackAllLocos(void* v, int argc, char **argv, char **colName) {
-		vector<Loco*>* locos = static_cast<vector<Loco*>*>(v);
+		map<locoID_t,Loco*>* locos = static_cast<map<locoID_t,Loco*>*>(v);
 		if (argc != 4) {
 			return 0;
 		}
-		locos->push_back(new Loco(atoi(argv[0]), argv[1], atoi(argv[2]), atoi(argv[3])));
+		locoID_t locoID = atoi(argv[0]);
+		if (locos->count(locoID)) {
+			xlog("Loco with ID %i already exists", locoID);
+			Loco* loco = (*locos)[locoID];
+			delete loco;
+		}
+		Loco* loco = new Loco(locoID, argv[1], atoi(argv[2]), atoi(argv[3]));
+
+		(*locos)[locoID] = loco;
 		return 0;
 	}
 

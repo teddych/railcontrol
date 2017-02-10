@@ -33,9 +33,9 @@ Manager::Manager() :
 	Loco newloco(1, "My Loco", 4, 1200);
 	storage->loco(newloco);
 
-	locos = storage->allLocos();
+	storage->allLocos(locos);
 	for (auto loco : locos) {
-		xlog("Loco %s loaded", loco->name.c_str());
+		xlog("Loaded loco %s", loco.second->name.c_str());
 	}
 }
 
@@ -44,7 +44,7 @@ Manager::~Manager() {
     delete control;
   }
 	for (auto loco : locos) {
-		delete loco;
+		delete loco.second;
 	}
 	delete storage;
 	storage = NULL;

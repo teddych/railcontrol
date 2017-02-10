@@ -1,6 +1,7 @@
 #ifndef MANAGER_H
 #define MANAGER_H
 
+#include <map>
 #include <vector>
 
 #include "control.h"
@@ -17,7 +18,7 @@ class Manager {
 		void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed);
 	private:
     std::vector<Control*> controllers;
-		std::vector<datamodel::Loco*> locos;
+		std::map<locoID_t,datamodel::Loco*> locos;
 		storage::StorageHandler* storage;
 };
 

@@ -1,6 +1,7 @@
 #ifndef STORAGE_STORAGE_INTERFACE_H
 #define STORAGE_STORAGE_INTERFACE_H
 
+#include <map>
 #include <string>
 
 #include "../datamodel/datamodel.h"
@@ -20,7 +21,7 @@ namespace storage {
 			virtual void loco(const datamodel::Loco& loco) = 0;
 
 			// read all locos
-			virtual std::vector<datamodel::Loco*> allLocos() = 0;
+			virtual void allLocos(std::map<locoID_t, datamodel::Loco*>& locos) = 0;
 	};
 
 } // namespace

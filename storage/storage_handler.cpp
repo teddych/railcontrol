@@ -5,7 +5,7 @@
 #include "storage_handler.h"
 
 using datamodel::Loco;
-using std::vector;
+using std::map;
 
 namespace storage {
 
@@ -81,12 +81,10 @@ namespace storage {
 		}
 	}
 
-	vector<Loco*> StorageHandler::allLocos() {
+	void StorageHandler::allLocos(map<locoID_t,datamodel::Loco*>& locos) {
 		if (instance) {
-			return instance->allLocos();
+			return instance->allLocos(locos);
 		}
-		vector<Loco*> v;
-		return v;
 	}
 
 } // namespace storage

@@ -1,7 +1,7 @@
 #ifndef STORAGE_SQLITE_H
 #define STORAGE_SQLITE_H
 
-#include <vector>
+#include <map>
 
 #include "datamodel/datamodel.h"
 #include "storage_interface.h"
@@ -19,7 +19,7 @@ namespace storage {
 			void loco(const datamodel::Loco& loco);
 
 			// read all locos
-			std::vector<datamodel::Loco*> allLocos();
+			void allLocos(std::map<locoID_t, datamodel::Loco*>& locos);
 
 		private:
 			const StorageParams& params;
