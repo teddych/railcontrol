@@ -22,7 +22,6 @@ namespace storage {
 			void allLocos(std::map<locoID_t, datamodel::Loco*>& locos);
 
 		private:
-			const StorageParams& params;
 			sqlite3 *db;
 
 			static int callbackListTables(void *v, int argc, char **argv, char **colName);

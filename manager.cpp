@@ -19,14 +19,14 @@ Manager::Manager() :
 
   controllers.push_back(new WebServer(*this, 8080));
 
-	struct HardwareParams hardwareParamsVirt;
+	HardwareParams hardwareParamsVirt;
 	hardwareParamsVirt.name = "Virtuelle Zentrale";
 	hardwareParamsVirt.ip = "";
 	hardwareControlID_t nextControlID = 0;
 	controllers.push_back(new HardwareHandler(HARDWARE_ID_VIRT, nextControlID++, hardwareParamsVirt));
 
-	struct StorageParams storageParams;
-	storageParams.name = "sqlite";
+	StorageParams storageParams;
+	storageParams.module = "sqlite";
 	storageParams.filename = "/tmp/railcontrol.db";
 	storage = new StorageHandler(storageParams);
 
@@ -63,9 +63,16 @@ void Manager::stop(const controlID_t controlID) {
 }
 
 bool Manager::getProtocolAddress(const locoID_t locoID, hardwareControlID_t& hardwareControlID, protocol_t& protocol, address_t& address) {
-	hardwareControlID = 0;
-	protocol = PROTOCOL_DCC;
-	address = 1228;
+	if (locos.count(locoID) < 1) {
+		hardwareControlID = 0;
+		protocol = PROTOCOL_NONE;
+		address = 0;
+		return false;
+	}
+	Loco* loco = locos[locoID];
+	hardwareControlID = loco->hardwareControlID;
+	protocol = loco->protocol;
+	address = loco->address;
 	return true;
 }
 

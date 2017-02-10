@@ -25,7 +25,6 @@ namespace storage {
 			destroyStorage_t* destroyStorage;
 			storage::StorageInterface* instance;
 			void* dlhandle;
-			const StorageParams params;
 	};
 
 } // namespace storage

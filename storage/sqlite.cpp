@@ -22,8 +22,7 @@ namespace storage {
     delete(sqlite);
   }
 
-	SQLite::SQLite(const StorageParams& params) :
-		params(params) {
+	SQLite::SQLite(const StorageParams& params) {
 		int rc;
 		char* dbError = NULL;
 
@@ -47,6 +46,7 @@ namespace storage {
 			return;
 		}
 
+		// create loco table if needed
 		if (tablenames["locos"] != true) {
 			xlog("Creating table locos");
 			rc = sqlite3_exec(db, "CREATE TABLE locos (locoid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT);", NULL, NULL, &dbError);
@@ -62,7 +62,7 @@ namespace storage {
 
 	SQLite::~SQLite() {
 		if (db) {
-			xlog("Closing SQLite database with filename %s", params.filename.c_str());
+			xlog("Closing SQLite database");
 			sqlite3_close(db);
 			db = NULL;
 		}
