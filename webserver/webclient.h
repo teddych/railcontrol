@@ -18,14 +18,9 @@ class WebClient {
 		void worker();
 		int stop();
 	private:
+		void printMainHTML();
 		void getCommand(const std::string& str, std::string& method, std::string& uri, std::string& protocol);
     void deliverFile(const int socket, const std::string& file);
-		/*
-		void handleLocoList(const int socket, const std::vector<std::string>& uri_parts);
-		void handleLocoProperties(const int socket, const std::vector<std::string>& uri_parts);
-		void handleLocoCommand(const int socket, const std::vector<std::string>& uri_parts);
-		*/
-		void handleLocoList(const int socket);
 		void handleLocoSpeed(const int socket, const std::map<std::string,std::string>& arguments);
 		unsigned int id;
 		int clientSocket;
@@ -33,6 +28,7 @@ class WebClient {
 		WebServer &server;
 		std::thread clientThread;
 		Manager& manager;
+		bool headOnly;
 };
 
 }; // namespace webserver

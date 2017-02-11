@@ -26,7 +26,7 @@ all: $(OBJ)
 sqlite-shell:
 	make -C storage/sqlite
 
-%.o: %.cpp %.h
+%.o: %.cpp *.h webserver/*.h storage/*.h hardware/*.h
 	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 install:

@@ -30,8 +30,11 @@ Manager::Manager() :
 	storageParams.filename = "/tmp/railcontrol.db";
 	storage = new StorageHandler(storageParams);
 
-	Loco newloco(1, "My Loco", 4, 1200);
-	storage->loco(newloco);
+	Loco newloco1(1, "My Loco", 4, 1200);
+	storage->loco(newloco1);
+
+	Loco newloco2(2, "Your Loco", 4, 1201);
+	storage->loco(newloco2);
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
