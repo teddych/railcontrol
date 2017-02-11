@@ -113,7 +113,7 @@ void WebClient::handleLocoSpeed(const int socket, const map<string,string>& argu
 
 	char buffer[1024];
 	snprintf(buffer, sizeof(buffer), "<p>loco %u speed is now set to %i</p>", locoID, speed);
-	manager.locoSpeed(CONTROL_ID_WEBSERVER, locoID, speed);
+	manager.locoSpeed(MANAGER_ID_WEBSERVER, locoID, speed);
 	char buffer_out[1024];
 	snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", buffer);
 	send(socket, buffer_out, strlen(buffer_out), 0);
@@ -183,12 +183,12 @@ void WebClient::worker() {
 			else if (arguments["cmd"].compare("on") == 0) {
 				snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Turning on Booster</p>");
 				send(clientSocket, buffer_out, strlen(buffer_out), 0);
-				manager.go(CONTROL_ID_WEBSERVER);
+				manager.go(MANAGER_ID_WEBSERVER);
 			}
 			else if (arguments["cmd"].compare("off") == 0) {
 				snprintf(buffer_out, sizeof(buffer_out), html_header_template, "200 OK", "RailControl", "<p>Turning off Booster</p>");
 				send(clientSocket, buffer_out, strlen(buffer_out), 0);
-				manager.stop(CONTROL_ID_WEBSERVER);
+				manager.stop(MANAGER_ID_WEBSERVER);
 			}
 			else if (arguments["cmd"].compare("locolist") == 0) {
 				handleLocoList(clientSocket);

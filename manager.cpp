@@ -22,7 +22,7 @@ Manager::Manager() :
 	HardwareParams hardwareParamsVirt;
 	hardwareParamsVirt.name = "Virtuelle Zentrale";
 	hardwareParamsVirt.ip = "";
-	hardwareControlID_t nextControlID = 0;
+	controlID_t nextControlID = 0;
 	controllers.push_back(new HardwareHandler(*this, HARDWARE_ID_VIRT, nextControlID++, hardwareParamsVirt));
 
 	StorageParams storageParams;
@@ -50,33 +50,33 @@ Manager::~Manager() {
 	storage = NULL;
 }
 
-void Manager::go(const controlID_t controlID) {
+void Manager::go(const managerID_t controlID) {
   for (auto control : controllers) {
 		control->go(controlID);
 	}
 }
 
-void Manager::stop(const controlID_t controlID) {
+void Manager::stop(const managerID_t controlID) {
   for (auto control : controllers) {
 		control->stop(controlID);
 	}
 }
 
-bool Manager::getProtocolAddress(const locoID_t locoID, hardwareControlID_t& hardwareControlID, protocol_t& protocol, address_t& address) const {
+bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
 	if (locos.count(locoID) < 1) {
-		hardwareControlID = 0;
+		controlID = 0;
 		protocol = PROTOCOL_NONE;
 		address = 0;
 		return false;
 	}
 	Loco* loco = locos.at(locoID);
-	hardwareControlID = loco->hardwareControlID;
+	controlID = loco->controlID;
 	protocol = loco->protocol;
 	address = loco->address;
 	return true;
 }
 
-void Manager::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
+void Manager::locoSpeed(const managerID_t controlID, const locoID_t locoID, const speed_t speed) {
   for (auto control : controllers) {
     control->locoSpeed(controlID, locoID, speed);
   }

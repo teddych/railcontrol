@@ -4,20 +4,20 @@
 #include <thread>
 #include <vector>
 
-#include "../control.h"
-#include "../manager.h"
+#include "manager_interface.h"
+#include "manager.h"
 
 namespace webserver {
 
 class WebClient;
 
-class WebServer : public Control {
+class WebServer : public ManagerInterface {
 	public:
 		WebServer(Manager& manager, const unsigned short port);
 		~WebServer();
-		void go(const controlID_t controlID) override;
-		void stop(const controlID_t controlID) override;
-		void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) override;
+		void go(const managerID_t managerID) override;
+		void stop(const managerID_t managerID) override;
+		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
 	private:
 	  void worker();
 		unsigned short port;

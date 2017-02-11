@@ -1,20 +1,19 @@
 #include <dlfcn.h>              // dl*
 #include <sstream>
 
-#include "control.h"
 #include "datatypes.h"
 #include "hardware_handler.h"
+
 #include "util.h"
 
 using std::string;
 
 namespace hardware {
 
-HardwareHandler::HardwareHandler(const Manager& manager, const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const HardwareParams& params) :
-  Control(CONTROL_ID_HARDWARE),
+HardwareHandler::HardwareHandler(const Manager& manager, const hardwareID_t hardwareID, const controlID_t controlID, const HardwareParams& params) :
 	manager(manager),
 	hardwareID(hardwareID),
-	hardwareControlID(hardwareControlID),
+	controlID(controlID),
 	createHardware(NULL),
 	destroyHardware(NULL),
 	instance(NULL),
@@ -89,24 +88,24 @@ std::string HardwareHandler::getName() const {
 	return "Unknown, not running";
 }
 
-void HardwareHandler::go(const controlID_t controlID) {
-  if (controlID != CONTROL_ID_HARDWARE) {
+void HardwareHandler::go(const managerID_t managerID) {
+  if (managerID != MANAGER_ID_HARDWARE) {
 		instance->go();
 	}
 }
 
-void HardwareHandler::stop(const controlID_t controlID) {
-  if (controlID != CONTROL_ID_HARDWARE) {
+void HardwareHandler::stop(const managerID_t managerID) {
+  if (managerID != MANAGER_ID_HARDWARE) {
 		instance->stop();
 	}
 }
 
-void HardwareHandler::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
-  if (controlID != CONTROL_ID_HARDWARE) {
-    hardwareControlID_t hardwareControlID = 0;
+void HardwareHandler::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
+  if (managerID != MANAGER_ID_HARDWARE) {
+    controlID_t controlID = 0;
     protocol_t protocol = PROTOCOL_NONE;
     address_t address = ADDRESS_NONE;
-    manager.getProtocolAddress(locoID, hardwareControlID, protocol, address);
+    manager.getProtocolAddress(locoID, controlID, protocol, address);
 		instance->locoSpeed(protocol, address, speed);
   }
 }

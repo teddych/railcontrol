@@ -1,13 +1,13 @@
-#ifndef HARDWARE_PROPERTIES_H
-#define HARDWARE_PROPERTIES_H
+#ifndef HARDWARE_HARDWARE_HANDLER_H
+#define HARDWARE_HARDWARE_HANDLER_H
 
 #include <string>
 
 #include "datatypes.h"
-#include "control.h"
 #include "hardware_interface.h"
 #include "hardware_params.h"
 #include "manager.h"
+#include "manager_interface.h"
 #include "util.h"
 
 namespace hardware {
@@ -16,19 +16,18 @@ namespace hardware {
 	typedef hardware::HardwareInterface* createHardware_t(struct HardwareParams params);
 	typedef void destroyHardware_t(hardware::HardwareInterface*);
 
-	class HardwareHandler: public Control {
+	class HardwareHandler: public ManagerInterface {
 		public:
-			HardwareHandler(const Manager& manager, const hardware_id_t hardwareID, const hardwareControlID_t hardwareControlID, const HardwareParams& params);
+			HardwareHandler(const Manager& manager, const hardwareID_t hardwareID, const controlID_t controlID, const HardwareParams& params);
 			~HardwareHandler();
 			std::string getName() const;
-			void go(const controlID_t controlID) override;
-			void stop(const controlID_t controlID) override;
-			void locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) override;
-			hardwareControlID_t getHardwareControlID(const locoID_t locoID);
+			void go(const managerID_t managerID) override;
+			void stop(const managerID_t managerID) override;
+			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
 		private:
 			const Manager& manager;
-			hardware_id_t hardwareID;
-			hardwareControlID_t hardwareControlID;
+			hardwareID_t hardwareID;
+			controlID_t controlID;
 			createHardware_t* createHardware;
 			destroyHardware_t* destroyHardware;
 			hardware::HardwareInterface* instance;
@@ -40,5 +39,5 @@ namespace hardware {
 ;
 // namespace hardware
 
-#endif // HARDWARE_PROPERTIES_H
+#endif // HARDWARE_HARDWARE_HANDLER_H
 

@@ -1,5 +1,5 @@
-#ifndef HARDWARE_CONTROL_INTERFACE_H
-#define HARDWARE_CONTROL_INTERFACE_H
+#ifndef HARDWARE_HARDAWRE_INTERFACE_H
+#define HARDWARE_HARDWARE_INTERFACE_H
 
 #include <string>
 
@@ -31,5 +31,5 @@ namespace hardware {
 } // namespace
 
 
-#endif // HARDWARE_CONTROL_INTERFACE_H
+#endif // HARDWARE_HARDWARE_INTERFACE_H
 

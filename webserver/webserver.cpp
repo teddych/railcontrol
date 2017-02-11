@@ -6,8 +6,8 @@
 #include <thread>
 #include <unistd.h>
 
-#include "../railcontrol.h"
-#include "../util.h"
+#include "railcontrol.h"
+#include "util.h"
 #include "webclient.h"
 #include "webserver.h"
 
@@ -17,13 +17,12 @@ using std::vector;
 
 namespace webserver {
 
-WebServer::WebServer(Manager& m, const unsigned short port) :
-  Control(CONTROL_ID_WEBSERVER),
+WebServer::WebServer(Manager& manager, const unsigned short port) :
 	port(port),
 	serverSocket(0),
 	run(false),
 	lastClientID(0),
-	manager(m) {
+	manager(manager) {
 
 	run = true;
 	struct sockaddr_in6 server_addr;
@@ -122,14 +121,14 @@ void WebServer::worker() {
 	}
 }
 
-void WebServer::go(const controlID_t controlID) {
+void WebServer::go(const managerID_t managerID) {
 }
 
-void WebServer::stop(const controlID_t controlID) {
+void WebServer::stop(const managerID_t managerID) {
 }
 
-void WebServer::locoSpeed(const controlID_t controlID, const locoID_t locoID, const speed_t speed) {
-	if (controlID != CONTROL_ID_WEBSERVER) {
+void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
+	if (managerID != MANAGER_ID_WEBSERVER) {
 		xlog("locoSpeed not yet implemented in Webserver");
 	}
 }

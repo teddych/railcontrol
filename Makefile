@@ -9,7 +9,6 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
-	control.o \
 	datamodel/loco.o \
 	hardware/hardware_handler.o \
 	manager.o \

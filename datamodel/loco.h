@@ -13,7 +13,7 @@ class Loco {
 		Loco(locoID_t locoID, std::string name, protocol_t protocol, address_t address);
 		~Loco();
 
-		hardwareControlID_t hardwareControlID;
+		controlID_t controlID;
 		locoID_t locoID;
 		std::string name;
 		protocol_t protocol;
