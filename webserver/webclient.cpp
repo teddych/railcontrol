@@ -146,10 +146,12 @@ namespace webserver {
 		char reply[1024];
 		snprintf(reply, sizeof(reply),
 			"HTTP/1.0 %s\r\n"
-			"Cache-Control: max-age=3600"
-			"Content-Type: text/html\r\n\r\n"
-			"<!DOCTYPE html><html><head><title>%s</title></head><body><p>%s</p></body></html>",
-			code.c_str(), code.c_str(), text.c_str());
+			"Cache-Control: no-cache, must-revalidate\r\n"
+			"Pragma: no-cache\r\n"
+			"Expires: Sun, 12 Feb 2016 00:00:00 GMT\r\n"
+			"Content-Type: text/html; charset=utf-8\r\n\r\n"
+			"%s",
+			code.c_str(), text.c_str());
 		send_timeout(clientSocket, reply, strlen(reply), 0);
 	}
 
@@ -205,14 +207,15 @@ namespace webserver {
 		// handle requests
 		if (arguments["cmd"].compare("quit") == 0) {
 			simpleReply("Stopping Railcontrol");
+			manager.stop(MANAGER_ID_WEBSERVER);
 			stopRailControl(SIGTERM);
 		}
 		else if (arguments["cmd"].compare("on") == 0) {
-			simpleReply("Turning on Booster");
+			simpleReply("Turning booster on");
 			manager.go(MANAGER_ID_WEBSERVER);
 		}
 		else if (arguments["cmd"].compare("off") == 0) {
-			simpleReply("Turning off Booster");
+			simpleReply("Turning booster off");
 			manager.stop(MANAGER_ID_WEBSERVER);
 		}
 		else if (arguments["cmd"].compare("speed") == 0) {
@@ -232,10 +235,8 @@ namespace webserver {
 	string WebClient::button(const string& value, const string& cmd) {
 		stringstream ss;
 		ss <<
-			"<form action=\"/\" method=\"get\">"
-			"<input type=\"submit\" value=\"" << value << "\">"
-			"<input type=\"hidden\" name=\"cmd\" value=\"" << cmd << "\">"
-			"</form>";
+			"<input class=\"button\" id=\"" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
+			"<script>\n$(function() {\n$(\"#" << cmd << "\").on(\"click\", function() {\n$(\"#status\").load(\"/?cmd=" << cmd << "\");\nreturn false;\n })\n})\n</script>";
 		return ss.str();
 	}
 
@@ -258,8 +259,8 @@ namespace webserver {
 			"<h1>Railcontrol</h1>"
 			"<div class=\"menu\">";
 			ss << button("X", "quit");
-			ss << button("O", "on");
-			//"<p><a href=\"/?cmd=quit\">Shut down RailControl</a></p>"
+			ss << button("On", "on");
+			ss << button("Off", "off");
 			ss << "</div>"
 			"<div class=\"locolist\">"
 			"<select name=\"locolist\">";
@@ -273,8 +274,10 @@ namespace webserver {
 			"</div>"
 			"<div class=\"loco\">Loco</div>"
 			"<div class=\"popup\">Popup</div>"
+			"<div class=\"status\" id=\"status\">Status</div>"
 			"</body></html>";
-			const char* html = ss.str().c_str();
+			string sOut = ss.str();
+			const char* html = sOut.c_str();
 			send_timeout(clientSocket, html, strlen(html), 0);
 	}
 
@@ -284,6 +287,4 @@ namespace webserver {
 		return 0;
 	}
 
-}
-;
-// namespace webserver
+} ; // namespace webserver

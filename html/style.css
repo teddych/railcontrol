@@ -19,3 +19,24 @@ body {
 	width: 200px;
 	border: solid 1px;
 }
+
+.status {
+	height: 20px;
+	width: 100%;
+	border: solid 1px;
+}
+
+.button {
+	height: 45px;
+	width: 45px;
+	background-color: lightgray;
+	border-radius: 5px;
+	margin: 1px;
+	display: inline-block;
+	text-align: center;
+}
+
+.button:active {
+	background-color: darkgray;
+	transform: translateY(1px);
+}
