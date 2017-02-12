@@ -80,7 +80,12 @@ namespace webserver {
 					}
 				}
 				char header[1024];
-				snprintf(header, sizeof(header), "HTTP/1.0 200 OK\r\nContent-Lenth: %lu\r\nContent-Type: %s\r\n\r\n", s.st_size, contentType);
+				snprintf(header, sizeof(header),
+					"HTTP/1.0 200 OK\r\n"
+					"Cache-Control: max-age=3600"
+					"Content-Lenth: %lu\r\n"
+					"Content-Type: %s\r\n\r\n",
+					s.st_size, contentType);
 				send(socket, header, strlen(header), 0);
 				if (headOnly == false) {
 					char* buffer = static_cast<char*>(malloc(s.st_size));
@@ -88,11 +93,19 @@ namespace webserver {
 						size_t r = fread(buffer, 1, s.st_size, f);
 						send(socket, buffer, r, 0);
 						free(buffer);
+						fclose(f);
+						return;
 					}
 				}
 			}
 			fclose(f);
 		}
+		char reply[1024];
+		snprintf(reply, sizeof(reply),
+			"HTTP/1.0 404 Not found\r\n\r\n"
+			"<!DOCTYPE html><html><head><title>404 Not found</title></head><body><p>File %s not found</p></body></html>",
+			virtualFile.c_str());
+		send(socket, reply, strlen(reply), 0);
 	}
 
 	void WebClient::handleLocoSpeed(const int socket, const map<string, string>& arguments) {
@@ -212,19 +225,29 @@ namespace webserver {
 			// handle base request
 			stringstream ss;
 			ss << "HTTP/1.0 200 OK\r\n"
+			"Cache-Control: no-cache, must-revalidate\r\n"
+			"Pragma: no-cache\r\n"
+			"Expires: Sun, 12 Feb 2016 00:00:00 GMT\r\n"
 			"Content-Type: text/html; charset=utf-8\r\n\r\n"
-			"<!DOCTYPE html><html><head><title>RailControl</title></head>"
+			"<!DOCTYPE html><html><head>"
+			"<title>RailControl</title>"
+			"<link rel=\"stylesheet\" type=\"text/css\" href=\"/style.css\" />"
+			"<script src=\"/jquery-3.1.1.min.js\"></script>"
+			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
+			"<meta name=\"robots\" content=\"noindex,nofollow\">"
+			"</head>"
 			"<body>"
 			"<h1>Rocrail</h1>"
-			"<div name=\"locolist\">";
+			"<div class=\"locolist\">"
+			"<select name=\"locolist\">";
 			// locolist
 			const map<locoID_t, Loco*>& locos = manager.locoList();
-			ss << "<select name=\"locolist\" onChange=\">";
 			for (auto locoTMP : locos) {
 				Loco* loco = locoTMP.second;
 				ss << "<option value=\"" << loco->locoID << "\">" << loco->name << "</option>";
 			}
 			ss << "</select>"
+			"</div>"
 			"<div class=\"loco\">Loco</div>"
 			"<div class=\"popup\">Popup</div>"
 			"<p><a href=\"/?cmd=quit\">Shut down RailControl</a></p></body></html>";
