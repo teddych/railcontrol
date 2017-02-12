@@ -16,3 +16,8 @@ void hexlog(const char* hex, const size_t size);
 // create a UDP connection to a server on a port
 int create_udp_connection(const struct sockaddr* sockaddr, const unsigned int sockaddr_len, const char* server, const unsigned short port);
 
+// receive with timeout
+int recv_timeout(int sock, char* buf, const size_t buflen, const int flags);
+
+// receive with timeout
+int send_timeout(int sock, const char* buf, const size_t buflen, const int flags);

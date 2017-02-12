@@ -1,6 +1,7 @@
 #ifndef WEBSERVER_WEBCLIENT_H
 #define WEBSERVER_WEBCLIENT_H
 
+#include <map>
 #include <thread>
 #include <string>
 #include <vector>
@@ -19,8 +20,9 @@ class WebClient {
 		int stop();
 	private:
 		void printMainHTML();
-		void getCommand(const std::string& str, std::string& method, std::string& uri, std::string& protocol);
-    void deliverFile(const int socket, const std::string& file);
+		void interpretClientRequest(const std::string& str, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments);
+		void simpleReply(const std::string& text, const std::string& code = "200 OK");
+    void deliverFile(const std::string& file);
 		void handleLocoSpeed(const int socket, const std::map<std::string,std::string>& arguments);
 		unsigned int id;
 		int clientSocket;

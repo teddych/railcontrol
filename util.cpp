@@ -108,3 +108,65 @@ int create_udp_connection(const struct sockaddr* sockaddr, const unsigned int so
   return sock;
 }
 
+int recv_timeout(int sock, char* buf, const size_t buflen, const int flags) {
+	int ret;
+	errno = 0;
+	fd_set set;
+	FD_ZERO(&set);
+	FD_SET(sock, &set);
+	struct timeval timeout;
+	timeout.tv_sec = 30;
+	timeout.tv_usec = 0;
+
+	ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &timeout));
+	if (ret < 0) {
+		return ret;
+	}
+	else if (ret > 0) {
+		ret = recv(sock, buf, buflen, flags);
+		if (ret > 0) {
+			return ret;
+		}
+		else if (ret <= 0) {
+			errno = ECONNRESET;
+			return -1;
+		}
+	}
+	else {
+		errno = ETIMEDOUT;
+		return -1;
+	}
+	return 0;
+}
+
+int send_timeout(int sock, const char* buf, const size_t buflen, const int flags) {
+	int ret;
+	errno = 0;
+	fd_set set;
+	FD_ZERO(&set);
+	FD_SET(sock, &set);
+	struct timeval timeout;
+	timeout.tv_sec = 30;
+	timeout.tv_usec = 0;
+
+	ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, NULL, &set, NULL, &timeout));
+	if (ret < 0) {
+		return ret;
+	}
+	else if (ret > 0) {
+		ret = send(sock, buf, buflen, flags);
+		if (ret > 0) {
+			return ret;
+		}
+		else if (ret <= 0) {
+			errno = ECONNRESET;
+			return -1;
+		}
+	}
+	else {
+		errno = ETIMEDOUT;
+		return -1;
+	}
+	return 0;
+}
+

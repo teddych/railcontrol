@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cstring>		//memset
-#include <map>
 #include <netinet/in.h>
 #include <signal.h>
 #include <sstream>
@@ -40,18 +39,37 @@ namespace webserver {
 		clientThread.join();
 	}
 
-	void WebClient::getCommand(const string& str, string& method, string& uri, string& protocol) {
-		// FIXME: move argument evaluation to here
+	void WebClient::interpretClientRequest(const string& str, string& method, string& uri, string& protocol, map<string,string>& arguments) {
 		vector<string> list;
 		str_split(str, string(" "), list);
 		if (list.size() == 3) {
 			method = list[0];
+			// transform method to uppercase
+			std::transform(method.begin(), method.end(), method.begin(), ::toupper);
+			// if method == HEAD set membervariable
+			headOnly = false;
+			if (method.compare("HEAD") == 0) {
+				headOnly = true;
+			}
+			// set uri and protocol
 			uri = list[1];
 			protocol = list[2];
+			// read GET-arguments from uri
+			vector<string> uri_parts;
+			str_split(uri, "?", uri_parts);
+			if (uri_parts.size() == 2) {
+				vector<string> argumentStrings;
+				str_split(uri_parts[1], "&", argumentStrings);
+				for (auto argument : argumentStrings) {
+					vector<string> argumentParts;
+					str_split(argument, "=", argumentParts);
+					arguments[argumentParts[0]] = argumentParts[1];
+				}
+			}
 		}
 	}
 
-	void WebClient::deliverFile(const int socket, const string& virtualFile) {
+	void WebClient::deliverFile(const string& virtualFile) {
 		stringstream ss;
 		char workingDir[128];
 		int rc;
@@ -86,12 +104,12 @@ namespace webserver {
 					"Content-Lenth: %lu\r\n"
 					"Content-Type: %s\r\n\r\n",
 					s.st_size, contentType);
-				send(socket, header, strlen(header), 0);
+				send_timeout(clientSocket, header, strlen(header), 0);
 				if (headOnly == false) {
 					char* buffer = static_cast<char*>(malloc(s.st_size));
 					if (buffer) {
 						size_t r = fread(buffer, 1, s.st_size, f);
-						send(socket, buffer, r, 0);
+						send_timeout(clientSocket, buffer, r, 0);
 						free(buffer);
 						fclose(f);
 						return;
@@ -105,7 +123,7 @@ namespace webserver {
 			"HTTP/1.0 404 Not found\r\n\r\n"
 			"<!DOCTYPE html><html><head><title>404 Not found</title></head><body><p>File %s not found</p></body></html>",
 			virtualFile.c_str());
-		send(socket, reply, strlen(reply), 0);
+		send_timeout(clientSocket, reply, strlen(reply), 0);
 	}
 
 	void WebClient::handleLocoSpeed(const int socket, const map<string, string>& arguments) {
@@ -120,8 +138,19 @@ namespace webserver {
 		manager.locoSpeed(MANAGER_ID_WEBSERVER, locoID, speed);
 		char buffer_out[1024];
 		snprintf(buffer_out, sizeof(buffer_out), htmlTemplate, "200 OK", "RailControl", "", buffer);
-		send(socket, buffer_out, strlen(buffer_out), 0);
+		send_timeout(socket, buffer_out, strlen(buffer_out), 0);
 	*/
+	}
+
+	void WebClient::simpleReply(const string& text, const string& code) {
+		char reply[1024];
+		snprintf(reply, sizeof(reply),
+			"HTTP/1.0 %s\r\n"
+			"Cache-Control: max-age=3600"
+			"Content-Type: text/html\r\n\r\n"
+			"<!DOCTYPE html><html><head><title>%s</title></head><body><p>%s</p></body></html>",
+			code.c_str(), code.c_str(), text.c_str());
+		send_timeout(clientSocket, reply, strlen(reply), 0);
 	}
 
 	// worker is the thread that handles client requests
@@ -135,7 +164,7 @@ namespace webserver {
 		size_t pos = 0;
 		string s;
 		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos) {
-			pos += recv(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+			pos += recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
 			s = string(buffer_in);
 			str_replace(s, string("\r\n"), string("\n"));
 			str_replace(s, string("\r"), string("\n"));
@@ -151,42 +180,19 @@ namespace webserver {
 		string method;
 		string uri;
 		string protocol;
-		getCommand(lines[0], method, uri, protocol);
-		xlog(method.c_str());
-		xlog(uri.c_str());
+		map<string, string> arguments;
+		interpretClientRequest(lines[0], method, uri, protocol, arguments);
+		xlog("%s %s", method.c_str(), uri.c_str());
 
-		// transform method to uppercase
-		std::transform(method.begin(), method.end(), method.begin(), ::toupper);
-
+		// if method is not implemented
 		if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0)) {
-			xlog("Method not implemented");
+			xlog("Method %s not implemented", method.c_str());
 			const char* reply =
 				"HTTP/1.0 501 Not implemented\r\n\r\n"
-				"<!DOCTYPE html><html><head><title>404 Not found</title></head><body><p>Method not implemented</p></body></html>";
-			send(clientSocket, reply, strlen(reply), 0);
+				"<!DOCTYPE html><html><head><title>501 Not implemented</title></head><body><p>Method not implemented</p></body></html>";
+			send_timeout(clientSocket, reply, strlen(reply), 0);
 			close(clientSocket);
 			return;
-		}
-
-		headOnly = false;
-		if (method.compare("HEAD") == 0) {
-			headOnly = true;
-		}
-
-		// read GET-arguments
-		map<string, string> arguments;
-		{ // we have several temp Objects
-			vector<string> uri_parts;
-			str_split(uri, "?", uri_parts);
-			if (uri_parts.size() == 2) {
-				vector<string> argumentStrings;
-				str_split(uri_parts[1], "&", argumentStrings);
-				for (auto argument : argumentStrings) {
-					vector<string> argumentParts;
-					str_split(argument, "=", argumentParts);
-					arguments[argumentParts[0]] = argumentParts[1];
-				}
-			}
 		}
 
 		/*
@@ -198,18 +204,15 @@ namespace webserver {
 
 		// handle requests
 		if (arguments["cmd"].compare("quit") == 0) {
-			//snprintf(buffer_out, sizeof(buffer_out), htmlTemplate, "200 OK", "RailControl", "", "<p>Railcontrol is shutting down</p>");
-			//send(clientSocket, buffer_out, strlen(buffer_out), 0);
+			simpleReply("Stopping Railcontrol");
 			stopRailControl(SIGTERM);
 		}
 		else if (arguments["cmd"].compare("on") == 0) {
-			//snprintf(buffer_out, sizeof(buffer_out), htmlTemplate, "200 OK", "RailControl", "", "<p>Turning on Booster</p>");
-			//send(clientSocket, buffer_out, strlen(buffer_out), 0);
+			simpleReply("Turning on Booster");
 			manager.go(MANAGER_ID_WEBSERVER);
 		}
 		else if (arguments["cmd"].compare("off") == 0) {
-			//snprintf(buffer_out, sizeof(buffer_out), htmlTemplate, "200 OK", "RailControl", "", "<p>Turning off Booster</p>");
-			//send(clientSocket, buffer_out, strlen(buffer_out), 0);
+			simpleReply("Turning off Booster");
 			manager.stop(MANAGER_ID_WEBSERVER);
 		}
 		else if (arguments["cmd"].compare("speed") == 0) {
@@ -219,7 +222,7 @@ namespace webserver {
 			printMainHTML();
 		}
 		else {
-			deliverFile(clientSocket, uri);
+			deliverFile(uri);
 		}
 
 		xlog("Terminating webclient");
@@ -257,7 +260,7 @@ namespace webserver {
 			"<div class=\"popup\">Popup</div>"
 			"<p><a href=\"/?cmd=quit\">Shut down RailControl</a></p></body></html>";
 			const char* html = ss.str().c_str();
-			send(clientSocket, html, strlen(html), 0);
+			send_timeout(clientSocket, html, strlen(html), 0);
 	}
 
 	int WebClient::stop() {
