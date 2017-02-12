@@ -160,9 +160,10 @@ namespace webserver {
 
 		if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0)) {
 			xlog("Method not implemented");
-			// FIXME: send response
-//			snprintf(buffer_out, sizeof(buffer_out), htmlTemplate, "501 Not implemented", "Not implemented", "", "<p>This request method is not implemented</p>");
-//			send(clientSocket, buffer_out, strlen(buffer_out), 0);
+			const char* reply =
+				"HTTP/1.0 501 Not implemented\r\n\r\n"
+				"<!DOCTYPE html><html><head><title>404 Not found</title></head><body><p>Method not implemented</p></body></html>";
+			send(clientSocket, reply, strlen(reply), 0);
 			close(clientSocket);
 			return;
 		}
