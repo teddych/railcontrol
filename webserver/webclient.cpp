@@ -229,6 +229,16 @@ namespace webserver {
 		close(clientSocket);
 	}
 
+	string WebClient::button(const string& value, const string& cmd) {
+		stringstream ss;
+		ss <<
+			"<form action=\"/\" method=\"get\">"
+			"<input type=\"submit\" value=\"" << value << "\">"
+			"<input type=\"hidden\" name=\"cmd\" value=\"" << cmd << "\">"
+			"</form>";
+		return ss.str();
+	}
+
 	void WebClient::printMainHTML() {
 			// handle base request
 			stringstream ss;
@@ -245,7 +255,12 @@ namespace webserver {
 			"<meta name=\"robots\" content=\"noindex,nofollow\">"
 			"</head>"
 			"<body>"
-			"<h1>Rocrail</h1>"
+			"<h1>Railcontrol</h1>"
+			"<div class=\"menu\">";
+			ss << button("X", "quit");
+			ss << button("O", "on");
+			//"<p><a href=\"/?cmd=quit\">Shut down RailControl</a></p>"
+			ss << "</div>"
 			"<div class=\"locolist\">"
 			"<select name=\"locolist\">";
 			// locolist
@@ -258,7 +273,7 @@ namespace webserver {
 			"</div>"
 			"<div class=\"loco\">Loco</div>"
 			"<div class=\"popup\">Popup</div>"
-			"<p><a href=\"/?cmd=quit\">Shut down RailControl</a></p></body></html>";
+			"</body></html>";
 			const char* html = ss.str().c_str();
 			send_timeout(clientSocket, html, strlen(html), 0);
 	}

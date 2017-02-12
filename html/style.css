@@ -1,3 +1,21 @@
 body {
-	background-color: blue;
+	background-color: white;
+}
+
+.loco {
+	height: 200px;
+	width: 200px;
+	border: solid 1px;
+}
+
+.popup {
+	height: 200px;
+	width: 200px;
+	border: solid 1px;
+}
+
+.menu {
+	height: 50px;
+	width: 200px;
+	border: solid 1px;
 }

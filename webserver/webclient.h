@@ -19,6 +19,7 @@ class WebClient {
 		void worker();
 		int stop();
 	private:
+		std::string button(const std::string& value, const std::string& cmd);
 		void printMainHTML();
 		void interpretClientRequest(const std::string& str, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments);
 		void simpleReply(const std::string& text, const std::string& code = "200 OK");
