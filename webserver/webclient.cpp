@@ -130,12 +130,16 @@ namespace webserver {
 		run = true;
 
 		char buffer_in[1024];
-//		char buffer_out[1024];
+		memset(buffer_in, 0, sizeof(buffer_in));
 
-		recv(clientSocket, buffer_in, sizeof(buffer_in), 0);
-		string s(buffer_in);
-		str_replace(s, string("\r\n"), string("\n"));
-		str_replace(s, string("\r"), string("\n"));
+		size_t pos = 0;
+		string s;
+		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos) {
+			pos += recv(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+			s = string(buffer_in);
+			str_replace(s, string("\r\n"), string("\n"));
+			str_replace(s, string("\r"), string("\n"));
+		}
 		vector<string> lines;
 		str_split(s, string("\n"), lines);
 
