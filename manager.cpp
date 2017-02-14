@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "manager.h"
-
+#include "railcontrol.h"
 #include "hardware/hardware_handler.h"
 #include "hardware/hardware_params.h"
 #include "util.h"
@@ -10,25 +10,27 @@
 using datamodel::Loco;
 using hardware::HardwareHandler;
 using hardware::HardwareParams;
+using std::map;
+using std::string;
 using storage::StorageHandler;
 using storage::StorageParams;
 using webserver::WebServer;
 
-Manager::Manager() :
+Manager::Manager(Config& config) :
 	storage(NULL) {
 
-  controllers.push_back(new WebServer(*this, 8080));
+	StorageParams storageParams;
+	storageParams.module = config.getValue("dbengine", "sqlite");
+	storageParams.filename = config.getValue("dbfilename", "/tmp/railcontrol.db");
+	storage = new StorageHandler(storageParams);
+
+  controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
 
 	HardwareParams hardwareParamsVirt;
 	hardwareParamsVirt.name = "Virtuelle Zentrale";
 	hardwareParamsVirt.ip = "";
 	controlID_t nextControlID = 0;
 	controllers.push_back(new HardwareHandler(*this, HARDWARE_ID_VIRT, nextControlID++, hardwareParamsVirt));
-
-	StorageParams storageParams;
-	storageParams.module = "sqlite";
-	storageParams.filename = "/tmp/railcontrol.db";
-	storage = new StorageHandler(storageParams);
 
 	Loco newloco1(1, "My Loco", 4, 1200);
 	storage->loco(newloco1);

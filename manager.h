@@ -2,15 +2,17 @@
 #define MANAGER_H
 
 #include <map>
+#include <string>
 #include <vector>
 
+#include "config.h"
 #include "datamodel/datamodel.h"
 #include "manager_interface.h"
 #include "storage/storage_handler.h"
 
 class Manager {
 	public:
-    Manager();
+    Manager(Config& config);
     ~Manager();
 		void go(const managerID_t controlID);
 		void stop(const managerID_t controlID);
