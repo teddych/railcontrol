@@ -48,11 +48,8 @@ WebServer::WebServer(Manager& manager, const unsigned short port) :
 		xlog("Unable to set webserver socket option SO_REUSEADDR.");
 	}
 
-	while (run && bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
-		xlog("Unable to bind socket for webserver to port %i. Retrying later.", port);
-		sleep(1);
-	}
-	if (!run) {
+	if (bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
+		xlog("Unable to bind socket for webserver to port %i. Unable to serve clients.", port);
 		close(serverSocket);
 		run = false;
 		return;
@@ -71,23 +68,25 @@ WebServer::WebServer(Manager& manager, const unsigned short port) :
 }
 
 WebServer::~WebServer() {
-	xlog("Stopping webserver");
-	run = false;
+	if (run) {
+		xlog("Stopping webserver");
+		run = false;
 
-	// stopping all clients
-	for(auto client : clients) {
-		client->stop();
+		// stopping all clients
+		for(auto client : clients) {
+			client->stop();
+		}
+
+		// delete all client memory
+		while (clients.size()) {
+			WebClient* client = clients.back();
+			clients.pop_back();
+			delete client;
+		}
+
+		// join server thread
+		serverThread.join();
 	}
-
-	// delete all client memory
-	while (clients.size()) {
-		WebClient* client = clients.back();
-		clients.pop_back();
-		delete client;
-	}
-
-	// join server thread
-	serverThread.join();
 }
 
 
