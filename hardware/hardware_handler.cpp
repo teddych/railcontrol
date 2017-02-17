@@ -18,6 +18,9 @@ HardwareHandler::HardwareHandler(const Manager& manager, const HardwareParams* p
 	dlhandle(NULL),
 	params(params) {
 
+	// FIXME: if the same hardware library is loaded twice the clean up does not work correctly
+	// FIXME: the second unload will creash
+
   // generate symbol and library names
   char* error;
 	string symbol = hardwareSymbols[params->hardwareID];
