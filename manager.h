@@ -9,18 +9,20 @@
 #include "datamodel/datamodel.h"
 #include "manager_interface.h"
 #include "storage/storage_handler.h"
+#include "hardware/hardware_params.h"
 
 class Manager {
 	public:
-    Manager(Config& config);
-    ~Manager();
-		void go(const managerID_t controlID);
-		void stop(const managerID_t controlID);
-    bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		void locoSpeed(const managerID_t controlID, const locoID_t locoID, const speed_t speed);
+		Manager(Config& config);
+		~Manager();
+		void go(const managerID_t managerID);
+		void stop(const managerID_t managerID);
+		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 	private:
-    std::vector<ManagerInterface*> controllers;
+		std::vector<ManagerInterface*> controllers;
+		std::map<controlID_t,hardware::HardwareParams> hardwareParams;
 		std::map<locoID_t,datamodel::Loco*> locos;
 		storage::StorageHandler* storage;
 };

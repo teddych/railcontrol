@@ -4,8 +4,9 @@
 #include <map>
 #include <string>
 
-#include "../datamodel/datamodel.h"
-#include "../datatypes.h"
+#include "datamodel/datamodel.h"
+#include "datatypes.h"
+#include "hardware/hardware_params.h"
 
 namespace storage {
 
@@ -17,6 +18,12 @@ namespace storage {
 			// pure virtual destructor prevents polymorphism in derived class
 			virtual ~StorageInterface() {};
 
+			// save control
+			virtual void hardwareParams(const hardware::HardwareParams& hardwareParams) = 0;
+
+			// read controls
+			virtual void allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams) = 0;
+			
 			// save loco
 			virtual void loco(const datamodel::Loco& loco) = 0;
 

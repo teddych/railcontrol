@@ -26,17 +26,27 @@ Manager::Manager(Config& config) :
 
   controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
 
+
+	storage->allHardwareParams(hardwareParams);
+	for (auto hardwareParam : hardwareParams) {
+		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
+	}
+
+/*
 	HardwareParams hardwareParamsVirt;
 	hardwareParamsVirt.name = "Virtuelle Zentrale";
 	hardwareParamsVirt.ip = "";
 	controlID_t nextControlID = 0;
 	controllers.push_back(new HardwareHandler(*this, HARDWARE_ID_VIRT, nextControlID++, hardwareParamsVirt));
+	*/
 
+/*
 	Loco newloco1(1, "My Loco", 4, 1200);
 	storage->loco(newloco1);
 
 	Loco newloco2(2, "Your Loco", 4, 1201);
 	storage->loco(newloco2);
+*/
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
@@ -55,15 +65,15 @@ Manager::~Manager() {
 	storage = NULL;
 }
 
-void Manager::go(const managerID_t controlID) {
+void Manager::go(const managerID_t managerID) {
   for (auto control : controllers) {
-		control->go(controlID);
+		control->go(managerID);
 	}
 }
 
-void Manager::stop(const managerID_t controlID) {
+void Manager::stop(const managerID_t managerID) {
   for (auto control : controllers) {
-		control->stop(controlID);
+		control->stop(managerID);
 	}
 }
 

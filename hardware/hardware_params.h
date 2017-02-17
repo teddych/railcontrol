@@ -4,6 +4,8 @@
 namespace hardware {
 
 	struct HardwareParams {
+			hardwareID_t hardwareID;
+			controlID_t controlID;
 			std::string name;
 			std::string ip;
 	};

@@ -1,7 +1,7 @@
 #include <dlfcn.h>              // dl*
 #include <sstream>
 
-#include "../util.h"
+#include "util.h"
 #include "storage_handler.h"
 
 using datamodel::Loco;
@@ -69,6 +69,18 @@ namespace storage {
 		if (dlhandle) {
 			dlclose(dlhandle);
 			dlhandle = NULL;
+		}
+	}
+
+	void StorageHandler::hardwareParams(const hardware::HardwareParams& hardwareParams) {
+		if (instance) {
+			instance->hardwareParams(hardwareParams);
+		}
+	}
+
+	void StorageHandler::allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams) {
+		if (instance) {
+			instance->allHardwareParams(hardwareParams);
 		}
 	}
 

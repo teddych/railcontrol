@@ -74,6 +74,12 @@ namespace storage {
 		return 0;
 	}
 
+	void SQLite::hardwareParams(const hardware::HardwareParams& hardwareParams) {
+	}
+
+	void SQLite::allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams) {
+	}
+
 	// save loco (locoID is primary key)
 	void SQLite::loco(const datamodel::Loco& loco) {
 		if (db) {

@@ -15,6 +15,12 @@ namespace storage {
 			SQLite(const StorageParams& params);
 			~SQLite();
 
+			// save control
+			void hardwareParams(const hardware::HardwareParams& params);
+
+			// read controls
+			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams);
+
 			// save loco
 			void loco(const datamodel::Loco& loco);
 

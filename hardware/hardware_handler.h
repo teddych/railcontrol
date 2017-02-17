@@ -18,7 +18,7 @@ namespace hardware {
 
 	class HardwareHandler: public ManagerInterface {
 		public:
-			HardwareHandler(const Manager& manager, const hardwareID_t hardwareID, const controlID_t controlID, const HardwareParams& params);
+			HardwareHandler(const Manager& manager, const HardwareParams& params);
 			~HardwareHandler();
 			std::string getName() const;
 			void go(const managerID_t managerID) override;
@@ -26,8 +26,6 @@ namespace hardware {
 			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
 		private:
 			const Manager& manager;
-			hardwareID_t hardwareID;
-			controlID_t controlID;
 			createHardware_t* createHardware;
 			destroyHardware_t* destroyHardware;
 			hardware::HardwareInterface* instance;
