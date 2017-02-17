@@ -82,6 +82,10 @@ HardwareHandler::~HardwareHandler() {
   xlog("Hardware library %s unloaded", hardwareSymbols[params->hardwareID].c_str());
 }
 
+controlID_t HardwareHandler::getControlID() {
+	return params->controlID;
+}
+
 std::string HardwareHandler::getName() const {
 	if (instance) {
 		return instance->getName();

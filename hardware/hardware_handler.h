@@ -20,6 +20,7 @@ namespace hardware {
 		public:
 			HardwareHandler(const Manager& manager, const HardwareParams* params);
 			~HardwareHandler();
+			controlID_t getControlID();
 			std::string getName() const;
 			void go(const managerID_t managerID) override;
 			void stop(const managerID_t managerID) override;

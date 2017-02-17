@@ -76,6 +76,39 @@ void Manager::stop(const managerID_t managerID) {
 	}
 }
 
+void Manager::saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip) {
+	HardwareParams* params;
+	if (hardwareParams.count(controlID) == 1) {
+		params = hardwareParams.at(controlID);
+		params->name = name;
+		params->ip = ip;
+		// FIXME: reload hardware
+	}
+	else {
+		params = new HardwareParams(controlID, hardwareID, name, ip);
+		hardwareParams[controlID] = params;
+		controllers.push_back(new HardwareHandler(*this, params));
+	}
+	if (storage && params) {
+		storage->hardwareParams(*params);
+	}
+}
+
+void Manager::deleteHardware(controlID_t controlID) {
+	if (hardwareParams.count(controlID) == 1) {
+		//vector<>::iterator control =
+		// FIXME: deleteHardware not implemented
+		// FIXME: check if there are no elements on this Hardware
+	}
+}
+
+HardwareParams* Manager::getHardware(controlID_t controlID) {
+	if (hardwareParams.count(controlID) == 1) {
+		return hardwareParams.at(controlID);
+	}
+	return NULL;
+}
+
 bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
 	if (locos.count(locoID) < 1) {
 		controlID = 0;

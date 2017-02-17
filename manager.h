@@ -17,6 +17,9 @@ class Manager {
 		~Manager();
 		void go(const managerID_t managerID);
 		void stop(const managerID_t managerID);
+		void saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip);
+		void deleteHardware(controlID_t controlID);
+		hardware::HardwareParams* getHardware(controlID_t controlID);
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
