@@ -89,6 +89,16 @@ namespace storage {
 	}
 
 	void SQLite::hardwareParams(const hardware::HardwareParams& hardwareParams) {
+		if (db) {
+			stringstream ss;
+			char* dbError = NULL;
+			ss << "INSERT OR REPLACE INTO hardware VALUES (" << (int)hardwareParams.controlID << ", " << (int)hardwareParams.hardwareID << ", '" << hardwareParams.name << "', '" << hardwareParams.ip << "');";
+			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
 	}
 
 	void SQLite::allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) {
@@ -111,11 +121,7 @@ namespace storage {
 		if (hardwareParams->count(controlID)) {
 			xlog("Control with ID %i already exists", controlID);
 		}
-		HardwareParams* params = new HardwareParams();
-		params->controlID = controlID;
-		params->hardwareID = atoi(argv[1]);
-		params->name = argv[2];
-		params->ip = argv[3];
+		HardwareParams* params = new HardwareParams(controlID, atoi(argv[1]), argv[2], argv[3]);
 		(*hardwareParams)[controlID] = params;
 		return 0;
 	}

@@ -1,5 +1,5 @@
-#ifndef HARDWARE_PARAMS_H
-#define HARDWARE_PARAMS_H
+#ifndef HARDWARE_HARDWARE_PARAMS_H
+#define HARDWARE_HARDWARE_PARAMS_H
 
 #include "datatypes.h"
 
@@ -7,12 +7,13 @@ namespace hardware {
 
 	class HardwareParams {
 		public:
-			hardwareID_t hardwareID;
+			HardwareParams(controlID_t controlID, hardwareID_t hardwareID, std::string name, std::string ip);
 			controlID_t controlID;
+			hardwareID_t hardwareID;
 			std::string name;
 			std::string ip;
 	};
 
-} // namespace hardwarev
-#endif // HARDWARE_PARAMS_H
+} // namespace hardware
+#endif // HARDWARE_HARDWARE_PARAMS_H
 
