@@ -31,6 +31,7 @@ namespace storage {
 			sqlite3 *db;
 
 			static int callbackListTables(void *v, int argc, char **argv, char **colName);
+			static int callbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
 			static int callbackAllLocos(void* v, int argc, char **argv, char **colName);
 	};
 

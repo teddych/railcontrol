@@ -12,9 +12,9 @@ typedef short speed_t;
 typedef unsigned short locoID_t;
 
 enum managerIDs : managerID_t {
-  MANAGER_ID_CONSOLE = 0,
-  MANAGER_ID_HARDWARE,
-  MANAGER_ID_WEBSERVER
+	MANAGER_ID_CONSOLE = 0,
+	MANAGER_ID_HARDWARE,
+	MANAGER_ID_WEBSERVER
 };
 
 enum protocols : protocol_t {
@@ -30,7 +30,7 @@ enum protocols : protocol_t {
 
 enum hardwareIDs : hardwareID_t {
 	HARDWARE_ID_NONE = 0,
-  HARDWARE_ID_VIRT,
+	HARDWARE_ID_VIRT,
 	HARDWARE_ID_CS2,
 	HARDWARE_ID_NUM
 };

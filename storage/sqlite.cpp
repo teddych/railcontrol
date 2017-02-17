@@ -4,11 +4,12 @@
 #include "sqlite.h"
 #include "util.h"
 
+using datamodel::Loco;
+using hardware::HardwareParams;
 using std::map;
 using std::string;
 using std::stringstream;
 using std::vector;
-using datamodel::Loco;
 
 namespace storage {
 
@@ -46,6 +47,19 @@ namespace storage {
 			return;
 		}
 
+		// create hardware table if needed
+		if (tablenames["hardware"] != true) {
+			xlog("Creating table hardware");
+			rc = sqlite3_exec(db, "CREATE TABLE hardware (controlid UNSIGNED TINYINT PRIMARY KEY, hardwareid UNSIGNED TINYINT, name VARCHAR(50), ip VARCHARi(46));", NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+				sqlite3_close(db);
+				db = NULL;
+				return;
+			}
+		}
+
 		// create loco table if needed
 		if (tablenames["locos"] != true) {
 			xlog("Creating table locos");
@@ -78,7 +92,34 @@ namespace storage {
 	}
 
 	void SQLite::allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams) {
+		if (db) {
+			char* dbError = 0;
+			int rc = sqlite3_exec(db, "SELECT controlid, hardwareid, name, ip FROM hardware ORDER BY controlid;", callbackAllHardwareParams, &hardwareParams, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
 	}
+
+	int SQLite::callbackAllHardwareParams(void* v, int argc, char **argv, char **colName) {
+		map<controlID_t,HardwareParams>* hardwareParams = static_cast<map<controlID_t,HardwareParams>*>(v);
+		if (argc != 4) {
+			return 0;
+		}
+		controlID_t controlID = atoi(argv[0]);
+		if (hardwareParams->count(controlID)) {
+			xlog("Control with ID %i already exists", controlID);
+		}
+		HardwareParams params;
+		params.controlID = controlID;
+		params.hardwareID = atoi(argv[1]);
+		params.name = argv[2];
+		params.ip = argv[3];
+		(*hardwareParams)[controlID] = params;
+		return 0;
+	}
+
 
 	// save loco (locoID is primary key)
 	void SQLite::loco(const datamodel::Loco& loco) {
