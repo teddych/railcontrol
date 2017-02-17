@@ -12,6 +12,7 @@ OBJ= \
 	config.o \
 	datamodel/loco.o \
 	hardware/hardware_handler.o \
+	hardware/hardware_params.o \
 	manager.o \
 	railcontrol.o \
 	storage/storage_handler.o \

@@ -22,7 +22,7 @@ class Manager {
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 	private:
 		std::vector<ManagerInterface*> controllers;
-		std::map<controlID_t,hardware::HardwareParams> hardwareParams;
+		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;
 		std::map<locoID_t,datamodel::Loco*> locos;
 		storage::StorageHandler* storage;
 };

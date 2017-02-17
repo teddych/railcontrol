@@ -78,7 +78,7 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams) {
+	void StorageHandler::allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) {
 		if (instance) {
 			instance->allHardwareParams(hardwareParams);
 		}

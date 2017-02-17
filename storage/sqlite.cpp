@@ -91,7 +91,7 @@ namespace storage {
 	void SQLite::hardwareParams(const hardware::HardwareParams& hardwareParams) {
 	}
 
-	void SQLite::allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams) {
+	void SQLite::allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) {
 		if (db) {
 			char* dbError = 0;
 			int rc = sqlite3_exec(db, "SELECT controlid, hardwareid, name, ip FROM hardware ORDER BY controlid;", callbackAllHardwareParams, &hardwareParams, &dbError);
@@ -103,7 +103,7 @@ namespace storage {
 	}
 
 	int SQLite::callbackAllHardwareParams(void* v, int argc, char **argv, char **colName) {
-		map<controlID_t,HardwareParams>* hardwareParams = static_cast<map<controlID_t,HardwareParams>*>(v);
+		map<controlID_t,HardwareParams*>* hardwareParams = static_cast<map<controlID_t,HardwareParams*>*>(v);
 		if (argc != 4) {
 			return 0;
 		}
@@ -111,11 +111,11 @@ namespace storage {
 		if (hardwareParams->count(controlID)) {
 			xlog("Control with ID %i already exists", controlID);
 		}
-		HardwareParams params;
-		params.controlID = controlID;
-		params.hardwareID = atoi(argv[1]);
-		params.name = argv[2];
-		params.ip = argv[3];
+		HardwareParams* params = new HardwareParams();
+		params->controlID = controlID;
+		params->hardwareID = atoi(argv[1]);
+		params->name = argv[2];
+		params->ip = argv[3];
 		(*hardwareParams)[controlID] = params;
 		return 0;
 	}

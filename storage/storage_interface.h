@@ -22,7 +22,7 @@ namespace storage {
 			virtual void hardwareParams(const hardware::HardwareParams& hardwareParams) = 0;
 
 			// read controls
-			virtual void allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams) = 0;
+			virtual void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) = 0;
 			
 			// save loco
 			virtual void loco(const datamodel::Loco& loco) = 0;

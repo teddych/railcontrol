@@ -27,10 +27,18 @@ Manager::Manager(Config& config) :
   controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
 
 
+	xlog("Loading HardwareParams");
 	storage->allHardwareParams(hardwareParams);
+	xlog("Loading Controllers");
+	controllers.push_back(new HardwareHandler(*this, *(hardwareParams[1])));
+	/*
 	for (auto hardwareParam : hardwareParams) {
-		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
+		xlog("Loading Controller %s", hardwareParam.second->name);
+		controllers.push_back(new HardwareHandler(*this, *(hardwareParam.second)));
+		xlog("Controller %s loaded", hardwareParam.second->name);
 	}
+	*/
+	xlog("Controllers loaded");
 
 /*
 	HardwareParams hardwareParamsVirt;
@@ -55,12 +63,15 @@ Manager::Manager(Config& config) :
 }
 
 Manager::~Manager() {
-  for (auto control : controllers) {
-    delete control;
-  }
 	for (auto loco : locos) {
 		delete loco.second;
 	}
+  for (auto params : hardwareParams) {
+    delete params.second;
+  }
+  for (auto control : controllers) {
+    delete control;
+  }
 	delete storage;
 	storage = NULL;
 }

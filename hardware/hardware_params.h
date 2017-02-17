@@ -1,9 +1,14 @@
 #ifndef HARDWARE_PARAMS_H
 #define HARDWARE_PARAMS_H
 
+#include "datatypes.h"
+
 namespace hardware {
 
-	struct HardwareParams {
+	class HardwareParams {
+		public:
+			HardwareParams();
+			~HardwareParams();
 			hardwareID_t hardwareID;
 			controlID_t controlID;
 			std::string name;

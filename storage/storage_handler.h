@@ -20,7 +20,7 @@ namespace storage {
 			StorageHandler(const StorageParams& params);
 			~StorageHandler();
 			void hardwareParams(const hardware::HardwareParams& hardwareParams);
-			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams>& hardwareParams);
+			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
 			void loco(const datamodel::Loco& loco);
 			void allLocos(std::map<locoID_t,datamodel::Loco*>& locos);
 		private:
