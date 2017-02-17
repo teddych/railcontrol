@@ -20,7 +20,7 @@
 namespace hardware {
 
 	// create instance of cs2
-	extern "C" CS2* create_cs2(const HardwareParams& params) {
+	extern "C" CS2* create_cs2(const HardwareParams* params) {
 		return new CS2(params);
   }
 
@@ -30,9 +30,9 @@ namespace hardware {
   }
 
   // start the thing
-	CS2::CS2(const HardwareParams& params) {
+	CS2::CS2(const HardwareParams* params) {
 		std::stringstream ss;
-		ss << "Maerklin Central Station 2 (CS2) / " << params.name;
+		ss << "Maerklin Central Station 2 (CS2) / " << params->name;
 		name = ss.str();
 		run = true;
 		senderThread = std::thread([this] {sender();});

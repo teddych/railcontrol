@@ -4,7 +4,6 @@ CC=g++
 #CPPFLAGS=-g -O2 -Wall
 #CPPFLAGS=-g -O0 -Wall -std=c++11
 CPPFLAGS=-I. -g -O2 -Wall -std=c++11
-#LDFLAGS=-g -Wl,--whole-archive -Wl,--no-whole-archive -Wl,--export-dynamic
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 

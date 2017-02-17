@@ -13,12 +13,12 @@
 namespace hardware {
 
 	// the types of the class factories
-	typedef hardware::HardwareInterface* createHardware_t(struct HardwareParams params);
+	typedef hardware::HardwareInterface* createHardware_t(const hardware::HardwareParams* params);
 	typedef void destroyHardware_t(hardware::HardwareInterface*);
 
 	class HardwareHandler: public ManagerInterface {
 		public:
-			HardwareHandler(const Manager& manager, const HardwareParams& params);
+			HardwareHandler(const Manager& manager, const HardwareParams* params);
 			~HardwareHandler();
 			std::string getName() const;
 			void go(const managerID_t managerID) override;
@@ -30,7 +30,7 @@ namespace hardware {
 			destroyHardware_t* destroyHardware;
 			hardware::HardwareInterface* instance;
 			void* dlhandle;
-			const HardwareParams& params;
+			const HardwareParams* params;
 	};
 
 }

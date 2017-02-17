@@ -27,26 +27,12 @@ Manager::Manager(Config& config) :
   controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
 
 
-	xlog("Loading HardwareParams");
-	storage->allHardwareParams(hardwareParams);
 	xlog("Loading Controllers");
-	controllers.push_back(new HardwareHandler(*this, *(hardwareParams[1])));
-	/*
+	storage->allHardwareParams(hardwareParams);
 	for (auto hardwareParam : hardwareParams) {
-		xlog("Loading Controller %s", hardwareParam.second->name);
-		controllers.push_back(new HardwareHandler(*this, *(hardwareParam.second)));
-		xlog("Controller %s loaded", hardwareParam.second->name);
+		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
 	}
-	*/
 	xlog("Controllers loaded");
-
-/*
-	HardwareParams hardwareParamsVirt;
-	hardwareParamsVirt.name = "Virtuelle Zentrale";
-	hardwareParamsVirt.ip = "";
-	controlID_t nextControlID = 0;
-	controllers.push_back(new HardwareHandler(*this, HARDWARE_ID_VIRT, nextControlID++, hardwareParamsVirt));
-	*/
 
 /*
 	Loco newloco1(1, "My Loco", 4, 1200);
@@ -54,7 +40,7 @@ Manager::Manager(Config& config) :
 
 	Loco newloco2(2, "Your Loco", 4, 1201);
 	storage->loco(newloco2);
-*/
+	*/
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
