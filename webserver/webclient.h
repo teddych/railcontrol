@@ -19,12 +19,15 @@ class WebClient {
 		void worker();
 		int stop();
 	private:
-		std::string button(const std::string& value, const std::string& cmd);
+		std::string select(const std::string& name, const std::map<std::string,std::string>& options, const std::string& cmd = "", const std::string& target = "", const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
+		std::string button(const std::string& value, const std::string& cmd, const std::string& target = "status", const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
+		void printLoco(const std::map<std::string, std::string>& arguments);
 		void printMainHTML();
 		void interpretClientRequest(const std::string& str, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments);
 		void simpleReply(const std::string& text, const std::string& code = "200 OK");
     void deliverFile(const std::string& file);
-		void handleLocoSpeed(const int socket, const std::map<std::string,std::string>& arguments);
+		void handleLocoSpeed(const std::map<std::string,std::string>& arguments);
+
 		unsigned int id;
 		int clientSocket;
 		volatile unsigned char run;
@@ -32,6 +35,7 @@ class WebClient {
 		std::thread clientThread;
 		Manager& manager;
 		bool headOnly;
+		unsigned int buttonID;
 };
 
 }; // namespace webserver

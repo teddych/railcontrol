@@ -29,7 +29,8 @@ namespace webserver {
 		run(false),
 		server(webserver),
 		clientThread(thread([this] {worker();})),
-		manager(m) {
+		manager(m),
+		buttonID(0) {
 	}
 
 	WebClient::~WebClient() {
@@ -126,24 +127,23 @@ namespace webserver {
 		send_timeout(clientSocket, reply, strlen(reply), 0);
 	}
 
-	void WebClient::handleLocoSpeed(const int socket, const map<string, string>& arguments) {
-/*
+	void WebClient::handleLocoSpeed(const map<string, string>& arguments) {
 		locoID_t locoID = 0;
 		speed_t speed = 0;
-		if (arguments.count("locoid")) locoID = std::stoi(arguments.at("locoid"));
+		if (arguments.count("loco")) locoID = std::stoi(arguments.at("loco"));
 		if (arguments.count("speed")) speed = std::stoi(arguments.at("speed"));
 
-		char buffer[1024];
-		snprintf(buffer, sizeof(buffer), "<p>loco %u speed is now set to %i</p>", locoID, speed);
 		manager.locoSpeed(MANAGER_ID_WEBSERVER, locoID, speed);
-		char buffer_out[1024];
-		snprintf(buffer_out, sizeof(buffer_out), htmlTemplate, "200 OK", "RailControl", "", buffer);
-		send_timeout(socket, buffer_out, strlen(buffer_out), 0);
-	*/
+
+		stringstream ss;
+		ss << "Loco " << locoID << " speed is now set to " << speed;
+		string sOut = ss.str();
+		simpleReply(sOut);
 	}
 
 	void WebClient::simpleReply(const string& text, const string& code) {
-		char reply[1024];
+		size_t contentLength = text.length();
+		char reply[256 + contentLength];
 		snprintf(reply, sizeof(reply),
 			"HTTP/1.0 %s\r\n"
 			"Cache-Control: no-cache, must-revalidate\r\n"
@@ -218,8 +218,11 @@ namespace webserver {
 			simpleReply("Turning booster off");
 			manager.stop(MANAGER_ID_WEBSERVER);
 		}
-		else if (arguments["cmd"].compare("speed") == 0) {
-			handleLocoSpeed(clientSocket, arguments);
+		else if (arguments["cmd"].compare("loco") == 0) {
+			printLoco(arguments);
+		}
+		else if (arguments["cmd"].compare("locospeed") == 0) {
+			handleLocoSpeed(arguments);
 		}
 		else if (uri.compare("/") == 0) {
 			printMainHTML();
@@ -232,18 +235,93 @@ namespace webserver {
 		close(clientSocket);
 	}
 
-	string WebClient::button(const string& value, const string& cmd) {
+	string WebClient::select(const string& name, const map<string,string>& options, const string& cmd, const string& target, const map<string,string>& arguments) {
 		stringstream ss;
-		ss <<
-			"<input class=\"button\" id=\"" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
-			"<script>\n$(function() {\n$(\"#" << cmd << "\").on(\"click\", function() {\n$(\"#status\").load(\"/?cmd=" << cmd << "\");\nreturn false;\n })\n})\n</script>";
+		ss << "<form method=\"get\" action=\"/\" id=\"" << buttonID << "_"<< cmd << "_" << "form\">";
+		ss << "<select name=\"" << name << "\" id=\"" << buttonID << "_" << cmd << "\">";
+		for (auto option : options) {
+			ss << "<option value=\"" << option.first << "\">" << option.second << "</option>";
+		}
+		ss << "</select>";
+		for (auto argument : arguments) {
+			ss << "<input type=\"hidden\" name=\"" << argument.first << "\" value=\"" << argument.second << "\">";
+		}
+		ss << "<input type=\"hidden\" name=\"cmd\" value=\"" << cmd << "\">";
+		ss << "</form>";
+		ss << "<script>\n"
+		"$(function() {\n"
+		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', function() {\n"
+		"  $.ajax({\n"
+		"   data: $(this).serialize(),\n"
+		"   type: $(this).attr('get'),\n"
+		"   url: $(this).attr('/'),\n"
+		"   success: function(response) {\n"
+		"    $('#" << target << "').html(response);\n"
+		"   }\n"
+		"  })\n"
+		"  return false;\n"
+		" });\n"
+		"});\n"
+		"$(function() {\n"
+		" $('#" << buttonID << "_"<< cmd << "').on('change', function() {\n"
+		"  $('#" << buttonID << "_"<< cmd << "_" << "form').submit();\n"
+		"  return false;\n"
+		" });\n"
+		"});\n"
+		"</script>";
+		++buttonID;
 		return ss.str();
 	}
 
-	void WebClient::printMainHTML() {
-			// handle base request
+	string WebClient::button(const string& value, const string& cmd, const string& target, const map<string,string>& arguments) {
+		stringstream ss;
+		ss <<
+			"<input class=\"button\" id=\"" << buttonID << "_" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
+			"<script>\n"
+			"$(function() {\n"
+			" $('#" << buttonID << "_"<< cmd << "').on('click', function() {\n"
+			"  $('#" << target << "').load('/?cmd=" << cmd;
+		for (auto argument : arguments) {
+			ss << "&" << argument.first << "=" << argument.second;
+		}
+		ss <<"');\n"
+			"  return false;\n"
+			" })\n"
+			"})\n"
+			"</script>";
+		++buttonID;
+		return ss.str();
+	}
+
+	void WebClient::printLoco(const map<string, string>& arguments) {
+		string sOut;
+		if (arguments.count("loco")) {
+			map<string,string> buttonArguments;
+			buttonArguments["loco"] = arguments.at("loco");
 			stringstream ss;
-			ss << "HTTP/1.0 200 OK\r\n"
+			ss << "<p>Fix Loco</p>";
+			buttonArguments["speed"] = "0";
+			ss << button("0%", "locospeed", "status", buttonArguments);
+			buttonArguments["speed"] = "255";
+			ss << button("25%", "locospeed", "status", buttonArguments);
+			buttonArguments["speed"] = "511";
+			ss << button("50%", "locospeed", "status", buttonArguments);
+			buttonArguments["speed"] = "767";
+			ss << button("75%", "locospeed", "status", buttonArguments);
+			buttonArguments["speed"] = "1023";
+			ss << button("100%", "locospeed", "status", buttonArguments);
+			sOut = ss.str();
+		}
+		else {
+			sOut = "No locoID provided";
+		}
+		simpleReply(sOut);
+	}
+
+	void WebClient::printMainHTML() {
+		// handle base request
+		stringstream ss;
+		ss << "HTTP/1.0 200 OK\r\n"
 			"Cache-Control: no-cache, must-revalidate\r\n"
 			"Pragma: no-cache\r\n"
 			"Expires: Sun, 12 Feb 2016 00:00:00 GMT\r\n"
@@ -258,27 +336,31 @@ namespace webserver {
 			"<body>"
 			"<h1>Railcontrol</h1>"
 			"<div class=\"menu\">";
-			ss << button("X", "quit");
-			ss << button("On", "on");
-			ss << button("Off", "off");
-			ss << "</div>"
-			"<div class=\"locolist\">"
-			"<select name=\"locolist\">";
-			// locolist
-			const map<locoID_t, Loco*>& locos = manager.locoList();
-			for (auto locoTMP : locos) {
-				Loco* loco = locoTMP.second;
-				ss << "<option value=\"" << loco->locoID << "\">" << loco->name << "</option>";
-			}
-			ss << "</select>"
-			"</div>"
-			"<div class=\"loco\">Loco</div>"
-			"<div class=\"popup\">Popup</div>"
+		ss << button("X", "quit");
+		ss << button("On", "on");
+		ss << button("Off", "off");
+		ss << "</div>";
+		ss << "<div class=\"loco\" id=\"loco\">";
+		ss << button("Load", "loco", "loco");
+		ss << "</div>";
+		ss << "<div class=\"locolist\">";
+		// locolist
+		const map<locoID_t, Loco*>& locos = manager.locoList();
+		map<string,string> options;
+		for (auto locoTMP : locos) {
+			Loco* loco = locoTMP.second;
+			options[std::to_string(loco->locoID)] = loco->name;
+		}
+		map<string,string> arguments;
+		ss << select("loco", options, "loco", "loco", arguments);
+		ss <<"</div>";
+		ss << "<div class=\"popup\">Popup</div>"
 			"<div class=\"status\" id=\"status\">Status</div>"
-			"</body></html>";
-			string sOut = ss.str();
-			const char* html = sOut.c_str();
-			send_timeout(clientSocket, html, strlen(html), 0);
+			"</body>"
+			"</html>";
+		string sOut = ss.str();
+		const char* html = sOut.c_str();
+		send_timeout(clientSocket, html, strlen(html), 0);
 	}
 
 	int WebClient::stop() {
