@@ -26,8 +26,8 @@ Manager::Manager(Config& config) :
 
   controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
 
-	HardwareParams newHardwareParams(1, 1, "Virtuelle Zentrale", "");
-	storage->hardwareParams(newHardwareParams);
+	//HardwareParams newHardwareParams(1, 1, "Virtuelle Zentrale", "");
+	//storage->hardwareParams(newHardwareParams);
 
 	xlog("Loading Controllers");
 	storage->allHardwareParams(hardwareParams);
