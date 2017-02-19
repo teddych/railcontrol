@@ -112,14 +112,15 @@ namespace hardware {
 
 	// set the speed of a loco
 	void CS2::locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) {
+		xlog("Setting speed of cs2 loco %i/%i to speed %i", protocol, address, speed);
 		char buffer[CS2_CMD_BUF_LEN];
-		// fill up header & locid
+		// set header
 		createCommandHeader(buffer, 0, 0x04, 0, 6);
+		// set locID
+		createLocID(buffer + 5, protocol, address);
 		// set data buffer (8 bytes) to 0
 		int64_t* buffer_data = (int64_t*) (buffer + 5);
 		*buffer_data = 0L;
-		// set locID
-		createLocID(buffer + 5, protocol, address);
 		// set speed
 		buffer[9] = (speed >> 8);
 		buffer[10] = (speed & 0xFF);
@@ -127,9 +128,7 @@ namespace hardware {
 		// send data
 		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
 			xlog("Unable to send data to CS2");
-			return;
 		}
-		xlog("Setting speed of cs2 loco %i/%i to speed %i", protocol, address, speed);
 	}
 
   // the receiver thread of the CS2
