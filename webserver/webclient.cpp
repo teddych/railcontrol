@@ -136,7 +136,7 @@ namespace webserver {
 		manager.locoSpeed(MANAGER_ID_WEBSERVER, locoID, speed);
 
 		stringstream ss;
-		ss << "Loco " << locoID << " speed is now set to " << speed;
+		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to speed " << speed;
 		string sOut = ss.str();
 		simpleReply(sOut);
 	}
@@ -273,6 +273,40 @@ namespace webserver {
 		return ss.str();
 	}
 
+	string WebClient::slider(const string& name, const string& cmd, const string& target, const unsigned int min, const unsigned int max, const map<string,string>& arguments) {
+		stringstream ss;
+		ss << "<form method=\"get\" action=\"/\" id=\"" << buttonID << "_"<< cmd << "_" << "form\">";
+		ss << "<input class=\"slider\" type=\"range\" min=\"" << min << "\" max=\"" << max << "\" name=\"" << name << "\" id=\"" << buttonID << "_"<< cmd << "\">";
+		for (auto argument : arguments) {
+			ss << "<input type=\"hidden\" name=\"" << argument.first << "\" value=\"" << argument.second << "\">";
+		}
+		ss << "<input type=\"hidden\" name=\"cmd\" value=\"" << cmd << "\">";
+		ss << "</form>";
+		ss << "<script>\n"
+		"$(function() {\n"
+		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', function() {\n"
+		"  $.ajax({\n"
+		"   data: $(this).serialize(),\n"
+		"   type: $(this).attr('get'),\n"
+		"   url: $(this).attr('/'),\n"
+		"   success: function(response) {\n"
+		"    $('#" << target << "').html(response);\n"
+		"   }\n"
+		"  })\n"
+		"  return false;\n"
+		" });\n"
+		"});\n"
+		"$(function() {\n"
+		" $('#" << buttonID << "_"<< cmd << "').on('change', function() {\n"
+		"  $('#" << buttonID << "_"<< cmd << "_" << "form').submit();\n"
+		"  return false;\n"
+		" });\n"
+		"});\n"
+		"</script>";
+		++buttonID;
+		return ss.str();
+	}
+
 	string WebClient::button(const string& value, const string& cmd, const string& target, const map<string,string>& arguments) {
 		stringstream ss;
 		ss <<
@@ -303,6 +337,7 @@ namespace webserver {
 			ss << "<p>";
 			ss << manager.getLocoName(std::stoi(locoID));
 			ss << "</p>";
+			ss << slider("speed", "locospeed", "status", 0, 1024, buttonArguments);
 			buttonArguments["speed"] = "0";
 			ss << button("0%", "locospeed", "status", buttonArguments);
 			buttonArguments["speed"] = "255";

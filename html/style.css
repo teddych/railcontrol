@@ -40,3 +40,7 @@ body {
 	background-color: darkgray;
 	transform: translateY(1px);
 }
+
+.slider {
+	width: 230px;
+}

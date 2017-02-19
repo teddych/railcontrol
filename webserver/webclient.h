@@ -20,6 +20,7 @@ class WebClient {
 		int stop();
 	private:
 		std::string select(const std::string& name, const std::map<std::string,std::string>& options, const std::string& cmd = "", const std::string& target = "", const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
+		std::string slider(const std::string& name, const std::string& cmd, const std::string& target, const unsigned int min, const unsigned int max, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
 		std::string button(const std::string& value, const std::string& cmd, const std::string& target = "status", const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
 		void printLoco(const std::map<std::string, std::string>& arguments);
 		void printMainHTML();
