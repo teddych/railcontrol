@@ -21,6 +21,7 @@ class Manager {
 		void deleteHardware(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+		std::string getLocoName(const locoID_t locoID);
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 	private:

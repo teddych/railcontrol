@@ -297,9 +297,12 @@ namespace webserver {
 		string sOut;
 		if (arguments.count("loco")) {
 			map<string,string> buttonArguments;
-			buttonArguments["loco"] = arguments.at("loco");
+			string locoID = arguments.at("loco");
+			buttonArguments["loco"] = locoID;
 			stringstream ss;
-			ss << "<p>Fix Loco</p>";
+			ss << "<p>";
+			ss << manager.getLocoName(std::stoi(locoID));
+			ss << "</p>";
 			buttonArguments["speed"] = "0";
 			ss << button("0%", "locospeed", "status", buttonArguments);
 			buttonArguments["speed"] = "255";
@@ -340,9 +343,6 @@ namespace webserver {
 		ss << button("On", "on");
 		ss << button("Off", "off");
 		ss << "</div>";
-		ss << "<div class=\"loco\" id=\"loco\">";
-		ss << button("Load", "loco", "loco");
-		ss << "</div>";
 		ss << "<div class=\"locolist\">";
 		// locolist
 		const map<locoID_t, Loco*>& locos = manager.locoList();
@@ -354,6 +354,9 @@ namespace webserver {
 		map<string,string> arguments;
 		ss << select("loco", options, "loco", "loco", arguments);
 		ss <<"</div>";
+		ss << "<div class=\"loco\" id=\"loco\">";
+		ss << button("Load", "loco", "loco");
+		ss << "</div>";
 		ss << "<div class=\"popup\">Popup</div>"
 			"<div class=\"status\" id=\"status\">Status</div>"
 			"</body>"

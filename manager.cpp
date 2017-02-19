@@ -120,8 +120,14 @@ bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, 
 	controlID = loco->controlID;
 	protocol = loco->protocol;
 	address = loco->address;
-	xlog("LocoID: %i ControlID: %i Protocol: %i Address: %i", (int)locoID, (int)controlID, (int)protocol, (int)address);
 	return true;
+}
+
+std::string Manager::getLocoName(const locoID_t locoID) {
+	if (locos.count(locoID) == 1) {
+		return locos.at(locoID)->name;
+	}
+	return "Unknown Loco";
 }
 
 void Manager::locoSpeed(const managerID_t controlID, const locoID_t locoID, const speed_t speed) {
