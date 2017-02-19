@@ -36,11 +36,13 @@ namespace hardware {
 		name = ss.str();
 		run = true;
 		senderThread = std::thread([this] {sender();});
+		receiverThread = std::thread([this] {receiver();});
 	}
 
   // stop the thing
 	CS2::~CS2() {
 		run = false;
+		receiverThread.join();
 		senderThread.join();
 	}
 
@@ -51,10 +53,12 @@ namespace hardware {
 
 	// GO-command (turn on booster)
   void CS2::go() {
+		xlog("CS2::go not implemented");
   }
 
 	// Stop-command (turn off booster)
   void CS2::stop() {
+		xlog("CS2::stop not implemented");
   }
 
 	/*
@@ -78,7 +82,7 @@ namespace hardware {
 	}
 	*/
 
-	void CS2::createCommandHeader(char* buffer, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length) {
+	void CS2::createCommandHeader(char* buffer, const cs2Prio_t& prio, const cs2Command_t& command, const cs2Response_t& response, const cs2Length_t& length) {
 		buffer[0] = (prio << 1) | (command >> 7);
 		buffer[1] = (command << 1) | (response & 0x01);
 		buffer[2] = (hash >> 8);
@@ -86,7 +90,7 @@ namespace hardware {
 		buffer[4] = length;
 	}
 
-	void CS2::createLocID(char* buffer, const protocol_t protocol, address_t address) {
+	void CS2::createLocID(char* buffer, const protocol_t& protocol, const address_t& address) {
 		uint32_t locID = address;
 		if (protocol == PROTOCOL_DCC) {
 			locID |= 0xC000;
@@ -99,22 +103,24 @@ namespace hardware {
 	}
 
 	// set the speed of a loco
-	void CS2::locoSpeed(protocol_t protocol, address_t address, speed_t speed) {
+	void CS2::locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) {
+		xlog("CS2::locoSpeed not fully implemented");
 		char buffer[CS2_CMD_BUF_LEN];
 		// fill up header & locid
 		createCommandHeader(buffer, 0, 0x04, 0, 6);
-		// set data buffer to 0
+		// set data buffer (8 bytes) to 0
 		int64_t* buffer_data = (int64_t*) (buffer + 5);
 		*buffer_data = 0L;
 		// set locID
 		createLocID(buffer + 5, protocol, address);
 		// set speed
-		buffer[10] = (speed >> 8);
-		buffer[11] = (speed & 0xFF);
+		buffer[9] = (speed >> 8);
+		buffer[10] = (speed & 0xFF);
+
+		hexlog(buffer, 13);
 
 //    hexlog(buffer, sizeof(buffer));
-		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in))
-		    == -1) {
+		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
 			xlog("Unable to send data to CS2");
 		}
 
@@ -141,20 +147,20 @@ namespace hardware {
     if (bind(sock, (struct sockaddr*)&sockaddr_in, sizeof(sockaddr_in)) == -1) {
       xlog("Unable to bind the socket for CS2 receiver");
     }
-//    char buffer[CS2_CMD_BUF_LEN];
+    char buffer[CS2_CMD_BUF_LEN];
     while(run) {
-//      //try to receive some data, this is a blocking call
-//      xlog("Receiver waiting for data");
-//      ssize_t datalen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
-//      if (datalen <= 0) {
-//        xlog("Unable to receive data");
-//        close(sock);
-//        return;
-//      }
-//      else {
-//        xlog("Receiver %i bytes received", datalen);
-//        hexlog(buffer, datalen);
-//      }
+      //try to receive some data, this is a blocking call
+      xlog("Receiver waiting for data");
+      ssize_t datalen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
+      if (datalen <= 0) {
+        xlog("Unable to receive data");
+        close(sock);
+        return;
+      }
+      else {
+        xlog("Receiver %i bytes received", datalen);
+        hexlog(buffer, datalen);
+      }
     }
     close(sock);
     xlog("CS2 receiver ended");
@@ -165,7 +171,7 @@ namespace hardware {
     xlog("CS2 sender started");
     senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), CS2_IP, CS2_PORT_SEND);
     if (senderSocket < 0) {
-//      xlog("Unable to create UDP connection for sending data to CS2");
+      xlog("Unable to create UDP socket for sending data to CS2");
       return;
     };
 

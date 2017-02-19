@@ -28,6 +28,17 @@ enum protocols : protocol_t {
 	PROTOCOL_SX2
 };
 
+static std::string protocolSymbols[] = {
+	"none",
+	"all",
+	"MM1",
+	"MM2",
+	"mfx",
+	"DCC",
+	"SX1",
+	"SX2"
+};
+
 enum hardwareIDs : hardwareID_t {
 	HARDWARE_ID_NONE = 0,
 	HARDWARE_ID_VIRT,

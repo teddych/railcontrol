@@ -10,6 +10,11 @@
 
 namespace hardware {
 
+	typedef unsigned char cs2Prio_t;
+	typedef unsigned char cs2Command_t;
+	typedef unsigned char cs2Response_t;
+	typedef unsigned char cs2Length_t;
+
 	class CS2: HardwareInterface {
 		public:
 			CS2(const HardwareParams* params);
@@ -17,10 +22,10 @@ namespace hardware {
 			std::string getName() const override;
 			void go() override;
 			void stop() override;
-			void locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
+			void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
 		private:
-			void createCommandHeader(char* buffer, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length);
-			void createLocID(char* buffer, const protocol_t protocol, address_t address);
+			void createCommandHeader(char* buffer, const cs2Prio_t& prio, const cs2Command_t& command, const cs2Response_t& response, const cs2Length_t& length);
+			void createLocID(char* buffer, const protocol_t& protocol, const address_t& address);
 			void receiver();
 			void sender();
 			volatile unsigned char run;
@@ -28,6 +33,7 @@ namespace hardware {
 			struct sockaddr_in sockaddr_inSender;
 			int senderSocket;
 			std::thread senderThread;
+			std::thread receiverThread;
 			static const unsigned short hash = 0x7337;
 	};
 

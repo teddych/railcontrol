@@ -26,7 +26,7 @@ namespace hardware {
       void stop() override;
 
 			// set loco speed
-			void locoSpeed(protocol_t protocol, address_t address, speed_t speed) override;
+			void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
 
 		private:
 			std::string name;

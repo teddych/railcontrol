@@ -120,6 +120,7 @@ bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, 
 	controlID = loco->controlID;
 	protocol = loco->protocol;
 	address = loco->address;
+	xlog("LocoID: %i ControlID: %i Protocol: %i Address: %i", (int)locoID, (int)controlID, (int)protocol, (int)address);
 	return true;
 }
 
