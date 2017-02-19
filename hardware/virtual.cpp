@@ -45,4 +45,9 @@ namespace hardware {
 		xlog("Setting speed of virtual loco %i/%i to speed %i", protocol, address, speed);
 	}
 
+	// set loco function
+	void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) {
+		xlog("Setting f%i of virtual loco %i/%i to \"%s\"", (int)function, (int)protocol, (int)address, on ? "on" : "off");
+	}
+
 } // namespace

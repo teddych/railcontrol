@@ -9,6 +9,7 @@ typedef unsigned char hardwareID_t;
 typedef unsigned char protocol_t;
 typedef unsigned short address_t;
 typedef short speed_t;
+typedef unsigned char function_t;
 typedef unsigned short locoID_t;
 
 enum managerIDs : managerID_t {

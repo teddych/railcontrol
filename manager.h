@@ -23,6 +23,7 @@ class Manager {
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 		std::string getLocoName(const locoID_t locoID);
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
+		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 	private:
 		std::vector<ManagerInterface*> controllers;

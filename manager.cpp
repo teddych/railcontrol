@@ -37,16 +37,16 @@ Manager::Manager(Config& config) :
 	xlog("Controllers loaded");
 
 /*
-	Loco newloco1(1, "My Loco", 4, 1200);
+	Loco newloco1(1, "Re 460 Teddy", 1, 5, 1119);
 	storage->loco(newloco1);
 
-	Loco newloco2(2, "Your Loco", 4, 1201);
+	Loco newloco2(2, "ICN", 1, 5, 1118);
 	storage->loco(newloco2);
 	*/
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
-		xlog("Loaded loco %s", loco.second->name.c_str());
+		xlog("Loaded loco %i/%s", loco.second->locoID, loco.second->name.c_str());
 	}
 }
 
@@ -133,6 +133,12 @@ std::string Manager::getLocoName(const locoID_t locoID) {
 void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
   for (auto control : controllers) {
     control->locoSpeed(managerID, locoID, speed);
+  }
+}
+
+void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
+  for (auto control : controllers) {
+    control->locoFunction(managerID, locoID, function, on);
   }
 }
 

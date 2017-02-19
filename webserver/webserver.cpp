@@ -138,4 +138,10 @@ void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, co
 	}
 }
 
+void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
+	if (managerID != MANAGER_ID_WEBSERVER) {
+		xlog("locoFunction not yet implemented in Webserver");
+	}
+}
+
 }; // namespace webserver

@@ -26,6 +26,9 @@ namespace hardware {
 
 			// set loco speed
 			virtual void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) = 0;
+
+			// set loco function
+			virtual void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) = 0;
 	};
 
 } // namespace

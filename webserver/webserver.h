@@ -18,6 +18,7 @@ class WebServer : public ManagerInterface {
 		void go(const managerID_t managerID) override;
 		void stop(const managerID_t managerID) override;
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
+		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) override;
 	private:
 	  void worker();
 		unsigned short port;

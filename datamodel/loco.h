@@ -3,23 +3,21 @@
 
 #include <string>
 
-#include "../datatypes.h"
+#include "datatypes.h"
 
 namespace datamodel {
 
-class Loco {
-	public:
-		Loco(locoID_t locoID);
-		Loco(locoID_t locoID, std::string name, protocol_t protocol, address_t address);
-		~Loco();
+	class Loco {
+		public:
+			Loco(locoID_t locoID, std::string name, controlID_t controlID, protocol_t protocol, address_t address);
 
-		controlID_t controlID;
-		locoID_t locoID;
-		std::string name;
-		protocol_t protocol;
-		address_t address;
-		speed_t speed;
-};
+			locoID_t locoID;
+			std::string name;
+			controlID_t controlID;
+			protocol_t protocol;
+			address_t address;
+			speed_t speed;
+	};
 
 } // namespace storage
 

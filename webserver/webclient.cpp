@@ -141,6 +141,24 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
+
+	void WebClient::handleLocoFunction(const map<string, string>& arguments) {
+		locoID_t locoID = 0;
+		function_t function = 0;
+		bool on = false;
+		if (arguments.count("loco")) locoID = std::stoi(arguments.at("loco"));
+		if (arguments.count("function")) function = std::stoi(arguments.at("function"));
+		if (arguments.count("on")) on = std::stoi(arguments.at("on"));
+
+		manager.locoFunction(MANAGER_ID_WEBSERVER, locoID, function, on);
+
+		stringstream ss;
+		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now set f";
+		ss << function << " to " << (on ? "on" : "off");
+		string sOut = ss.str();
+		simpleReply(sOut);
+	}
+
 	void WebClient::simpleReply(const string& text, const string& code) {
 		size_t contentLength = text.length();
 		char reply[256 + contentLength];
@@ -223,6 +241,9 @@ namespace webserver {
 		}
 		else if (arguments["cmd"].compare("locospeed") == 0) {
 			handleLocoSpeed(arguments);
+		}
+		else if (arguments["cmd"].compare("locofunction") == 0) {
+			handleLocoFunction(arguments);
 		}
 		else if (uri.compare("/") == 0) {
 			printMainHTML();
@@ -348,6 +369,12 @@ namespace webserver {
 			ss << button("75%", "locospeed", "status", buttonArguments);
 			buttonArguments["speed"] = "1023";
 			ss << button("100%", "locospeed", "status", buttonArguments);
+
+			buttonArguments["function"] = "0";
+			buttonArguments["on"] = "1";
+			ss << button("f0 on", "locofunction", "status", buttonArguments);
+			buttonArguments["on"] = "0";
+			ss << button("f0 off", "locofunction", "status", buttonArguments);
 			sOut = ss.str();
 		}
 		else {
@@ -386,8 +413,7 @@ namespace webserver {
 			Loco* loco = locoTMP.second;
 			options[std::to_string(loco->locoID)] = loco->name;
 		}
-		map<string,string> arguments;
-		ss << select("loco", options, "loco", "loco", arguments);
+		ss << select("loco", options, "loco", "loco");
 		ss <<"</div>";
 		ss << "<div class=\"loco\" id=\"loco\">";
 		ss << button("Load", "loco", "loco");

@@ -63,7 +63,7 @@ namespace storage {
 		// create loco table if needed
 		if (tablenames["locos"] != true) {
 			xlog("Creating table locos");
-			rc = sqlite3_exec(db, "CREATE TABLE locos (locoid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT);", NULL, NULL, &dbError);
+			rc = sqlite3_exec(db, "CREATE TABLE locos (locoid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT);", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -132,7 +132,7 @@ namespace storage {
 		if (db) {
 			stringstream ss;
 			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO locos VALUES (" << loco.locoID << ", '" << loco.name << "', " << (int)loco.protocol << ", " << loco.address << ");";
+			ss << "INSERT OR REPLACE INTO locos (locoid, name, controlid, protocol, address) VALUES (" << loco.locoID << ", '" << loco.name << "', " << (int)loco.controlID << ", " << (int)loco.protocol << ", " << loco.address << ");";
 			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
@@ -145,7 +145,7 @@ namespace storage {
 	void SQLite::allLocos(std::map<locoID_t, datamodel::Loco*>& locos) {
 		if (db) {
 			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT locoid, name, protocol, address FROM locos ORDER BY locoid;", callbackAllLocos, &locos, &dbError);
+			int rc = sqlite3_exec(db, "SELECT locoid, name, controlid, protocol, address FROM locos ORDER BY locoid;", callbackAllLocos, &locos, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -155,7 +155,7 @@ namespace storage {
 
 	int SQLite::callbackAllLocos(void* v, int argc, char **argv, char **colName) {
 		map<locoID_t,Loco*>* locos = static_cast<map<locoID_t,Loco*>*>(v);
-		if (argc != 4) {
+		if (argc != 5) {
 			return 0;
 		}
 		locoID_t locoID = atoi(argv[0]);
@@ -164,7 +164,7 @@ namespace storage {
 			Loco* loco = (*locos)[locoID];
 			delete loco;
 		}
-		Loco* loco = new Loco(locoID, argv[1], atoi(argv[2]), atoi(argv[3]));
+		Loco* loco = new Loco(locoID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
 
 		(*locos)[locoID] = loco;
 		return 0;
