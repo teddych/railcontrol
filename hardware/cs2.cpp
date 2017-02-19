@@ -73,12 +73,41 @@ namespace hardware {
 
 	// GO-command (turn on booster)
   void CS2::go() {
-		xlog("CS2::go not implemented");
+		char buffer[CS2_CMD_BUF_LEN];
+		// fill up header & locid
+		createCommandHeader(buffer, 0, 0x00, 0, 5);
+		// set data buffer (8 bytes) to 0
+		int64_t* buffer_data = (int64_t*) (buffer + 5);
+		*buffer_data = 0L;
+		//buffer[5-8]: 0 = all
+		//buffer[9]: subcommand stop 0x01
+		buffer[9] = 0x01;
+
+		// send data
+		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
+			xlog("Unable to send data to CS2");
+			return;
+		}
+		xlog("Starting CS2");
   }
 
 	// Stop-command (turn off booster)
   void CS2::stop() {
-		xlog("CS2::stop not implemented");
+		char buffer[CS2_CMD_BUF_LEN];
+		// fill up header & locid
+		createCommandHeader(buffer, 0, 0x00, 0, 5);
+		// set data buffer (8 bytes) to 0
+		int64_t* buffer_data = (int64_t*) (buffer + 5);
+		*buffer_data = 0L;
+		//buffer[5-8]: 0 = all
+		//buffer[9]: subcommand stop 0x00 (is alreay 0x00)
+
+		// send data
+		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
+			xlog("Unable to send data to CS2");
+			return;
+		}
+		xlog("Stopping CS2");
   }
 
 	// set the speed of a loco
