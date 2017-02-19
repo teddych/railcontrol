@@ -51,37 +51,6 @@ namespace hardware {
 		return name;
   }
 
-	// GO-command (turn on booster)
-  void CS2::go() {
-		xlog("CS2::go not implemented");
-  }
-
-	// Stop-command (turn off booster)
-  void CS2::stop() {
-		xlog("CS2::stop not implemented");
-  }
-
-	/*
-	// send a command to the CS2
-	std::string CS2::sendCommand(const int sock, const struct sockaddr* sockaddr_in, const unsigned char prio, const unsigned char command, const unsigned char response, const unsigned char length, const char* data) {
-    static unsigned short hash = 0x7337;
-		char buffer[CS2_CMD_BUF_LEN];
-		memset (buffer + 5, 0, CS2_CMD_BUF_LEN - 5);
-    buffer[0] = (prio << 1) | (command >> 7);
-    buffer[1] = (command << 1) | (response & 0x01);
-    buffer[2] = (hash >> 8);
-    buffer[3] = (hash & 0xff);
-    buffer[4] = length;
-		// copy 8 byte from data to buffer[5..12]
-		int64_t* buffer_data = (int64_t*)(buffer + 5);
-		*buffer_data = (int64_t)(*data);
-		if (sendto(sock, buffer, sizeof (buffer), 0, sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-      return "Unable to send data to CS2";
-    }
-		return "";
-	}
-	*/
-
 	void CS2::createCommandHeader(char* buffer, const cs2Prio_t& prio, const cs2Command_t& command, const cs2Response_t& response, const cs2Length_t& length) {
 		buffer[0] = (prio << 1) | (command >> 7);
 		buffer[1] = (command << 1) | (response & 0x01);
@@ -102,9 +71,18 @@ namespace hardware {
 		buffer[3] = (locID & 0xFF);
 	}
 
+	// GO-command (turn on booster)
+  void CS2::go() {
+		xlog("CS2::go not implemented");
+  }
+
+	// Stop-command (turn off booster)
+  void CS2::stop() {
+		xlog("CS2::stop not implemented");
+  }
+
 	// set the speed of a loco
 	void CS2::locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) {
-		xlog("CS2::locoSpeed not fully implemented");
 		char buffer[CS2_CMD_BUF_LEN];
 		// fill up header & locid
 		createCommandHeader(buffer, 0, 0x04, 0, 6);
@@ -117,20 +95,12 @@ namespace hardware {
 		buffer[9] = (speed >> 8);
 		buffer[10] = (speed & 0xFF);
 
-		hexlog(buffer, 13);
-
-//    hexlog(buffer, sizeof(buffer));
+		// send data
 		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
 			xlog("Unable to send data to CS2");
+			return;
 		}
-
-		/*
-		 return sendCommand(clientSocket, )
-		 std::stringstream ss;
-		 ss << "Setting speed in CS2 of loco " << (unsigned int)protocol << "/" << address << " to speed " << speed;
-		 std::string s = ss.str();
-		 return s;
-		 */
+		xlog("Setting speed of cs2 loco %i/%i to speed %i", protocol, address, speed);
 	}
 
   // the receiver thread of the CS2
