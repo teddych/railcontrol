@@ -111,7 +111,9 @@ void HardwareHandler::locoSpeed(const managerID_t managerID, const locoID_t loco
     protocol_t protocol = PROTOCOL_NONE;
     address_t address = ADDRESS_NONE;
     manager.getProtocolAddress(locoID, controlID, protocol, address);
-		instance->locoSpeed(protocol, address, speed);
+		if (controlID == getControlID()) {
+			instance->locoSpeed(protocol, address, speed);
+		}
   }
 }
 

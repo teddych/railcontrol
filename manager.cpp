@@ -130,9 +130,9 @@ std::string Manager::getLocoName(const locoID_t locoID) {
 	return "Unknown Loco";
 }
 
-void Manager::locoSpeed(const managerID_t controlID, const locoID_t locoID, const speed_t speed) {
+void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
   for (auto control : controllers) {
-    control->locoSpeed(controlID, locoID, speed);
+    control->locoSpeed(managerID, locoID, speed);
   }
 }
 

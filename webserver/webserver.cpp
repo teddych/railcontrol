@@ -121,9 +121,15 @@ void WebServer::worker() {
 }
 
 void WebServer::go(const managerID_t managerID) {
+	if (managerID != MANAGER_ID_WEBSERVER) {
+		xlog("go not yet implemented in Webserver");
+	}
 }
 
 void WebServer::stop(const managerID_t managerID) {
+	if (managerID != MANAGER_ID_WEBSERVER) {
+		xlog("stop not yet implemented in Webserver");
+	}
 }
 
 void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
