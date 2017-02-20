@@ -144,4 +144,10 @@ void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID,
 	}
 }
 
+void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
+	if (managerID != MANAGER_ID_WEBSERVER) {
+		xlog("feedback not yet implemented in Webserver");
+	}
+}
+
 }; // namespace webserver

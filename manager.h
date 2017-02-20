@@ -25,6 +25,7 @@ class Manager {
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
 		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
+		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
 	private:
 		std::vector<ManagerInterface*> controllers;
 		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;

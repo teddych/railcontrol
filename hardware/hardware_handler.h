@@ -26,6 +26,7 @@ namespace hardware {
 			void stop(const managerID_t managerID) override;
 			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
 			void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) override;
+			void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 		private:
 			const Manager& manager;
 			createHardware_t* createHardware;
@@ -35,8 +36,8 @@ namespace hardware {
 			const HardwareParams* params;
 	};
 
-}
-;
+	inline void HardwareHandler::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {};
+};
 // namespace hardware
 
 #endif // HARDWARE_HARDWARE_HANDLER_H

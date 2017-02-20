@@ -32,6 +32,7 @@ Manager::Manager(Config& config) :
 	xlog("Loading Controllers");
 	storage->allHardwareParams(hardwareParams);
 	for (auto hardwareParam : hardwareParams) {
+		hardwareParam.second->manager = this;
 		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
 	}
 	xlog("Controllers loaded");
@@ -144,4 +145,10 @@ void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, c
 
 const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
 	return locos;
+}
+
+void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
+  for (auto control : controllers) {
+		control->feedback(managerID, pin, state);
+	}
 }

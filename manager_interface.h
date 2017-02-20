@@ -13,6 +13,7 @@ class ManagerInterface {
 		virtual void stop(const managerID_t managerID) = 0;
 		virtual void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) = 0;
 		virtual void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) = 0;
+		virtual void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
   private:
     managerID_t managerID;
     std::string name;

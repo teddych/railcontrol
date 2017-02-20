@@ -30,7 +30,8 @@ namespace hardware {
   }
 
   // start the thing
-	CS2::CS2(const HardwareParams* params) {
+	CS2::CS2(const HardwareParams* params) :
+		manager(params->manager) {
 		std::stringstream ss;
 		ss << "Maerklin Central Station 2 (CS2) / " << params->name;
 		name = ss.str();
@@ -58,12 +59,37 @@ namespace hardware {
 		return name;
   }
 
-	void CS2::createCommandHeader(char* buffer, const cs2Prio_t& prio, const cs2Command_t& command, const cs2Response_t& response, const cs2Length_t& length) {
+	void CS2::createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length) {
 		buffer[0] = (prio << 1) | (command >> 7);
 		buffer[1] = (command << 1) | (response & 0x01);
 		buffer[2] = (hash >> 8);
 		buffer[3] = (hash & 0xFF);
 		buffer[4] = length;
+	}
+
+	void CS2::readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length) {
+		prio = buffer[0] >> 1;
+		command = (cs2Command_t)(buffer[0]) << 7 | (cs2Command_t)(buffer[1]) >> 1;
+		response = buffer[1] & 0x01;
+		length = buffer[4];
+	}
+
+	inline void intToData(const uint32_t i, char* buffer) {
+		buffer[0] = (i >> 24);
+		buffer[1] = ((i >> 16) & 0xFF);
+		buffer[2] = ((i >> 8) & 0xFF);
+		buffer[3] = (i & 0xFF);
+	}
+
+	inline uint32_t dataToInt(const char* buffer) {
+		uint32_t i = buffer[0];
+		i <<= 8;
+		i |= buffer[1];
+		i <<= 8;
+		i |= buffer[2];
+		i <<= 8;
+		i |= buffer[3];
+		return i;
 	}
 
 	void CS2::createLocID(char* buffer, const protocol_t& protocol, const address_t& address) {
@@ -72,10 +98,7 @@ namespace hardware {
 			locID |= 0xC000;
 		}
 		// else expect PROTOCOL_MM2: do nothing
-		buffer[0] = (locID >> 24);
-		buffer[1] = ((locID >> 16) & 0xFF);
-		buffer[2] = ((locID >> 8) & 0xFF);
-		buffer[3] = (locID & 0xFF);
+		intToData(locID, buffer);
 	}
 
 	// GO-command (turn on booster)
@@ -177,16 +200,29 @@ namespace hardware {
     char buffer[CS2_CMD_BUF_LEN];
     while(run) {
       //try to receive some data, this is a blocking call
-      xlog("Receiver waiting for data");
       ssize_t datalen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
       if (datalen <= 0) {
-        xlog("Unable to receive data");
+        xlog("Unable to receive data from CS2. Closing socket.");
         close(sock);
         return;
       }
-      else {
-        xlog("Receiver %i bytes received", datalen);
+			else if (datalen != 13) {
+				xlog("Unable to receive valid data from CS2. Continuing with next packet.");
+			}
+			else {
+//        xlog("Receiver %i bytes received", datalen);
         hexlog(buffer, datalen);
+				cs2Prio_t prio;
+				cs2Command_t command;
+				cs2Response_t response;
+				cs2Length_t length;
+				readCommandHeader(buffer, prio, command, response, length);
+				if (command == 0x11 && response) {
+					// s88 event
+					feedbackPin_t pin = dataToInt(buffer + 5);
+					xlog("S88 Pin %u set to %s", pin, (buffer[10] ? "on" : "off"));
+					manager->feedback(MANAGER_ID_HARDWARE, pin, buffer[10]);
+				}
       }
     }
     close(sock);

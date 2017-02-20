@@ -6,11 +6,13 @@
 typedef unsigned char managerID_t;
 typedef unsigned char controlID_t;
 typedef unsigned char hardwareID_t;
+typedef unsigned short locoID_t;
 typedef unsigned char protocol_t;
 typedef unsigned short address_t;
 typedef short speed_t;
 typedef unsigned char function_t;
-typedef unsigned short locoID_t;
+typedef unsigned int feedbackPin_t;
+typedef unsigned char feedbackState_t;
 
 enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
