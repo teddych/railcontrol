@@ -35,15 +35,22 @@ namespace hardware {
 		ss << "Maerklin Central Station 2 (CS2) / " << params->name;
 		name = ss.str();
 		run = true;
-		senderThread = std::thread([this] {sender();});
+    senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), CS2_IP, CS2_PORT_SEND);
+    if (senderSocket < 0) {
+      xlog("Unable to create UDP socket for sending data to CS2");
+    }
+		else {
+			xlog("CS2 sender socket created");
+		}
 		receiverThread = std::thread([this] {receiver();});
 	}
 
   // stop the thing
 	CS2::~CS2() {
 		run = false;
+    close (senderSocket);
+    xlog("CS2 sender socket closed");
 		receiverThread.join();
-		senderThread.join();
 	}
 
   // return the name
@@ -184,96 +191,6 @@ namespace hardware {
     }
     close(sock);
     xlog("CS2 receiver ended");
-  }
-
-  // the sender thread of the CS2
-  void CS2::sender() {
-    xlog("CS2 sender started");
-    senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), CS2_IP, CS2_PORT_SEND);
-    if (senderSocket < 0) {
-      xlog("Unable to create UDP socket for sending data to CS2");
-      return;
-    };
-
-		while (run) {
-			sleep(1);
-		}
-
-//    char buffer[CS2_CMD_BUF_LEN];
-//    memset (buffer, 0, sizeof (buffer));
-//    unsigned char prio = 0;
-//    unsigned char command = 0;
-//    unsigned char response = 0;
-//		unsigned char length = 5;
-//
-//		/*
-//    buffer[0] = (prio << 1) | (command >> 7);
-//    buffer[1] = (command << 1) | (response & 0x01);
-//    buffer[2] = (hash >> 8);
-//    buffer[3] = (hash & 0xff);
-//    buffer[4] = 5;
-//		*/
-//    buffer[9] = 1;
-//		sendCommand(senderSocket, (struct sockaddr*)&sockaddr_in, prio, command, response, length, buffer + 5);
-//		/*
-//    //send the message
-//    hexlog(buffer, sizeof(buffer));
-//    if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-//      xlog("Unable to send data");
-//    }
-//		*/
-//
-//    command = 0x04;
-//		length = 5;
-//		/*
-//    buffer[0] = (prio << 1) | (command >> 7);
-//    buffer[1] = (command << 1) | (response & 0x01);
-//    buffer[2] = (hash >> 8);
-//    buffer[3] = (hash & 0xff);
-//    buffer[4] = 6;
-//		*/
-//    buffer[7] = 0xc4;
-//    buffer[8] = 0x68;
-//    buffer[9] = 0;
-//    buffer[10] = 0x50;
-//		sendCommand(senderSocket, (struct sockaddr*)&sockaddr_in, prio, command, response, length, buffer + 5);
-//
-//    //send the message
-//		/*
-//    hexlog(buffer, sizeof(buffer));
-//    if (sendto(sock, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_inSender)) == -1) {
-//      xlog("Unable to send data");
-//    }
-//		*/
-//
-//    sleep(1);
-//    buffer[10] = 0x0;
-//
-//    //send the message
-//    hexlog(buffer, sizeof(buffer));
-//    if (sendto(senderSocket, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
-//      xlog("Unable to send data");
-//    }
-//
-//    sleep(1);
-//
-//    command = 0;
-//    buffer[0] = (prio << 1) | (command >> 7);
-//    buffer[1] = (command << 1) | (response & 0x01);
-//    buffer[2] = (hash >> 8);
-//    buffer[3] = (hash & 0xff);
-//    buffer[4] = 5;
-//    buffer[7] = 0;
-//    buffer[8] = 0;
-//    buffer[9] = 0;
-//    buffer[10] = 0;
-//    //send the message
-//    hexlog(buffer, sizeof(buffer));
-//    if (sendto(senderSocket, buffer, sizeof (buffer), 0, (struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in)) == -1) {
-//      xlog("Unable to send data");
-//    }
-    close (senderSocket);
-    xlog("CS2 sender ended");
   }
 
 } // namespace

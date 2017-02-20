@@ -28,12 +28,10 @@ namespace hardware {
 			void createCommandHeader(char* buffer, const cs2Prio_t& prio, const cs2Command_t& command, const cs2Response_t& response, const cs2Length_t& length);
 			void createLocID(char* buffer, const protocol_t& protocol, const address_t& address);
 			void receiver();
-			void sender();
 			volatile unsigned char run;
 			std::string name;
 			struct sockaddr_in sockaddr_inSender;
 			int senderSocket;
-			std::thread senderThread;
 			std::thread receiverThread;
 			static const unsigned short hash = 0x7337;
 	};
