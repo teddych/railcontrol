@@ -26,6 +26,7 @@ void stopRailControl(__attribute__((unused))int signo) {
 int main (int argc, char* argv[]) {
 	signal(SIGINT, stopRailControl);
 	signal(SIGTERM, stopRailControl);
+
 	run = true;
   xlog("Starting railcontrol");
 

@@ -21,9 +21,10 @@ body {
 }
 
 .status {
-	height: 20px;
+	height: 80px;
 	width: 100%;
 	border: solid 1px;
+	overflow-y: scroll;
 }
 
 .button {

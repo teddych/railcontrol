@@ -108,13 +108,13 @@ void WebServer::worker() {
 		} while (ret == 0 && run);
 		if (ret > 0 && run) {
 			// accept connection
-			int socket_client = accept(serverSocket, (struct sockaddr *) &client_addr, &client_addr_len);
-			if (socket_client < 0) {
-				xlog("Unable to accept client connection: %i, %i", socket_client, errno);
+			int socketClient = accept(serverSocket, (struct sockaddr *) &client_addr, &client_addr_len);
+			if (socketClient < 0) {
+				xlog("Unable to accept client connection: %i, %i", socketClient, errno);
 			}
 			else {
 				// create client and fill into vector
-				clients.push_back(new WebClient(++lastClientID, socket_client, *this, manager));
+				clients.push_back(new WebClient(++lastClientID, socketClient, *this, manager));
 			}
 		}
 	}

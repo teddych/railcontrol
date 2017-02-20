@@ -159,6 +159,24 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
+	void WebClient::handleUpdater(const map<string, string>& arguments) {
+		char reply[1024];
+		int ret = snprintf(reply, sizeof(reply),
+			"HTTP/1.0 200 OK\r\n"
+			"Cache-Control: no-cache, must-revalidate\r\n"
+			"Pragma: no-cache\r\n"
+			"Expires: Sun, 12 Feb 2016 00:00:00 GMT\r\n"
+			"Content-Type: text/event-stream; charset=utf-8\r\n\r\n");
+		send_timeout(clientSocket, reply, ret, 0);
+
+		while(run) {
+			ret = snprintf(reply, sizeof(reply),
+				"data: Time now: %li\r\n\r\n", time(0));
+			send_timeout(clientSocket, reply, ret, 0);
+			sleep(1);
+		}
+	}
+
 	void WebClient::simpleReply(const string& text, const string& code) {
 		size_t contentLength = text.length();
 		char reply[256 + contentLength];
@@ -244,6 +262,9 @@ namespace webserver {
 		}
 		else if (arguments["cmd"].compare("locofunction") == 0) {
 			handleLocoFunction(arguments);
+		}
+		else if (arguments["cmd"].compare("updater") == 0) {
+			handleUpdater(arguments);
 		}
 		else if (uri.compare("/") == 0) {
 			printMainHTML();
@@ -419,7 +440,16 @@ namespace webserver {
 		ss << button("Load", "loco", "loco");
 		ss << "</div>";
 		ss << "<div class=\"popup\">Popup</div>"
-			"<div class=\"status\" id=\"status\">Status</div>"
+			"<div class=\"status\" id=\"status\">Status<br></div>"
+			"<script>\n"
+			"var updater = new EventSource('/?cmd=updater');\n"
+			"updater.onmessage = function(e) {\n"
+			//"document.getElementById('status').innerHTML += e.data + '<br>';\n"
+			"var status = document.getElementById('status');\n"
+			" status.innerHTML += e.data + '<br>';\n"
+			" status.scrollTop = status.scrollHeight - status.clientHeight;\n"
+			"};\n"
+			"</script>"
 			"</body>"
 			"</html>";
 		string sOut = ss.str();

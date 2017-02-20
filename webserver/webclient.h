@@ -29,6 +29,7 @@ class WebClient {
     void deliverFile(const std::string& file);
 		void handleLocoSpeed(const std::map<std::string,std::string>& arguments);
 		void handleLocoFunction(const std::map<std::string, std::string>& arguments);
+		void handleUpdater(const std::map<std::string,std::string>& arguments);
 
 		unsigned int id;
 		int clientSocket;
