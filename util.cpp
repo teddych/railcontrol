@@ -154,7 +154,7 @@ int send_timeout(int sock, const char* buf, const size_t buflen, const int flags
 		return ret;
 	}
 	else if (ret > 0) {
-		ret = send(sock, buf, buflen, flags);
+		ret = send(sock, buf, buflen, flags | MSG_NOSIGNAL);
 		if (ret > 0) {
 			return ret;
 		}
