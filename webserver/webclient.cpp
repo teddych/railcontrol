@@ -172,7 +172,10 @@ namespace webserver {
 		while(run) {
 			ret = snprintf(reply, sizeof(reply),
 				"data: Time now: %li\r\n\r\n", time(0));
-			send_timeout(clientSocket, reply, ret, 0);
+			ret = send_timeout(clientSocket, reply, ret, 0);
+			if (ret < 0) {
+				return;
+			}
 			sleep(1);
 		}
 	}
