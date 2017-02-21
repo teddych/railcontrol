@@ -360,18 +360,21 @@ namespace webserver {
 		return ss.str();
 	}
 
-	string WebClient::button(const string& value, const string& cmd, const string& target, const map<string,string>& arguments) {
+	string WebClient::button(const string& value, const string& cmd, const map<string,string>& arguments) {
 		stringstream ss;
 		ss <<
 			"<input class=\"button\" id=\"" << buttonID << "_" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
 			"<script>\n"
 			"$(function() {\n"
 			" $('#" << buttonID << "_"<< cmd << "').on('click', function() {\n"
-			"  $('#" << target << "').load('/?cmd=" << cmd;
+			"  var theUrl = '/?cmd=" << cmd;
 		for (auto argument : arguments) {
 			ss << "&" << argument.first << "=" << argument.second;
 		}
-		ss <<"');\n"
+		ss <<"';\n"
+			"  var xmlHttp = new XMLHttpRequest();"
+			"  xmlHttp.open('GET', theUrl, true);"
+			"  xmlHttp.send(null);"
 			"  return false;\n"
 			" })\n"
 			"})\n"
@@ -392,21 +395,21 @@ namespace webserver {
 			ss << "</p>";
 			ss << slider("speed", "locospeed", "status", 0, 1024, buttonArguments);
 			buttonArguments["speed"] = "0";
-			ss << button("0%", "locospeed", "status", buttonArguments);
+			ss << button("0%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "255";
-			ss << button("25%", "locospeed", "status", buttonArguments);
+			ss << button("25%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "511";
-			ss << button("50%", "locospeed", "status", buttonArguments);
+			ss << button("50%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "767";
-			ss << button("75%", "locospeed", "status", buttonArguments);
+			ss << button("75%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "1023";
-			ss << button("100%", "locospeed", "status", buttonArguments);
+			ss << button("100%", "locospeed", buttonArguments);
 
 			buttonArguments["function"] = "0";
 			buttonArguments["on"] = "1";
-			ss << button("f0 on", "locofunction", "status", buttonArguments);
+			ss << button("f0 on", "locofunction", buttonArguments);
 			buttonArguments["on"] = "0";
-			ss << button("f0 off", "locofunction", "status", buttonArguments);
+			ss << button("f0 off", "locofunction", buttonArguments);
 			sOut = ss.str();
 		}
 		else {
@@ -448,7 +451,6 @@ namespace webserver {
 		ss << select("loco", options, "loco", "loco");
 		ss <<"</div>";
 		ss << "<div class=\"loco\" id=\"loco\">";
-		ss << button("Load", "loco", "loco");
 		ss << "</div>";
 		ss << "<div class=\"popup\">Popup</div>"
 			"<div class=\"status\" id=\"status\">Status<br></div>"

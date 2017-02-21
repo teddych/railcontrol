@@ -132,39 +132,36 @@ void WebServer::worker() {
 }
 
 void WebServer::go(const managerID_t managerID) {
-	if (managerID != MANAGER_ID_WEBSERVER) {
-		xlog("go not yet implemented in Webserver");
-	}
+	addUpdate("Booster turned on");
 }
 
 void WebServer::stop(const managerID_t managerID) {
-	if (managerID != MANAGER_ID_WEBSERVER) {
-		xlog("stop not yet implemented in Webserver");
-	}
+	addUpdate("Booster turned off");
 }
 
 void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
-	if (managerID != MANAGER_ID_WEBSERVER) {
-		xlog("locoSpeed not yet implemented in Webserver");
-	}
+	std::stringstream ss;
+	ss << "Setting speed of loco " << locoID << " to " << speed;
+	addUpdate(ss.str());
 }
 
 void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
-	if (managerID != MANAGER_ID_WEBSERVER) {
-		xlog("locoFunction not yet implemented in Webserver");
-	}
+	std::stringstream ss;
+	ss << "Setting f";
+	ss << function << " of loco " << locoID << " to " << (on ? "on" : "off");
+	addUpdate(ss.str());
 }
 
 void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
-	if (managerID != MANAGER_ID_WEBSERVER) {
-		std::stringstream ss;
-		ss << "Feedback " << pin << " set to " << (state ? "on" : "off");
-		{
-			std::lock_guard<std::mutex> Guard(updateMutex);
-			updates[++updateID] = ss.str();
-			updates.erase(updateID - 10);
-		}
-	}
+	std::stringstream ss;
+	ss << "Feedback " << pin << " set to " << (state ? "on" : "off");
+	addUpdate(ss.str());
+}
+
+void WebServer::addUpdate(const string& s) {
+	std::lock_guard<std::mutex> Guard(updateMutex);
+	updates[++updateID] = s;
+	updates.erase(updateID - 10);
 }
 
 bool WebServer::nextUpdate(unsigned int& updateID, string& s) {
