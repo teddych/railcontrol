@@ -226,7 +226,7 @@ namespace hardware {
 					manager->feedback(MANAGER_ID_HARDWARE, pin, buffer[10]);
 				}
 			}
-			else {
+			else if (run) {
 				xlog("Unable to receive valid data from CS2. Continuing with next packet.");
       }
     }
