@@ -199,17 +199,19 @@ namespace hardware {
     }
     char buffer[CS2_CMD_BUF_LEN];
     while(run) {
-      //try to receive some data, this is a blocking call
-      ssize_t datalen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
-      if (datalen <= 0) {
+			ssize_t datalen;
+			do {
+				//try to receive some data, this is a blocking call
+				errno = 0;
+				datalen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
+			} while (datalen < 0 && errno == EAGAIN && run);
+
+      if (datalen < 0 && errno != EAGAIN) {
         xlog("Unable to receive data from CS2. Closing socket.");
         close(sock);
         return;
       }
-			else if (datalen != 13) {
-				xlog("Unable to receive valid data from CS2. Continuing with next packet.");
-			}
-			else {
+			else if (datalen == 13) {
 //        xlog("Receiver %i bytes received", datalen);
         hexlog(buffer, datalen);
 				cs2Prio_t prio;
@@ -223,6 +225,9 @@ namespace hardware {
 					xlog("S88 Pin %u set to %s", pin, (buffer[10] ? "on" : "off"));
 					manager->feedback(MANAGER_ID_HARDWARE, pin, buffer[10]);
 				}
+			}
+			else {
+				xlog("Unable to receive valid data from CS2. Continuing with next packet.");
       }
     }
     close(sock);

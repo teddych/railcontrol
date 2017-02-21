@@ -90,22 +90,30 @@ void hexlog(const char* hex, const size_t size) {
 
 // create a UDP connection to a server on a port
 int create_udp_connection(const struct sockaddr* sockaddr, const unsigned int sockaddr_len, const char* server, const unsigned short port) {
-  int sock;
+	int sock;
 
-  if ((sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
-    xlog("Unable to create UDP socket");
-    return -1;
-  }
+	// create socket
+	if ((sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1) {
+		xlog("Unable to create UDP socket");
+		return -1;
+	}
 
-  memset ((char*)sockaddr, 0, sockaddr_len);
-  struct sockaddr_in* sockaddr_in = (struct sockaddr_in*)sockaddr;
-  sockaddr_in->sin_family = AF_INET;
-  sockaddr_in->sin_port = htons(port);
-  if (inet_aton (server, &sockaddr_in->sin_addr) == 0) {
-    xlog("inet_aton() failed");
-    return -1;
-  }
-  return sock;
+	// setting listening port
+	memset ((char*)sockaddr, 0, sockaddr_len);
+	struct sockaddr_in* sockaddr_in = (struct sockaddr_in*)sockaddr;
+	sockaddr_in->sin_family = AF_INET;
+	sockaddr_in->sin_port = htons(port);
+	if (inet_aton (server, &sockaddr_in->sin_addr) == 0) {
+		xlog("inet_aton() failed");
+		return -1;
+	}
+
+	// setting receive timeout to 1s
+	struct timeval tv;
+	tv.tv_sec = 1;
+	tv.tv_usec = 0;
+	setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
+	return sock;
 }
 
 int recv_timeout(int sock, char* buf, const size_t buflen, const int flags) {
