@@ -1,6 +1,8 @@
 #ifndef WEBSERVER_WEBSERVER_H
 #define WEBSERVER_WEBSERVER_H
 
+#include <map>
+#include <mutex>
 #include <thread>
 #include <vector>
 
@@ -15,6 +17,7 @@ class WebServer : public ManagerInterface {
 	public:
 		WebServer(Manager& manager, const unsigned short port);
 		~WebServer();
+		bool nextUpdate(unsigned int& updateID, std::string& s);
 		void go(const managerID_t managerID) override;
 		void stop(const managerID_t managerID) override;
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
@@ -29,6 +32,10 @@ class WebServer : public ManagerInterface {
 		std::thread serverThread;
 		std::vector<WebClient*> clients;
 		Manager& manager;
+
+		std::map<unsigned int,std::string> updates;
+		std::mutex updateMutex;
+		unsigned int updateID;
 };
 
 }; // namespace webserver

@@ -12,6 +12,7 @@
 #include "railcontrol.h"
 #include "util.h"
 #include "webclient.h"
+#include "webserver.h"
 
 using std::map;
 using std::stoi;
@@ -169,14 +170,21 @@ namespace webserver {
 			"Content-Type: text/event-stream; charset=utf-8\r\n\r\n");
 		send_timeout(clientSocket, reply, ret, 0);
 
+		unsigned int updateID = 0;
 		while(run) {
-			ret = snprintf(reply, sizeof(reply),
-				"data: Time now: %li\r\n\r\n", time(0));
-			ret = send_timeout(clientSocket, reply, ret, 0);
-			if (ret < 0) {
-				return;
+			string s;
+			if (server.nextUpdate(updateID, s)) {
+				++updateID;
+				ret = snprintf(reply, sizeof(reply),
+						"data: %s\r\n\r\n", s.c_str());
+				ret = send_timeout(clientSocket, reply, ret, 0);
+				if (ret < 0) {
+					return;
+				}
 			}
-			sleep(1);
+			else {
+				sleep(1);
+			}
 		}
 	}
 

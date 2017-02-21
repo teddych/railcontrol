@@ -2,15 +2,18 @@
 #include <cstring>		//memset
 #include <netinet/in.h>
 #include <signal.h>
+#include <sstream>
 #include <sys/socket.h>
 #include <thread>
 #include <unistd.h>
 
+#include "datatypes.h"
 #include "railcontrol.h"
 #include "util.h"
 #include "webclient.h"
 #include "webserver.h"
 
+using std::map;
 using std::thread;
 using std::string;
 using std::vector;
@@ -22,7 +25,10 @@ WebServer::WebServer(Manager& manager, const unsigned short port) :
 	serverSocket(0),
 	run(false),
 	lastClientID(0),
-	manager(manager) {
+	manager(manager),
+	updateID(1) {
+
+	updates[updateID] = "Railcontrol started";
 
 	run = true;
 	struct sockaddr_in6 server_addr;
@@ -70,6 +76,11 @@ WebServer::WebServer(Manager& manager, const unsigned short port) :
 WebServer::~WebServer() {
 	if (run) {
 		xlog("Stopping webserver");
+		{
+			std::lock_guard<std::mutex> Guard(updateMutex);
+			updates[++updateID] = "Stopping Railcontrol";
+		}
+		sleep(1);
 		run = false;
 
 		// stopping all clients
@@ -146,8 +157,32 @@ void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID,
 
 void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	if (managerID != MANAGER_ID_WEBSERVER) {
-		xlog("feedback not yet implemented in Webserver");
+		std::stringstream ss;
+		ss << "Feedback " << pin << " set to " << (state ? "on" : "off");
+		{
+			std::lock_guard<std::mutex> Guard(updateMutex);
+			updates[++updateID] = ss.str();
+			updates.erase(updateID - 10);
+		}
 	}
+}
+
+bool WebServer::nextUpdate(unsigned int& updateID, string& s) {
+	std::lock_guard<std::mutex> Guard(updateMutex);
+	if(updates.count(updateID) == 1) {
+		s = updates.at(updateID);
+		return true;
+	}
+
+	for (auto& update : updates) {
+		if (update.first > updateID) {
+			updateID = update.first;
+			s = update.second;
+			return true;
+		}
+	}
+
+	return false;
 }
 
 }; // namespace webserver
