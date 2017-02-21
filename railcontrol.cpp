@@ -35,9 +35,10 @@ int main (int argc, char* argv[]) {
 	// init manager
 	Manager m(config);
 
-	while(run) {
-		sleep(1);
-	}
+	string in;
+	do {
+		std::cin >> in;
+	} while (in.compare("q") != 0);
 
   xlog("Stopping railcontrol");
 
