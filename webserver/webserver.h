@@ -25,7 +25,7 @@ class WebServer : public ManagerInterface {
 		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 	private:
 	  void worker();
-		void addUpdate(const std::string& s);
+		void addUpdate(const std::string& command, const std::string& status);
 		unsigned short port;
 		int serverSocket;
 		volatile unsigned char run;

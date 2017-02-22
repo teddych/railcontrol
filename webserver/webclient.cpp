@@ -117,7 +117,7 @@ namespace webserver {
 			handleLocoFunction(arguments);
 		}
 		else if (arguments["cmd"].compare("updater") == 0) {
-			handleUpdater(arguments);
+			handleUpdater(headers);
 		}
 		else if (uri.compare("/") == 0) {
 			printMainHTML();
@@ -286,7 +286,7 @@ namespace webserver {
 			string s;
 			if (server.nextUpdate(updateID, s)) {
 				ret = snprintf(reply, sizeof(reply),
-						"id: %i\r\ndata: %s\r\n\r\n", updateID, s.c_str());
+						"id: %i\r\n%s\r\n\r\n", updateID, s.c_str());
 				ret = send_timeout(clientSocket, reply, ret, 0);
 				++updateID;
 				if (ret < 0) {
@@ -353,16 +353,18 @@ namespace webserver {
 	}
 
 	string WebClient::slider(const string& name, const string& cmd, const unsigned int min, const unsigned int max, const map<string,string>& arguments) {
+		locoID_t locoID = 0;
+		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
 		stringstream ss;
-		ss << "<input class=\"slider\" type=\"range\" min=\"" << min << "\" max=\"" << max << "\" name=\"" << name << "\" id=\"" << buttonID << "_"<< cmd << "\">";
+		ss << "<input class=\"slider\" type=\"range\" min=\"" << min << "\" max=\"" << max << "\" name=\"" << name << "\" id=\"" << cmd << "_" << locoID<< "\">";
 		ss << "<script>\n"
 			"$(function() {\n"
-			" $('#" << buttonID << "_"<< cmd << "').on('change', function() {\n"
+			" $('#" << cmd << "_" << locoID << "').on('change', function() {\n"
 			"  var theUrl = '/?cmd=" << cmd;
 		for (auto argument : arguments) {
 			ss << "&" << argument.first << "=" << argument.second;
 		}
-		ss << "&" << name << "=" << "' + document.getElementById('" << buttonID << "_"<< cmd <<"').value;\n"
+		ss << "&" << name << "=" << "' + document.getElementById('" << cmd << "_" << locoID <<"').value;\n"
 			"  var xmlHttp = new XMLHttpRequest();\n"
 			"  xmlHttp.open('GET', theUrl, true);\n"
 			"  xmlHttp.send(null);\n"
@@ -370,7 +372,6 @@ namespace webserver {
 			" })\n"
 			"});\n"
 			"</script>";
-		++buttonID;
 		return ss.str();
 	}
 
@@ -471,9 +472,24 @@ namespace webserver {
 			"<script>\n"
 			"var updater = new EventSource('/?cmd=updater');\n"
 			"updater.onmessage = function(e) {\n"
-			"var status = document.getElementById('status');\n"
-			" status.innerHTML += e.data + '<br>';\n"
-			" status.scrollTop = status.scrollHeight - status.clientHeight;\n"
+			" var status = document.getElementById('status');\n"
+			" var arguments = e.data.split(';');\n"
+			" var argumentMap = new Map();\n"
+			" arguments.forEach(function(argument) {\n"
+			"  var parts = argument.split('=');\n"
+			"  if (parts[0] == 'status') {\n"
+			"   status.innerHTML += parts[1] + '<br>';\n"
+			"   status.scrollTop = status.scrollHeight - status.clientHeight;\n"
+			"  }\n"
+			"  else {\n"
+			"   argumentMap.set(parts[0], parts[1]);\n"
+			"  }\n"
+			" })\n"
+			" if (argumentMap.get('command') == 'locospeed') {\n"
+			"  var elementName = 'locospeed_' + argumentMap.get('loco');\n"
+			"  var element = document.getElementById(elementName);\n"
+			"  if (element) element.value = argumentMap.get('speed');\n"
+			" }\n"
 			"};\n"
 			"</script>"
 			"</body>"

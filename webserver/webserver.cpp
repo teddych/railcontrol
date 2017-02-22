@@ -16,6 +16,7 @@
 using std::map;
 using std::thread;
 using std::string;
+using std::stringstream;
 using std::vector;
 
 namespace webserver {
@@ -132,34 +133,42 @@ void WebServer::worker() {
 }
 
 void WebServer::go(const managerID_t managerID) {
-	addUpdate("Booster=on");
+	addUpdate("boosteron", "Booster is on");
 }
 
 void WebServer::stop(const managerID_t managerID) {
-	addUpdate("Booster=off");
+	addUpdate("boosteroff", "Booster is off");
 }
 
 void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
-	std::stringstream ss;
-	ss << manager.getLocoName(locoID) << " speed=" << speed;
-	addUpdate(ss.str());
+	std::stringstream command;
+	std::stringstream status;
+	command << "locospeed;loco=" << locoID << ";speed=" << speed;
+	status << manager.getLocoName(locoID) << " speed is " << speed;
+	addUpdate(command.str(), status.str());
 }
 
-void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
-	std::stringstream ss;
-	ss << manager.getLocoName(locoID) << " f" << (unsigned int)function << "=" << (on ? "on" : "off");
-	addUpdate(ss.str());
+void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool state) {
+	std::stringstream command;
+	std::stringstream status;
+	command << "locofunction;loco=" << locoID << ";function=" << (unsigned int)function << ";on=" << (state ? "on" : "off");
+	status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
+	addUpdate(command.str(), status.str());
 }
 
 void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
-	std::stringstream ss;
-	ss << "Feedback " << pin << "=" << (state ? "on" : "off");
-	addUpdate(ss.str());
+	std::stringstream command;
+	std::stringstream status;
+	command << "feedback;pin=" << pin << ";state=" << (state ? "on" : "off");
+	status << "Feedback " << pin << " is " << (state ? "on" : "off");
+	addUpdate(command.str(), status.str());
 }
 
-void WebServer::addUpdate(const string& s) {
+void WebServer::addUpdate(const string& command, const string& status) {
+	stringstream ss;
+	ss << "data: command=" << command << ";status=" << status << "\r\n\r\n";
 	std::lock_guard<std::mutex> Guard(updateMutex);
-	updates[++updateID] = s;
+	updates[++updateID] = ss.str();
 	updates.erase(updateID - 10);
 }
 
