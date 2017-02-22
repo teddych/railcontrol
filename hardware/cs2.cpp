@@ -82,13 +82,20 @@ namespace hardware {
 	}
 
 	inline uint32_t dataToInt(const char* buffer) {
-		uint32_t i = buffer[0];
+		uint32_t i = (const unsigned char)buffer[0];
 		i <<= 8;
-		i |= buffer[1];
+		i |= (const unsigned char)buffer[1];
 		i <<= 8;
-		i |= buffer[2];
+		i |= (const unsigned char)buffer[2];
 		i <<= 8;
-		i |= buffer[3];
+		i |= (const unsigned char)buffer[3];
+		return i;
+	}
+
+	inline uint16_t dataToShort(const char* buffer) {
+		uint16_t i = (const unsigned char)buffer[0];
+		i <<= 8;
+		i |= (const unsigned char)buffer[1];
 		return i;
 	}
 
@@ -224,6 +231,17 @@ namespace hardware {
 					feedbackPin_t pin = dataToInt(buffer + 5);
 					xlog("S88 Pin %u set to %s", pin, (buffer[10] ? "on" : "off"));
 					manager->feedback(MANAGER_ID_HARDWARE, pin, buffer[10]);
+				}
+				else if (command == 0x04 && !response && length == 6) {
+					uint32_t locID = dataToInt(buffer + 5);
+					address_t address = locID;
+					protocol_t protocol = PROTOCOL_MM2;
+					if (locID & 0xC000) {
+						protocol = PROTOCOL_DCC;
+						address = locID - 0xC000;
+					}
+					speed_t speed = dataToShort(buffer + 9);
+					manager->locoSpeed(MANAGER_ID_HARDWARE, protocol, address, speed);
 				}
 			}
 			else if (run) {

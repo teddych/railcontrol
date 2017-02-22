@@ -132,6 +132,15 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 	return unknownLoco;
 }
 
+void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
+	for (auto loco : locos) {
+		if (loco.second->protocol == protocol && loco.second->address == address) {
+			locoSpeed(managerID, loco.first, speed);
+			return;
+		}
+	}
+}
+
 void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
   for (auto control : controllers) {
     control->locoSpeed(managerID, locoID, speed);
