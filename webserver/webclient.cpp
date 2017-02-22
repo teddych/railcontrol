@@ -183,7 +183,8 @@ namespace webserver {
 				}
 			}
 			else {
-				sleep(1);
+				// FIXME: use conditional variables instead of sleep
+				usleep(100000);
 			}
 		}
 	}
