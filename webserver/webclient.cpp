@@ -361,9 +361,9 @@ namespace webserver {
 			ss << "&" << argument.first << "=" << argument.second;
 		}
 		ss <<"';\n"
-			"  var xmlHttp = new XMLHttpRequest();"
-			"  xmlHttp.open('GET', theUrl, true);"
-			"  xmlHttp.send(null);"
+			"  var xmlHttp = new XMLHttpRequest();\n"
+			"  xmlHttp.open('GET', theUrl, true);\n"
+			"  xmlHttp.send(null);\n"
 			"  return false;\n"
 			" })\n"
 			"})\n"
@@ -442,11 +442,10 @@ namespace webserver {
 		ss << "<div class=\"loco\" id=\"loco\">";
 		ss << "</div>";
 		ss << "<div class=\"popup\">Popup</div>"
-			"<div class=\"status\" id=\"status\">Status<br></div>"
+			"<div class=\"status\" id=\"status\"></div>"
 			"<script>\n"
 			"var updater = new EventSource('/?cmd=updater');\n"
 			"updater.onmessage = function(e) {\n"
-			//"document.getElementById('status').innerHTML += e.data + '<br>';\n"
 			"var status = document.getElementById('status');\n"
 			" status.innerHTML += e.data + '<br>';\n"
 			" status.scrollTop = status.scrollHeight - status.clientHeight;\n"
