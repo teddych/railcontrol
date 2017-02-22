@@ -132,29 +132,28 @@ void WebServer::worker() {
 }
 
 void WebServer::go(const managerID_t managerID) {
-	addUpdate("Booster turned on");
+	addUpdate("Booster=on");
 }
 
 void WebServer::stop(const managerID_t managerID) {
-	addUpdate("Booster turned off");
+	addUpdate("Booster=off");
 }
 
 void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
 	std::stringstream ss;
-	ss << "Setting speed of loco " << locoID << " to " << speed;
+	ss << manager.getLocoName(locoID) << " speed=" << speed;
 	addUpdate(ss.str());
 }
 
 void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
 	std::stringstream ss;
-	ss << "Setting f";
-	ss << function << " of loco " << locoID << " to " << (on ? "on" : "off");
+	ss << manager.getLocoName(locoID) << " f" << (unsigned int)function << "=" << (on ? "on" : "off");
 	addUpdate(ss.str());
 }
 
 void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	std::stringstream ss;
-	ss << "Feedback " << pin << " set to " << (state ? "on" : "off");
+	ss << "Feedback " << pin << "=" << (state ? "on" : "off");
 	addUpdate(ss.str());
 }
 

@@ -17,7 +17,8 @@ using storage::StorageParams;
 using webserver::WebServer;
 
 Manager::Manager(Config& config) :
-	storage(NULL) {
+	storage(NULL),
+	unknownLoco("Unknown Loco") {
 
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
@@ -124,11 +125,11 @@ bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, 
 	return true;
 }
 
-std::string Manager::getLocoName(const locoID_t locoID) {
+const std::string& Manager::getLocoName(const locoID_t locoID) {
 	if (locos.count(locoID) == 1) {
 		return locos.at(locoID)->name;
 	}
-	return "Unknown Loco";
+	return unknownLoco;
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
