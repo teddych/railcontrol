@@ -41,31 +41,139 @@ namespace webserver {
 		clientThread.join();
 	}
 
-	void WebClient::interpretClientRequest(const string& str, string& method, string& uri, string& protocol, map<string,string>& arguments) {
-		vector<string> list;
-		str_split(str, string(" "), list);
-		if (list.size() == 3) {
-			method = list[0];
-			// transform method to uppercase
-			std::transform(method.begin(), method.end(), method.begin(), ::toupper);
-			// if method == HEAD set membervariable
-			headOnly = false;
-			if (method.compare("HEAD") == 0) {
-				headOnly = true;
-			}
-			// set uri and protocol
-			uri = list[1];
-			protocol = list[2];
-			// read GET-arguments from uri
-			vector<string> uri_parts;
-			str_split(uri, "?", uri_parts);
-			if (uri_parts.size() == 2) {
-				vector<string> argumentStrings;
-				str_split(uri_parts[1], "&", argumentStrings);
-				for (auto argument : argumentStrings) {
-					vector<string> argumentParts;
-					str_split(argument, "=", argumentParts);
-					arguments[argumentParts[0]] = argumentParts[1];
+	// worker is the thread that handles client requests
+	void WebClient::worker() {
+		xlog("Executing webclient");
+		run = true;
+
+		char buffer_in[1024];
+		memset(buffer_in, 0, sizeof(buffer_in));
+
+		size_t pos = 0;
+		string s;
+		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos) {
+			pos += recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+			s = string(buffer_in);
+			str_replace(s, string("\r\n"), string("\n"));
+			str_replace(s, string("\r"), string("\n"));
+		}
+		vector<string> lines;
+		str_split(s, string("\n"), lines);
+
+		if (lines.size() < 1) {
+			xlog("Invalid request");
+			close(clientSocket);
+			return;
+		}
+		string method;
+		string uri;
+		string protocol;
+		map<string, string> arguments;
+		map<string, string> headers;
+		interpretClientRequest(lines, method, uri, protocol, arguments, headers);
+		xlog("%s %s", method.c_str(), uri.c_str());
+
+		// if method is not implemented
+		if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0)) {
+			xlog("Method %s not implemented", method.c_str());
+			const char* reply =
+				"HTTP/1.0 501 Not implemented\r\n\r\n"
+				"<!DOCTYPE html><html><head><title>501 Not implemented</title></head><body><p>Method not implemented</p></body></html>";
+			send_timeout(clientSocket, reply, strlen(reply), 0);
+			close(clientSocket);
+			return;
+		}
+
+		/*
+		for (auto argument : arguments) {
+			xlog("Argument: %s=%s", argument.first.c_str(), argument.second.c_str());
+		}
+		for (auto header : headers) {
+			xlog("Header: %s=%s", header.first.c_str(), header.second.c_str());
+		}
+		*/
+
+		// handle requests
+		if (arguments["cmd"].compare("quit") == 0) {
+			simpleReply("Stopping Railcontrol");
+			manager.stop(MANAGER_ID_WEBSERVER);
+			stopRailControl(SIGTERM);
+		}
+		else if (arguments["cmd"].compare("on") == 0) {
+			simpleReply("Turning booster on");
+			manager.go(MANAGER_ID_WEBSERVER);
+		}
+		else if (arguments["cmd"].compare("off") == 0) {
+			simpleReply("Turning booster off");
+			manager.stop(MANAGER_ID_WEBSERVER);
+		}
+		else if (arguments["cmd"].compare("loco") == 0) {
+			printLoco(arguments);
+		}
+		else if (arguments["cmd"].compare("locospeed") == 0) {
+			handleLocoSpeed(arguments);
+		}
+		else if (arguments["cmd"].compare("locofunction") == 0) {
+			handleLocoFunction(arguments);
+		}
+		else if (arguments["cmd"].compare("updater") == 0) {
+			handleUpdater(arguments);
+		}
+		else if (uri.compare("/") == 0) {
+			printMainHTML();
+		}
+		else {
+			deliverFile(uri);
+		}
+
+		xlog("Terminating webclient");
+		close(clientSocket);
+	}
+
+	int WebClient::stop() {
+		// inform thread to stop
+		run = false;
+		return 0;
+	}
+
+	void WebClient::interpretClientRequest(const vector<string>& lines, string& method, string& uri, string& protocol, map<string,string>& arguments, map<string,string>& headers) {
+		if (lines.size()) {
+			for (auto line : lines) {
+				if (line.find("HTTP/1.") != string::npos) {
+					vector<string> list;
+					str_split(line, string(" "), list);
+					if (list.size() == 3) {
+						method = list[0];
+						// transform method to uppercase
+						std::transform(method.begin(), method.end(), method.begin(), ::toupper);
+						// if method == HEAD set membervariable
+						headOnly = false;
+						if (method.compare("HEAD") == 0) {
+							headOnly = true;
+						}
+						// set uri and protocol
+						uri = list[1];
+						protocol = list[2];
+						// read GET-arguments from uri
+						vector<string> uri_parts;
+						str_split(uri, "?", uri_parts);
+						if (uri_parts.size() == 2) {
+							vector<string> argumentStrings;
+							str_split(uri_parts[1], "&", argumentStrings);
+							for (auto argument : argumentStrings) {
+								vector<string> argumentParts;
+								str_split(argument, "=", argumentParts);
+								arguments[argumentParts[0]] = argumentParts[1];
+							}
+						}
+					}
+				}
+				else {
+					vector<string> list;
+					str_split(line, string(": "), list);
+					if (list.size() == 2) {
+						headers[list[0]] = list[1];
+					}
 				}
 			}
 		}
@@ -160,7 +268,7 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
-	void WebClient::handleUpdater(const map<string, string>& arguments) {
+	void WebClient::handleUpdater(const map<string, string>& headers) {
 		char reply[1024];
 		int ret = snprintf(reply, sizeof(reply),
 			"HTTP/1.0 200 OK\r\n"
@@ -171,13 +279,16 @@ namespace webserver {
 		send_timeout(clientSocket, reply, ret, 0);
 
 		unsigned int updateID = 0;
+		if (headers.count("Last-Event-ID") == 1) {
+			updateID = stoi(headers.at("Last-Event-ID"));
+		}
 		while(run) {
 			string s;
 			if (server.nextUpdate(updateID, s)) {
-				++updateID;
 				ret = snprintf(reply, sizeof(reply),
-						"data: %s\r\n\r\n", s.c_str());
+						"id: %i\r\ndata: %s\r\n\r\n", updateID, s.c_str());
 				ret = send_timeout(clientSocket, reply, ret, 0);
+				++updateID;
 				if (ret < 0) {
 					return;
 				}
@@ -201,92 +312,6 @@ namespace webserver {
 			"%s",
 			code.c_str(), text.c_str());
 		send_timeout(clientSocket, reply, strlen(reply), 0);
-	}
-
-	// worker is the thread that handles client requests
-	void WebClient::worker() {
-		xlog("Executing webclient");
-		run = true;
-
-		char buffer_in[1024];
-		memset(buffer_in, 0, sizeof(buffer_in));
-
-		size_t pos = 0;
-		string s;
-		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos) {
-			pos += recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
-			s = string(buffer_in);
-			str_replace(s, string("\r\n"), string("\n"));
-			str_replace(s, string("\r"), string("\n"));
-		}
-		vector<string> lines;
-		str_split(s, string("\n"), lines);
-
-		if (lines.size() < 1) {
-			xlog("Invalid request");
-			close(clientSocket);
-			return;
-		}
-		string method;
-		string uri;
-		string protocol;
-		map<string, string> arguments;
-		interpretClientRequest(lines[0], method, uri, protocol, arguments);
-		xlog("%s %s", method.c_str(), uri.c_str());
-
-		// if method is not implemented
-		if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0)) {
-			xlog("Method %s not implemented", method.c_str());
-			const char* reply =
-				"HTTP/1.0 501 Not implemented\r\n\r\n"
-				"<!DOCTYPE html><html><head><title>501 Not implemented</title></head><body><p>Method not implemented</p></body></html>";
-			send_timeout(clientSocket, reply, strlen(reply), 0);
-			close(clientSocket);
-			return;
-		}
-
-		/*
-		xlog(arguments["cmd"].c_str());
-		for (auto argument : arguments) {
-			xlog("%s=%s", argument.first.c_str(), argument.second.c_str());
-		}
-		*/
-
-		// handle requests
-		if (arguments["cmd"].compare("quit") == 0) {
-			simpleReply("Stopping Railcontrol");
-			manager.stop(MANAGER_ID_WEBSERVER);
-			stopRailControl(SIGTERM);
-		}
-		else if (arguments["cmd"].compare("on") == 0) {
-			simpleReply("Turning booster on");
-			manager.go(MANAGER_ID_WEBSERVER);
-		}
-		else if (arguments["cmd"].compare("off") == 0) {
-			simpleReply("Turning booster off");
-			manager.stop(MANAGER_ID_WEBSERVER);
-		}
-		else if (arguments["cmd"].compare("loco") == 0) {
-			printLoco(arguments);
-		}
-		else if (arguments["cmd"].compare("locospeed") == 0) {
-			handleLocoSpeed(arguments);
-		}
-		else if (arguments["cmd"].compare("locofunction") == 0) {
-			handleLocoFunction(arguments);
-		}
-		else if (arguments["cmd"].compare("updater") == 0) {
-			handleUpdater(arguments);
-		}
-		else if (uri.compare("/") == 0) {
-			printMainHTML();
-		}
-		else {
-			deliverFile(uri);
-		}
-
-		xlog("Terminating webclient");
-		close(clientSocket);
 	}
 
 	string WebClient::select(const string& name, const map<string,string>& options, const string& cmd, const string& target, const map<string,string>& arguments) {
@@ -456,12 +481,6 @@ namespace webserver {
 		string sOut = ss.str();
 		const char* html = sOut.c_str();
 		send_timeout(clientSocket, html, strlen(html), 0);
-	}
-
-	int WebClient::stop() {
-		// inform thread to stop
-		run = false;
-		return 0;
 	}
 
 } ; // namespace webserver
