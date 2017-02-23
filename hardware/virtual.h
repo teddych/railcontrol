@@ -28,6 +28,9 @@ namespace hardware {
 			// set loco speed
 			void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
 
+			// set loco direction
+			void locoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
+
 			// set loco function
 			void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 

@@ -117,6 +117,18 @@ void HardwareHandler::locoSpeed(const managerID_t managerID, const locoID_t loco
   }
 }
 
+void HardwareHandler::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
+  if (managerID != MANAGER_ID_HARDWARE) {
+    controlID_t controlID = 0;
+    protocol_t protocol = PROTOCOL_NONE;
+    address_t address = ADDRESS_NONE;
+    manager.getProtocolAddress(locoID, controlID, protocol, address);
+		if (controlID == getControlID()) {
+			instance->locoDirection(protocol, address, direction);
+		}
+  }
+}
+
 void HardwareHandler::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
   if (managerID != MANAGER_ID_HARDWARE) {
     controlID_t controlID = 0;

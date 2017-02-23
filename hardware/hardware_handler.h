@@ -25,6 +25,7 @@ namespace hardware {
 			void go(const managerID_t managerID) override;
 			void stop(const managerID_t managerID) override;
 			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
+			void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) override;
 			void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) override;
 			void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 		private:

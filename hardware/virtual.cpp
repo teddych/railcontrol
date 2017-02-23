@@ -45,6 +45,11 @@ namespace hardware {
 		xlog("Setting speed of virtual loco %i/%i to speed %i", protocol, address, speed);
 	}
 
+	// set the direction of a loco
+	void Virtual::locoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) {
+		xlog("Setting direction of virtual loco %i/%i to %s", protocol, address, direction ? "forward" : "reverse");
+	}
+
 	// set loco function
 	void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) {
 		xlog("Setting f%i of virtual loco %i/%i to \"%s\"", (int)function, (int)protocol, (int)address, on ? "on" : "off");

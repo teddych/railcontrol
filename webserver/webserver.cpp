@@ -148,6 +148,15 @@ void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, co
 	addUpdate(command.str(), status.str());
 }
 
+void WebServer::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
+	std::stringstream command;
+	std::stringstream status;
+	const char* directionText = (direction ? "forward" : "reverse");
+	command << "locodirection;loco=" << locoID << ";direction=" << directionText;
+	status << manager.getLocoName(locoID) << " direction is " << directionText;
+	addUpdate(command.str(), status.str());
+}
+
 void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool state) {
 	std::stringstream command;
 	std::stringstream status;

@@ -168,6 +168,26 @@ namespace hardware {
 		}
 	}
 
+	// set the direction of a loco
+	void CS2::locoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) {
+		xlog("Setting direction of cs2 loco %i/%i to %s", protocol, address, direction ? "forward" : "reverse");
+		char buffer[CS2_CMD_BUF_LEN];
+		// set header
+		createCommandHeader(buffer, 0, 0x05, 0, 5);
+		// set data buffer (8 bytes) to 0
+		int64_t* buffer_data = (int64_t*) (buffer + 5);
+		*buffer_data = 0L;
+		// set locID
+		createLocID(buffer + 5, protocol, address);
+		// set speed
+		buffer[9] = (direction ? 1 : 2);
+
+		// send data
+		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
+			xlog("Unable to send data to CS2");
+		}
+	}
+
 	// set loco function
 	void CS2::locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) {
 		xlog("Setting f%i of cs2 loco %i/%i to \"%s\"", (int)function, (int)protocol, (int)address, on ? "on" : "off");
@@ -233,6 +253,7 @@ namespace hardware {
 					manager->feedback(MANAGER_ID_HARDWARE, pin, buffer[10]);
 				}
 				else if (command == 0x04 && !response && length == 6) {
+					// speed event
 					uint32_t locID = dataToInt(buffer + 5);
 					address_t address = locID;
 					protocol_t protocol = PROTOCOL_MM2;
@@ -242,6 +263,19 @@ namespace hardware {
 					}
 					speed_t speed = dataToShort(buffer + 9);
 					manager->locoSpeed(MANAGER_ID_HARDWARE, protocol, address, speed);
+				}
+				else if (command == 0x05 && !response && length == 5) {
+					// direction event (implies speed=0)
+					uint32_t locID = dataToInt(buffer + 5);
+					address_t address = locID;
+					protocol_t protocol = PROTOCOL_MM2;
+					if (locID & 0xC000) {
+						protocol = PROTOCOL_DCC;
+						address = locID - 0xC000;
+					}
+					direction_t direction = (buffer[9] == 1 ? true : false);
+					manager->locoSpeed(MANAGER_ID_HARDWARE, protocol, address, 0);
+					manager->locoDirection(MANAGER_ID_HARDWARE, protocol, address, direction);
 				}
 			}
 			else if (run) {

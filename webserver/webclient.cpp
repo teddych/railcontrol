@@ -113,6 +113,9 @@ namespace webserver {
 		else if (arguments["cmd"].compare("locospeed") == 0) {
 			handleLocoSpeed(arguments);
 		}
+		else if (arguments["cmd"].compare("locodirection") == 0) {
+			handleLocoDirection(arguments);
+		}
 		else if (arguments["cmd"].compare("locofunction") == 0) {
 			handleLocoFunction(arguments);
 		}
@@ -250,6 +253,19 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
+	void WebClient::handleLocoDirection(const map<string, string>& arguments) {
+		locoID_t locoID = 0;
+		direction_t direction = 0;
+		if (arguments.count("loco")) locoID = std::stoi(arguments.at("loco"));
+		if (arguments.count("direction")) direction = (arguments.at("direction").compare("forward") == 0 ? 1 : 0);
+
+		manager.locoDirection(MANAGER_ID_WEBSERVER, locoID, direction);
+
+		stringstream ss;
+		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to " << direction;
+		string sOut = ss.str();
+		simpleReply(sOut);
+	}
 
 	void WebClient::handleLocoFunction(const map<string, string>& arguments) {
 		locoID_t locoID = 0;
@@ -425,6 +441,11 @@ namespace webserver {
 			ss << button("f0 on", "locofunction", buttonArguments);
 			buttonArguments["on"] = "0";
 			ss << button("f0 off", "locofunction", buttonArguments);
+
+			buttonArguments["direction"] = "forward";
+			ss << button("forward", "locodirection", buttonArguments);
+			buttonArguments["direction"] = "reverse";
+			ss << button("reverse", "locodirection", buttonArguments);
 			sOut = ss.str();
 		}
 		else {

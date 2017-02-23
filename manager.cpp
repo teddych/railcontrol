@@ -147,10 +147,24 @@ void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, cons
   }
 }
 
+void Manager::locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction) {
+	for (auto loco : locos) {
+		if (loco.second->protocol == protocol && loco.second->address == address) {
+			locoDirection(managerID, loco.first, direction);
+			return;
+		}
+	}
+}
+void Manager::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
+	for (auto control : controllers) {
+		control->locoDirection(managerID, locoID, direction);
+	}
+}
+
 void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
-  for (auto control : controllers) {
-    control->locoFunction(managerID, locoID, function, on);
-  }
+	for (auto control : controllers) {
+		control->locoFunction(managerID, locoID, function, on);
+	}
 }
 
 const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
