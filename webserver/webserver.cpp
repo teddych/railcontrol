@@ -181,21 +181,25 @@ void WebServer::addUpdate(const string& command, const string& status) {
 	updates.erase(updateID - 10);
 }
 
-bool WebServer::nextUpdate(unsigned int& updateID, string& s) {
+bool WebServer::nextUpdate(unsigned int& updateIDClient, string& s) {
 	std::lock_guard<std::mutex> Guard(updateMutex);
-	if(updates.count(updateID) == 1) {
-		s = updates.at(updateID);
+	// updateIDClient found
+	if(updates.count(updateIDClient) == 1) {
+		s = updates.at(updateIDClient);
 		return true;
 	}
 
+	// updateIDClient is lower then available data
 	for (auto& update : updates) {
-		if (update.first > updateID) {
-			updateID = update.first;
+		if (update.first > updateIDClient) {
+			updateIDClient = update.first;
 			s = update.second;
 			return true;
 		}
 	}
 
+	// updateIDClient is bigger then available data
+	updateID = updateIDClient;
 	return false;
 }
 
