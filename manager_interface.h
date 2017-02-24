@@ -14,6 +14,7 @@ class ManagerInterface {
 		virtual void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) = 0;
 		virtual void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) = 0;
 		virtual void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) = 0;
+		virtual void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) = 0;
 		virtual void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
   private:
     managerID_t managerID;

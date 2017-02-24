@@ -51,8 +51,28 @@ namespace hardware {
 	}
 
 	// set loco function
-	void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) {
+	void Virtual::locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) {
 		xlog("Setting f%i of virtual loco %i/%i to \"%s\"", (int)function, (int)protocol, (int)address, on ? "on" : "off");
+	}
+
+	// accessory command
+	void Virtual::accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) {
+		char* stateText;
+		switch (state) {
+			case 0:
+				"red on";
+				break;
+			case 1:
+				"red off";
+				break;
+			case 2:
+				"green on";
+				break;
+			case 3:
+				"green off";
+				break;
+		}
+		xlog("Setting state of virtual accessory %i/%i to \"%s\"", (int)protocol, (int)address, stateText);
 	}
 
 } // namespace

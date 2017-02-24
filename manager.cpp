@@ -125,11 +125,25 @@ bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, 
 	return true;
 }
 
+bool Manager::getAccessoryProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
+	// FIXME: not completely implemented
+	controlID = 1;
+	protocol = PROTOCOL_DCC;
+	address = 5;
+	return true;
+}
+
 const std::string& Manager::getLocoName(const locoID_t locoID) {
 	if (locos.count(locoID) == 1) {
 		return locos.at(locoID)->name;
 	}
 	return unknownLoco;
+}
+
+static string accessoryName("Accessory Name");
+const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
+	// FIXME: Acessory name not implemented
+	return accessoryName;
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
@@ -176,3 +190,10 @@ void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, con
 		control->feedback(managerID, pin, state);
 	}
 }
+
+void Manager::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+  for (auto control : controllers) {
+		control->accessory(managerID, accessoryID, state);
+	}
+}
+

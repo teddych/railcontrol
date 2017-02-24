@@ -26,6 +26,7 @@ namespace hardware {
 			void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
 			void locoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
 			void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
+			void accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) override;
 		private:
 			void createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
 			void readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length);

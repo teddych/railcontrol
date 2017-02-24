@@ -210,6 +210,10 @@ namespace hardware {
 		}
 	}
 
+	void CS2::accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) {
+		xlog("CS2 accessory not yet implemented");
+	}
+
   // the receiver thread of the CS2
   void CS2::receiver() {
     xlog("CS2 receiver started");

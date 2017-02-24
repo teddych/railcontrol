@@ -165,6 +165,16 @@ void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID,
 	addUpdate(command.str(), status.str());
 }
 
+void WebServer::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+	std::stringstream command;
+	std::stringstream status;
+	const char* colorText = ((state & 0x02) ? "red" : "green");
+	const char* stateText = ((state & 0x01) ? "on" : "off");
+	command << "accessory;accessory=" << accessoryID << ";color=" << colorText << ";on=" << stateText;
+	status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText;
+	addUpdate(command.str(), status.str());
+}
+
 void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	std::stringstream command;
 	std::stringstream status;

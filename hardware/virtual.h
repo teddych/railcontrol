@@ -34,6 +34,9 @@ namespace hardware {
 			// set loco function
 			void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 
+			// accessory command
+			void accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) override;
+
 		private:
 			std::string name;
   };

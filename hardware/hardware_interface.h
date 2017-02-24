@@ -32,6 +32,9 @@ namespace hardware {
 
 			// set loco function
 			virtual void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) = 0;
+
+			// accessory command
+			virtual void accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) = 0;
 	};
 
 } // namespace

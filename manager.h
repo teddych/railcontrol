@@ -21,12 +21,15 @@ class Manager {
 		void deleteHardware(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+		bool getAccessoryProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 		const std::string& getLocoName(const locoID_t locoID);
+		const std::string& getAccessoryName(const accessoryID_t accessoryID);
 		void locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed);
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
 		void locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction);
 		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
+		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
 	private:
