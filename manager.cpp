@@ -41,16 +41,27 @@ Manager::Manager(Config& config) :
 	xlog("Controllers loaded");
 
 /*
-	Loco newloco1(1, "Re 460 Teddy", 1, 5, 1119);
+	Loco newloco1(1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
 	storage->loco(newloco1);
 
-	Loco newloco2(2, "ICN", 1, 5, 1118);
+	Loco newloco2(2, "ICN", 1, PROTOCOL_DCC, 1118);
 	storage->loco(newloco2);
 	*/
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
 		xlog("Loaded loco %i/%s", loco.second->locoID, loco.second->name.c_str());
+	}
+
+	Accessory newAccessory1(1, "Weiche Einfahrt 1", 1, PROTOCOL_DCC, 1, 1);
+	storage->accessory(newAccessory1);
+
+	Accessory newAccessory2(2, "Weiche Ausfahrt 1", 1, PROTOCOL_DCC, 2, 1);
+	storage->accessory(newAccessory2);
+
+	storage->allAccessories(accessories);
+	for (auto accessory : accessories) {
+		xlog("Loaded accessory %i/%s", accessory.second->accessoryID, accessory.second->name.c_str());
 	}
 }
 

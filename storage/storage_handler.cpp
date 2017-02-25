@@ -4,6 +4,7 @@
 #include "util.h"
 #include "storage_handler.h"
 
+using datamodel::Accessory;
 using datamodel::Loco;
 using std::map;
 
@@ -93,6 +94,18 @@ namespace storage {
 	void StorageHandler::allLocos(map<locoID_t,datamodel::Loco*>& locos) {
 		if (instance) {
 			return instance->allLocos(locos);
+		}
+	}
+
+	void StorageHandler::accessory(const Accessory& accessory) {
+		if (instance) {
+			instance->accessory(accessory);
+		}
+	}
+
+	void StorageHandler::allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) {
+		if (instance) {
+			return instance->allAccessories(accessories);
 		}
 	}
 
