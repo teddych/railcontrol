@@ -191,7 +191,7 @@ namespace storage {
 		if (db) {
 			stringstream ss;
 			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO accessories (accessoryid, name, controlid, protocol, address, type) VALUES (" << accessory.accessoryID << ", '" << accessory.name << "', " << (int)accessory.controlID << ", " << (int)accessory.protocol << ", " << accessory.address << ", " << accessory.type << ");";
+			ss << "INSERT OR REPLACE INTO accessories (accessoryid, name, controlid, protocol, address, type) VALUES (" << accessory.accessoryID << ", '" << accessory.name << "', " << (int)accessory.controlID << ", " << (int)accessory.protocol << ", " << accessory.address << ", " << (int)accessory.type << ");";
 			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
