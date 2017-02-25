@@ -32,6 +32,7 @@ class Manager {
 		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
+		static void getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText);
 	private:
 		std::vector<ManagerInterface*> controllers;
 		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;

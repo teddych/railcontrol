@@ -211,33 +211,12 @@ namespace hardware {
 	}
 
 	void CS2::accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) {
-		const unsigned char color = state >> 1;
-		const unsigned char on = state & 0x01;
-		const char* colorText;
-		switch (color) {
-			case 0:
-				colorText = "red";
-				break;
-			case 1:
-				colorText = "green";
-				break;
-			case 2:
-				colorText = "yellow";
-				break;
-			default:
-				colorText = "white";
-				break;
-		}
-		const char* onText;
-		switch (on) {
-			case 0:
-				onText = "off";
-				break;
-			default:
-				onText = "on";
-				break;
-		}
-		xlog("Setting state of virtual accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
+		unsigned char color;
+		unsigned char on;
+		char* colorText;
+		char* onText;
+		Manager::getAccessoryTexts(state, color, on, colorText, onText);
+		xlog("Setting state of cs2 accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x0B, 0, 6);

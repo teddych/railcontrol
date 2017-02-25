@@ -1,6 +1,7 @@
 #include <sstream>
 
-#include "../util.h"
+#include "manager.h"
+#include "util.h"
 #include "virtual.h"
 
 namespace hardware {
@@ -57,22 +58,12 @@ namespace hardware {
 
 	// accessory command
 	void Virtual::accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) {
-		const char* stateText;
-		switch (state) {
-			case 0:
-				stateText = "red off";
-				break;
-			case 1:
-				stateText = "red on";
-				break;
-			case 2:
-				stateText = "green off";
-				break;
-			default:
-				stateText = "green on";
-				break;
-		}
-		xlog("Setting state of virtual accessory %i/%i to \"%s\"", (int)protocol, (int)address, stateText);
+		unsigned char color;
+		unsigned char on;
+		char* colorText;
+		char* onText;
+		Manager::getAccessoryTexts(state, color, on, colorText, onText);
+		xlog("Setting state of virtual accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
 	}
 
 } // namespace
