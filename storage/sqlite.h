@@ -27,12 +27,19 @@ namespace storage {
 			// read all locos
 			void allLocos(std::map<locoID_t, datamodel::Loco*>& locos);
 
+			// save accessory
+			void accessory(const datamodel::Accessory& accessory);
+
+			// read all accessories
+			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
+
 		private:
 			sqlite3 *db;
 
 			static int callbackListTables(void *v, int argc, char **argv, char **colName);
 			static int callbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
 			static int callbackAllLocos(void* v, int argc, char **argv, char **colName);
+			static int callbackAllAccessories(void* v, int argc, char **argv, char **colName);
 	};
 
 } // namespace storage

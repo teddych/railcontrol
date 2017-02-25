@@ -14,6 +14,7 @@ typedef unsigned short speed_t;
 typedef bool direction_t;
 typedef unsigned char function_t;
 typedef unsigned short accessoryID_t;
+typedef unsigned char accessoryType_t;
 typedef unsigned char accessoryState_t;
 typedef unsigned int feedbackPin_t;
 typedef unsigned char feedbackState_t;

@@ -29,6 +29,12 @@ namespace storage {
 
 			// read all locos
 			virtual void allLocos(std::map<locoID_t, datamodel::Loco*>& locos) = 0;
+
+			// save accessory
+			virtual void accessory(const datamodel::Accessory& accessory) = 0;
+
+			// read all accessories
+			virtual void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) = 0;
 	};
 
 } // namespace

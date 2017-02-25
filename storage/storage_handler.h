@@ -23,6 +23,8 @@ namespace storage {
 			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
 			void loco(const datamodel::Loco& loco);
 			void allLocos(std::map<locoID_t,datamodel::Loco*>& locos);
+			void accessory(const datamodel::Accessory& accessory);
+			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
 		private:
 			createStorage_t* createStorage;
 			destroyStorage_t* destroyStorage;

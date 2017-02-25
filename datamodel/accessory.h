@@ -9,13 +9,14 @@ namespace datamodel {
 
 	class Accessory {
 		public:
-			Accessory(accessoryID_t accessoryID, std::string name, controlID_t controlID, protocol_t protocol, address_t address);
+			Accessory(accessoryID_t accessoryID, std::string name, controlID_t controlID, protocol_t protocol, address_t address, accessoryType_t type);
 
 			accessoryID_t accessoryID;
 			std::string name;
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;
+			accessoryType_t type;
 			accessoryState_t state;
 	};
 

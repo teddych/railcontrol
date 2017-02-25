@@ -4,6 +4,7 @@
 #include "sqlite.h"
 #include "util.h"
 
+using datamodel::Accessory;
 using datamodel::Loco;
 using hardware::HardwareParams;
 using std::map;
@@ -72,6 +73,19 @@ namespace storage {
 				return;
 			}
 		}
+
+		// create loco table if needed
+		if (tablenames["accessories"] != true) {
+			xlog("Creating table accessories");
+			rc = sqlite3_exec(db, "CREATE TABLE accessories (accessoryid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT, type UNSIGNED TINYINT);", NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+				sqlite3_close(db);
+				db = NULL;
+				return;
+			}
+		}
 	}
 
 	SQLite::~SQLite() {
@@ -112,6 +126,7 @@ namespace storage {
 		}
 	}
 
+	// callback read hardwareparams
 	int SQLite::callbackAllHardwareParams(void* v, int argc, char **argv, char **colName) {
 		map<controlID_t,HardwareParams*>* hardwareParams = static_cast<map<controlID_t,HardwareParams*>*>(v);
 		if (argc != 4) {
@@ -153,6 +168,7 @@ namespace storage {
 		}
 	}
 
+	// callback read all locos
 	int SQLite::callbackAllLocos(void* v, int argc, char **argv, char **colName) {
 		map<locoID_t,Loco*>* locos = static_cast<map<locoID_t,Loco*>*>(v);
 		if (argc != 5) {
@@ -167,6 +183,50 @@ namespace storage {
 		Loco* loco = new Loco(locoID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
 
 		(*locos)[locoID] = loco;
+		return 0;
+	}
+
+	// save accessory
+	void SQLite::accessory(const datamodel::Accessory& accessory) {
+		if (db) {
+			stringstream ss;
+			char* dbError = NULL;
+			ss << "INSERT OR REPLACE INTO accessories (accessoryid, name, controlid, protocol, address, type) VALUES (" << accessory.accessoryID << ", '" << accessory.name << "', " << (int)accessory.controlID << ", " << (int)accessory.protocol << ", " << accessory.address << ", " << accessory.type << ");";
+			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// read all accessories
+	void SQLite::allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) {
+			if (db) {
+			char* dbError = 0;
+			int rc = sqlite3_exec(db, "SELECT accessoryid, name, controlid, protocol, address, type FROM accessories ORDER BY accessoryid;", callbackAllAccessories, &accessories, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// callback read all accessories
+	int SQLite::callbackAllAccessories(void* v, int argc, char **argv, char **colName) {
+		map<accessoryID_t,Accessory*>* accessories = static_cast<map<accessoryID_t,Accessory*>*>(v);
+		if (argc != 6) {
+			return 0;
+		}
+		accessoryID_t accessoryID = atoi(argv[0]);
+		if (accessories->count(accessoryID)) {
+			xlog("Accessory with ID %i already exists", accessoryID);
+			Accessory* accessory = (*accessories)[accessoryID];
+			delete accessory;
+		}
+		Accessory* accessory = new Accessory(accessoryID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+
+		(*accessories)[accessoryID] = accessory;
 		return 0;
 	}
 
