@@ -7,6 +7,7 @@
 #include "util.h"
 #include "webserver/webserver.h"
 
+using datamodel::Accessory;
 using datamodel::Loco;
 using hardware::HardwareHandler;
 using hardware::HardwareParams;
@@ -18,7 +19,8 @@ using webserver::WebServer;
 
 Manager::Manager(Config& config) :
 	storage(NULL),
-	unknownLoco("Unknown Loco") {
+	unknownLoco("Unknown Loco"),
+	unknownAccessory("Unknown Accessory") {
 
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
@@ -125,11 +127,17 @@ bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, 
 	return true;
 }
 
-bool Manager::getAccessoryProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
-	// FIXME: not completely implemented
-	controlID = 1;
-	protocol = PROTOCOL_DCC;
-	address = 5;
+bool Manager::getAccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
+	if (accessories.count(accessoryID) < 1) {
+		controlID = 0;
+		protocol = PROTOCOL_NONE;
+		address = 0;
+		return false;
+	}
+	Accessory* accessory = accessories.at(accessoryID);
+	controlID = accessory->controlID;
+	protocol = accessory->protocol;
+	address = accessory->address;
 	return true;
 }
 
@@ -140,10 +148,11 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 	return unknownLoco;
 }
 
-static string accessoryName("Accessory Name");
 const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
-	// FIXME: Acessory name not implemented
-	return accessoryName;
+	if (accessories.count(accessoryID) == 1) {
+		return accessories.at(accessoryID)->name;
+	}
+	return unknownAccessory;
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {

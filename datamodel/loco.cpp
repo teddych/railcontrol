@@ -11,5 +11,5 @@ namespace datamodel {
 		speed(0) {
 	}
 
-} // namespace Loco
+} // namespace datamodel
 

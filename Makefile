@@ -9,6 +9,7 @@ LIBS=-lpthread -ldl
 
 OBJ= \
 	config.o \
+	datamodel/accessory.o \
 	datamodel/loco.o \
 	hardware/hardware_handler.o \
 	hardware/hardware_params.o \
@@ -27,7 +28,7 @@ all: $(OBJ)
 sqlite-shell:
 	make -C storage/sqlite
 
-%.o: %.cpp *.h webserver/*.h storage/*.h hardware/*.h
+%.o: %.cpp *.h datamodel/*.h webserver/*.h storage/*.h hardware/*.h
 	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 install:

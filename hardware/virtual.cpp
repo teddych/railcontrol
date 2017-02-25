@@ -57,19 +57,19 @@ namespace hardware {
 
 	// accessory command
 	void Virtual::accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) {
-		char* stateText;
+		const char* stateText;
 		switch (state) {
 			case 0:
-				"red on";
+				stateText = "red off";
 				break;
 			case 1:
-				"red off";
+				stateText = "red on";
 				break;
 			case 2:
-				"green on";
+				stateText = "green off";
 				break;
-			case 3:
-				"green off";
+			default:
+				stateText = "green on";
 				break;
 		}
 		xlog("Setting state of virtual accessory %i/%i to \"%s\"", (int)protocol, (int)address, stateText);

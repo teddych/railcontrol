@@ -211,7 +211,50 @@ namespace hardware {
 	}
 
 	void CS2::accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) {
-		xlog("CS2 accessory not yet implemented");
+		const unsigned char color = state >> 1;
+		const unsigned char on = state & 0x01;
+		const char* colorText;
+		switch (color) {
+			case 0:
+				colorText = "red";
+				break;
+			case 1:
+				colorText = "green";
+				break;
+			case 2:
+				colorText = "yellow";
+				break;
+			default:
+				colorText = "white";
+				break;
+		}
+		const char* onText;
+		switch (on) {
+			case 0:
+				onText = "off";
+				break;
+			default:
+				onText = "on";
+				break;
+		}
+		xlog("Setting state of virtual accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
+		char buffer[CS2_CMD_BUF_LEN];
+		// set header
+		createCommandHeader(buffer, 0, 0x0B, 0, 6);
+		// set data buffer (8 bytes) to 0
+		int64_t* buffer_data = (int64_t*) (buffer + 5);
+		*buffer_data = 0L;
+		// set locID
+		createLocID(buffer + 5, protocol, address);
+		buffer[9] = color;
+		buffer[10] = on;
+
+		hexlog(buffer, sizeof(buffer));
+
+		// send data
+		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
+			xlog("Unable to send data to CS2");
+		}
 	}
 
   // the receiver thread of the CS2
