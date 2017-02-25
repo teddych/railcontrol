@@ -132,12 +132,9 @@ void WebServer::worker() {
 	}
 }
 
-void WebServer::go(const managerID_t managerID) {
-	addUpdate("boosteron", "Booster is on");
-}
-
-void WebServer::stop(const managerID_t managerID) {
-	addUpdate("boosteroff", "Booster is off");
+void WebServer::booster(const managerID_t managerID, const boosterStatus_t status) {
+	if (status) addUpdate("boosteron", "Booster is on");
+	else addUpdate("boosteroff", "Booster is off");
 }
 
 void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {

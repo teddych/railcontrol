@@ -93,15 +93,9 @@ std::string HardwareHandler::getName() const {
 	return "Unknown, not running";
 }
 
-void HardwareHandler::go(const managerID_t managerID) {
+void HardwareHandler::booster(const managerID_t managerID, const boosterStatus_t status) {
   if (managerID != MANAGER_ID_HARDWARE) {
-		instance->go();
-	}
-}
-
-void HardwareHandler::stop(const managerID_t managerID) {
-  if (managerID != MANAGER_ID_HARDWARE) {
-		instance->stop();
+		instance->booster(status);
 	}
 }
 

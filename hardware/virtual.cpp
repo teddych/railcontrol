@@ -26,14 +26,10 @@ namespace hardware {
 		name = ss.str();
 	}
 
-	// GO-command (turn on booster)
-  void Virtual::go() {
-		xlog("Turning virtual booster on");
-  }
-
-	// Stop-command (turn off booster)
-  void Virtual::stop() {
-		xlog("Turning virtual booster off");
+	// turn booster on or off
+  void Virtual::booster(const boosterStatus_t status) {
+		if (status) xlog("Turning virtual booster on");
+		else xlog("Turning virtual booster off");
   }
 
 	// return the name

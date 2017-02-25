@@ -6,6 +6,7 @@
 typedef unsigned char managerID_t;
 typedef unsigned char controlID_t;
 typedef unsigned char hardwareID_t;
+typedef unsigned char boosterStatus_t;
 typedef unsigned short locoID_t;
 typedef unsigned char protocol_t;
 typedef unsigned short address_t;
@@ -21,6 +22,11 @@ enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
 	MANAGER_ID_HARDWARE,
 	MANAGER_ID_WEBSERVER
+};
+
+enum boosterStatus : boosterStatus_t {
+	BOOSTER_STOP = 0,
+	BOOSTER_GO
 };
 
 enum protocols : protocol_t {

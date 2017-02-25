@@ -9,8 +9,7 @@ class ManagerInterface {
 	public:
 		ManagerInterface() {};
     virtual ~ManagerInterface() {};
-		virtual void go(const managerID_t managerID) = 0;
-		virtual void stop(const managerID_t managerID) = 0;
+		virtual void booster(const managerID_t managerID, const boosterStatus_t status) = 0;
 		virtual void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) = 0;
 		virtual void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) = 0;
 		virtual void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) = 0;

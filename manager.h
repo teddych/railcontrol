@@ -15,8 +15,7 @@ class Manager {
 	public:
 		Manager(Config& config);
 		~Manager();
-		void go(const managerID_t managerID);
-		void stop(const managerID_t managerID);
+		void booster(const managerID_t managerID, const boosterStatus_t status);
 		void saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip);
 		void deleteHardware(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);

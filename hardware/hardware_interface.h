@@ -18,11 +18,8 @@ namespace hardware {
 			// get the name of the hardware
 			virtual std::string getName() const = 0;
 
-			// GO-command (turn on booster)
-			virtual void go() = 0;
-
-			// Stop-command (turn off booster)
-			virtual void stop() = 0;
+			// turn booster on or off
+			virtual void booster(const boosterStatus_t status) = 0;
 
 			// set loco speed
 			virtual void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) = 0;

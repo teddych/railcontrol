@@ -96,16 +96,16 @@ namespace webserver {
 		// handle requests
 		if (arguments["cmd"].compare("quit") == 0) {
 			simpleReply("Stopping Railcontrol");
-			manager.stop(MANAGER_ID_WEBSERVER);
+			manager.booster(MANAGER_ID_WEBSERVER, BOOSTER_STOP);
 			stopRailControl(SIGTERM);
 		}
 		else if (arguments["cmd"].compare("on") == 0) {
 			simpleReply("Turning booster on");
-			manager.go(MANAGER_ID_WEBSERVER);
+			manager.booster(MANAGER_ID_WEBSERVER, BOOSTER_GO);
 		}
 		else if (arguments["cmd"].compare("off") == 0) {
 			simpleReply("Turning booster off");
-			manager.stop(MANAGER_ID_WEBSERVER);
+			manager.booster(MANAGER_ID_WEBSERVER, BOOSTER_STOP);
 		}
 		else if (arguments["cmd"].compare("loco") == 0) {
 			printLoco(arguments);

@@ -68,15 +68,9 @@ Manager::~Manager() {
 	storage = NULL;
 }
 
-void Manager::go(const managerID_t managerID) {
+void Manager::booster(const managerID_t managerID, const boosterStatus_t status) {
   for (auto control : controllers) {
-		control->go(managerID);
-	}
-}
-
-void Manager::stop(const managerID_t managerID) {
-  for (auto control : controllers) {
-		control->stop(managerID);
+		control->booster(managerID, status);
 	}
 }
 

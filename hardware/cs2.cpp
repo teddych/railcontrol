@@ -108,8 +108,10 @@ namespace hardware {
 		intToData(locID, buffer);
 	}
 
-	// GO-command (turn on booster)
-  void CS2::go() {
+	// turn booster on or off
+	void CS2::booster(const boosterStatus_t status) {
+		if (status) xlog("Turning CS2 booster on");
+		else xlog("Turning CS2 off");
 		char buffer[CS2_CMD_BUF_LEN];
 		// fill up header & locid
 		createCommandHeader(buffer, 0, 0x00, 0, 5);
@@ -118,33 +120,13 @@ namespace hardware {
 		*buffer_data = 0L;
 		//buffer[5-8]: 0 = all
 		//buffer[9]: subcommand stop 0x01
-		buffer[9] = 0x01;
+		buffer[9] = status;
 
 		// send data
 		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
 			xlog("Unable to send data to CS2");
 			return;
 		}
-		xlog("Starting CS2");
-  }
-
-	// Stop-command (turn off booster)
-  void CS2::stop() {
-		char buffer[CS2_CMD_BUF_LEN];
-		// fill up header & locid
-		createCommandHeader(buffer, 0, 0x00, 0, 5);
-		// set data buffer (8 bytes) to 0
-		int64_t* buffer_data = (int64_t*) (buffer + 5);
-		*buffer_data = 0L;
-		//buffer[5-8]: 0 = all
-		//buffer[9]: subcommand stop 0x00 (is alreay 0x00)
-
-		// send data
-		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
-			xlog("Unable to send data to CS2");
-			return;
-		}
-		xlog("Stopping CS2");
   }
 
 	// set the speed of a loco
