@@ -11,10 +11,10 @@ LIBS= \
 
 all: $(LIBS)
 
-sqlite.so: sqlite.o sqlite/sqlite3.o
+sqlite.so: sqlite.o sqlite/sqlite3.o *.h ../*.h ../datamodel/*.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<  sqlite/sqlite3.o
 
-sqlite/sqlite3.o: sqlite/sqlite3.c
+sqlite/sqlite3.o: sqlite/sqlite3.c sqlite/sqlite3.h
 	$(CC) $(CFLAGS) \
 	-DSQLITE_ENABLE_FTS4 \
 	-DSQLITE_ENABLE_JSON1 \
@@ -25,10 +25,10 @@ sqlite/sqlite3.o: sqlite/sqlite3.c
 #sqlite.so: sqlite.cpp
 #	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $< sqlite/sqlite3.o -ldl -pthread
 
-%.so: %.cpp %.h
+%.so: %.cpp *.h ../*.h ../datamodel/*.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
-%.so: %.o
+%.so: %.o *.h ../*.h ../datamodel/*.h
 	$(CPP) -o $@ $< $(LDFLAGS)$@
 
 clean:

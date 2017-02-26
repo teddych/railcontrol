@@ -37,7 +37,7 @@ install:
 clean:
 	make -C hardware clean
 	make -C storage clean
-	rm -f *.o webserver/*.o
+	rm -f *.o webserver/*.o datamodel/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:

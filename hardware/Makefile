@@ -9,7 +9,7 @@ LIBS= \
 	cs2.so \
 	virtual.so
 
-%.so: %.cpp %.h hardware_interface.h
+%.so: %.cpp *.h ../*.h ../datamodel/*.h
 	$(CC) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
 all: $(LIBS)
