@@ -16,22 +16,23 @@ namespace storage {
 			~SQLite();
 
 			// save control
-			void hardwareParams(const hardware::HardwareParams& params);
+			void hardwareParams(const hardware::HardwareParams& params) override;
 
 			// read controls
-			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
+			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) override;
 
 			// save loco
-			void loco(const datamodel::Loco& loco);
+			void loco(const datamodel::Loco& loco) override;
 
 			// read all locos
-			void allLocos(std::map<locoID_t, datamodel::Loco*>& locos);
+			void allLocos(std::map<locoID_t, datamodel::Loco*>& locos) override;
 
 			// save accessory
-			void accessory(const datamodel::Accessory& accessory);
+			void accessory(const datamodel::Accessory& accessory) override;
 
 			// read all accessories
-			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
+			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) override;
+
 
 		private:
 			sqlite3 *db;
