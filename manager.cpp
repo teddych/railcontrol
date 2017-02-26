@@ -8,6 +8,7 @@
 #include "webserver/webserver.h"
 
 using datamodel::Accessory;
+using datamodel::Feedback;
 using datamodel::Loco;
 using hardware::HardwareHandler;
 using hardware::HardwareParams;
@@ -20,7 +21,8 @@ using webserver::WebServer;
 Manager::Manager(Config& config) :
 	storage(NULL),
 	unknownLoco("Unknown Loco"),
-	unknownAccessory("Unknown Accessory") {
+	unknownAccessory("Unknown Accessory"),
+	unknownFeedback("Unknown Feedback") {
 
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
@@ -62,6 +64,17 @@ Manager::Manager(Config& config) :
 	storage->allAccessories(accessories);
 	for (auto accessory : accessories) {
 		xlog("Loaded accessory %i/%s", accessory.second->accessoryID, accessory.second->name.c_str());
+	}
+
+	Feedback newFeedback1(1, "Rückmelder Einfahrt links", 1, 1);
+	storage->feedback(newFeedback1);
+
+	Feedback newFeedback2(2, "Rückmelder Einfahrt rechts", 1, 2);
+	storage->feedback(newFeedback2);
+
+	storage->allFeedbacks(feedbacks);
+	for (auto feedback : feedbacks) {
+		xlog("Loaded Feedback %i/%s", feedback.second->feedbackID, feedback.second->name.c_str());
 	}
 }
 

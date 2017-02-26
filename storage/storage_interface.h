@@ -35,6 +35,12 @@ namespace storage {
 
 			// read all accessories
 			virtual void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) = 0;
+
+			// save feedback
+			virtual void feedback(const datamodel::Feedback& feedback) = 0;
+
+			// read all feedbacks
+			virtual void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks) = 0;
 	};
 
 } // namespace

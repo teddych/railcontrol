@@ -37,9 +37,11 @@ class Manager {
 		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;
 		std::map<locoID_t,datamodel::Loco*> locos;
 		std::map<accessoryID_t,datamodel::Accessory*> accessories;
+		std::map<feedbackID_t,datamodel::Feedback*> feedbacks;
 		storage::StorageHandler* storage;
 		const std::string unknownLoco;
 		const std::string unknownAccessory;
+		const std::string unknownFeedback;
 };
 
 #endif // MANAGER_H

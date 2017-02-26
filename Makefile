@@ -10,6 +10,7 @@ LIBS=-lpthread -ldl
 OBJ= \
 	config.o \
 	datamodel/accessory.o \
+	datamodel/feedback.o \
 	datamodel/loco.o \
 	hardware/hardware_handler.o \
 	hardware/hardware_params.o \

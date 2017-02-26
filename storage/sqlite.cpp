@@ -5,6 +5,7 @@
 #include "util.h"
 
 using datamodel::Accessory;
+using datamodel::Feedback;
 using datamodel::Loco;
 using hardware::HardwareParams;
 using std::map;
@@ -74,10 +75,23 @@ namespace storage {
 			}
 		}
 
-		// create loco table if needed
+		// create accessories table if needed
 		if (tablenames["accessories"] != true) {
 			xlog("Creating table accessories");
 			rc = sqlite3_exec(db, "CREATE TABLE accessories (accessoryid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT, type UNSIGNED TINYINT);", NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+				sqlite3_close(db);
+				db = NULL;
+				return;
+			}
+		}
+
+		// create feedbacks table if needed
+		if (tablenames["feedbacks"] != true) {
+			xlog("Creating table feedbacks");
+			rc = sqlite3_exec(db, "CREATE TABLE feedbacks (feedbackid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, pin UNSIGNED INT);", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -227,6 +241,50 @@ namespace storage {
 		Accessory* accessory = new Accessory(accessoryID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
 
 		(*accessories)[accessoryID] = accessory;
+		return 0;
+	}
+
+	// save feedback
+	void SQLite::feedback(const datamodel::Feedback& feedback) {
+		if (db) {
+			stringstream ss;
+			char* dbError = NULL;
+			ss << "INSERT OR REPLACE INTO feedbacks (feedbackid, name, controlid, pin) VALUES (" << feedback.feedbackID << ", '" << feedback.name << "', " << (int)feedback.controlID << ", " << feedback.pin << ");";
+			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// read all feedbacks
+	void SQLite::allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks) {
+			if (db) {
+			char* dbError = 0;
+			int rc = sqlite3_exec(db, "SELECT feedbackid, name, controlid, pin FROM feedbacks ORDER BY feedbackid;", callbackAllFeedbacks, &feedbacks, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// callback read all feedbacks
+	int SQLite::callbackAllFeedbacks(void* v, int argc, char **argv, char **colName) {
+		map<feedbackID_t,Feedback*>* feedbacks = static_cast<map<feedbackID_t,Feedback*>*>(v);
+		if (argc != 4) {
+			return 0;
+		}
+		feedbackID_t feedbackID = atoi(argv[0]);
+		if (feedbacks->count(feedbackID)) {
+			xlog("feedback with ID %i already exists", feedbackID);
+			Feedback* feedback = (*feedbacks)[feedbackID];
+			delete feedback;
+		}
+		Feedback* feedback = new Feedback(feedbackID, argv[1], atoi(argv[2]), atoi(argv[3]));
+
+		(*feedbacks)[feedbackID] = feedback;
 		return 0;
 	}
 
