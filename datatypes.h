@@ -3,19 +3,24 @@
 
 #include <string>
 
+// common
 typedef unsigned char managerID_t;
 typedef unsigned char controlID_t;
 typedef unsigned char hardwareID_t;
+// booster
 typedef unsigned char boosterStatus_t;
+// loco
 typedef unsigned short locoID_t;
 typedef unsigned char protocol_t;
 typedef unsigned short address_t;
 typedef unsigned short speed_t;
 typedef bool direction_t;
 typedef unsigned char function_t;
+// accessory
 typedef unsigned short accessoryID_t;
 typedef unsigned char accessoryType_t;
 typedef unsigned char accessoryState_t;
+// feedback
 typedef unsigned int feedbackPin_t;
 typedef unsigned char feedbackState_t;
 

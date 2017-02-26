@@ -19,6 +19,6 @@ namespace datamodel {
 			speed_t speed;
 	};
 
-} // namespace storage
+} // namespace datamodel
 
 #endif // DATAMODEL_LOCO_H

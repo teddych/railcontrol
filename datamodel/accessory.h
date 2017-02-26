@@ -20,6 +20,6 @@ namespace datamodel {
 			accessoryState_t state;
 	};
 
-} // namespace storage
+} // namespace datamodel
 
 #endif // DATAMODEL_ACCESSORY_H
