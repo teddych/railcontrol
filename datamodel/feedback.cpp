@@ -6,7 +6,8 @@ namespace datamodel {
 		feedbackID(feedbackID),
 		name(name),
 		controlID(controlID),
-		pin(pin) {
+		pin(pin),
+		state(FEEDBACK_STATE_FREE) {
 	}
 
 } // namespace datamodel

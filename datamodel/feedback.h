@@ -15,6 +15,7 @@ namespace datamodel {
 			std::string name;
 			controlID_t controlID;
 			feedbackPin_t pin;
+			feedbackState_t state;
 	};
 
 } // namespace datamodel
