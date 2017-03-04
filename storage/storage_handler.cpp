@@ -123,15 +123,15 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
-		if (instance) {
-			return instance->allBlocks(blocks);
-		}
-	}
-
 	void StorageHandler::block(const Block& block) {
 		if (instance) {
 			instance->block(block);
+		}
+	}
+
+	void StorageHandler::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
+		if (instance) {
+			return instance->allBlocks(blocks);
 		}
 	}
 
