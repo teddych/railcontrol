@@ -5,6 +5,7 @@
 #include "storage_handler.h"
 
 using datamodel::Accessory;
+using datamodel::Block;
 using datamodel::Feedback;
 using datamodel::Loco;
 using std::map;
@@ -119,6 +120,18 @@ namespace storage {
 	void StorageHandler::allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks) {
 		if (instance) {
 			return instance->allFeedbacks(feedbacks);
+		}
+	}
+
+	void StorageHandler::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
+		if (instance) {
+			return instance->allBlocks(blocks);
+		}
+	}
+
+	void StorageHandler::block(const Block& block) {
+		if (instance) {
+			instance->block(block);
 		}
 	}
 

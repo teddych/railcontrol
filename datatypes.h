@@ -24,6 +24,9 @@ typedef unsigned char accessoryState_t;
 typedef unsigned short feedbackID_t;
 typedef unsigned int feedbackPin_t;
 typedef unsigned char feedbackState_t;
+// block
+typedef unsigned short blockID_t;
+typedef unsigned char blockState_t;
 
 enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
@@ -71,6 +74,17 @@ static std::string hardwareSymbols[] = {
 	"none",
 	"virtual",
 	"cs2"
+};
+
+enum feedbackState : feedbackState_t {
+	FEEDBACK_STATE_FREE = 0,
+	FEEDBACK_STATE_OCCUPIED
+};
+
+enum blockState : blockState_t {
+	BLOCK_STATE_FREE = 0,
+	BLOCK_STATE_RESERVED,
+	BLOCK_STATE_USED
 };
 
 #endif // DATATYPES_H

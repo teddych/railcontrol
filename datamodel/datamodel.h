@@ -2,6 +2,7 @@
 #define DATAMODEL_DATAMODEL_H
 
 #include "accessory.h"
+#include "block.h"
 #include "feedback.h"
 #include "loco.h"
 

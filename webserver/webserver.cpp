@@ -183,6 +183,16 @@ void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, c
 	addUpdate(command.str(), status.str());
 }
 
+void WebServer::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
+	std::stringstream command;
+	std::stringstream status;
+	char* stateText;
+	Manager::getBlockTexts(state, stateText);
+	command << "block;block=" << blockID << ";state=" << stateText;
+	status << manager.getBlockName(blockID) << " is " << stateText;
+	addUpdate(command.str(), status.str());
+}
+
 void WebServer::addUpdate(const string& command, const string& status) {
 	stringstream ss;
 	ss << "data: command=" << command << ";status=" << status << "\r\n\r\n";

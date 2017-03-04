@@ -2,6 +2,7 @@
 #define MANAGER_H
 
 #include <map>
+#include <mutex>
 #include <string>
 #include <vector>
 
@@ -32,16 +33,26 @@ class Manager {
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
 		static void getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText);
+
+		// block
+		void block(const managerID_t managerID, const feedbackID_t feedbackID, const blockState_t);
+		datamodel::Block* getBlock(const blockID_t blockID);
+		const std::string& getBlockName(const blockID_t blockID);
+		static void getBlockTexts(const blockState_t state, char*& stateText);
+
 	private:
 		std::vector<ManagerInterface*> controllers;
 		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;
 		std::map<locoID_t,datamodel::Loco*> locos;
 		std::map<accessoryID_t,datamodel::Accessory*> accessories;
 		std::map<feedbackID_t,datamodel::Feedback*> feedbacks;
+		std::map<blockID_t,datamodel::Block*> blocks;
+		std::mutex blockMutex;
 		storage::StorageHandler* storage;
 		const std::string unknownLoco;
 		const std::string unknownAccessory;
 		const std::string unknownFeedback;
+		const std::string unknownBlock;
 };
 
 #endif // MANAGER_H

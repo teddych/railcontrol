@@ -8,6 +8,7 @@
 #include "webserver/webserver.h"
 
 using datamodel::Accessory;
+using datamodel::Block;
 using datamodel::Feedback;
 using datamodel::Loco;
 using hardware::HardwareHandler;
@@ -22,7 +23,8 @@ Manager::Manager(Config& config) :
 	storage(NULL),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
-	unknownFeedback("Unknown Feedback") {
+	unknownFeedback("Unknown Feedback"),
+	unknownBlock("Unknown Block") {
 
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
@@ -75,6 +77,17 @@ Manager::Manager(Config& config) :
 	storage->allFeedbacks(feedbacks);
 	for (auto feedback : feedbacks) {
 		xlog("Loaded Feedback %i/%s", feedback.second->feedbackID, feedback.second->name.c_str());
+	}
+
+	Block newBlock1(1, "Block 1");
+	storage->block(newBlock1);
+
+	Block newBlock2(2, "Block 2");
+	storage->block(newBlock2);
+
+	storage->allBlocks(blocks);
+	for (auto block : blocks) {
+		xlog("Loaded block %i/%s", block.second->blockID, block.second->name.c_str());
 	}
 }
 
@@ -173,6 +186,13 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
 	return unknownAccessory;
 }
 
+const std::string& Manager::getBlockName(const blockID_t blockID) {
+	if (blocks.count(blockID) == 1) {
+		return blocks.at(blockID)->name;
+	}
+	return unknownBlock;
+}
+
 void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
 	for (auto loco : locos) {
 		if (loco.second->protocol == protocol && loco.second->address == address) {
@@ -251,6 +271,34 @@ void Manager::getAccessoryTexts(const accessoryState_t state, unsigned char& col
 			break;
 		default:
 			onText = (char*)"on";
+			break;
+	}
+}
+
+void Manager::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
+  for (auto control : controllers) {
+		control->block(managerID, blockID, state);
+	}
+}
+
+Block* Manager::getBlock(const blockID_t blockID) {
+	std::lock_guard<std::mutex> Guard(blockMutex);
+	if (blocks.count(blockID) == 1) {
+		return blocks.at(blockID);
+	}
+	return NULL;
+}
+
+void Manager::getBlockTexts(const blockState_t state, char*& stateText) {
+	switch (state) {
+		case BLOCK_STATE_FREE:
+			stateText = (char*)"free";
+			break;
+		case BLOCK_STATE_RESERVED:
+			stateText = (char*)"reserved";
+			break;
+		case BLOCK_STATE_USED:
+			stateText = (char*)"used";
 			break;
 	}
 }

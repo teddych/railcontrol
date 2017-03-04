@@ -27,6 +27,8 @@ namespace storage {
 			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
 			void feedback(const datamodel::Feedback& feedback);
 			void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks);
+			void block(const datamodel::Block& block);
+			void allBlocks(std::map<blockID_t,datamodel::Block*>& blocks);
 		private:
 			createStorage_t* createStorage;
 			destroyStorage_t* destroyStorage;

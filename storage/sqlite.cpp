@@ -5,6 +5,7 @@
 #include "util.h"
 
 using datamodel::Accessory;
+using datamodel::Block;
 using datamodel::Feedback;
 using datamodel::Loco;
 using hardware::HardwareParams;
@@ -92,6 +93,19 @@ namespace storage {
 		if (tablenames["feedbacks"] != true) {
 			xlog("Creating table feedbacks");
 			rc = sqlite3_exec(db, "CREATE TABLE feedbacks (feedbackid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, pin UNSIGNED INT);", NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+				sqlite3_close(db);
+				db = NULL;
+				return;
+			}
+		}
+
+		// create blocks table if needed
+		if (tablenames["blocks"] != true) {
+			xlog("Creating table blocks");
+			rc = sqlite3_exec(db, "CREATE TABLE blocks (blockid UNSIGNED INT PRIMARY KEY, name VARCHAR(50));", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -285,6 +299,50 @@ namespace storage {
 		Feedback* feedback = new Feedback(feedbackID, argv[1], atoi(argv[2]), atoi(argv[3]));
 
 		(*feedbacks)[feedbackID] = feedback;
+		return 0;
+	}
+
+	// save block
+	void SQLite::block(const datamodel::Block& block) {
+		if (db) {
+			stringstream ss;
+			char* dbError = NULL;
+			ss << "INSERT OR REPLACE INTO blocks (blockid, name) VALUES (" << block.blockID << ", '" << block.name << "');";
+			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// read all blocks
+	void SQLite::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
+			if (db) {
+			char* dbError = 0;
+			int rc = sqlite3_exec(db, "SELECT blockid, name FROM blocks ORDER BY blockid;", callbackAllBlocks, &blocks, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// callback read all blocks
+	int SQLite::callbackAllBlocks(void* v, int argc, char **argv, char **colName) {
+		map<blockID_t,Block*>* blocks = static_cast<map<blockID_t,Block*>*>(v);
+		if (argc != 2) {
+			return 0;
+		}
+		blockID_t blockID = atoi(argv[0]);
+		if (blocks->count(blockID)) {
+			xlog("Block with ID %i already exists", blockID);
+			Block* block = (*blocks)[blockID];
+			delete block;
+		}
+		Block* block = new Block(blockID, argv[1]);
+
+		(*blocks)[blockID] = block;
 		return 0;
 	}
 

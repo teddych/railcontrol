@@ -24,6 +24,7 @@ namespace webserver {
 			void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) override;
 			void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) override;
 			void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
+			void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) override;
 		private:
 			void worker();
 			void addUpdate(const std::string& command, const std::string& status);

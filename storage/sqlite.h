@@ -39,6 +39,12 @@ namespace storage {
 			// read all feedbacks
 			void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedback) override;
 
+			// save block
+			void block(const datamodel::Block& block) override;
+
+			// read all blocks
+			void allBlocks(std::map<blockID_t,datamodel::Block*>& block) override;
+
 		private:
 			sqlite3 *db;
 
@@ -47,6 +53,7 @@ namespace storage {
 			static int callbackAllLocos(void* v, int argc, char **argv, char **colName);
 			static int callbackAllAccessories(void* v, int argc, char **argv, char **colName);
 			static int callbackAllFeedbacks(void* v, int argc, char **argv, char **colName);
+			static int callbackAllBlocks(void* v, int argc, char **argv, char **colName);
 	};
 
 } // namespace storage
