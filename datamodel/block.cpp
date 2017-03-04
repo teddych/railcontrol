@@ -37,5 +37,19 @@ namespace datamodel {
 		return false;
 	}
 
+	void Block::getTexts(const blockState_t state, char*& stateText) {
+		switch (state) {
+			case BLOCK_STATE_FREE:
+				stateText = (char*)"free";
+				break;
+			case BLOCK_STATE_RESERVED:
+				stateText = (char*)"reserved";
+				break;
+			case BLOCK_STATE_USED:
+				stateText = (char*)"used";
+				break;
+		}
+	}
+
 } // namespace datamodel
 

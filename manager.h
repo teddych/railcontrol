@@ -48,7 +48,6 @@ class Manager {
 		void block(const managerID_t managerID, const feedbackID_t feedbackID, const blockState_t);
 		datamodel::Block* getBlock(const blockID_t blockID);
 		const std::string& getBlockName(const blockID_t blockID);
-		static void getBlockTexts(const blockState_t state, char*& stateText);
 
 	private:
 		std::vector<ManagerInterface*> controllers;

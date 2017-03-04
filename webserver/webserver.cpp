@@ -187,7 +187,7 @@ void WebServer::block(const managerID_t managerID, const blockID_t blockID, cons
 	std::stringstream command;
 	std::stringstream status;
 	char* stateText;
-	Manager::getBlockTexts(state, stateText);
+	datamodel::Block::getTexts(state, stateText);
 	command << "block;block=" << blockID << ";state=" << stateText;
 	status << manager.getBlockName(blockID) << " is " << stateText;
 	addUpdate(command.str(), status.str());

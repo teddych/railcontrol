@@ -288,17 +288,3 @@ Block* Manager::getBlock(const blockID_t blockID) {
 	}
 	return NULL;
 }
-
-void Manager::getBlockTexts(const blockState_t state, char*& stateText) {
-	switch (state) {
-		case BLOCK_STATE_FREE:
-			stateText = (char*)"free";
-			break;
-		case BLOCK_STATE_RESERVED:
-			stateText = (char*)"reserved";
-			break;
-		case BLOCK_STATE_USED:
-			stateText = (char*)"used";
-			break;
-	}
-}

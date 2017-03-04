@@ -16,6 +16,8 @@ namespace datamodel {
 			bool reserve(const locoID_t locoID);
 			bool free(const locoID_t locoID);
 
+			static void getTexts(const blockState_t state, char*& stateText);
+
 			blockID_t blockID;
 			std::string name;
 		private:
