@@ -16,23 +16,33 @@ class Manager {
 	public:
 		Manager(Config& config);
 		~Manager();
+
+		// booster
 		void booster(const managerID_t managerID, const boosterStatus_t status);
+
+		// hardware
 		void saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip);
 		void deleteHardware(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
-		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		bool getAccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+
+		// loco
 		const std::string& getLocoName(const locoID_t locoID);
-		const std::string& getAccessoryName(const accessoryID_t accessoryID);
+		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 		void locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed);
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
 		void locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction);
 		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
+		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+
+		// accessory
 		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
-		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
-		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
+		const std::string& getAccessoryName(const accessoryID_t accessoryID);
 		static void getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText);
+		bool getAccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+
+		// feedback
+		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
 
 		// block
 		void block(const managerID_t managerID, const feedbackID_t feedbackID, const blockState_t);
