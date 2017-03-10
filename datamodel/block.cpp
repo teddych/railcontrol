@@ -6,6 +6,7 @@ namespace datamodel {
 		blockID(blockID),
 		name(name),
 		state(BLOCK_STATE_FREE) {
+		height = 1;
 		width = width;
 		rotation = rotation;
 		posX = x;
