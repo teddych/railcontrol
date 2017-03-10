@@ -79,10 +79,10 @@ Manager::Manager(Config& config) :
 		xlog("Loaded Feedback %i/%s", feedback.second->feedbackID, feedback.second->name.c_str());
 	}
 
-	Block newBlock1(1, "Block 1");
+	Block newBlock1(1, "Block 1", 4, ROTATION_0, 5, 5, 0);
 	storage->block(newBlock1);
 
-	Block newBlock2(2, "Block 2");
+	Block newBlock2(2, "Block 2", 4, ROTATION_90, 5, 6, 0);
 	storage->block(newBlock2);
 
 	storage->allBlocks(blocks);

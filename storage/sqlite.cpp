@@ -105,7 +105,7 @@ namespace storage {
 		// create blocks table if needed
 		if (tablenames["blocks"] != true) {
 			xlog("Creating table blocks");
-			rc = sqlite3_exec(db, "CREATE TABLE blocks (blockid UNSIGNED INT PRIMARY KEY, name VARCHAR(50));", NULL, NULL, &dbError);
+			rc = sqlite3_exec(db, "CREATE TABLE blocks (blockid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), width UNSIGNED TINYINT, rotation UNSIGNED TINYINT, x UNSIGEND TINYINT, y UNSIGNED TINYINT, z UNSIGNED TINYINT);", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -307,7 +307,7 @@ namespace storage {
 		if (db) {
 			stringstream ss;
 			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO blocks (blockid, name) VALUES (" << block.blockID << ", '" << block.name << "');";
+			ss << "INSERT OR REPLACE INTO blocks (blockid, name, width, rotation, x, y, z) VALUES (" << block.blockID << ", '" << block.name << "', " << (int)block.width << ", " << (int)block.rotation << ", " << (int)block.posX << ", " << (int)block.posY << ", " << (int)block.posZ << ");";
 			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
@@ -320,7 +320,7 @@ namespace storage {
 	void SQLite::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
 			if (db) {
 			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT blockid, name FROM blocks ORDER BY blockid;", callbackAllBlocks, &blocks, &dbError);
+			int rc = sqlite3_exec(db, "SELECT blockid, name, width, rotation, x, y, z FROM blocks ORDER BY blockid;", callbackAllBlocks, &blocks, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -331,7 +331,7 @@ namespace storage {
 	// callback read all blocks
 	int SQLite::callbackAllBlocks(void* v, int argc, char **argv, char **colName) {
 		map<blockID_t,Block*>* blocks = static_cast<map<blockID_t,Block*>*>(v);
-		if (argc != 2) {
+		if (argc != 7) {
 			return 0;
 		}
 		blockID_t blockID = atoi(argv[0]);
@@ -340,7 +340,7 @@ namespace storage {
 			Block* block = (*blocks)[blockID];
 			delete block;
 		}
-		Block* block = new Block(blockID, argv[1]);
+		Block* block = new Block(blockID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]));
 
 		(*blocks)[blockID] = block;
 		return 0;

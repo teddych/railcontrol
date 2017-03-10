@@ -16,6 +16,10 @@ typedef unsigned short address_t;
 typedef unsigned short speed_t;
 typedef bool direction_t;
 typedef unsigned char function_t;
+// layoutItem
+typedef unsigned char layoutRotation_t;
+typedef unsigned char layoutItemSize_t;
+typedef unsigned char layoutPosition_t;
 // accessory
 typedef unsigned short accessoryID_t;
 typedef unsigned char accessoryType_t;
@@ -75,6 +79,13 @@ static std::string hardwareSymbols[] = {
 	"none",
 	"virtual",
 	"cs2"
+};
+
+enum rotations : layoutRotation_t {
+	ROTATION_0 = 0,
+	ROTATION_90,
+	ROTATION_180,
+	ROTATION_270
 };
 
 enum feedbackState : feedbackState_t {

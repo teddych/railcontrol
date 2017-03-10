@@ -5,12 +5,13 @@
 #include <string>
 
 #include "datatypes.h"
+#include "layout_item.h"
 
 namespace datamodel {
 
-	class Block {
+	class Block : public LayoutItem {
 		public:
-			Block(blockID_t blockID, std::string name);
+			Block(blockID_t blockID, std::string name, layoutItemSize_t width, layoutRotation_t rotation, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z);
 
 			bool tryReserve(const locoID_t locoID);
 			bool reserve(const locoID_t locoID);
