@@ -68,10 +68,10 @@ Manager::Manager(Config& config) :
 		xlog("Loaded accessory %i/%s", accessory.second->accessoryID, accessory.second->name.c_str());
 	}
 
-	Feedback newFeedback1(1, "Rückmelder Einfahrt links", 1, 1);
+	Feedback newFeedback1(1, "Rückmelder Einfahrt links", 1, 1, 4, 5, 0);
 	storage->feedback(newFeedback1);
 
-	Feedback newFeedback2(2, "Rückmelder Einfahrt rechts", 1, 2);
+	Feedback newFeedback2(2, "Rückmelder Einfahrt rechts", 1, 2, 4, 6, 0);
 	storage->feedback(newFeedback2);
 
 	storage->allFeedbacks(feedbacks);

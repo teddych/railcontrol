@@ -3,13 +3,13 @@
 
 #include <string>
 
-#include "datatypes.h"
+#include "datamodel.h"
 
 namespace datamodel {
 
-	class Feedback {
+	class Feedback : public LayoutItem {
 		public:
-			Feedback(feedbackID_t feedbackID, std::string name, controlID_t controlID, feedbackPin_t pin);
+			Feedback(feedbackID_t feedbackID, std::string name, controlID_t controlID, feedbackPin_t pin, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z);
 
 			feedbackID_t feedbackID;
 			std::string name;

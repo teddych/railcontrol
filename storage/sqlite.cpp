@@ -92,7 +92,7 @@ namespace storage {
 		// create feedbacks table if needed
 		if (tablenames["feedbacks"] != true) {
 			xlog("Creating table feedbacks");
-			rc = sqlite3_exec(db, "CREATE TABLE feedbacks (feedbackid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, pin UNSIGNED INT);", NULL, NULL, &dbError);
+			rc = sqlite3_exec(db, "CREATE TABLE feedbacks (feedbackid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, pin UNSIGNED INT, x UNSIGEND TINYINT, y UNSIGNED TINYINT, z UNSIGNED TINYINT);", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -263,7 +263,7 @@ namespace storage {
 		if (db) {
 			stringstream ss;
 			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO feedbacks (feedbackid, name, controlid, pin) VALUES (" << feedback.feedbackID << ", '" << feedback.name << "', " << (int)feedback.controlID << ", " << feedback.pin << ");";
+			ss << "INSERT OR REPLACE INTO feedbacks (feedbackid, name, controlid, pin, x, y, z) VALUES (" << feedback.feedbackID << ", '" << feedback.name << "', " << (int)feedback.controlID << ", " << feedback.pin << ", " << (int)feedback.posX << ", " << (int)feedback.posY << ", " << (int)feedback.posZ << ");";
 			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
@@ -276,7 +276,7 @@ namespace storage {
 	void SQLite::allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks) {
 			if (db) {
 			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT feedbackid, name, controlid, pin FROM feedbacks ORDER BY feedbackid;", callbackAllFeedbacks, &feedbacks, &dbError);
+			int rc = sqlite3_exec(db, "SELECT feedbackid, name, controlid, pin, x, y, z FROM feedbacks ORDER BY feedbackid;", callbackAllFeedbacks, &feedbacks, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -287,7 +287,7 @@ namespace storage {
 	// callback read all feedbacks
 	int SQLite::callbackAllFeedbacks(void* v, int argc, char **argv, char **colName) {
 		map<feedbackID_t,Feedback*>* feedbacks = static_cast<map<feedbackID_t,Feedback*>*>(v);
-		if (argc != 4) {
+		if (argc != 7) {
 			return 0;
 		}
 		feedbackID_t feedbackID = atoi(argv[0]);
@@ -296,7 +296,7 @@ namespace storage {
 			Feedback* feedback = (*feedbacks)[feedbackID];
 			delete feedback;
 		}
-		Feedback* feedback = new Feedback(feedbackID, argv[1], atoi(argv[2]), atoi(argv[3]));
+		Feedback* feedback = new Feedback(feedbackID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]));
 
 		(*feedbacks)[feedbackID] = feedback;
 		return 0;
