@@ -4,7 +4,8 @@
 #include <mutex>
 #include <string>
 
-#include "datamodel.h"
+#include "datatypes.h"
+#include "layout_item.h"
 
 namespace datamodel {
 

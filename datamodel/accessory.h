@@ -4,10 +4,11 @@
 #include <string>
 
 #include "datatypes.h"
+#include "layout_item.h"
 
 namespace datamodel {
 
-	class Accessory {
+	class Accessory : public LayoutItem {
 		public:
 			Accessory(accessoryID_t accessoryID, std::string name, controlID_t controlID, protocol_t protocol, address_t address, accessoryType_t type);
 
