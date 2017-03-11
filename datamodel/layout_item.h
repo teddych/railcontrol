@@ -7,7 +7,7 @@ namespace datamodel {
 
 	class LayoutItem {
 		public:
-			LayoutItem();
+			LayoutItem(layoutRotation_t rotation, layoutItemSize_t width, layoutItemSize_t height, layoutPosition_t posX, layoutPosition_t posY, layoutPosition_t posZ);
 			
 			layoutRotation_t rotation;
 			layoutItemSize_t width;
@@ -17,13 +17,13 @@ namespace datamodel {
 			layoutPosition_t posZ;
 	};
 
-	inline LayoutItem::LayoutItem() :
-		rotation(0),
-		width(1),
-		height(1),
-		posX(1),
-		posY(1),
-		posZ(1) {
+	inline LayoutItem::LayoutItem(layoutRotation_t rotation, layoutItemSize_t width, layoutItemSize_t height, layoutPosition_t posX, layoutPosition_t posY, layoutPosition_t posZ) :
+		rotation(rotation),
+		width(width),
+		height(height),
+		posX(posX),
+		posY(posY),
+		posZ(posZ) {
 	}
 
 } // namespace datamodel

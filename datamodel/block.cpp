@@ -3,15 +3,10 @@
 namespace datamodel {
 
 	Block::Block(blockID_t blockID, std::string name, layoutItemSize_t width, layoutRotation_t rotation, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z) :
+		LayoutItem(rotation, width, /*width*/ 1, x, y, z),
 		blockID(blockID),
 		name(name),
 		state(BLOCK_STATE_FREE) {
-		height = 1;
-		width = width;
-		rotation = rotation;
-		posX = x;
-		posY = y;
-		posZ = z;
 	}
 
 	bool Block::tryReserve(const locoID_t locoID) {
