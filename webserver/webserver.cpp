@@ -193,6 +193,9 @@ void WebServer::block(const managerID_t managerID, const blockID_t blockID, cons
 	addUpdate(command.str(), status.str());
 }
 
+void WebServer::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
+}
+
 void WebServer::addUpdate(const string& command, const string& status) {
 	stringstream ss;
 	ss << "data: command=" << command << ";status=" << status << "\r\n\r\n";

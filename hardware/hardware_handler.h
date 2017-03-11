@@ -29,6 +29,7 @@ namespace hardware {
 			void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) override;
 			void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 			void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) override;
+			void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) override;
 		private:
 			const Manager& manager;
 			createHardware_t* createHardware;

@@ -8,6 +8,7 @@ using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
 using datamodel::Loco;
+using datamodel::Switch;
 using hardware::HardwareParams;
 using std::map;
 using std::string;
@@ -106,6 +107,19 @@ namespace storage {
 		if (tablenames["blocks"] != true) {
 			xlog("Creating table blocks");
 			rc = sqlite3_exec(db, "CREATE TABLE blocks (blockid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), width UNSIGNED TINYINT, rotation UNSIGNED TINYINT, x UNSIGEND TINYINT, y UNSIGNED TINYINT, z UNSIGNED TINYINT);", NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+				sqlite3_close(db);
+				db = NULL;
+				return;
+			}
+		}
+
+		// create switches table if needed
+		if (tablenames["switches"] != true) {
+			xlog("Creating table switches");
+			rc = sqlite3_exec(db, "CREATE TABLE switches (switchid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT, type UNSIGNED TINYINT, rotation UNSIGEND TINYINT, x UNSIGEND TINYINT, y UNSIGNED TINYINT, z UNSIGNED TINYINT);", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -343,6 +357,50 @@ namespace storage {
 		Block* block = new Block(blockID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]));
 
 		(*blocks)[blockID] = block;
+		return 0;
+	}
+
+	// save switch
+	void SQLite::saveSwitch(const datamodel::Switch& mySwitch) {
+		if (db) {
+			stringstream ss;
+			char* dbError = NULL;
+			ss << "INSERT OR REPLACE INTO switches (switchid, name, controlid, protocol, address, type, rotation, x, y, z) VALUES (" << mySwitch.switchID << ", '" << mySwitch.name << "', " << (int)mySwitch.controlID << ", " << (int)mySwitch.protocol << ", " << mySwitch.address << ", " << (int)mySwitch.type << ", " << (int)mySwitch.rotation << ", " << (int)mySwitch.posX << ", " << (int)mySwitch.posY << ", " << (int)mySwitch.posZ << ");";
+			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// read all switches
+	void SQLite::allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) {
+			if (db) {
+			char* dbError = 0;
+			int rc = sqlite3_exec(db, "SELECT switchid, name, controlid, protocol, type, rotation, x, y, z FROM switches ORDER BY switchid;", callbackAllSwitches, &switches, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// callback read all switches
+	int SQLite::callbackAllSwitches(void* v, int argc, char **argv, char **colName) {
+		map<switchID_t,Switch*>* switches = static_cast<map<switchID_t,Switch*>*>(v);
+		if (argc != 10) {
+			return 0;
+		}
+		switchID_t switchID = atoi(argv[0]);
+		if (switches->count(switchID)) {
+			xlog("switch with ID %i already exists", switchID);
+			Switch* mySwitch = (*switches)[switchID];
+			delete mySwitch;
+		}
+		Switch* mySwitch = new Switch(switchID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]), atoi(argv[8]), atoi(argv[9]));
+
+		(*switches)[switchID] = mySwitch;
 		return 0;
 	}
 

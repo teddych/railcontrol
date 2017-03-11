@@ -6,5 +6,6 @@
 #include "block.h"
 #include "feedback.h"
 #include "loco.h"
+#include "switch.h"
 
 #endif // DATAMODEL_DATAMODEL_H

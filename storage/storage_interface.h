@@ -47,6 +47,12 @@ namespace storage {
 
 			// read all blocks
 			virtual void allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) = 0;
+
+			// save switch
+			virtual void saveSwitch(const datamodel::Switch& mySwitch) = 0;
+
+			// read all switches
+			virtual void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) = 0;
 	};
 
 } // namespace

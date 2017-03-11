@@ -16,6 +16,7 @@ class ManagerInterface {
 		virtual void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) = 0;
 		virtual void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
 		virtual void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) = 0;
+		virtual void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) = 0;
   private:
     managerID_t managerID;
     std::string name;

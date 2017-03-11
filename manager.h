@@ -40,6 +40,7 @@ class Manager {
 		const std::string& getAccessoryName(const accessoryID_t accessoryID);
 		static void getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText);
 		bool getAccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+		bool getSwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
 		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
@@ -49,6 +50,8 @@ class Manager {
 		datamodel::Block* getBlock(const blockID_t blockID);
 		const std::string& getBlockName(const blockID_t blockID);
 
+		// switch
+
 	private:
 		std::vector<ManagerInterface*> controllers;
 		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;
@@ -57,11 +60,15 @@ class Manager {
 		std::map<feedbackID_t,datamodel::Feedback*> feedbacks;
 		std::map<blockID_t,datamodel::Block*> blocks;
 		std::mutex blockMutex;
+		std::map<switchID_t,datamodel::Switch*> switches;
+		std::mutex switchMutex;
+
 		storage::StorageHandler* storage;
 		const std::string unknownLoco;
 		const std::string unknownAccessory;
 		const std::string unknownFeedback;
 		const std::string unknownBlock;
+		const std::string unknownSwitch;
 };
 
 #endif // MANAGER_H

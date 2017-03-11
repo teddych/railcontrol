@@ -8,6 +8,7 @@ using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
 using datamodel::Loco;
+using datamodel::Switch;
 using std::map;
 
 namespace storage {
@@ -132,6 +133,18 @@ namespace storage {
 	void StorageHandler::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
 		if (instance) {
 			return instance->allBlocks(blocks);
+		}
+	}
+
+	void StorageHandler::saveSwitch(const Switch& mySwitch) {
+		if (instance) {
+			instance->saveSwitch(mySwitch);
+		}
+	}
+
+	void StorageHandler::allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) {
+		if (instance) {
+			return instance->allSwitches(switches);
 		}
 	}
 

@@ -45,6 +45,12 @@ namespace storage {
 			// read all blocks
 			void allBlocks(std::map<blockID_t,datamodel::Block*>& block) override;
 
+			// save switch
+			void saveSwitch(const datamodel::Switch& mySwitch) override;
+
+			// read all switches
+			void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) override;
+
 		private:
 			sqlite3 *db;
 
@@ -54,6 +60,7 @@ namespace storage {
 			static int callbackAllAccessories(void* v, int argc, char **argv, char **colName);
 			static int callbackAllFeedbacks(void* v, int argc, char **argv, char **colName);
 			static int callbackAllBlocks(void* v, int argc, char **argv, char **colName);
+			static int callbackAllSwitches(void* v, int argc, char **argv, char **colName);
 	};
 
 } // namespace storage

@@ -103,5 +103,10 @@ enum blockState : blockState_t {
 	BLOCK_STATE_USED
 };
 
+enum switchType : switchType_t {
+	SWITCH_LEFT = 0,
+	SWITCH_RIGHT
+};
+
 #endif // DATATYPES_H
 

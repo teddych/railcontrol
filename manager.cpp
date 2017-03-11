@@ -11,6 +11,7 @@ using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
 using datamodel::Loco;
+using datamodel::Switch;
 using hardware::HardwareHandler;
 using hardware::HardwareParams;
 using std::map;
@@ -24,7 +25,8 @@ Manager::Manager(Config& config) :
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
 	unknownFeedback("Unknown Feedback"),
-	unknownBlock("Unknown Block") {
+	unknownBlock("Unknown Block"),
+	unknownSwitch("Unknown Switch") {
 
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
@@ -57,10 +59,10 @@ Manager::Manager(Config& config) :
 		xlog("Loaded loco %i/%s", loco.second->locoID, loco.second->name.c_str());
 	}
 
-	Accessory newAccessory1(1, "Weiche Einfahrt 1", 1, PROTOCOL_DCC, 1, 1, 3, 5, 0);
+	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, 3, 5, 0);
 	storage->accessory(newAccessory1);
 
-	Accessory newAccessory2(2, "Weiche Ausfahrt 1", 1, PROTOCOL_DCC, 2, 1, 3, 6, 0);
+	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, 3, 6, 0);
 	storage->accessory(newAccessory2);
 
 	storage->allAccessories(accessories);
@@ -88,6 +90,18 @@ Manager::Manager(Config& config) :
 	storage->allBlocks(blocks);
 	for (auto block : blocks) {
 		xlog("Loaded block %i/%s", block.second->blockID, block.second->name.c_str());
+	}
+
+	Switch newSwitch1(1, "Weiche 1", 1, PROTOCOL_DCC, 3, ROTATION_90, SWITCH_LEFT, 2, 5, 0);
+	storage->saveSwitch(newSwitch1);
+
+	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, ROTATION_0, SWITCH_RIGHT, 2, 6, 0);
+	storage->saveSwitch(newSwitch2);
+
+	storage->allSwitches(switches);
+	// FIXME: someting with switches does not work
+	for (auto mySwitch : switches) {
+		xlog("Loaded Switch %i/%s", mySwitch.second->switchID, mySwitch.second->name.c_str());
 	}
 }
 
@@ -169,6 +183,20 @@ bool Manager::getAccessoryProtocolAddress(const accessoryID_t accessoryID, contr
 	controlID = accessory->controlID;
 	protocol = accessory->protocol;
 	address = accessory->address;
+	return true;
+}
+
+bool Manager::getSwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
+	if (switches.count(switchID) < 1) {
+		controlID = 0;
+		protocol = PROTOCOL_NONE;
+		address = 0;
+		return false;
+	}
+	Switch* mySwitch = switches.at(switchID);
+	controlID = mySwitch->controlID;
+	protocol = mySwitch->protocol;
+	address = mySwitch->address;
 	return true;
 }
 

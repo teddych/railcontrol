@@ -147,4 +147,16 @@ void HardwareHandler::accessory(const managerID_t managerID, const accessoryID_t
 	}
 }
 
+void HardwareHandler::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
+  if (managerID != MANAGER_ID_HARDWARE) {
+    controlID_t controlID = 0;
+    protocol_t protocol = PROTOCOL_NONE;
+    address_t address = ADDRESS_NONE;
+    manager.getSwitchProtocolAddress(switchID, controlID, protocol, address);
+		if (controlID == getControlID()) {
+			instance->accessory(protocol, address, state);
+		}
+	}
+}
+
 } // namespace hardware
