@@ -31,6 +31,10 @@ typedef unsigned char feedbackState_t;
 // block
 typedef unsigned short blockID_t;
 typedef unsigned char blockState_t;
+// switch
+typedef accessoryID_t switchID_t;
+typedef accessoryType_t switchType_t;
+typedef accessoryState_t switchState_t;
 
 enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
