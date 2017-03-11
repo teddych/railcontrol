@@ -59,10 +59,10 @@ Manager::Manager(Config& config) :
 		xlog("Loaded loco %i/%s", loco.second->locoID, loco.second->name.c_str());
 	}
 
-	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, 3, 5, 0);
+	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 3, 5, 0);
 	storage->accessory(newAccessory1);
 
-	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, 3, 6, 0);
+	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 3, 6, 0);
 	storage->accessory(newAccessory2);
 
 	storage->allAccessories(accessories);
@@ -92,10 +92,10 @@ Manager::Manager(Config& config) :
 		xlog("Loaded block %i/%s", block.second->blockID, block.second->name.c_str());
 	}
 
-	Switch newSwitch1(1, "Weiche 1", 1, PROTOCOL_DCC, 3, ROTATION_90, SWITCH_LEFT, 2, 5, 0);
+	Switch newSwitch1(1, "Weiche 1", 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 2, 5, 0);
 	storage->saveSwitch(newSwitch1);
 
-	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, ROTATION_0, SWITCH_RIGHT, 2, 6, 0);
+	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
 	storage->saveSwitch(newSwitch2);
 
 	storage->allSwitches(switches);

@@ -92,6 +92,11 @@ enum rotations : layoutRotation_t {
 	ROTATION_270
 };
 
+enum accessoryState : accessoryState_t {
+	ACCESSORY_STATE_OFF = 0,
+	ACCESSORY_STATE_ON
+};
+
 enum feedbackState : feedbackState_t {
 	FEEDBACK_STATE_FREE = 0,
 	FEEDBACK_STATE_OCCUPIED
@@ -106,6 +111,11 @@ enum blockState : blockState_t {
 enum switchType : switchType_t {
 	SWITCH_LEFT = 0,
 	SWITCH_RIGHT
+};
+
+enum switchState : switchState_t {
+	SWITCH_STRAIGHT = 0,
+	SWITCH_TURNOUT
 };
 
 #endif // DATATYPES_H
