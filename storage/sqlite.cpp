@@ -79,7 +79,7 @@ namespace storage {
 		// create accessories table if needed
 		if (tablenames["accessories"] != true) {
 			xlog("Creating table accessories");
-			rc = sqlite3_exec(db, "CREATE TABLE accessories (accessoryid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT, type UNSIGNED TINYINT);", NULL, NULL, &dbError);
+			rc = sqlite3_exec(db, "CREATE TABLE accessories (accessoryid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT, type UNSIGNED TINYINT, x UNSIGEND TINYINT, y UNSIGNED TINYINT, z UNSIGNED TINYINT);", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -219,7 +219,7 @@ namespace storage {
 		if (db) {
 			stringstream ss;
 			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO accessories (accessoryid, name, controlid, protocol, address, type) VALUES (" << accessory.accessoryID << ", '" << accessory.name << "', " << (int)accessory.controlID << ", " << (int)accessory.protocol << ", " << accessory.address << ", " << (int)accessory.type << ");";
+			ss << "INSERT OR REPLACE INTO accessories (accessoryid, name, controlid, protocol, address, type, x, y, z) VALUES (" << accessory.accessoryID << ", '" << accessory.name << "', " << (int)accessory.controlID << ", " << (int)accessory.protocol << ", " << accessory.address << ", " << (int)accessory.type << ", " << (int)accessory.posX << ", " << (int)accessory.posY << ", " << (int)accessory.posZ << ");";
 			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
@@ -232,7 +232,7 @@ namespace storage {
 	void SQLite::allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) {
 			if (db) {
 			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT accessoryid, name, controlid, protocol, address, type FROM accessories ORDER BY accessoryid;", callbackAllAccessories, &accessories, &dbError);
+			int rc = sqlite3_exec(db, "SELECT accessoryid, name, controlid, protocol, address, type, x, y, z FROM accessories ORDER BY accessoryid;", callbackAllAccessories, &accessories, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -243,7 +243,7 @@ namespace storage {
 	// callback read all accessories
 	int SQLite::callbackAllAccessories(void* v, int argc, char **argv, char **colName) {
 		map<accessoryID_t,Accessory*>* accessories = static_cast<map<accessoryID_t,Accessory*>*>(v);
-		if (argc != 6) {
+		if (argc != 9) {
 			return 0;
 		}
 		accessoryID_t accessoryID = atoi(argv[0]);
@@ -252,7 +252,7 @@ namespace storage {
 			Accessory* accessory = (*accessories)[accessoryID];
 			delete accessory;
 		}
-		Accessory* accessory = new Accessory(accessoryID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]));
+		Accessory* accessory = new Accessory(accessoryID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]), atoi(argv[8]));
 
 		(*accessories)[accessoryID] = accessory;
 		return 0;
