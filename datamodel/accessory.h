@@ -18,7 +18,7 @@ namespace datamodel {
 			protocol_t protocol;
 			address_t address;
 			accessoryType_t type;
-			accessoryState_t state;
+			accessoryState_t state; // first 7 bits are for state/color, last bit is for on/off
 
 			static void getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText);
 	};

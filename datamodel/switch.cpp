@@ -13,13 +13,13 @@ namespace datamodel {
 								 layoutPosition_t x,
 								 layoutPosition_t y,
 								 layoutPosition_t z) :
-		Accessory(switchID, name, controlID, protocol, address, type, state, x, y, z),
+		Accessory(switchID, name, controlID, protocol, address, type, state << 1, x, y, z),
 		switchID(switchID),
 		rotation(rotation) {
 	}
 
 	void Switch::getTexts(const switchState_t state, char*& stateText) {
-		switch (state) {
+		switch (state >> 1) {
 			case SWITCH_STRAIGHT:
 				stateText = (char*)"straight";
 				break;
