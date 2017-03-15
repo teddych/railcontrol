@@ -19,6 +19,8 @@ namespace datamodel {
 			address_t address;
 			accessoryType_t type;
 			accessoryState_t state;
+
+			static void getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText);
 	};
 
 } // namespace datamodel

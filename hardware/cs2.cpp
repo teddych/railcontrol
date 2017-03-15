@@ -197,7 +197,7 @@ namespace hardware {
 		unsigned char on;
 		char* colorText;
 		char* onText;
-		Manager::getAccessoryTexts(state, color, on, colorText, onText);
+		datamodel::Accessory::getAccessoryTexts(state, color, on, colorText, onText);
 		xlog("Setting state of cs2 accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header

@@ -272,37 +272,6 @@ void Manager::accessory(const managerID_t managerID, const accessoryID_t accesso
 	}
 }
 
-void Manager::getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText) {
-	// calculate color as number
-	color = state >> 1;
-	// calculate color as text
-	switch (color) {
-		case 0:
-			colorText = (char*)"red";
-			break;
-		case 1:
-			colorText = (char*)"green";
-			break;
-		case 2:
-			colorText = (char*)"yellow";
-			break;
-		default:
-			colorText = (char*)"white";
-			break;
-	}
-	// calculate on as number
-	on = state & 0x01;
-	// calculate on as text
-	switch (on) {
-		case 0:
-			onText = (char*)"off";
-			break;
-		default:
-			onText = (char*)"on";
-			break;
-	}
-}
-
 void Manager::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
   for (auto control : controllers) {
 		control->block(managerID, blockID, state);

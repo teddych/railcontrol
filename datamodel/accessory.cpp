@@ -13,5 +13,40 @@ namespace datamodel {
 		state(state) {
 	}
 
+	void Accessory::getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText) {
+		// calculate color as number
+		color = state >> 1;
+		// calculate color as text
+		switch (color) {
+			case 0:
+				colorText = (char*)"red";
+				break;
+			case 1:
+				colorText = (char*)"green";
+				break;
+			case 2:
+				colorText = (char*)"yellow";
+				break;
+			case 3:
+				colorText = (char*)"white";
+				break;
+			default:
+				stateText = (char*)"unknown";
+		}
+		// calculate on as number
+		on = state & 0x01;
+		// calculate on as text
+		switch (on) {
+			case 0:
+				onText = (char*)"off";
+				break;
+			case 1:
+				onText = (char*)"on";
+				break;
+			default:
+				stateText = (char*)"unknown";
+		}
+	}
+
 } // namespace datamodel
 

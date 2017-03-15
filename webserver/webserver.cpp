@@ -169,7 +169,7 @@ void WebServer::accessory(const managerID_t managerID, const accessoryID_t acces
 	unsigned char on;
 	char* colorText;
 	char* stateText;
-	Manager::getAccessoryTexts(state, color, on, colorText, stateText);
+	datamodel::Accessory::getAccessoryTexts(state, color, on, colorText, stateText);
 	command << "accessory;accessory=" << accessoryID << ";color=" << colorText << ";on=" << stateText;
 	status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText;
 	addUpdate(command.str(), status.str());
