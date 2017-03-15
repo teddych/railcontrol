@@ -11,9 +11,7 @@
 #include "../util.h"
 #include "cs2.h"
 
-#define CS2_IP "192.168.0.190"
 #define CS2_CMD_BUF_LEN 13    // Length of the commandbuffer
-//#define CS2_DATA_BUF_LEN 8    // Length of the databuffer
 #define CS2_PORT_SEND 15731   // The port on which to send data
 #define CS2_PORT_RECV 15730   // The port on which to receive data
 
@@ -36,7 +34,7 @@ namespace hardware {
 		ss << "Maerklin Central Station 2 (CS2) / " << params->name;
 		name = ss.str();
 		run = true;
-    senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), CS2_IP, CS2_PORT_SEND);
+    senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->ip.c_str(), CS2_PORT_SEND);
     if (senderSocket < 0) {
       xlog("Unable to create UDP socket for sending data to CS2");
     }
