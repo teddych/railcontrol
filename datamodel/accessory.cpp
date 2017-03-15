@@ -18,33 +18,33 @@ namespace datamodel {
 		color = state >> 1;
 		// calculate color as text
 		switch (color) {
-			case 0:
+			case ACCESSORY_COLOR_RED:
 				colorText = (char*)"red";
 				break;
-			case 1:
+			case ACCESSORY_COLOR_GREEN:
 				colorText = (char*)"green";
 				break;
-			case 2:
+			case ACCESSORY_COLOR_YELLOW:
 				colorText = (char*)"yellow";
 				break;
-			case 3:
+			case ACCESSORY_COLOR_WHITE:
 				colorText = (char*)"white";
 				break;
 			default:
-				stateText = (char*)"unknown";
+				colorText = (char*)"unknown";
 		}
 		// calculate on as number
 		on = state & 0x01;
 		// calculate on as text
 		switch (on) {
-			case 0:
+			case ACCESSORY_STATE_OFF:
 				onText = (char*)"off";
 				break;
-			case 1:
+			case ACCESSORY_STATE_ON:
 				onText = (char*)"on";
 				break;
 			default:
-				stateText = (char*)"unknown";
+				onText = (char*)"unknown";
 		}
 	}
 

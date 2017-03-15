@@ -24,6 +24,7 @@ typedef unsigned char layoutPosition_t;
 typedef unsigned short accessoryID_t;
 typedef unsigned char accessoryType_t;
 typedef unsigned char accessoryState_t;
+typedef unsigned char accessoryColor_t;
 // feedback
 typedef unsigned short feedbackID_t;
 typedef unsigned int feedbackPin_t;
@@ -90,6 +91,13 @@ enum rotations : layoutRotation_t {
 	ROTATION_90,
 	ROTATION_180,
 	ROTATION_270
+};
+
+enum accessoryColor : accessoryColor_t {
+	ACCESSORY_COLOR_RED = 0,
+	ACCESSORY_COLOR_GREEN,
+	ACCESSORY_COLOR_YELLOW,
+	ACCESSORY_COLOR_WHITE
 };
 
 enum accessoryState : accessoryState_t {
