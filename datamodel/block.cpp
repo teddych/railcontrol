@@ -49,6 +49,8 @@ namespace datamodel {
 			case BLOCK_STATE_USED:
 				stateText = (char*)"used";
 				break;
+			default:
+				stateText = (char*)"unknown";
 		}
 	}
 
