@@ -18,5 +18,18 @@ namespace datamodel {
 		rotation(rotation) {
 	}
 
+	void Switch::getTexts(const switchState_t state, char*& stateText) {
+		switch (state) {
+			case SWITCH_STRAIGHT:
+				stateText = (char*)"straight";
+				break;
+			case SWITCH_TURNOUT:
+				stateText = (char*)"turnout";
+				break;
+			default:
+				stateText = (char*)"unknown";
+		}
+	}
+
 } // namespace datamodel
 

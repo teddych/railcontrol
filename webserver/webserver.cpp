@@ -194,6 +194,13 @@ void WebServer::block(const managerID_t managerID, const blockID_t blockID, cons
 }
 
 void WebServer::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
+	std::stringstream command;
+	std::stringstream status;
+	char* stateText;
+	datamodel::Switch::getTexts(state, stateText);
+	command << "switch;switch=" << switchID << ";state=" << stateText;
+	status << manager.getSwitchName(switchID) << " is " << stateText;
+	addUpdate(command.str(), status.str());
 }
 
 void WebServer::addUpdate(const string& command, const string& status) {

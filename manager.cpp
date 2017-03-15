@@ -316,3 +316,11 @@ Block* Manager::getBlock(const blockID_t blockID) {
 	}
 	return NULL;
 }
+
+const std::string& Manager::getSwitchName(const switchID_t switchID) {
+	if (switches.count(switchID) == 1) {
+		return switches.at(switchID)->name;
+	}
+	return unknownSwitch;
+}
+

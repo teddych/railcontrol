@@ -51,6 +51,7 @@ class Manager {
 		const std::string& getBlockName(const blockID_t blockID);
 
 		// switch
+		const std::string& getSwitchName(const switchID_t switchID);
 
 	private:
 		std::vector<ManagerInterface*> controllers;

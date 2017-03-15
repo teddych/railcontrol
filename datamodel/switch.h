@@ -22,6 +22,8 @@ namespace datamodel {
 						 layoutPosition_t y,
 						 layoutPosition_t z);
 
+			static void getTexts(const switchState_t state, char*& stateText);
+
 			switchID_t switchID;
 			layoutRotation_t rotation;
 	};
