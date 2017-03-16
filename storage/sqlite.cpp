@@ -287,7 +287,8 @@ namespace storage {
 			Accessory* accessory = (*accessories)[accessoryID];
 			delete accessory;
 		}
-		Accessory* accessory = new Accessory(accessoryID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]), atoi(argv[8]), atoi(argv[9]));
+		// FIXME: timeout not stored
+		Accessory* accessory = new Accessory(accessoryID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), 200, atoi(argv[7]), atoi(argv[8]), atoi(argv[9]));
 
 		(*accessories)[accessoryID] = accessory;
 		return 0;
