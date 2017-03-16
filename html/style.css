@@ -9,10 +9,16 @@ body {
 }
 
 .popup {
+	position: fixed;
 	display: none;
-	height: 200px;
-	width: 250px;
-	border: solid 1px;
+	height: 400px;
+	width: 600px;
+	top: 20px;
+	left: 20px;
+	border: solid 3px darkblue;
+	border-radius: 10px;
+	background-color: lightblue;
+	padding: 10px;
 }
 
 .menu {

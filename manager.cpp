@@ -21,6 +21,7 @@ using storage::StorageParams;
 using webserver::WebServer;
 
 Manager::Manager(Config& config) :
+	autoMode(false),
 	storage(NULL),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
@@ -258,6 +259,13 @@ void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, c
 
 const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
 	return locos;
+}
+
+const datamodel::Loco* Manager::getLoco(locoID_t locoID) const {
+	if (locos.count(locoID) == 1) {
+		return locos.at(locoID);
+	}
+	return NULL;
 }
 
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {

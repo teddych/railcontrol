@@ -34,6 +34,7 @@ class Manager {
 		void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction);
 		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+		const datamodel::Loco* getLoco(locoID_t locoID) const;
 
 		// accessory
 		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
@@ -52,6 +53,8 @@ class Manager {
 		// switch
 		const std::string& getSwitchName(const switchID_t switchID);
 
+		bool autoMode;
+
 	private:
 		std::vector<ManagerInterface*> controllers;
 		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;
@@ -64,6 +67,7 @@ class Manager {
 		std::mutex switchMutex;
 
 		storage::StorageHandler* storage;
+
 		const std::string unknownLoco;
 		const std::string unknownAccessory;
 		const std::string unknownFeedback;

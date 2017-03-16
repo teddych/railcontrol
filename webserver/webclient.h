@@ -23,6 +23,9 @@ class WebClient {
 		std::string select(const std::string& name, const std::map<std::string,std::string>& options, const std::string& cmd = "", const std::string& target = "", const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
 		std::string slider(const std::string& name, const std::string& cmd, const unsigned int min, const unsigned int max, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
 		std::string button(const std::string& value, const std::string& cmd, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
+		std::string buttonPopup(const std::string& value, const std::string& cmd, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
+		std::string buttonPopupCancel();
+		std::string buttonPopupOK();
 		void printLoco(const std::map<std::string, std::string>& arguments);
 		void printMainHTML();
 		void simpleReply(const std::string& text, const std::string& code = "200 OK");
@@ -30,6 +33,7 @@ class WebClient {
 		void handleLocoSpeed(const std::map<std::string,std::string>& arguments);
 		void handleLocoDirection(const std::map<std::string,std::string>& arguments);
 		void handleLocoFunction(const std::map<std::string, std::string>& arguments);
+		void handleLocoEdit(const std::map<std::string, std::string>& arguments);
 		void handleUpdater(const std::map<std::string,std::string>& arguments);
 
 		unsigned int id;

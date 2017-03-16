@@ -119,6 +119,9 @@ namespace webserver {
 		else if (arguments["cmd"].compare("locofunction") == 0) {
 			handleLocoFunction(arguments);
 		}
+		else if (arguments["cmd"].compare("locoedit") == 0) {
+			handleLocoEdit(arguments);
+		}
 		else if (arguments["cmd"].compare("updater") == 0) {
 			handleUpdater(headers);
 		}
@@ -242,8 +245,8 @@ namespace webserver {
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments) {
 		locoID_t locoID = 0;
 		speed_t speed = 0;
-		if (arguments.count("loco")) locoID = std::stoi(arguments.at("loco"));
-		if (arguments.count("speed")) speed = std::stoi(arguments.at("speed"));
+		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
+		if (arguments.count("speed")) speed = stoi(arguments.at("speed"));
 
 		manager.locoSpeed(MANAGER_ID_WEBSERVER, locoID, speed);
 
@@ -256,7 +259,7 @@ namespace webserver {
 	void WebClient::handleLocoDirection(const map<string, string>& arguments) {
 		locoID_t locoID = 0;
 		direction_t direction = 0;
-		if (arguments.count("loco")) locoID = std::stoi(arguments.at("loco"));
+		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
 		if (arguments.count("direction")) direction = (arguments.at("direction").compare("forward") == 0 ? 1 : 0);
 
 		manager.locoDirection(MANAGER_ID_WEBSERVER, locoID, direction);
@@ -271,15 +274,47 @@ namespace webserver {
 		locoID_t locoID = 0;
 		function_t function = 0;
 		bool on = false;
-		if (arguments.count("loco")) locoID = std::stoi(arguments.at("loco"));
-		if (arguments.count("function")) function = std::stoi(arguments.at("function"));
-		if (arguments.count("on")) on = std::stoi(arguments.at("on"));
+		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
+		if (arguments.count("function")) function = stoi(arguments.at("function"));
+		if (arguments.count("on")) on = stoi(arguments.at("on"));
 
 		manager.locoFunction(MANAGER_ID_WEBSERVER, locoID, function, on);
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now set f";
 		ss << function << " to " << (on ? "on" : "off");
+		string sOut = ss.str();
+		simpleReply(sOut);
+	}
+
+	void WebClient::handleLocoEdit(const map<string, string>& arguments) {
+		stringstream ss;
+		locoID_t locoID = 0;
+		if (!manager.autoMode) {
+			if (arguments.count("loco")) {
+				locoID = stoi(arguments.at("loco"));
+				const datamodel::Loco* loco = manager.getLoco(locoID);
+				ss << "<h1>Edit loco &quot;";
+				ss << loco->name;
+				ss << "&quot;</h1>";
+				ss << "<form id=\"editlocoform\">";
+				ss << "<input type=\"text\" name=\"name\" value=\"" << loco->name << "\">";
+				ss << "<input type=\"text\" name=\"controlid\" value=\"" << (unsigned int)loco->controlID << "\">";
+				ss << "<input type=\"text\" name=\"protocol\" value=\"" << (unsigned int)loco->protocol << "\">";
+				ss << "<input type=\"text\" name=\"address\" value=\"" << loco->address << "\">";
+				ss << "</form>";
+				ss << buttonPopupCancel();
+				ss << buttonPopupOK();
+			}
+			else {
+				ss << "<h1>Loco not found.</h1>";
+				ss << buttonPopupCancel();
+			}
+		}
+		else {
+			ss << "<h1>Unable to edit locos in auto mode</h1>";
+			ss << buttonPopupCancel();
+		}
 		string sOut = ss.str();
 		simpleReply(sOut);
 	}
@@ -414,6 +449,56 @@ namespace webserver {
 		return ss.str();
 	}
 
+	string WebClient::buttonPopup(const string& value, const string& cmd, const map<string,string>& arguments) {
+		stringstream ss;
+		ss <<
+			"<input class=\"button\" id=\"" << buttonID << "_" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
+			"<script>\n"
+			"$(function() {\n"
+			" $('#" << buttonID << "_"<< cmd << "').on('click', function() {\n"
+			"  var theUrl = '/?cmd=" << cmd;
+		for (auto argument : arguments) {
+			ss << "&" << argument.first << "=" << argument.second;
+		}
+		ss <<"';\n"
+			"  $('#popup').show();\n"
+			"  $('#popup').load(theUrl);\n"
+			" })\n"
+			"})\n"
+			"</script>";
+		++buttonID;
+		return ss.str();
+	}
+
+	string WebClient::buttonPopupCancel() {
+		stringstream ss;
+		ss <<
+			"<input class=\"button\" id=\"popup_cancel\" type=\"submit\" value=\"Cancel\">"
+			"<script>\n"
+			"$(function() {\n"
+			" $('#popup_cancel').on('click', function() {\n"
+			"  $('#popup').hide();\n"
+			" })\n"
+			"})\n"
+			"</script>";
+		return ss.str();
+	}
+
+	string WebClient::buttonPopupOK() {
+		stringstream ss;
+		ss <<
+			"<input class=\"button\" id=\"popup_ok\" type=\"submit\" value=\"Save\">"
+			"<script>\n"
+			"$(function() {\n"
+			" $('#popup_ok').on('click', function() {\n"
+			"  $('#popup').hide();\n"
+			" })\n"
+			"})\n"
+			"</script>";
+		++buttonID;
+		return ss.str();
+	}
+
 	void WebClient::printLoco(const map<string, string>& arguments) {
 		string sOut;
 		if (arguments.count("loco")) {
@@ -422,7 +507,7 @@ namespace webserver {
 			buttonArguments["loco"] = locoID;
 			stringstream ss;
 			ss << "<p>";
-			ss << manager.getLocoName(std::stoi(locoID));
+			ss << manager.getLocoName(stoi(locoID));
 			ss << "</p>";
 			ss << slider("speed", "locospeed", 0, 1024, buttonArguments);
 			buttonArguments["speed"] = "0";
@@ -446,6 +531,7 @@ namespace webserver {
 			ss << button("forward", "locodirection", buttonArguments);
 			buttonArguments["direction"] = "reverse";
 			ss << button("reverse", "locodirection", buttonArguments);
+			ss << buttonPopup("Edit", "locoedit", buttonArguments);
 			sOut = ss.str();
 		}
 		else {
@@ -488,7 +574,7 @@ namespace webserver {
 		ss <<"</div>";
 		ss << "<div class=\"loco\" id=\"loco\">";
 		ss << "</div>";
-		ss << "<div class=\"popup\">Popup</div>"
+		ss << "<div class=\"popup\" id=\"popup\">Popup</div>"
 			"<div class=\"status\" id=\"status\"></div>"
 			"<script>\n"
 			"var updater = new EventSource('/?cmd=updater');\n"
