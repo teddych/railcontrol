@@ -59,10 +59,10 @@ Manager::Manager(Config& config) :
 		xlog("Loaded loco %i/%s", loco.second->locoID, loco.second->name.c_str());
 	}
 
-	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 3, 5, 0);
+	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200, 3, 5, 0);
 	storage->accessory(newAccessory1);
 
-	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 3, 6, 0);
+	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200, 3, 6, 0);
 	storage->accessory(newAccessory2);
 
 	storage->allAccessories(accessories);

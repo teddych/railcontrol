@@ -2,7 +2,7 @@
 
 namespace datamodel {
 
-	Accessory::Accessory(accessoryID_t accessoryID, std::string name, controlID_t controlID, protocol_t protocol, address_t address, accessoryType_t type, accessoryState_t state, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z) :
+	Accessory::Accessory(accessoryID_t accessoryID, std::string name, controlID_t controlID, protocol_t protocol, address_t address, accessoryType_t type, accessoryState_t state, accessoryTimeout_t timeout, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z) :
 		LayoutItem(ROTATION_0, /* width */ 1, /* height */ 1, x, y, z),
 		accessoryID(accessoryID),
 		name(name),
@@ -10,7 +10,8 @@ namespace datamodel {
 		protocol(protocol),
 		address(address),
 		type(type),
-		state(state) {
+		state(state),
+		timeout(timeout) {
 	}
 
 	void Accessory::getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText) {

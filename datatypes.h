@@ -25,6 +25,7 @@ typedef unsigned short accessoryID_t;
 typedef unsigned char accessoryType_t;
 typedef unsigned char accessoryState_t;
 typedef unsigned char accessoryColor_t;
+typedef unsigned short accessoryTimeout_t;
 // feedback
 typedef unsigned short feedbackID_t;
 typedef unsigned int feedbackPin_t;

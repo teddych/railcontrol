@@ -13,7 +13,7 @@ namespace datamodel {
 								 layoutPosition_t x,
 								 layoutPosition_t y,
 								 layoutPosition_t z) :
-		Accessory(switchID, name, controlID, protocol, address, type, state << 1, x, y, z),
+		Accessory(switchID, name, controlID, protocol, address, type, state << 1, /* timeout ms*/ 200, x, y, z),
 		switchID(switchID),
 		rotation(rotation) {
 	}
