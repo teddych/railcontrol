@@ -660,6 +660,10 @@ namespace webserver {
 			"  if (element) element.value = argumentMap.get('speed');\n"
 			" }\n"
 			"};\n"
+
+			// FIXME: get first locoid in db
+			"$('#loco').load('/?cmd=loco&loco=1');\n"
+
 			"</script>"
 			"</body>"
 			"</html>";
