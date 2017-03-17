@@ -278,6 +278,7 @@ void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 			loco->controlID = controlID;
 			loco->protocol = protocol;
 			loco->address = address;
+			storage->loco(*loco);
 		}
 	}
 }

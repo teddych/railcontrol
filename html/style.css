@@ -21,6 +21,10 @@ body {
 	padding: 10px;
 }
 
+label {
+	width: 150px;
+}
+
 .menu {
 	height: 50px;
 	width: 200px;

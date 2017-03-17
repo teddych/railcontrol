@@ -172,7 +172,9 @@ namespace webserver {
 							for (auto argument : argumentStrings) {
 								vector<string> argumentParts;
 								str_split(argument, "=", argumentParts);
-								arguments[argumentParts[0]] = argumentParts[1];
+								string argumentValue = argumentParts[1];
+								// FIXME: %20 and other coded characters are not interpreted correctly
+								arguments[argumentParts[0]] = argumentValue;
 							}
 						}
 					}
@@ -290,6 +292,21 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
+	string inputText(string label, string name, string value) {
+		// FIXME: make template to use also int as value
+		stringstream ss;
+		// FIXME: label
+		ss << "<label>" << label << "</label><input type=\"text\" name=\"" << name << "\" value=\"" << value << "\"><br>";
+		return ss.str();
+	}
+
+	string inputHidden(string name, string value) {
+		// FIXME: make template to use also int as value
+		stringstream ss;
+		ss << "<input type=\"hidden\" name=\"" << name << "\" value=\"" << value << "\">";
+		return ss.str();
+	}
+
 	void WebClient::handleLocoEdit(const map<string, string>& arguments) {
 		stringstream ss;
 		locoID_t locoID = 0;
@@ -301,12 +318,14 @@ namespace webserver {
 				ss << loco->name;
 				ss << "&quot;</h1>";
 				ss << "<form id=\"editform\">";
-				ss << "<input type=\"hidden\" name=\"cmd\" value=\"locosave\">";
-				ss << "<input type=\"hidden\" name=\"loco\" value=\"" << loco->locoID << "\">";
-				ss << "<input type=\"text\" name=\"name\" value=\"" << loco->name << "\">";
-				ss << "<input type=\"text\" name=\"controlid\" value=\"" << (unsigned int)loco->controlID << "\">";
-				ss << "<input type=\"text\" name=\"protocol\" value=\"" << (unsigned int)loco->protocol << "\">";
-				ss << "<input type=\"text\" name=\"address\" value=\"" << loco->address << "\">";
+				ss << inputHidden("cmd", "locosave");
+				//ss << inputHidden("loco", loco->locoID);
+				ss << inputText("Loco name:", "name", loco->name);
+				/*
+				ss << inputText("Control:", "controlid", (unsigned int)loco->controlID);
+				ss << inputText("Protocol:", "protocol", (unsigned int)loco->protocol);
+				ss << inputText("Address:", "address", loco->address);
+				*/
 				ss << "</form>";
 				ss << buttonPopupCancel();
 				ss << buttonPopupOK();
@@ -329,6 +348,15 @@ namespace webserver {
 		locoID_t locoID;
 		if (arguments.count("loco")) {
 			locoID = stoi(arguments.at("loco"));
+			string name;
+			controlID_t controlID = 0;
+			protocol_t protocol = 0;
+			address_t address = 0;
+			if (arguments.count("name")) name = arguments.at("name");
+			if (arguments.count("controlid")) controlID = stoi(arguments.at("controlid"));
+			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
+			if (arguments.count("address")) address = stoi(arguments.at("address"));
+			manager.locoSave(locoID, name, controlID, protocol, address);
 			ss << "<p>Loco &quot;" << locoID << "&quot; saved.</p>";
 		}
 		else {
