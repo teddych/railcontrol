@@ -268,6 +268,20 @@ const datamodel::Loco* Manager::getLoco(locoID_t locoID) const {
 	return NULL;
 }
 
+void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& controlID, protocol_t& protocol, address_t& address) {
+	// locoID == 0 means new loco
+	if (locoID) {
+		// if loco exists
+		if (locos.count(locoID)) {
+			Loco* loco = locos.at(locoID);
+			loco->name = name;
+			loco->controlID = controlID;
+			loco->protocol = protocol;
+			loco->address = address;
+		}
+	}
+}
+
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
   for (auto control : controllers) {
 		control->feedback(managerID, pin, state);

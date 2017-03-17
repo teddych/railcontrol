@@ -34,6 +34,7 @@ class WebClient {
 		void handleLocoDirection(const std::map<std::string,std::string>& arguments);
 		void handleLocoFunction(const std::map<std::string, std::string>& arguments);
 		void handleLocoEdit(const std::map<std::string, std::string>& arguments);
+		void handleLocoSave(const std::map<std::string, std::string>& arguments);
 		void handleUpdater(const std::map<std::string,std::string>& arguments);
 
 		unsigned int id;

@@ -33,6 +33,7 @@ class Manager {
 		void locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction);
 		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
+		void locoSave(const locoID_t locoID, const std::string& name, controlID_t& controlID, protocol_t& protocol, address_t& address);
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 		const datamodel::Loco* getLoco(locoID_t locoID) const;
 

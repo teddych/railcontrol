@@ -122,6 +122,9 @@ namespace webserver {
 		else if (arguments["cmd"].compare("locoedit") == 0) {
 			handleLocoEdit(arguments);
 		}
+		else if (arguments["cmd"].compare("locosave") == 0) {
+			handleLocoSave(arguments);
+		}
 		else if (arguments["cmd"].compare("updater") == 0) {
 			handleUpdater(headers);
 		}
@@ -297,7 +300,9 @@ namespace webserver {
 				ss << "<h1>Edit loco &quot;";
 				ss << loco->name;
 				ss << "&quot;</h1>";
-				ss << "<form id=\"editlocoform\">";
+				ss << "<form id=\"editform\">";
+				ss << "<input type=\"hidden\" name=\"cmd\" value=\"locosave\">";
+				ss << "<input type=\"hidden\" name=\"loco\" value=\"" << loco->locoID << "\">";
 				ss << "<input type=\"text\" name=\"name\" value=\"" << loco->name << "\">";
 				ss << "<input type=\"text\" name=\"controlid\" value=\"" << (unsigned int)loco->controlID << "\">";
 				ss << "<input type=\"text\" name=\"protocol\" value=\"" << (unsigned int)loco->protocol << "\">";
@@ -315,6 +320,21 @@ namespace webserver {
 			ss << "<h1>Unable to edit locos in auto mode</h1>";
 			ss << buttonPopupCancel();
 		}
+		string sOut = ss.str();
+		simpleReply(sOut);
+	}
+
+	void WebClient::handleLocoSave(const map<string, string>& arguments) {
+		stringstream ss;
+		locoID_t locoID;
+		if (arguments.count("loco")) {
+			locoID = stoi(arguments.at("loco"));
+			ss << "<p>Loco &quot;" << locoID << "&quot; saved.</p>";
+		}
+		else {
+			ss << "<p>Unable to save loco.</p>";
+		}
+
 		string sOut = ss.str();
 		simpleReply(sOut);
 	}
@@ -490,12 +510,26 @@ namespace webserver {
 			"<input class=\"button\" id=\"popup_ok\" type=\"submit\" value=\"Save\">"
 			"<script>\n"
 			"$(function() {\n"
+			" $('#editform').on('submit', function() {\n"
+			"  $.ajax({\n"
+			"   data: $(this).serialize(),\n"
+			"   type: $(this).attr('get'),\n"
+			"   url: $(this).attr('/'),\n"
+			"   success: function(response) {\n"
+			"    $('#popup').html(response);\n"
+			"   }\n"
+			"  })\n"
+			"  $('#popup').hide(2000);\n"
+			"  return false;\n"
+			" });\n"
+			"});\n"
+			"$(function() {\n"
 			" $('#popup_ok').on('click', function() {\n"
-			"  $('#popup').hide();\n"
-			" })\n"
-			"})\n"
-			"</script>";
-		++buttonID;
+			"  $('#editform').submit();\n"
+			"  return false;\n"
+			" });\n"
+			"});\n"
+			"</script>\n";
 		return ss.str();
 	}
 
