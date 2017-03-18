@@ -24,7 +24,7 @@ class Manager {
 		void saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip);
 		void deleteHardware(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
-		const std::map<controlID_t,hardware::HardwareParams*>& hardwareList() const;
+		const std::map<controlID_t,std::string> hardwareList() const;
 
 		// loco
 		const std::string& getLocoName(const locoID_t locoID);

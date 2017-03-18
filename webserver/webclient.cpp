@@ -320,9 +320,9 @@ namespace webserver {
 				ss << inputHidden("loco", loco->locoID);
 				ss << inputText("Loco name:", "name", loco->name);
 				ss << "<label>Control:</label><select name=\"controlid\">";
-				std::map<controlID_t,hardware::HardwareParams*> hardware = manager.hardwareList();
+				std::map<controlID_t,string> hardware = manager.hardwareList();
 				for (auto h : hardware) {
-					ss << "<option value=\"" << (unsigned int)h.first << "\"" << (h.first == loco->controlID ? " selected" : "") << ">" << h.second->name << "</option>";
+					ss << "<option value=\"" << (unsigned int)h.first << "\"" << (h.first == loco->controlID ? " selected" : "") << ">" << h.second << "</option>";
 				}
 				ss << "</select>";
 				ss << inputText("Protocol:", "protocol", (unsigned int)loco->protocol);

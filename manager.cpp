@@ -161,8 +161,13 @@ void Manager::deleteHardware(controlID_t controlID) {
 	}
 }
 
-const std::map<controlID_t,hardware::HardwareParams*>& Manager::hardwareList() const {
-	return hardwareParams;
+const std::map<controlID_t,std::string> Manager::hardwareList() const {
+	std::map<controlID_t,std::string> ret;
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	for (auto hardware : hardwareParams) {
+		ret[hardware.first] = hardware.second->name;
+	}
+	return ret;
 }
 
 HardwareParams* Manager::getHardware(controlID_t controlID) {
