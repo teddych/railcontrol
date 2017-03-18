@@ -135,6 +135,7 @@ void Manager::booster(const managerID_t managerID, const boosterStatus_t status)
 
 void Manager::saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip) {
 	HardwareParams* params;
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
 		params = hardwareParams.at(controlID);
 		params->name = name;
@@ -152,6 +153,7 @@ void Manager::saveHardware(const controlID_t& controlID, const hardwareID_t& har
 }
 
 void Manager::deleteHardware(controlID_t controlID) {
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
 		//vector<>::iterator control =
 		// FIXME: deleteHardware not implemented
@@ -159,7 +161,12 @@ void Manager::deleteHardware(controlID_t controlID) {
 	}
 }
 
+const std::map<controlID_t,hardware::HardwareParams*>& Manager::hardwareList() const {
+	return hardwareParams;
+}
+
 HardwareParams* Manager::getHardware(controlID_t controlID) {
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
 		return hardwareParams.at(controlID);
 	}
