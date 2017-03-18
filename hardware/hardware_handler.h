@@ -22,6 +22,8 @@ namespace hardware {
 			~HardwareHandler();
 			controlID_t getControlID();
 			std::string getName() const;
+			std::vector<protocol_t> getProtocols() const;
+
 			void booster(const managerID_t managerID, boosterStatus_t status) override;
 			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
 			void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) override;

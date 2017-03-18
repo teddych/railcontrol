@@ -51,11 +51,13 @@ enum boosterStatus : boosterStatus_t {
 
 enum protocols : protocol_t {
 	PROTOCOL_NONE = 0,
-	PROTOCOL_ALL,
+	PROTOCOL_SERVER,
 	PROTOCOL_MM1,
 	PROTOCOL_MM2,
 	PROTOCOL_MFX,
 	PROTOCOL_DCC,
+	PROTOCOL_DCC_SHORT,
+	PROTOCOL_DCC_LONG,
 	PROTOCOL_SX1,
 	PROTOCOL_SX2
 };

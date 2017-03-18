@@ -24,7 +24,10 @@ class Manager {
 		void saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip);
 		void deleteHardware(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
-		const std::map<controlID_t,std::string> hardwareList() const;
+
+		// control
+		const std::map<controlID_t,std::string> controlList() const;
+		const std::map<protocol_t,std::string> protocolsOfControl(controlID_t) const;
 
 		// loco
 		const std::string& getLocoName(const locoID_t locoID);
@@ -59,6 +62,8 @@ class Manager {
 		bool autoMode;
 
 	private:
+//		const hardwareID_t hardwareOfControl(controlID_t controlID) const;
+
 		// controllers (hardwareHandler & Webserver)
 		std::vector<ManagerInterface*> controllers;
 

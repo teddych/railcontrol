@@ -93,6 +93,15 @@ std::string HardwareHandler::getName() const {
 	return "Unknown, not running";
 }
 
+std::vector<protocol_t> HardwareHandler::getProtocols() const {
+	if (instance) {
+		return instance->getProtocols();
+	}
+	std::vector<protocol_t> ret;
+	ret.push_back(PROTOCOL_NONE);
+	return ret;
+}
+
 void HardwareHandler::booster(const managerID_t managerID, const boosterStatus_t status) {
   if (managerID != MANAGER_ID_HARDWARE) {
 		instance->booster(status);

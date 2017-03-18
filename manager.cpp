@@ -161,12 +161,38 @@ void Manager::deleteHardware(controlID_t controlID) {
 	}
 }
 
-const std::map<controlID_t,std::string> Manager::hardwareList() const {
+const std::map<controlID_t,std::string> Manager::controlList() const {
 	std::map<controlID_t,std::string> ret;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	for (auto hardware : hardwareParams) {
 		ret[hardware.first] = hardware.second->name;
 	}
+	return ret;
+}
+
+/*
+const hardwareID_t Manager::hardwareOfControl(controlID_t controlID) const {
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	if (hardwareParams.count(controlID) == 1) {
+		const HardwareParams* params = hardwareParams.at(controlID);
+		return params->hardwareID;
+	}
+	return HARDWARE_ID_NONE;
+}
+*/
+
+const std::map<protocol_t,std::string> Manager::protocolsOfControl(controlID_t controlID) const {
+	/*
+	FIXME: not finished
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	if (hardwareParams.count(controlID) == 1) {
+		const HardwareParams* params = hardwareParams.at(controlID);
+		if (params && params->instance) {
+			return params->instance->getProtocols();
+		}
+	}
+	*/
+	std::map<protocol_t,std::string> ret;
 	return ret;
 }
 
