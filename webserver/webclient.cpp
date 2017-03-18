@@ -292,16 +292,14 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
-	string inputText(string label, string name, string value) {
-		// FIXME: make template to use also int as value
+	template <typename T> string inputText(string label, string name, T value) {
 		stringstream ss;
 		// FIXME: label
 		ss << "<label>" << label << "</label><input type=\"text\" name=\"" << name << "\" value=\"" << value << "\"><br>";
 		return ss.str();
 	}
 
-	string inputHidden(string name, string value) {
-		// FIXME: make template to use also int as value
+	template <typename T> string inputHidden(string name, T value) {
 		stringstream ss;
 		ss << "<input type=\"hidden\" name=\"" << name << "\" value=\"" << value << "\">";
 		return ss.str();
@@ -319,13 +317,11 @@ namespace webserver {
 				ss << "&quot;</h1>";
 				ss << "<form id=\"editform\">";
 				ss << inputHidden("cmd", "locosave");
-				//ss << inputHidden("loco", loco->locoID);
+				ss << inputHidden("loco", loco->locoID);
 				ss << inputText("Loco name:", "name", loco->name);
-				/*
 				ss << inputText("Control:", "controlid", (unsigned int)loco->controlID);
 				ss << inputText("Protocol:", "protocol", (unsigned int)loco->protocol);
 				ss << inputText("Address:", "address", loco->address);
-				*/
 				ss << "</form>";
 				ss << buttonPopupCancel();
 				ss << buttonPopupOK();
