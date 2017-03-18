@@ -47,7 +47,7 @@ Manager::Manager(Config& config) :
 	}
 	xlog("Controllers loaded");
 
-/*
+	/*
 	Loco newloco1(1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
 	storage->loco(newloco1);
 
@@ -60,44 +60,52 @@ Manager::Manager(Config& config) :
 		xlog("Loaded loco %i/%s", loco.second->locoID, loco.second->name.c_str());
 	}
 
+	/*
 	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200, 3, 5, 0);
 	storage->accessory(newAccessory1);
 
 	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200, 3, 6, 0);
 	storage->accessory(newAccessory2);
+	*/
 
 	storage->allAccessories(accessories);
 	for (auto accessory : accessories) {
 		xlog("Loaded accessory %i/%s", accessory.second->accessoryID, accessory.second->name.c_str());
 	}
 
+	/*
 	Feedback newFeedback1(1, "Rückmelder Einfahrt links", 1, 1, 4, 5, 0);
 	storage->feedback(newFeedback1);
 
 	Feedback newFeedback2(2, "Rückmelder Einfahrt rechts", 1, 2, 4, 6, 0);
 	storage->feedback(newFeedback2);
+	*/
 
 	storage->allFeedbacks(feedbacks);
 	for (auto feedback : feedbacks) {
 		xlog("Loaded Feedback %i/%s", feedback.second->feedbackID, feedback.second->name.c_str());
 	}
 
+	/*
 	Block newBlock1(1, "Block 1", 4, ROTATION_0, 5, 5, 0);
 	storage->block(newBlock1);
 
 	Block newBlock2(2, "Block 2", 4, ROTATION_90, 5, 6, 0);
 	storage->block(newBlock2);
+	*/
 
 	storage->allBlocks(blocks);
 	for (auto block : blocks) {
 		xlog("Loaded block %i/%s", block.second->blockID, block.second->name.c_str());
 	}
 
+	/*
 	Switch newSwitch1(1, "Weiche 1", 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 2, 5, 0);
 	storage->saveSwitch(newSwitch1);
 
 	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
 	storage->saveSwitch(newSwitch2);
+	*/
 
 	storage->allSwitches(switches);
 	// FIXME: someting with switches does not work
@@ -160,6 +168,7 @@ HardwareParams* Manager::getHardware(controlID_t controlID) {
 }
 
 bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
+	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) < 1) {
 		controlID = 0;
 		protocol = PROTOCOL_NONE;
@@ -202,6 +211,7 @@ bool Manager::getSwitchProtocolAddress(const switchID_t switchID, controlID_t& c
 }
 
 const std::string& Manager::getLocoName(const locoID_t locoID) {
+	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) == 1) {
 		return locos.at(locoID)->name;
 	}
@@ -223,6 +233,7 @@ const std::string& Manager::getBlockName(const blockID_t blockID) {
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
+	std::lock_guard<std::mutex> Guard(locoMutex);
 	for (auto loco : locos) {
 		if (loco.second->protocol == protocol && loco.second->address == address) {
 			locoSpeed(managerID, loco.first, speed);
@@ -232,12 +243,14 @@ void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, 
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
+	std::lock_guard<std::mutex> Guard(locoMutex);
   for (auto control : controllers) {
     control->locoSpeed(managerID, locoID, speed);
   }
 }
 
 void Manager::locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction) {
+	std::lock_guard<std::mutex> Guard(locoMutex);
 	for (auto loco : locos) {
 		if (loco.second->protocol == protocol && loco.second->address == address) {
 			locoDirection(managerID, loco.first, direction);
@@ -262,6 +275,7 @@ const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
 }
 
 const datamodel::Loco* Manager::getLoco(locoID_t locoID) const {
+	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) == 1) {
 		return locos.at(locoID);
 	}
@@ -272,6 +286,7 @@ void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 	// locoID == 0 means new loco
 	if (locoID) {
 		// if loco exists
+		std::lock_guard<std::mutex> Guard(locoMutex);
 		if (locos.count(locoID)) {
 			Loco* loco = locos.at(locoID);
 			loco->name = name;

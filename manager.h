@@ -20,7 +20,7 @@ class Manager {
 		// booster
 		void booster(const managerID_t managerID, const boosterStatus_t status);
 
-		// hardware
+		// hardware (virt, CS2, ...)
 		void saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip);
 		void deleteHardware(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
@@ -54,19 +54,35 @@ class Manager {
 		// switch
 		const std::string& getSwitchName(const switchID_t switchID);
 
+		// automode
 		bool autoMode;
 
 	private:
+		// controllers (hardwareHandler & Webserver)
 		std::vector<ManagerInterface*> controllers;
+
+		// hardware (virt, CS2, ...)
 		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;
+
+		// loco
 		std::map<locoID_t,datamodel::Loco*> locos;
+		mutable std::mutex locoMutex;
+
+		// accessory
 		std::map<accessoryID_t,datamodel::Accessory*> accessories;
+
+		// feedback
 		std::map<feedbackID_t,datamodel::Feedback*> feedbacks;
+
+		// block
 		std::map<blockID_t,datamodel::Block*> blocks;
 		std::mutex blockMutex;
+
+		// switch
 		std::map<switchID_t,datamodel::Switch*> switches;
 		std::mutex switchMutex;
 
+		// storage
 		storage::StorageHandler* storage;
 
 		const std::string unknownLoco;
