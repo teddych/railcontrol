@@ -108,7 +108,6 @@ Manager::Manager(Config& config) :
 	*/
 
 	storage->allSwitches(switches);
-	// FIXME: someting with switches does not work
 	for (auto mySwitch : switches) {
 		xlog("Loaded Switch %i/%s", mySwitch.second->switchID, mySwitch.second->name.c_str());
 	}

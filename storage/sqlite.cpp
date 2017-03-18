@@ -400,7 +400,7 @@ namespace storage {
 	void SQLite::allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) {
 			if (db) {
 			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT switchid, name, controlid, protocol, type, state, rotation, x, y, z FROM switches ORDER BY switchid;", callbackAllSwitches, &switches, &dbError);
+			int rc = sqlite3_exec(db, "SELECT switchid, name, controlid, protocol, address, type, state, rotation, x, y, z FROM switches ORDER BY switchid;", callbackAllSwitches, &switches, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
