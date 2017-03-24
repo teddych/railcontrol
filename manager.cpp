@@ -182,17 +182,23 @@ const hardwareID_t Manager::hardwareOfControl(controlID_t controlID) const {
 */
 
 const std::map<protocol_t,std::string> Manager::protocolsOfControl(controlID_t controlID) const {
-	/*
-	FIXME: not finished
+	std::map<protocol_t,std::string> ret;
+	std::vector<protocol_t> protocols;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
-		const HardwareParams* params = hardwareParams.at(controlID);
-		if (params && params->instance) {
-			return params->instance->getProtocols();
+		const ManagerInterface* control = controllers.at(controlID);
+		managerID_t managerID = control->getManagerID();
+		if (managerID == MANAGER_ID_HARDWARE) {
+			const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control);
+			hardware->getProtocols(protocols);
+			for(auto protocol : protocols) {
+				ret[protocol] = protocolSymbols[protocol];
+			}
 		}
 	}
-	*/
-	std::map<protocol_t,std::string> ret;
+	else {
+		ret[0] = protocolSymbols[0];
+	}
 	return ret;
 }
 

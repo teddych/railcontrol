@@ -37,10 +37,8 @@ namespace hardware {
 		return name;
 	}
 
-	std::vector<protocol_t> Virtual::getProtocols() const {
-		std::vector<protocol_t> ret;
-		ret.push_back(PROTOCOL_SERVER);
-		return ret;
+	void Virtual::getProtocols(std::vector<protocol_t>& protocols) const {
+		protocols.push_back(PROTOCOL_SERVER);
 	}
 
 	// set loco speed

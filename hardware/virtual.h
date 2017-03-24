@@ -17,7 +17,7 @@ namespace hardware {
 			std::string getName() const override;
 
 			// get available protocols of this control
-			std::vector<protocol_t> getProtocols() const override;
+			void getProtocols(std::vector<protocol_t>& protocols) const override;
 
 		  // All possible methods that can be implemented
 			// if not the method of the abstract class hardware is used

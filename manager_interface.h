@@ -7,8 +7,9 @@
 
 class ManagerInterface {
 	public:
-		ManagerInterface() {};
+		ManagerInterface(managerID_t managerID);
     virtual ~ManagerInterface() {};
+		const managerID_t getManagerID() const;
 		virtual void booster(const managerID_t managerID, const boosterStatus_t status) = 0;
 		virtual void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) = 0;
 		virtual void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) = 0;
@@ -17,10 +18,19 @@ class ManagerInterface {
 		virtual void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
 		virtual void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) = 0;
 		virtual void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) = 0;
+
   private:
     managerID_t managerID;
     std::string name;
 };
+
+inline ManagerInterface::ManagerInterface(managerID_t managerID) :
+	managerID(managerID) {
+}
+
+inline const managerID_t ManagerInterface::getManagerID() const {
+	return managerID;
+}
 
 /*
 inline bool ManagerInterface::operator==(const ManagerInterface& mi) {

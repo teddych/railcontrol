@@ -57,11 +57,9 @@ namespace hardware {
 		return name;
   }
 
-	std::vector<protocol_t> CS2::getProtocols() const {
-		std::vector<protocol_t> ret;
-		ret.push_back(PROTOCOL_MM2);
-		ret.push_back(PROTOCOL_DCC);
-		return ret;
+	void CS2::getProtocols(std::vector<protocol_t>& protocols) const {
+		protocols.push_back(PROTOCOL_MM2);
+		protocols.push_back(PROTOCOL_DCC);
 	}
 
 	void CS2::createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length) {

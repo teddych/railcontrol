@@ -22,6 +22,7 @@ using std::vector;
 namespace webserver {
 
 WebServer::WebServer(Manager& manager, const unsigned short port) :
+	ManagerInterface(MANAGER_ID_WEBSERVER),
 	port(port),
 	serverSocket(0),
 	run(false),

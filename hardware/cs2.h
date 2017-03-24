@@ -21,7 +21,7 @@ namespace hardware {
 			CS2(const HardwareParams* params);
 			~CS2();
 			std::string getName() const override;
-			std::vector<protocol_t> getProtocols() const override;
+			void getProtocols(std::vector<protocol_t>& protocols) const override;
 			void booster(const boosterStatus_t status) override;
 			void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
 			void locoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;

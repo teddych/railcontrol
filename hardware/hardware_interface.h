@@ -20,7 +20,7 @@ namespace hardware {
 			virtual std::string getName() const = 0;
 
 			// get available protocols of this control
-			virtual std::vector<protocol_t> getProtocols() const = 0;
+			virtual void getProtocols(std::vector<protocol_t>& protocols) const = 0;
 
 			// turn booster on or off
 			virtual void booster(const boosterStatus_t status) = 0;

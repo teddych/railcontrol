@@ -11,6 +11,7 @@ using std::string;
 namespace hardware {
 
 HardwareHandler::HardwareHandler(const Manager& manager, const HardwareParams* params) :
+	ManagerInterface(MANAGER_ID_HARDWARE),
 	manager(manager),
 	createHardware(NULL),
 	destroyHardware(NULL),
@@ -93,13 +94,12 @@ std::string HardwareHandler::getName() const {
 	return "Unknown, not running";
 }
 
-std::vector<protocol_t> HardwareHandler::getProtocols() const {
+void HardwareHandler::getProtocols(std::vector<protocol_t>& protocols) const {
 	if (instance) {
-		return instance->getProtocols();
+		instance->getProtocols(protocols);
+		return;
 	}
-	std::vector<protocol_t> ret;
-	ret.push_back(PROTOCOL_NONE);
-	return ret;
+	protocols.push_back(PROTOCOL_NONE);
 }
 
 void HardwareHandler::booster(const managerID_t managerID, const boosterStatus_t status) {

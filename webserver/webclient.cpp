@@ -325,7 +325,13 @@ namespace webserver {
 					ss << "<option value=\"" << (unsigned int)control.first << "\"" << (control.first == loco->controlID ? " selected" : "") << ">" << control.second << "</option>";
 				}
 				ss << "</select>";
-				ss << inputText("Protocol:", "protocol", (unsigned int)loco->protocol);
+				std::map<protocol_t,string> protocols = manager.protocolsOfControl(loco->controlID);
+				// FIXME: Update protocols on control-change
+				ss << "<label>Protocol:</label><select name=\"controlid\">";
+				for (auto protocol : protocols) {
+					ss << "<option value=\"" << (unsigned int)protocol.first << "\"" << (protocol.first == loco->protocol ? " selected" : "") << ">" << protocol.second << "</option>";
+				}
+				ss << "</select>";
 				ss << inputText("Address:", "address", loco->address);
 				ss << "</form>";
 				ss << buttonPopupCancel();
