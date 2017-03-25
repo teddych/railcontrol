@@ -309,38 +309,42 @@ namespace webserver {
 		stringstream ss;
 		locoID_t locoID = 0;
 		if (!manager.autoMode) {
+			controlID_t controlID = 0;
+			protocol_t protocol = 0;
+			address_t address = 0;
+			string name("New Loco");
 			if (arguments.count("loco")) {
 				locoID = stoi(arguments.at("loco"));
 				const datamodel::Loco* loco = manager.getLoco(locoID);
-				ss << "<h1>Edit loco &quot;";
-				ss << loco->name;
-				ss << "&quot;</h1>";
-				ss << "<form id=\"editform\">";
-				ss << inputHidden("cmd", "locosave");
-				ss << inputHidden("loco", loco->locoID);
-				ss << inputText("Loco name:", "name", loco->name);
-				ss << "<label>Control:</label><select name=\"controlid\">";
-				std::map<controlID_t,string> controls = manager.controlList();
-				for (auto control : controls) {
-					ss << "<option value=\"" << (unsigned int)control.first << "\"" << (control.first == loco->controlID ? " selected" : "") << ">" << control.second << "</option>";
-				}
-				ss << "</select>";
-				std::map<protocol_t,string> protocols = manager.protocolsOfControl(loco->controlID);
-				// FIXME: Update protocols on control-change
-				ss << "<label>Protocol:</label><select name=\"controlid\">";
-				for (auto protocol : protocols) {
-					ss << "<option value=\"" << (unsigned int)protocol.first << "\"" << (protocol.first == loco->protocol ? " selected" : "") << ">" << protocol.second << "</option>";
-				}
-				ss << "</select>";
-				ss << inputText("Address:", "address", loco->address);
-				ss << "</form>";
-				ss << buttonPopupCancel();
-				ss << buttonPopupOK();
+				controlID = loco->controlID;
+				protocol = loco->protocol;
+				address = loco->address;
+				name = loco->name;
 			}
-			else {
-				ss << "<h1>Loco not found.</h1>";
-				ss << buttonPopupCancel();
+			ss << "<h1>Edit loco &quot;";
+			ss << name;
+			ss << "&quot;</h1>";
+			ss << "<form id=\"editform\">";
+			ss << inputHidden("cmd", "locosave");
+			ss << inputHidden("loco", locoID);
+			ss << inputText("Loco name:", "name", name);
+			ss << "<label>Control:</label><select name=\"controlid\">";
+			std::map<controlID_t,string> controls = manager.controlList();
+			for (auto control : controls) {
+				ss << "<option value=\"" << (unsigned int)control.first << "\"" << (control.first == controlID ? " selected" : "") << ">" << control.second << "</option>";
 			}
+			ss << "</select>";
+			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
+			// FIXME: Update protocols on control-change
+			ss << "<label>Protocol:</label><select name=\"controlid\">";
+			for (auto protocol2 : protocols) {
+				ss << "<option value=\"" << (unsigned int)protocol2.first << "\"" << (protocol2.first == protocol ? " selected" : "") << ">" << protocol2.second << "</option>";
+			}
+			ss << "</select>";
+			ss << inputText("Address:", "address", address);
+			ss << "</form>";
+			ss << buttonPopupCancel();
+			ss << buttonPopupOK();
 		}
 		else {
 			ss << "<h1>Unable to edit locos in auto mode</h1>";
@@ -589,17 +593,22 @@ namespace webserver {
 			ss << button("75%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "1023";
 			ss << button("100%", "locospeed", buttonArguments);
+			buttonArguments.erase("speed");
 
 			buttonArguments["function"] = "0";
 			buttonArguments["on"] = "1";
 			ss << button("f0 on", "locofunction", buttonArguments);
 			buttonArguments["on"] = "0";
 			ss << button("f0 off", "locofunction", buttonArguments);
+			buttonArguments.erase("function");
+			buttonArguments.erase("on");
 
 			buttonArguments["direction"] = "forward";
 			ss << button("forward", "locodirection", buttonArguments);
 			buttonArguments["direction"] = "reverse";
 			ss << button("reverse", "locodirection", buttonArguments);
+			buttonArguments.erase("direction");
+
 			ss << buttonPopup("Edit", "locoedit", buttonArguments);
 			sOut = ss.str();
 		}
@@ -630,6 +639,7 @@ namespace webserver {
 		ss << button("X", "quit");
 		ss << button("On", "on");
 		ss << button("Off", "off");
+		ss << buttonPopup("NewLoco", "locoedit");
 		ss << "</div>";
 		ss << "<div class=\"locolist\">";
 		// locolist
