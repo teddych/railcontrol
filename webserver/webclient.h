@@ -36,6 +36,7 @@ class WebClient {
 		void handleLocoEdit(const std::map<std::string, std::string>& arguments);
 		void handleLocoSave(const std::map<std::string, std::string>& arguments);
 		void handleUpdater(const std::map<std::string,std::string>& arguments);
+		void handleProtocol(const std::map<std::string, std::string>& arguments);
 
 		unsigned int id;
 		int clientSocket;

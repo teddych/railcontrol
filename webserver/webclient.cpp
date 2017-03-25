@@ -125,6 +125,9 @@ namespace webserver {
 		else if (arguments["cmd"].compare("locosave") == 0) {
 			handleLocoSave(arguments);
 		}
+		else if (arguments["cmd"].compare("protocol") == 0) {
+			handleProtocol(arguments);
+		}
 		else if (arguments["cmd"].compare("updater") == 0) {
 			handleUpdater(headers);
 		}
@@ -334,13 +337,15 @@ namespace webserver {
 				ss << "<option value=\"" << (unsigned int)control.first << "\"" << (control.first == controlID ? " selected" : "") << ">" << control.second << "</option>";
 			}
 			ss << "</select>";
+			ss << "<div id=\"protocol\">";
 			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
 			// FIXME: Update protocols on control-change
-			ss << "<label>Protocol:</label><select name=\"controlid\">";
+			ss << "<label>Protocol:</label><select name=\"protocol\">";
 			for (auto protocol2 : protocols) {
 				ss << "<option value=\"" << (unsigned int)protocol2.first << "\"" << (protocol2.first == protocol ? " selected" : "") << ">" << protocol2.second << "</option>";
 			}
 			ss << "</select>";
+			ss << "</div>";
 			ss << inputText("Address:", "address", address);
 			ss << "</form>";
 			ss << buttonPopupCancel();
@@ -349,6 +354,34 @@ namespace webserver {
 		else {
 			ss << "<h1>Unable to edit locos in auto mode</h1>";
 			ss << buttonPopupCancel();
+		}
+		string sOut = ss.str();
+		simpleReply(sOut);
+	}
+
+	void WebClient::handleProtocol(const map<string, string>& arguments) {
+		stringstream ss;
+		if (arguments.count("control")) {
+			controlID_t controlID = stoi(arguments.at("control"));
+			protocol_t selectedProtocol = PROTOCOL_NONE;
+			/*
+			FIXME: get selectedProtocol
+			if (arguments.count("loco")) {
+				locoID_t locoID = stoi(arguments.at("loco"));
+				if (locos.count(locoID)) {
+					Loco* loco = locos.at(locoID);
+					selectedProtocol = loco->protocol;
+				}
+			}
+			*/
+			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
+			ss << "<label>Protocol:</label><select name=\"protocol\">";
+			for (auto protocol : protocols) {
+				ss << "<option value=\"" << (unsigned int)protocol.first << "\"" << (protocol.first == selectedProtocol ? " selected" : "") << ">" << protocol.second << "</option>";
+			}
+		}
+		else {
+			ss << "Unknown control";
 		}
 		string sOut = ss.str();
 		simpleReply(sOut);
