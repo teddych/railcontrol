@@ -359,10 +359,6 @@ namespace webserver {
 		locoID_t locoID;
 		if (arguments.count("loco")) {
 			locoID = stoi(arguments.at("loco"));
-			// if no locoID availabe get one to save new loco
-			if (locoID == 0) {
-				// FIXME: get new locoID
-			}
 			string name;
 			controlID_t controlID = 0;
 			protocol_t protocol = 0;

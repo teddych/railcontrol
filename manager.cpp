@@ -326,19 +326,32 @@ const datamodel::Loco* Manager::getLoco(locoID_t locoID) const {
 }
 
 void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& controlID, protocol_t& protocol, address_t& address) {
-	// locoID == 0 means new loco
-	if (locoID) {
-		// if loco exists
-		std::lock_guard<std::mutex> Guard(locoMutex);
-		if (locos.count(locoID)) {
-			Loco* loco = locos.at(locoID);
-			loco->name = name;
-			loco->controlID = controlID;
-			loco->protocol = protocol;
-			loco->address = address;
-			storage->loco(*loco);
-		}
+	std::lock_guard<std::mutex> Guard(locoMutex);
+	Loco* loco;
+	if (locoID && locos.count(locoID)) {
+		// update existing loco
+		loco = locos.at(locoID);
+		loco->name = name;
+		loco->controlID = controlID;
+		loco->protocol = protocol;
+		loco->address = address;
 	}
+	else {
+		// create new loco
+		locoID_t newLocoID = 0;
+		// get next locoID
+		for (auto loco : locos) {
+			if (loco.first > locoID) {
+				newLocoID = loco.first;
+			}
+		}
+		++newLocoID;
+		loco = new Loco(newLocoID, name, controlID, protocol, address);
+		// save in map
+		locos[newLocoID] = loco;
+	}
+	// save in db
+	storage->loco(*loco);
 }
 
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
