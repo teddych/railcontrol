@@ -331,20 +331,22 @@ namespace webserver {
 			ss << inputHidden("cmd", "locosave");
 			ss << inputHidden("loco", locoID);
 			ss << inputText("Loco name:", "name", name);
-			ss << "<label>Control:</label><select name=\"controlid\">";
 			std::map<controlID_t,string> controls = manager.controlList();
+			std::map<string, string> protocolOptions;
+			for(auto control : controls) {
+				protocolOptions[std::to_string(control.first)] = control.second;
+			}
+			std::map<string, string> protocolArguments; // let empty
+			/*
+			ss << "<label>Control:</label><select name=\"controlid\">";
 			for (auto control : controls) {
 				ss << "<option value=\"" << (unsigned int)control.first << "\"" << (control.first == controlID ? " selected" : "") << ">" << control.second << "</option>";
 			}
 			ss << "</select>";
+			*/
+			ss << select("control", protocolOptions, "protocol", "protocol", protocolArguments);
 			ss << "<div id=\"protocol\">";
-			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
-			// FIXME: Update protocols on control-change
-			ss << "<label>Protocol:</label><select name=\"protocol\">";
-			for (auto protocol2 : protocols) {
-				ss << "<option value=\"" << (unsigned int)protocol2.first << "\"" << (protocol2.first == protocol ? " selected" : "") << ">" << protocol2.second << "</option>";
-			}
-			ss << "</select>";
+			// protocol is loaded later
 			ss << "</div>";
 			ss << inputText("Address:", "address", address);
 			ss << "</form>";
@@ -364,21 +366,15 @@ namespace webserver {
 		if (arguments.count("control")) {
 			controlID_t controlID = stoi(arguments.at("control"));
 			protocol_t selectedProtocol = PROTOCOL_NONE;
-			/*
-			FIXME: get selectedProtocol
-			if (arguments.count("loco")) {
-				locoID_t locoID = stoi(arguments.at("loco"));
-				if (locos.count(locoID)) {
-					Loco* loco = locos.at(locoID);
-					selectedProtocol = loco->protocol;
-				}
+			if (arguments.count("protocol")) {
+				selectedProtocol = stoi(arguments.at("protocol"));
 			}
-			*/
 			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
 			ss << "<label>Protocol:</label><select name=\"protocol\">";
 			for (auto protocol : protocols) {
 				ss << "<option value=\"" << (unsigned int)protocol.first << "\"" << (protocol.first == selectedProtocol ? " selected" : "") << ">" << protocol.second << "</option>";
 			}
+			ss << "</select>";
 		}
 		else {
 			ss << "Unknown control";
@@ -465,6 +461,10 @@ namespace webserver {
 			ss << "<option value=\"" << option.first << "\">" << option.second << "</option>";
 		}
 		ss << "</select>";
+		// FIXME: onload
+			xlog("name=%s", name.c_str());
+			xlog("cmd=%s", cmd.c_str());
+			xlog("target=%s", target.c_str());
 		for (auto argument : arguments) {
 			ss << "<input type=\"hidden\" name=\"" << argument.first << "\" value=\"" << argument.second << "\">";
 		}
@@ -473,14 +473,17 @@ namespace webserver {
 		ss << "<script>\n"
 		"$(function() {\n"
 		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', function() {\n"
+		"alert('1');\n"
 		"  $.ajax({\n"
 		"   data: $(this).serialize(),\n"
 		"   type: $(this).attr('get'),\n"
 		"   url: $(this).attr('/'),\n"
 		"   success: function(response) {\n"
 		"    $('#" << target << "').html(response);\n"
+		"alert('2');\n"
 		"   }\n"
 		"  })\n"
+		"alert('3');\n"
 		"  return false;\n"
 		" });\n"
 		"});\n"
@@ -489,6 +492,12 @@ namespace webserver {
 		"  $('#" << buttonID << "_"<< cmd << "_" << "form').submit();\n"
 		"  return false;\n"
 		" });\n"
+		"});\n"
+		// FIXME: onload
+		"$(function() {\n"
+		"  $('#" << buttonID << "_"<< cmd << "_" << "form').submit();\n"
+		"alert('4');\n"
+		"  return false;\n"
 		"});\n"
 		"</script>";
 		++buttonID;
