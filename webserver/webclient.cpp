@@ -470,7 +470,14 @@ namespace webserver {
 		}
 		ss << "<input type=\"hidden\" name=\"cmd\" value=\"" << cmd << "\">";
 		ss << "</form>";
-		ss << "<script>\n"
+		ss << "<script type=\"application/javascript\">\n"
+		"debugger;\n"
+		"$(function() {\n"
+		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', loadDiv('" << target << "'));\n"
+		"});\n"
+		"onChange('" << buttonID << "_"<< cmd << "', '" << buttonID << "_"<< cmd << "_" << "form');\n"
+		"submitForm('" << buttonID << "_"<< cmd << "_" << "form');\n"
+		/*
 		"$(function() {\n"
 		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', function() {\n"
 		"alert('1');\n"
@@ -495,10 +502,12 @@ namespace webserver {
 		"});\n"
 		// FIXME: onload
 		"$(function() {\n"
+		"  debugger;\n"
 		"  $('#" << buttonID << "_"<< cmd << "_" << "form').submit();\n"
 		"alert('4');\n"
 		"  return false;\n"
 		"});\n"
+		*/
 		"</script>";
 		++buttonID;
 		return ss.str();
@@ -509,7 +518,7 @@ namespace webserver {
 		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
 		stringstream ss;
 		ss << "<input class=\"slider\" type=\"range\" min=\"" << min << "\" max=\"" << max << "\" name=\"" << name << "\" id=\"" << cmd << "_" << locoID<< "\">";
-		ss << "<script>\n"
+		ss << "<script type=\"application/javascript\">\n"
 			"$(function() {\n"
 			" $('#" << cmd << "_" << locoID << "').on('change', function() {\n"
 			"  var theUrl = '/?cmd=" << cmd;
@@ -531,7 +540,7 @@ namespace webserver {
 		stringstream ss;
 		ss <<
 			"<input class=\"button\" id=\"" << buttonID << "_" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
-			"<script>\n"
+			"<script type=\"application/javascript\">\n"
 			"$(function() {\n"
 			" $('#" << buttonID << "_"<< cmd << "').on('click', function() {\n"
 			"  var theUrl = '/?cmd=" << cmd;
@@ -554,7 +563,7 @@ namespace webserver {
 		stringstream ss;
 		ss <<
 			"<input class=\"button\" id=\"" << buttonID << "_" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
-			"<script>\n"
+			"<script type=\"application/javascript\">\n"
 			"$(function() {\n"
 			" $('#" << buttonID << "_"<< cmd << "').on('click', function() {\n"
 			"  var theUrl = '/?cmd=" << cmd;
@@ -575,7 +584,7 @@ namespace webserver {
 		stringstream ss;
 		ss <<
 			"<input class=\"button\" id=\"popup_cancel\" type=\"submit\" value=\"Cancel\">"
-			"<script>\n"
+			"<script type=\"application/javascript\">\n"
 			"$(function() {\n"
 			" $('#popup_cancel').on('click', function() {\n"
 			"  $('#popup').hide();\n"
@@ -589,7 +598,7 @@ namespace webserver {
 		stringstream ss;
 		ss <<
 			"<input class=\"button\" id=\"popup_ok\" type=\"submit\" value=\"Save\">"
-			"<script>\n"
+			"<script type=\"application/javascript\">\n"
 			"$(function() {\n"
 			" $('#editform').on('submit', function() {\n"
 			"  $.ajax({\n"
@@ -672,6 +681,7 @@ namespace webserver {
 			"<title>RailControl</title>"
 			"<link rel=\"stylesheet\" type=\"text/css\" href=\"/style.css\" />"
 			"<script src=\"/jquery-3.1.1.min.js\"></script>"
+			"<script src=\"/javascript.js\"></script>"
 			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
 			"<meta name=\"robots\" content=\"noindex,nofollow\">"
 			"</head>"
@@ -697,7 +707,7 @@ namespace webserver {
 		ss << "</div>";
 		ss << "<div class=\"popup\" id=\"popup\">Popup</div>"
 			"<div class=\"status\" id=\"status\"></div>"
-			"<script>\n"
+			"<script type=\"application/javascript\">\n"
 			"var updater = new EventSource('/?cmd=updater');\n"
 			"updater.onmessage = function(e) {\n"
 			" var status = document.getElementById('status');\n"
