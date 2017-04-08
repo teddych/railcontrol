@@ -1,11 +1,11 @@
 #include <arpa/inet.h>
-#include <cstdarg>             // va_* in xlog
-#include <cstdio>		//printf
-#include <cstdlib>		//exit(0);
-#include <cstring>		//memset
-#include <iostream>
+#include <cstdarg>    // va_* in xlog
+#include <cstdio>     // printf
+#include <cstdlib>    // exit(0);
+#include <cstring>    // memset
+#include <iostream>   // cout
 #include <sstream>
-#include <unistd.h>		//close;
+#include <unistd.h>   // close;
 #include <vector>
 
 using std::cout;
