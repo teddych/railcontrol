@@ -1,14 +1,16 @@
-function loadDiv(target) {
+function loadFormToDiv(form, target) {
   debugger;
+	var formName = '#' + form;
   $.ajax({
-  data: $(this).serialize(),
-   type: $(this).attr('get'),
-   url: $(this).attr('/'),
+  data: $(formName).serialize(),
+   type: $(formName).attr('get'),
+   url: $(formName).attr('/'),
    success: function(response) {
     var targetName = '#' + target;
 		debugger;
 		console.log(targetName);
 		alert(targetName);
+		alert(response);
     $(targetName).html(response);
    }
   })
@@ -17,7 +19,10 @@ function loadDiv(target) {
 
 function onChange(buttonID, formID) {
   debugger;
- $('#' + buttonID).on('change', submitForm(formID));
+ $(function() {
+  $('#' + buttonID).on('change', submitForm(formID));
+	return false;
+ });
 }
 
 function submitForm(formID) {

@@ -352,6 +352,9 @@ namespace webserver {
 			ss << "</form>";
 			ss << buttonPopupCancel();
 			ss << buttonPopupOK();
+			ss << "<script>\n";
+			ss << "//# sourceURL=handleLocoEdit.js";
+			ss << "</script>\n";
 		}
 		else {
 			ss << "<h1>Unable to edit locos in auto mode</h1>";
@@ -472,11 +475,32 @@ namespace webserver {
 		ss << "</form>";
 		ss << "<script type=\"application/javascript\">\n"
 		"debugger;\n"
+		/*
 		"$(function() {\n"
-		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', loadDiv('" << target << "'));\n"
+		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', function() {\n"
+		"debugger;\n"
+		"alert('1');\n"
+		"  $.ajax({\n"
+		"   data: $(this).serialize(),\n"
+		"   type: $(this).attr('get'),\n"
+		"   url: $(this).attr('/'),\n"
+		"   success: function(response) {\n"
+		"    $('#" << target << "').html(response);\n"
+		"alert('2');\n"
+		"   }\n"
+		"  })\n"
+		"alert('3');\n"
+		"  return false;\n"
+		" });\n"
+		"});\n"
+		*/
+		"$(function() {\n"
+		" var formName = '" << buttonID << "_"<< cmd << "_" << "form';\n"
+		" $('#' + formName).on('submit', loadFormToDiv(formName, '" << target << "'));\n"
+		//" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', alert('" << target << "'));\n"
 		"});\n"
 		"onChange('" << buttonID << "_"<< cmd << "', '" << buttonID << "_"<< cmd << "_" << "form');\n"
-		"submitForm('" << buttonID << "_"<< cmd << "_" << "form');\n"
+//		"submitForm('" << buttonID << "_"<< cmd << "_" << "form');\n"
 		/*
 		"$(function() {\n"
 		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', function() {\n"
@@ -731,7 +755,8 @@ namespace webserver {
 			"};\n"
 
 			// FIXME: get first locoid in db
-			"$('#loco').load('/?cmd=loco&loco=1');\n"
+			"debugger;\n"
+			//"$('#loco').load('/?cmd=loco&loco=1');\n"
 
 			"</script>"
 			"</body>"
