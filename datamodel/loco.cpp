@@ -11,5 +11,17 @@ namespace datamodel {
 		speed(0) {
 	}
 
+	Loco::Loco(const std::string serialized) {
+		deserialize(serialized);
+	}
+
+	std::string Loco::serialize() const {
+		return "";
+	}
+
+	bool Loco::deserialize(const std::string serialized) {
+		return true;
+	}
+
 } // namespace datamodel
 
