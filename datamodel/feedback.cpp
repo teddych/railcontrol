@@ -11,5 +11,19 @@ namespace datamodel {
 		state(FEEDBACK_STATE_FREE) {
 	}
 
+	/*
+	Feedback::Feedback(const std::string serialized) {
+		deserialize(serialized);
+	}
+	*/
+
+	std::string Feedback::serialize() const {
+		return "";
+	}
+
+	bool Feedback::deserialize(const std::string serialized) {
+		return true;
+	}
+
 } // namespace datamodel
 

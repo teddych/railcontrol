@@ -18,6 +18,20 @@ namespace datamodel {
 		rotation(rotation) {
 	}
 
+	/*
+	Switch::Switch(const std::string serialized) {
+		deserialize(serialized);
+	}
+	*/
+
+	std::string Switch::serialize() const {
+		return "";
+	}
+
+	bool Switch::deserialize(const std::string serialized) {
+		return true;
+	}
+
 	void Switch::getTexts(const switchState_t state, char*& stateText) {
 		switch (state >> 1) {
 			case SWITCH_STRAIGHT:

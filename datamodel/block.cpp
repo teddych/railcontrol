@@ -9,6 +9,14 @@ namespace datamodel {
 		state(BLOCK_STATE_FREE) {
 	}
 
+	std::string Block::serialize() const {
+		return "";
+	}
+
+	bool Block::deserialize(const std::string serialized) {
+		return true;
+	}
+
 	bool Block::tryReserve(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (state != BLOCK_STATE_FREE) {

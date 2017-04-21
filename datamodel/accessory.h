@@ -5,12 +5,17 @@
 
 #include "datatypes.h"
 #include "layout_item.h"
+#include "serializable.h"
 
 namespace datamodel {
 
-	class Accessory : public LayoutItem {
+	class Accessory : public LayoutItem, Serializable {
 		public:
 			Accessory(accessoryID_t accessoryID, std::string name, controlID_t controlID, protocol_t protocol, address_t address, accessoryType_t type, accessoryState_t state, accessoryTimeout_t timeout, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z);
+			//Accessory(const std::string serialized);
+
+			virtual std::string serialize() const override;
+			virtual bool deserialize(std::string) override;
 
 			accessoryID_t accessoryID;
 			std::string name;

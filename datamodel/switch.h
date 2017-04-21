@@ -3,8 +3,9 @@
 
 #include <string>
 
-#include "datatypes.h"
 #include "accessory.h"
+#include "datatypes.h"
+#include "serializable.h"
 
 namespace datamodel {
 
@@ -21,6 +22,9 @@ namespace datamodel {
 						 layoutPosition_t x,
 						 layoutPosition_t y,
 						 layoutPosition_t z);
+
+			std::string serialize() const override;
+			bool deserialize(std::string) override;
 
 			static void getTexts(const switchState_t state, char*& stateText);
 

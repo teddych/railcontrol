@@ -14,6 +14,20 @@ namespace datamodel {
 		timeout(timeout) {
 	}
 
+	/*
+	Accessory::Accessory(const std::string serialized) {
+		deserialize(serialized);
+	}
+	*/
+
+	std::string Accessory::serialize() const {
+		return "";
+	}
+
+	bool Accessory::deserialize(const std::string serialized) {
+		return true;
+	}
+
 	void Accessory::getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText) {
 		// calculate color as number
 		color = state >> 1;

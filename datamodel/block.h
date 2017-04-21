@@ -6,12 +6,16 @@
 
 #include "datatypes.h"
 #include "layout_item.h"
+#include "serializable.h"
 
 namespace datamodel {
 
-	class Block : public LayoutItem {
+	class Block : public LayoutItem, Serializable {
 		public:
 			Block(blockID_t blockID, std::string name, layoutItemSize_t width, layoutRotation_t rotation, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z);
+
+			std::string serialize() const override;
+			bool deserialize(std::string) override;
 
 			bool tryReserve(const locoID_t locoID);
 			bool reserve(const locoID_t locoID);
