@@ -1,4 +1,12 @@
+#include <map>
+#include <sstream>
+#include <string>
+
 #include "accessory.h"
+
+using std::map;
+using std::stringstream;
+using std::string;
 
 namespace datamodel {
 
@@ -21,12 +29,28 @@ namespace datamodel {
 	*/
 
 	std::string Accessory::serialize() const {
-		return "";
+		stringstream ss;
+		ss << "objectType=Accessory;accessoryID=" << accessoryID << ";name=" << name << ";controlID=" << controlID << ";protocol=" << protocol << ";address=" << address;
+		return ss.str();
 	}
 
 	bool Accessory::deserialize(const std::string serialized) {
-		return true;
+		map<string,string> arguments;
+		parseArguments(serialized, arguments);
+//		if (arguments.count("objectType") && arguments.at("abjectType").equals("Accessory")) {
+			if (arguments.count("accessoryID")) accessoryID = stoi(arguments.at("accessoryID"));
+			if (arguments.count("name")) name = arguments.at("name");
+			if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
+			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
+			if (arguments.count("address")) address = stoi(arguments.at("address"));
+			if (arguments.count("type")) type = stoi(arguments.at("type"));
+			if (arguments.count("state")) state = stoi(arguments.at("state"));
+			if (arguments.count("timeout")) timeout = stoi(arguments.at("timeout"));
+			return true;
+//	}
+		return false;
 	}
+
 
 	void Accessory::getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText) {
 		// calculate color as number
