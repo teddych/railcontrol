@@ -13,6 +13,7 @@ OBJ= \
 	datamodel/block.o \
 	datamodel/feedback.o \
 	datamodel/loco.o \
+	datamodel/serializable.o \
 	datamodel/switch.o \
 	hardware/hardware_handler.o \
 	hardware/hardware_params.o \

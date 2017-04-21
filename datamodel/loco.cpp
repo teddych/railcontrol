@@ -1,4 +1,13 @@
+
+#include <map>
+#include <sstream>
+#include <string>
+
 #include "loco.h"
+
+using std::map;
+using std::stringstream;
+using std::string;
 
 namespace datamodel {
 
@@ -16,10 +25,19 @@ namespace datamodel {
 	}
 
 	std::string Loco::serialize() const {
-		return "";
+		stringstream ss;
+		ss << "objectType=Loco;locoID=" << locoID << ";name=" << name << ";controlID=" << controlID << ";protocol=" << protocol << ";address=" << address;
+		return ss.str();
 	}
 
 	bool Loco::deserialize(const std::string serialized) {
+		map<string,string> arguments;
+		parseArguments(serialized, arguments);
+		if (arguments.count("locoID")) locoID = stoi(arguments.at("locoID"));
+		if (arguments.count("name")) name = arguments.at("name");
+		if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
+		if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
+		if (arguments.count("address")) address = stoi(arguments.at("address"));
 		return true;
 	}
 
