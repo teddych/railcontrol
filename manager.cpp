@@ -42,45 +42,68 @@ Manager::Manager(Config& config) :
 	for (auto hardwareParam : hardwareParams) {
 		hardwareParam.second->manager = this;
 		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
-		xlog("Loaded controller %i/%s", hardwareParam.first, hardwareParam.second->name.c_str());
+		xlog("Loaded controller %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
 	}
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
-		xlog("Loaded loco %i/%s", loco.second->locoID, loco.second->name.c_str());
+		xlog("Loaded loco %i: %s", loco.second->locoID, loco.second->name.c_str());
 	}
 
 	storage->allAccessories(accessories);
 	for (auto accessory : accessories) {
-		xlog("Loaded accessory %i/%s", accessory.second->accessoryID, accessory.second->name.c_str());
+		xlog("Loaded accessory %i: %s", accessory.second->accessoryID, accessory.second->name.c_str());
 	}
 
 	storage->allFeedbacks(feedbacks);
 	for (auto feedback : feedbacks) {
-		xlog("Loaded Feedback %i/%s", feedback.second->feedbackID, feedback.second->name.c_str());
+		xlog("Loaded feedback %i: %s", feedback.second->feedbackID, feedback.second->name.c_str());
 	}
 
 	storage->allBlocks(blocks);
 	for (auto block : blocks) {
-		xlog("Loaded block %i/%s", block.second->blockID, block.second->name.c_str());
+		xlog("Loaded block %i: %s", block.second->blockID, block.second->name.c_str());
 	}
 
 	storage->allSwitches(switches);
 	for (auto mySwitch : switches) {
-		xlog("Loaded Switch %i/%s", mySwitch.second->switchID, mySwitch.second->name.c_str());
+		xlog("Loaded switch %i: %s", mySwitch.second->switchID, mySwitch.second->name.c_str());
 	}
 }
 
 Manager::~Manager() {
+	for (auto control : controllers) {
+		delete control;
+	}
+	for (auto hardwareParam : hardwareParams) {
+		xlog("Unloaded controller %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
+		delete hardwareParam.second;
+	}
 	for (auto loco : locos) {
+		xlog("Saving loco %i: %s", loco.second->locoID, loco.second->name.c_str());
+		storage->loco(*(loco.second));
 		delete loco.second;
 	}
-  for (auto params : hardwareParams) {
-    delete params.second;
-  }
-  for (auto control : controllers) {
-    delete control;
-  }
+	for (auto accessory : accessories) {
+		xlog("Saving accessory %i: %s", accessory.second->accessoryID, accessory.second->name.c_str());
+		storage->accessory(*(accessory.second));
+		delete accessory.second;
+	}
+	for (auto  feedback : feedbacks) {
+		xlog("Saving feedback %i: %s", feedback.second->feedbackID, feedback.second->name.c_str());
+		storage->feedback(*(feedback.second));
+		delete feedback.second;
+	}
+	for (auto block : blocks) {
+		xlog("Saving block %i: %s", block.second->blockID, block.second->name.c_str());
+		storage->block(*(block.second));
+		delete block.second;
+	}
+	for (auto mySwitch : switches) {
+		xlog("Saving wwitch %i: %s", mySwitch.second->switchID, mySwitch.second->name.c_str());
+		storage->saveSwitch(*(mySwitch.second));
+		delete mySwitch.second;
+	}
 	delete storage;
 	storage = NULL;
 }
