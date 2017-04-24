@@ -1,4 +1,11 @@
+#include <map>
+#include <sstream>
+
 #include "switch.h"
+
+using std::map;
+using std::stringstream;
+using std::string;
 
 namespace datamodel {
 
@@ -14,22 +21,28 @@ namespace datamodel {
 								 layoutPosition_t y,
 								 layoutPosition_t z) :
 		Accessory(switchID, name, controlID, protocol, address, type, state << 1, /* timeout ms*/ 200, x, y, z),
-		switchID(switchID),
-		rotation(rotation) {
+		switchID(switchID) {
 	}
 
-	/*
-	Switch::Switch(const std::string serialized) {
+	Switch::Switch(const std::string& serialized) {
 		deserialize(serialized);
 	}
-	*/
 
 	std::string Switch::serialize() const {
-		return "";
+		stringstream ss;
+		ss << "objectType=Switch;switchID=" << (int)switchID << Accessory::serialize();
+		return ss.str();
 	}
 
-	bool Switch::deserialize(const std::string serialized) {
-		return true;
+	bool Switch::deserialize(const std::string& serialized) {
+		map<string,string> arguments;
+		parseArguments(serialized, arguments);
+		if (arguments.count("objectType") && arguments.at("objectType").compare("Switch") == 0) {
+			Accessory::deserialize(arguments);
+			if (arguments.count("switchID")) switchID = stoi(arguments.at("switchID"));
+			return true;
+		}
+		return false;
 	}
 
 	void Switch::getTexts(const switchState_t state, char*& stateText) {

@@ -9,8 +9,10 @@ typedef unsigned char controlID_t;
 typedef unsigned char hardwareID_t;
 // booster
 typedef unsigned char boosterStatus_t;
+// objects in db
+typedef unsigned short objectID_t;
 // loco
-typedef unsigned short locoID_t;
+typedef objectID_t locoID_t;
 typedef unsigned char protocol_t;
 typedef unsigned short address_t;
 typedef unsigned short speed_t;
@@ -21,17 +23,17 @@ typedef unsigned char layoutRotation_t;
 typedef unsigned char layoutItemSize_t;
 typedef unsigned char layoutPosition_t;
 // accessory
-typedef unsigned short accessoryID_t;
+typedef objectID_t accessoryID_t;
 typedef unsigned char accessoryType_t;
 typedef unsigned char accessoryState_t;
 typedef unsigned char accessoryColor_t;
 typedef unsigned short accessoryTimeout_t;
 // feedback
-typedef unsigned short feedbackID_t;
+typedef objectID_t feedbackID_t;
 typedef unsigned int feedbackPin_t;
 typedef unsigned char feedbackState_t;
 // block
-typedef unsigned short blockID_t;
+typedef objectID_t blockID_t;
 typedef unsigned char blockState_t;
 // switch
 typedef accessoryID_t switchID_t;
@@ -94,6 +96,16 @@ enum rotations : layoutRotation_t {
 	ROTATION_90,
 	ROTATION_180,
 	ROTATION_270
+};
+
+typedef unsigned char objectType_t;
+
+enum objectType : objectType_t {
+	OBJECT_TYPE_LOCO = 1,
+	OBJECT_TYPE_BLOCK,
+	OBJECT_TYPE_FEEDBACK,
+	OBJECT_TYPE_ACCESSORY,
+	OBJECT_TYPE_SWITCH
 };
 
 enum accessoryColor : accessoryColor_t {

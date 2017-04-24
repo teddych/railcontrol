@@ -23,36 +23,12 @@ namespace storage {
 
 			// read controls
 			virtual void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) = 0;
-			
-			// save loco
-			virtual void loco(const datamodel::Loco& loco) = 0;
 
-			// read all locos
-			virtual void allLocos(std::map<locoID_t, datamodel::Loco*>& locos) = 0;
+			// save datamodelobject
+			virtual void saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) = 0;
 
-			// save accessory
-			virtual void accessory(const datamodel::Accessory& accessory) = 0;
-
-			// read all accessories
-			virtual void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) = 0;
-
-			// save feedback
-			virtual void feedback(const datamodel::Feedback& feedback) = 0;
-
-			// read all feedbacks
-			virtual void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks) = 0;
-
-			// save block
-			virtual void block(const datamodel::Block& block) = 0;
-
-			// read all blocks
-			virtual void allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) = 0;
-
-			// save switch
-			virtual void saveSwitch(const datamodel::Switch& mySwitch) = 0;
-
-			// read all switches
-			virtual void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) = 0;
+			// read datamodelobject
+			virtual void objectsOfType(const objectType_t objectType, std::vector<std::string>& objects) = 0;
 	};
 
 } // namespace

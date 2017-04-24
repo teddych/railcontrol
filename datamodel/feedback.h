@@ -9,12 +9,13 @@
 
 namespace datamodel {
 
-	class Feedback : public LayoutItem, Serializable {
+	class Feedback : public LayoutItem {
 		public:
 			Feedback(feedbackID_t feedbackID, std::string name, controlID_t controlID, feedbackPin_t pin, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z);
+			Feedback(const std::string& serialized);
 
 			std::string serialize() const override;
-			bool deserialize(std::string) override;
+			bool deserialize(const std::string& serialized) override;
 
 			feedbackID_t feedbackID;
 			std::string name;

@@ -1,6 +1,5 @@
 #include <map>
 #include <sstream>
-#include <string>
 
 #include "accessory.h"
 
@@ -22,33 +21,36 @@ namespace datamodel {
 		timeout(timeout) {
 	}
 
-	/*
-	Accessory::Accessory(const std::string serialized) {
+	Accessory::Accessory(const std::string& serialized) {
 		deserialize(serialized);
 	}
-	*/
 
 	std::string Accessory::serialize() const {
 		stringstream ss;
-		ss << "objectType=Accessory;accessoryID=" << accessoryID << ";name=" << name << ";controlID=" << controlID << ";protocol=" << protocol << ";address=" << address;
+		ss << "objectType=Accessory;accessoryID=" << (int)accessoryID << ";name=" << name << ";controlID=" << (int)controlID << ";protocol=" << (int)protocol << ";address=" << (int)address << ";type=" << (int)type << ";state=" << (int)state << ";timeout=" << (int)timeout << LayoutItem::serialize();
 		return ss.str();
 	}
 
-	bool Accessory::deserialize(const std::string serialized) {
+	bool Accessory::deserialize(const std::string& serialized) {
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
-//		if (arguments.count("objectType") && arguments.at("abjectType").equals("Accessory")) {
-			if (arguments.count("accessoryID")) accessoryID = stoi(arguments.at("accessoryID"));
-			if (arguments.count("name")) name = arguments.at("name");
-			if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
-			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
-			if (arguments.count("address")) address = stoi(arguments.at("address"));
-			if (arguments.count("type")) type = stoi(arguments.at("type"));
-			if (arguments.count("state")) state = stoi(arguments.at("state"));
-			if (arguments.count("timeout")) timeout = stoi(arguments.at("timeout"));
-			return true;
-//	}
+		if (arguments.count("objectType") && arguments.at("objectType").compare("Accessory") == 0) {
+			return deserialize(arguments);
+		}
 		return false;
+	}
+
+	bool Accessory::deserialize(const map<string,string>& arguments) {
+		LayoutItem::deserialize(arguments);
+		if (arguments.count("accessoryID")) accessoryID = stoi(arguments.at("accessoryID"));
+		if (arguments.count("name")) name = arguments.at("name");
+		if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
+		if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
+		if (arguments.count("address")) address = stoi(arguments.at("address"));
+		if (arguments.count("type")) type = stoi(arguments.at("type"));
+		if (arguments.count("state")) state = stoi(arguments.at("state"));
+		if (arguments.count("timeout")) timeout = stoi(arguments.at("timeout"));
+		return true;
 	}
 
 

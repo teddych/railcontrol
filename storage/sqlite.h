@@ -21,46 +21,18 @@ namespace storage {
 			// read controls
 			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) override;
 
-			// save loco
-			void loco(const datamodel::Loco& loco) override;
+			// save datamodelobject
+			void saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) override;
 
-			// read all locos
-			void allLocos(std::map<locoID_t, datamodel::Loco*>& locos) override;
-
-			// save accessory
-			void accessory(const datamodel::Accessory& accessory) override;
-
-			// read all accessories
-			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) override;
-
-			// save feedback
-			void feedback(const datamodel::Feedback& feedback) override;
-
-			// read all feedbacks
-			void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedback) override;
-
-			// save block
-			void block(const datamodel::Block& block) override;
-
-			// read all blocks
-			void allBlocks(std::map<blockID_t,datamodel::Block*>& block) override;
-
-			// save switch
-			void saveSwitch(const datamodel::Switch& mySwitch) override;
-
-			// read all switches
-			void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) override;
+			// read datamodelobject
+			void objectsOfType(const objectType_t objectType, std::vector<std::string>& objects);
 
 		private:
 			sqlite3 *db;
 
 			static int callbackListTables(void *v, int argc, char **argv, char **colName);
 			static int callbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
-			static int callbackAllLocos(void* v, int argc, char **argv, char **colName);
-			static int callbackAllAccessories(void* v, int argc, char **argv, char **colName);
-			static int callbackAllFeedbacks(void* v, int argc, char **argv, char **colName);
-			static int callbackAllBlocks(void* v, int argc, char **argv, char **colName);
-			static int callbackAllSwitches(void* v, int argc, char **argv, char **colName);
+			static int callbackObjectsOfType(void* v, int argc, char **argv, char **colName);
 	};
 
 } // namespace storage

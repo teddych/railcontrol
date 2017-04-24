@@ -64,83 +64,16 @@ namespace storage {
 			}
 		}
 
-		// create loco table if needed
-		if (tablenames["locos"] != true) {
-			xlog("Creating table locos");
-			rc = sqlite3_exec(db, "CREATE TABLE locos (locoid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, protocol UNSIGNED TINYINT, address UNSIGNED SHORTINT);", NULL, NULL, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-				sqlite3_close(db);
-				db = NULL;
-				return;
-			}
-		}
-
-		// create accessories table if needed
-		if (tablenames["accessories"] != true) {
-			xlog("Creating table accessories");
-			rc = sqlite3_exec(db, "CREATE TABLE accessories ("
-				"accessoryid UNSIGNED INT PRIMARY KEY, "
+		// create objects table if needed
+		if (tablenames["objects"] != true) {
+			xlog("Creating table objects");
+			rc = sqlite3_exec(db, "CREATE TABLE objects ("
+				"objecttype UNSIGNED TINYINT, "
+				"objectid UNSIGNED SHORTINT, "
 				"name VARCHAR(50), "
-				"controlid UNSIGNED TINYINT, "
-				"protocol UNSIGNED TINYINT, "
-				"address UNSIGNED SHORTINT, "
-				"type UNSIGNED TINYINT, "
-				"state UNSIGNED TINYINT, "
-				"x UNSIGEND TINYINT, "
-				"y UNSIGNED TINYINT, "
-				"z UNSIGNED TINYINT);", NULL, NULL, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-				sqlite3_close(db);
-				db = NULL;
-				return;
-			}
-		}
-
-		// create feedbacks table if needed
-		if (tablenames["feedbacks"] != true) {
-			xlog("Creating table feedbacks");
-			rc = sqlite3_exec(db, "CREATE TABLE feedbacks (feedbackid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), controlid UNSIGNED TINYINT, pin UNSIGNED INT, x UNSIGEND TINYINT, y UNSIGNED TINYINT, z UNSIGNED TINYINT);", NULL, NULL, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-				sqlite3_close(db);
-				db = NULL;
-				return;
-			}
-		}
-
-		// create blocks table if needed
-		if (tablenames["blocks"] != true) {
-			xlog("Creating table blocks");
-			rc = sqlite3_exec(db, "CREATE TABLE blocks (blockid UNSIGNED INT PRIMARY KEY, name VARCHAR(50), width UNSIGNED TINYINT, rotation UNSIGNED TINYINT, x UNSIGEND TINYINT, y UNSIGNED TINYINT, z UNSIGNED TINYINT);", NULL, NULL, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-				sqlite3_close(db);
-				db = NULL;
-				return;
-			}
-		}
-
-		// create switches table if needed
-		if (tablenames["switches"] != true) {
-			xlog("Creating table switches");
-			rc = sqlite3_exec(db, "CREATE TABLE switches ("
-				"switchid UNSIGNED INT PRIMARY KEY, "
-				"name VARCHAR(50), "
-				"controlid UNSIGNED TINYINT, "
-				"protocol UNSIGNED TINYINT, "
-				"address UNSIGNED SHORTINT, "
-				"type UNSIGNED TINYINT, "
-				"state UNSIGNED TINYINT, "
-				"rotation UNSIGEND TINYINT, "
-				"x UNSIGEND TINYINT, "
-				"y UNSIGNED TINYINT, "
-				"z UNSIGNED TINYINT);", NULL, NULL, &dbError);
+				"object SHORTTEXT,"
+				"PRIMARY KEY (objecttype, objectid));",
+				NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -204,14 +137,15 @@ namespace storage {
 		return 0;
 	}
 
-
-	// save loco (locoID is primary key)
-	void SQLite::loco(const datamodel::Loco& loco) {
+	// save datamodelobject
+	void SQLite::saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) {
 		if (db) {
 			stringstream ss;
 			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO locos (locoid, name, controlid, protocol, address) VALUES (" << loco.locoID << ", '" << loco.name << "', " << (int)loco.controlID << ", " << (int)loco.protocol << ", " << loco.address << ");";
-			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
+			// FIXME: escape "'" in object
+			ss << "INSERT OR REPLACE INTO objects (objecttype, objectid, name, object) VALUES (" << (int)objectType << ", " << (int)objectID << ", '" << name << "', '" << object << "');";
+			string s(ss.str());
+			int rc = sqlite3_exec(db, s.c_str(), NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -219,43 +153,14 @@ namespace storage {
 		}
 	}
 
-	// read all locos
-	void SQLite::allLocos(std::map<locoID_t, datamodel::Loco*>& locos) {
+	// read datamodelobject
+	void SQLite::objectsOfType(const objectType_t objectType, vector<string>& objects) {
 		if (db) {
 			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT locoid, name, controlid, protocol, address FROM locos ORDER BY locoid;", callbackAllLocos, &locos, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
-		}
-	}
-
-	// callback read all locos
-	int SQLite::callbackAllLocos(void* v, int argc, char **argv, char **colName) {
-		map<locoID_t,Loco*>* locos = static_cast<map<locoID_t,Loco*>*>(v);
-		if (argc != 5) {
-			return 0;
-		}
-		locoID_t locoID = atoi(argv[0]);
-		if (locos->count(locoID)) {
-			xlog("Loco with ID %i already exists", locoID);
-			Loco* loco = (*locos)[locoID];
-			delete loco;
-		}
-		Loco* loco = new Loco(locoID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]));
-
-		(*locos)[locoID] = loco;
-		return 0;
-	}
-
-	// save accessory
-	void SQLite::accessory(const datamodel::Accessory& accessory) {
-		if (db) {
 			stringstream ss;
-			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO accessories (accessoryid, name, controlid, protocol, address, type, state, x, y, z) VALUES (" << accessory.accessoryID << ", '" << accessory.name << "', " << (int)accessory.controlID << ", " << (int)accessory.protocol << ", " << accessory.address << ", " << (int)accessory.type << ", " << (int)accessory.state << ", " << (int)accessory.posX << ", " << (int)accessory.posY << ", " << (int)accessory.posZ << ");";
-			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
+			ss << "SELECT object FROM objects WHERE objecttype = " << (int)objectType << " ORDER BY objectid;";
+			string s(ss.str());
+			int rc = sqlite3_exec(db, s.c_str(), callbackObjectsOfType, &objects, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -263,168 +168,14 @@ namespace storage {
 		}
 	}
 
-	// read all accessories
-	void SQLite::allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) {
-			if (db) {
-			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT accessoryid, name, controlid, protocol, address, type, state, x, y, z FROM accessories ORDER BY accessoryid;", callbackAllAccessories, &accessories, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
-		}
-	}
-
-	// callback read all accessories
-	int SQLite::callbackAllAccessories(void* v, int argc, char **argv, char **colName) {
-		map<accessoryID_t,Accessory*>* accessories = static_cast<map<accessoryID_t,Accessory*>*>(v);
-		if (argc != 10) {
+	// callback read all datamodelobject
+	int SQLite::callbackObjectsOfType(void* v, int argc, char **argv, char **colName) {
+		vector<string>* objects = static_cast<vector<string>*>(v);
+		if (argc != 1) {
 			return 0;
 		}
-		accessoryID_t accessoryID = atoi(argv[0]);
-		if (accessories->count(accessoryID)) {
-			xlog("Accessory with ID %i already exists", accessoryID);
-			Accessory* accessory = (*accessories)[accessoryID];
-			delete accessory;
-		}
-		// FIXME: timeout not stored
-		Accessory* accessory = new Accessory(accessoryID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), 200, atoi(argv[7]), atoi(argv[8]), atoi(argv[9]));
-
-		(*accessories)[accessoryID] = accessory;
-		return 0;
-	}
-
-	// save feedback
-	void SQLite::feedback(const datamodel::Feedback& feedback) {
-		if (db) {
-			stringstream ss;
-			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO feedbacks (feedbackid, name, controlid, pin, x, y, z) VALUES (" << feedback.feedbackID << ", '" << feedback.name << "', " << (int)feedback.controlID << ", " << feedback.pin << ", " << (int)feedback.posX << ", " << (int)feedback.posY << ", " << (int)feedback.posZ << ");";
-			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
-		}
-	}
-
-	// read all feedbacks
-	void SQLite::allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks) {
-			if (db) {
-			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT feedbackid, name, controlid, pin, x, y, z FROM feedbacks ORDER BY feedbackid;", callbackAllFeedbacks, &feedbacks, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
-		}
-	}
-
-	// callback read all feedbacks
-	int SQLite::callbackAllFeedbacks(void* v, int argc, char **argv, char **colName) {
-		map<feedbackID_t,Feedback*>* feedbacks = static_cast<map<feedbackID_t,Feedback*>*>(v);
-		if (argc != 7) {
-			return 0;
-		}
-		feedbackID_t feedbackID = atoi(argv[0]);
-		if (feedbacks->count(feedbackID)) {
-			xlog("feedback with ID %i already exists", feedbackID);
-			Feedback* feedback = (*feedbacks)[feedbackID];
-			delete feedback;
-		}
-		Feedback* feedback = new Feedback(feedbackID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]));
-
-		(*feedbacks)[feedbackID] = feedback;
-		return 0;
-	}
-
-	// save block
-	void SQLite::block(const datamodel::Block& block) {
-		if (db) {
-			stringstream ss;
-			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO blocks (blockid, name, width, rotation, x, y, z) VALUES (" << block.blockID << ", '" << block.name << "', " << (int)block.width << ", " << (int)block.rotation << ", " << (int)block.posX << ", " << (int)block.posY << ", " << (int)block.posZ << ");";
-			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
-		}
-	}
-
-	// read all blocks
-	void SQLite::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
-			if (db) {
-			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT blockid, name, width, rotation, x, y, z FROM blocks ORDER BY blockid;", callbackAllBlocks, &blocks, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
-		}
-	}
-
-	// callback read all blocks
-	int SQLite::callbackAllBlocks(void* v, int argc, char **argv, char **colName) {
-		map<blockID_t,Block*>* blocks = static_cast<map<blockID_t,Block*>*>(v);
-		if (argc != 7) {
-			return 0;
-		}
-		blockID_t blockID = atoi(argv[0]);
-		if (blocks->count(blockID)) {
-			xlog("Block with ID %i already exists", blockID);
-			Block* block = (*blocks)[blockID];
-			delete block;
-		}
-		Block* block = new Block(blockID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]));
-
-		(*blocks)[blockID] = block;
-		return 0;
-	}
-
-	// save switch
-	void SQLite::saveSwitch(const datamodel::Switch& mySwitch) {
-		if (db) {
-			stringstream ss;
-			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO switches (switchid, name, controlid, protocol, address, type, state, rotation, x, y, z) VALUES (" << mySwitch.switchID << ", '" << mySwitch.name << "', " << (int)mySwitch.controlID << ", " << (int)mySwitch.protocol << ", " << mySwitch.address << ", " << (int)mySwitch.type << ", " << (int)mySwitch.state << ", " << (int)mySwitch.rotation << ", " << (int)mySwitch.posX << ", " << (int)mySwitch.posY << ", " << (int)mySwitch.posZ << ");";
-			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
-		}
-	}
-
-	// read all switches
-	void SQLite::allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) {
-			if (db) {
-			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT switchid, name, controlid, protocol, address, type, state, rotation, x, y, z FROM switches ORDER BY switchid;", callbackAllSwitches, &switches, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
-		}
-	}
-
-	// callback read all switches
-	int SQLite::callbackAllSwitches(void* v, int argc, char **argv, char **colName) {
-		map<switchID_t,Switch*>* switches = static_cast<map<switchID_t,Switch*>*>(v);
-		if (argc != 10) {
-			return 0;
-		}
-		switchID_t switchID = atoi(argv[0]);
-		if (switches->count(switchID)) {
-			xlog("switch with ID %i already exists", switchID);
-			Switch* mySwitch = (*switches)[switchID];
-			delete mySwitch;
-		}
-		Switch* mySwitch = new Switch(switchID, argv[1], atoi(argv[2]), atoi(argv[3]), atoi(argv[4]), atoi(argv[5]), atoi(argv[6]), atoi(argv[7]), atoi(argv[8]), atoi(argv[9]), atoi(argv[10]));
-
-		(*switches)[switchID] = mySwitch;
+		objects->push_back(argv[0]);
 		return 0;
 	}
 
 } // namespace storage
-

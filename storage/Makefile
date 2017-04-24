@@ -3,6 +3,7 @@ CC=gcc
 CPP=g++
 
 CFLAGS=-g -fpic -O2 -Wall
+#CPPFLAGS=-g -fpic -O0 -Wall -std=c++11 -I..
 CPPFLAGS=-g -fpic -O2 -Wall -std=c++11 -I..
 LDFLAGS=-g -shared -Wl,-soname,
 

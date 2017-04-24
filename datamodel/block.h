@@ -10,12 +10,13 @@
 
 namespace datamodel {
 
-	class Block : public LayoutItem, Serializable {
+	class Block : private LayoutItem {
 		public:
 			Block(blockID_t blockID, std::string name, layoutItemSize_t width, layoutRotation_t rotation, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z);
+			Block(const std::string& serialized);
 
 			std::string serialize() const override;
-			bool deserialize(std::string) override;
+			bool deserialize(const std::string& serialized) override;
 
 			bool tryReserve(const locoID_t locoID);
 			bool reserve(const locoID_t locoID);
@@ -25,6 +26,7 @@ namespace datamodel {
 
 			blockID_t blockID;
 			std::string name;
+
 		private:
 			blockState_t state;
 			locoID_t locoID;

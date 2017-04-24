@@ -8,13 +8,13 @@
 
 namespace datamodel {
 
-	class Loco : Serializable {
+	class Loco : private Serializable {
 		public:
 			Loco(locoID_t locoID, std::string name, controlID_t controlID, protocol_t protocol, address_t address);
-			Loco(const std::string);
+			Loco(const std::string& serialized);
 
 			std::string serialize() const override;
-			bool deserialize(std::string) override;
+			bool deserialize(const std::string& serialized) override;
 
 			locoID_t locoID;
 			std::string name;

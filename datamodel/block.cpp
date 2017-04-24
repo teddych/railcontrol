@@ -1,4 +1,13 @@
+
+#include <map>
+#include <sstream>
+#include <string>
+
 #include "block.h"
+
+using std::map;
+using std::stoi;
+using std::string;
 
 namespace datamodel {
 
@@ -9,12 +18,27 @@ namespace datamodel {
 		state(BLOCK_STATE_FREE) {
 	}
 
-	std::string Block::serialize() const {
-		return "";
+	Block::Block(const std::string& serialized) {
+		deserialize(serialized);
 	}
 
-	bool Block::deserialize(const std::string serialized) {
-		return true;
+	std::string Block::serialize() const {
+		std::stringstream ss;
+		ss << "objectType=Block;blockID=" << (int)blockID << ";name=" << name << ";state=" << (int)state << LayoutItem::serialize();
+		return ss.str();
+	}
+
+	bool Block::deserialize(const std::string& serialized) {
+		map<string,string> arguments;
+		parseArguments(serialized, arguments);
+		if (arguments.count("objectType") && arguments.at("objectType").compare("Block") == 0) {
+			LayoutItem::deserialize(arguments);
+			if (arguments.count("blockID")) blockID = stoi(arguments.at("blockID"));
+			if (arguments.count("name")) name = arguments.at("name");
+			if (arguments.count("state")) state = stoi(arguments.at("state"));
+			return true;
+		}
+		return false;
 	}
 
 	bool Block::tryReserve(const locoID_t locoID) {

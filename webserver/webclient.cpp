@@ -312,15 +312,15 @@ namespace webserver {
 		stringstream ss;
 		locoID_t locoID = 0;
 		if (!manager.autoMode) {
-			controlID_t controlID = 0;
-			protocol_t protocol = 0;
+			//controlID_t controlID = 0;
+			//protocol_t protocol = 0;
 			address_t address = 0;
 			string name("New Loco");
 			if (arguments.count("loco")) {
 				locoID = stoi(arguments.at("loco"));
 				const datamodel::Loco* loco = manager.getLoco(locoID);
-				controlID = loco->controlID;
-				protocol = loco->protocol;
+				//controlID = loco->controlID;
+				//protocol = loco->protocol;
 				address = loco->address;
 				name = loco->name;
 			}

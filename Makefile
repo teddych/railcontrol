@@ -3,7 +3,8 @@ CC=g++
 
 #CPPFLAGS=-g -O2 -Wall
 #CPPFLAGS=-g -O0 -Wall -std=c++11
-CPPFLAGS=-I. -g -O2 -Wall -std=c++11
+CPPFLAGS=-I. -g -O0 -Wall -std=c++11
+#CPPFLAGS=-I. -g -O2 -Wall -std=c++11
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
@@ -12,6 +13,7 @@ OBJ= \
 	datamodel/accessory.o \
 	datamodel/block.o \
 	datamodel/feedback.o \
+	datamodel/layout_item.o \
 	datamodel/loco.o \
 	datamodel/serializable.o \
 	datamodel/switch.o \

@@ -23,13 +23,14 @@ namespace datamodel {
 						 layoutPosition_t y,
 						 layoutPosition_t z);
 
+			Switch(const std::string& serialized);
+
 			std::string serialize() const override;
-			bool deserialize(std::string) override;
+			bool deserialize(const std::string& serialized) override;
 
 			static void getTexts(const switchState_t state, char*& stateText);
 
 			switchID_t switchID;
-			layoutRotation_t rotation;
 	};
 
 } // namespace datamodel
