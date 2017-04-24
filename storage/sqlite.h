@@ -25,14 +25,23 @@ namespace storage {
 			void saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) override;
 
 			// read datamodelobject
-			void objectsOfType(const objectType_t objectType, std::vector<std::string>& objects);
+			void objectsOfType(const objectType_t objectType, std::vector<std::string>& objects) override;
+
+			// save datamodelrelation
+			void saveRelation(const relationType_t relationType, const objectID_t objectID1, const objectID_t objectID2, const std::string& name, const std::string& relation) override;
+
+			// read datamodelrelation
+			void relationsFromObject(const relationType_t relationType, const objectID_t objectID, std::vector<std::string>& relations) override;
+
+			// read datamodelrelation
+			void relationsToObject(const relationType_t relationType, const objectID_t objectID, std::vector<std::string>& relations) override;
 
 		private:
 			sqlite3 *db;
 
 			static int callbackListTables(void *v, int argc, char **argv, char **colName);
 			static int callbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
-			static int callbackObjectsOfType(void* v, int argc, char **argv, char **colName);
+			static int callbackStringVector(void* v, int argc, char **argv, char **colName);
 	};
 
 } // namespace storage

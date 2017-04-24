@@ -82,6 +82,27 @@ namespace storage {
 				return;
 			}
 		}
+
+		// create relations table if needed
+		if (tablenames["relations"] != true) {
+			xlog("Creating table relations");
+			rc = sqlite3_exec(db, "CREATE TABLE relations ("
+				"objecttype1 UNSIGNED TINYINT, "
+				"objectid1 UNSIGNED SHORTINT, "
+				"objecttype2 UNSIGNED TINYINT, "
+				"objectid2 UNSIGNED SHORTINT, "
+				"name VARCHAR(50), "
+				"relation SHORTTEXT,"
+				"PRIMARY KEY (objecttype1, objectid1, objecttype2, objectid2));",
+				NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+				sqlite3_close(db);
+				db = NULL;
+				return;
+			}
+		}
 	}
 
 	SQLite::~SQLite() {
@@ -153,14 +174,14 @@ namespace storage {
 		}
 	}
 
-	// read datamodelobject
+	// read datamodelobjects
 	void SQLite::objectsOfType(const objectType_t objectType, vector<string>& objects) {
 		if (db) {
 			char* dbError = 0;
 			stringstream ss;
 			ss << "SELECT object FROM objects WHERE objecttype = " << (int)objectType << " ORDER BY objectid;";
 			string s(ss.str());
-			int rc = sqlite3_exec(db, s.c_str(), callbackObjectsOfType, &objects, &dbError);
+			int rc = sqlite3_exec(db, s.c_str(), callbackStringVector, &objects, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -168,8 +189,54 @@ namespace storage {
 		}
 	}
 
-	// callback read all datamodelobject
-	int SQLite::callbackObjectsOfType(void* v, int argc, char **argv, char **colName) {
+	// save datamodelrelation
+	void SQLite::saveRelation(const relationType_t relationType, const objectID_t objectID1, const objectID_t objectID2, const std::string& name, const std::string& relation) {
+		if (db) {
+			stringstream ss;
+			char* dbError = NULL;
+			// FIXME: escape "'" in object
+			ss << "INSERT OR REPLACE INTO relations (relationtype, objectid1, objectid2, name, relation) VALUES (" << (int)relationType << ", " << (int)objectID1 << ", " << (int)objectID2 << ", '" << name << "', '" << relation << "');";
+			string s(ss.str());
+			int rc = sqlite3_exec(db, s.c_str(), NULL, NULL, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// read datamodelrelations
+	void SQLite::relationsFromObject(const relationType_t relationType, const objectID_t objectID, vector<string>& relations) {
+		if (db) {
+			char* dbError = 0;
+			stringstream ss;
+			ss << "SELECT relation FROM relations WHERE relationtype = " << (int)relationType << " AND objectid1 = " << (int)objectID << ";";
+			string s(ss.str());
+			int rc = sqlite3_exec(db, s.c_str(), callbackStringVector, &relations, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// read datamodelrelations
+	void SQLite::relationsToObject(const relationType_t relationType, const objectID_t objectID, vector<string>& relations) {
+		if (db) {
+			char* dbError = 0;
+			stringstream ss;
+			ss << "SELECT relation FROM relations WHERE relationtype = " << (int)relationType << " AND objectid2 = " << (int)objectID << ";";
+			string s(ss.str());
+			int rc = sqlite3_exec(db, s.c_str(), callbackStringVector, &relations, &dbError);
+			if (rc != SQLITE_OK) {
+				xlog("SQLite error: %s", dbError);
+				sqlite3_free(dbError);
+			}
+		}
+	}
+
+	// callback read all datamodelobjects
+	int SQLite::callbackStringVector(void* v, int argc, char **argv, char **colName) {
 		vector<string>* objects = static_cast<vector<string>*>(v);
 		if (argc != 1) {
 			return 0;

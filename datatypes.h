@@ -108,6 +108,13 @@ enum objectType : objectType_t {
 	OBJECT_TYPE_SWITCH
 };
 
+typedef unsigned char relationType_t;
+
+enum relationType : relationType_t {
+	RELATION_TYPE_BLOCK_STREET = 0,
+	RELATION_TYPE_STREET_FEEDBACK
+};
+
 enum accessoryColor : accessoryColor_t {
 	ACCESSORY_COLOR_RED = 0,
 	ACCESSORY_COLOR_GREEN,
