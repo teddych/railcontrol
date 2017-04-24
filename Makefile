@@ -48,3 +48,6 @@ clean:
 
 clean-sqlite-shell:
 	make -C storage/sqlite clean
+
+test:
+	make -C test

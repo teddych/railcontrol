@@ -10,7 +10,7 @@ LIBS=-lpthread -ldl
 TESTS= \
 	testloco
 
-test: $(TESTS)
+all: $(TESTS)
 	@./testloco
 
 clean:
