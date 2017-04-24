@@ -34,78 +34,36 @@ Manager::Manager(Config& config) :
 	storageParams.filename = config.getValue("dbfilename", "/tmp/railcontrol.db");
 	storage = new StorageHandler(storageParams);
 
-  controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
+	//loadDefaultValuesToDB();
 
-	//HardwareParams newHardwareParams(1, 1, "Virtuelle Zentrale", "");
-	//storage->hardwareParams(newHardwareParams);
+	controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
 
-	xlog("Loading Controllers");
 	storage->allHardwareParams(hardwareParams);
 	for (auto hardwareParam : hardwareParams) {
 		hardwareParam.second->manager = this;
 		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
+		xlog("Loaded controller %i/%s", hardwareParam.first, hardwareParam.second->name.c_str());
 	}
-	xlog("Controllers loaded");
-
-	/*
-	Loco newloco1(1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
-	storage->loco(newloco1);
-
-	Loco newloco2(2, "ICN", 1, PROTOCOL_DCC, 1118);
-	storage->loco(newloco2);
-	*/
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
 		xlog("Loaded loco %i/%s", loco.second->locoID, loco.second->name.c_str());
 	}
 
-	/*
-	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200, 3, 5, 0);
-	storage->accessory(newAccessory1);
-
-	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200, 3, 6, 0);
-	storage->accessory(newAccessory2);
-	*/
-
 	storage->allAccessories(accessories);
 	for (auto accessory : accessories) {
 		xlog("Loaded accessory %i/%s", accessory.second->accessoryID, accessory.second->name.c_str());
 	}
-
-	/*
-	Feedback newFeedback1(1, "Rückmelder Einfahrt links", 1, 1, 4, 5, 0);
-	storage->feedback(newFeedback1);
-
-	Feedback newFeedback2(2, "Rückmelder Einfahrt rechts", 1, 2, 4, 6, 0);
-	storage->feedback(newFeedback2);
-	*/
 
 	storage->allFeedbacks(feedbacks);
 	for (auto feedback : feedbacks) {
 		xlog("Loaded Feedback %i/%s", feedback.second->feedbackID, feedback.second->name.c_str());
 	}
 
-	/*
-	Block newBlock1(1, "Block 1", 4, ROTATION_0, 5, 5, 0);
-	storage->block(newBlock1);
-
-	Block newBlock2(2, "Block 2", 4, ROTATION_90, 5, 6, 0);
-	storage->block(newBlock2);
-	*/
-
 	storage->allBlocks(blocks);
 	for (auto block : blocks) {
 		xlog("Loaded block %i/%s", block.second->blockID, block.second->name.c_str());
 	}
-
-	/*
-	Switch newSwitch1(1, "Weiche 1", 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 2, 5, 0);
-	storage->saveSwitch(newSwitch1);
-
-	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
-	storage->saveSwitch(newSwitch2);
-	*/
 
 	storage->allSwitches(switches);
 	for (auto mySwitch : switches) {
@@ -125,6 +83,41 @@ Manager::~Manager() {
   }
 	delete storage;
 	storage = NULL;
+}
+
+void Manager::loadDefaultValuesToDB() {
+	HardwareParams newHardwareParams(1, 1, "Virtuelle Zentrale", "");
+	storage->hardwareParams(newHardwareParams);
+
+	Loco newloco1(1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
+	storage->loco(newloco1);
+
+	Loco newloco2(2, "ICN", 1, PROTOCOL_DCC, 1118);
+	storage->loco(newloco2);
+
+	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200, 3, 5, 0);
+	storage->accessory(newAccessory1);
+
+	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200, 3, 6, 0);
+	storage->accessory(newAccessory2);
+
+	Feedback newFeedback1(1, "Rückmelder Einfahrt links", 1, 1, 4, 5, 0);
+	storage->feedback(newFeedback1);
+
+	Feedback newFeedback2(2, "Rückmelder Einfahrt rechts", 1, 2, 4, 6, 0);
+	storage->feedback(newFeedback2);
+
+	Block newBlock1(1, "Block 1", 4, ROTATION_0, 5, 5, 0);
+	storage->block(newBlock1);
+
+	Block newBlock2(2, "Block 2", 4, ROTATION_90, 5, 6, 0);
+	storage->block(newBlock2);
+
+	Switch newSwitch1(1, "Weiche 1", 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 2, 5, 0);
+	storage->saveSwitch(newSwitch1);
+
+	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
+	storage->saveSwitch(newSwitch2);
 }
 
 void Manager::booster(const managerID_t managerID, const boosterStatus_t status) {

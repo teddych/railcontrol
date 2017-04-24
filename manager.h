@@ -16,6 +16,7 @@ class Manager {
 	public:
 		Manager(Config& config);
 		~Manager();
+		void loadDefaultValuesToDB();
 
 		// booster
 		void booster(const managerID_t managerID, const boosterStatus_t status);
