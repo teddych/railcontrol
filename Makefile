@@ -15,7 +15,9 @@ OBJ= \
 	datamodel/feedback.o \
 	datamodel/layout_item.o \
 	datamodel/loco.o \
+	datamodel/relation.o \
 	datamodel/serializable.o \
+	datamodel/street.o \
 	datamodel/switch.o \
 	hardware/hardware_handler.o \
 	hardware/hardware_params.o \

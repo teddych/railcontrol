@@ -9,6 +9,7 @@ typedef unsigned char controlID_t;
 typedef unsigned char hardwareID_t;
 // booster
 typedef unsigned char boosterStatus_t;
+
 // objects in db
 typedef unsigned short objectID_t;
 // loco
@@ -39,6 +40,11 @@ typedef unsigned char blockState_t;
 typedef accessoryID_t switchID_t;
 typedef accessoryType_t switchType_t;
 typedef accessoryState_t switchState_t;
+
+// relations in db
+typedef unsigned short relationID_t;
+// street
+typedef relationID_t streetID_t;
 
 enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
