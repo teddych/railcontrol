@@ -723,7 +723,7 @@ namespace webserver {
 		map<string,string> options;
 		for (auto locoTMP : locos) {
 			Loco* loco = locoTMP.second;
-			options[std::to_string(loco->locoID)] = loco->name;
+			options[std::to_string(loco->objectID)] = loco->name;
 		}
 		ss << select("loco", options, "loco", "loco");
 		ss <<"</div>";

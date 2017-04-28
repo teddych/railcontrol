@@ -47,7 +47,7 @@ Manager::Manager(Config& config) :
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
-		xlog("Loaded loco %i: %s", loco.second->locoID, loco.second->name.c_str());
+		xlog("Loaded loco %i: %s", loco.second->objectID, loco.second->name.c_str());
 	}
 
 	storage->allAccessories(accessories);
@@ -80,7 +80,7 @@ Manager::~Manager() {
 		delete hardwareParam.second;
 	}
 	for (auto loco : locos) {
-		xlog("Saving loco %i: %s", loco.second->locoID, loco.second->name.c_str());
+		xlog("Saving loco %i: %s", loco.second->objectID, loco.second->name.c_str());
 		storage->loco(*(loco.second));
 		delete loco.second;
 	}

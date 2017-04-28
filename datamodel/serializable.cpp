@@ -11,10 +11,12 @@ namespace datamodel {
 		vector<string> parts;
 		str_split(serialized, ";", parts);
 		for (auto part : parts) {
-			vector<string> keyValue;
-			str_split(part, "=", keyValue);
-			string value = keyValue[1];
-			arguments[keyValue[0]] = value;
+			if (part.length()) {
+				vector<string> keyValue;
+				str_split(part, "=", keyValue);
+				string value = keyValue[1];
+				arguments[keyValue[0]] = value;
+			}
 		}
 	}
 

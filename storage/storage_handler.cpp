@@ -94,7 +94,7 @@ namespace storage {
 	void StorageHandler::loco(const Loco& loco) {
 		if (instance) {
 			string serialized = loco.serialize();
-			instance->saveObject(OBJECT_TYPE_LOCO, loco.locoID, loco.name, serialized);
+			instance->saveObject(OBJECT_TYPE_LOCO, loco.objectID, loco.name, serialized);
 		}
 	}
 
@@ -104,7 +104,7 @@ namespace storage {
 			instance->objectsOfType(OBJECT_TYPE_LOCO, objects);
 			for(auto object : objects) {
 				Loco* loco = new Loco(object);
-				locos[loco->locoID] = loco;
+				locos[loco->objectID] = loco;
 			}
 		}
 	}
