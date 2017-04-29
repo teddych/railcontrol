@@ -11,6 +11,7 @@ using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
 using datamodel::Loco;
+using datamodel::Street;
 using datamodel::Switch;
 using hardware::HardwareHandler;
 using hardware::HardwareParams;
@@ -27,14 +28,15 @@ Manager::Manager(Config& config) :
 	unknownAccessory("Unknown Accessory"),
 	unknownFeedback("Unknown Feedback"),
 	unknownBlock("Unknown Block"),
-	unknownSwitch("Unknown Switch") {
+	unknownSwitch("Unknown Switch"),
+	unknownStreet("Unknown Street") {
 
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
 	storageParams.filename = config.getValue("dbfilename", "/tmp/railcontrol.db");
 	storage = new StorageHandler(storageParams);
 
-	//loadDefaultValuesToDB();
+	loadDefaultValuesToDB();
 
 	controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
 
@@ -68,6 +70,11 @@ Manager::Manager(Config& config) :
 	storage->allSwitches(switches);
 	for (auto mySwitch : switches) {
 		xlog("Loaded switch %i: %s", mySwitch.second->objectID, mySwitch.second->name.c_str());
+	}
+
+	storage->allStreets(streets);
+	for (auto street : streets) {
+		xlog("Loaded street %i: %s", street.second->objectID, street.second->name.c_str());
 	}
 }
 
@@ -103,6 +110,11 @@ Manager::~Manager() {
 		xlog("Saving switch %i: %s", mySwitch.second->objectID, mySwitch.second->name.c_str());
 		storage->saveSwitch(*(mySwitch.second));
 		delete mySwitch.second;
+	}
+	for (auto street : streets) {
+		xlog("Saving street %i: %s", street.second->objectID, street.second->name.c_str());
+		storage->street(*(street.second));
+		delete street.second;
 	}
 	delete storage;
 	storage = NULL;
@@ -141,6 +153,12 @@ void Manager::loadDefaultValuesToDB() {
 
 	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
 	storage->saveSwitch(newSwitch2);
+
+	Street newStreet1(1, "Fahrstrasse 1");
+	storage->street(newStreet1);
+
+	Street newStreet2(2, "Fahrstrasse 2");
+	storage->street(newStreet2);
 }
 
 void Manager::booster(const managerID_t managerID, const boosterStatus_t status) {

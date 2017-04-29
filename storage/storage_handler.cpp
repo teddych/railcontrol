@@ -10,6 +10,7 @@ using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
 using datamodel::Loco;
+using datamodel::Street;
 using datamodel::Switch;
 using std::map;
 using std::string;
@@ -177,6 +178,24 @@ namespace storage {
 			for(auto object : objects) {
 				Switch* mySwitch = new Switch(object);
 				switches[mySwitch->objectID] = mySwitch;
+			}
+		}
+	}
+
+	void StorageHandler::street(const datamodel::Street& street) {
+		if (instance) {
+			string serialized = street.serialize();
+			instance->saveObject(OBJECT_TYPE_STREET, street.objectID, street.name, serialized);
+		}
+	}
+
+	void StorageHandler::allStreets(std::map<streetID_t,datamodel::Street*>& streets) {
+		if (instance) {
+			vector<string> objects;
+			instance->objectsOfType(OBJECT_TYPE_STREET, objects);
+			for(auto object : objects) {
+				Street* street = new Street(object);
+				streets[street->objectID] = street;
 			}
 		}
 	}

@@ -90,6 +90,10 @@ class Manager {
 		std::map<switchID_t,datamodel::Switch*> switches;
 		std::mutex switchMutex;
 
+		// street
+		std::map<streetID_t,datamodel::Street*> streets;
+		std::mutex streetMutex;
+
 		// storage
 		storage::StorageHandler* storage;
 
@@ -98,6 +102,7 @@ class Manager {
 		const std::string unknownFeedback;
 		const std::string unknownBlock;
 		const std::string unknownSwitch;
+		const std::string unknownStreet;
 };
 
 #endif // MANAGER_H

@@ -31,6 +31,8 @@ namespace storage {
 			void allBlocks(std::map<blockID_t,datamodel::Block*>& blocks);
 			void saveSwitch(const datamodel::Switch& mySwitch);
 			void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches);
+			void street(const datamodel::Street& street);
+			void allStreets(std::map<streetID_t,datamodel::Street*>& streets);
 		private:
 			createStorage_t* createStorage;
 			destroyStorage_t* destroyStorage;

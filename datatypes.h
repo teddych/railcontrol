@@ -111,7 +111,8 @@ enum objectType : objectType_t {
 	OBJECT_TYPE_BLOCK,
 	OBJECT_TYPE_FEEDBACK,
 	OBJECT_TYPE_ACCESSORY,
-	OBJECT_TYPE_SWITCH
+	OBJECT_TYPE_SWITCH,
+	OBJECT_TYPE_STREET
 };
 
 typedef unsigned char relationType_t;
