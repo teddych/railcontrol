@@ -112,7 +112,7 @@ namespace storage {
 	void StorageHandler::accessory(const Accessory& accessory) {
 		if (instance) {
 			string serialized = accessory.serialize();
-			instance->saveObject(OBJECT_TYPE_ACCESSORY, accessory.accessoryID, accessory.name, serialized);
+			instance->saveObject(OBJECT_TYPE_ACCESSORY, accessory.objectID, accessory.name, serialized);
 		}
 	}
 
@@ -122,7 +122,7 @@ namespace storage {
 			instance->objectsOfType(OBJECT_TYPE_ACCESSORY, objects);
 			for(auto object : objects) {
 				Accessory* accessory = new Accessory(object);
-				accessories[accessory->accessoryID] = accessory;
+				accessories[accessory->objectID] = accessory;
 			}
 		}
 	}
@@ -130,7 +130,7 @@ namespace storage {
 	void StorageHandler::feedback(const Feedback& feedback) {
 		if (instance) {
 			string serialized = feedback.serialize();
-			instance->saveObject(OBJECT_TYPE_FEEDBACK, feedback.feedbackID, feedback.name, serialized);
+			instance->saveObject(OBJECT_TYPE_FEEDBACK, feedback.objectID, feedback.name, serialized);
 		}
 	}
 
@@ -140,7 +140,7 @@ namespace storage {
 			instance->objectsOfType(OBJECT_TYPE_FEEDBACK, objects);
 			for(auto object : objects) {
 				Feedback* feedback = new Feedback(object);
-				feedbacks[feedback->feedbackID] = feedback;
+				feedbacks[feedback->objectID] = feedback;
 			}
 		}
 	}
@@ -148,7 +148,7 @@ namespace storage {
 	void StorageHandler::block(const Block& block) {
 		if (instance) {
 			string serialized = block.serialize();
-			instance->saveObject(OBJECT_TYPE_BLOCK, block.blockID, block.name, serialized);
+			instance->saveObject(OBJECT_TYPE_BLOCK, block.objectID, block.name, serialized);
 		}
 	}
 
@@ -158,7 +158,7 @@ namespace storage {
 			instance->objectsOfType(OBJECT_TYPE_BLOCK, objects);
 			for(auto object : objects) {
 				Block* block = new Block(object);
-				blocks[block->blockID] = block;
+				blocks[block->objectID] = block;
 			}
 		}
 	}
@@ -166,7 +166,7 @@ namespace storage {
 	void StorageHandler::saveSwitch(const Switch& mySwitch) {
 		if (instance) {
 			string serialized = mySwitch.serialize();
-			instance->saveObject(OBJECT_TYPE_SWITCH, mySwitch.switchID, mySwitch.name, serialized);
+			instance->saveObject(OBJECT_TYPE_SWITCH, mySwitch.objectID, mySwitch.name, serialized);
 		}
 	}
 
@@ -176,7 +176,7 @@ namespace storage {
 			instance->objectsOfType(OBJECT_TYPE_SWITCH, objects);
 			for(auto object : objects) {
 				Switch* mySwitch = new Switch(object);
-				switches[mySwitch->switchID] = mySwitch;
+				switches[mySwitch->objectID] = mySwitch;
 			}
 		}
 	}

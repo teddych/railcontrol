@@ -4,20 +4,17 @@
 #include <string>
 
 #include "datatypes.h"
-#include "relation.h"
+#include "object.h"
 
 namespace datamodel {
 
-	class Street : private Relation {
+	class Street : public Object {
 		public:
-			Street(streetID_t streetID, std::string name);
+			Street(const streetID_t streetID, const std::string& name);
 			Street(const std::string& serialized);
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
-
-			streetID_t streetID;
-			std::string name;
 	};
 
 } // namespace datamodel

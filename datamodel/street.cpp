@@ -10,9 +10,8 @@ using std::string;
 
 namespace datamodel {
 
-	Street::Street(streetID_t streetID, std::string name) :
-		streetID(streetID),
-		name(name) {
+	Street::Street(const streetID_t streetID, const std::string& name) :
+		Object(streetID, name) {
 	}
 
 	Street::Street(const std::string& serialized) {
@@ -21,7 +20,7 @@ namespace datamodel {
 
 	std::string Street::serialize() const {
 		stringstream ss;
-		ss << "relationType=Street;streetID=" << (int)streetID << ";name=" << name;
+		ss << "relationType=Street;" << Object::serialize();
 		return ss.str();
 	}
 
@@ -29,8 +28,7 @@ namespace datamodel {
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
 		if (arguments.count("relationType") && arguments.at("relationType").compare("Street") == 0) {
-			if (arguments.count("streetID")) streetID = stoi(arguments.at("streetID"));
-			if (arguments.count("name")) name = arguments.at("name");
+			Object::deserialize(arguments);
 			return true;
 		}
 		return false;

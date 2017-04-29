@@ -10,7 +10,7 @@ using std::string;
 
 namespace datamodel {
 
-	Loco::Loco(locoID_t locoID, std::string name, controlID_t controlID, protocol_t protocol, address_t address) :
+	Loco::Loco(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) :
 		Object(locoID, name),
 		controlID(controlID),
 		protocol(protocol),

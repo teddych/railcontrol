@@ -9,10 +9,8 @@ using std::string;
 
 namespace datamodel {
 
-	Accessory::Accessory(accessoryID_t accessoryID, std::string name, controlID_t controlID, protocol_t protocol, address_t address, accessoryType_t type, accessoryState_t state, accessoryTimeout_t timeout, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z) :
-		LayoutItem(ROTATION_0, /* width */ 1, /* height */ 1, x, y, z),
-		accessoryID(accessoryID),
-		name(name),
+	Accessory::Accessory(const accessoryID_t accessoryID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) :
+		LayoutItem(accessoryID, name, ROTATION_0, /* width */ 1, /* height */ 1, x, y, z),
 		controlID(controlID),
 		protocol(protocol),
 		address(address),
@@ -27,7 +25,13 @@ namespace datamodel {
 
 	std::string Accessory::serialize() const {
 		stringstream ss;
-		ss << "objectType=Accessory;accessoryID=" << (int)accessoryID << ";name=" << name << ";controlID=" << (int)controlID << ";protocol=" << (int)protocol << ";address=" << (int)address << ";type=" << (int)type << ";state=" << (int)state << ";timeout=" << (int)timeout << LayoutItem::serialize();
+		ss << "objectType=Accessory;" << serializeWithoutType();
+		return ss.str();
+	}
+
+	std::string Accessory::serializeWithoutType() const {
+		stringstream ss;
+		ss << LayoutItem::serialize() << ";controlID=" << (int)controlID << ";protocol=" << (int)protocol << ";address=" << (int)address << ";type=" << (int)type << ";state=" << (int)state << ";timeout=" << (int)timeout;
 		return ss.str();
 	}
 
@@ -42,8 +46,6 @@ namespace datamodel {
 
 	bool Accessory::deserialize(const map<string,string>& arguments) {
 		LayoutItem::deserialize(arguments);
-		if (arguments.count("accessoryID")) accessoryID = stoi(arguments.at("accessoryID"));
-		if (arguments.count("name")) name = arguments.at("name");
 		if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
 		if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
 		if (arguments.count("address")) address = stoi(arguments.at("address"));

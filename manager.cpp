@@ -52,22 +52,22 @@ Manager::Manager(Config& config) :
 
 	storage->allAccessories(accessories);
 	for (auto accessory : accessories) {
-		xlog("Loaded accessory %i: %s", accessory.second->accessoryID, accessory.second->name.c_str());
+		xlog("Loaded accessory %i: %s", accessory.second->objectID, accessory.second->name.c_str());
 	}
 
 	storage->allFeedbacks(feedbacks);
 	for (auto feedback : feedbacks) {
-		xlog("Loaded feedback %i: %s", feedback.second->feedbackID, feedback.second->name.c_str());
+		xlog("Loaded feedback %i: %s", feedback.second->objectID, feedback.second->name.c_str());
 	}
 
 	storage->allBlocks(blocks);
 	for (auto block : blocks) {
-		xlog("Loaded block %i: %s", block.second->blockID, block.second->name.c_str());
+		xlog("Loaded block %i: %s", block.second->objectID, block.second->name.c_str());
 	}
 
 	storage->allSwitches(switches);
 	for (auto mySwitch : switches) {
-		xlog("Loaded switch %i: %s", mySwitch.second->switchID, mySwitch.second->name.c_str());
+		xlog("Loaded switch %i: %s", mySwitch.second->objectID, mySwitch.second->name.c_str());
 	}
 }
 
@@ -85,22 +85,22 @@ Manager::~Manager() {
 		delete loco.second;
 	}
 	for (auto accessory : accessories) {
-		xlog("Saving accessory %i: %s", accessory.second->accessoryID, accessory.second->name.c_str());
+		xlog("Saving accessory %i: %s", accessory.second->objectID, accessory.second->name.c_str());
 		storage->accessory(*(accessory.second));
 		delete accessory.second;
 	}
 	for (auto  feedback : feedbacks) {
-		xlog("Saving feedback %i: %s", feedback.second->feedbackID, feedback.second->name.c_str());
+		xlog("Saving feedback %i: %s", feedback.second->objectID, feedback.second->name.c_str());
 		storage->feedback(*(feedback.second));
 		delete feedback.second;
 	}
 	for (auto block : blocks) {
-		xlog("Saving block %i: %s", block.second->blockID, block.second->name.c_str());
+		xlog("Saving block %i: %s", block.second->objectID, block.second->name.c_str());
 		storage->block(*(block.second));
 		delete block.second;
 	}
 	for (auto mySwitch : switches) {
-		xlog("Saving wwitch %i: %s", mySwitch.second->switchID, mySwitch.second->name.c_str());
+		xlog("Saving switch %i: %s", mySwitch.second->objectID, mySwitch.second->name.c_str());
 		storage->saveSwitch(*(mySwitch.second));
 		delete mySwitch.second;
 	}

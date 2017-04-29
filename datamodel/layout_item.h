@@ -5,13 +5,13 @@
 #include <string>
 
 #include "datatypes.h"
-#include "serializable.h"
+#include "object.h"
 
 namespace datamodel {
 
-	class LayoutItem : protected Serializable {
+	class LayoutItem : public Object {
 		public:
-			LayoutItem(layoutRotation_t rotation, layoutItemSize_t width, layoutItemSize_t height, layoutPosition_t posX, layoutPosition_t posY, layoutPosition_t posZ);
+			LayoutItem(const objectID_t objectID, const std::string& name, const layoutRotation_t rotation, const layoutItemSize_t width, const layoutItemSize_t height, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
 			LayoutItem();
 
 			virtual std::string serialize() const override;

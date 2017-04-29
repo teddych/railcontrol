@@ -20,8 +20,7 @@ namespace datamodel {
 								 layoutPosition_t x,
 								 layoutPosition_t y,
 								 layoutPosition_t z) :
-		Accessory(switchID, name, controlID, protocol, address, type, state << 1, /* timeout ms*/ 200, x, y, z),
-		switchID(switchID) {
+		Accessory(switchID, name, controlID, protocol, address, type, state << 1, /* timeout ms*/ 200, x, y, z) {
 	}
 
 	Switch::Switch(const std::string& serialized) {
@@ -30,7 +29,7 @@ namespace datamodel {
 
 	std::string Switch::serialize() const {
 		stringstream ss;
-		ss << "objectType=Switch;switchID=" << (int)switchID << Accessory::serialize();
+		ss << "objectType=Switch;" << Accessory::serializeWithoutType();
 		return ss.str();
 	}
 
@@ -39,7 +38,6 @@ namespace datamodel {
 		parseArguments(serialized, arguments);
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Switch") == 0) {
 			Accessory::deserialize(arguments);
-			if (arguments.count("switchID")) switchID = stoi(arguments.at("switchID"));
 			return true;
 		}
 		return false;

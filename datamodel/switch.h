@@ -29,8 +29,6 @@ namespace datamodel {
 			bool deserialize(const std::string& serialized) override;
 
 			static void getTexts(const switchState_t state, char*& stateText);
-
-			switchID_t switchID;
 	};
 
 } // namespace datamodel

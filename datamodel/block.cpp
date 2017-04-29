@@ -11,11 +11,10 @@ using std::string;
 
 namespace datamodel {
 
-	Block::Block(blockID_t blockID, std::string name, layoutItemSize_t width, layoutRotation_t rotation, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z) :
-		LayoutItem(rotation, width, /*width*/ 1, x, y, z),
-		blockID(blockID),
-		name(name),
-		state(BLOCK_STATE_FREE) {
+	Block::Block(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) :
+		LayoutItem(blockID, name, rotation, width, /*width*/ 1, x, y, z),
+		state(BLOCK_STATE_FREE) /* FIXME */,
+		locoID(0) /* FIXME */ {
 	}
 
 	Block::Block(const std::string& serialized) {
@@ -24,18 +23,17 @@ namespace datamodel {
 
 	std::string Block::serialize() const {
 		std::stringstream ss;
-		ss << "objectType=Block;blockID=" << (int)blockID << ";name=" << name << ";state=" << (int)state << LayoutItem::serialize();
+		ss << "objectType=Block;" << LayoutItem::serialize() << ";state=" << (int)state << ";locoID=" << (int)locoID;
 		return ss.str();
 	}
 
 	bool Block::deserialize(const std::string& serialized) {
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
+		LayoutItem::deserialize(arguments);
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Block") == 0) {
-			LayoutItem::deserialize(arguments);
-			if (arguments.count("blockID")) blockID = stoi(arguments.at("blockID"));
-			if (arguments.count("name")) name = arguments.at("name");
 			if (arguments.count("state")) state = stoi(arguments.at("state"));
+			if (arguments.count("locoID")) locoID = stoi(arguments.at("locoID"));
 			return true;
 		}
 		return false;

@@ -10,9 +10,9 @@
 
 namespace datamodel {
 
-	class Block : private LayoutItem {
+	class Block : public LayoutItem {
 		public:
-			Block(blockID_t blockID, std::string name, layoutItemSize_t width, layoutRotation_t rotation, layoutPosition_t x, layoutPosition_t y, layoutPosition_t z);
+			Block(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z);
 			Block(const std::string& serialized);
 
 			std::string serialize() const override;
@@ -23,9 +23,6 @@ namespace datamodel {
 			bool free(const locoID_t locoID);
 
 			static void getTexts(const blockState_t state, char*& stateText);
-
-			blockID_t blockID;
-			std::string name;
 
 		private:
 			blockState_t state;
