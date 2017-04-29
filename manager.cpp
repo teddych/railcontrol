@@ -154,10 +154,10 @@ void Manager::loadDefaultValuesToDB() {
 	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
 	storage->saveSwitch(newSwitch2);
 
-	Street newStreet1(1, "Fahrstrasse 1");
+	Street newStreet1(1, "Fahrstrasse 1", 1, 2);
 	storage->street(newStreet1);
 
-	Street newStreet2(2, "Fahrstrasse 2");
+	Street newStreet2(2, "Fahrstrasse 2", 2, 1);
 	storage->street(newStreet2);
 }
 
