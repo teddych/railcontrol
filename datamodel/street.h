@@ -19,6 +19,7 @@ namespace datamodel {
 		private:
 			blockID_t fromBlock;
 			blockID_t toBlock;
+			locoID_t locoID;
 	};
 
 } // namespace datamodel

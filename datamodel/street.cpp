@@ -13,10 +13,12 @@ namespace datamodel {
 	Street::Street(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const blockID_t toBlock) :
 		Object(streetID, name),
 		fromBlock(fromBlock),
-		toBlock(toBlock) {
+		toBlock(toBlock),
+		locoID(0) /* FIXME use LOCO_NONE */ {
 	}
 
-	Street::Street(const std::string& serialized) {
+	Street::Street(const std::string& serialized) :
+		locoID(0) /* FIXME use LOCO_NONE */ {
 		deserialize(serialized);
 	}
 
