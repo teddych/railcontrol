@@ -12,7 +12,7 @@ using std::string;
 namespace datamodel {
 
 	Block::Block(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) :
-		LayoutItem(blockID, name, rotation, width, /*width*/ 1, x, y, z),
+		LayoutItem(blockID, name, rotation, width, /*height*/ 1, x, y, z),
 		state(BLOCK_STATE_FREE) /* FIXME */,
 		locoID(0) /* FIXME */ {
 	}

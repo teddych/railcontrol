@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "automode/automode.h"
 #include "manager.h"
 #include "railcontrol.h"
 #include "hardware/hardware_handler.h"
@@ -7,6 +8,7 @@
 #include "util.h"
 #include "webserver/webserver.h"
 
+using automode::AutoMode;
 using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
@@ -46,6 +48,8 @@ Manager::Manager(Config& config) :
 		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
 		xlog("Loaded controller %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
 	}
+
+	controllers.push_back(new AutoMode(*this));
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {
@@ -136,29 +140,63 @@ void Manager::loadDefaultValuesToDB() {
 	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200, 3, 6, 0);
 	storage->accessory(newAccessory2);
 
-	Feedback newFeedback1(1, "Rückmelder Einfahrt links", 1, 1, 4, 5, 0);
+	Feedback newFeedback1(1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0);
 	storage->feedback(newFeedback1);
 
-	Feedback newFeedback2(2, "Rückmelder Einfahrt rechts", 1, 2, 4, 6, 0);
+	Feedback newFeedback2(2, "Rückmelder Bahnhof 2", 1, 2, 4, 6, 0);
 	storage->feedback(newFeedback2);
 
-	Block newBlock1(1, "Block 1", 4, ROTATION_0, 5, 5, 0);
+	Feedback newFeedback3(3, "Rückmelder Ausfahrt", 1, 3, 4, 6, 0);
+	storage->feedback(newFeedback3);
+
+	Feedback newFeedback4(4, "Rückmelder Strecke", 1, 4, 4, 6, 0);
+	storage->feedback(newFeedback4);
+
+	Feedback newFeedback5(5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0);
+	storage->feedback(newFeedback5);
+
+	Block newBlock1(1, "Block Bahnhof 1", 4, ROTATION_0, 5, 5, 0);
+	newBlock1.tryReserve(newloco1.objectID);
+	newBlock1.reserve(newloco1.objectID);
 	storage->block(newBlock1);
 
-	Block newBlock2(2, "Block 2", 4, ROTATION_90, 5, 6, 0);
+	Block newBlock2(2, "Block Bahnhof 2", 4, ROTATION_90, 5, 6, 0);
+	newBlock2.tryReserve(newloco2.objectID);
+	newBlock2.reserve(newloco2.objectID);
 	storage->block(newBlock2);
 
-	Switch newSwitch1(1, "Weiche 1", 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 2, 5, 0);
+	Block newBlock3(3, "Block Ausfahrt", 4, ROTATION_90, 5, 6, 0);
+	storage->block(newBlock3);
+
+	Block newBlock4(4, "Block Einfahrt", 4, ROTATION_90, 5, 6, 0);
+	storage->block(newBlock4);
+
+	Block newBlock5(5, "Block Strecke", 4, ROTATION_90, 5, 6, 0);
+	storage->block(newBlock5);
+
+	Switch newSwitch1(1, "Weiche Einfahrt", 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 2, 5, 0);
 	storage->saveSwitch(newSwitch1);
 
-	Switch newSwitch2(2, "Weiche 2", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
+	Switch newSwitch2(2, "Weiche Ausfahrt", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
 	storage->saveSwitch(newSwitch2);
 
-	Street newStreet1(1, "Fahrstrasse 1", 1, 2);
+	Street newStreet1(1, "Fahrstrasse Ausfahrt 1", 1, 3);
 	storage->street(newStreet1);
 
-	Street newStreet2(2, "Fahrstrasse 2", 2, 1);
+	Street newStreet2(2, "Fahrstrasse Ausfahrt 2", 2, 3);
 	storage->street(newStreet2);
+
+	Street newStreet3(3, "Fahrstrasse Auf Strecke", 3, 4);
+	storage->street(newStreet3);
+
+	Street newStreet4(4, "Fahrstrasse Von Strecke", 4, 5);
+	storage->street(newStreet4);
+
+	Street newStreet5(5, "Fahrstrasse Einfahrt 1", 5, 1);
+	storage->street(newStreet5);
+
+	Street newStreet6(6, "Fahrstrasse Einfahrt 2", 5, 2);
+	storage->street(newStreet6);
 }
 
 void Manager::booster(const managerID_t managerID, const boosterStatus_t status) {
