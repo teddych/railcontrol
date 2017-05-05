@@ -15,10 +15,13 @@ namespace datamodel {
 		controlID(controlID),
 		protocol(protocol),
 		address(address),
-		speed(0) {
+		speed(0),
+		state(AUTOMODE_OFF) {
 	}
 
-	Loco::Loco(const std::string& serialized) {
+	Loco::Loco(const std::string& serialized) :
+		speed(0),
+		state(AUTOMODE_OFF) {
 		deserialize(serialized);
 	}
 

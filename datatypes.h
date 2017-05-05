@@ -40,11 +40,14 @@ typedef unsigned char blockState_t;
 typedef accessoryID_t switchID_t;
 typedef accessoryType_t switchType_t;
 typedef accessoryState_t switchState_t;
+// street
+typedef objectID_t streetID_t;
 
 // relations in db
 typedef unsigned short relationID_t;
-// street
-typedef relationID_t streetID_t;
+
+// automode
+typedef unsigned char autoModeState_t;
 
 enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
@@ -154,6 +157,13 @@ enum switchType : switchType_t {
 enum switchState : switchState_t {
 	SWITCH_STRAIGHT = 0,
 	SWITCH_TURNOUT
+};
+
+enum autmodeState : autoModeState_t {
+	AUTOMODE_OFF = 0,
+	AUTOMODE_SEARCHING,
+	AUTOMODE_RUNNING,
+	AUTOMODE_STOPPING
 };
 
 #endif // DATATYPES_H

@@ -2,6 +2,7 @@
 #define DATAMODEL_LOCO_H
 
 #include <string>
+#include <thread>
 
 #include "datatypes.h"
 #include "object.h"
@@ -19,7 +20,11 @@ namespace datamodel {
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;
+
+		private:
 			speed_t speed;
+			autoModeState_t state;
+			std::thread thread;
 	};
 
 } // namespace datamodel
