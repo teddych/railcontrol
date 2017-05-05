@@ -49,7 +49,8 @@ typedef relationID_t streetID_t;
 enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
 	MANAGER_ID_HARDWARE,
-	MANAGER_ID_WEBSERVER
+	MANAGER_ID_WEBSERVER,
+	MANAGER_ID_AUTOMODE
 };
 
 enum boosterStatus : boosterStatus_t {

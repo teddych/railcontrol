@@ -9,6 +9,7 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
+	automode/automode.o \
 	config.o \
 	datamodel/accessory.o \
 	datamodel/block.o \
@@ -37,16 +38,13 @@ all: $(OBJ)
 sqlite-shell:
 	make -C storage/sqlite
 
-%.o: %.cpp *.h datamodel/*.h webserver/*.h storage/*.h hardware/*.h
+%.o: %.cpp *.h automode/*.h datamodel/*.h webserver/*.h storage/*.h hardware/*.h
 	$(CC) $(CPPFLAGS) -c -o $@ $<
-
-install:
-	#install milter-log /usr/sbin
 
 clean:
 	make -C hardware clean
 	make -C storage clean
-	rm -f *.o webserver/*.o datamodel/*.o
+	rm -f *.o webserver/*.o datamodel/*.o automode/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:
