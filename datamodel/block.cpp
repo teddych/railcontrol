@@ -68,6 +68,31 @@ namespace datamodel {
 		return false;
 	}
 
+	bool Block::addStreet(Street* street) {
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		for(auto s : streets) {
+			if (s == street) return false;
+		}
+		streets.push_back(street);
+		return true;
+	}
+
+	bool Block::removeStreet(Street* street) {
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		/* FIXME */
+		return false;
+	}
+
+	bool Block::getValidStreets(locoID_t locoID, std::vector<Street*>& validStreets) {
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		for(auto street : streets) {
+			if (street->fromBlockDirection(objectID, locoDirection)) {
+				validStreets.push_back(street);
+			}
+		}
+		return true;
+	}
+
 	void Block::getTexts(const blockState_t state, char*& stateText) {
 		switch (state) {
 			case BLOCK_STATE_FREE:

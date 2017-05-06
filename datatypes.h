@@ -47,7 +47,7 @@ typedef objectID_t streetID_t;
 typedef unsigned short relationID_t;
 
 // automode
-typedef unsigned char autoModeState_t;
+typedef unsigned char locoState_t;
 
 enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
@@ -159,11 +159,11 @@ enum switchState : switchState_t {
 	SWITCH_TURNOUT
 };
 
-enum autmodeState : autoModeState_t {
-	AUTOMODE_OFF = 0,
-	AUTOMODE_SEARCHING,
-	AUTOMODE_RUNNING,
-	AUTOMODE_STOPPING
+enum locoState : locoState_t {
+	LOCO_STATE_OFF = 0,
+	LOCO_STATE_SEARCHING,
+	LOCO_STATE_RUNNING,
+	LOCO_STATE_STOPPING
 };
 
 #endif // DATATYPES_H

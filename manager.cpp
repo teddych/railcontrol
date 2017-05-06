@@ -180,22 +180,22 @@ void Manager::loadDefaultValuesToDB() {
 	Switch newSwitch2(2, "Weiche Ausfahrt", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
 	storage->saveSwitch(newSwitch2);
 
-	Street newStreet1(1, "Fahrstrasse Ausfahrt 1", 1, 3);
+	Street newStreet1(1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false);
 	storage->street(newStreet1);
 
-	Street newStreet2(2, "Fahrstrasse Ausfahrt 2", 2, 3);
+	Street newStreet2(2, "Fahrstrasse Ausfahrt 2", 2, false, 3, false);
 	storage->street(newStreet2);
 
-	Street newStreet3(3, "Fahrstrasse Auf Strecke", 3, 4);
+	Street newStreet3(3, "Fahrstrasse Auf Strecke", 3, false, 4, false);
 	storage->street(newStreet3);
 
-	Street newStreet4(4, "Fahrstrasse Von Strecke", 4, 5);
+	Street newStreet4(4, "Fahrstrasse Von Strecke", 4, false, 5, false);
 	storage->street(newStreet4);
 
-	Street newStreet5(5, "Fahrstrasse Einfahrt 1", 5, 1);
+	Street newStreet5(5, "Fahrstrasse Einfahrt 1", 5, false, 1, false);
 	storage->street(newStreet5);
 
-	Street newStreet6(6, "Fahrstrasse Einfahrt 2", 5, 2);
+	Street newStreet6(6, "Fahrstrasse Einfahrt 2", 5, false, 2, false);
 	storage->street(newStreet6);
 }
 

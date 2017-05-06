@@ -59,6 +59,8 @@ class Manager {
 		// switch
 		const std::string& getSwitchName(const switchID_t switchID);
 
+		// street
+
 		// automode
 		bool autoMode;
 

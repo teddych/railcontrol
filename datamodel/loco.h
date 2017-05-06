@@ -1,6 +1,7 @@
 #ifndef DATAMODEL_LOCO_H
 #define DATAMODEL_LOCO_H
 
+#include <mutex>
 #include <string>
 #include <thread>
 
@@ -17,14 +18,21 @@ namespace datamodel {
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
 
+			bool start();
+			void stop();
+
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;
 
 		private:
+			void autoMode();
+
 			speed_t speed;
-			autoModeState_t state;
-			std::thread thread;
+			locoState_t state;
+			blockID_t blockID;
+			std::mutex stateMutex;
+			std::thread locoThread;
 	};
 
 } // namespace datamodel

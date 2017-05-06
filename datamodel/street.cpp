@@ -10,10 +10,12 @@ using std::string;
 
 namespace datamodel {
 
-	Street::Street(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const blockID_t toBlock) :
+	Street::Street(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection) :
 		Object(streetID, name),
 		fromBlock(fromBlock),
+		fromDirection(fromDirection),
 		toBlock(toBlock),
+		toDirection(toDirection),
 		locoID(0) /* FIXME use LOCO_NONE */ {
 	}
 
@@ -24,7 +26,7 @@ namespace datamodel {
 
 	std::string Street::serialize() const {
 		stringstream ss;
-		ss << "relationType=Street;" << Object::serialize() << ";fromBlock=" << (int)fromBlock << ";toBlock=" << (int)toBlock;
+		ss << "relationType=Street;" << Object::serialize() << ";fromBlock=" << (int)fromBlock << ";fromDirection=" << (int)fromDirection << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection;
 		return ss.str();
 	}
 
@@ -34,10 +36,16 @@ namespace datamodel {
 		if (arguments.count("relationType") && arguments.at("relationType").compare("Street") == 0) {
 			Object::deserialize(arguments);
 			if (arguments.count("fromBlock")) fromBlock = stoi(arguments.at("fromBlock"));
+			if (arguments.count("fromDirection")) fromDirection = (bool)stoi(arguments.at("fromDirection"));
 			if (arguments.count("toBlock")) toBlock = stoi(arguments.at("toBlock"));
+			if (arguments.count("toDirection")) toDirection = (bool)stoi(arguments.at("toDirection"));
 			return true;
 		}
 		return false;
+	}
+
+	bool Street::fromBlockDirection(blockID_t blockID, direction_t direction) {
+		return (fromBlock == blockID && fromDirection == direction);
 	}
 
 } // namespace datamodel

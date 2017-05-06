@@ -3,10 +3,12 @@
 
 #include <mutex>
 #include <string>
+#include <vector>
 
 #include "datatypes.h"
 #include "layout_item.h"
 #include "serializable.h"
+#include "street.h"
 
 namespace datamodel {
 
@@ -22,12 +24,19 @@ namespace datamodel {
 			bool reserve(const locoID_t locoID);
 			bool free(const locoID_t locoID);
 
+			bool addStreet(Street* street);
+			bool removeStreet(Street* street);
+
+			bool getValidStreets(locoID_t locoID, std::vector<Street*>& validStreets);
+
 			static void getTexts(const blockState_t state, char*& stateText);
 
 		private:
 			blockState_t state;
 			locoID_t locoID;
+			direction_t locoDirection;
 			std::mutex updateMutex;
+			std::vector<Street*> streets;
 	};
 
 } // namespace datamodel
