@@ -93,7 +93,7 @@ enum hardwareIDs : hardwareID_t {
 };
 
 #define ADDRESS_NONE 0
-#define LOCO_NONE 0;
+#define LOCO_NONE 0
 
 static std::string hardwareSymbols[] = {
 	"none",

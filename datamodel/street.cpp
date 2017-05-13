@@ -16,11 +16,11 @@ namespace datamodel {
 		fromDirection(fromDirection),
 		toBlock(toBlock),
 		toDirection(toDirection),
-		locoID(0) /* FIXME use LOCO_NONE */ {
+		locoID(LOCO_NONE) {
 	}
 
 	Street::Street(const std::string& serialized) :
-		locoID(0) /* FIXME use LOCO_NONE */ {
+		locoID(LOCO_NONE) {
 		deserialize(serialized);
 	}
 
