@@ -14,6 +14,7 @@ namespace datamodel {
 		public:
 			Loco(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
 			Loco(const std::string& serialized);
+			~Loco();
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;

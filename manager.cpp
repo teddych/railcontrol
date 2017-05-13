@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 #include "automode/automode.h"
 #include "manager.h"
@@ -86,6 +87,9 @@ Manager::Manager(Config& config) :
 }
 
 Manager::~Manager() {
+	stopLoco(1);
+	stopAllLocos();
+
 	for (auto control : controllers) {
 		delete control;
 	}
@@ -472,6 +476,10 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 				loco->toBlock(blockID);
 				reserved = block->reserve(locoID);
 				if (reserved) {
+					std::stringstream ss;
+					ss << "Loco \"" << loco->name << "\" is now in block \"" << block->name << "\"";
+					string s(ss.str());
+					xlog(s.c_str());
 					return true;
 				}
 				block->release(locoID);

@@ -27,6 +27,17 @@ namespace datamodel {
 		deserialize(serialized);
 	}
 
+	Loco::~Loco() {
+		while(true) {
+			std::lock_guard<std::mutex> Guard(stateMutex);
+			if (state == LOCO_STATE_OFF) {
+				return;
+			}
+			xlog("Waiting until loco has stoppted");
+			sleep(1);
+		}
+	}
+
 	std::string Loco::serialize() const {
 		stringstream ss;
 		ss << "objectType=Loco;" << Object::serialize() << ";controlID=" << (int)controlID << ";protocol=" << (int)protocol << ";address=" << (int)address << ";blockID=" << (int)blockID;
@@ -123,8 +134,10 @@ namespace datamodel {
 				switch (state) {
 					case LOCO_STATE_OFF:
 						// automode is turned off
+						xlog("Loco stopped");
 						return;
 					case LOCO_STATE_SEARCHING:
+						xlog("Looking for new Block for loco");
 						// get possible destinations
 						//Block* block = manager.getBlock(blockID);
 						// get best fitting destination
@@ -133,9 +146,11 @@ namespace datamodel {
 						break;
 					case LOCO_STATE_RUNNING:
 						// loco is already running
+						state = LOCO_STATE_SEARCHING;
 						break;
 					case LOCO_STATE_STOPPING:
 						// loco is running but we do not search any more
+						state = LOCO_STATE_OFF;
 						break;
 				}
 			}
