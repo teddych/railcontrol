@@ -58,7 +58,7 @@ namespace datamodel {
 		return false;
 	}
 
-	bool Block::free(const locoID_t locoID) {
+	bool Block::release(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (this->locoID == locoID || locoID == 0) {
 			this->locoID = LOCO_NONE;

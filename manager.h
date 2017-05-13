@@ -40,7 +40,7 @@ class Manager {
 		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
 		void locoSave(const locoID_t locoID, const std::string& name, controlID_t& controlID, protocol_t& protocol, address_t& address);
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		const datamodel::Loco* getLoco(locoID_t locoID) const;
+		datamodel::Loco* getLoco(const locoID_t locoID);
 
 		// accessory
 		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
@@ -62,6 +62,11 @@ class Manager {
 		// street
 
 		// automode
+		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);
+		bool startLoco(const locoID_t locoID);
+		bool stopLoco(const locoID_t locoID);
+		bool startAllLocos();
+		bool stopAllLocos();
 		bool autoMode;
 
 	private:

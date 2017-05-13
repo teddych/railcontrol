@@ -80,6 +80,9 @@ Manager::Manager(Config& config) :
 	for (auto street : streets) {
 		xlog("Loaded street %i: %s", street.second->objectID, street.second->name.c_str());
 	}
+
+	locoIntoBlock(1, 1);
+	startLoco(1);
 }
 
 Manager::~Manager() {
@@ -389,7 +392,7 @@ const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
 	return locos;
 }
 
-const datamodel::Loco* Manager::getLoco(locoID_t locoID) const {
+datamodel::Loco* Manager::getLoco(locoID_t locoID) {
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) == 1) {
 		return locos.at(locoID);
@@ -459,3 +462,45 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) {
 	return unknownSwitch;
 }
 
+bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
+	Block* block = getBlock(blockID);
+	if (block) {
+		Loco* loco = getLoco(locoID);
+		if (loco) {
+			bool reserved = block->tryReserve(locoID);
+			if (reserved) {
+				loco->toBlock(blockID);
+				reserved = block->reserve(locoID);
+				if (reserved) {
+					return true;
+				}
+				block->release(locoID);
+			}
+		}
+	}
+	return false;
+}
+
+bool Manager::startLoco(const locoID_t locoID) {
+	Loco* loco = getLoco(locoID);
+	if (loco) {
+		return loco->start();
+	}
+	return false;
+}
+
+bool Manager::stopLoco(const locoID_t locoID) {
+	Loco* loco = getLoco(locoID);
+	if (loco) {
+		return loco->stop();
+	}
+	return false;
+}
+
+bool Manager::startAllLocos() {
+	return false;
+}
+
+bool Manager::stopAllLocos() {
+	return false;
+}

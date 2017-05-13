@@ -32,9 +32,10 @@ int main (int argc, char* argv[]) {
 
 	Config config("railcontrol.conf");;
 
-	// init manager
+	// init manager that does all the stuff in a seperate thread
 	Manager m(config);
 
+	// wait for "q" on console
 	string in;
 	do {
 		std::cin >> in;

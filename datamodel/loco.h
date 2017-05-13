@@ -19,7 +19,11 @@ namespace datamodel {
 			bool deserialize(const std::string& serialized) override;
 
 			bool start();
-			void stop();
+			bool stop();
+
+			bool toBlock(const blockID_t blockID);
+			bool toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew);
+			bool releaseBlock();
 
 			controlID_t controlID;
 			protocol_t protocol;

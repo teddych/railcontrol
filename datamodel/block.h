@@ -22,7 +22,7 @@ namespace datamodel {
 
 			bool tryReserve(const locoID_t locoID);
 			bool reserve(const locoID_t locoID);
-			bool free(const locoID_t locoID);
+			bool release(const locoID_t locoID);
 
 			bool addStreet(Street* street);
 			bool removeStreet(Street* street);

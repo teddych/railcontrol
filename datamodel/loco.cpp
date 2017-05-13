@@ -67,10 +67,44 @@ namespace datamodel {
 		return true;
 	}
 
-	void Loco::stop() {
+	bool Loco::stop() {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (state == LOCO_STATE_SEARCHING) state = LOCO_STATE_OFF;
-		if (state == LOCO_STATE_RUNNING) state = LOCO_STATE_STOPPING;
+		if (state == LOCO_STATE_SEARCHING) {
+			state = LOCO_STATE_OFF;
+			return true;
+		}
+		if (state == LOCO_STATE_RUNNING) {
+			state = LOCO_STATE_STOPPING;
+			return true;
+		}
+		return false;
+	}
+
+	bool Loco::toBlock(const blockID_t blockID) {
+		std::lock_guard<std::mutex> Guard(stateMutex);
+		if (this->blockID == LOCO_NONE) {
+			this->blockID = blockID;
+			return true;
+		}
+		return false;
+	}
+
+	bool Loco::toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew) {
+		std::lock_guard<std::mutex> Guard(stateMutex);
+		if (blockID == blockIDOld) {
+			blockID = blockIDNew;
+			return true;
+		}
+		return false;
+	}
+
+	bool Loco::releaseBlock() {
+		std::lock_guard<std::mutex> Guard(stateMutex);
+		if (blockID) {
+			blockID = LOCO_NONE;
+			return true;
+		}
+		return false;
 	}
 
 	void Loco::autoMode() {
