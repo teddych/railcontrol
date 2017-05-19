@@ -31,7 +31,7 @@ namespace datamodel {
 			address_t address;
 
 		private:
-			void autoMode();
+			void autoMode(Loco* loco);
 
 			speed_t speed;
 			locoState_t state;

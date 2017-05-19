@@ -18,22 +18,28 @@ namespace datamodel {
 		protocol(protocol),
 		address(address),
 		speed(0),
-		state(LOCO_STATE_OFF) {
+		state(LOCO_STATE_NEVER) {
 	}
 
 	Loco::Loco(const std::string& serialized) :
 		speed(0),
-		state(LOCO_STATE_OFF) {
+		state(LOCO_STATE_NEVER) {
 		deserialize(serialized);
 	}
 
 	Loco::~Loco() {
 		while(true) {
-			std::lock_guard<std::mutex> Guard(stateMutex);
-			if (state == LOCO_STATE_OFF) {
-				return;
+			{
+				std::lock_guard<std::mutex> Guard(stateMutex);
+				if (state == LOCO_STATE_OFF) {
+					locoThread.join();
+					return;
+				}
+				if (state == LOCO_STATE_NEVER) {
+					return;
+				}
 			}
-			xlog("Waiting until loco has stoppted");
+			xlog("Waiting until loco %s has stopped", name.c_str());
 			sleep(1);
 		}
 	}
@@ -74,7 +80,8 @@ namespace datamodel {
 			xlog(s.c_str());
 			return false;
 		}
-		locoThread = std::thread([this] { autoMode(); });
+		locoThread = std::thread(&datamodel::Loco::autoMode, this, this);
+
 		return true;
 	}
 
@@ -118,20 +125,22 @@ namespace datamodel {
 		return false;
 	}
 
-	void Loco::autoMode() {
+	void Loco::autoMode(Loco* loco) {
 		stringstream ss;
-		ss << "Starting loco " << name;
+		ss << "Starting loco " << loco->name;
 		string s(ss.str());
 		xlog(s.c_str());
 		{
-			std::lock_guard<std::mutex> Guard(stateMutex);
-			if (state == LOCO_STATE_OFF) state = LOCO_STATE_SEARCHING;
+			std::lock_guard<std::mutex> Guard(loco->stateMutex);
+			if (loco->state == LOCO_STATE_OFF || loco->state == LOCO_STATE_NEVER) loco->state = LOCO_STATE_SEARCHING;
 		}
 
 		while (true) {
 			{
-				std::lock_guard<std::mutex> Guard(stateMutex);
-				switch (state) {
+				std::lock_guard<std::mutex> Guard(loco->stateMutex);
+				xlog("State: %i", loco->state);
+				switch (loco->state) {
+					case LOCO_STATE_NEVER:
 					case LOCO_STATE_OFF:
 						// automode is turned off
 						xlog("Loco stopped");
@@ -146,11 +155,11 @@ namespace datamodel {
 						break;
 					case LOCO_STATE_RUNNING:
 						// loco is already running
-						state = LOCO_STATE_SEARCHING;
+						loco->state = LOCO_STATE_SEARCHING;
 						break;
 					case LOCO_STATE_STOPPING:
 						// loco is running but we do not search any more
-						state = LOCO_STATE_OFF;
+						loco->state = LOCO_STATE_OFF;
 						break;
 				}
 			}
