@@ -119,7 +119,7 @@ namespace datamodel {
 	bool Loco::releaseBlock() {
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		if (blockID) {
-			blockID = LOCO_NONE;
+			blockID = BLOCK_NONE;
 			return true;
 		}
 		return false;
