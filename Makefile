@@ -9,7 +9,7 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
-	automode/automode.o \
+  automode/automode.o \
 	config.o \
 	datamodel/accessory.o \
 	datamodel/block.o \

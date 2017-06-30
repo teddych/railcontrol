@@ -79,7 +79,7 @@ WebServer::~WebServer() {
 	if (run) {
 		xlog("Stopping webserver");
 		{
-			std::lock_guard<std::mutex> Guard(updateMutex);
+			std::lock_guard<std::mutex> lock(updateMutex);
 			updates[++updateID] = "Stopping Railcontrol";
 		}
 		sleep(1);
@@ -207,13 +207,13 @@ void WebServer::handleSwitch(const managerID_t managerID, const switchID_t switc
 void WebServer::addUpdate(const string& command, const string& status) {
 	stringstream ss;
 	ss << "data: command=" << command << ";status=" << status << "\r\n\r\n";
-	std::lock_guard<std::mutex> Guard(updateMutex);
+	std::lock_guard<std::mutex> lock(updateMutex);
 	updates[++updateID] = ss.str();
 	updates.erase(updateID - 10);
 }
 
 bool WebServer::nextUpdate(unsigned int& updateIDClient, string& s) {
-	std::lock_guard<std::mutex> Guard(updateMutex);
+	std::lock_guard<std::mutex> lock(updateMutex);
 	// updateIDClient found
 	if(updates.count(updateIDClient) == 1) {
 		s = updates.at(updateIDClient);

@@ -8,12 +8,14 @@
 #include "datatypes.h"
 #include "object.h"
 
+class Manager;
+
 namespace datamodel {
 
 	class Loco : public Object {
 		public:
-			Loco(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
-			Loco(const std::string& serialized);
+			Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
+			Loco(Manager* manager, const std::string& serialized);
 			~Loco();
 
 			std::string serialize() const override;
@@ -32,8 +34,9 @@ namespace datamodel {
 
 		private:
 			void autoMode(Loco* loco);
+			Manager* manager;
 
-			speed_t speed;
+			//speed_t speed;
 			locoState_t state;
 			blockID_t blockID;
 			std::mutex stateMutex;

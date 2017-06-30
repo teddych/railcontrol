@@ -5,24 +5,29 @@
 
 #include "block.h"
 #include "loco.h"
+#include "manager.h"
 
 using std::map;
 using std::stringstream;
 using std::string;
+using std::vector;
 
 namespace datamodel {
 
-	Loco::Loco(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) :
+	Loco::Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) :
 		Object(locoID, name),
 		controlID(controlID),
 		protocol(protocol),
 		address(address),
-		speed(0),
-		state(LOCO_STATE_NEVER) {
+		manager(manager),
+		//speed(0),
+		state(LOCO_STATE_NEVER),
+		blockID(BLOCK_NONE) {
 	}
 
-	Loco::Loco(const std::string& serialized) :
-		speed(0),
+	Loco::Loco(Manager* manager, const std::string& serialized) :
+		manager(manager),
+		//speed(0),
 		state(LOCO_STATE_NEVER) {
 		deserialize(serialized);
 	}
@@ -100,29 +105,23 @@ namespace datamodel {
 
 	bool Loco::toBlock(const blockID_t blockID) {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (this->blockID == LOCO_NONE) {
-			this->blockID = blockID;
-			return true;
-		}
-		return false;
+		if (this->blockID != LOCO_NONE) return false;
+		this->blockID = blockID;
+		return true;
 	}
 
 	bool Loco::toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew) {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (blockID == blockIDOld) {
-			blockID = blockIDNew;
-			return true;
-		}
-		return false;
+		if (blockID != blockIDOld) return false;
+		blockID = blockIDNew;
+		return true;
 	}
 
 	bool Loco::releaseBlock() {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (blockID) {
-			blockID = BLOCK_NONE;
-			return true;
-		}
-		return false;
+		if (!blockID) return false;
+		blockID = BLOCK_NONE;
+		return true;
 	}
 
 	void Loco::autoMode(Loco* loco) {
@@ -145,16 +144,37 @@ namespace datamodel {
 						// automode is turned off
 						xlog("Loco stopped");
 						return;
-					case LOCO_STATE_SEARCHING:
+					case LOCO_STATE_SEARCHING: {
 						xlog("Looking for new Block for loco");
 						// get possible destinations
-						//Block* block = manager.getBlock(blockID);
-						// get best fitting destination
-						// reserve street
+						Block* fromBlock = manager->getBlock(blockID);
+						if (!fromBlock) break;
+						// get best fitting destination and reserve street
+						vector<Street*> streets;
+						fromBlock->getValidStreets(streets);
+						Street* usedStreet = NULL;
+						for (auto street : streets) {
+							if (street->reserve(objectID)) {
+								street->lock(objectID);
+								usedStreet = street;
+xlog("YYY");
+								break;
+							}
+						}
+						if (!usedStreet) {
+							xlog("No valid street found");
+							break;
+						}
+xlog("XXX");
 						// start loco
+						//loco->speed(1024);
+						loco->state = LOCO_STATE_RUNNING;
 						break;
+					}
 					case LOCO_STATE_RUNNING:
 						// loco is already running
+						xlog("Loco is running and reaches the destination");
+						//loco->speed(0);
 						loco->state = LOCO_STATE_SEARCHING;
 						break;
 					case LOCO_STATE_STOPPING:
@@ -163,7 +183,7 @@ namespace datamodel {
 						break;
 				}
 			}
-			usleep(100000);
+			usleep(1000000);
 		}
 	}
 

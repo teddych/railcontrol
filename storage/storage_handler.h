@@ -17,7 +17,7 @@ namespace storage {
 
 	class StorageHandler {
 		public:
-			StorageHandler(const StorageParams& params);
+			StorageHandler(Manager* manager, const StorageParams& params);
 			~StorageHandler();
 			void hardwareParams(const hardware::HardwareParams& hardwareParams);
 			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
@@ -34,6 +34,7 @@ namespace storage {
 			void street(const datamodel::Street& street);
 			void allStreets(std::map<streetID_t,datamodel::Street*>& streets);
 		private:
+			Manager* manager;
 			createStorage_t* createStorage;
 			destroyStorage_t* destroyStorage;
 			storage::StorageInterface* instance;

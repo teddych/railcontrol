@@ -18,7 +18,8 @@ using std::vector;
 
 namespace storage {
 
-	StorageHandler::StorageHandler(const StorageParams& params) :
+	StorageHandler::StorageHandler(Manager* manager, const StorageParams& params) :
+		manager(manager),
 		createStorage(NULL),
 		destroyStorage(NULL),
 		instance(NULL),
@@ -104,7 +105,7 @@ namespace storage {
 			vector<string> objects;
 			instance->objectsOfType(OBJECT_TYPE_LOCO, objects);
 			for(auto object : objects) {
-				Loco* loco = new Loco(object);
+				Loco* loco = new Loco(manager, object);
 				locos[loco->objectID] = loco;
 			}
 		}
@@ -194,7 +195,7 @@ namespace storage {
 			vector<string> objects;
 			instance->objectsOfType(OBJECT_TYPE_STREET, objects);
 			for(auto object : objects) {
-				Street* street = new Street(object);
+				Street* street = new Street(manager, object);
 				streets[street->objectID] = street;
 			}
 		}

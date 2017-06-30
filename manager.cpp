@@ -37,7 +37,7 @@ Manager::Manager(Config& config) :
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
 	storageParams.filename = config.getValue("dbfilename", "/tmp/railcontrol.db");
-	storage = new StorageHandler(storageParams);
+	storage = new StorageHandler(this, storageParams);
 
 	loadDefaultValuesToDB();
 
@@ -97,10 +97,15 @@ Manager::~Manager() {
 		xlog("Unloaded controller %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
 		delete hardwareParam.second;
 	}
-	for (auto loco : locos) {
-		xlog("Saving loco %i: %s", loco.second->objectID, loco.second->name.c_str());
-		storage->loco(*(loco.second));
-		delete loco.second;
+	for (auto street : streets) {
+		xlog("Saving street %i: %s", street.second->objectID, street.second->name.c_str());
+		storage->street(*(street.second));
+		delete street.second;
+	}
+	for (auto mySwitch : switches) {
+		xlog("Saving switch %i: %s", mySwitch.second->objectID, mySwitch.second->name.c_str());
+		storage->saveSwitch(*(mySwitch.second));
+		delete mySwitch.second;
 	}
 	for (auto accessory : accessories) {
 		xlog("Saving accessory %i: %s", accessory.second->objectID, accessory.second->name.c_str());
@@ -117,15 +122,10 @@ Manager::~Manager() {
 		storage->block(*(block.second));
 		delete block.second;
 	}
-	for (auto mySwitch : switches) {
-		xlog("Saving switch %i: %s", mySwitch.second->objectID, mySwitch.second->name.c_str());
-		storage->saveSwitch(*(mySwitch.second));
-		delete mySwitch.second;
-	}
-	for (auto street : streets) {
-		xlog("Saving street %i: %s", street.second->objectID, street.second->name.c_str());
-		storage->street(*(street.second));
-		delete street.second;
+	for (auto loco : locos) {
+		xlog("Saving loco %i: %s", loco.second->objectID, loco.second->name.c_str());
+		storage->loco(*(loco.second));
+		delete loco.second;
 	}
 	delete storage;
 	storage = NULL;
@@ -135,10 +135,10 @@ void Manager::loadDefaultValuesToDB() {
 	HardwareParams newHardwareParams(1, 1, "Virtuelle Zentrale", "");
 	storage->hardwareParams(newHardwareParams);
 
-	Loco newloco1(1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
+	Loco newloco1(this, 1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
 	storage->loco(newloco1);
 
-	Loco newloco2(2, "ICN", 1, PROTOCOL_DCC, 1118);
+	Loco newloco2(this, 2, "ICN", 1, PROTOCOL_DCC, 1118);
 	storage->loco(newloco2);
 
 	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200, 3, 5, 0);
@@ -163,13 +163,13 @@ void Manager::loadDefaultValuesToDB() {
 	storage->feedback(newFeedback5);
 
 	Block newBlock1(1, "Block Bahnhof 1", 4, ROTATION_0, 5, 5, 0);
-	newBlock1.tryReserve(newloco1.objectID);
 	newBlock1.reserve(newloco1.objectID);
+	newBlock1.lock(newloco1.objectID);
 	storage->block(newBlock1);
 
 	Block newBlock2(2, "Block Bahnhof 2", 4, ROTATION_90, 5, 6, 0);
-	newBlock2.tryReserve(newloco2.objectID);
 	newBlock2.reserve(newloco2.objectID);
+	newBlock2.lock(newloco2.objectID);
 	storage->block(newBlock2);
 
 	Block newBlock3(3, "Block Ausfahrt", 4, ROTATION_90, 5, 6, 0);
@@ -187,22 +187,22 @@ void Manager::loadDefaultValuesToDB() {
 	Switch newSwitch2(2, "Weiche Ausfahrt", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
 	storage->saveSwitch(newSwitch2);
 
-	Street newStreet1(1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false);
+	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false);
 	storage->street(newStreet1);
 
-	Street newStreet2(2, "Fahrstrasse Ausfahrt 2", 2, false, 3, false);
+	Street newStreet2(this, 2, "Fahrstrasse Ausfahrt 2", 2, false, 3, false);
 	storage->street(newStreet2);
 
-	Street newStreet3(3, "Fahrstrasse Auf Strecke", 3, false, 4, false);
+	Street newStreet3(this, 3, "Fahrstrasse Auf Strecke", 3, false, 4, false);
 	storage->street(newStreet3);
 
-	Street newStreet4(4, "Fahrstrasse Von Strecke", 4, false, 5, false);
+	Street newStreet4(this, 4, "Fahrstrasse Von Strecke", 4, false, 5, false);
 	storage->street(newStreet4);
 
-	Street newStreet5(5, "Fahrstrasse Einfahrt 1", 5, false, 1, false);
+	Street newStreet5(this, 5, "Fahrstrasse Einfahrt 1", 5, false, 1, false);
 	storage->street(newStreet5);
 
-	Street newStreet6(6, "Fahrstrasse Einfahrt 2", 5, false, 2, false);
+	Street newStreet6(this, 6, "Fahrstrasse Einfahrt 2", 5, false, 2, false);
 	storage->street(newStreet6);
 }
 
@@ -425,7 +425,7 @@ void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 			}
 		}
 		++newLocoID;
-		loco = new Loco(newLocoID, name, controlID, protocol, address);
+		loco = new Loco(this, newLocoID, name, controlID, protocol, address);
 		// save in map
 		locos[newLocoID] = loco;
 	}
@@ -468,25 +468,32 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) {
 
 bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	Block* block = getBlock(blockID);
-	if (block) {
-		Loco* loco = getLoco(locoID);
-		if (loco) {
-			bool reserved = block->tryReserve(locoID);
-			if (reserved) {
-				loco->toBlock(blockID);
-				reserved = block->reserve(locoID);
-				if (reserved) {
-					std::stringstream ss;
-					ss << "Loco \"" << loco->name << "\" is now in block \"" << block->name << "\"";
-					string s(ss.str());
-					xlog(s.c_str());
-					return true;
-				}
-				block->release(locoID);
-			}
-		}
+	if (!block) return false;
+
+	Loco* loco = getLoco(locoID);
+	if (!loco) return false;
+
+	bool reserved = block->reserve(locoID);
+	if (!reserved) return false;
+
+	reserved = loco->toBlock(blockID);
+	if (!reserved) {
+		block->release(locoID);
+		return false;
 	}
-	return false;
+
+	reserved = block->lock(locoID);
+	if (!reserved) {
+		loco->releaseBlock();
+		block->release(locoID);
+		return false;
+	}
+
+	std::stringstream ss;
+	ss << "Loco \"" << loco->name << "\" is now in block \"" << block->name << "\"";
+	string s(ss.str());
+	xlog(s.c_str());
+	return true;
 }
 
 bool Manager::startLoco(const locoID_t locoID) {

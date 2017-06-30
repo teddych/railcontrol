@@ -20,14 +20,14 @@ namespace datamodel {
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
 
-			bool tryReserve(const locoID_t locoID);
 			bool reserve(const locoID_t locoID);
+			bool lock(const locoID_t locoID);
 			bool release(const locoID_t locoID);
 
 			bool addStreet(Street* street);
 			bool removeStreet(Street* street);
 
-			bool getValidStreets(locoID_t locoID, std::vector<Street*>& validStreets);
+			bool getValidStreets(std::vector<Street*>& validStreets);
 
 			static void getTexts(const blockState_t state, char*& stateText);
 

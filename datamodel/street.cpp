@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "street.h"
+#include "manager.h"
 
 using std::map;
 using std::stringstream;
@@ -10,18 +11,26 @@ using std::string;
 
 namespace datamodel {
 
-	Street::Street(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection) :
+	Street::Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection) :
 		Object(streetID, name),
+		manager(manager),
 		fromBlock(fromBlock),
 		fromDirection(fromDirection),
 		toBlock(toBlock),
 		toDirection(toDirection),
 		locoID(LOCO_NONE) {
+		Block* block = manager->getBlock(fromBlock);
+		if (!block) return;
+		block->addStreet(this);
 	}
 
-	Street::Street(const std::string& serialized) :
+	Street::Street(Manager* manager, const std::string& serialized) :
+		manager(manager),
 		locoID(LOCO_NONE) {
 		deserialize(serialized);
+		Block* block = manager->getBlock(fromBlock);
+		if (!block) return;
+		block->addStreet(this);
 	}
 
 	std::string Street::serialize() const {
@@ -44,8 +53,38 @@ namespace datamodel {
 		return false;
 	}
 
-	bool Street::fromBlockDirection(blockID_t blockID, direction_t direction) {
-		return (fromBlock == blockID && fromDirection == direction);
+	bool Street::reserve(const locoID_t locoID) {
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		if (locoID == this->locoID) return true;
+		if (state != STREET_STATE_FREE) return false;
+		Block* block = manager->getBlock(toBlock);
+		if (!block) return false;
+		if (!block->reserve(locoID)) return false;
+		state = STREET_STATE_RESERVED;
+		this->locoID = locoID;
+		return true;
+	}
+
+	bool Street::lock(const locoID_t locoID) {
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		if (state != STREET_STATE_RESERVED) return false;
+		if (this->locoID != locoID) return false;
+		Block* block = manager->getBlock(toBlock);
+		if (!block) return false;
+		if (!block->lock(locoID)) return false;
+		state = STREET_STATE_LOCKED;
+		return true;
+	}
+
+	bool Street::release(const locoID_t locoID) {
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		if (state == STREET_STATE_FREE) return true;
+		if (this->locoID != locoID) return false;
+		Block* block = manager->getBlock(toBlock);
+		block->release(locoID);
+		this->locoID = LOCO_NONE;
+		state = STREET_STATE_FREE;
+		return true;
 	}
 
 } // namespace datamodel

@@ -42,6 +42,7 @@ typedef accessoryType_t switchType_t;
 typedef accessoryState_t switchState_t;
 // street
 typedef objectID_t streetID_t;
+typedef unsigned char streetState_t;
 
 // relations in db
 typedef unsigned short relationID_t;
@@ -147,7 +148,13 @@ enum feedbackState : feedbackState_t {
 enum blockState : blockState_t {
 	BLOCK_STATE_FREE = 0,
 	BLOCK_STATE_RESERVED,
-	BLOCK_STATE_USED
+	BLOCK_STATE_LOCKED
+};
+
+enum streetState : streetState_t {
+	STREET_STATE_FREE = 0,
+	STREET_STATE_RESERVED,
+	STREET_STATE_LOCKED
 };
 
 enum switchType : switchType_t {
