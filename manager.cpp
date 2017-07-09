@@ -163,13 +163,9 @@ void Manager::loadDefaultValuesToDB() {
 	storage->feedback(newFeedback5);
 
 	Block newBlock1(1, "Block Bahnhof 1", 4, ROTATION_0, 5, 5, 0);
-	newBlock1.reserve(newloco1.objectID);
-	newBlock1.lock(newloco1.objectID);
 	storage->block(newBlock1);
 
 	Block newBlock2(2, "Block Bahnhof 2", 4, ROTATION_90, 5, 6, 0);
-	newBlock2.reserve(newloco2.objectID);
-	newBlock2.lock(newloco2.objectID);
 	storage->block(newBlock2);
 
 	Block newBlock3(3, "Block Ausfahrt", 4, ROTATION_90, 5, 6, 0);

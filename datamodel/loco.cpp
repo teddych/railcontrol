@@ -157,7 +157,6 @@ namespace datamodel {
 							if (street->reserve(objectID)) {
 								street->lock(objectID);
 								usedStreet = street;
-xlog("YYY");
 								break;
 							}
 						}
@@ -165,9 +164,8 @@ xlog("YYY");
 							xlog("No valid street found");
 							break;
 						}
-xlog("XXX");
 						// start loco
-						//loco->speed(1024);
+						// FIXME: loco->speed(1024);
 						loco->state = LOCO_STATE_RUNNING;
 						break;
 					}

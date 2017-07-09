@@ -14,6 +14,7 @@ namespace datamodel {
 	Street::Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection) :
 		Object(streetID, name),
 		manager(manager),
+		state(STREET_STATE_FREE),
 		fromBlock(fromBlock),
 		fromDirection(fromDirection),
 		toBlock(toBlock),
@@ -35,7 +36,7 @@ namespace datamodel {
 
 	std::string Street::serialize() const {
 		stringstream ss;
-		ss << "relationType=Street;" << Object::serialize() << ";fromBlock=" << (int)fromBlock << ";fromDirection=" << (int)fromDirection << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection;
+		ss << "relationType=Street;" << Object::serialize() << ";state=" << (int)state << ";fromBlock=" << (int)fromBlock << ";fromDirection=" << (int)fromDirection << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection;
 		return ss.str();
 	}
 
@@ -44,6 +45,7 @@ namespace datamodel {
 		parseArguments(serialized, arguments);
 		if (arguments.count("relationType") && arguments.at("relationType").compare("Street") == 0) {
 			Object::deserialize(arguments);
+			if (arguments.count("state")) state = stoi(arguments.at("state"));
 			if (arguments.count("fromBlock")) fromBlock = stoi(arguments.at("fromBlock"));
 			if (arguments.count("fromDirection")) fromDirection = (bool)stoi(arguments.at("fromDirection"));
 			if (arguments.count("toBlock")) toBlock = stoi(arguments.at("toBlock"));

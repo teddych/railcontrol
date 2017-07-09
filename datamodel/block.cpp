@@ -43,8 +43,13 @@ namespace datamodel {
 
 	bool Block::reserve(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
+		if (locoID == this->locoID) {
+			if (state == BLOCK_STATE_FREE) {
+				state = BLOCK_STATE_RESERVED;
+			}
+			return true;
+		}
 		if (state != BLOCK_STATE_FREE) return false;
-		if (locoID == this->locoID) return true;
 		state = BLOCK_STATE_RESERVED;
 		this->locoID = locoID;
 		return true;
