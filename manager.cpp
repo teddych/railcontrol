@@ -1,7 +1,6 @@
 #include <iostream>
 #include <sstream>
 
-#include "automode/automode.h"
 #include "manager.h"
 #include "railcontrol.h"
 #include "hardware/hardware_handler.h"
@@ -9,7 +8,6 @@
 #include "util.h"
 #include "webserver/webserver.h"
 
-using automode::AutoMode;
 using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
@@ -49,8 +47,6 @@ Manager::Manager(Config& config) :
 		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
 		xlog("Loaded controller %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
 	}
-
-	controllers.push_back(new AutoMode(*this));
 
 	storage->allLocos(locos);
 	for (auto loco : locos) {

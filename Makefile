@@ -9,7 +9,6 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
-  automode/automode.o \
 	config.o \
 	datamodel/accessory.o \
 	datamodel/block.o \
@@ -17,7 +16,6 @@ OBJ= \
 	datamodel/layout_item.o \
 	datamodel/loco.o \
 	datamodel/object.o \
-	datamodel/relation.o \
 	datamodel/serializable.o \
 	datamodel/street.o \
 	datamodel/switch.o \

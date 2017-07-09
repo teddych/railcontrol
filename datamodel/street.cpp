@@ -36,14 +36,14 @@ namespace datamodel {
 
 	std::string Street::serialize() const {
 		stringstream ss;
-		ss << "relationType=Street;" << Object::serialize() << ";state=" << (int)state << ";fromBlock=" << (int)fromBlock << ";fromDirection=" << (int)fromDirection << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection;
+		ss << "objectType=Street;" << Object::serialize() << ";state=" << (int)state << ";fromBlock=" << (int)fromBlock << ";fromDirection=" << (int)fromDirection << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection;
 		return ss.str();
 	}
 
 	bool Street::deserialize(const std::string& serialized) {
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
-		if (arguments.count("relationType") && arguments.at("relationType").compare("Street") == 0) {
+		if (arguments.count("objectType") && arguments.at("objectType").compare("Street") == 0) {
 			Object::deserialize(arguments);
 			if (arguments.count("state")) state = stoi(arguments.at("state"));
 			if (arguments.count("fromBlock")) fromBlock = stoi(arguments.at("fromBlock"));

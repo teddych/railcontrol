@@ -160,19 +160,22 @@ namespace datamodel {
 								break;
 							}
 						}
+
 						if (!usedStreet) {
 							xlog("No valid street found");
 							break;
 						}
+
 						// start loco
-						// FIXME: loco->speed(1024);
+						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 1024);
 						loco->state = LOCO_STATE_RUNNING;
+
 						break;
 					}
 					case LOCO_STATE_RUNNING:
 						// loco is already running
 						xlog("Loco is running and reaches the destination");
-						//loco->speed(0);
+						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 1024);
 						loco->state = LOCO_STATE_SEARCHING;
 						break;
 					case LOCO_STATE_STOPPING:
