@@ -1,13 +1,15 @@
 #include <iostream>
 #include <sstream>
 
-#include "manager.h"
-#include "railcontrol.h"
+#include "console/console.h"
 #include "hardware/hardware_handler.h"
 #include "hardware/hardware_params.h"
+#include "manager.h"
+#include "railcontrol.h"
 #include "util.h"
 #include "webserver/webserver.h"
 
+using console::Console;
 using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
@@ -39,6 +41,7 @@ Manager::Manager(Config& config) :
 
 	loadDefaultValuesToDB();
 
+	controllers.push_back(new Console(*this, config.getValue("consoleport", 2222)));
 	controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
 
 	storage->allHardwareParams(hardwareParams);
@@ -86,8 +89,8 @@ Manager::~Manager() {
 	stopLoco(1);
 	stopAllLocos();
 
-	for (auto control : controllers) {
-		delete control;
+	for (auto controller : controllers) {
+		delete controller;
 	}
 	for (auto hardwareParam : hardwareParams) {
 		xlog("Unloaded controller %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());

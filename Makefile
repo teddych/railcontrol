@@ -10,6 +10,7 @@ LIBS=-lpthread -ldl
 
 OBJ= \
 	config.o \
+	console/console.o \
 	datamodel/accessory.o \
 	datamodel/block.o \
 	datamodel/feedback.o \
@@ -36,13 +37,13 @@ all: $(OBJ)
 sqlite-shell:
 	make -C storage/sqlite
 
-%.o: %.cpp *.h automode/*.h datamodel/*.h webserver/*.h storage/*.h hardware/*.h
+%.o: %.cpp *.h datamodel/*.h console/*.h webserver/*.h storage/*.h hardware/*.h
 	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 clean:
 	make -C hardware clean
 	make -C storage clean
-	rm -f *.o webserver/*.o datamodel/*.o automode/*.o
+	rm -f *.o webserver/*.o datamodel/*.o console/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:
