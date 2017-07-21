@@ -157,13 +157,14 @@ namespace datamodel {
 							if (street->reserve(objectID)) {
 								street->lock(objectID);
 								usedStreet = street;
-								break;
+								xlog("Found Street %s", street->name.c_str());
+								break; // for
 							}
 						}
 
 						if (!usedStreet) {
 							xlog("No valid street found");
-							break;
+							break; // switch
 						}
 
 						// start loco
@@ -175,7 +176,7 @@ namespace datamodel {
 					case LOCO_STATE_RUNNING:
 						// loco is already running
 						xlog("Loco is running and reaches the destination");
-						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 1024);
+						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
 						loco->state = LOCO_STATE_SEARCHING;
 						break;
 					case LOCO_STATE_STOPPING:

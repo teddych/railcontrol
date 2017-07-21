@@ -347,17 +347,22 @@ const std::string& Manager::getBlockName(const blockID_t blockID) {
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
-	std::lock_guard<std::mutex> Guard(locoMutex);
-	for (auto loco : locos) {
-		if (loco.second->protocol == protocol && loco.second->address == address) {
-			locoSpeed(managerID, loco.first, speed);
-			return;
+	locoID_t locoID = 0;
+	{
+		std::lock_guard<std::mutex> Guard(locoMutex);
+		for (auto loco : locos) {
+			if (loco.second->protocol == protocol && loco.second->address == address) {
+				locoID = loco.first;
+				break;
+			}
 		}
+	}
+	if (locoID) {
+		locoSpeed(managerID, locoID, speed);
 	}
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
-	std::lock_guard<std::mutex> Guard(locoMutex);
   for (auto control : controllers) {
     control->locoSpeed(managerID, locoID, speed);
   }
@@ -397,29 +402,31 @@ datamodel::Loco* Manager::getLoco(locoID_t locoID) {
 }
 
 void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& controlID, protocol_t& protocol, address_t& address) {
-	std::lock_guard<std::mutex> Guard(locoMutex);
 	Loco* loco;
-	if (locoID && locos.count(locoID)) {
-		// update existing loco
-		loco = locos.at(locoID);
-		loco->name = name;
-		loco->controlID = controlID;
-		loco->protocol = protocol;
-		loco->address = address;
-	}
-	else {
-		// create new loco
-		locoID_t newLocoID = 0;
-		// get next locoID
-		for (auto loco : locos) {
-			if (loco.first > locoID) {
-				newLocoID = loco.first;
-			}
+	{
+		std::lock_guard<std::mutex> Guard(locoMutex);
+		if (locoID && locos.count(locoID)) {
+			// update existing loco
+			loco = locos.at(locoID);
+			loco->name = name;
+			loco->controlID = controlID;
+			loco->protocol = protocol;
+			loco->address = address;
 		}
-		++newLocoID;
-		loco = new Loco(this, newLocoID, name, controlID, protocol, address);
-		// save in map
-		locos[newLocoID] = loco;
+		else {
+			// create new loco
+			locoID_t newLocoID = 0;
+			// get next locoID
+			for (auto loco : locos) {
+				if (loco.first > locoID) {
+					newLocoID = loco.first;
+				}
+			}
+			++newLocoID;
+			loco = new Loco(this, newLocoID, name, controlID, protocol, address);
+			// save in map
+			locos[newLocoID] = loco;
+		}
 	}
 	// save in db
 	storage->loco(*loco);
