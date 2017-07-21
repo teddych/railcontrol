@@ -11,7 +11,7 @@ using std::string;
 
 namespace datamodel {
 
-	Street::Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection) :
+	Street::Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackIDStop) :
 		Object(streetID, name),
 		manager(manager),
 		state(STREET_STATE_FREE),
@@ -19,6 +19,7 @@ namespace datamodel {
 		fromDirection(fromDirection),
 		toBlock(toBlock),
 		toDirection(toDirection),
+		feedbackIDStop(feedbackIDStop),
 		locoID(LOCO_NONE) {
 		Block* block = manager->getBlock(fromBlock);
 		if (!block) return;
@@ -36,7 +37,7 @@ namespace datamodel {
 
 	std::string Street::serialize() const {
 		stringstream ss;
-		ss << "objectType=Street;" << Object::serialize() << ";state=" << (int)state << ";fromBlock=" << (int)fromBlock << ";fromDirection=" << (int)fromDirection << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection;
+		ss << "objectType=Street;" << Object::serialize() << ";state=" << (int)state << ";fromBlock=" << (int)fromBlock << ";fromDirection=" << (int)fromDirection << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection << ";feedbackIDStop=" << (int)feedbackIDStop;
 		return ss.str();
 	}
 
@@ -50,6 +51,7 @@ namespace datamodel {
 			if (arguments.count("fromDirection")) fromDirection = (bool)stoi(arguments.at("fromDirection"));
 			if (arguments.count("toBlock")) toBlock = stoi(arguments.at("toBlock"));
 			if (arguments.count("toDirection")) toDirection = (bool)stoi(arguments.at("toDirection"));
+			if (arguments.count("feedbackIDStop")) feedbackIDStop = stoi(arguments.at("feedbackIDStop"));
 			return true;
 		}
 		return false;
@@ -75,6 +77,8 @@ namespace datamodel {
 		if (!block) return false;
 		if (!block->lock(locoID)) return false;
 		state = STREET_STATE_LOCKED;
+		Feedback* feedback = manager->getFeedback(feedbackIDStop);
+		feedback->setLoco(locoID);
 		return true;
 	}
 
@@ -86,6 +90,8 @@ namespace datamodel {
 		block->release(locoID);
 		this->locoID = LOCO_NONE;
 		state = STREET_STATE_FREE;
+		Feedback* feedback = manager->getFeedback(feedbackIDStop);
+		feedback->setLoco(LOCO_NONE);
 		return true;
 	}
 

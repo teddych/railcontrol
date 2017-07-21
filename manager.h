@@ -49,6 +49,7 @@ class Manager {
 		bool getSwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
+		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
 		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
 
 		// block
@@ -88,6 +89,7 @@ class Manager {
 
 		// feedback
 		std::map<feedbackID_t,datamodel::Feedback*> feedbacks;
+		std::mutex feedbackMutex;
 
 		// block
 		std::map<blockID_t,datamodel::Block*> blocks;

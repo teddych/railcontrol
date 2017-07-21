@@ -27,6 +27,7 @@ namespace datamodel {
 			bool toBlock(const blockID_t blockID);
 			bool toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew);
 			bool releaseBlock();
+			void destinationReached();
 
 			controlID_t controlID;
 			protocol_t protocol;

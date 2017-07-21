@@ -170,14 +170,11 @@ namespace datamodel {
 						// start loco
 						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 1024);
 						loco->state = LOCO_STATE_RUNNING;
-
 						break;
 					}
 					case LOCO_STATE_RUNNING:
 						// loco is already running
-						xlog("Loco is running and reaches the destination");
-						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
-						loco->state = LOCO_STATE_SEARCHING;
+						xlog("Loco is still running");
 						break;
 					case LOCO_STATE_STOPPING:
 						// loco is running but we do not search any more
@@ -187,6 +184,13 @@ namespace datamodel {
 			}
 			usleep(1000000);
 		}
+	}
+
+	void Loco::destinationReached() {
+		xlog("Loco reached its destination");
+		std::lock_guard<std::mutex> Guard(stateMutex);
+		manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
+		state = LOCO_STATE_SEARCHING;
 	}
 
 } // namespace datamodel

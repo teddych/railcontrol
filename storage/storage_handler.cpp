@@ -141,7 +141,7 @@ namespace storage {
 			vector<string> objects;
 			instance->objectsOfType(OBJECT_TYPE_FEEDBACK, objects);
 			for(auto object : objects) {
-				Feedback* feedback = new Feedback(object);
+				Feedback* feedback = new Feedback(manager, object);
 				feedbacks[feedback->objectID] = feedback;
 			}
 		}

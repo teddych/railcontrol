@@ -143,19 +143,19 @@ void Manager::loadDefaultValuesToDB() {
 	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200, 3, 6, 0);
 	storage->accessory(newAccessory2);
 
-	Feedback newFeedback1(1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0);
+	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0);
 	storage->feedback(newFeedback1);
 
-	Feedback newFeedback2(2, "Rückmelder Bahnhof 2", 1, 2, 4, 6, 0);
+	Feedback newFeedback2(this, 2, "Rückmelder Bahnhof 2", 1, 2, 4, 6, 0);
 	storage->feedback(newFeedback2);
 
-	Feedback newFeedback3(3, "Rückmelder Ausfahrt", 1, 3, 4, 6, 0);
+	Feedback newFeedback3(this, 3, "Rückmelder Ausfahrt", 1, 3, 4, 6, 0);
 	storage->feedback(newFeedback3);
 
-	Feedback newFeedback4(4, "Rückmelder Strecke", 1, 4, 4, 6, 0);
+	Feedback newFeedback4(this, 4, "Rückmelder Strecke", 1, 4, 4, 6, 0);
 	storage->feedback(newFeedback4);
 
-	Feedback newFeedback5(5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0);
+	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0);
 	storage->feedback(newFeedback5);
 
 	Block newBlock1(1, "Block Bahnhof 1", 4, ROTATION_0, 5, 5, 0);
@@ -179,22 +179,22 @@ void Manager::loadDefaultValuesToDB() {
 	Switch newSwitch2(2, "Weiche Ausfahrt", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
 	storage->saveSwitch(newSwitch2);
 
-	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false);
+	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false, 3);
 	storage->street(newStreet1);
 
-	Street newStreet2(this, 2, "Fahrstrasse Ausfahrt 2", 2, false, 3, false);
+	Street newStreet2(this, 2, "Fahrstrasse Ausfahrt 2", 2, false, 3, false, 3);
 	storage->street(newStreet2);
 
-	Street newStreet3(this, 3, "Fahrstrasse Auf Strecke", 3, false, 4, false);
+	Street newStreet3(this, 3, "Fahrstrasse Auf Strecke", 3, false, 4, false, 4);
 	storage->street(newStreet3);
 
-	Street newStreet4(this, 4, "Fahrstrasse Von Strecke", 4, false, 5, false);
+	Street newStreet4(this, 4, "Fahrstrasse Von Strecke", 4, false, 5, false, 5);
 	storage->street(newStreet4);
 
-	Street newStreet5(this, 5, "Fahrstrasse Einfahrt 1", 5, false, 1, false);
+	Street newStreet5(this, 5, "Fahrstrasse Einfahrt 1", 5, false, 1, false, 1);
 	storage->street(newStreet5);
 
-	Street newStreet6(this, 6, "Fahrstrasse Einfahrt 2", 5, false, 2, false);
+	Street newStreet6(this, 6, "Fahrstrasse Einfahrt 2", 5, false, 2, false, 2);
 	storage->street(newStreet6);
 }
 
@@ -436,6 +436,14 @@ void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, con
   for (auto control : controllers) {
 		control->feedback(managerID, pin, state);
 	}
+}
+
+datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID) {
+	std::lock_guard<std::mutex> Guard(feedbackMutex);
+	if (feedbacks.count(feedbackID) == 1) {
+		return feedbacks.at(feedbackID);
+	}
+	return NULL;
 }
 
 void Manager::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {

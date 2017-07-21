@@ -13,7 +13,7 @@ namespace datamodel {
 
 	class Street : public Object {
 		public:
-			Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection);
+			Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackIDStop);
 			Street(Manager* manager, const std::string& serialized);
 
 			std::string serialize() const override;
@@ -32,6 +32,7 @@ namespace datamodel {
 			direction_t fromDirection;
 			blockID_t toBlock;
 			direction_t toDirection;
+			feedbackID_t feedbackIDStop;
 			locoID_t locoID;
 			std::mutex updateMutex;
 	};
