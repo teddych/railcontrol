@@ -49,7 +49,9 @@ namespace datamodel {
 			}
 			return true;
 		}
-		if (state != BLOCK_STATE_FREE) return false;
+		if (state != BLOCK_STATE_FREE) {
+			return false;
+		}
 		state = BLOCK_STATE_RESERVED;
 		this->locoID = locoID;
 		return true;
@@ -57,16 +59,24 @@ namespace datamodel {
 
 	bool Block::lock(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (state != BLOCK_STATE_RESERVED) return false;
-		if (this->locoID != locoID) return false;
+		if (state != BLOCK_STATE_RESERVED) {
+			return false;
+		}
+		if (this->locoID != locoID) {
+			return false;
+		}
 		state = BLOCK_STATE_LOCKED;
 		return true;
 	}
 
 	bool Block::release(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (state == BLOCK_STATE_FREE) return true;
-		if (this->locoID != locoID) return false;
+		if (state == BLOCK_STATE_FREE) {
+			return true;
+		}
+		if (this->locoID != locoID) {
+			return false;
+		}
 		this->locoID = LOCO_NONE;
 		state = BLOCK_STATE_FREE;
 		return true;

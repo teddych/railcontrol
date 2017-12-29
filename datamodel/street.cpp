@@ -59,11 +59,19 @@ namespace datamodel {
 
 	bool Street::reserve(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (locoID == this->locoID) return true;
-		if (state != STREET_STATE_FREE) return false;
+		if (locoID == this->locoID) {
+			return true;
+		}
+		if (state != STREET_STATE_FREE) {
+			return false;
+		}
 		Block* block = manager->getBlock(toBlock);
-		if (!block) return false;
-		if (!block->reserve(locoID)) return false;
+		if (!block) {
+			return false;
+		}
+		if (!block->reserve(locoID)) {
+			return false;
+		}
 		state = STREET_STATE_RESERVED;
 		this->locoID = locoID;
 		return true;
@@ -71,11 +79,19 @@ namespace datamodel {
 
 	bool Street::lock(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (state != STREET_STATE_RESERVED) return false;
-		if (this->locoID != locoID) return false;
+		if (state != STREET_STATE_RESERVED) {
+			return false;
+		}
+		if (this->locoID != locoID) {
+			return false;
+		}
 		Block* block = manager->getBlock(toBlock);
-		if (!block) return false;
-		if (!block->lock(locoID)) return false;
+		if (!block) {
+			return false;
+		}
+		if (!block->lock(locoID)) {
+			return false;
+		}
 		state = STREET_STATE_LOCKED;
 		Feedback* feedback = manager->getFeedback(feedbackIDStop);
 		feedback->setLoco(locoID);
@@ -84,9 +100,13 @@ namespace datamodel {
 
 	bool Street::release(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (state == STREET_STATE_FREE) return true;
-		if (this->locoID != locoID) return false;
-		Block* block = manager->getBlock(toBlock);
+		if (state == STREET_STATE_FREE) {
+			return true;
+		}
+		if (this->locoID != locoID) {
+			return false;
+		}
+		Block* block = manager->getBlock(fromBlock);
 		block->release(locoID);
 		this->locoID = LOCO_NONE;
 		state = STREET_STATE_FREE;

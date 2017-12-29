@@ -204,7 +204,12 @@ namespace datamodel {
 		// release old block
 		street->release(objectID);
 		// set state
-		state = LOCO_STATE_SEARCHING;
+		if (state == LOCO_STATE_RUNNING) {
+			state = LOCO_STATE_SEARCHING;
+		}
+		else {
+			state = LOCO_STATE_OFF;
+		}
 	}
 
 } // namespace datamodel
