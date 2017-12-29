@@ -45,9 +45,12 @@ namespace datamodel {
 	}
 
 	bool Feedback::setLoco(const locoID_t locoID) {
-		if (locoID != LOCO_NONE) {
+		// FIXME: should check if already a loco is set / basically is done by street
+		/*
+		if (locoID == LOCO_NONE) {
 			return false;
 		}
+		*/
 		this->locoID = locoID;
 		return true;
 	}

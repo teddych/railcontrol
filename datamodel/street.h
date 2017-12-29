@@ -25,6 +25,8 @@ namespace datamodel {
 			bool lock(const locoID_t locoID);
 			bool release(const locoID_t locoID);
 
+			blockID_t destinationBlock();
+
 		private:
 			Manager* manager;
 			streetState_t state;
@@ -39,6 +41,10 @@ namespace datamodel {
 
 	inline bool Street::fromBlockDirection(blockID_t blockID, direction_t direction) {
 		return (fromBlock == blockID && fromDirection == direction);
+	}
+
+	inline blockID_t Street::destinationBlock() {
+		return toBlock;
 	}
 
 } // namespace datamodel

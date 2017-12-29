@@ -36,6 +36,7 @@ namespace datamodel {
 		private:
 			void autoMode(Loco* loco);
 			Manager* manager;
+			Street* street;
 
 			//speed_t speed;
 			locoState_t state;
