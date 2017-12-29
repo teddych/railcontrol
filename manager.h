@@ -61,6 +61,7 @@ class Manager {
 		const std::string& getSwitchName(const switchID_t switchID);
 
 		// street
+		datamodel::Street* getStreet(const streetID_t streetID);
 
 		// automode
 		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);

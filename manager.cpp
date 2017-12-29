@@ -485,6 +485,14 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) {
 	return unknownSwitch;
 }
 
+Street* Manager::getStreet(const streetID_t streetID) {
+	std::lock_guard<std::mutex> Guard(streetMutex);
+	if (streets.count(streetID) == 1) {
+		return streets.at(streetID);
+	}
+	return NULL;
+}
+
 bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	Block* block = getBlock(blockID);
 	if (!block) return false;

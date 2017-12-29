@@ -96,6 +96,7 @@ enum hardwareIDs : hardwareID_t {
 #define ADDRESS_NONE 0
 #define LOCO_NONE 0
 #define BLOCK_NONE 0
+#define STREET_NONE 0
 
 static std::string hardwareSymbols[] = {
 	"none",
@@ -172,7 +173,8 @@ enum locoState : locoState_t {
 	LOCO_STATE_OFF,
 	LOCO_STATE_SEARCHING,
 	LOCO_STATE_RUNNING,
-	LOCO_STATE_STOPPING
+	LOCO_STATE_STOPPING,
+	LOCO_STATE_ERROR
 };
 
 #endif // DATATYPES_H

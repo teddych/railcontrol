@@ -20,15 +20,14 @@ namespace datamodel {
 		protocol(protocol),
 		address(address),
 		manager(manager),
-		street(NULL),
 		//speed(0),
 		state(LOCO_STATE_NEVER),
-		blockID(BLOCK_NONE) {
+		blockID(BLOCK_NONE),
+		streetID(STREET_NONE) {
 	}
 
 	Loco::Loco(Manager* manager, const std::string& serialized) :
 		manager(manager),
-		street(NULL),
 		//speed(0),
 		state(LOCO_STATE_NEVER) {
 		deserialize(serialized);
@@ -66,6 +65,7 @@ namespace datamodel {
 			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
 			if (arguments.count("address")) address = stoi(arguments.at("address"));
 			if (arguments.count("blockID")) blockID = stoi(arguments.at("blockID"));
+			streetID = STREET_NONE;
 			return true;
 		}
 		return false;
@@ -101,6 +101,9 @@ namespace datamodel {
 		if (state == LOCO_STATE_RUNNING) {
 			state = LOCO_STATE_STOPPING;
 			return true;
+		}
+		if (state == LOCO_STATE_ERROR) {
+			state = LOCO_STATE_OFF;
 		}
 		return false;
 	}
@@ -156,6 +159,12 @@ namespace datamodel {
 						return;
 					case LOCO_STATE_SEARCHING: {
 						xlog("Looking for new Block for loco %s", loco->name.c_str());
+						// check if already running
+						if (streetID != STREET_NONE) {
+							loco->state = LOCO_STATE_ERROR;
+							xlog("Loco %s has already a street reserved. Going to error state.", loco->name.c_str());
+							break;
+						}
 						// get possible destinations
 						Block* fromBlock = manager->getBlock(blockID);
 						if (!fromBlock) break;
@@ -165,13 +174,13 @@ namespace datamodel {
 						for (auto street : streets) {
 							if (street->reserve(objectID)) {
 								street->lock(objectID);
-								this->street = street;
+							streetID = street->objectID;
 								xlog("Found Street \"%s\" for loco %s", street->name.c_str(), loco->name.c_str());
 								break; // break for
 							}
 						}
 
-						if (!this->street) {
+						if (streetID == STREET_NONE) {
 							xlog("No valid street found for loco %s", loco->name.c_str());
 							break; // break switch
 						}
@@ -189,6 +198,10 @@ namespace datamodel {
 						// loco is running but we do not search any more
 						loco->state = LOCO_STATE_OFF;
 						break;
+					case LOCO_STATE_ERROR:
+						xlog("Loco %s is in error state.", loco->name.c_str());
+						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
+						break;
 				}
 			}
 			usleep(1000000);
@@ -196,13 +209,18 @@ namespace datamodel {
 	}
 
 	void Loco::destinationReached() {
-		xlog("Loco reached its destination");
+		xlog("Loco %s reached its destination", name.c_str());
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
 		// set loco to new block
+		Street* street = manager->getStreet(streetID);
+		if (!street) {
+			return;
+		}
 		blockID = street->destinationBlock();
-		// release old block
+		// release old block & old street
 		street->release(objectID);
+		streetID = STREET_NONE;
 		// set state
 		if (state == LOCO_STATE_RUNNING) {
 			state = LOCO_STATE_SEARCHING;
