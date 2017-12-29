@@ -45,18 +45,26 @@ namespace datamodel {
 	}
 
 	bool Feedback::setLoco(const locoID_t locoID) {
-		if (locoID != LOCO_NONE) return false;
+		if (locoID != LOCO_NONE) {
+			return false;
+		}
 		this->locoID = locoID;
 		return true;
 	}
 
 	bool Feedback::setState(const feedbackState_t state) {
-		if (this->state == state) return false;
+		if (this->state == state) {
+			return false;
+		}
 
 		this->state = state;
-		if (!state) return true;
+		if (!state) {
+			return true;
+		}
 
-		if (!locoID) return true;
+		if (!locoID) {
+			return true;
+		}
 
 		manager->getLoco(locoID)->destinationReached();
 

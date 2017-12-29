@@ -130,9 +130,49 @@ void Console::handleClient() {
 
 		switch (s[0])
 		{
+			case 'f': // feedback
+			{
+				int i = 1;
+				unsigned char input;
+				// read possible blanks
+				while (true) {
+					input = s[i];
+					if (input != ' ') {
+						break;
+					}
+					++i;
+				}
+				// read pin number
+				feedbackPin_t feedbackNumber = 0;
+				while (true) {
+					input = s[i];
+					if ( input < '0' || input > '9') {
+						break;
+					}
+					feedbackNumber *= 10;
+					feedbackNumber += input - '0';
+					++i;
+				};
+				// read possible blanks
+				while (true) {
+					input = s[i];
+					if (input != ' ') {
+						break;
+					}
+					++i;
+				}
+				// read state
+				input = s[i];
+				feedbackState_t state = FEEDBACK_STATE_FREE;
+				if (input == 'X' || input == 'x') {
+					state = FEEDBACK_STATE_OCCUPIED;
+				}
+				manager.feedback(MANAGER_ID_CONSOLE, feedbackNumber, state);
+				break;
+			}
 			case 'h': // help
 			{
-				string status("Available commands:\nh Help\nq Quit\n");
+				string status("Available commands:\nh Help\nf pin# [X]\nq Quit\n");
 				addUpdate(unused, status);
 				break;
 			}
@@ -152,13 +192,19 @@ void Console::handleClient() {
 }
 
 void Console::addUpdate(const string& command, const string& status) {
-	if (clientSocket < 0) return;
+	if (clientSocket < 0) {
+		return;
+	}
 	send_timeout(clientSocket, status.c_str(), status.length(), 0);
 }
 
 void Console::booster(const managerID_t managerID, const boosterStatus_t status) {
-	if (status) addUpdate("boosteron", "Booster is on");
-	else addUpdate("boosteroff", "Booster is off");
+	if (status) {
+		addUpdate("boosteron", "Booster is on");
+	}
+	else {
+		addUpdate("boosteroff", "Booster is off");
+	}
 }
 
 void Console::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {

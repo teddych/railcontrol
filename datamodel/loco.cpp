@@ -105,21 +105,27 @@ namespace datamodel {
 
 	bool Loco::toBlock(const blockID_t blockID) {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (this->blockID != LOCO_NONE) return false;
+		if (this->blockID != LOCO_NONE) {
+			return false;
+		}
 		this->blockID = blockID;
 		return true;
 	}
 
 	bool Loco::toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew) {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (blockID != blockIDOld) return false;
+		if (blockID != blockIDOld) {
+			return false;
+		}
 		blockID = blockIDNew;
 		return true;
 	}
 
 	bool Loco::releaseBlock() {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (!blockID) return false;
+		if (!blockID) {
+			return false;
+		}
 		blockID = BLOCK_NONE;
 		return true;
 	}
@@ -174,7 +180,7 @@ namespace datamodel {
 					}
 					case LOCO_STATE_RUNNING:
 						// loco is already running
-						xlog("Loco is still running");
+						//xlog("Loco is still running");
 						break;
 					case LOCO_STATE_STOPPING:
 						// loco is running but we do not search any more

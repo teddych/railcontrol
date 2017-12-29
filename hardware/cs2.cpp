@@ -250,8 +250,8 @@ namespace hardware {
         return;
       }
 			else if (datalen == 13) {
-//        xlog("Receiver %i bytes received", datalen);
-        hexlog(buffer, datalen);
+				//xlog("Receiver %i bytes received", datalen);
+				//hexlog(buffer, datalen);
 				cs2Prio_t prio;
 				cs2Command_t command;
 				cs2Response_t response;
@@ -260,8 +260,18 @@ namespace hardware {
 				if (command == 0x11 && response) {
 					// s88 event
 					feedbackPin_t pin = dataToInt(buffer + 5);
-					xlog("S88 Pin %u set to %s", pin, (buffer[10] ? "on" : "off"));
-					manager->feedback(MANAGER_ID_HARDWARE, pin, buffer[10]);
+					const char* text;
+					feedbackState_t state;
+					if (buffer[10]) {
+						text = "on";
+						state = 1;
+					}
+					else {
+						text = "off";
+						state = 0;
+					}
+					xlog("CS2 S88 Pin %u set to %s", pin, text);
+					manager->feedback(MANAGER_ID_HARDWARE, pin, state);
 				}
 				else if (command == 0x04 && !response && length == 6) {
 					// speed event

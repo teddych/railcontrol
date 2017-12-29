@@ -131,7 +131,8 @@ Manager::~Manager() {
 }
 
 void Manager::loadDefaultValuesToDB() {
-	HardwareParams newHardwareParams(1, 1, "Virtuelle Zentrale", "");
+	//HardwareParams newHardwareParams(1, 1, "Virtuelle Zentrale", "");
+	HardwareParams newHardwareParams(1, 2, "CS2 Zentrale", "192.168.0.190");
 	storage->hardwareParams(newHardwareParams);
 
 	Loco newloco1(this, 1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
@@ -366,9 +367,10 @@ void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, 
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
-  for (auto control : controllers) {
-    control->locoSpeed(managerID, locoID, speed);
-  }
+	xlog("Setting speed of loco \"%s\" (%i) to speed %i", getLocoName(locoID).c_str(), locoID, speed);
+	for (auto control : controllers) {
+		control->locoSpeed(managerID, locoID, speed);
+	}
 }
 
 void Manager::locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction) {
@@ -381,12 +383,14 @@ void Manager::locoDirection(const managerID_t managerID, const protocol_t protoc
 	}
 }
 void Manager::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
+	xlog("Setting direction of loco \"%s\" (%i) to %i", getLocoName(locoID).c_str(), locoID, direction);
 	for (auto control : controllers) {
 		control->locoDirection(managerID, locoID, direction);
 	}
 }
 
 void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
+	xlog("Setting function %i of loco \"%s\" (%i) to %i", function, getLocoName(locoID).c_str(), locoID, on);
 	for (auto control : controllers) {
 		control->locoFunction(managerID, locoID, function, on);
 	}
@@ -436,7 +440,12 @@ void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 }
 
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
-  for (auto control : controllers) {
+	Feedback* feedback = getFeedback(pin);
+	if (feedback) {
+		xlog("Setting feedback %i to %s", pin, (state ? "on" : "off"));
+		feedback->setState(state);
+	}
+	for (auto control : controllers) {
 		control->feedback(managerID, pin, state);
 	}
 }
