@@ -204,7 +204,7 @@ void WebServer::handleSwitch(const managerID_t managerID, const switchID_t switc
 	addUpdate(command.str(), status.str());
 }
 
-void WebServer::locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID) {
+void WebServer::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	std::stringstream command;
 	std::stringstream status;
 	command << "locoIntoBlock;loco=" << locoID << ";block=" << blockID;
@@ -212,7 +212,7 @@ void WebServer::locoIntoBlock(const managerID_t managerID, const locoID_t locoID
 	addUpdate(command.str(), status.str());
 }
 
-void WebServer::locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+void WebServer::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 	std::stringstream command;
 	std::stringstream status;
 	command << "locoStreet;loco=" << locoID << ";street=" << streetID << ";block=" << blockID;
@@ -220,11 +220,27 @@ void WebServer::locoStreet(const managerID_t managerID, const locoID_t locoID, c
 	addUpdate(command.str(), status.str());
 }
 
-void WebServer::locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+void WebServer::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 	std::stringstream command;
 	std::stringstream status;
 	command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";block=" << blockID;
 	status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID);
+	addUpdate(command.str(), status.str());
+}
+
+void WebServer::locoStart(const locoID_t locoID) {
+	std::stringstream command;
+	std::stringstream status;
+	command << "locoStart;loco=" << locoID;
+	status << manager.getLocoName(locoID) << " is in auto mode";
+	addUpdate(command.str(), status.str());
+}
+
+void WebServer::locoStop(const locoID_t locoID) {
+	std::stringstream command;
+	std::stringstream status;
+	command << "locoStop;loco=" << locoID;
+	status << manager.getLocoName(locoID) << " is in manual mode";
 	addUpdate(command.str(), status.str());
 }
 

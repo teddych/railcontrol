@@ -18,9 +18,11 @@ class ManagerInterface {
 		virtual void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
 		virtual void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) = 0;
 		virtual void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) = 0;
-		virtual void locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID) = 0;
-		virtual void locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) = 0;
-		virtual void locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) = 0;
+		virtual void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) = 0;
+		virtual void locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) = 0;
+		virtual void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) = 0;
+		virtual void locoStart(const locoID_t locoID) = 0;
+		virtual void locoStop(const locoID_t locoID) = 0;
 
   private:
     managerID_t managerID;

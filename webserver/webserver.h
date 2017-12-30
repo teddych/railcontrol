@@ -26,9 +26,11 @@ namespace webserver {
 			void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 			void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) override;
 			void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) override;
-			void locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID) override;
-			void locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
-			void locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
+			void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) override;
+			void locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
+			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
+			void locoStart(const locoID_t locoID) override;
+			void locoStop(const locoID_t locoID) override;
 		private:
 			void worker();
 			void addUpdate(const std::string& command, const std::string& status);

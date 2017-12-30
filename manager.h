@@ -65,13 +65,13 @@ class Manager {
 		const std::string& getStreetName(const streetID_t streetID);
 
 		// automode
-		bool locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID);
-		bool locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
-		bool locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
-		bool startLoco(const locoID_t locoID);
-		bool stopLoco(const locoID_t locoID);
-		bool startAllLocos();
-		bool stopAllLocos();
+		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);
+		bool locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
+		bool locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
+		bool locoStart(const locoID_t locoID);
+		bool locoStop(const locoID_t locoID);
+		bool locoStartAll();
+		bool locoStopAll();
 		bool autoMode;
 
 	private:

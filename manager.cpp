@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
 
 #include "console/console.h"
 #include "hardware/hardware_handler.h"
@@ -84,8 +85,9 @@ Manager::Manager(Config& config) :
 }
 
 Manager::~Manager() {
-	stopLoco(1);
-	stopAllLocos();
+	while (!locoStopAll()) {
+		sleep(1);
+	}
 
 	for (auto controller : controllers) {
 		delete controller;
@@ -498,7 +500,7 @@ const string& Manager::getStreetName(const streetID_t streetID) {
 	return unknownStreet;
 }
 
-bool Manager::locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID) {
+bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	Block* block = getBlock(blockID);
 	if (!block) return false;
 
@@ -527,44 +529,74 @@ bool Manager::locoIntoBlock(const managerID_t managerID, const locoID_t locoID, 
 	xlog(s.c_str());
 
   for (auto control : controllers) {
-		control->locoIntoBlock(managerID, locoID, blockID);
+		control->locoIntoBlock(locoID, blockID);
 	}
 	return true;
 }
 
-bool Manager::locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
   for (auto control : controllers) {
-		control->locoStreet(managerID, locoID, streetID, blockID);
+		control->locoStreet(locoID, streetID, blockID);
 	}
 	return true;
 }
-bool Manager::locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
   for (auto control : controllers) {
-		control->locoDestinationReached(managerID, locoID, streetID, blockID);
+		control->locoDestinationReached(locoID, streetID, blockID);
 	}
 	return true;
 }
 
-bool Manager::startLoco(const locoID_t locoID) {
+bool Manager::locoStart(const locoID_t locoID) {
 	Loco* loco = getLoco(locoID);
 	if (loco) {
-		return loco->start();
+		bool ret = loco->start();
+		if (ret) {
+			for (auto control : controllers) {
+				control->locoStart(locoID);
+			}
+		}
+		return ret;
 	}
 	return false;
 }
 
-bool Manager::stopLoco(const locoID_t locoID) {
+bool Manager::locoStop(const locoID_t locoID) {
 	Loco* loco = getLoco(locoID);
 	if (loco) {
-		return loco->stop();
+		bool ret = loco->stop();
+		if (ret) {
+			for (auto control : controllers) {
+				control->locoStop(locoID);
+			}
+		}
+		return ret;
 	}
 	return false;
 }
 
-bool Manager::startAllLocos() {
-	return false;
+bool Manager::locoStartAll() {
+	for (auto loco : locos) {
+		bool ret = loco.second->start();
+		if (ret) {
+			for (auto control : controllers) {
+				control->locoStart(loco.first);
+			}
+		}
+	}
+	return true;
 }
 
-bool Manager::stopAllLocos() {
-	return false;
+bool Manager::locoStopAll() {
+	bool ret1 = true;
+	for (auto loco : locos) {
+		bool ret2 = loco.second->stop();
+		if (ret2) {
+			for (auto control : controllers) {
+				control->locoStop(loco.first);
+			}
+		}
+		ret1 &= ret2;
+	}
+	return ret1;
 }

@@ -157,8 +157,12 @@ void Console::handleClient() {
 			{
 				size_t i = 1;
 				readBlanks(s, i);
+				if (s[i] == 'a') {
+					manager.locoStartAll();
+					break;
+				}
 				locoID_t locoID = readNumber(s, i);
-				manager.startLoco(locoID);
+				manager.locoStart(locoID);
 				break;
 			}
 			case 'l': // loco speed
@@ -178,7 +182,7 @@ void Console::handleClient() {
 				locoID_t locoID = readNumber(s, i);
 				readBlanks(s, i);
 				blockID_t blockID = readNumber(s, i);
-				manager.locoIntoBlock(MANAGER_ID_CONSOLE, locoID, blockID);
+				manager.locoIntoBlock(locoID, blockID);
 
 				break;
 			}
@@ -214,8 +218,12 @@ void Console::handleClient() {
 			{
 				size_t i = 1;
 				readBlanks(s, i);
+				if (s[i] == 'a') {
+					manager.locoStopAll();
+					break;
+				}
 				locoID_t locoID = readNumber(s, i);
-				manager.stopLoco(locoID);
+				manager.locoStop(locoID);
 				break;
 			}
 			case 'q': // quit
@@ -303,21 +311,33 @@ void Console::handleSwitch(const managerID_t managerID, const switchID_t switchI
 	addUpdate(status.str());
 }
 
-void Console::locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID) {
+void Console::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	std::stringstream status;
 	status << manager.getLocoName(locoID) << " is in block " << manager.getBlockName(blockID);
 	addUpdate(status.str());
 }
 
-void Console::locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 	std::stringstream status;
 	status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID) << "\n";
 	addUpdate(status.str());
 }
 
-void Console::locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+void Console::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 	std::stringstream status;
 	status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID) << "\n";
+	addUpdate(status.str());
+}
+
+void Console::locoStart(const locoID_t locoID) {
+	std::stringstream status;
+	status << manager.getLocoName(locoID) << " is in auto mode\n";
+	addUpdate(status.str());
+}
+
+void Console::locoStop(const locoID_t locoID) {
+	std::stringstream status;
+	status << manager.getLocoName(locoID) << " is in manual mode\n";
 	addUpdate(status.str());
 }
 

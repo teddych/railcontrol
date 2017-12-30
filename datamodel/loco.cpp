@@ -196,7 +196,7 @@ namespace datamodel {
 						}
 
 						// start loco
-						manager->locoStreet(MANAGER_ID_AUTOMODE, objectID, streetID, blockID);
+						manager->locoStreet(objectID, streetID, blockID);
 						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 1024);
 						loco->state = LOCO_STATE_RUNNING;
 						break;
@@ -216,6 +216,7 @@ namespace datamodel {
 						break;
 				}
 			}
+			// FIXME: make configurable
 			usleep(1000000);
 		}
 	}
@@ -231,7 +232,7 @@ namespace datamodel {
 			return;
 		}
 		blockID = street->destinationBlock();
-		manager->locoDestinationReached(MANAGER_ID_AUTOMODE, objectID, streetID, blockID);
+		manager->locoDestinationReached(objectID, streetID, blockID);
 		// release old block & old street
 		street->release(objectID);
 		streetID = STREET_NONE;
