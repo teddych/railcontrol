@@ -344,7 +344,7 @@ namespace webserver {
 			}
 			ss << "</select>";
 			*/
-			ss << select("control", protocolOptions, "protocol", "protocol", protocolArguments);
+			//ss << select("control", protocolOptions, "protocol", "protocol", protocolArguments);
 			ss << "<div id=\"protocol\">";
 			// protocol is loaded later
 			ss << "</div>";
@@ -456,84 +456,16 @@ namespace webserver {
 		send_timeout(clientSocket, reply, strlen(reply), 0);
 	}
 
-	string WebClient::select(const string& name, const map<string,string>& options, const string& cmd, const string& target, const map<string,string>& arguments) {
+	string WebClient::selectLoco(const map<string,string>& options) {
 		stringstream ss;
-		ss << "<form method=\"get\" action=\"/\" id=\"" << buttonID << "_"<< cmd << "_" << "form\">";
-		ss << "<select name=\"" << name << "\" id=\"" << buttonID << "_" << cmd << "\">";
+		ss << "<form method=\"get\" action=\"/\" id=\"selectLoco_form\">";
+		ss << "<select name=\"loco\" onchange=\"loadLoco('selectLoco_form')\">";
 		for (auto option : options) {
 			ss << "<option value=\"" << option.first << "\">" << option.second << "</option>";
 		}
 		ss << "</select>";
-		// FIXME: onload
-			xlog("name=%s", name.c_str());
-			xlog("cmd=%s", cmd.c_str());
-			xlog("target=%s", target.c_str());
-		for (auto argument : arguments) {
-			ss << "<input type=\"hidden\" name=\"" << argument.first << "\" value=\"" << argument.second << "\">";
-		}
-		ss << "<input type=\"hidden\" name=\"cmd\" value=\"" << cmd << "\">";
+		ss << "<input type=\"hidden\" name=\"cmd\" value=\"loco\">";
 		ss << "</form>";
-		ss << "<script type=\"application/javascript\">\n"
-		"debugger;\n"
-		/*
-		"$(function() {\n"
-		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', function() {\n"
-		"debugger;\n"
-		"alert('1');\n"
-		"  $.ajax({\n"
-		"   data: $(this).serialize(),\n"
-		"   type: $(this).attr('get'),\n"
-		"   url: $(this).attr('/'),\n"
-		"   success: function(response) {\n"
-		"    $('#" << target << "').html(response);\n"
-		"alert('2');\n"
-		"   }\n"
-		"  })\n"
-		"alert('3');\n"
-		"  return false;\n"
-		" });\n"
-		"});\n"
-		*/
-		"$(function() {\n"
-		" var formName = '" << buttonID << "_"<< cmd << "_" << "form';\n"
-		" $('#' + formName).on('submit', loadFormToDiv(formName, '" << target << "'));\n"
-		//" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', alert('" << target << "'));\n"
-		"});\n"
-		"onChange('" << buttonID << "_"<< cmd << "', '" << buttonID << "_"<< cmd << "_" << "form');\n"
-//		"submitForm('" << buttonID << "_"<< cmd << "_" << "form');\n"
-		/*
-		"$(function() {\n"
-		" $('#" << buttonID << "_"<< cmd << "_" << "form').on('submit', function() {\n"
-		"alert('1');\n"
-		"  $.ajax({\n"
-		"   data: $(this).serialize(),\n"
-		"   type: $(this).attr('get'),\n"
-		"   url: $(this).attr('/'),\n"
-		"   success: function(response) {\n"
-		"    $('#" << target << "').html(response);\n"
-		"alert('2');\n"
-		"   }\n"
-		"  })\n"
-		"alert('3');\n"
-		"  return false;\n"
-		" });\n"
-		"});\n"
-		"$(function() {\n"
-		" $('#" << buttonID << "_"<< cmd << "').on('change', function() {\n"
-		"  $('#" << buttonID << "_"<< cmd << "_" << "form').submit();\n"
-		"  return false;\n"
-		" });\n"
-		"});\n"
-		// FIXME: onload
-		"$(function() {\n"
-		"  debugger;\n"
-		"  $('#" << buttonID << "_"<< cmd << "_" << "form').submit();\n"
-		"alert('4');\n"
-		"  return false;\n"
-		"});\n"
-		*/
-		"</script>";
-		++buttonID;
 		return ss.str();
 	}
 
@@ -709,7 +641,7 @@ namespace webserver {
 			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
 			"<meta name=\"robots\" content=\"noindex,nofollow\">"
 			"</head>"
-			"<body>"
+			"<body onload=\"loadLoco('selectLoco_form')\">"
 			"<h1>Railcontrol</h1>"
 			"<div class=\"menu\">";
 		ss << button("X", "quit");
@@ -725,7 +657,7 @@ namespace webserver {
 			Loco* loco = locoTMP.second;
 			options[std::to_string(loco->objectID)] = loco->name;
 		}
-		ss << select("loco", options, "loco", "loco");
+		ss << selectLoco(options);
 		ss <<"</div>";
 		ss << "<div class=\"loco\" id=\"loco\">";
 		ss << "</div>";
@@ -755,9 +687,6 @@ namespace webserver {
 			"};\n"
 
 			// FIXME: get first locoid in db
-			"debugger;\n"
-			//"$('#loco').load('/?cmd=loco&loco=1');\n"
-
 			"</script>"
 			"</body>"
 			"</html>";

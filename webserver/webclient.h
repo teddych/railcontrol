@@ -20,7 +20,8 @@ class WebClient {
 		int stop();
 	private:
 		void interpretClientRequest(const std::vector<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
-		std::string select(const std::string& name, const std::map<std::string,std::string>& options, const std::string& cmd = "", const std::string& target = "", const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
+		std::string selectLoco(const std::map<std::string,std::string>& options);
+		std::string select(const std::map<std::string,std::string>& options, const std::string& cmd = "", const std::string& target = "", const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
 		std::string slider(const std::string& name, const std::string& cmd, const unsigned int min, const unsigned int max, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
 		std::string button(const std::string& value, const std::string& cmd, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
 		std::string buttonPopup(const std::string& value, const std::string& cmd, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());

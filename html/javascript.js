@@ -1,33 +1,15 @@
-function loadFormToDiv(form, target) {
-  debugger;
+function loadLoco(form) {
 	var formName = '#' + form;
   $.ajax({
-  data: $(formName).serialize(),
+   data: $(formName).serialize(),
    type: $(formName).attr('get'),
    url: $(formName).attr('/'),
    success: function(response) {
-    var targetName = '#' + target;
-		debugger;
+    var targetName = '#loco';
 		console.log(targetName);
-		alert(targetName);
-		alert(response);
     $(targetName).html(response);
    }
   })
-  return false;
-}
-
-function onChange(buttonID, formID) {
-  debugger;
- $(function() {
-  $('#' + buttonID).on('change', submitForm(formID));
-	return false;
- });
-}
-
-function submitForm(formID) {
-  debugger;
-  $('#' + formID).submit();
   return false;
 }
 
