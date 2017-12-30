@@ -25,7 +25,7 @@ namespace console {
 		private:
 			void worker();
 			void handleClient();
-			void addUpdate(const std::string& command, const std::string& status);
+			void addUpdate(const std::string& status);
 			static void readBlanks(std::string& s, size_t& i);
 			static int readNumber(std::string& s, size_t& i);
 

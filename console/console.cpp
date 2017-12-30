@@ -138,9 +138,7 @@ int Console::readNumber(string& s, size_t& i) {
 }
 
 void Console::handleClient() {
-	string unused;
-	string status("Welcome to railcontrol console!\nType h for help\n");
-	addUpdate(unused, status);
+	addUpdate("Welcome to railcontrol console!\nType h for help\n");
 	char buffer_in[1024];
 	memset(buffer_in, 0, sizeof(buffer_in));
 
@@ -209,7 +207,7 @@ void Console::handleClient() {
 				"l loco# speed  Set loco speed between 0 and 1024\n"
 				"m loco#        Stop loco and got to manual mode\n"
 				"q              Quit\n");
-				addUpdate(unused, status);
+				addUpdate(status);
 				break;
 			}
 			case 'm': // start manual mode and leave automode
@@ -223,19 +221,19 @@ void Console::handleClient() {
 			case 'q': // quit
 			{
 				string status("Quit railcontrol console\n");
-				addUpdate(unused, status);
+				addUpdate(status);
 				close(clientSocket);
 				return;
 			}
 			default: {
 				string status("Unknown command\n");
-				addUpdate(unused, status);
+				addUpdate(status);
 			}
 		}
 	}
 }
 
-void Console::addUpdate(const string& command, const string& status) {
+void Console::addUpdate(const string& status) {
 	if (clientSocket < 0) {
 		return;
 	}
@@ -246,77 +244,63 @@ void Console::addUpdate(const string& command, const string& status) {
 
 void Console::booster(const managerID_t managerID, const boosterStatus_t status) {
 	if (status) {
-		addUpdate("boosteron", "Booster is on");
+		addUpdate("Booster is on\n");
 	}
 	else {
-		addUpdate("boosteroff", "Booster is off");
+		addUpdate("Booster is off\n");
 	}
 }
 
 void Console::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
-	std::stringstream command;
 	std::stringstream status;
-	command << "locospeed;loco=" << locoID << ";speed=" << speed;
-	status << manager.getLocoName(locoID) << " speed is " << speed;
-	addUpdate(command.str(), status.str());
+	status << manager.getLocoName(locoID) << " speed is " << speed << "\n";
+	addUpdate(status.str());
 }
 
 void Console::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
-	std::stringstream command;
 	std::stringstream status;
 	const char* directionText = (direction ? "forward" : "reverse");
-	command << "locodirection;loco=" << locoID << ";direction=" << directionText;
-	status << manager.getLocoName(locoID) << " direction is " << directionText;
-	addUpdate(command.str(), status.str());
+	status << manager.getLocoName(locoID) << " direction is " << directionText << "\n";
+	addUpdate(status.str());
 }
 
 void Console::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool state) {
-	std::stringstream command;
 	std::stringstream status;
-	command << "locofunction;loco=" << locoID << ";function=" << (unsigned int)function << ";on=" << (state ? "on" : "off");
-	status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
-	addUpdate(command.str(), status.str());
+	status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off") << "\n";
+	addUpdate(status.str());
 }
 
 void Console::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
-	std::stringstream command;
 	std::stringstream status;
 	unsigned char color;
 	unsigned char on;
 	char* colorText;
 	char* stateText;
 	datamodel::Accessory::getAccessoryTexts(state, color, on, colorText, stateText);
-	command << "accessory;accessory=" << accessoryID << ";color=" << colorText << ";on=" << stateText;
-	status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText;
-	addUpdate(command.str(), status.str());
+	status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText << "\n";
+	addUpdate(status.str());
 }
 
 void Console::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
-	std::stringstream command;
 	std::stringstream status;
-	command << "feedback;pin=" << pin << ";state=" << (state ? "on" : "off");
-	status << "Feedback " << pin << " is " << (state ? "on" : "off");
-	addUpdate(command.str(), status.str());
+	status << "Feedback " << pin << " is " << (state ? "on" : "off") << "\n";
+	addUpdate(status.str());
 }
 
 void Console::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
-	std::stringstream command;
 	std::stringstream status;
 	char* stateText;
 	datamodel::Block::getTexts(state, stateText);
-	command << "block;block=" << blockID << ";state=" << stateText;
-	status << manager.getBlockName(blockID) << " is " << stateText;
-	addUpdate(command.str(), status.str());
+	status << manager.getBlockName(blockID) << " is " << stateText << "\n";
+	addUpdate(status.str());
 }
 
 void Console::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
-	std::stringstream command;
 	std::stringstream status;
 	char* stateText;
 	datamodel::Switch::getTexts(state, stateText);
-	command << "switch;switch=" << switchID << ";state=" << stateText;
-	status << manager.getSwitchName(switchID) << " is " << stateText;
-	addUpdate(command.str(), status.str());
+	status << manager.getSwitchName(switchID) << " is " << stateText << "\n";
+	addUpdate(status.str());
 }
 
-}; // namespace webserver
+}; // namespace console
