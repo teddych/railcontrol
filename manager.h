@@ -62,9 +62,12 @@ class Manager {
 
 		// street
 		datamodel::Street* getStreet(const streetID_t streetID);
+		const std::string& getStreetName(const streetID_t streetID);
 
 		// automode
-		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);
+		bool locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID);
+		bool locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
+		bool locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
 		bool startLoco(const locoID_t locoID);
 		bool stopLoco(const locoID_t locoID);
 		bool startAllLocos();
@@ -72,7 +75,7 @@ class Manager {
 		bool autoMode;
 
 	private:
-//		const hardwareID_t hardwareOfControl(controlID_t controlID) const;
+		// const hardwareID_t hardwareOfControl(controlID_t controlID) const;
 
 		// controllers (hardwareHandler & Webserver)
 		std::vector<ManagerInterface*> controllers;

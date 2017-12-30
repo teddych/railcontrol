@@ -491,7 +491,14 @@ Street* Manager::getStreet(const streetID_t streetID) {
 	return NULL;
 }
 
-bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
+const string& Manager::getStreetName(const streetID_t streetID) {
+	if (streets.count(streetID) == 1) {
+		return streets.at(streetID)->name;
+	}
+	return unknownStreet;
+}
+
+bool Manager::locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID) {
 	Block* block = getBlock(blockID);
 	if (!block) return false;
 
@@ -518,6 +525,23 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	ss << "Loco \"" << loco->name << "\" is now in block \"" << block->name << "\"";
 	string s(ss.str());
 	xlog(s.c_str());
+
+  for (auto control : controllers) {
+		control->locoIntoBlock(managerID, locoID, blockID);
+	}
+	return true;
+}
+
+bool Manager::locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+  for (auto control : controllers) {
+		control->locoStreet(managerID, locoID, streetID, blockID);
+	}
+	return true;
+}
+bool Manager::locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+  for (auto control : controllers) {
+		control->locoDestinationReached(managerID, locoID, streetID, blockID);
+	}
 	return true;
 }
 

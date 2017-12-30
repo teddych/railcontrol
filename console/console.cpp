@@ -178,7 +178,7 @@ void Console::handleClient() {
 				locoID_t locoID = readNumber(s, i);
 				readBlanks(s, i);
 				blockID_t blockID = readNumber(s, i);
-				manager.locoIntoBlock(locoID, blockID);
+				manager.locoIntoBlock(MANAGER_ID_CONSOLE, locoID, blockID);
 
 				break;
 			}
@@ -300,6 +300,24 @@ void Console::handleSwitch(const managerID_t managerID, const switchID_t switchI
 	char* stateText;
 	datamodel::Switch::getTexts(state, stateText);
 	status << manager.getSwitchName(switchID) << " is " << stateText << "\n";
+	addUpdate(status.str());
+}
+
+void Console::locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID) {
+	std::stringstream status;
+	status << manager.getLocoName(locoID) << " is in block " << manager.getBlockName(blockID);
+	addUpdate(status.str());
+}
+
+void Console::locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+	std::stringstream status;
+	status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID) << "\n";
+	addUpdate(status.str());
+}
+
+void Console::locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+	std::stringstream status;
+	status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID) << "\n";
 	addUpdate(status.str());
 }
 

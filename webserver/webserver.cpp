@@ -204,6 +204,30 @@ void WebServer::handleSwitch(const managerID_t managerID, const switchID_t switc
 	addUpdate(command.str(), status.str());
 }
 
+void WebServer::locoIntoBlock(const managerID_t managerID, const locoID_t locoID, const blockID_t blockID) {
+	std::stringstream command;
+	std::stringstream status;
+	command << "locoIntoBlock;loco=" << locoID << ";block=" << blockID;
+	status << manager.getLocoName(locoID) << " is in block " << manager.getBlockName(blockID);
+	addUpdate(command.str(), status.str());
+}
+
+void WebServer::locoStreet(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+	std::stringstream command;
+	std::stringstream status;
+	command << "locoStreet;loco=" << locoID << ";street=" << streetID << ";block=" << blockID;
+	status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID);
+	addUpdate(command.str(), status.str());
+}
+
+void WebServer::locoDestinationReached(const managerID_t managerID, const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+	std::stringstream command;
+	std::stringstream status;
+	command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";block=" << blockID;
+	status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID);
+	addUpdate(command.str(), status.str());
+}
+
 void WebServer::addUpdate(const string& command, const string& status) {
 	stringstream ss;
 	ss << "data: command=" << command << ";status=" << status << "\r\n\r\n";

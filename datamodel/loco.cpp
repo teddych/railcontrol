@@ -179,11 +179,13 @@ namespace datamodel {
 						// get best fitting destination and reserve street
 						vector<Street*> streets;
 						fromBlock->getValidStreets(streets);
+						blockID_t toBlockID = BLOCK_NONE;
 						for (auto street : streets) {
 							if (street->reserve(objectID)) {
 								street->lock(objectID);
 								streetID = street->objectID;
-								xlog("Found Street \"%s\" for loco %s", street->name.c_str(), name);
+								toBlockID = street->destinationBlock();
+								xlog("Loco &s found street \"%s\" with destination %s", name, street->name.c_str(), manager->getBlockName(toBlockID));
 								break; // break for
 							}
 						}
@@ -194,6 +196,7 @@ namespace datamodel {
 						}
 
 						// start loco
+						manager->locoStreet(MANAGER_ID_AUTOMODE, objectID, streetID, blockID);
 						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 1024);
 						loco->state = LOCO_STATE_RUNNING;
 						break;
@@ -202,7 +205,7 @@ namespace datamodel {
 						// loco is already running, waiting until destination reached
 						break;
 					case LOCO_STATE_STOPPING:
-						xlog("Loco %s has not yet reached its destination. Stopping if it reached its destination.", name);
+						xlog("Loco %s has not yet reached its destination. Going to manual mode when it reached its destination.", name);
 						break;
 					case LOCO_STATE_MANUAL:
 						xlog("Loco %s is in manual state while automode is running. Putting loco into error state", name);
@@ -228,6 +231,7 @@ namespace datamodel {
 			return;
 		}
 		blockID = street->destinationBlock();
+		manager->locoDestinationReached(MANAGER_ID_AUTOMODE, objectID, streetID, blockID);
 		// release old block & old street
 		street->release(objectID);
 		streetID = STREET_NONE;
