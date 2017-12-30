@@ -112,6 +112,31 @@ void Console::worker() {
 	}
 }
 
+void Console::readBlanks(string& s, size_t& i) {
+	// read possible blanks
+	while (s.length() > i) {
+		unsigned char input = s[i];
+		if (input != ' ') {
+			break;
+		}
+		++i;
+	}
+}
+
+int Console::readNumber(string& s, size_t& i) {
+	int number = 0;
+	while (s.length() > i) {
+		unsigned char input = s[i];
+		if ( input < '0' || input > '9') {
+			break;
+		}
+		number *= 10;
+		number += input - '0';
+		++i;
+	};
+	return number;
+}
+
 void Console::handleClient() {
 	string unused;
 	string status("Welcome to railcontrol console!\nType h for help\n");
@@ -130,50 +155,69 @@ void Console::handleClient() {
 
 		switch (s[0])
 		{
+			case 'a': // start automode
+			{
+				size_t i = 1;
+				readBlanks(s, i);
+				locoID_t locoID = readNumber(s, i);
+				manager.startLoco(locoID);
+				break;
+			}
+			case 'l': // loco speed
+			{
+				size_t i = 1;
+				readBlanks(s, i);
+				locoID_t locoID = readNumber(s, i);
+				readBlanks(s, i);
+				speed_t speed = readNumber(s, i);
+				manager.locoSpeed(MANAGER_ID_CONSOLE, locoID, speed);
+				break;
+			}
+			case 'i': // loco into block
+			{
+				size_t i = 1;
+				readBlanks(s, i);
+				locoID_t locoID = readNumber(s, i);
+				readBlanks(s, i);
+				blockID_t blockID = readNumber(s, i);
+				manager.locoIntoBlock(locoID, blockID);
+
+				break;
+			}
 			case 'f': // feedback
 			{
-				int i = 1;
-				unsigned char input;
-				// read possible blanks
-				while (true) {
-					input = s[i];
-					if (input != ' ') {
-						break;
-					}
-					++i;
-				}
-				// read pin number
-				feedbackPin_t feedbackNumber = 0;
-				while (true) {
-					input = s[i];
-					if ( input < '0' || input > '9') {
-						break;
-					}
-					feedbackNumber *= 10;
-					feedbackNumber += input - '0';
-					++i;
-				};
-				// read possible blanks
-				while (true) {
-					input = s[i];
-					if (input != ' ') {
-						break;
-					}
-					++i;
-				}
+				size_t i = 1;
+				readBlanks(s, i);
+				feedbackID_t feedbackID = readNumber(s, i);
+				readBlanks(s, i);
 				// read state
-				input = s[i];
+				unsigned char input = s[i];
 				feedbackState_t state = FEEDBACK_STATE_FREE;
 				if (input == 'X' || input == 'x') {
 					state = FEEDBACK_STATE_OCCUPIED;
 				}
-				manager.feedback(MANAGER_ID_CONSOLE, feedbackNumber, state);
+				manager.feedback(MANAGER_ID_CONSOLE, feedbackID, state);
 				break;
 			}
 			case 'h': // help
 			{
-				string status("Available commands:\nh Help\nf pin# [X]\nq Quit\n");
+				string status("Available console commands:\n"
+				"a loco#        Start loco into automode\n"
+				"f pin# [X]     Turn feedback on (with X) or of (without X)\n"
+				"h              Show this help\n"
+				"i loco# block# Set loco into block\n"
+				"l loco# speed  Set loco speed between 0 and 1024\n"
+				"m loco#        Stop loco and got to manual mode\n"
+				"q              Quit\n");
 				addUpdate(unused, status);
+				break;
+			}
+			case 'm': // start manual mode and leave automode
+			{
+				size_t i = 1;
+				readBlanks(s, i);
+				locoID_t locoID = readNumber(s, i);
+				manager.stopLoco(locoID);
 				break;
 			}
 			case 'q': // quit
@@ -195,7 +239,9 @@ void Console::addUpdate(const string& command, const string& status) {
 	if (clientSocket < 0) {
 		return;
 	}
-	send_timeout(clientSocket, status.c_str(), status.length(), 0);
+	string s(status);
+	s += '\n';
+	send_timeout(clientSocket, s.c_str(), s.length(), 0);
 }
 
 void Console::booster(const managerID_t managerID, const boosterStatus_t status) {
