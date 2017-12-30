@@ -20,16 +20,15 @@ namespace datamodel {
 		protocol(protocol),
 		address(address),
 		manager(manager),
-		//speed(0),
-		state(LOCO_STATE_NEVER),
+		state(LOCO_STATE_MANUAL),
 		blockID(BLOCK_NONE),
 		streetID(STREET_NONE) {
 	}
 
 	Loco::Loco(Manager* manager, const std::string& serialized) :
 		manager(manager),
-		//speed(0),
-		state(LOCO_STATE_NEVER) {
+		state(LOCO_STATE_MANUAL),
+		streetID(STREET_NONE) {
 		deserialize(serialized);
 	}
 
@@ -37,12 +36,11 @@ namespace datamodel {
 		while(true) {
 			{
 				std::lock_guard<std::mutex> Guard(stateMutex);
-				if (state == LOCO_STATE_OFF) {
-					locoThread.join();
-					return;
-				}
-				if (state == LOCO_STATE_NEVER) {
-					return;
+				switch (state) {
+					case LOCO_STATE_MANUAL:
+					{
+						return;
+					}
 				}
 			}
 			xlog("Waiting until loco %s has stopped", name.c_str());
@@ -65,45 +63,7 @@ namespace datamodel {
 			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
 			if (arguments.count("address")) address = stoi(arguments.at("address"));
 			if (arguments.count("blockID")) blockID = stoi(arguments.at("blockID"));
-			streetID = STREET_NONE;
 			return true;
-		}
-		return false;
-	}
-
-	bool Loco::start() {
-		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (!blockID) {
-			stringstream ss;
-			ss << "Can not start loco " << name << " because it is not in a block";
-			string s(ss.str());
-			xlog(s.c_str());
-			return false;
-		}
-		if (state) {
-			stringstream ss;
-			ss << "Can not start loco " << name << " because it is already running";
-			string s(ss.str());
-			xlog(s.c_str());
-			return false;
-		}
-		locoThread = std::thread(&datamodel::Loco::autoMode, this, this);
-
-		return true;
-	}
-
-	bool Loco::stop() {
-		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (state == LOCO_STATE_SEARCHING) {
-			state = LOCO_STATE_OFF;
-			return true;
-		}
-		if (state == LOCO_STATE_RUNNING) {
-			state = LOCO_STATE_STOPPING;
-			return true;
-		}
-		if (state == LOCO_STATE_ERROR) {
-			state = LOCO_STATE_OFF;
 		}
 		return false;
 	}
@@ -137,32 +97,80 @@ namespace datamodel {
 		return true;
 	}
 
-	void Loco::autoMode(Loco* loco) {
-		stringstream ss;
-		ss << "Starting loco " << loco->name;
-		string s(ss.str());
-		xlog(s.c_str());
-		{
-			std::lock_guard<std::mutex> Guard(loco->stateMutex);
-			if (loco->state == LOCO_STATE_OFF || loco->state == LOCO_STATE_NEVER) loco->state = LOCO_STATE_SEARCHING;
+	bool Loco::start() {
+		std::lock_guard<std::mutex> Guard(stateMutex);
+		if (!blockID) {
+			xlog("Can not start loco %s because it is not in a block", name.c_str());
+			return false;
+		}
+		if (state == LOCO_STATE_ERROR) {
+			xlog("Can not start loco %s because it is in error state", name.c_str());
+			return false;
+		}
+		if (state == LOCO_STATE_OFF) {
+			locoThread.join();
+			state = LOCO_STATE_MANUAL;
+		}
+		if (state != LOCO_STATE_MANUAL) {
+			xlog("Can not start loco %s because it is already running", name.c_str());
+			return false;
 		}
 
+		state = LOCO_STATE_SEARCHING;
+		locoThread = std::thread(&datamodel::Loco::autoMode, this, this);
+
+		return true;
+	}
+
+	bool Loco::stop() {
+		{
+			std::lock_guard<std::mutex> Guard(stateMutex);
+			switch (state) {
+				case LOCO_STATE_MANUAL:
+					return true;
+
+				case LOCO_STATE_OFF:
+				case LOCO_STATE_SEARCHING:
+				case LOCO_STATE_ERROR:
+					state = LOCO_STATE_OFF;
+					break;
+
+				case LOCO_STATE_RUNNING:
+				case LOCO_STATE_STOPPING:
+					xlog("Loco %s is actually running, waiting until loco reached its destination", name.c_str());
+					state = LOCO_STATE_STOPPING;
+					return false;
+
+				default:
+					xlog("Loco %s is unknown state. Setting to error state and setting to speed 0.", name.c_str());
+					state = LOCO_STATE_ERROR;
+					manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
+					return false;
+			}
+		}
+		locoThread.join();
+		state = LOCO_STATE_MANUAL;
+		return true;
+	}
+
+	void Loco::autoMode(Loco* loco) {
+		const char* name = loco->name.c_str();
+		xlog("Loco %s is now in automode", name);
 		while (true) {
 			{
 				std::lock_guard<std::mutex> Guard(loco->stateMutex);
-				xlog("Locostate for loco %s: %i", loco->name.c_str(), loco->state);
 				switch (loco->state) {
-					case LOCO_STATE_NEVER:
 					case LOCO_STATE_OFF:
-						// automode is turned off
-						xlog("Loco stopped %s", loco->name.c_str());
+						// automode is turned off, terminate thread
+						xlog("Loco %s is now in manual mode", name);
 						return;
-					case LOCO_STATE_SEARCHING: {
-						xlog("Looking for new Block for loco %s", loco->name.c_str());
+					case LOCO_STATE_SEARCHING:
+					{
+						xlog("Looking for new Block for loco %s", name);
 						// check if already running
 						if (streetID != STREET_NONE) {
 							loco->state = LOCO_STATE_ERROR;
-							xlog("Loco %s has already a street reserved. Going to error state.", loco->name.c_str());
+							xlog("Loco %s has already a street reserved. Going to error state.", name);
 							break;
 						}
 						// get possible destinations
@@ -174,14 +182,14 @@ namespace datamodel {
 						for (auto street : streets) {
 							if (street->reserve(objectID)) {
 								street->lock(objectID);
-							streetID = street->objectID;
-								xlog("Found Street \"%s\" for loco %s", street->name.c_str(), loco->name.c_str());
+								streetID = street->objectID;
+								xlog("Found Street \"%s\" for loco %s", street->name.c_str(), name);
 								break; // break for
 							}
 						}
 
 						if (streetID == STREET_NONE) {
-							xlog("No valid street found for loco %s", loco->name.c_str());
+							xlog("No valid street found for loco %s", name);
 							break; // break switch
 						}
 
@@ -191,15 +199,16 @@ namespace datamodel {
 						break;
 					}
 					case LOCO_STATE_RUNNING:
-						// loco is already running
-						//xlog("Loco is still running");
+						// loco is already running, waiting until destination reached
 						break;
 					case LOCO_STATE_STOPPING:
-						// loco is running but we do not search any more
-						loco->state = LOCO_STATE_OFF;
+						xlog("Loco %s has not yet reached its destination. Stopping if it reached its destination.", name);
 						break;
+					case LOCO_STATE_MANUAL:
+						xlog("Loco %s is in manual state while automode is running. Putting loco into error state", name);
+						state = LOCO_STATE_ERROR;
 					case LOCO_STATE_ERROR:
-						xlog("Loco %s is in error state.", loco->name.c_str());
+						xlog("Loco %s is in error state.", name);
 						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
 						break;
 				}
@@ -209,12 +218,13 @@ namespace datamodel {
 	}
 
 	void Loco::destinationReached() {
-		xlog("Loco %s reached its destination", name.c_str());
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
 		// set loco to new block
 		Street* street = manager->getStreet(streetID);
 		if (!street) {
+			state = LOCO_STATE_ERROR;
+			xlog("Loco %s is running in automode without a street. Putting loco into error state", name.c_str());
 			return;
 		}
 		blockID = street->destinationBlock();
@@ -225,9 +235,10 @@ namespace datamodel {
 		if (state == LOCO_STATE_RUNNING) {
 			state = LOCO_STATE_SEARCHING;
 		}
-		else {
+		else { // LOCO_STATE_STOPPING
 			state = LOCO_STATE_OFF;
 		}
+		xlog("Loco %s reached its destination", name.c_str());
 	}
 
 } // namespace datamodel

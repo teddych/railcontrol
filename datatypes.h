@@ -169,7 +169,7 @@ enum switchState : switchState_t {
 };
 
 enum locoState : locoState_t {
-	LOCO_STATE_NEVER = 0,
+	LOCO_STATE_MANUAL = 0,
 	LOCO_STATE_OFF,
 	LOCO_STATE_SEARCHING,
 	LOCO_STATE_RUNNING,

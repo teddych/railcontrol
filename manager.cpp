@@ -80,9 +80,7 @@ Manager::Manager(Config& config) :
 	for (auto street : streets) {
 		xlog("Loaded street %i: %s", street.second->objectID, street.second->name.c_str());
 	}
-
-	locoIntoBlock(1, 1);
-	startLoco(1);
+	// FIXME: load locos into blocks
 }
 
 Manager::~Manager() {
