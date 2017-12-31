@@ -51,7 +51,7 @@ void xlog(const char* logtext, ...) {
 
 	// Convert it to local time representation
 	gmtime_r(&timestamp.tv_sec, &tm);
-	strftime(buffer, sizeof(buffer), "%FT%T.", &tm);
+	strftime(buffer, sizeof(buffer), "%F %T.", &tm);
 
 	snprintf(buffer + 20, sizeof(buffer) - 20, "%06li ", timestamp.tv_usec);
 
