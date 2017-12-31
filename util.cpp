@@ -5,6 +5,7 @@
 #include <cstring>    // memset
 #include <iostream>   // cout
 #include <sstream>
+#include <sys/time.h> // gettimeofday
 #include <unistd.h>   // close;
 #include <vector>
 
@@ -40,10 +41,22 @@ void str_split(const std::string& str_in, const std::string &delimiter, std::vec
 // create log text
 void xlog(const char* logtext, ...) {
   char buffer[1024];
+	struct timeval timestamp;
+	struct tm tm;
   va_list ap;
   va_start(ap, logtext);
-  vsnprintf(buffer, sizeof(buffer), logtext, ap);
-  // we ignore text more then length of buffer
+
+	// Get the current time
+	gettimeofday(&timestamp, NULL);
+
+	// Convert it to local time representation
+	gmtime_r(&timestamp.tv_sec, &tm);
+	strftime(buffer, sizeof(buffer), "%FT%T.", &tm);
+
+	snprintf(buffer + 20, sizeof(buffer) - 20, "%06li ", timestamp.tv_usec);
+
+  vsnprintf(buffer + 27, sizeof(buffer) - 27, logtext, ap);
+  // we ignore text that is longer then our buffer
   // prevent reading more then the buffer size
   buffer[sizeof(buffer) - 1] = 0;
 
