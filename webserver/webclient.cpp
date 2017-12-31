@@ -176,7 +176,36 @@ namespace webserver {
 								vector<string> argumentParts;
 								str_split(argument, "=", argumentParts);
 								string argumentValue = argumentParts[1];
-								// FIXME: %20 and other coded characters are not interpreted correctly
+								// decode %20 and similar
+								while (true) {
+									size_t pos = argumentValue.find('%');
+									if (pos == string::npos || pos + 3 > argumentValue.length()) {
+										break;
+									}
+									char c1 = argumentValue[pos + 1];
+									char c2 = argumentValue[pos + 2];
+									if (c1 >= 'a') {
+										c1 -= 'a' - 10;
+									}
+									else if (c1 >= 'A') {
+										c1 -= 'A' - 10;
+									}
+									else if (c1 >= '0') {
+										c1 -= '0';
+									}
+									if (c2 >= 'a') {
+										c2 -= 'a' - 10;
+									}
+									else if (c2 >= 'A') {
+										c2 -= 'A' - 10;
+									}
+									else if (c2 >= '0') {
+										c2 -= '0';
+									}
+									char c = c1 * 16 + c2;
+									xlog("%%20: %i %i %i", c1, c2, c);
+									argumentValue.replace(pos, 3, 1, c);
+								}
 								arguments[argumentParts[0]] = argumentValue;
 							}
 						}
