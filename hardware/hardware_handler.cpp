@@ -83,7 +83,7 @@ HardwareHandler::~HardwareHandler() {
   xlog("Hardware library %s unloaded", hardwareSymbols[params->hardwareID].c_str());
 }
 
-controlID_t HardwareHandler::getControlID() {
+controlID_t HardwareHandler::getControlID() const {
 	return params->controlID;
 }
 
