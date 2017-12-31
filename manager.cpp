@@ -131,9 +131,11 @@ Manager::~Manager() {
 }
 
 void Manager::loadDefaultValuesToDB() {
-	//HardwareParams newHardwareParams(1, 1, "Virtuelle Zentrale", "");
-	HardwareParams newHardwareParams(1, 2, "CS2 Zentrale", "192.168.0.190");
-	storage->hardwareParams(newHardwareParams);
+	HardwareParams newHardwareParams1(1, 1, "Virtuelle Zentrale", "");
+	storage->hardwareParams(newHardwareParams1);
+
+	HardwareParams newHardwareParams2(2, 2, "CS2 Zentrale", "192.168.0.190");
+	storage->hardwareParams(newHardwareParams2);
 
 	Loco newloco1(this, 1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
 	storage->loco(newloco1);
