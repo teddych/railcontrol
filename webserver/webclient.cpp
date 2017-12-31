@@ -19,6 +19,7 @@ using std::stoi;
 using std::string;
 using std::stringstream;
 using std::thread;
+using std::to_string;
 using std::vector;
 using datamodel::Loco;
 
@@ -203,7 +204,6 @@ namespace webserver {
 										c2 -= '0';
 									}
 									char c = c1 * 16 + c2;
-									xlog("%%20: %i %i %i", c1, c2, c);
 									argumentValue.replace(pos, 3, 1, c);
 								}
 								arguments[argumentParts[0]] = argumentValue;
@@ -341,15 +341,15 @@ namespace webserver {
 		stringstream ss;
 		locoID_t locoID = 0;
 		if (!manager.autoMode) {
-			//controlID_t controlID = 0;
-			//protocol_t protocol = 0;
+			controlID_t controlID = 0;
+			protocol_t protocol = 0;
 			address_t address = 0;
 			string name("New Loco");
 			if (arguments.count("loco")) {
 				locoID = stoi(arguments.at("loco"));
 				const datamodel::Loco* loco = manager.getLoco(locoID);
-				//controlID = loco->controlID;
-				//protocol = loco->protocol;
+				controlID = loco->controlID;
+				protocol = loco->protocol;
 				address = loco->address;
 				name = loco->name;
 			}
@@ -360,22 +360,23 @@ namespace webserver {
 			ss << inputHidden("cmd", "locosave");
 			ss << inputHidden("loco", locoID);
 			ss << inputText("Loco name:", "name", name);
+
 			std::map<controlID_t,string> controls = manager.controlList();
-			std::map<string, string> protocolOptions;
+			std::map<string, string> controlOptions;
 			for(auto control : controls) {
-				protocolOptions[std::to_string(control.first)] = control.second;
+				controlOptions[to_string(control.first)] = control.second;
 			}
-			std::map<string, string> protocolArguments; // let empty
-			/*
-			ss << "<label>Control:</label><select name=\"controlid\">";
-			for (auto control : controls) {
-				ss << "<option value=\"" << (unsigned int)control.first << "\"" << (control.first == controlID ? " selected" : "") << ">" << control.second << "</option>";
+			ss << "<label>Control:</label>";
+			ss << select("control", controlOptions, to_string(controlID));
+
+			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
+			std::map<string, string> protocolOptions;
+			for(auto protocol : protocols) {
+				protocolOptions[to_string(protocol.first)] = protocol.second;
 			}
-			ss << "</select>";
-			*/
-			//ss << select("control", protocolOptions, "protocol", "protocol", protocolArguments);
+			ss << "<label>Protocol:</label>";
 			ss << "<div id=\"protocol\">";
-			// protocol is loaded later
+			ss << select("protocol", protocolOptions, to_string(protocol));
 			ss << "</div>";
 			ss << inputText("Address:", "address", address);
 			ss << "</form>";
@@ -425,7 +426,7 @@ namespace webserver {
 			protocol_t protocol = 0;
 			address_t address = 0;
 			if (arguments.count("name")) name = arguments.at("name");
-			if (arguments.count("controlid")) controlID = stoi(arguments.at("controlid"));
+			if (arguments.count("control")) controlID = stoi(arguments.at("control"));
 			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
 			if (arguments.count("address")) address = stoi(arguments.at("address"));
 			manager.locoSave(locoID, name, controlID, protocol, address);
@@ -488,13 +489,24 @@ namespace webserver {
 	string WebClient::selectLoco(const map<string,string>& options) {
 		stringstream ss;
 		ss << "<form method=\"get\" action=\"/\" id=\"selectLoco_form\">";
-		ss << "<select name=\"loco\" onchange=\"loadLoco('selectLoco_form')\">";
+		ss << "<select name=\"loco\" onchange=\"loadDivFromForm('selectLoco_form', 'loco')\">";
 		for (auto option : options) {
 			ss << "<option value=\"" << option.first << "\">" << option.second << "</option>";
 		}
 		ss << "</select>";
 		ss << "<input type=\"hidden\" name=\"cmd\" value=\"loco\">";
 		ss << "</form>";
+		return ss.str();
+	}
+
+	string WebClient::select(const string& name, const map<string,string>& options, const std::string& defaultValue) {
+		stringstream ss;
+		ss << "<select name=\"" << name << "\" id=\"" << buttonID << "_" << name << "\" onchange=\"reloadProtocol()\">";
+		for (auto option : options) {
+			ss << "<option value=\"" << option.first << "\"" << (option.first.compare(defaultValue) ? "" : " selected") << ">" << option.second << "</option>";
+		}
+		ss << "</select>";
+		++buttonID;
 		return ss.str();
 	}
 
@@ -673,7 +685,7 @@ namespace webserver {
 			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
 			"<meta name=\"robots\" content=\"noindex,nofollow\">"
 			"</head>"
-			"<body onload=\"loadLoco('selectLoco_form')\">"
+			"<body onload=\"loadDivFromForm('selectLoco_form', 'loco')\">"
 			"<h1>Railcontrol</h1>"
 			"<div class=\"menu\">";
 		ss << button("X", "quit");
@@ -687,7 +699,7 @@ namespace webserver {
 		map<string,string> options;
 		for (auto locoTMP : locos) {
 			Loco* loco = locoTMP.second;
-			options[std::to_string(loco->objectID)] = loco->name;
+			options[to_string(loco->objectID)] = loco->name;
 		}
 		ss << selectLoco(options);
 		ss <<"</div>";
