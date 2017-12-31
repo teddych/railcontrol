@@ -469,11 +469,11 @@ namespace webserver {
 		return ss.str();
 	}
 
-	string WebClient::slider(const string& name, const string& cmd, const unsigned int min, const unsigned int max, const map<string,string>& arguments) {
+	string WebClient::slider(const string& name, const string& cmd, const unsigned int min, const unsigned int max, const unsigned int value, const map<string,string>& arguments) {
 		locoID_t locoID = 0;
 		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
 		stringstream ss;
-		ss << "<input class=\"slider\" type=\"range\" min=\"" << min << "\" max=\"" << max << "\" name=\"" << name << "\" id=\"" << cmd << "_" << locoID<< "\">";
+		ss << "<input class=\"slider\" type=\"range\" min=\"" << min << "\" max=\"" << max << "\" name=\"" << name << "\" id=\"" << cmd << "_" << locoID<< "\" value=\"" << value << "\">";
 		ss << "<script type=\"application/javascript\">\n"
 			"$(function() {\n"
 			" $('#" << cmd << "_" << locoID << "').on('change', function() {\n"
@@ -583,13 +583,16 @@ namespace webserver {
 		string sOut;
 		if (arguments.count("loco")) {
 			map<string,string> buttonArguments;
-			string locoID = arguments.at("loco");
-			buttonArguments["loco"] = locoID;
+			string locoIDString = arguments.at("loco");
+			locoID_t locoID = stoi(locoIDString);
+			buttonArguments["loco"] = locoIDString;
 			stringstream ss;
+			Loco* loco = manager.getLoco(locoID);
 			ss << "<p>";
-			ss << manager.getLocoName(stoi(locoID));
+			ss << loco->name;
 			ss << "</p>";
-			ss << slider("speed", "locospeed", 0, 1024, buttonArguments);
+			unsigned int speed = loco->Speed();
+			ss << slider("speed", "locospeed", 0, MAX_SPEED, speed, buttonArguments);
 			buttonArguments["speed"] = "0";
 			ss << button("0%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "255";

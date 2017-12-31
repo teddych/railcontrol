@@ -328,6 +328,14 @@ bool Manager::getSwitchProtocolAddress(const switchID_t switchID, controlID_t& c
 	return true;
 }
 
+datamodel::Loco* Manager::getLoco(const locoID_t locoID) const {
+	std::lock_guard<std::mutex> Guard(locoMutex);
+	if (locos.count(locoID) == 1) {
+		return locos.at(locoID);
+	}
+	return NULL;
+}
+
 const std::string& Manager::getLocoName(const locoID_t locoID) {
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) == 1) {
@@ -367,10 +375,27 @@ void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, 
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
-	xlog("Setting speed of loco \"%s\" (%i) to speed %i", getLocoName(locoID).c_str(), locoID, speed);
-	for (auto control : controllers) {
-		control->locoSpeed(managerID, locoID, speed);
+	Loco* loco = getLoco(locoID);
+	if (!loco) {
+		return;
 	}
+	speed_t s = speed;
+	if (speed > MAX_SPEED) {
+		s = MAX_SPEED;
+	}
+	xlog("%s (%i) speed is now %i", loco->name.c_str(), locoID, s);
+	loco->Speed(s);
+	for (auto control : controllers) {
+		control->locoSpeed(managerID, locoID, s);
+	}
+}
+
+const speed_t Manager::locoSpeed(const locoID_t locoID) const {
+	Loco* loco = getLoco(locoID);
+	if (!loco) {
+		return 0;
+	}
+	return loco->Speed();
 }
 
 void Manager::locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction) {
@@ -383,14 +408,14 @@ void Manager::locoDirection(const managerID_t managerID, const protocol_t protoc
 	}
 }
 void Manager::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
-	xlog("Setting direction of loco \"%s\" (%i) to %i", getLocoName(locoID).c_str(), locoID, direction);
+	xlog("%s (%i) direction is now %i", getLocoName(locoID).c_str(), locoID, direction);
 	for (auto control : controllers) {
 		control->locoDirection(managerID, locoID, direction);
 	}
 }
 
 void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
-	xlog("Setting function %i of loco \"%s\" (%i) to %i", function, getLocoName(locoID).c_str(), locoID, on);
+	xlog("%s (%i) function %i is now %s", getLocoName(locoID).c_str(), locoID, function, (on ? "on" : "off"));
 	for (auto control : controllers) {
 		control->locoFunction(managerID, locoID, function, on);
 	}
@@ -398,14 +423,6 @@ void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, c
 
 const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
 	return locos;
-}
-
-datamodel::Loco* Manager::getLoco(locoID_t locoID) {
-	std::lock_guard<std::mutex> Guard(locoMutex);
-	if (locos.count(locoID) == 1) {
-		return locos.at(locoID);
-	}
-	return NULL;
 }
 
 void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& controlID, protocol_t& protocol, address_t& address) {
@@ -442,7 +459,7 @@ void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	Feedback* feedback = getFeedback(pin);
 	if (feedback) {
-		xlog("Setting feedback %i to %s", pin, (state ? "on" : "off"));
+		xlog("Feedback %i is now %s", pin, (state ? "on" : "off"));
 		feedback->setState(state);
 	}
 	for (auto control : controllers) {
@@ -523,10 +540,7 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 		return false;
 	}
 
-	std::stringstream ss;
-	ss << "Loco \"" << loco->name << "\" is now in block \"" << block->name << "\"";
-	string s(ss.str());
-	xlog(s.c_str());
+	xlog("%s (%i) is now in block %s (%i)", loco->name.c_str(), loco->objectID, block->name.c_str(), block->objectID);
 
   for (auto control : controllers) {
 		control->locoIntoBlock(locoID, blockID);

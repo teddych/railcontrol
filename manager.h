@@ -31,16 +31,17 @@ class Manager {
 		const std::map<protocol_t,std::string> protocolsOfControl(controlID_t) const;
 
 		// loco
+		datamodel::Loco* getLoco(const locoID_t locoID) const;
 		const std::string& getLocoName(const locoID_t locoID);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 		void locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed);
 		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
+		const speed_t locoSpeed(const locoID_t locoID) const;
 		void locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction);
 		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
 		void locoSave(const locoID_t locoID, const std::string& name, controlID_t& controlID, protocol_t& protocol, address_t& address);
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		datamodel::Loco* getLoco(const locoID_t locoID);
 
 		// accessory
 		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);

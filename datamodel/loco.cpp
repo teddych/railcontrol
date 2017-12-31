@@ -20,6 +20,7 @@ namespace datamodel {
 		protocol(protocol),
 		address(address),
 		manager(manager),
+		speed(0),
 		state(LOCO_STATE_MANUAL),
 		blockID(BLOCK_NONE),
 		streetID(STREET_NONE) {
@@ -27,6 +28,7 @@ namespace datamodel {
 
 	Loco::Loco(Manager* manager, const std::string& serialized) :
 		manager(manager),
+		speed(0),
 		state(LOCO_STATE_MANUAL),
 		streetID(STREET_NONE) {
 		deserialize(serialized);
@@ -197,7 +199,8 @@ namespace datamodel {
 
 						// start loco
 						manager->locoStreet(objectID, streetID, blockID);
-						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 1024);
+						// FIXME: make maxspeed configurable
+						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, MAX_SPEED);
 						loco->state = LOCO_STATE_RUNNING;
 						break;
 					}

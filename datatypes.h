@@ -50,6 +50,13 @@ typedef unsigned short relationID_t;
 // automode
 typedef unsigned char locoState_t;
 
+#define ADDRESS_NONE 0
+#define LOCO_NONE 0
+#define BLOCK_NONE 0
+#define STREET_NONE 0
+
+#define MAX_SPEED 1023
+
 enum managerIDs : managerID_t {
 	MANAGER_ID_CONSOLE = 0,
 	MANAGER_ID_HARDWARE,
@@ -92,11 +99,6 @@ enum hardwareIDs : hardwareID_t {
 	HARDWARE_ID_CS2,
 	HARDWARE_ID_NUM
 };
-
-#define ADDRESS_NONE 0
-#define LOCO_NONE 0
-#define BLOCK_NONE 0
-#define STREET_NONE 0
 
 static std::string hardwareSymbols[] = {
 	"none",

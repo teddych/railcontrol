@@ -29,6 +29,9 @@ namespace datamodel {
 			bool releaseBlock();
 			void destinationReached();
 
+			void Speed(const speed_t speed);
+			const speed_t Speed() const;
+
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;
@@ -37,12 +40,21 @@ namespace datamodel {
 			void autoMode(Loco* loco);
 			Manager* manager;
 
+			speed_t speed;
 			locoState_t state;
 			blockID_t blockID;
 			streetID_t streetID;
 			std::mutex stateMutex;
 			std::thread locoThread;
 	};
+
+	inline void Loco::Speed(const speed_t speed) {
+		this->speed = speed;
+	}
+
+	inline const speed_t Loco::Speed() const {
+		return this->speed;
+	}
 
 } // namespace datamodel
 
