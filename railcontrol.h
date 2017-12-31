@@ -1,6 +1,5 @@
-#ifndef RAILCONTROL_H
-#define RAILCONTROL_H
+#pragma once
 
-void stopRailControl(int);
+void stopRailControlSignal(int);
+void stopRailControlWebserver();
 
-#endif // RAILCONTROL_H

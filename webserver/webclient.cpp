@@ -97,7 +97,7 @@ namespace webserver {
 		if (arguments["cmd"].compare("quit") == 0) {
 			simpleReply("Stopping Railcontrol");
 			manager.booster(MANAGER_ID_WEBSERVER, BOOSTER_STOP);
-			stopRailControl(SIGTERM);
+			stopRailControlWebserver();
 		}
 		else if (arguments["cmd"].compare("on") == 0) {
 			simpleReply("Turning booster on");
