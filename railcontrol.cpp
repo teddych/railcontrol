@@ -45,11 +45,11 @@ int main (int argc, char* argv[]) {
 	char input = 0;
 
 	struct timeval tv;
-	tv.tv_sec = 1;
-	tv.tv_usec = 0;
 	fd_set set;
 
 	do {
+		tv.tv_sec = 1;
+		tv.tv_usec = 0;
 		// Zero out the fd_set - make sure it's pristine
 		FD_ZERO(&set);
 
@@ -61,6 +61,7 @@ int main (int argc, char* argv[]) {
 		// the last parameter is the timeout.  select will return if an FD is ready or 
 		// the timeout has occurred
 		int ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
+
 		// only read STDIN if there really is something to read
 		if (ret > 0 && FD_ISSET(STDIN_FILENO, &set)) {
 			read(STDIN_FILENO, &input, sizeof(input));

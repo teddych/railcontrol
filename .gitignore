@@ -4,3 +4,4 @@ storage/sqlite/sqlite3
 *.o
 *.so
 test/testloco
+gmon.out
