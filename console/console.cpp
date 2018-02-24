@@ -137,6 +137,16 @@ int Console::readNumber(string& s, size_t& i) {
 	return number;
 }
 
+string Console::readText(string& s, size_t& i) {
+    size_t start = i;
+    size_t length = 0;
+    while (s.length() - i && s[i] >= 0x30 && s[i] <= 0x3a) {
+        length++;
+    }
+    string text(s, start, length);
+    return text;
+}
+
 void Console::handleClient() {
 	addUpdate("Welcome to railcontrol console!\nType h for help\n");
 	char buffer_in[1024];
@@ -157,8 +167,41 @@ void Console::handleClient() {
         i++;
 		switch (cmd)
 		{
+            case 'a':
+            case 'A': // add new object
+            {
+				readBlanks(s, i);
+                char subcmd = s[i];
+                i++;
+                switch (subcmd) {
+                    case 'l':
+                    case 'L': // add new loco
+                    {
+                        readBlanks(s, i);
+                        string name = readText(s, i);
+                        readBlanks(s, i);
+                        controlID_t control = readNumber(s, i);
+                        readBlanks(s, i);
+                        protocol_t protocol = readNumber(s, i);
+                        readBlanks(s, i);
+                        address_t address = readNumber(s, i);
+                        if (!manager.locoSave(LOCO_NONE, name, control, protocol, address)) {
+                            string status("Unable to add loco\n");
+                            addUpdate(status);
+                        }
+                        break;
+                    }
+                    default:
+                    {
+                        string status("Unknwon object type\n");
+                        addUpdate(status);
+                    }
+                }
+                break;
+            }
 			case 'f':
 			case 'F': // feedback
+            {
 				readBlanks(s, i);
 				feedbackID_t feedbackID = readNumber(s, i);
 				readBlanks(s, i);
@@ -170,14 +213,17 @@ void Console::handleClient() {
 				}
 				manager.feedback(MANAGER_ID_CONSOLE, feedbackID, state);
 				break;
+            }
 			case 'l':
 			case 'L': // loco
+            {
 				readBlanks(s, i);
                 char subcmd = s[i];
                 i++;
                 switch (subcmd) {
                     case 'a': // set loco to automode
                     case 'A': // set loco to automode
+                    {
                         readBlanks(s, i);
                         if (s[i] == 'a') { // set all locos to automode
                             manager.locoStartAll();
@@ -190,8 +236,10 @@ void Console::handleClient() {
                             addUpdate(status);
                         }
                         break;
+                    }
                     case 'b':
                     case 'B': // loco into block
+                    {
                         readBlanks(s, i);
                         locoID_t locoID = readNumber(s, i);
                         readBlanks(s, i);
@@ -201,8 +249,10 @@ void Console::handleClient() {
                             addUpdate(status);
                         }
                         break;
+                    }
                     case 'm':
                     case 'M': // set loco to manual mode
+                    {
                         readBlanks(s, i);
                         if (s[i] == 'a') { // set all locos to manual mode
                             manager.locoStopAll();
@@ -215,8 +265,10 @@ void Console::handleClient() {
                             addUpdate(status);
                         }
                         break;
+                    }
                     case 's':
                     case 'S': // set loco speed
+                    {
                         readBlanks(s, i);
                         locoID_t locoID = readNumber(s, i);
                         readBlanks(s, i);
@@ -226,13 +278,18 @@ void Console::handleClient() {
                             addUpdate(status);
                         }
                         break;
+                    }
                     default:
+                    {
                         string status("Unknown subcommand");
                         addUpdate(status);
+                    }
                 }
 				break;
-			case 'h':
+			}
+            case 'h':
 			case 'H': // help
+            {
 				string status("Available console commands:\n"
 				"F pin# [X]       Turn feedback on (with X) or of (without X)\n"
 				"H                Show this help\n"
@@ -246,21 +303,28 @@ void Console::handleClient() {
                 "S                Shut down railcontrol\n");
 				addUpdate(status);
 				break;
+            }
             case 's':
             case 'S': // shut down railcontrol
+            {
                 string status("Shutting down railcontrol\n");
                 addUpdate(status);
                 stopRailControlConsole();
                 // no break, fall throught
+            }
 			case 'q':
 			case 'Q': // quit
+            {
 				string status("Quit railcontrol console\n");
 				addUpdate(status);
 				close(clientSocket);
 				return;
+            }
 			default:
+            {
 				string status("Unknown command\n");
 				addUpdate(status);
+            }
 		}
 	}
 }

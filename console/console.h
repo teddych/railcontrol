@@ -2,6 +2,7 @@
 
 #include <map>
 #include <mutex>
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -33,6 +34,7 @@ namespace console {
 			void addUpdate(const std::string& status);
 			static void readBlanks(std::string& s, size_t& i);
 			static int readNumber(std::string& s, size_t& i);
+            static std::string readText(std::string& s, size_t& i);
 
 			unsigned short port;
 			int serverSocket;

@@ -433,7 +433,7 @@ const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
 	return locos;
 }
 
-void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& controlID, protocol_t& protocol, address_t& address) {
+bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& controlID, protocol_t& protocol, address_t& address) {
 	Loco* loco;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
@@ -462,6 +462,8 @@ void Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 	}
 	// save in db
 	storage->loco(*loco);
+    // FIXME: no return value
+    return true;
 }
 
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
