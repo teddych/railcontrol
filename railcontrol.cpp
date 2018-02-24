@@ -29,6 +29,11 @@ void stopRailControlWebserver() {
 	runRailcontrol = false;
 }
 
+void stopRailControlConsole() {
+	xlog("Stopping railcontrol requested by a console client");
+	runRailcontrol = false;
+}
+
 int main (int argc, char* argv[]) {
 	signal(SIGINT, stopRailControlSignal);
 	signal(SIGTERM, stopRailControlSignal);

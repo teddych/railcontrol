@@ -145,50 +145,20 @@ void Console::handleClient() {
 	while(run) {
 		size_t pos = 0;
 		string s;
-		while(run && pos < sizeof(buffer_in) - 1 && (s.find("\n") == string::npos || s.find("\r") == string::npos)) {
+		while(run && pos < sizeof(buffer_in) - 1 && s.find("\n") == string::npos && s.find("\r") == string::npos) {
 			pos += recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
 			s = string(buffer_in);
 		}
 
 
-		switch (s[0])
+		size_t i = 0;
+		readBlanks(s, i);
+        char cmd = s[i];
+        i++;
+		switch (cmd)
 		{
-			case 'a': // start automode
-			{
-				size_t i = 1;
-				readBlanks(s, i);
-				if (s[i] == 'a') {
-					manager.locoStartAll();
-					break;
-				}
-				locoID_t locoID = readNumber(s, i);
-				manager.locoStart(locoID);
-				break;
-			}
-			case 'l': // loco speed
-			{
-				size_t i = 1;
-				readBlanks(s, i);
-				locoID_t locoID = readNumber(s, i);
-				readBlanks(s, i);
-				speed_t speed = readNumber(s, i);
-				manager.locoSpeed(MANAGER_ID_CONSOLE, locoID, speed);
-				break;
-			}
-			case 'i': // loco into block
-			{
-				size_t i = 1;
-				readBlanks(s, i);
-				locoID_t locoID = readNumber(s, i);
-				readBlanks(s, i);
-				blockID_t blockID = readNumber(s, i);
-				manager.locoIntoBlock(locoID, blockID);
-
-				break;
-			}
-			case 'f': // feedback
-			{
-				size_t i = 1;
+			case 'f':
+			case 'F': // feedback
 				readBlanks(s, i);
 				feedbackID_t feedbackID = readNumber(s, i);
 				readBlanks(s, i);
@@ -200,43 +170,97 @@ void Console::handleClient() {
 				}
 				manager.feedback(MANAGER_ID_CONSOLE, feedbackID, state);
 				break;
-			}
-			case 'h': // help
-			{
+			case 'l':
+			case 'L': // loco
+				readBlanks(s, i);
+                char subcmd = s[i];
+                i++;
+                switch (subcmd) {
+                    case 'a': // set loco to automode
+                    case 'A': // set loco to automode
+                        readBlanks(s, i);
+                        if (s[i] == 'a') { // set all locos to automode
+                            manager.locoStartAll();
+                            break;
+                        }
+                        // set specific loco to auto mode
+                        locoID_t locoID = readNumber(s, i);
+                        if (!manager.locoStart(locoID)) {
+                            string status("Unknwon loco");
+                            addUpdate(status);
+                        }
+                        break;
+                    case 'b':
+                    case 'B': // loco into block
+                        readBlanks(s, i);
+                        locoID_t locoID = readNumber(s, i);
+                        readBlanks(s, i);
+                        blockID_t blockID = readNumber(s, i);
+                        if (!manager.locoIntoBlock(locoID, blockID)) {
+                            string status("Unknwon loco or unknown block");
+                            addUpdate(status);
+                        }
+                        break;
+                    case 'm':
+                    case 'M': // set loco to manual mode
+                        readBlanks(s, i);
+                        if (s[i] == 'a') { // set all locos to manual mode
+                            manager.locoStopAll();
+                            break;
+                        }
+                        // set specific loco to manual mode
+                        locoID_t locoID = readNumber(s, i);
+                        if (!manager.locoStop(locoID)) {
+                            string status("Unknwon loco");
+                            addUpdate(status);
+                        }
+                        break;
+                    case 's':
+                    case 'S': // set loco speed
+                        readBlanks(s, i);
+                        locoID_t locoID = readNumber(s, i);
+                        readBlanks(s, i);
+                        speed_t speed = readNumber(s, i);
+                        if (!manager.locoSpeed(MANAGER_ID_CONSOLE, locoID, speed)) {
+                            string status("Unknwon loco");
+                            addUpdate(status);
+                        }
+                        break;
+                    default:
+                        string status("Unknown subcommand");
+                        addUpdate(status);
+                }
+				break;
+			case 'h':
+			case 'H': // help
 				string status("Available console commands:\n"
-				"a loco#        Start loco into automode\n"
-				"f pin# [X]     Turn feedback on (with X) or of (without X)\n"
-				"h              Show this help\n"
-				"i loco# block# Set loco into block\n"
-				"l loco# speed  Set loco speed between 0 and 1024\n"
-				"m loco#        Stop loco and got to manual mode\n"
-				"q              Quit\n");
+				"F pin# [X]       Turn feedback on (with X) or of (without X)\n"
+				"H                Show this help\n"
+				"L A loco#        Start loco into automode\n"
+				"L A A            Start all locos into automode\n"
+				"L B loco# block# Set loco into block\n"
+				"L M loco#        Stop loco and go to manual mode\n"
+				"L M A            Stop all locos and go to manual mode\n"
+				"L S loco# speed  Set loco speed between 0 and 1024\n"
+				"Q                Quit\n"
+                "S                Shut down railcontrol\n");
 				addUpdate(status);
 				break;
-			}
-			case 'm': // start manual mode and leave automode
-			{
-				size_t i = 1;
-				readBlanks(s, i);
-				if (s[i] == 'a') {
-					manager.locoStopAll();
-					break;
-				}
-				locoID_t locoID = readNumber(s, i);
-				manager.locoStop(locoID);
-				break;
-			}
-			case 'q': // quit
-			{
+            case 's':
+            case 'S': // shut down railcontrol
+                string status("Shutting down railcontrol\n");
+                addUpdate(status);
+                stopRailControlConsole();
+                // no break, fall throught
+			case 'q':
+			case 'Q': // quit
 				string status("Quit railcontrol console\n");
 				addUpdate(status);
 				close(clientSocket);
 				return;
-			}
-			default: {
+			default:
 				string status("Unknown command\n");
 				addUpdate(status);
-			}
 		}
 	}
 }

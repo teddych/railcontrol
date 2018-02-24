@@ -35,7 +35,7 @@ class Manager {
 		const std::string& getLocoName(const locoID_t locoID);
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
 		void locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed);
-		void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
+		bool locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
 		const speed_t locoSpeed(const locoID_t locoID) const;
 		void locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction);

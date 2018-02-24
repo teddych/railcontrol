@@ -381,10 +381,10 @@ void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, 
 	}
 }
 
-void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
+bool Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
 	Loco* loco = getLoco(locoID);
 	if (!loco) {
-		return;
+		return false;
 	}
 	speed_t s = speed;
 	if (speed > MAX_SPEED) {
@@ -395,6 +395,7 @@ void Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, cons
 	for (auto control : controllers) {
 		control->locoSpeed(managerID, locoID, s);
 	}
+    return true;
 }
 
 const speed_t Manager::locoSpeed(const locoID_t locoID) const {

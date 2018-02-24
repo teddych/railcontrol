@@ -2,4 +2,5 @@
 
 void stopRailControlSignal(int);
 void stopRailControlWebserver();
+void stopRailControlConsole();
 
