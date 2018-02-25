@@ -177,6 +177,7 @@ void Console::handleClient() {
                     case 'l':
                     case 'L': // add new loco
                     {
+                        // FIXME: untested
                         readBlanks(s, i);
                         string name = readText(s, i);
                         readBlanks(s, i);
@@ -186,14 +187,14 @@ void Console::handleClient() {
                         readBlanks(s, i);
                         address_t address = readNumber(s, i);
                         if (!manager.locoSave(LOCO_NONE, name, control, protocol, address)) {
-                            string status("Unable to add loco\n");
+                            string status("Unable to add loco");
                             addUpdate(status);
                         }
                         break;
                     }
                     default:
                     {
-                        string status("Unknwon object type\n");
+                        string status("Unknwon object type");
                         addUpdate(status);
                     }
                 }
@@ -248,6 +249,22 @@ void Console::handleClient() {
                             string status("Unknwon loco or unknown block");
                             addUpdate(status);
                         }
+                        break;
+                    }
+                    case 'l':
+                    case 'L':
+                    {
+                        readBlanks(s, i);
+                        if (s[i] == 'a') { // list all locos
+                            std::map<locoID_t,datamodel::Loco*> locos = manager.locoList();
+                            for (auto loco : locos) {
+                                stringstream status;
+                                status << loco.first << " " << loco.second->name;
+                                addUpdate(status.str());
+                            }
+                            break;
+                        }
+                        // FIXME: list one loco
                         break;
                     }
                     case 'm':
@@ -307,7 +324,7 @@ void Console::handleClient() {
             case 's':
             case 'S': // shut down railcontrol
             {
-                string status("Shutting down railcontrol\n");
+                string status("Shutting down railcontrol");
                 addUpdate(status);
                 stopRailControlConsole();
                 // no break, fall throught
@@ -315,14 +332,14 @@ void Console::handleClient() {
 			case 'q':
 			case 'Q': // quit
             {
-				string status("Quit railcontrol console\n");
+				string status("Quit railcontrol console");
 				addUpdate(status);
 				close(clientSocket);
 				return;
             }
 			default:
             {
-				string status("Unknown command\n");
+				string status("Unknown command");
 				addUpdate(status);
             }
 		}
