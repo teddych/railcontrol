@@ -14,6 +14,7 @@
 
 using std::map;
 using std::thread;
+using std::to_string;
 using std::string;
 using std::stringstream;
 using std::vector;
@@ -140,8 +141,9 @@ int Console::readNumber(string& s, size_t& i) {
 string Console::readText(string& s, size_t& i) {
     size_t start = i;
     size_t length = 0;
-    while (s.length() - i && s[i] >= 0x30 && s[i] <= 0x3a) {
+    while (s.length() >= i && s[i] != 0x20) {
         length++;
+        i++;
     }
     string text(s, start, length);
     return text;
@@ -189,7 +191,11 @@ void Console::handleClient() {
                         if (!manager.locoSave(LOCO_NONE, name, control, protocol, address)) {
                             string status("Unable to add loco");
                             addUpdate(status);
+                            break;
                         }
+                        stringstream status;
+                        status << "Loco " << name << " added";
+                        addUpdate(status.str());
                         break;
                     }
                     default:
@@ -257,14 +263,24 @@ void Console::handleClient() {
                         readBlanks(s, i);
                         if (s[i] == 'a') { // list all locos
                             std::map<locoID_t,datamodel::Loco*> locos = manager.locoList();
+                            stringstream status;
                             for (auto loco : locos) {
-                                stringstream status;
-                                status << loco.first << " " << loco.second->name;
-                                addUpdate(status.str());
+                                status << loco.first << " " << loco.second->name << "\n";
                             }
+                            status << "Total number of locos: " << locos.size();
+                            addUpdate(status.str());
                             break;
                         }
-                        // FIXME: list one loco
+                        locoID_t locoID = readNumber(s, i);
+                        datamodel::Loco* loco = manager.getLoco(locoID);
+                        if (loco == nullptr) {
+                            string status("Unknown loco");
+                            addUpdate(status);
+                            break;
+                        }
+                        stringstream status;
+                        status << locoID << " " << loco->name << " (" << static_cast<int>(loco->controlID) << "/" << static_cast<int>(loco->protocol) << "/" << loco->address << ")";
+                        addUpdate(status.str());
                         break;
                     }
                     case 'm':
@@ -310,11 +326,13 @@ void Console::handleClient() {
 				string status("Available console commands:\n"
 				"F pin# [X]       Turn feedback on (with X) or of (without X)\n"
 				"H                Show this help\n"
-				"L A loco#        Start loco into automode\n"
 				"L A A            Start all locos into automode\n"
+				"L A loco#        Start loco into automode\n"
 				"L B loco# block# Set loco into block\n"
-				"L M loco#        Stop loco and go to manual mode\n"
+                "L L A            List all locos\n"
+                "L L loco#        List loco\n"
 				"L M A            Stop all locos and go to manual mode\n"
+				"L M loco#        Stop loco and go to manual mode\n"
 				"L S loco# speed  Set loco speed between 0 and 1024\n"
 				"Q                Quit\n"
                 "S                Shut down railcontrol\n");
@@ -351,35 +369,35 @@ void Console::addUpdate(const string& status) {
 		return;
 	}
 	string s(status);
-	s += '\n';
+	s.append("\n> ");
 	send_timeout(clientSocket, s.c_str(), s.length(), 0);
 }
 
 void Console::booster(const managerID_t managerID, const boosterStatus_t status) {
 	if (status) {
-		addUpdate("Booster is on\n");
+		addUpdate("Booster is on");
 	}
 	else {
-		addUpdate("Booster is off\n");
+		addUpdate("Booster is off");
 	}
 }
 
 void Console::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
 	std::stringstream status;
-	status << manager.getLocoName(locoID) << " speed is " << speed << "\n";
+	status << manager.getLocoName(locoID) << " speed is " << speed;
 	addUpdate(status.str());
 }
 
 void Console::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
 	std::stringstream status;
 	const char* directionText = (direction ? "forward" : "reverse");
-	status << manager.getLocoName(locoID) << " direction is " << directionText << "\n";
+	status << manager.getLocoName(locoID) << " direction is " << directionText;
 	addUpdate(status.str());
 }
 
 void Console::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool state) {
 	std::stringstream status;
-	status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off") << "\n";
+	status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
 	addUpdate(status.str());
 }
 
@@ -390,13 +408,13 @@ void Console::accessory(const managerID_t managerID, const accessoryID_t accesso
 	char* colorText;
 	char* stateText;
 	datamodel::Accessory::getAccessoryTexts(state, color, on, colorText, stateText);
-	status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText << "\n";
+	status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText;
 	addUpdate(status.str());
 }
 
 void Console::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	std::stringstream status;
-	status << "Feedback " << pin << " is " << (state ? "on" : "off") << "\n";
+	status << "Feedback " << pin << " is " << (state ? "on" : "off");
 	addUpdate(status.str());
 }
 
@@ -404,7 +422,7 @@ void Console::block(const managerID_t managerID, const blockID_t blockID, const 
 	std::stringstream status;
 	char* stateText;
 	datamodel::Block::getTexts(state, stateText);
-	status << manager.getBlockName(blockID) << " is " << stateText << "\n";
+	status << manager.getBlockName(blockID) << " is " << stateText;
 	addUpdate(status.str());
 }
 
@@ -412,7 +430,7 @@ void Console::handleSwitch(const managerID_t managerID, const switchID_t switchI
 	std::stringstream status;
 	char* stateText;
 	datamodel::Switch::getTexts(state, stateText);
-	status << manager.getSwitchName(switchID) << " is " << stateText << "\n";
+	status << manager.getSwitchName(switchID) << " is " << stateText;
 	addUpdate(status.str());
 }
 
@@ -424,25 +442,25 @@ void Console::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 
 void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 	std::stringstream status;
-	status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID) << "\n";
+	status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID);
 	addUpdate(status.str());
 }
 
 void Console::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 	std::stringstream status;
-	status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID) << "\n";
+	status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID);
 	addUpdate(status.str());
 }
 
 void Console::locoStart(const locoID_t locoID) {
 	std::stringstream status;
-	status << manager.getLocoName(locoID) << " is in auto mode\n";
+	status << manager.getLocoName(locoID) << " is in auto mode";
 	addUpdate(status.str());
 }
 
 void Console::locoStop(const locoID_t locoID) {
 	std::stringstream status;
-	status << manager.getLocoName(locoID) << " is in manual mode\n";
+	status << manager.getLocoName(locoID) << " is in manual mode";
 	addUpdate(status.str());
 }
 
