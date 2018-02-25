@@ -205,7 +205,7 @@ void Manager::loadDefaultValuesToDB() {
 }
 
 void Manager::booster(const managerID_t managerID, const boosterStatus_t status) {
-  for (auto control : controllers) {
+	for (auto control : controllers) {
 		control->booster(managerID, status);
 	}
 }
@@ -248,15 +248,15 @@ const std::map<controlID_t,std::string> Manager::controlList() const {
 }
 
 /*
-const hardwareID_t Manager::hardwareOfControl(controlID_t controlID) const {
-	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	if (hardwareParams.count(controlID) == 1) {
-		const HardwareParams* params = hardwareParams.at(controlID);
-		return params->hardwareID;
-	}
-	return HARDWARE_ID_NONE;
-}
-*/
+   const hardwareID_t Manager::hardwareOfControl(controlID_t controlID) const {
+   std::lock_guard<std::mutex> Guard(hardwareMutex);
+   if (hardwareParams.count(controlID) == 1) {
+   const HardwareParams* params = hardwareParams.at(controlID);
+   return params->hardwareID;
+   }
+   return HARDWARE_ID_NONE;
+   }
+ */
 
 const std::map<protocol_t,std::string> Manager::protocolsOfControl(controlID_t controlID) const {
 	std::map<protocol_t,std::string> ret;
@@ -395,7 +395,7 @@ bool Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, cons
 	for (auto control : controllers) {
 		control->locoSpeed(managerID, locoID, s);
 	}
-    return true;
+	return true;
 }
 
 const speed_t Manager::locoSpeed(const locoID_t locoID) const {
@@ -450,7 +450,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 			locoID_t newLocoID = 0;
 			// get next locoID
 			for (auto loco : locos) {
-				if (loco.first > locoID) {
+				if (loco.first > newLocoID) {
 					newLocoID = loco.first;
 				}
 			}
@@ -462,12 +462,29 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 	}
 	// save in db
 	storage->loco(*loco);
-    // FIXME: no return value
-    return true;
+	// FIXME: no return value
+	return true;
 }
 
 bool Manager::locoDelete(const locoID_t locoID) {
-    return false;
+	Loco* loco = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(locoMutex);
+		if (locoID == LOCO_NONE || locos.count(locoID) == 0) {
+			return false;
+		}
+
+		loco = locos.at(locoID);
+		if (loco->isInUse()) {
+			return false;
+		}
+
+		locos.erase(locoID);
+	}
+
+	delete loco;
+	storage->deleteLoco(locoID);
+	return true;
 }
 
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
@@ -490,13 +507,13 @@ datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID) {
 }
 
 void Manager::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
-  for (auto control : controllers) {
+	for (auto control : controllers) {
 		control->accessory(managerID, accessoryID, state);
 	}
 }
 
 void Manager::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
-  for (auto control : controllers) {
+	for (auto control : controllers) {
 		control->block(managerID, blockID, state);
 	}
 }
@@ -556,20 +573,20 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 
 	xlog("%s (%i) is now in block %s (%i)", loco->name.c_str(), loco->objectID, block->name.c_str(), block->objectID);
 
-  for (auto control : controllers) {
+	for (auto control : controllers) {
 		control->locoIntoBlock(locoID, blockID);
 	}
 	return true;
 }
 
 bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
-  for (auto control : controllers) {
+	for (auto control : controllers) {
 		control->locoStreet(locoID, streetID, blockID);
 	}
 	return true;
 }
 bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
-  for (auto control : controllers) {
+	for (auto control : controllers) {
 		control->locoDestinationReached(locoID, streetID, blockID);
 	}
 	return true;

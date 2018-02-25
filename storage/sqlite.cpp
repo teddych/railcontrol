@@ -160,18 +160,38 @@ namespace storage {
 
 	// save datamodelobject
 	void SQLite::saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) {
-		if (db) {
-			stringstream ss;
-			char* dbError = NULL;
-			// FIXME: escape "'" in object
-			ss << "INSERT OR REPLACE INTO objects (objecttype, objectid, name, object) VALUES (" << (int)objectType << ", " << (int)objectID << ", '" << name << "', '" << object << "');";
-			string s(ss.str());
-			int rc = sqlite3_exec(db, s.c_str(), NULL, NULL, &dbError);
-			if (rc != SQLITE_OK) {
-				xlog("SQLite error: %s", dbError);
-				sqlite3_free(dbError);
-			}
+		if (db == nullptr) {
+			return;
 		}
+		stringstream ss;
+		char* dbError = NULL;
+		// FIXME: escape "'" in object
+		ss << "INSERT OR REPLACE INTO objects (objecttype, objectid, name, object) VALUES (" << (int)objectType << ", " << (int)objectID << ", '" << name << "', '" << object << "');";
+		string s(ss.str());
+		int rc = sqlite3_exec(db, s.c_str(), NULL, NULL, &dbError);
+		if (rc == SQLITE_OK) {
+			return;
+		}
+
+		xlog("SQLite error: %s Query: %s", dbError, s.c_str());
+		sqlite3_free(dbError);
+	}
+
+	// delete datamodelobject
+	void SQLite::deleteObject(const objectType_t objectType, const objectID_t objectID) {
+		if (db == nullptr) {
+			return;
+		}
+		stringstream ss;
+		ss << "DELETE FROM objects WHERE objecttype = " << (int)objectType << " AND objectid = " << (int)objectID << ";";
+		string s(ss.str());
+		char* dbError = NULL;
+		int rc = sqlite3_exec(db, s.c_str(), NULL, NULL, &dbError);
+		if (rc == SQLITE_OK) {
+			return;
+		}
+		xlog("SQLite error: %s Query: %s", dbError, s.c_str());
+		sqlite3_free(dbError);
 	}
 
 	// read datamodelobjects

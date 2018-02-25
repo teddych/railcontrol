@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_LOCO_H
-#define DATAMODEL_LOCO_H
+#pragma once
 
 #include <mutex>
 #include <string>
@@ -32,6 +31,8 @@ namespace datamodel {
 			void Speed(const speed_t speed);
 			const speed_t Speed() const;
 
+			bool isInUse();
+
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;
@@ -56,6 +57,8 @@ namespace datamodel {
 		return this->speed;
 	}
 
-} // namespace datamodel
+	inline bool Loco::isInUse() {
+		return this->speed > 0 || this->state != LOCO_STATE_MANUAL || this->blockID != BLOCK_NONE || this->streetID != STREET_NONE;
+	}
 
-#endif // DATAMODEL_LOCO_H
+} // namespace datamodel

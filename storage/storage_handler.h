@@ -1,5 +1,4 @@
-#ifndef STORAGE_STORAGE_H
-#define STORAGE_STORAGE_H
+#pragma once
 
 #include <map>
 
@@ -23,6 +22,7 @@ namespace storage {
 			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
 			void loco(const datamodel::Loco& loco);
 			void allLocos(std::map<locoID_t,datamodel::Loco*>& locos);
+			void deleteLoco(locoID_t locoID);
 			void accessory(const datamodel::Accessory& accessory);
 			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
 			void feedback(const datamodel::Feedback& feedback);
@@ -43,4 +43,3 @@ namespace storage {
 
 } // namespace storage
 
-#endif // STORAGE_STORAGE_H

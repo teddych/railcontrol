@@ -100,6 +100,12 @@ namespace storage {
 		}
 	}
 
+	void StorageHandler::deleteLoco(const locoID_t locoID) {
+		if (instance) {
+			instance->deleteObject(OBJECT_TYPE_LOCO, locoID);
+		}
+	}
+
 	void StorageHandler::allLocos(map<locoID_t,datamodel::Loco*>& locos) {
 		if (instance) {
 			vector<string> objects;

@@ -1,5 +1,4 @@
-#ifndef STORAGE_STORAGE_INTERFACE_H
-#define STORAGE_STORAGE_INTERFACE_H
+#pragma once
 
 #include <map>
 #include <string>
@@ -27,6 +26,9 @@ namespace storage {
 			// save datamodelobject
 			virtual void saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) = 0;
 
+			// delete datamodelobject
+			virtual void deleteObject(const objectType_t objectType, const objectID_t objectID) = 0;
+
 			// read datamodelobject
 			virtual void objectsOfType(const objectType_t objectType, std::vector<std::string>& objects) = 0;
 
@@ -41,7 +43,4 @@ namespace storage {
 	};
 
 } // namespace
-
-
-#endif // STORAGE_STORAGE_INTERFACE_H
 

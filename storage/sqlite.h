@@ -1,5 +1,4 @@
-#ifndef STORAGE_SQLITE_H
-#define STORAGE_SQLITE_H
+#pragma once
 
 #include <map>
 
@@ -24,6 +23,9 @@ namespace storage {
 			// save datamodelobject
 			void saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) override;
 
+			// delete datamodelobject
+			void deleteObject(const objectType_t objectType, const objectID_t objectID) override;
+
 			// read datamodelobject
 			void objectsOfType(const objectType_t objectType, std::vector<std::string>& objects) override;
 
@@ -46,4 +48,3 @@ namespace storage {
 
 } // namespace storage
 
-#endif // STORAGE_SQLITE_H
