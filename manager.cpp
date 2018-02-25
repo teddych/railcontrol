@@ -466,6 +466,10 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
     return true;
 }
 
+bool Manager::locoDelete(const locoID_t locoID) {
+    return false;
+}
+
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	Feedback* feedback = getFeedback(pin);
 	if (feedback) {

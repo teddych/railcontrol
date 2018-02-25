@@ -179,7 +179,6 @@ void Console::handleClient() {
                     case 'l':
                     case 'L': // add new loco
                     {
-                        // FIXME: untested
                         readBlanks(s, i);
                         string name = readText(s, i);
                         readBlanks(s, i);
@@ -202,6 +201,32 @@ void Console::handleClient() {
                     {
                         string status("Unknwon object type");
                         addUpdate(status);
+                    }
+                }
+                break;
+            }
+            case 'd':
+            case 'D': // delete object
+            {
+				readBlanks(s, i);
+                char subcmd = s[i];
+                i++;
+                switch (subcmd) {
+                    case 'l':
+                    case 'L': // delete loco
+                    {
+                        readBlanks(s, i);
+                        locoID_t locoID = readNumber(s, i);
+                        if (!manager.locoDelete(locoID)) {
+                            addUpdate("Loco not found");
+                            break;
+                        }
+                        addUpdate("Loco deleted");
+                        break;
+                    }
+                    default:
+                    {
+                        addUpdate("Unknown loco");
                     }
                 }
                 break;
