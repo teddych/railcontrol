@@ -176,6 +176,31 @@ namespace console {
 						char subcmd = s[i];
 						i++;
 						switch (subcmd) {
+							case 'b':
+							case 'B': // add new block
+								{
+									readBlanks(s, i);
+									string name = readText(s, i);
+									readBlanks(s, i);
+									layoutItemSize_t width = readNumber(s, i);
+									readBlanks(s, i);
+									layoutRotation_t rotation = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posX = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posY = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posZ = readNumber(s, i);
+									if (!manager.blockSave(BLOCK_NONE, name, width, rotation, posX, posY, posZ)) {
+										string status("Unable to add block");
+										addUpdate(status);
+										break;
+									}
+									stringstream status;
+									status << "Block " << name << " added";
+									addUpdate(status.str());
+									break;
+								}
 							case 'l':
 							case 'L': // add new loco
 								{
@@ -381,12 +406,23 @@ namespace console {
 				case 'H': // help
 					{
 						string status("Available console commands:\n"
+								"\n"
+								"Add commands\n"
+								"A B Name Width Rotation X Y Z     Add new block\n"
 								"A L Name Control Protocol Address Add new loco\n"
+								"\n"
+								"Block commands\n"
 								"B L A                             List all blocks\n"
 								"B L block#                        List block\n"
+								"\n"
+								"Delete commands\n"
+								"D B block#                        Delete block\n"
 								"D L loco#                         Delete loco\n"
+								"\n"
+								"Feedback commands\n"
 								"F pin# [X]                        Turn feedback on (with X) or of (without X)\n"
-								"H                                 Show this help\n"
+								"\n"
+								"Loco commands\n"
 								"L A A                             Start all locos into automode\n"
 								"L A loco#                         Start loco into automode\n"
 								"L B loco# block#                  Set loco into block\n"
@@ -395,7 +431,10 @@ namespace console {
 								"L M A                             Stop all locos and go to manual mode\n"
 								"L M loco#                         Stop loco and go to manual mode\n"
 								"L S loco# speed                   Set loco speed between 0 and 1024\n"
-								"Q                                 Quit\n"
+								"\n"
+								"Other commands\n"
+								"H                                 Show this help\n"
+								"Q                                 Quit console\n"
 								"S                                 Shut down railcontrol\n");
 						addUpdate(status);
 						break;

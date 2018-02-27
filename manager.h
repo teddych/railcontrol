@@ -25,7 +25,7 @@ class Manager {
         void deleteHardware(controlID_t controlID);
         hardware::HardwareParams* getHardware(controlID_t controlID);
 
-        // control
+        // control (console, web, ...)
         const std::map<controlID_t,std::string> controlList() const;
         const std::map<protocol_t,std::string> protocolsOfControl(controlID_t) const;
 
@@ -58,6 +58,7 @@ class Manager {
         datamodel::Block* getBlock(const blockID_t blockID);
         const std::string& getBlockName(const blockID_t blockID);
         const std::map<blockID_t,datamodel::Block*>& blockList() const;
+        bool blockSave(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
 
         // switch
         const std::string& getSwitchName(const switchID_t switchID);

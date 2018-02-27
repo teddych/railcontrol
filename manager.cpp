@@ -369,6 +369,41 @@ const std::map<blockID_t,datamodel::Block*>& Manager::blockList() const {
 	return blocks;
 }
 
+bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {
+	Block* block;
+	{
+		std::lock_guard<std::mutex> Guard(blockMutex);
+		if (blockID && blocks.count(blockID)) {
+			// update existing block
+			block = blocks.at(blockID);
+			block->name = name;
+			block->width = width;
+			block->rotation = rotation;
+			block->posX = posX;
+			block->posY = posY;
+			block->posZ = posZ;
+		}
+		else {
+			// create new block
+			blockID_t newblockID = 0;
+			// get next blockID
+			for (auto block : blocks) {
+				if (block.first > newblockID) {
+					newblockID = block.first;
+				}
+			}
+			++newblockID;
+			block = new Block(newblockID, name, width, rotation, posX, posY, posZ);
+			// save in map
+			blocks[newblockID] = block;
+		}
+	}
+	// save in db
+	storage->block(*block);
+	// FIXME: no return value
+	return true;
+}
+
 void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
 	locoID_t locoID = 0;
 	{
