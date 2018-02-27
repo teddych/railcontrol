@@ -275,6 +275,18 @@ namespace console {
 						char subcmd = s[i];
 						i++;
 						switch (subcmd) {
+							case 'b':
+							case 'B': // delete block
+								{
+									readBlanks(s, i);
+									blockID_t blockID = readNumber(s, i);
+									if (!manager.blockDelete(blockID)) {
+										addUpdate("Block not found or block in use");
+										break;
+									}
+									addUpdate("Block deleted");
+									break;
+								}
 							case 'l':
 							case 'L': // delete loco
 								{

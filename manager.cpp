@@ -215,12 +215,18 @@ void Manager::saveHardware(const controlID_t& controlID, const hardwareID_t& har
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
 		params = hardwareParams.at(controlID);
+		if (params == nullptr) {
+			return;
+		}
 		params->name = name;
 		params->ip = ip;
 		// FIXME: reload hardware
 	}
 	else {
 		params = new HardwareParams(controlID, hardwareID, name, ip);
+		if (params == nullptr) {
+			return;
+		}
 		hardwareParams[controlID] = params;
 		controllers.push_back(new HardwareHandler(*this, params));
 	}
@@ -376,6 +382,9 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 		if (blockID && blocks.count(blockID)) {
 			// update existing block
 			block = blocks.at(blockID);
+			if (block == nullptr) {
+				return false;
+			}
 			block->name = name;
 			block->width = width;
 			block->rotation = rotation;
@@ -394,6 +403,9 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 			}
 			++newblockID;
 			block = new Block(newblockID, name, width, rotation, posX, posY, posZ);
+			if (block == nullptr) {
+				return false;
+			}
 			// save in map
 			blocks[newblockID] = block;
 		}
@@ -401,6 +413,27 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 	// save in db
 	storage->block(*block);
 	// FIXME: no return value
+	return true;
+}
+
+bool Manager::blockDelete(const blockID_t blockID) {
+	Block* block = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(blockMutex);
+		if (blockID == BLOCK_NONE || blocks.count(blockID) == 0) {
+			return false;
+		}
+
+		block = blocks.at(blockID);
+		if (block == nullptr || block->isInUse()) {
+			return false;
+		}
+
+		blocks.erase(blockID);
+	}
+
+	delete block;
+	storage->deleteBlock(blockID);
 	return true;
 }
 
@@ -415,14 +448,15 @@ void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, 
 			}
 		}
 	}
-	if (locoID) {
-		locoSpeed(managerID, locoID, speed);
+	if (locoID == LOCO_NONE) {
+		return;
 	}
+	locoSpeed(managerID, locoID, speed);
 }
 
 bool Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
 	Loco* loco = getLoco(locoID);
-	if (!loco) {
+	if (loco == nullptr) {
 		return false;
 	}
 	speed_t s = speed;
@@ -439,7 +473,7 @@ bool Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, cons
 
 const speed_t Manager::locoSpeed(const locoID_t locoID) const {
 	Loco* loco = getLoco(locoID);
-	if (!loco) {
+	if (loco == nullptr) {
 		return 0;
 	}
 	return loco->Speed();
@@ -479,6 +513,9 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 		if (locoID && locos.count(locoID)) {
 			// update existing loco
 			loco = locos.at(locoID);
+			if (loco == nullptr) {
+				return false;
+			}
 			loco->name = name;
 			loco->controlID = controlID;
 			loco->protocol = protocol;
@@ -495,6 +532,9 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 			}
 			++newLocoID;
 			loco = new Loco(this, newLocoID, name, controlID, protocol, address);
+			if (loco == nullptr) {
+				return false;
+			}
 			// save in map
 			locos[newLocoID] = loco;
 		}
@@ -528,10 +568,11 @@ bool Manager::locoDelete(const locoID_t locoID) {
 
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	Feedback* feedback = getFeedback(pin);
-	if (feedback) {
-		xlog("Feedback %i is now %s", pin, (state ? "on" : "off"));
-		feedback->setState(state);
+	if (feedback == nullptr) {
+		return;
 	}
+	xlog("Feedback %i is now %s", pin, (state ? "on" : "off"));
+	feedback->setState(state);
 	for (auto control : controllers) {
 		control->feedback(managerID, pin, state);
 	}
@@ -589,13 +630,19 @@ const string& Manager::getStreetName(const streetID_t streetID) {
 
 bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	Block* block = getBlock(blockID);
-	if (!block) return false;
+	if (block == nullptr) {
+		return false;
+	}
 
 	Loco* loco = getLoco(locoID);
-	if (!loco) return false;
+	if (loco == nullptr) {
+		return false;
+	}
 
 	bool reserved = block->reserve(locoID);
-	if (!reserved) return false;
+	if (!reserved) {
+		return false;
+	}
 
 	reserved = loco->toBlock(blockID);
 	if (!reserved) {
@@ -633,30 +680,30 @@ bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t str
 
 bool Manager::locoStart(const locoID_t locoID) {
 	Loco* loco = getLoco(locoID);
-	if (loco) {
-		bool ret = loco->start();
-		if (ret) {
-			for (auto control : controllers) {
-				control->locoStart(locoID);
-			}
-		}
-		return ret;
+	if (loco == nullptr) {
+		return false;
 	}
-	return false;
+	bool ret = loco->start();
+	if (ret) {
+		for (auto control : controllers) {
+			control->locoStart(locoID);
+		}
+	}
+	return ret;
 }
 
 bool Manager::locoStop(const locoID_t locoID) {
 	Loco* loco = getLoco(locoID);
-	if (loco) {
-		bool ret = loco->stop();
-		if (ret) {
-			for (auto control : controllers) {
-				control->locoStop(locoID);
-			}
-		}
-		return ret;
+	if (loco == nullptr) {
+		return false;
 	}
-	return false;
+	bool ret = loco->stop();
+	if (ret) {
+		for (auto control : controllers) {
+			control->locoStop(locoID);
+		}
+	}
+	return ret;
 }
 
 bool Manager::locoStartAll() {

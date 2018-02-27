@@ -31,7 +31,7 @@ namespace datamodel {
 			void Speed(const speed_t speed);
 			const speed_t Speed() const;
 
-			bool isInUse();
+			bool isInUse() const;
 
 			controlID_t controlID;
 			protocol_t protocol;
@@ -57,7 +57,7 @@ namespace datamodel {
 		return this->speed;
 	}
 
-	inline bool Loco::isInUse() {
+	inline bool Loco::isInUse() const {
 		return this->speed > 0 || this->state != LOCO_STATE_MANUAL || this->blockID != BLOCK_NONE || this->streetID != STREET_NONE;
 	}
 

@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_BLOCK_H
-#define DATAMODEL_BLOCK_H
+#pragma once
 
 #include <mutex>
 #include <string>
@@ -31,6 +30,8 @@ namespace datamodel {
 
 			static void getTexts(const blockState_t state, char*& stateText);
 
+			bool isInUse() const;
+
 		private:
 			blockState_t state;
 			locoID_t locoID;
@@ -39,6 +40,9 @@ namespace datamodel {
 			std::vector<Street*> streets;
 	};
 
+	inline bool Block::isInUse() const {
+		return this->state != BLOCK_STATE_FREE || this->locoID != LOCO_NONE || this->streets.size() > 0;
+	}
+
 } // namespace datamodel
 
-#endif // DATAMODEL_BLOCK_H
