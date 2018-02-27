@@ -204,6 +204,45 @@ namespace console {
 						}
 						break;
 					}
+				case 'b':
+				case 'B': // block commands
+					{
+						readBlanks(s, i);
+						char subcmd = s[i];
+						i++;
+						switch (subcmd) {
+							case 'l':
+							case 'L': // list blocks
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all blocks
+										std::map<blockID_t,datamodel::Block*> blocks = manager.blockList();
+										stringstream status;
+										for (auto block : blocks) {
+											status << block.first << " " << block.second->name << "\n";
+										}
+										status << "Total number of Blocks: " << blocks.size();
+										addUpdate(status.str());
+										break;
+									}
+									blockID_t blockID = readNumber(s, i);
+									datamodel::Block* block = manager.getBlock(blockID);
+									if (block == nullptr) {
+										addUpdate("Unknwown block");
+										break;
+									}
+									stringstream status;
+									status << blockID << " " << block->name << " (" << static_cast<int>(block->posX) << "/" << static_cast<int>(block->posY) << "/" << static_cast<int>(block->posZ) << ")";
+									addUpdate(status.str());
+									break;
+								}
+							default:
+								{
+									addUpdate("Unknown block command");
+								}
+						}
+						break;
+					}
 				case 'd':
 				case 'D': // delete object
 					{
@@ -263,8 +302,7 @@ namespace console {
 									// set specific loco to auto mode
 									locoID_t locoID = readNumber(s, i);
 									if (!manager.locoStart(locoID)) {
-										string status("Unknwon loco");
-										addUpdate(status);
+										addUpdate("Unknwon loco");
 									}
 									break;
 								}
@@ -276,8 +314,7 @@ namespace console {
 									readBlanks(s, i);
 									blockID_t blockID = readNumber(s, i);
 									if (!manager.locoIntoBlock(locoID, blockID)) {
-										string status("Unknwon loco or unknown block");
-										addUpdate(status);
+										addUpdate("Unknwon loco or unknown block");
 									}
 									break;
 								}
@@ -298,8 +335,7 @@ namespace console {
 									locoID_t locoID = readNumber(s, i);
 									datamodel::Loco* loco = manager.getLoco(locoID);
 									if (loco == nullptr) {
-										string status("Unknown loco");
-										addUpdate(status);
+										addUpdate("Unknown loco");
 										break;
 									}
 									stringstream status;
@@ -318,8 +354,7 @@ namespace console {
 									// set specific loco to manual mode
 									locoID_t locoID = readNumber(s, i);
 									if (!manager.locoStop(locoID)) {
-										string status("Unknwon loco");
-										addUpdate(status);
+										addUpdate("Unknwon loco");
 									}
 									break;
 								}
@@ -331,15 +366,13 @@ namespace console {
 									readBlanks(s, i);
 									speed_t speed = readNumber(s, i);
 									if (!manager.locoSpeed(MANAGER_ID_CONSOLE, locoID, speed)) {
-										string status("Unknwon loco");
-										addUpdate(status);
+										addUpdate("Unknwon loco");
 									}
 									break;
 								}
 							default:
 								{
-									string status("Unknown subcommand");
-									addUpdate(status);
+									addUpdate("Unknown loco command");
 								}
 						}
 						break;
@@ -348,18 +381,22 @@ namespace console {
 				case 'H': // help
 					{
 						string status("Available console commands:\n"
-								"F pin# [X]       Turn feedback on (with X) or of (without X)\n"
-								"H                Show this help\n"
-								"L A A            Start all locos into automode\n"
-								"L A loco#        Start loco into automode\n"
-								"L B loco# block# Set loco into block\n"
-								"L L A            List all locos\n"
-								"L L loco#        List loco\n"
-								"L M A            Stop all locos and go to manual mode\n"
-								"L M loco#        Stop loco and go to manual mode\n"
-								"L S loco# speed  Set loco speed between 0 and 1024\n"
-								"Q                Quit\n"
-								"S                Shut down railcontrol\n");
+								"A L Name Control Protocol Address Add new loco\n"
+								"B L A                             List all blocks\n"
+								"B L block#                        List block\n"
+								"D L loco#                         Delete loco\n"
+								"F pin# [X]                        Turn feedback on (with X) or of (without X)\n"
+								"H                                 Show this help\n"
+								"L A A                             Start all locos into automode\n"
+								"L A loco#                         Start loco into automode\n"
+								"L B loco# block#                  Set loco into block\n"
+								"L L A                             List all locos\n"
+								"L L loco#                         List loco\n"
+								"L M A                             Stop all locos and go to manual mode\n"
+								"L M loco#                         Stop loco and go to manual mode\n"
+								"L S loco# speed                   Set loco speed between 0 and 1024\n"
+								"Q                                 Quit\n"
+								"S                                 Shut down railcontrol\n");
 						addUpdate(status);
 						break;
 					}
@@ -374,15 +411,13 @@ namespace console {
 				case 'q':
 				case 'Q': // quit
 					{
-						string status("Quit railcontrol console");
-						addUpdate(status);
+						addUpdate("Quit railcontrol console");
 						close(clientSocket);
 						return;
 					}
 				default:
 					{
-						string status("Unknown command");
-						addUpdate(status);
+						addUpdate("Unknown command");
 					}
 			}
 		}

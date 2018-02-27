@@ -57,6 +57,7 @@ class Manager {
         void block(const managerID_t managerID, const feedbackID_t feedbackID, const blockState_t);
         datamodel::Block* getBlock(const blockID_t blockID);
         const std::string& getBlockName(const blockID_t blockID);
+        const std::map<blockID_t,datamodel::Block*>& blockList() const;
 
         // switch
         const std::string& getSwitchName(const switchID_t switchID);

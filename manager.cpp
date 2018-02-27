@@ -40,7 +40,7 @@ Manager::Manager(Config& config) :
 	storageParams.filename = config.getValue("dbfilename", "/tmp/railcontrol.db");
 	storage = new StorageHandler(this, storageParams);
 
-	loadDefaultValuesToDB();
+	//loadDefaultValuesToDB();
 
 	controllers.push_back(new Console(*this, config.getValue("consoleport", 2222)));
 	controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
@@ -363,6 +363,10 @@ const std::string& Manager::getBlockName(const blockID_t blockID) {
 		return blocks.at(blockID)->name;
 	}
 	return unknownBlock;
+}
+
+const std::map<blockID_t,datamodel::Block*>& Manager::blockList() const {
+	return blocks;
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
