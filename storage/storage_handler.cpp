@@ -82,128 +82,143 @@ namespace storage {
 	}
 
 	void StorageHandler::hardwareParams(const hardware::HardwareParams& hardwareParams) {
-		if (instance) {
-			instance->hardwareParams(hardwareParams);
+		if (!instance) {
+			return;
 		}
+		instance->hardwareParams(hardwareParams);
 	}
 
 	void StorageHandler::allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) {
-		if (instance) {
-			instance->allHardwareParams(hardwareParams);
+		if (!instance) {
+			return;
 		}
+		instance->allHardwareParams(hardwareParams);
 	}
 
 	void StorageHandler::loco(const Loco& loco) {
-		if (instance) {
-			string serialized = loco.serialize();
-			instance->saveObject(OBJECT_TYPE_LOCO, loco.objectID, loco.name, serialized);
+		if (!instance) {
+			return;
 		}
+		string serialized = loco.serialize();
+		instance->saveObject(OBJECT_TYPE_LOCO, loco.objectID, loco.name, serialized);
 	}
 
 	void StorageHandler::deleteLoco(const locoID_t locoID) {
-		if (instance) {
-			instance->deleteObject(OBJECT_TYPE_LOCO, locoID);
+		if (!instance) {
+			return;
 		}
+		instance->deleteObject(OBJECT_TYPE_LOCO, locoID);
 	}
 
 	void StorageHandler::allLocos(map<locoID_t,datamodel::Loco*>& locos) {
-		if (instance) {
-			vector<string> objects;
-			instance->objectsOfType(OBJECT_TYPE_LOCO, objects);
-			for(auto object : objects) {
-				Loco* loco = new Loco(manager, object);
-				locos[loco->objectID] = loco;
-			}
+		if (!instance) {
+			return;
+		}
+		vector<string> objects;
+		instance->objectsOfType(OBJECT_TYPE_LOCO, objects);
+		for(auto object : objects) {
+			Loco* loco = new Loco(manager, object);
+			locos[loco->objectID] = loco;
 		}
 	}
 
 	void StorageHandler::accessory(const Accessory& accessory) {
-		if (instance) {
-			string serialized = accessory.serialize();
-			instance->saveObject(OBJECT_TYPE_ACCESSORY, accessory.objectID, accessory.name, serialized);
+		if (!instance) {
+			return;
 		}
+		string serialized = accessory.serialize();
+		instance->saveObject(OBJECT_TYPE_ACCESSORY, accessory.objectID, accessory.name, serialized);
 	}
 
 	void StorageHandler::allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) {
-		if (instance) {
-			vector<string> objects;
-			instance->objectsOfType(OBJECT_TYPE_ACCESSORY, objects);
-			for(auto object : objects) {
-				Accessory* accessory = new Accessory(object);
-				accessories[accessory->objectID] = accessory;
-			}
+		if (!instance) {
+			return;
+		}
+		vector<string> objects;
+		instance->objectsOfType(OBJECT_TYPE_ACCESSORY, objects);
+		for(auto object : objects) {
+			Accessory* accessory = new Accessory(object);
+			accessories[accessory->objectID] = accessory;
 		}
 	}
 
 	void StorageHandler::feedback(const Feedback& feedback) {
-		if (instance) {
-			string serialized = feedback.serialize();
-			instance->saveObject(OBJECT_TYPE_FEEDBACK, feedback.objectID, feedback.name, serialized);
+		if (!instance) {
+			return;
 		}
+		string serialized = feedback.serialize();
+		instance->saveObject(OBJECT_TYPE_FEEDBACK, feedback.objectID, feedback.name, serialized);
 	}
 
 	void StorageHandler::allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks) {
-		if (instance) {
-			vector<string> objects;
-			instance->objectsOfType(OBJECT_TYPE_FEEDBACK, objects);
-			for(auto object : objects) {
-				Feedback* feedback = new Feedback(manager, object);
-				feedbacks[feedback->objectID] = feedback;
-			}
+		if (!instance) {
+			return;
+		}
+		vector<string> objects;
+		instance->objectsOfType(OBJECT_TYPE_FEEDBACK, objects);
+		for(auto object : objects) {
+			Feedback* feedback = new Feedback(manager, object);
+			feedbacks[feedback->objectID] = feedback;
 		}
 	}
 
 	void StorageHandler::block(const Block& block) {
-		if (instance) {
-			string serialized = block.serialize();
-			instance->saveObject(OBJECT_TYPE_BLOCK, block.objectID, block.name, serialized);
+		if (!instance) {
+			return;
 		}
+		string serialized = block.serialize();
+		instance->saveObject(OBJECT_TYPE_BLOCK, block.objectID, block.name, serialized);
 	}
 
 	void StorageHandler::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
-		if (instance) {
-			vector<string> objects;
-			instance->objectsOfType(OBJECT_TYPE_BLOCK, objects);
-			for(auto object : objects) {
-				Block* block = new Block(object);
-				blocks[block->objectID] = block;
-			}
+		if (!instance) {
+			return;
+		}
+		vector<string> objects;
+		instance->objectsOfType(OBJECT_TYPE_BLOCK, objects);
+		for(auto object : objects) {
+			Block* block = new Block(object);
+			blocks[block->objectID] = block;
 		}
 	}
 
 	void StorageHandler::saveSwitch(const Switch& mySwitch) {
-		if (instance) {
-			string serialized = mySwitch.serialize();
-			instance->saveObject(OBJECT_TYPE_SWITCH, mySwitch.objectID, mySwitch.name, serialized);
+		if (!instance) {
+			return;
 		}
+		string serialized = mySwitch.serialize();
+		instance->saveObject(OBJECT_TYPE_SWITCH, mySwitch.objectID, mySwitch.name, serialized);
 	}
 
 	void StorageHandler::allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) {
-		if (instance) {
-			vector<string> objects;
-			instance->objectsOfType(OBJECT_TYPE_SWITCH, objects);
-			for(auto object : objects) {
-				Switch* mySwitch = new Switch(object);
-				switches[mySwitch->objectID] = mySwitch;
-			}
+		if (!instance) {
+			return;
+		}
+		vector<string> objects;
+		instance->objectsOfType(OBJECT_TYPE_SWITCH, objects);
+		for(auto object : objects) {
+			Switch* mySwitch = new Switch(object);
+			switches[mySwitch->objectID] = mySwitch;
 		}
 	}
 
 	void StorageHandler::street(const datamodel::Street& street) {
-		if (instance) {
-			string serialized = street.serialize();
-			instance->saveObject(OBJECT_TYPE_STREET, street.objectID, street.name, serialized);
+		if (!instance) {
+			return;
 		}
+		string serialized = street.serialize();
+		instance->saveObject(OBJECT_TYPE_STREET, street.objectID, street.name, serialized);
 	}
 
 	void StorageHandler::allStreets(std::map<streetID_t,datamodel::Street*>& streets) {
-		if (instance) {
-			vector<string> objects;
-			instance->objectsOfType(OBJECT_TYPE_STREET, objects);
-			for(auto object : objects) {
-				Street* street = new Street(manager, object);
-				streets[street->objectID] = street;
-			}
+		if (!instance) {
+			return;
+		}
+		vector<string> objects;
+		instance->objectsOfType(OBJECT_TYPE_STREET, objects);
+		for(auto object : objects) {
+			Street* street = new Street(manager, object);
+			streets[street->objectID] = street;
 		}
 	}
 
