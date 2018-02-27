@@ -38,11 +38,8 @@ namespace datamodel {
 		while(true) {
 			{
 				std::lock_guard<std::mutex> Guard(stateMutex);
-				switch (state) {
-					case LOCO_STATE_MANUAL:
-					{
-						return;
-					}
+				if (state == LOCO_STATE_MANUAL) {
+					return;
 				}
 			}
 			xlog("Waiting until loco %s has stopped", name.c_str());
@@ -60,14 +57,14 @@ namespace datamodel {
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
 		Object::deserialize(arguments);
-		if (arguments.count("objectType") && arguments.at("objectType").compare("Loco") == 0) {
-			if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
-			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
-			if (arguments.count("address")) address = stoi(arguments.at("address"));
-			if (arguments.count("blockID")) blockID = stoi(arguments.at("blockID"));
-			return true;
+		if (!arguments.count("objectType") || arguments.at("objectType").compare("Loco") != 0) {
+			return false;
 		}
-		return false;
+		if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
+		if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
+		if (arguments.count("address")) address = stoi(arguments.at("address"));
+		if (arguments.count("blockID")) blockID = stoi(arguments.at("blockID"));
+		return true;
 	}
 
 	bool Loco::toBlock(const blockID_t blockID) {
@@ -92,7 +89,7 @@ namespace datamodel {
 
 	bool Loco::releaseBlock() {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (!blockID) {
+		if (blockID == BLOCK_NONE) {
 			return false;
 		}
 		blockID = BLOCK_NONE;
@@ -101,7 +98,7 @@ namespace datamodel {
 
 	bool Loco::start() {
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (!blockID) {
+		if (blockID == BLOCK_NONE) {
 			xlog("Can not start loco %s because it is not in a block", name.c_str());
 			return false;
 		}
@@ -141,10 +138,10 @@ namespace datamodel {
 				case LOCO_STATE_STOPPING:
 					xlog("Loco %s is actually running, waiting until loco reached its destination", name.c_str());
 					state = LOCO_STATE_STOPPING;
-					return false;
+					return true;
 
 				default:
-					xlog("Loco %s is unknown state. Setting to error state and setting to speed 0.", name.c_str());
+					xlog("Loco %s is in unknown state. Setting to error state and setting speed to 0.", name.c_str());
 					state = LOCO_STATE_ERROR;
 					manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
 					return false;
