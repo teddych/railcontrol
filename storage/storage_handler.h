@@ -25,14 +25,19 @@ namespace storage {
 			void deleteLoco(locoID_t locoID);
 			void accessory(const datamodel::Accessory& accessory);
 			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
+			void deleteAccessory(accessoryID_t accessoryID);
 			void feedback(const datamodel::Feedback& feedback);
 			void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks);
+			void deleteFeedback(feedbackID_t feedbackID);
 			void block(const datamodel::Block& block);
 			void allBlocks(std::map<blockID_t,datamodel::Block*>& blocks);
+			void deleteBlock(blockID_t blockID);
 			void saveSwitch(const datamodel::Switch& mySwitch);
 			void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches);
+			void deleteSwitch(switchID_t switchID);
 			void street(const datamodel::Street& street);
 			void allStreets(std::map<streetID_t,datamodel::Street*>& streets);
+			void deleteStreet(streetID_t streetID);
 		private:
 			Manager* manager;
 			createStorage_t* createStorage;

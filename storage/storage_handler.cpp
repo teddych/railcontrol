@@ -103,13 +103,6 @@ namespace storage {
 		instance->saveObject(OBJECT_TYPE_LOCO, loco.objectID, loco.name, serialized);
 	}
 
-	void StorageHandler::deleteLoco(const locoID_t locoID) {
-		if (!instance) {
-			return;
-		}
-		instance->deleteObject(OBJECT_TYPE_LOCO, locoID);
-	}
-
 	void StorageHandler::allLocos(map<locoID_t,datamodel::Loco*>& locos) {
 		if (!instance) {
 			return;
@@ -120,6 +113,13 @@ namespace storage {
 			Loco* loco = new Loco(manager, object);
 			locos[loco->objectID] = loco;
 		}
+	}
+
+	void StorageHandler::deleteLoco(const locoID_t locoID) {
+		if (!instance) {
+			return;
+		}
+		instance->deleteObject(OBJECT_TYPE_LOCO, locoID);
 	}
 
 	void StorageHandler::accessory(const Accessory& accessory) {
@@ -142,6 +142,13 @@ namespace storage {
 		}
 	}
 
+	void StorageHandler::deleteAccessory(const accessoryID_t accessoryID) {
+		if (!instance) {
+			return;
+		}
+		instance->deleteObject(OBJECT_TYPE_ACCESSORY, accessoryID);
+	}
+
 	void StorageHandler::feedback(const Feedback& feedback) {
 		if (!instance) {
 			return;
@@ -160,6 +167,13 @@ namespace storage {
 			Feedback* feedback = new Feedback(manager, object);
 			feedbacks[feedback->objectID] = feedback;
 		}
+	}
+
+	void StorageHandler::deleteFeedback(const feedbackID_t feedbackID) {
+		if (!instance) {
+			return;
+		}
+		instance->deleteObject(OBJECT_TYPE_FEEDBACK, feedbackID);
 	}
 
 	void StorageHandler::block(const Block& block) {
@@ -182,6 +196,13 @@ namespace storage {
 		}
 	}
 
+	void StorageHandler::deleteBlock(const blockID_t blockID) {
+		if (!instance) {
+			return;
+		}
+		instance->deleteObject(OBJECT_TYPE_BLOCK, blockID);
+	}
+
 	void StorageHandler::saveSwitch(const Switch& mySwitch) {
 		if (!instance) {
 			return;
@@ -202,6 +223,13 @@ namespace storage {
 		}
 	}
 
+	void StorageHandler::deleteSwitch(const switchID_t switchID) {
+		if (!instance) {
+			return;
+		}
+		instance->deleteObject(OBJECT_TYPE_SWITCH, switchID);
+	}
+
 	void StorageHandler::street(const datamodel::Street& street) {
 		if (!instance) {
 			return;
@@ -220,6 +248,13 @@ namespace storage {
 			Street* street = new Street(manager, object);
 			streets[street->objectID] = street;
 		}
+	}
+
+	void StorageHandler::deleteStreet(const streetID_t streetID) {
+		if (!instance) {
+			return;
+		}
+		instance->deleteObject(OBJECT_TYPE_STREET, streetID);
 	}
 
 } // namespace storage
