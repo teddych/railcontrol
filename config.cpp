@@ -14,28 +14,30 @@ Config::Config(std::string fileName) {
 
 	std::ifstream configFile;
 	configFile.open(fileName);
-	if (configFile.is_open()) {
-
-		for (string line; std::getline(configFile, line); ) {
-			std::istringstream iss(line);
-			string configKey;
-			string eq;
-			string configValue;
-			bool error = false;
-
-			if (!(iss >> configKey >> eq >> configValue >> std::ws) || eq != "=" || iss.get() != EOF) {
-				error = true;
-			}
-			if (configKey[0] == '#') {
-				continue;
-			}
-
-			if (!error) {
-				config[configKey] = configValue;
-			}
-		}
-		configFile.close();
+	if (!configFile.is_open()) {
+		xlog("Unable to open configfile");
+		return;
 	}
+
+	for (string line; std::getline(configFile, line); ) {
+		std::istringstream iss(line);
+		string configKey;
+		string eq;
+		string configValue;
+		bool error = false;
+
+		if (!(iss >> configKey >> eq >> configValue >> std::ws) || eq != "=" || iss.get() != EOF) {
+			error = true;
+		}
+		if (configKey[0] == '#') {
+			continue;
+		}
+
+		if (!error) {
+			config[configKey] = configValue;
+		}
+	}
+	configFile.close();
 
 	for(auto option : config) {
 		xlog("Parameter found in config file: %s = %s", option.first.c_str(), option.second.c_str());

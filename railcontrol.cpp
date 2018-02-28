@@ -39,9 +39,17 @@ int main (int argc, char* argv[]) {
 	signal(SIGTERM, stopRailControlSignal);
 
 	runRailcontrol = true;
-  xlog("Starting railcontrol");
+	xlog("Starting railcontrol");
 
-	Config config("railcontrol.conf");;
+	string configfile;
+	if (argc == 2) {
+		configfile.append(argv[1]);
+	}
+	else {
+		configfile.append("railcontrol.conf");
+	}
+
+	Config config(configfile);
 
 	// init manager that does all the stuff in a seperate thread
 	Manager m(config);
@@ -73,10 +81,10 @@ int main (int argc, char* argv[]) {
 		}
 	} while (input != 'q' && runRailcontrol);
 
-  xlog("Stopping railcontrol");
+	xlog("Stopping railcontrol");
 
 	// manager is cleaned up implicitly while leaving scope
 
-  return 0;
+	return 0;
 }
 
