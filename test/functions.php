@@ -35,15 +35,18 @@ function startrailcontrol() {
 }
 
 function stoprailcontrol($socket, $message = '') {
+	$ret = 0;
+	if ($message != '') {
+		echo "$message\n";
+		$ret = 1;
+	}
+
 	// close control socket
 	socket_write($socket, "q\n");
 	socket_close($socket);
 	exec('./stoprailcontrol.sh');
-	if ($message != '') {
-		echo "$message\n";
-		exit (1);
-	}
-	exit (0);
+
+	exit ($ret);
 }
 
 ?>
