@@ -50,6 +50,7 @@ typedef unsigned short relationID_t;
 // automode
 typedef unsigned char locoState_t;
 
+#define CONTROL_NONE 0
 #define ADDRESS_NONE 0
 #define LOCO_NONE 0
 #define BLOCK_NONE 0

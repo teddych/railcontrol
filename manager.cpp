@@ -39,6 +39,10 @@ Manager::Manager(Config& config) :
 	storageParams.module = config.getValue("dbengine", "sqlite");
 	storageParams.filename = config.getValue("dbfilename", "/tmp/railcontrol.db");
 	storage = new StorageHandler(this, storageParams);
+	if (storage == nullptr) {
+		xlog("Unable to create storage handler");
+		return;
+	}
 
 	//loadDefaultValuesToDB();
 
@@ -85,6 +89,10 @@ Manager::Manager(Config& config) :
 }
 
 Manager::~Manager() {
+	if (storage == nullptr) {
+		return;
+	}
+
 	while (!locoStopAll()) {
 		sleep(1);
 	}
@@ -210,32 +218,44 @@ void Manager::booster(const managerID_t managerID, const boosterStatus_t status)
 	}
 }
 
-void Manager::saveHardware(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip) {
+bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip) {
 	HardwareParams* params;
-	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	if (hardwareParams.count(controlID) == 1) {
-		params = hardwareParams.at(controlID);
-		if (params == nullptr) {
-			return;
+	{
+		std::lock_guard<std::mutex> Guard(hardwareMutex);
+		if (hardwareParams.count(controlID) == 1) {
+			params = hardwareParams.at(controlID);
+			if (params == nullptr) {
+				return false;
+			}
+			params->name = name;
+			params->ip = ip;
+			// FIXME: reload hardware
 		}
-		params->name = name;
-		params->ip = ip;
-		// FIXME: reload hardware
-	}
-	else {
-		params = new HardwareParams(controlID, hardwareType, name, ip);
-		if (params == nullptr) {
-			return;
+		else {
+			controlID_t newControlID = 0;
+			// get next controlID
+			for (auto hardwareParam : hardwareParams) {
+				if (hardwareParam.first > newControlID) {
+					newControlID = hardwareParam.first;
+				}
+			}
+			++newControlID;
+			// create new control
+			params = new HardwareParams(newControlID, hardwareType, name, ip);
+			if (params == nullptr) {
+				return false;
+			}
+			hardwareParams[controlID] = params;
+			controllers.push_back(new HardwareHandler(*this, params));
 		}
-		hardwareParams[controlID] = params;
-		controllers.push_back(new HardwareHandler(*this, params));
 	}
-	if (storage && params) {
+	if (storage) {
 		storage->hardwareParams(*params);
 	}
+	return true;
 }
 
-void Manager::deleteHardware(controlID_t controlID) {
+void Manager::controlDelete(controlID_t controlID) {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
 		//vector<>::iterator control =
@@ -411,7 +431,9 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 		}
 	}
 	// save in db
-	storage->block(*block);
+	if (storage) {
+		storage->block(*block);
+	}
 	// FIXME: no return value
 	return true;
 }
@@ -433,7 +455,9 @@ bool Manager::blockDelete(const blockID_t blockID) {
 	}
 
 	delete block;
-	storage->deleteBlock(blockID);
+	if (storage) {
+		storage->deleteBlock(blockID);
+	}
 	return true;
 }
 
@@ -540,7 +564,9 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 		}
 	}
 	// save in db
-	storage->loco(*loco);
+	if (storage) {
+		storage->loco(*loco);
+	}
 	// FIXME: no return value
 	return true;
 }
@@ -562,7 +588,9 @@ bool Manager::locoDelete(const locoID_t locoID) {
 	}
 
 	delete loco;
-	storage->deleteLoco(locoID);
+	if (storage) {
+		storage->deleteLoco(locoID);
+	}
 	return true;
 }
 

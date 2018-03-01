@@ -210,8 +210,7 @@ namespace console {
 									readBlanks(s, i);
 									layoutPosition_t posZ = readNumber(s, i);
 									if (!manager.blockSave(BLOCK_NONE, name, width, rotation, posX, posY, posZ)) {
-										string status("Unable to add block");
-										addUpdate(status);
+										addUpdate("Unable to add block");
 										break;
 									}
 									stringstream status;
@@ -228,14 +227,25 @@ namespace console {
 									string type = readText(s, i);
 									readBlanks(s, i);
 									string ip = readText(s, i);
-									hardwareType_t hardwareType = HARDWARE_TYPE_NONE;
+									hardwareType_t hardwareType;
 									if (type.compare("virt") == 0) {
 										hardwareType = HARDWARE_TYPE_VIRT;
 									}
 									else if (type.compare("cs2") == 0) {
 										hardwareType = HARDWARE_TYPE_CS2;
 									}
-									// FIXME: unfinished
+									else {
+										addUpdate("Unknown hardware type");
+										break;
+									}
+									if (!manager.controlSave(CONTROL_NONE, hardwareType, name, ip)) {
+										addUpdate("Unable to add control");
+										break;
+									}
+									stringstream status;
+									status << "Control \"" << name << "\" added";
+									addUpdate(status.str());
+									break;
 								}
 							case 'l':
 							case 'L': // add new loco
