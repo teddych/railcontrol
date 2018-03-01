@@ -264,7 +264,11 @@ void Manager::controlDelete(controlID_t controlID) {
 	}
 }
 
-const std::map<controlID_t,std::string> Manager::controlList() const {
+const std::map<controlID_t,hardware::HardwareParams*> Manager::controlList() const {
+	return hardwareParams;
+}
+
+const std::map<controlID_t,std::string> Manager::controlListNames() const {
 	std::map<controlID_t,std::string> ret;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	for (auto hardware : hardwareParams) {

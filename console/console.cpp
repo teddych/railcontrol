@@ -314,6 +314,45 @@ namespace console {
 						}
 						break;
 					}
+				case 'c':
+				case 'C': // control commands
+					{
+						readBlanks(s, i);
+						char subcmd = s[i];
+						i++;
+						switch (subcmd) {
+							case 'l':
+							case 'L': // list controls
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all controls
+										std::map<controlID_t,hardware::HardwareParams*> params = manager.controlList();
+										stringstream status;
+										for (auto param : params) {
+											status << static_cast<int>(param.first) << " " << param.second->name << "\n";
+										}
+										status << "Total number of controls: " << params.size();
+										addUpdate(status.str());
+										break;
+									}
+									controlID_t controlID = readNumber(s, i);
+									hardware::HardwareParams* param = manager.getHardware(controlID);
+									if (param == nullptr) {
+										addUpdate("Unknwown Control");
+										break;
+									}
+									stringstream status;
+									status << static_cast<int>(controlID) << " " << param->name;
+									addUpdate(status.str());
+									break;
+								}
+							default:
+								{
+									addUpdate("Unknown control command");
+								}
+						}
+						break;
+					}
 				case 'd':
 				case 'D': // delete object
 					{

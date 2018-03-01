@@ -361,7 +361,7 @@ namespace webserver {
 			ss << inputHidden("loco", locoID);
 			ss << inputText("Loco name:", "name", name);
 
-			std::map<controlID_t,string> controls = manager.controlList();
+			std::map<controlID_t,string> controls = manager.controlListNames();
 			std::map<string, string> controlOptions;
 			for(auto control : controls) {
 				controlOptions[to_string(control.first)] = control.second;

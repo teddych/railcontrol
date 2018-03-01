@@ -26,7 +26,8 @@ class Manager {
 		hardware::HardwareParams* getHardware(controlID_t controlID);
 
 		// control (console, web, ...)
-		const std::map<controlID_t,std::string> controlList() const;
+		const std::map<controlID_t,hardware::HardwareParams*> controlList() const;
+		const std::map<controlID_t,std::string> controlListNames() const;
 		const std::map<protocol_t,std::string> protocolsOfControl(controlID_t) const;
 
 		// loco
