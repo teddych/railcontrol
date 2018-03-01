@@ -141,7 +141,25 @@ namespace console {
 	string Console::readText(string& s, size_t& i) {
 		size_t start = i;
 		size_t length = 0;
-		while (s.length() >= i && s[i] != 0x20) {
+		bool escape = false;
+		while (true) {
+			if (s.length() >= i) {
+				break;
+			}
+			if (s[i] == '"' && escape == false) {
+				escape = true;
+				i++;
+				start++;
+				continue;
+			}
+			if (s[i] == '"' && escape == true) {
+				i++;
+				break;
+			}
+			if (escape == false && s[i] != 0x20) {
+				i++;
+				break;
+			}
 			length++;
 			i++;
 		}
@@ -197,7 +215,7 @@ namespace console {
 										break;
 									}
 									stringstream status;
-									status << "Block " << name << " added";
+									status << "Block \"" << name << "\" added";
 									addUpdate(status.str());
 									break;
 								}
@@ -218,7 +236,7 @@ namespace console {
 										break;
 									}
 									stringstream status;
-									status << "Loco " << name << " added";
+									status << "Loco \"" << name << "\" added";
 									addUpdate(status.str());
 									break;
 								}
