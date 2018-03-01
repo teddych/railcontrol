@@ -372,6 +372,18 @@ namespace console {
 									addUpdate("Block deleted");
 									break;
 								}
+							case 'c':
+							case 'C': // delete control
+								{
+									readBlanks(s, i);
+									controlID_t controlID = readNumber(s, i);
+									if (!manager.controlDelete(controlID)) {
+										addUpdate("Control not found or control in use");
+										break;
+									}
+									addUpdate("Control deleted");
+									break;
+								}
 							case 'l':
 							case 'L': // delete loco
 								{

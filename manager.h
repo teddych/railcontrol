@@ -22,7 +22,7 @@ class Manager {
 
 		// hardware (virt, CS2, ...)
 		bool controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip);
-		void controlDelete(controlID_t controlID);
+		bool controlDelete(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
 
 		// control (console, web, ...)

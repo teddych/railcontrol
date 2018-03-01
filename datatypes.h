@@ -59,10 +59,10 @@ typedef unsigned char locoState_t;
 #define MAX_SPEED 1023
 
 enum managerIDs : managerID_t {
-	MANAGER_ID_CONSOLE = 0,
-	MANAGER_ID_HARDWARE,
-	MANAGER_ID_WEBSERVER,
-	MANAGER_ID_AUTOMODE
+	MANAGER_ID_HARDWARE = 0,
+	MANAGER_ID_AUTOMODE,
+	MANAGER_ID_CONSOLE,
+	MANAGER_ID_WEBSERVER
 };
 
 enum boosterStatus : boosterStatus_t {

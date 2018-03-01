@@ -1,5 +1,4 @@
-#ifndef MANAGER_INTERFACE_H
-#define MANAGER_INTERFACE_H
+#pragma once
 
 #include <string>
 
@@ -36,23 +35,4 @@ inline ManagerInterface::ManagerInterface(managerID_t managerID) :
 inline const managerID_t ManagerInterface::getManagerID() const {
 	return managerID;
 }
-
-/*
-inline bool ManagerInterface::operator==(const ManagerInterface& mi) {
-	if (managerID == mi.managerID) {
-		if (managerID == MANAGER_ID_HARDWARE) {
-			hardware::HardwareHandler* hw1 = static_cast<HardwareHandler*>this;
-			hardware::HardwareHandler* hw2 = static_cast<HardwareHandler*>(&mi);
-			if (hw1.getControlID() == hw2.getControlID()) {
-				return true;
-			}
-			return false;
-		}
-		return true;
-	}
-	return false;
-}
-*/
-
-#endif // MANAGER_INTERFACE_H
 

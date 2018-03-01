@@ -255,13 +255,14 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 	return true;
 }
 
-void Manager::controlDelete(controlID_t controlID) {
+bool Manager::controlDelete(controlID_t controlID) {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
 		//vector<>::iterator control =
 		// FIXME: deleteHardware not implemented
 		// FIXME: check if there are no elements on this Hardware
 	}
+	return false;
 }
 
 const std::map<controlID_t,hardware::HardwareParams*> Manager::controlList() const {
