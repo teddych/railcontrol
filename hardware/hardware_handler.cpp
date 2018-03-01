@@ -24,7 +24,7 @@ HardwareHandler::HardwareHandler(const Manager& manager, const HardwareParams* p
 
   // generate symbol and library names
   char* error;
-	string symbol = hardwareSymbols[params->hardwareID];
+	string symbol = hardwareSymbols[params->hardwareType];
 	std::stringstream ss;
 	ss << "hardware/" << symbol << ".so";
 
@@ -80,7 +80,7 @@ HardwareHandler::~HardwareHandler() {
 		dlclose(dlhandle);
 		dlhandle = NULL;
 	}
-  xlog("Hardware library %s unloaded", hardwareSymbols[params->hardwareID].c_str());
+  xlog("Hardware library %s unloaded", hardwareSymbols[params->hardwareType].c_str());
 }
 
 controlID_t HardwareHandler::getControlID() const {

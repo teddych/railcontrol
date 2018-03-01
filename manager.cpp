@@ -210,7 +210,7 @@ void Manager::booster(const managerID_t managerID, const boosterStatus_t status)
 	}
 }
 
-void Manager::saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip) {
+void Manager::saveHardware(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip) {
 	HardwareParams* params;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
@@ -223,7 +223,7 @@ void Manager::saveHardware(const controlID_t& controlID, const hardwareID_t& har
 		// FIXME: reload hardware
 	}
 	else {
-		params = new HardwareParams(controlID, hardwareID, name, ip);
+		params = new HardwareParams(controlID, hardwareType, name, ip);
 		if (params == nullptr) {
 			return;
 		}
@@ -254,13 +254,13 @@ const std::map<controlID_t,std::string> Manager::controlList() const {
 }
 
 /*
-   const hardwareID_t Manager::hardwareOfControl(controlID_t controlID) const {
+   const hardwareType_t Manager::hardwareOfControl(controlID_t controlID) const {
    std::lock_guard<std::mutex> Guard(hardwareMutex);
    if (hardwareParams.count(controlID) == 1) {
    const HardwareParams* params = hardwareParams.at(controlID);
-   return params->hardwareID;
+   return params->hardwareType;
    }
-   return HARDWARE_ID_NONE;
+   return HARDWARE_TYPE_NONE;
    }
  */
 

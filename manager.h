@@ -21,7 +21,7 @@ class Manager {
 		void booster(const managerID_t managerID, const boosterStatus_t status);
 
 		// hardware (virt, CS2, ...)
-		void saveHardware(const controlID_t& controlID, const hardwareID_t& hardwareID, const std::string& name, const std::string& ip);
+		void saveHardware(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip);
 		void deleteHardware(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
 
@@ -79,7 +79,7 @@ class Manager {
 		bool autoMode;
 
 	private:
-		// const hardwareID_t hardwareOfControl(controlID_t controlID) const;
+		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;
 
 		// controllers (hardwareHandler & Webserver)
 		std::vector<ManagerInterface*> controllers;

@@ -54,7 +54,7 @@ namespace storage {
 		// create hardware table if needed
 		if (tablenames["hardware"] != true) {
 			xlog("Creating table hardware");
-			rc = sqlite3_exec(db, "CREATE TABLE hardware (controlid UNSIGNED TINYINT PRIMARY KEY, hardwareid UNSIGNED TINYINT, name VARCHAR(50), ip VARCHAR(46));", NULL, NULL, &dbError);
+			rc = sqlite3_exec(db, "CREATE TABLE hardware (controlid UNSIGNED TINYINT PRIMARY KEY, hardwaretype UNSIGNED TINYINT, name VARCHAR(50), ip VARCHAR(46));", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);
@@ -123,7 +123,7 @@ namespace storage {
 		if (db) {
 			stringstream ss;
 			char* dbError = NULL;
-			ss << "INSERT OR REPLACE INTO hardware VALUES (" << (int)hardwareParams.controlID << ", " << (int)hardwareParams.hardwareID << ", '" << hardwareParams.name << "', '" << hardwareParams.ip << "');";
+			ss << "INSERT OR REPLACE INTO hardware VALUES (" << (int)hardwareParams.controlID << ", " << (int)hardwareParams.hardwareType << ", '" << hardwareParams.name << "', '" << hardwareParams.ip << "');";
 			int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
@@ -135,7 +135,7 @@ namespace storage {
 	void SQLite::allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) {
 		if (db) {
 			char* dbError = 0;
-			int rc = sqlite3_exec(db, "SELECT controlid, hardwareid, name, ip FROM hardware ORDER BY controlid;", callbackAllHardwareParams, &hardwareParams, &dbError);
+			int rc = sqlite3_exec(db, "SELECT controlid, hardwaretype, name, ip FROM hardware ORDER BY controlid;", callbackAllHardwareParams, &hardwareParams, &dbError);
 			if (rc != SQLITE_OK) {
 				xlog("SQLite error: %s", dbError);
 				sqlite3_free(dbError);

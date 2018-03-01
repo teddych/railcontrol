@@ -6,7 +6,7 @@
 // common
 typedef unsigned char managerID_t;
 typedef unsigned char controlID_t;
-typedef unsigned char hardwareID_t;
+typedef unsigned char hardwareType_t;
 // booster
 typedef unsigned char boosterStatus_t;
 
@@ -93,11 +93,11 @@ static std::string protocolSymbols[] = {
 	"SX2"
 };
 
-enum hardwareIDs : hardwareID_t {
-	HARDWARE_ID_NONE = 0,
-	HARDWARE_ID_VIRT,
-	HARDWARE_ID_CS2,
-	HARDWARE_ID_NUM
+enum hardwareTypes : hardwareType_t {
+	HARDWARE_TYPE_NONE = 0,
+	HARDWARE_TYPE_VIRT,
+	HARDWARE_TYPE_CS2,
+	HARDWARE_TYPE_NUM
 };
 
 static std::string hardwareSymbols[] = {
