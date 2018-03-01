@@ -143,7 +143,7 @@ namespace console {
 		size_t length = 0;
 		bool escape = false;
 		while (true) {
-			if (s.length() >= i) {
+			if (s.length() <= i) {
 				break;
 			}
 			if (s[i] == '"' && escape == false) {
@@ -156,7 +156,7 @@ namespace console {
 				i++;
 				break;
 			}
-			if (escape == false && s[i] != 0x20) {
+			if (escape == false && s[i] == 0x20) {
 				i++;
 				break;
 			}
