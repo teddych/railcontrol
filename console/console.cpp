@@ -219,6 +219,24 @@ namespace console {
 									addUpdate(status.str());
 									break;
 								}
+							case 'c':
+							case 'C': // add new control
+								{
+									readBlanks(s, i);
+									string name = readText(s, i);
+									readBlanks(s, i);
+									string type = readText(s, i);
+									readBlanks(s, i);
+									string ip = readText(s, i);
+									hardwareType_t hardwareType = HARDWARE_TYPE_NONE;
+									if (type.compare("virt") == 0) {
+										hardwareType = HARDWARE_TYPE_VIRT;
+									}
+									else if (type.compare("cs2") == 0) {
+										hardwareType = HARDWARE_TYPE_CS2;
+									}
+									// FIXME: unfinished
+								}
 							case 'l':
 							case 'L': // add new loco
 								{
