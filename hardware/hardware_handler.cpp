@@ -10,14 +10,15 @@ using std::string;
 
 namespace hardware {
 
-	HardwareHandler::HardwareHandler(const Manager& manager, const HardwareParams* params) :
+	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params) :
 		ManagerInterface(MANAGER_ID_HARDWARE),
 		manager(manager),
 		createHardware(nullptr),
 		destroyHardware(nullptr),
 		instance(nullptr),
-		dlhandle(nullptr),
-		params(params) {
+		params(params)
+	{
+		hardwareType_t type = params->hardwareType;
 
 		// FIXME: if the same hardware library is loaded twice
 		// FIXME: the clean up does not work correctly
@@ -25,16 +26,24 @@ namespace hardware {
 
 		// generate symbol and library names
 		char* error;
-		string symbol = hardwareSymbols[params->hardwareType];
+		string& symbol = hardwareSymbols[type];
 		std::stringstream ss;
 		ss << "hardware/" << symbol << ".so";
 
-		dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
-		if (!dlhandle) {
-			xlog("Can not open library: %s", dlerror());
-			return;
+		void* dlhandle = manager.hardwareLibraryGet(type);
+		if (dlhandle == nullptr) {
+			// open dynamic library
+			dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
+			if (!dlhandle) {
+				xlog("Can not open library: %s", dlerror());
+				return;
+			}
+			xlog("Hardware library %s loaded", symbol.c_str());
+			if (!manager.hardwareLibraryAdd(type, dlhandle)) {
+				xlog("Unable to store library address");
+				return;
+			}
 		}
-		xlog("Hardware library %s loaded", symbol.c_str());
 
 		// look for symbol create_*
 		ss.str(std::string());
@@ -43,7 +52,7 @@ namespace hardware {
 		createHardware_t* new_create_hardware = (createHardware_t*)dlsym(dlhandle, s);
 		error = dlerror();
 		if (error) {
-			xlog("Unable to find symbol %s", s);
+			xlog("Unable to find symbol %s: %s", s, error);
 			return;
 		}
 
@@ -54,7 +63,7 @@ namespace hardware {
 		destroyHardware_t* new_destroy_hardware = (destroyHardware_t*)dlsym(dlhandle, ss.str().c_str());
 		error = dlerror();
 		if (error) {
-			xlog("Unable to find symbol %s", s);
+			xlog("Unable to find symbol %s: %s", s, error);
 			return;
 		}
 
@@ -76,12 +85,21 @@ namespace hardware {
 			destroyHardware(instance);
 			instance = nullptr;
 		}
+
+		hardwareType_t type = params->hardwareType;
 		// close library
-		if (dlhandle) {
-			dlclose(dlhandle);
-			dlhandle = nullptr;
+		if (manager.controlsOfHardwareType(type) > 1) {
+			return;
 		}
-		xlog("Hardware library %s unloaded", hardwareSymbols[params->hardwareType].c_str());
+		void* dlhandle = manager.hardwareLibraryGet(type);
+		if (dlhandle == nullptr) {
+			return;
+		}
+		if (manager.hardwareLibraryRemove(type) == false) {
+			return;
+		}
+		dlclose(dlhandle);
+		xlog("Hardware library %s unloaded", hardwareSymbols[type].c_str());
 	}
 
 	controlID_t HardwareHandler::getControlID() const {

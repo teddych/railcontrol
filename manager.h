@@ -24,6 +24,10 @@ class Manager {
 		bool controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip);
 		bool controlDelete(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
+		unsigned int controlsOfHardwareType(const hardwareType_t hardwareType);
+		bool hardwareLibraryAdd(const hardwareType_t hardwareType, void* libraryHandle);
+		void* hardwareLibraryGet(const hardwareType_t hardwareType) const;
+		bool hardwareLibraryRemove(const hardwareType_t hardwareType);
 
 		// control (console, web, ...)
 		const std::map<controlID_t,hardware::HardwareParams*> controlList() const;
@@ -82,12 +86,16 @@ class Manager {
 	private:
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;
 
-		// controllers (hardwareHandler & Webserver)
-		std::vector<ManagerInterface*> controllers;
+		// controls (Webserver, console & hardwareHandler. So each hardware is also added here).
+		std::map<controlID_t,ManagerInterface*> controls;
+		mutable std::mutex controlMutex;
 
 		// hardware (virt, CS2, ...)
 		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;
 		mutable std::mutex hardwareMutex;
+
+		std::map<hardwareType_t,void*> hardwareLibraries;
+		mutable std::mutex hardwareLibrariesMutex;
 
 		// loco
 		std::map<locoID_t,datamodel::Loco*> locos;

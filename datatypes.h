@@ -65,6 +65,13 @@ enum managerIDs : managerID_t {
 	MANAGER_ID_WEBSERVER
 };
 
+enum controlIDs : controlID_t {
+	CONTROL_ID_NONE = 0,
+	CONTROL_ID_CONSOLE,
+	CONTROL_ID_WEBSERVER,
+	CONTROL_ID_FIRST_HARDWARE = 10
+};
+
 enum boosterStatus : boosterStatus_t {
 	BOOSTER_STOP = 0,
 	BOOSTER_GO

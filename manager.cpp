@@ -46,14 +46,14 @@ Manager::Manager(Config& config) :
 
 	//loadDefaultValuesToDB();
 
-	controllers.push_back(new Console(*this, config.getValue("consoleport", 2222)));
-	controllers.push_back(new WebServer(*this, config.getValue("webserverport", 80)));
+	controls[CONTROL_ID_CONSOLE] = new Console(*this, config.getValue("consoleport", 2222));
+	controls[CONTROL_ID_WEBSERVER] = new WebServer(*this, config.getValue("webserverport", 80));
 
 	storage->allHardwareParams(hardwareParams);
 	for (auto hardwareParam : hardwareParams) {
 		hardwareParam.second->manager = this;
-		controllers.push_back(new HardwareHandler(*this, hardwareParam.second));
-		xlog("Loaded controller %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
+		controls[hardwareParam.second->controlID] = new HardwareHandler(*this, hardwareParam.second);
+		xlog("Loaded control %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
 	}
 
 	storage->allLocos(locos);
@@ -97,13 +97,6 @@ Manager::~Manager() {
 		sleep(1);
 	}
 
-	for (auto controller : controllers) {
-		delete controller;
-	}
-	for (auto hardwareParam : hardwareParams) {
-		xlog("Unloaded controller %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
-		delete hardwareParam.second;
-	}
 	for (auto street : streets) {
 		xlog("Saving street %i: %s", street.second->objectID, street.second->name.c_str());
 		storage->street(*(street.second));
@@ -134,6 +127,25 @@ Manager::~Manager() {
 		storage->loco(*(loco.second));
 		delete loco.second;
 	}
+	for (auto control : controls) {
+		controlID_t controlID = control.first;
+		if (controlID < CONTROL_ID_FIRST_HARDWARE) {
+			delete control.second;
+			continue;
+		}
+		if (hardwareParams.count(controlID) != 1) {
+			continue;
+		}
+		HardwareParams* params = hardwareParams.at(controlID);
+		if (params == nullptr) {
+			continue;
+		}
+		xlog("Unloading control %i: %s", controlID, params->name.c_str());
+		delete control.second;
+		hardwareParams.erase(controlID);
+		delete params;
+	}
+
 	delete storage;
 	storage = NULL;
 }
@@ -213,12 +225,16 @@ void Manager::loadDefaultValuesToDB() {
 }
 
 void Manager::booster(const managerID_t managerID, const boosterStatus_t status) {
-	for (auto control : controllers) {
-		control->booster(managerID, status);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->booster(managerID, status);
 	}
 }
 
 bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip) {
+	if (controlID != CONTROL_ID_NONE && controlID < CONTROL_ID_FIRST_HARDWARE) {
+		return false;
+	}
 	HardwareParams* params;
 	{
 		std::lock_guard<std::mutex> Guard(hardwareMutex);
@@ -232,11 +248,12 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 			// FIXME: reload hardware
 		}
 		else {
-			controlID_t newControlID = 0;
+			std::lock_guard<std::mutex> Guard(controlMutex);
+			controlID_t newControlID = CONTROL_ID_FIRST_HARDWARE - 1;
 			// get next controlID
-			for (auto hardwareParam : hardwareParams) {
-				if (hardwareParam.first > newControlID) {
-					newControlID = hardwareParam.first;
+			for (auto control : controls) {
+				if (control.first > newControlID) {
+					newControlID = control.first;
 				}
 			}
 			++newControlID;
@@ -245,8 +262,8 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 			if (params == nullptr) {
 				return false;
 			}
-			hardwareParams[controlID] = params;
-			controllers.push_back(new HardwareHandler(*this, params));
+			hardwareParams[newControlID] = params;
+			controls[newControlID] = new HardwareHandler(*this, params);
 		}
 	}
 	if (storage) {
@@ -256,13 +273,34 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 }
 
 bool Manager::controlDelete(controlID_t controlID) {
-	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	if (hardwareParams.count(controlID) == 1) {
-		//vector<>::iterator control =
-		// FIXME: deleteHardware not implemented
-		// FIXME: check if there are no elements on this Hardware
+	HardwareParams* params = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(hardwareMutex);
+		if (controlID < CONTROL_ID_FIRST_HARDWARE || hardwareParams.count(controlID) != 1) {
+			return false;
+		}
+
+		if (hardwareParams.count(controlID) != 1) {
+			return false;
+		}
+		params = hardwareParams.at(controlID);
+		if (params == nullptr) {
+			return false;
+		}
 	}
-	return false;
+	{
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		if (controls.count(controlID) != 1) {
+			return false;
+		}
+		ManagerInterface* control = controls.at(controlID);
+		controls.erase(controlID);
+		delete control;
+	}
+
+	hardwareParams.erase(controlID);
+	delete params;
+	return true;
 }
 
 const std::map<controlID_t,hardware::HardwareParams*> Manager::controlList() const {
@@ -278,27 +316,17 @@ const std::map<controlID_t,std::string> Manager::controlListNames() const {
 	return ret;
 }
 
-/*
-   const hardwareType_t Manager::hardwareOfControl(controlID_t controlID) const {
-   std::lock_guard<std::mutex> Guard(hardwareMutex);
-   if (hardwareParams.count(controlID) == 1) {
-   const HardwareParams* params = hardwareParams.at(controlID);
-   return params->hardwareType;
-   }
-   return HARDWARE_TYPE_NONE;
-   }
- */
-
 const std::map<protocol_t,std::string> Manager::protocolsOfControl(controlID_t controlID) const {
 	std::map<protocol_t,std::string> ret;
 	std::vector<protocol_t> protocols;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) == 1) {
-		for (auto controller : controllers) {
-			if (controller->getManagerID() != MANAGER_ID_HARDWARE) {
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		for (auto control : controls) {
+			if (control.second->getManagerID() != MANAGER_ID_HARDWARE) {
 				continue;
 			}
-			const HardwareHandler* hardware = static_cast<const HardwareHandler*>(controller);
+			const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control.second);
 			if (hardware->getControlID() != controlID) {
 				continue;
 			}
@@ -321,6 +349,43 @@ HardwareParams* Manager::getHardware(controlID_t controlID) {
 		return NULL;
 	}
 	return hardwareParams.at(controlID);
+}
+
+unsigned int Manager::controlsOfHardwareType(const hardwareType_t hardwareType) {
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	unsigned int counter = 0;
+	for (auto hardwareParam : hardwareParams) {
+		if (hardwareParam.second->hardwareType == hardwareType) {
+			counter++;
+		}
+	}
+	return counter;
+}
+
+bool Manager::hardwareLibraryAdd(const hardwareType_t hardwareType, void* libraryHandle) {
+	std::lock_guard<std::mutex> Guard(hardwareLibrariesMutex);
+	if (hardwareLibraries.count(hardwareType) == 1) {
+		return false;
+	}
+	hardwareLibraries[hardwareType] = libraryHandle;
+	return true;
+}
+
+void* Manager::hardwareLibraryGet(const hardwareType_t hardwareType) const {
+	std::lock_guard<std::mutex> Guard(hardwareLibrariesMutex);
+	if (hardwareLibraries.count(hardwareType) != 1) {
+		return nullptr;
+	}
+	return hardwareLibraries.at(hardwareType);
+}
+
+bool Manager::hardwareLibraryRemove(const hardwareType_t hardwareType) {
+	std::lock_guard<std::mutex> Guard(hardwareLibrariesMutex);
+	if (hardwareLibraries.count(hardwareType) != 1) {
+		return false;
+	}
+	hardwareLibraries.erase(hardwareType);
+	return true;
 }
 
 bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
@@ -494,8 +559,9 @@ bool Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, cons
 	}
 	xlog("%s (%i) speed is now %i", loco->name.c_str(), locoID, s);
 	loco->Speed(s);
-	for (auto control : controllers) {
-		control->locoSpeed(managerID, locoID, s);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->locoSpeed(managerID, locoID, s);
 	}
 	return true;
 }
@@ -519,15 +585,17 @@ void Manager::locoDirection(const managerID_t managerID, const protocol_t protoc
 }
 void Manager::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
 	xlog("%s (%i) direction is now %i", getLocoName(locoID).c_str(), locoID, direction);
-	for (auto control : controllers) {
-		control->locoDirection(managerID, locoID, direction);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->locoDirection(managerID, locoID, direction);
 	}
 }
 
 void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
 	xlog("%s (%i) function %i is now %s", getLocoName(locoID).c_str(), locoID, function, (on ? "on" : "off"));
-	for (auto control : controllers) {
-		control->locoFunction(managerID, locoID, function, on);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->locoFunction(managerID, locoID, function, on);
 	}
 }
 
@@ -606,28 +674,31 @@ void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, con
 	}
 	xlog("Feedback %i is now %s", pin, (state ? "on" : "off"));
 	feedback->setState(state);
-	for (auto control : controllers) {
-		control->feedback(managerID, pin, state);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->feedback(managerID, pin, state);
 	}
 }
 
 datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID) {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
-	if (feedbacks.count(feedbackID) == 1) {
-		return feedbacks.at(feedbackID);
+	if (feedbacks.count(feedbackID) != 1) {
+		return NULL;
 	}
-	return NULL;
+	return feedbacks.at(feedbackID);
 }
 
 void Manager::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
-	for (auto control : controllers) {
-		control->accessory(managerID, accessoryID, state);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->accessory(managerID, accessoryID, state);
 	}
 }
 
 void Manager::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
-	for (auto control : controllers) {
-		control->block(managerID, blockID, state);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->block(managerID, blockID, state);
 	}
 }
 
@@ -692,21 +763,24 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 
 	xlog("%s (%i) is now in block %s (%i)", loco->name.c_str(), loco->objectID, block->name.c_str(), block->objectID);
 
-	for (auto control : controllers) {
-		control->locoIntoBlock(locoID, blockID);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->locoIntoBlock(locoID, blockID);
 	}
 	return true;
 }
 
 bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
-	for (auto control : controllers) {
-		control->locoStreet(locoID, streetID, blockID);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->locoStreet(locoID, streetID, blockID);
 	}
 	return true;
 }
 bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
-	for (auto control : controllers) {
-		control->locoDestinationReached(locoID, streetID, blockID);
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->locoDestinationReached(locoID, streetID, blockID);
 	}
 	return true;
 }
@@ -717,12 +791,14 @@ bool Manager::locoStart(const locoID_t locoID) {
 		return false;
 	}
 	bool ret = loco->start();
-	if (ret) {
-		for (auto control : controllers) {
-			control->locoStart(locoID);
-		}
+	if (ret == false) {
+		return false;
 	}
-	return ret;
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->locoStart(locoID);
+	}
+	return true;
 }
 
 bool Manager::locoStop(const locoID_t locoID) {
@@ -731,20 +807,26 @@ bool Manager::locoStop(const locoID_t locoID) {
 		return false;
 	}
 	bool ret = loco->stop();
-	if (ret) {
-		for (auto control : controllers) {
-			control->locoStop(locoID);
-		}
+	if (ret == false) {
+		return false;
 	}
-	return ret;
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->locoStop(locoID);
+	}
+	return true;
 }
 
 bool Manager::locoStartAll() {
 	for (auto loco : locos) {
 		bool ret = loco.second->start();
-		if (ret) {
-			for (auto control : controllers) {
-				control->locoStart(loco.first);
+		if (ret == false) {
+			continue;
+		}
+		{
+			std::lock_guard<std::mutex> Guard(controlMutex);
+			for (auto control : controls) {
+				control.second->locoStart(loco.first);
 			}
 		}
 	}
@@ -755,12 +837,16 @@ bool Manager::locoStopAll() {
 	bool ret1 = true;
 	for (auto loco : locos) {
 		bool ret2 = loco.second->stop();
-		if (ret2) {
-			for (auto control : controllers) {
-				control->locoStop(loco.first);
+		ret1 &= ret2;
+		if (ret2 == false) {
+			continue;
+		}
+		{
+			std::lock_guard<std::mutex> Guard(controlMutex);
+			for (auto control : controls) {
+				control.second->locoStop(loco.first);
 			}
 		}
-		ret1 &= ret2;
 	}
 	return ret1;
 }
