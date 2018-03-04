@@ -20,6 +20,9 @@ namespace storage {
 			// read controls
 			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) override;
 
+			// delete control
+			void deleteHardwareParams(const controlID_t controlID) override;
+
 			// save datamodelobject
 			void saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) override;
 

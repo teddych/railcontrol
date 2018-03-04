@@ -95,6 +95,13 @@ namespace storage {
 		instance->allHardwareParams(hardwareParams);
 	}
 
+	void StorageHandler::deleteHardwareParams(const controlID_t controlID) {
+		if (!instance) {
+			return;
+		}
+		instance->deleteHardwareParams(controlID);
+	}
+
 	void StorageHandler::loco(const Loco& loco) {
 		if (!instance) {
 			return;

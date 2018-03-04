@@ -23,6 +23,9 @@ namespace storage {
 			// read controls
 			virtual void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) = 0;
 
+			// delete control
+			virtual void deleteHardwareParams(const controlID_t controlID) = 0;
+
 			// save datamodelobject
 			virtual void saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) = 0;
 

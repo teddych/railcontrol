@@ -300,6 +300,9 @@ bool Manager::controlDelete(controlID_t controlID) {
 
 	hardwareParams.erase(controlID);
 	delete params;
+	if (storage) {
+		storage->deleteHardwareParams(controlID);
+	}
 	return true;
 }
 

@@ -158,6 +158,23 @@ namespace storage {
 		return 0;
 	}
 
+	// delete control
+	void SQLite::deleteHardwareParams(const controlID_t controlID) {
+		if (db == nullptr) {
+			return;
+		}
+		stringstream ss;
+		ss << "DELETE FROM hardware WHERE controlid = " << (int)controlID << ";";
+		string s(ss.str());
+		char* dbError = NULL;
+		int rc = sqlite3_exec(db, s.c_str(), NULL, NULL, &dbError);
+		if (rc == SQLITE_OK) {
+			return;
+		}
+		xlog("SQLite error: %s Query: %s", dbError, s.c_str());
+		sqlite3_free(dbError);
+	}
+
 	// save datamodelobject
 	void SQLite::saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) {
 		if (db == nullptr) {
