@@ -146,6 +146,10 @@ namespace console {
 			if (s.length() <= i) {
 				break;
 			}
+			if (s[i] == '\n' || s[i] == '\r') {
+				i++;
+				break;
+			}
 			if (s[i] == '"' && escape == false) {
 				escape = true;
 				i++;
