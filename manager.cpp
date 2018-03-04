@@ -317,10 +317,10 @@ const std::map<protocol_t,std::string> Manager::protocolsOfControl(controlID_t c
 
 HardwareParams* Manager::getHardware(controlID_t controlID) {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	if (hardwareParams.count(controlID) == 1) {
-		return hardwareParams.at(controlID);
+	if (hardwareParams.count(controlID) != 1) {
+		return NULL;
 	}
-	return NULL;
+	return hardwareParams.at(controlID);
 }
 
 bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
@@ -368,32 +368,32 @@ bool Manager::getSwitchProtocolAddress(const switchID_t switchID, controlID_t& c
 
 datamodel::Loco* Manager::getLoco(const locoID_t locoID) const {
 	std::lock_guard<std::mutex> Guard(locoMutex);
-	if (locos.count(locoID) == 1) {
-		return locos.at(locoID);
+	if (locos.count(locoID) != 1) {
+		return NULL;
 	}
-	return NULL;
+	return locos.at(locoID);
 }
 
 const std::string& Manager::getLocoName(const locoID_t locoID) {
 	std::lock_guard<std::mutex> Guard(locoMutex);
-	if (locos.count(locoID) == 1) {
-		return locos.at(locoID)->name;
+	if (locos.count(locoID) != 1) {
+		return unknownLoco;
 	}
-	return unknownLoco;
+	return locos.at(locoID)->name;
 }
 
 const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
-	if (accessories.count(accessoryID) == 1) {
-		return accessories.at(accessoryID)->name;
+	if (accessories.count(accessoryID) != 1) {
+		return unknownAccessory;
 	}
-	return unknownAccessory;
+	return accessories.at(accessoryID)->name;
 }
 
 const std::string& Manager::getBlockName(const blockID_t blockID) {
-	if (blocks.count(blockID) == 1) {
-		return blocks.at(blockID)->name;
+	if (blocks.count(blockID) != 1) {
+		return unknownBlock;
 	}
-	return unknownBlock;
+	return blocks.at(blockID)->name;
 }
 
 const std::map<blockID_t,datamodel::Block*>& Manager::blockList() const {
@@ -404,7 +404,7 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 	Block* block;
 	{
 		std::lock_guard<std::mutex> Guard(blockMutex);
-		if (blockID && blocks.count(blockID)) {
+		if (blockID != BLOCK_NONE && blocks.count(blockID)) {
 			// update existing block
 			block = blocks.at(blockID);
 			if (block == nullptr) {
@@ -467,7 +467,7 @@ bool Manager::blockDelete(const blockID_t blockID) {
 }
 
 void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
-	locoID_t locoID = 0;
+	locoID_t locoID = LOCO_NONE;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
 		for (auto loco : locos) {
@@ -539,7 +539,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 	Loco* loco;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
-		if (locoID && locos.count(locoID)) {
+		if (locoID != LOCO_NONE && locos.count(locoID)) {
 			// update existing loco
 			loco = locos.at(locoID);
 			if (loco == nullptr) {
@@ -633,32 +633,32 @@ void Manager::block(const managerID_t managerID, const blockID_t blockID, const 
 
 Block* Manager::getBlock(const blockID_t blockID) {
 	std::lock_guard<std::mutex> Guard(blockMutex);
-	if (blocks.count(blockID) == 1) {
-		return blocks.at(blockID);
+	if (blocks.count(blockID) != 1) {
+		return NULL;
 	}
-	return NULL;
+	return blocks.at(blockID);
 }
 
 const std::string& Manager::getSwitchName(const switchID_t switchID) {
-	if (switches.count(switchID) == 1) {
-		return switches.at(switchID)->name;
+	if (switches.count(switchID) != 1) {
+		return unknownSwitch;
 	}
-	return unknownSwitch;
+	return switches.at(switchID)->name;
 }
 
 Street* Manager::getStreet(const streetID_t streetID) {
 	std::lock_guard<std::mutex> Guard(streetMutex);
-	if (streets.count(streetID) == 1) {
-		return streets.at(streetID);
+	if (streets.count(streetID) != 1) {
+		return NULL;
 	}
-	return NULL;
+	return streets.at(streetID);
 }
 
 const string& Manager::getStreetName(const streetID_t streetID) {
-	if (streets.count(streetID) == 1) {
-		return streets.at(streetID)->name;
+	if (streets.count(streetID) != 1) {
+		return unknownStreet;
 	}
-	return unknownStreet;
+	return streets.at(streetID)->name;
 }
 
 bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
@@ -678,13 +678,13 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	}
 
 	reserved = loco->toBlock(blockID);
-	if (!reserved) {
+	if (reserved == false) {
 		block->release(locoID);
 		return false;
 	}
 
 	reserved = block->lock(locoID);
-	if (!reserved) {
+	if (reserved == false) {
 		loco->releaseBlock();
 		block->release(locoID);
 		return false;
