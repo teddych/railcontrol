@@ -10,11 +10,11 @@ using std::string;
 
 namespace datamodel {
 
-	Feedback::Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const controlID_t controlID, const feedbackPin_t pin, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) :
-		manager(manager),
+	Feedback::Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const feedbackPin_t pin) :
 		LayoutItem(feedbackID, name, ROTATION_0, WIDTH_1, HEIGHT_1, x, y, z),
 		controlID(controlID),
 		pin(pin),
+		manager(manager),
 		state(FEEDBACK_STATE_FREE),
 		locoID(LOCO_NONE) {
 	}

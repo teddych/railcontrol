@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_FEEDBACK_H
-#define DATAMODEL_FEEDBACK_H
+#pragma once
 
 #include <string>
 
@@ -13,7 +12,7 @@ namespace datamodel {
 
 	class Feedback : public LayoutItem {
 		public:
-			Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const controlID_t controlID, const feedbackPin_t pin, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z);
+			Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const feedbackPin_t pin);
 			Feedback(Manager* manager, const std::string& serialized);
 
 			std::string serialize() const override;
@@ -22,14 +21,14 @@ namespace datamodel {
 			bool setLoco(const locoID_t locoID);
 			bool setState(const feedbackState_t state);
 
-		private:
-			Manager* manager;
 			controlID_t controlID;
 			feedbackPin_t pin;
+
+		private:
+			Manager* manager;
 			feedbackState_t state;
 			locoID_t locoID;
 	};
 
 } // namespace datamodel
 
-#endif // DATAMODEL_FEEDBACK_H

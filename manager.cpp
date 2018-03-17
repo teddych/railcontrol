@@ -766,6 +766,83 @@ datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID) {
 	return feedbacks.at(feedbackID);
 }
 
+const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) {
+	std::lock_guard<std::mutex> Guard(feedbackMutex);
+	if (feedbacks.count(feedbackID) != 1) {
+		return unknownFeedback;
+	}
+	return feedbacks.at(feedbackID)->name;
+}
+
+const std::map<feedbackID_t,datamodel::Feedback*>& Manager::feedbackList() const {
+	return feedbacks;
+}
+
+bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin) {
+	Feedback* feedback;
+	{
+		std::lock_guard<std::mutex> Guard(feedbackMutex);
+		if (feedbackID != FEEDBACK_NONE && feedbacks.count(feedbackID)) {
+			// update existing feedback
+			feedback = feedbacks.at(feedbackID);
+			if (feedback == nullptr) {
+				return false;
+			}
+			feedback->name = name;
+			feedback->posX = posX;
+			feedback->posY = posY;
+			feedback->posZ = posZ;
+			feedback->controlID = controlID;
+			feedback->pin = pin;
+		}
+		else {
+			// create new feedback
+			feedbackID_t newFeedbackID = 0;
+			// get next feedbackID
+			for (auto feedback : feedbacks) {
+				if (feedback.first > newFeedbackID) {
+					newFeedbackID = feedback.first;
+				}
+			}
+			++newFeedbackID;
+			feedback = new Feedback(this, newFeedbackID, name, posX, posY, posZ, controlID, pin);
+			if (feedback == nullptr) {
+				return false;
+			}
+			// save in map
+			feedbacks[newFeedbackID] = feedback;
+		}
+	}
+	// save in db
+	if (storage) {
+		storage->feedback(*feedback);
+	}
+	return feedback;
+}
+
+bool Manager::feedbackDelete(const feedbackID_t feedbackID) {
+	Feedback* feedback = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(feedbackMutex);
+		if (feedbackID == FEEDBACK_NONE || feedbacks.count(feedbackID) == 0) {
+			return false;
+		}
+
+		feedback = feedbacks.at(feedbackID);
+		if (feedback == nullptr) {
+			return false;
+		}
+
+		feedbacks.erase(feedbackID);
+	}
+
+	delete feedback;
+	if (storage) {
+		storage->deleteFeedback(feedbackID);
+	}
+	return true;
+}
+
 void Manager::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {

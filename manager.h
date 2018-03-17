@@ -58,8 +58,12 @@ class Manager {
 		bool accessoryDelete(const accessoryID_t accessoryID);
 
 		// feedback
-		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
 		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
+		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
+		const std::string& getFeedbackName(const feedbackID_t feedbackID);
+		const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const;
+		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin);
+		bool feedbackDelete(const feedbackID_t feedbackID);
 
 		// block
 		void block(const managerID_t managerID, const feedbackID_t feedbackID, const blockState_t);

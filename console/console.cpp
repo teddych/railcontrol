@@ -433,15 +433,99 @@ namespace console {
 				case 'F': // feedback commands
 					{
 						readBlanks(s, i);
-						feedbackID_t feedbackID = readNumber(s, i);
-						readBlanks(s, i);
-						// read state
-						unsigned char input = s[i];
-						feedbackState_t state = FEEDBACK_STATE_FREE;
-						if (input == 'X' || input == 'x') {
-							state = FEEDBACK_STATE_OCCUPIED;
+						char subcmd = s[i];
+						i++;
+						switch (subcmd) {
+							case 'd':
+							case 'D': // delete feedback
+								{
+									readBlanks(s, i);
+									feedbackID_t feedbackID = readNumber(s, i);
+									if (!manager.feedbackDelete(feedbackID)) {
+										addUpdate("Feedback not found or feedback in use");
+										break;
+									}
+									addUpdate("Feedback deleted");
+									break;
+								}
+							case 'l':
+							case 'L': // list feedbacks
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all feedbacks
+										std::map<feedbackID_t,datamodel::Feedback*> feedbacks = manager.feedbackList();
+										stringstream status;
+										for (auto feedback : feedbacks) {
+											status << feedback.first << " " << feedback.second->name << "\n";
+										}
+										status << "Total number of feedbacks: " << feedbacks.size();
+										addUpdate(status.str());
+										break;
+									}
+									feedbackID_t feedbackID = readNumber(s, i);
+									datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+									if (feedback == nullptr) {
+										addUpdate("Unknwown feedback");
+										break;
+									}
+									stringstream status;
+									status << feedbackID << " " << feedback->name << " (" << static_cast<int>(feedback->posX) << "/" << static_cast<int>(feedback->posY) << "/" << static_cast<int>(feedback->posZ) << ")";
+									addUpdate(status.str());
+									break;
+								}
+							case 'n':
+							case 'N': // new feedback
+								{
+									readBlanks(s, i);
+									string name = readText(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posX = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posY = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posZ = readNumber(s, i);
+									readBlanks(s, i);
+									controlID_t control = readNumber(s, i);
+									readBlanks(s, i);
+									feedbackPin_t pin = readNumber(s, i);
+									if(!manager.feedbackSave(FEEDBACK_NONE, name, posX, posY, posZ, control, pin)) {
+										addUpdate("Unable to add feedback");
+										break;
+									}
+									stringstream status;
+									status << "Feedback \"" << name << "\" added";
+									addUpdate(status.str());
+									break;
+								}
+							case 's':
+							case 'S': // set feedback
+								{
+									feedbackID_t feedbackID = readNumber(s, i);
+									readBlanks(s, i);
+									// read state
+									unsigned char input = s[i];
+									feedbackState_t state;
+									char* text;
+									if (input == 'X' || input == 'x') {
+										state = FEEDBACK_STATE_OCCUPIED;
+										text = (char*)"ON";
+									}
+									else {
+										state = FEEDBACK_STATE_FREE;
+										text = (char*)"OFF";
+									}
+									manager.feedback(MANAGER_ID_CONSOLE, feedbackID, state);
+									stringstream status;
+									status << "Feedback \"" << manager.getFeedbackName(feedbackID) << "\" turned " << text;
+									addUpdate(status.str());
+									break;
+								}
+							default:
+								{
+									addUpdate("Unknown feedback command");
+									break;
+								}
 						}
-						manager.feedback(MANAGER_ID_CONSOLE, feedbackID, state);
 						break;
 					}
 				case 'l':
@@ -579,16 +663,20 @@ namespace console {
 								"B D block#                        Delete block\n"
 								"B L A                             List all blocks\n"
 								"B L block#                        List block\n"
-								"B N Name Width Rotation X Y Z     New Block\n"
+								"B N Name Width Rotation X Y Z     New block\n"
 								"\n"
 								"Control commands\n"
 								"C D control#                      Delete control\n"
 								"C L A                             List all controls\n"
 								"C L control#                      List control\n"
-								"C N Name Type IP                  New Control\n"
+								"C N Name Type IP                  New control\n"
 								"\n"
 								"Feedback commands\n"
-								"F pin# [X]                        Turn feedback on (with X) or of (without X)\n"
+								"F D feedback#                     Delete feedback\n"
+								"F L A                             List all feedbacks\n"
+								"F L feedback#                     List feedback\n"
+								"F S pin# [X]                      Turn feedback on (with X) or of (without X)\n"
+								"F N Name X Y Z Control Pin        New feedback\n"
 								"\n"
 								"Loco commands\n"
 								"L A A                             Start all locos into automode\n"

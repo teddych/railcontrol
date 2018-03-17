@@ -1,5 +1,4 @@
-#ifndef DATATYPES_H
-#define DATATYPES_H
+#pragma once
 
 #include <string>
 
@@ -53,8 +52,10 @@ typedef unsigned char locoState_t;
 #define CONTROL_NONE 0
 #define ADDRESS_NONE 0
 #define LOCO_NONE 0
-#define BLOCK_NONE 0
 #define ACCESSORY_NONE 0
+#define FEEDBACK_NONE 0
+#define BLOCK_NONE 0
+#define SWITCH_NONE 0
 #define STREET_NONE 0
 
 #define MAX_SPEED 1023
@@ -190,6 +191,4 @@ enum locoState : locoState_t {
 	LOCO_STATE_STOPPING,
 	LOCO_STATE_ERROR
 };
-
-#endif // DATATYPES_H
 
