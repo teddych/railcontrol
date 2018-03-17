@@ -59,6 +59,9 @@ typedef unsigned char locoState_t;
 
 #define MAX_SPEED 1023
 
+#define WIDTH_1 1
+#define HEIGHT_1 1
+
 enum managerIDs : managerID_t {
 	MANAGER_ID_HARDWARE = 0,
 	MANAGER_ID_AUTOMODE,
