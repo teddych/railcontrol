@@ -11,6 +11,7 @@ namespace datamodel {
 
 	Accessory::Accessory(const accessoryID_t accessoryID,
 		const std::string& name,
+		const layoutRotation_t rotation,
 		const layoutPosition_t x,
 		const layoutPosition_t y,
 		const layoutPosition_t z,
@@ -20,7 +21,7 @@ namespace datamodel {
 		const accessoryType_t type,
 		const accessoryState_t state,
 		const accessoryTimeout_t timeout) :
-		LayoutItem(accessoryID, name, ROTATION_0, WIDTH_1, HEIGHT_1, x, y, z),
+		LayoutItem(accessoryID, name, rotation, WIDTH_1, HEIGHT_1, x, y, z),
 		controlID(controlID),
 		protocol(protocol),
 		address(address),

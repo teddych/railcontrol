@@ -163,10 +163,10 @@ void Manager::loadDefaultValuesToDB() {
 	Loco newloco2(this, 2, "ICN", 1, PROTOCOL_DCC, 1118);
 	storage->loco(newloco2);
 
-	Accessory newAccessory1(1, "Schalter 1", 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200, 3, 5, 0);
+	Accessory newAccessory1(1, "Schalter 1", ROTATION_0, 3, 5, 0, 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200);
 	storage->accessory(newAccessory1);
 
-	Accessory newAccessory2(2, "Schalter 2", 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200, 3, 6, 0);
+	Accessory newAccessory2(2, "Schalter 2", ROTATION_0, 3, 6, 0, 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200);
 	storage->accessory(newAccessory2);
 
 	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0);
@@ -199,10 +199,10 @@ void Manager::loadDefaultValuesToDB() {
 	Block newBlock5(5, "Block Strecke", 4, ROTATION_90, 5, 6, 0);
 	storage->block(newBlock5);
 
-	Switch newSwitch1(1, "Weiche Einfahrt", 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 2, 5, 0);
+	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 200);
 	storage->saveSwitch(newSwitch1);
 
-	Switch newSwitch2(2, "Weiche Ausfahrt", 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 2, 6, 0);
+	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 200);
 	storage->saveSwitch(newSwitch2);
 
 	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false, 3);
@@ -618,7 +618,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 				}
 			}
 			++newAccessoryID;
-			accessory = new Accessory(newAccessoryID, name, x, y, z, controlID, protocol, address, type, state, timeout);
+			accessory = new Accessory(newAccessoryID, name, ROTATION_0, x, y, z, controlID, protocol, address, type, state, timeout);
 			if (accessory == nullptr) {
 				return false;
 			}
@@ -859,6 +859,14 @@ bool Manager::blockDelete(const blockID_t blockID) {
 * Switch                   *
 ***************************/
 
+Switch* Manager::getSwitch(const switchID_t switchID) {
+	std::lock_guard<std::mutex> Guard(switchMutex);
+	if (switches.count(switchID) != 1) {
+		return NULL;
+	}
+	return switches.at(switchID);
+}
+
 const std::string& Manager::getSwitchName(const switchID_t switchID) {
 	if (switches.count(switchID) != 1) {
 		return unknownSwitch;
@@ -894,6 +902,73 @@ const string& Manager::getStreetName(const streetID_t streetID) {
 	}
 	return streets.at(streetID)->name;
 }
+
+bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout) {
+	Switch* mySwitch;
+	{
+		std::lock_guard<std::mutex> Guard(switchMutex);
+		if (switchID != SWITCH_NONE && switches.count(switchID)) {
+			// update existing switch
+			mySwitch = switches.at(switchID);
+			if (mySwitch == nullptr) {
+				return false;
+			}
+			mySwitch->name = name;
+			mySwitch->rotation = rotation;
+			mySwitch->posX = x;
+			mySwitch->posY = y;
+			mySwitch->posZ = z;
+			mySwitch->controlID = controlID;
+			mySwitch->protocol = protocol;
+			mySwitch->address = address;
+			mySwitch->type = type;
+			mySwitch->state = state;
+			mySwitch->timeout = timeout;
+		}
+		else {
+			// create new switch
+			switchID_t newswitchID = 0;
+			// get next switchID
+			for (auto mySwitch : switches) {
+				if (mySwitch.first > newswitchID) {
+					newswitchID = mySwitch.first;
+				}
+			}
+			++newswitchID;
+			mySwitch = new Switch(newswitchID, name, rotation, x, y, z, controlID, protocol, address, type, state, timeout);
+			if (mySwitch == nullptr) {
+				return false;
+			}
+			// save in map
+			switches[newswitchID] = mySwitch;
+		}
+	}
+	// save in db
+	if (storage) {
+		storage->saveSwitch(*mySwitch);
+	}
+	return true;
+}
+
+bool Manager::switchDelete(const switchID_t switchID) {
+	Switch* mySwitch = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(switchMutex);
+		if (switchID == SWITCH_NONE || switches.count(switchID) == 0) {
+			return false;
+		}
+
+		mySwitch = switches.at(switchID);
+		switches.erase(switchID);
+	}
+
+	delete mySwitch;
+	if (storage) {
+		storage->deleteSwitch(switchID);
+	}
+	return true;
+}
+
 
 /***************************
 * Automode                 *

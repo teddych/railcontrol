@@ -10,17 +10,18 @@ using std::string;
 namespace datamodel {
 
 	Switch::Switch(switchID_t switchID,
-	               std::string name,
-								 controlID_t controlID,
-								 protocol_t protocol,
-								 address_t address,
-								 switchType_t type,
-								 switchState_t state,
-								 layoutRotation_t rotation,
-								 layoutPosition_t x,
-								 layoutPosition_t y,
-								 layoutPosition_t z) :
-		Accessory(switchID, name, controlID, protocol, address, type, state << 1, /* timeout ms*/ 200, x, y, z) {
+		std::string name,
+		layoutRotation_t rotation,
+		layoutPosition_t x,
+		layoutPosition_t y,
+		layoutPosition_t z,
+		controlID_t controlID,
+		protocol_t protocol,
+		address_t address,
+		switchType_t type,
+		switchState_t state,
+		switchTimeout_t timeout) :
+		Accessory(switchID, name, rotation, x, y, z, controlID, protocol, address, type, state << 1, timeout) {
 	}
 
 	Switch::Switch(const std::string& serialized) {

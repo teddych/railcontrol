@@ -39,6 +39,7 @@ typedef unsigned char blockState_t;
 typedef accessoryID_t switchID_t;
 typedef accessoryType_t switchType_t;
 typedef accessoryState_t switchState_t;
+typedef accessoryTimeout_t switchTimeout_t;
 // street
 typedef objectID_t streetID_t;
 typedef unsigned char streetState_t;

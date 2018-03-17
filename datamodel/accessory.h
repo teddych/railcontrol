@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_ACCESSORY_H
-#define DATAMODEL_ACCESSORY_H
+#pragma once
 
 #include <string>
 
@@ -11,7 +10,7 @@ namespace datamodel {
 
 	class Accessory : public LayoutItem {
 		public:
-			Accessory(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout);
+			Accessory(const accessoryID_t accessoryID, const std::string& name, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout);
 			Accessory(const std::string& serialized);
 			Accessory();
 
@@ -36,4 +35,3 @@ namespace datamodel {
 
 } // namespace datamodel
 
-#endif // DATAMODEL_ACCESSORY_H

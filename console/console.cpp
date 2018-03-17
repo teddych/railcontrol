@@ -725,6 +725,91 @@ namespace console {
 						close(clientSocket);
 						return;
 					}
+				case 'w':
+				case 'W': // Switch commands
+					{
+						readBlanks(s, i);
+						char subcmd = s[i];
+						i++;
+						switch (subcmd) {
+							case 'd':
+							case 'D': // delete switch
+								{
+									readBlanks(s, i);
+									switchID_t switchID = readNumber(s, i);
+									if (!manager.switchDelete(switchID)) {
+										addUpdate("Switch not found or switch in use");
+										break;
+									}
+									addUpdate("Switch deleted");
+									break;
+								}
+							case 'l':
+							case 'L': // list switchs
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all switches
+										std::map<switchID_t,datamodel::Switch*> switches = manager.switchList();
+										stringstream status;
+										for (auto mySwitch : switches) {
+											status << mySwitch.first << " " << mySwitch.second->name << "\n";
+										}
+										status << "Total number of switches: " << switches.size();
+										addUpdate(status.str());
+										break;
+									}
+									switchID_t switchID = readNumber(s, i);
+									datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+									if (mySwitch == nullptr) {
+										addUpdate("Unknwown switch");
+										break;
+									}
+									stringstream status;
+									status << switchID << " " << mySwitch->name << " (" << static_cast<int>(mySwitch->posX) << "/" << static_cast<int>(mySwitch->posY) << "/" << static_cast<int>(mySwitch->posZ) << ")";
+									addUpdate(status.str());
+									break;
+								}
+							case 'n':
+							case 'N': // new switch
+								{
+									readBlanks(s, i);
+									string name = readText(s, i);
+									readBlanks(s, i);
+									layoutRotation_t rotation = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posX = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posY = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posZ = readNumber(s, i);
+									readBlanks(s, i);
+									controlID_t controlID = readNumber(s, i);
+									readBlanks(s, i);
+									protocol_t protocol = readNumber(s, i);
+									readBlanks(s, i);
+									address_t address = readNumber(s, i);
+									readBlanks(s, i);
+									accessoryType_t type = readNumber(s, i);
+									readBlanks(s, i);
+									accessoryState_t state = readNumber(s, i);
+									readBlanks(s, i);
+									accessoryTimeout_t timeout = readNumber(s, i);
+									if (!manager.switchSave(SWITCH_NONE, name, rotation, posX, posY, posZ, controlID, protocol, address, type, state, timeout)) {
+										addUpdate("Unable to add switch");
+										break;
+									}
+									stringstream status;
+									status << "Switch \"" << name << "\" added";
+									addUpdate(status.str());
+									break;
+								}
+							default:
+								{
+									addUpdate("Unknown switch command");
+								}
+						}
+						break;
+					}
 				default:
 					{
 						addUpdate("Unknown command");

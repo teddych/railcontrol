@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_SWITCH_H
-#define DATAMODEL_SWITCH_H
+#pragma once
 
 #include <string>
 
@@ -12,16 +11,17 @@ namespace datamodel {
 	class Switch : public Accessory {
 		public:
 			Switch(switchID_t switchID,
-			       std::string name,
-						 controlID_t controlID,
-						 protocol_t protocol,
-						 address_t address,
-						 switchType_t type,
-						 switchState_t state,
-						 layoutRotation_t rotation,
-						 layoutPosition_t x,
-						 layoutPosition_t y,
-						 layoutPosition_t z);
+				std::string name,
+				layoutRotation_t rotation,
+				layoutPosition_t x,
+				layoutPosition_t y,
+				layoutPosition_t z,
+				controlID_t controlID,
+				protocol_t protocol,
+				address_t address,
+				switchType_t type,
+				switchState_t state,
+				switchTimeout_t timeout);
 
 			Switch(const std::string& serialized);
 
@@ -33,4 +33,3 @@ namespace datamodel {
 
 } // namespace datamodel
 
-#endif // DATAMODEL_SWITCH_H
