@@ -26,5 +26,5 @@ sqlite.o: sqlite3.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.o *.so
+	rm -f *.o *.so sqlite3
 
