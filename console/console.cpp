@@ -439,6 +439,18 @@ namespace console {
 						char subcmd = s[i];
 						i++;
 						switch (subcmd) {
+							case 'a':
+							case 'A': // delete accessory
+								{
+									readBlanks(s, i);
+									accessoryID_t accessoryID = readNumber(s, i);
+									if (!manager.accessoryDelete(accessoryID)) {
+										addUpdate("Accessory not found or accessory in use");
+										break;
+									}
+									addUpdate("Accessory deleted");
+									break;
+								}
 							case 'b':
 							case 'B': // delete block
 								{
