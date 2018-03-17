@@ -142,10 +142,7 @@ namespace console {
 		size_t start = i;
 		size_t length = 0;
 		bool escape = false;
-		while (true) {
-			if (s.length() <= i) {
-				break;
-			}
+		while (s.length() > i) {
 			if (s[i] == '\n' || s[i] == '\r') {
 				i++;
 				break;
@@ -172,80 +169,74 @@ namespace console {
 	}
 
 	switchType_t Console::readSwitchType(string& s, size_t& i) {
-		switchType_t type;
+		if (s.length() <= i) {
+			return SWITCH_LEFT;
+		}
 		switch (s[i]) {
 			case 'l':
 			case 'L':
-				type = SWITCH_LEFT;
 				i++;
-				break;
+				return SWITCH_LEFT;
 			case 'r':
 			case 'R':
-				type = SWITCH_RIGHT;
 				i++;
-				break;
+				return SWITCH_RIGHT;
 			default:
-				type = readNumber(s, i);
-				break;
+				switchType_t type = readNumber(s, i);
+				if (type == SWITCH_RIGHT) {
+					return SWITCH_RIGHT;
+				}
+				return SWITCH_LEFT;
 		}
-		return type;
 	}
 
 	layoutRotation_t Console::readRotation(string& s, size_t& i) {
 		uint16_t rotation;
+		if (s.length() <= i) {
+			return ROTATION_0;
+		}
 		switch (s[i]) {
 			case 'n':
 			case 'N':
 			case 't':
 			case 'T': // north/top
-				rotation = ROTATION_0;
 				i++;
-				break;
+				return ROTATION_0;
 			case 'e':
 			case 'E':
 			case 'r':
 			case 'R': // east/right
-				rotation = ROTATION_90;
 				i++;
-				break;
+				return ROTATION_90;
 			case 's':
 			case 'S':
 			case 'b':
 			case 'B': // south/bottom
-				rotation = ROTATION_180;
 				i++;
-				break;
+				return ROTATION_180;
 			case 'w':
 			case 'W':
 			case 'l':
 			case 'L': // west/left
-				rotation = ROTATION_270;
 				i++;
-				break;
+				return ROTATION_270;
 			default:
 				rotation = readNumber(s, i);
 				switch (rotation) {
-					case ROTATION_0:
 					case ROTATION_90:
 					case ROTATION_180:
 					case ROTATION_270:
-						break;
+						return rotation;
 					case 90:
-						rotation = ROTATION_90;
-						break;
+						return ROTATION_90;
 					case 180:
-						rotation = ROTATION_180;
-						break;
+						return ROTATION_180;
 					case 270:
-						rotation = ROTATION_270;
-						break;
+						return ROTATION_270;
 					default:
-						rotation = ROTATION_0;
-						break;
+						return ROTATION_0;
 				}
-				break;
 		}
-		return (layoutRotation_t)rotation;
 	}
 
 	void Console::handleClient() {
