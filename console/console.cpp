@@ -192,14 +192,51 @@ namespace console {
 			switch (cmd)
 			{
 				case 'a':
-				case 'A': // add new object
+				case 'A': // accessory commands
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
 						i++;
 						switch (subcmd) {
-							case 'a':
-							case 'A': // add new accessory
+							case 'd':
+							case 'D': // delete accessory
+								{
+									readBlanks(s, i);
+									accessoryID_t accessoryID = readNumber(s, i);
+									if (!manager.accessoryDelete(accessoryID)) {
+										addUpdate("Accessory not found or accessory in use");
+										break;
+									}
+									addUpdate("Accessory deleted");
+									break;
+								}
+							case 'l':
+							case 'L': // list accessories
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all accessories
+										std::map<accessoryID_t,datamodel::Accessory*> accessories = manager.accessoryList();
+										stringstream status;
+										for (auto accessory : accessories) {
+											status << accessory.first << " " << accessory.second->name << "\n";
+										}
+										status << "Total number of accessorys: " << accessories.size();
+										addUpdate(status.str());
+										break;
+									}
+									accessoryID_t accessoryID = readNumber(s, i);
+									datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+									if (accessory == nullptr) {
+										addUpdate("Unknwown accessory");
+										break;
+									}
+									stringstream status;
+									status << accessoryID << " " << accessory->name << " (" << static_cast<int>(accessory->posX) << "/" << static_cast<int>(accessory->posY) << "/" << static_cast<int>(accessory->posZ) << ")";
+									addUpdate(status.str());
+									break;
+								}
+							case 'n':
+							case 'N': // add new accessory
 								{
 									readBlanks(s, i);
 									string name = readText(s, i);
@@ -230,8 +267,59 @@ namespace console {
 									addUpdate(status.str());
 									break;
 								}
-							case 'b':
-							case 'B': // add new block
+							default:
+								{
+									addUpdate("Unknown accessory command");
+								}
+						}
+						break;
+					}
+				case 'b':
+				case 'B': // block commands
+					{
+						readBlanks(s, i);
+						char subcmd = s[i];
+						i++;
+						switch (subcmd) {
+							case 'd':
+							case 'D': // delete block
+								{
+									readBlanks(s, i);
+									blockID_t blockID = readNumber(s, i);
+									if (!manager.blockDelete(blockID)) {
+										addUpdate("Block not found or block in use");
+										break;
+									}
+									addUpdate("Block deleted");
+									break;
+								}
+							case 'l':
+							case 'L': // list blocks
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all blocks
+										std::map<blockID_t,datamodel::Block*> blocks = manager.blockList();
+										stringstream status;
+										for (auto block : blocks) {
+											status << block.first << " " << block.second->name << "\n";
+										}
+										status << "Total number of Blocks: " << blocks.size();
+										addUpdate(status.str());
+										break;
+									}
+									blockID_t blockID = readNumber(s, i);
+									datamodel::Block* block = manager.getBlock(blockID);
+									if (block == nullptr) {
+										addUpdate("Unknwown block");
+										break;
+									}
+									stringstream status;
+									status << blockID << " " << block->name << " (" << static_cast<int>(block->posX) << "/" << static_cast<int>(block->posY) << "/" << static_cast<int>(block->posZ) << ")";
+									addUpdate(status.str());
+									break;
+								}
+							case 'n':
+							case 'N': // new block
 								{
 									readBlanks(s, i);
 									string name = readText(s, i);
@@ -254,8 +342,59 @@ namespace console {
 									addUpdate(status.str());
 									break;
 								}
-							case 'c':
-							case 'C': // add new control
+							default:
+								{
+									addUpdate("Unknown block command");
+								}
+						}
+						break;
+					}
+				case 'c':
+				case 'C': // control commands
+					{
+						readBlanks(s, i);
+						char subcmd = s[i];
+						i++;
+						switch (subcmd) {
+							case 'd':
+							case 'D': // delete control
+								{
+									readBlanks(s, i);
+									controlID_t controlID = readNumber(s, i);
+									if (!manager.controlDelete(controlID)) {
+										addUpdate("Control not found or control in use");
+										break;
+									}
+									addUpdate("Control deleted");
+									break;
+								}
+							case 'l':
+							case 'L': // list controls
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all controls
+										std::map<controlID_t,hardware::HardwareParams*> params = manager.controlList();
+										stringstream status;
+										for (auto param : params) {
+											status << static_cast<int>(param.first) << " " << param.second->name << "\n";
+										}
+										status << "Total number of controls: " << params.size();
+										addUpdate(status.str());
+										break;
+									}
+									controlID_t controlID = readNumber(s, i);
+									hardware::HardwareParams* param = manager.getHardware(controlID);
+									if (param == nullptr) {
+										addUpdate("Unknwown Control");
+										break;
+									}
+									stringstream status;
+									status << static_cast<int>(controlID) << " " << param->name;
+									addUpdate(status.str());
+									break;
+								}
+							case 'n':
+							case 'N': // new control
 								{
 									readBlanks(s, i);
 									string name = readText(s, i);
@@ -283,148 +422,6 @@ namespace console {
 									addUpdate(status.str());
 									break;
 								}
-							case 'l':
-							case 'L': // add new loco
-								{
-									readBlanks(s, i);
-									string name = readText(s, i);
-									readBlanks(s, i);
-									controlID_t control = readNumber(s, i);
-									readBlanks(s, i);
-									protocol_t protocol = readNumber(s, i);
-									readBlanks(s, i);
-									address_t address = readNumber(s, i);
-									if (!manager.locoSave(LOCO_NONE, name, control, protocol, address)) {
-										string status("Unable to add loco");
-										addUpdate(status);
-										break;
-									}
-									stringstream status;
-									status << "Loco \"" << name << "\" added";
-									addUpdate(status.str());
-									break;
-								}
-							case 's':
-							case 'S': // add new switch
-								{
-									addUpdate("Add Switch not supported");
-								}
-							default:
-								{
-									addUpdate("Unknwon object type");
-								}
-						}
-						break;
-					}
-				case 'x': // accessory
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						i++;
-						switch (subcmd) {
-							case 'l':
-							case 'L': // list accessories
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all accessories
-										std::map<accessoryID_t,datamodel::Accessory*> accessories = manager.accessoryList();
-										stringstream status;
-										for (auto accessory : accessories) {
-											status << accessory.first << " " << accessory.second->name << "\n";
-										}
-										status << "Total number of accessorys: " << accessories.size();
-										addUpdate(status.str());
-										break;
-									}
-									accessoryID_t accessoryID = readNumber(s, i);
-									datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
-									if (accessory == nullptr) {
-										addUpdate("Unknwown accessory");
-										break;
-									}
-									stringstream status;
-									status << accessoryID << " " << accessory->name << " (" << static_cast<int>(accessory->posX) << "/" << static_cast<int>(accessory->posY) << "/" << static_cast<int>(accessory->posZ) << ")";
-									addUpdate(status.str());
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown accessory command");
-								}
-						}
-						break;
-					}
-				case 'b':
-				case 'B': // block commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						i++;
-						switch (subcmd) {
-							case 'l':
-							case 'L': // list blocks
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all blocks
-										std::map<blockID_t,datamodel::Block*> blocks = manager.blockList();
-										stringstream status;
-										for (auto block : blocks) {
-											status << block.first << " " << block.second->name << "\n";
-										}
-										status << "Total number of Blocks: " << blocks.size();
-										addUpdate(status.str());
-										break;
-									}
-									blockID_t blockID = readNumber(s, i);
-									datamodel::Block* block = manager.getBlock(blockID);
-									if (block == nullptr) {
-										addUpdate("Unknwown block");
-										break;
-									}
-									stringstream status;
-									status << blockID << " " << block->name << " (" << static_cast<int>(block->posX) << "/" << static_cast<int>(block->posY) << "/" << static_cast<int>(block->posZ) << ")";
-									addUpdate(status.str());
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown block command");
-								}
-						}
-						break;
-					}
-				case 'c':
-				case 'C': // control commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						i++;
-						switch (subcmd) {
-							case 'l':
-							case 'L': // list controls
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all controls
-										std::map<controlID_t,hardware::HardwareParams*> params = manager.controlList();
-										stringstream status;
-										for (auto param : params) {
-											status << static_cast<int>(param.first) << " " << param.second->name << "\n";
-										}
-										status << "Total number of controls: " << params.size();
-										addUpdate(status.str());
-										break;
-									}
-									controlID_t controlID = readNumber(s, i);
-									hardware::HardwareParams* param = manager.getHardware(controlID);
-									if (param == nullptr) {
-										addUpdate("Unknwown Control");
-										break;
-									}
-									stringstream status;
-									status << static_cast<int>(controlID) << " " << param->name;
-									addUpdate(status.str());
-									break;
-								}
 							default:
 								{
 									addUpdate("Unknown control command");
@@ -432,70 +429,8 @@ namespace console {
 						}
 						break;
 					}
-				case 'd':
-				case 'D': // delete object
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						i++;
-						switch (subcmd) {
-							case 'a':
-							case 'A': // delete accessory
-								{
-									readBlanks(s, i);
-									accessoryID_t accessoryID = readNumber(s, i);
-									if (!manager.accessoryDelete(accessoryID)) {
-										addUpdate("Accessory not found or accessory in use");
-										break;
-									}
-									addUpdate("Accessory deleted");
-									break;
-								}
-							case 'b':
-							case 'B': // delete block
-								{
-									readBlanks(s, i);
-									blockID_t blockID = readNumber(s, i);
-									if (!manager.blockDelete(blockID)) {
-										addUpdate("Block not found or block in use");
-										break;
-									}
-									addUpdate("Block deleted");
-									break;
-								}
-							case 'c':
-							case 'C': // delete control
-								{
-									readBlanks(s, i);
-									controlID_t controlID = readNumber(s, i);
-									if (!manager.controlDelete(controlID)) {
-										addUpdate("Control not found or control in use");
-										break;
-									}
-									addUpdate("Control deleted");
-									break;
-								}
-							case 'l':
-							case 'L': // delete loco
-								{
-									readBlanks(s, i);
-									locoID_t locoID = readNumber(s, i);
-									if (!manager.locoDelete(locoID)) {
-										addUpdate("Loco not found or loco in use");
-										break;
-									}
-									addUpdate("Loco deleted");
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown object type");
-								}
-						}
-						break;
-					}
 				case 'f':
-				case 'F': // feedback
+				case 'F': // feedback commands
 					{
 						readBlanks(s, i);
 						feedbackID_t feedbackID = readNumber(s, i);
@@ -510,7 +445,7 @@ namespace console {
 						break;
 					}
 				case 'l':
-				case 'L': // loco
+				case 'L': // loco commands
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
@@ -541,6 +476,18 @@ namespace console {
 									if (!manager.locoIntoBlock(locoID, blockID)) {
 										addUpdate("Unknwon loco or unknown block");
 									}
+									break;
+								}
+							case 'd':
+							case 'D': // delete loco
+								{
+									readBlanks(s, i);
+									locoID_t locoID = readNumber(s, i);
+									if (!manager.locoDelete(locoID)) {
+										addUpdate("Loco not found or loco in use");
+										break;
+									}
+									addUpdate("Loco deleted");
 									break;
 								}
 							case 'l':
@@ -583,6 +530,27 @@ namespace console {
 									}
 									break;
 								}
+							case 'n':
+							case 'N': // new loco
+								{
+									readBlanks(s, i);
+									string name = readText(s, i);
+									readBlanks(s, i);
+									controlID_t control = readNumber(s, i);
+									readBlanks(s, i);
+									protocol_t protocol = readNumber(s, i);
+									readBlanks(s, i);
+									address_t address = readNumber(s, i);
+									if (!manager.locoSave(LOCO_NONE, name, control, protocol, address)) {
+										string status("Unable to add loco");
+										addUpdate(status);
+										break;
+									}
+									stringstream status;
+									status << "Loco \"" << name << "\" added";
+									addUpdate(status.str());
+									break;
+								}
 							case 's':
 							case 'S': // set loco speed
 								{
@@ -607,23 +575,17 @@ namespace console {
 					{
 						string status("Available console commands:\n"
 								"\n"
-								"Add commands\n"
-								"A B Name Width Rotation X Y Z     Add new block\n"
-								"A C Name Type IP                  Add new Control\n"
-								"A L Name Control Protocol Address Add new loco\n"
-								"\n"
 								"Block commands\n"
+								"B D block#                        Delete block\n"
 								"B L A                             List all blocks\n"
 								"B L block#                        List block\n"
+								"B N Name Width Rotation X Y Z     New Block\n"
 								"\n"
 								"Control commands\n"
+								"C D control#                      Delete control\n"
 								"C L A                             List all controls\n"
 								"C L control#                      List control\n"
-								"\n"
-								"Delete commands\n"
-								"D B block#                        Delete block\n"
-								"D C control#                      Delete control\n"
-								"D L loco#                         Delete loco\n"
+								"C N Name Type IP                  New Control\n"
 								"\n"
 								"Feedback commands\n"
 								"F pin# [X]                        Turn feedback on (with X) or of (without X)\n"
@@ -632,10 +594,12 @@ namespace console {
 								"L A A                             Start all locos into automode\n"
 								"L A loco#                         Start loco into automode\n"
 								"L B loco# block#                  Set loco into block\n"
+								"L D loco#                         Delete loco\n"
 								"L L A                             List all locos\n"
 								"L L loco#                         List loco\n"
 								"L M A                             Stop all locos and go to manual mode\n"
 								"L M loco#                         Stop loco and go to manual mode\n"
+								"L N Name Control Protocol Address New loco\n"
 								"L S loco# speed                   Set loco speed between 0 and 1024\n"
 								"\n"
 								"Other commands\n"
