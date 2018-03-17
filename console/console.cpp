@@ -198,6 +198,38 @@ namespace console {
 						char subcmd = s[i];
 						i++;
 						switch (subcmd) {
+							case 'a':
+							case 'A': // add new accessory
+								{
+									readBlanks(s, i);
+									string name = readText(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posX = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posY = readNumber(s, i);
+									readBlanks(s, i);
+									layoutPosition_t posZ = readNumber(s, i);
+									readBlanks(s, i);
+									controlID_t controlID = readNumber(s, i);
+									readBlanks(s, i);
+									protocol_t protocol = readNumber(s, i);
+									readBlanks(s, i);
+									address_t address = readNumber(s, i);
+									readBlanks(s, i);
+									accessoryType_t type = readNumber(s, i);
+									readBlanks(s, i);
+									accessoryState_t state = readNumber(s, i);
+									readBlanks(s, i);
+									accessoryTimeout_t timeout = readNumber(s, i);
+									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, type, state, timeout)) {
+										addUpdate("Unable to add accessory");
+										break;
+									}
+									stringstream status;
+									status << "Accessory \"" << name << "\" added";
+									addUpdate(status.str());
+									break;
+								}
 							case 'b':
 							case 'B': // add new block
 								{
@@ -272,9 +304,52 @@ namespace console {
 									addUpdate(status.str());
 									break;
 								}
+							case 's':
+							case 'S': // add new switch
+								{
+									addUpdate("Add Switch not supported");
+								}
 							default:
 								{
 									addUpdate("Unknwon object type");
+								}
+						}
+						break;
+					}
+				case 'x': // accessory
+					{
+						readBlanks(s, i);
+						char subcmd = s[i];
+						i++;
+						switch (subcmd) {
+							case 'l':
+							case 'L': // list accessories
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all accessories
+										std::map<accessoryID_t,datamodel::Accessory*> accessories = manager.accessoryList();
+										stringstream status;
+										for (auto accessory : accessories) {
+											status << accessory.first << " " << accessory.second->name << "\n";
+										}
+										status << "Total number of accessorys: " << accessories.size();
+										addUpdate(status.str());
+										break;
+									}
+									accessoryID_t accessoryID = readNumber(s, i);
+									datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+									if (accessory == nullptr) {
+										addUpdate("Unknwown accessory");
+										break;
+									}
+									stringstream status;
+									status << accessoryID << " " << accessory->name << " (" << static_cast<int>(accessory->posX) << "/" << static_cast<int>(accessory->posY) << "/" << static_cast<int>(accessory->posZ) << ")";
+									addUpdate(status.str());
+									break;
+								}
+							default:
+								{
+									addUpdate("Unknown accessory command");
 								}
 						}
 						break;

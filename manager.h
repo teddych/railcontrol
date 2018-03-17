@@ -44,15 +44,18 @@ class Manager {
 		void locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction);
 		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
-		bool locoSave(const locoID_t locoID, const std::string& name, controlID_t& controlID, protocol_t& protocol, address_t& address);
+		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
 		bool locoDelete(const locoID_t locoID);
 		bool getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// accessory
 		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
+		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID);
 		const std::string& getAccessoryName(const accessoryID_t accessoryID);
+		const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const;
 		bool getAccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		bool getSwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+		bool accessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout);
+		bool accessoryDelete(const accessoryID_t accessoryID);
 
 		// feedback
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
@@ -68,6 +71,7 @@ class Manager {
 
 		// switch
 		const std::string& getSwitchName(const switchID_t switchID);
+		bool getSwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// street
 		datamodel::Street* getStreet(const streetID_t streetID);
@@ -84,6 +88,7 @@ class Manager {
 		bool autoMode;
 
 	private:
+		// FIXME: check usage of all mutexes
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;
 
 		// controls (Webserver, console & hardwareHandler. So each hardware is also added here).
@@ -103,6 +108,7 @@ class Manager {
 
 		// accessory
 		std::map<accessoryID_t,datamodel::Accessory*> accessories;
+		std::mutex accessoryMutex;
 
 		// feedback
 		std::map<feedbackID_t,datamodel::Feedback*> feedbacks;

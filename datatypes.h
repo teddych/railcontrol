@@ -54,6 +54,7 @@ typedef unsigned char locoState_t;
 #define ADDRESS_NONE 0
 #define LOCO_NONE 0
 #define BLOCK_NONE 0
+#define ACCESSORY_NONE 0
 #define STREET_NONE 0
 
 #define MAX_SPEED 1023

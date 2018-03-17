@@ -9,7 +9,17 @@ using std::string;
 
 namespace datamodel {
 
-	Accessory::Accessory(const accessoryID_t accessoryID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) :
+	Accessory::Accessory(const accessoryID_t accessoryID,
+		const std::string& name,
+		const layoutPosition_t x,
+		const layoutPosition_t y,
+		const layoutPosition_t z,
+		const controlID_t controlID,
+		const protocol_t protocol,
+		const address_t address,
+		const accessoryType_t type,
+		const accessoryState_t state,
+		const accessoryTimeout_t timeout) :
 		LayoutItem(accessoryID, name, ROTATION_0, /* width */ 1, /* height */ 1, x, y, z),
 		controlID(controlID),
 		protocol(protocol),

@@ -457,6 +457,86 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
 	return accessories.at(accessoryID)->name;
 }
 
+Accessory* Manager::getAccessory(const accessoryID_t accessoryID) {
+	std::lock_guard<std::mutex> Guard(accessoryMutex);
+	if (accessories.count(accessoryID) != 1) {
+		return NULL;
+	}
+	return accessories.at(accessoryID);
+}
+
+const std::map<accessoryID_t,datamodel::Accessory*>& Manager::accessoryList() const {
+	return accessories;
+}
+
+bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout) {
+	Accessory* accessory;
+	{
+		std::lock_guard<std::mutex> Guard(accessoryMutex);
+		if (accessoryID != ACCESSORY_NONE && accessories.count(accessoryID)) {
+			// update existing accessory
+			accessory = accessories.at(accessoryID);
+			if (accessory == nullptr) {
+				return false;
+			}
+			accessory->name = name;
+			accessory->posX = x;
+			accessory->posY = y;
+			accessory->posZ = z;
+			accessory->controlID = controlID;
+			accessory->protocol = protocol;
+			accessory->address = address;
+			accessory->type = type;
+			accessory->state = state;
+			accessory->timeout = timeout;
+		}
+		else {
+			// create new accessory
+			accessoryID_t newAccessoryID = 0;
+			// get next accessoryID
+			for (auto accessory : accessories) {
+				if (accessory.first > newAccessoryID) {
+					newAccessoryID = accessory.first;
+				}
+			}
+			++newAccessoryID;
+			accessory = new Accessory(newAccessoryID, name, x, y, z, controlID, protocol, address, type, state, timeout);
+			if (accessory == nullptr) {
+				return false;
+			}
+			// save in map
+			{
+				std::lock_guard<std::mutex> Guard(accessoryMutex);
+				accessories[newAccessoryID] = accessory;
+			}
+		}
+	}
+	// save in db
+	if (storage) {
+		storage->accessory(*accessory);
+	}
+	return true;
+}
+
+bool Manager::accessoryDelete(const accessoryID_t accessoryID) {
+	Accessory* accessory = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(accessoryMutex);
+		if (accessoryID == ACCESSORY_NONE || accessories.count(accessoryID) == 0) {
+			return false;
+		}
+
+		accessory = accessories.at(accessoryID);
+		accessories.erase(accessoryID);
+	}
+
+	delete accessory;
+	if (storage) {
+		storage->deleteAccessory(accessoryID);
+	}
+	return true;
+}
+
 const std::string& Manager::getBlockName(const blockID_t blockID) {
 	if (blocks.count(blockID) != 1) {
 		return unknownBlock;
@@ -507,7 +587,6 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 	if (storage) {
 		storage->block(*block);
 	}
-	// FIXME: no return value
 	return true;
 }
 
@@ -606,7 +685,7 @@ const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
 	return locos;
 }
 
-bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& controlID, protocol_t& protocol, address_t& address) {
+bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) {
 	Loco* loco;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
@@ -643,7 +722,6 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, controlID_t& c
 	if (storage) {
 		storage->loco(*loco);
 	}
-	// FIXME: no return value
 	return true;
 }
 
