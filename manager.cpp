@@ -224,12 +224,20 @@ void Manager::loadDefaultValuesToDB() {
 	storage->street(newStreet6);
 }
 
+/***************************
+* Booster                  *
+***************************/
+
 void Manager::booster(const managerID_t managerID, const boosterStatus_t status) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
 		control.second->booster(managerID, status);
 	}
 }
+
+/***************************
+* Control                  *
+***************************/
 
 bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip) {
 	if (controlID != CONTROL_ID_NONE && controlID < CONTROL_ID_FIRST_HARDWARE) {
@@ -306,46 +314,6 @@ bool Manager::controlDelete(controlID_t controlID) {
 	return true;
 }
 
-const std::map<controlID_t,hardware::HardwareParams*> Manager::controlList() const {
-	return hardwareParams;
-}
-
-const std::map<controlID_t,std::string> Manager::controlListNames() const {
-	std::map<controlID_t,std::string> ret;
-	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	for (auto hardware : hardwareParams) {
-		ret[hardware.first] = hardware.second->name;
-	}
-	return ret;
-}
-
-const std::map<protocol_t,std::string> Manager::protocolsOfControl(controlID_t controlID) const {
-	std::map<protocol_t,std::string> ret;
-	std::vector<protocol_t> protocols;
-	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	if (hardwareParams.count(controlID) == 1) {
-		std::lock_guard<std::mutex> Guard(controlMutex);
-		for (auto control : controls) {
-			if (control.second->getManagerID() != MANAGER_ID_HARDWARE) {
-				continue;
-			}
-			const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control.second);
-			if (hardware->getControlID() != controlID) {
-				continue;
-			}
-			hardware->getProtocols(protocols);
-			for(auto protocol : protocols) {
-				ret[protocol] = protocolSymbols[protocol];
-			}
-			return ret;
-		}
-	}
-	else {
-		ret[0] = protocolSymbols[0];
-	}
-	return ret;
-}
-
 HardwareParams* Manager::getHardware(controlID_t controlID) {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) != 1) {
@@ -391,48 +359,49 @@ bool Manager::hardwareLibraryRemove(const hardwareType_t hardwareType) {
 	return true;
 }
 
-bool Manager::getProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
-	std::lock_guard<std::mutex> Guard(locoMutex);
-	if (locos.count(locoID) < 1) {
-		controlID = 0;
-		protocol = PROTOCOL_NONE;
-		address = 0;
-		return false;
-	}
-	Loco* loco = locos.at(locoID);
-	controlID = loco->controlID;
-	protocol = loco->protocol;
-	address = loco->address;
-	return true;
+const std::map<controlID_t,hardware::HardwareParams*> Manager::controlList() const {
+	return hardwareParams;
 }
 
-bool Manager::getAccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
-	if (accessories.count(accessoryID) < 1) {
-		controlID = 0;
-		protocol = PROTOCOL_NONE;
-		address = 0;
-		return false;
+const std::map<controlID_t,std::string> Manager::controlListNames() const {
+	std::map<controlID_t,std::string> ret;
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	for (auto hardware : hardwareParams) {
+		ret[hardware.first] = hardware.second->name;
 	}
-	Accessory* accessory = accessories.at(accessoryID);
-	controlID = accessory->controlID;
-	protocol = accessory->protocol;
-	address = accessory->address;
-	return true;
+	return ret;
 }
 
-bool Manager::getSwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
-	if (switches.count(switchID) < 1) {
-		controlID = 0;
-		protocol = PROTOCOL_NONE;
-		address = 0;
-		return false;
+const std::map<protocol_t,std::string> Manager::protocolsOfControl(controlID_t controlID) const {
+	std::map<protocol_t,std::string> ret;
+	std::vector<protocol_t> protocols;
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	if (hardwareParams.count(controlID) == 1) {
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		for (auto control : controls) {
+			if (control.second->getManagerID() != MANAGER_ID_HARDWARE) {
+				continue;
+			}
+			const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control.second);
+			if (hardware->getControlID() != controlID) {
+				continue;
+			}
+			hardware->getProtocols(protocols);
+			for(auto protocol : protocols) {
+				ret[protocol] = protocolSymbols[protocol];
+			}
+			return ret;
+		}
 	}
-	Switch* mySwitch = switches.at(switchID);
-	controlID = mySwitch->controlID;
-	protocol = mySwitch->protocol;
-	address = mySwitch->address;
-	return true;
+	else {
+		ret[0] = protocolSymbols[0];
+	}
+	return ret;
 }
+
+/***************************
+* Loco                     *
+***************************/
 
 datamodel::Loco* Manager::getLoco(const locoID_t locoID) const {
 	std::lock_guard<std::mutex> Guard(locoMutex);
@@ -450,163 +419,85 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 	return locos.at(locoID)->name;
 }
 
-const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
-	if (accessories.count(accessoryID) != 1) {
-		return unknownAccessory;
-	}
-	return accessories.at(accessoryID)->name;
+const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
+	return locos;
 }
 
-Accessory* Manager::getAccessory(const accessoryID_t accessoryID) {
-	std::lock_guard<std::mutex> Guard(accessoryMutex);
-	if (accessories.count(accessoryID) != 1) {
-		return NULL;
-	}
-	return accessories.at(accessoryID);
-}
-
-const std::map<accessoryID_t,datamodel::Accessory*>& Manager::accessoryList() const {
-	return accessories;
-}
-
-bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout) {
-	Accessory* accessory;
+bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) {
+	Loco* loco;
 	{
-		std::lock_guard<std::mutex> Guard(accessoryMutex);
-		if (accessoryID != ACCESSORY_NONE && accessories.count(accessoryID)) {
-			// update existing accessory
-			accessory = accessories.at(accessoryID);
-			if (accessory == nullptr) {
+		std::lock_guard<std::mutex> Guard(locoMutex);
+		if (locoID != LOCO_NONE && locos.count(locoID)) {
+			// update existing loco
+			loco = locos.at(locoID);
+			if (loco == nullptr) {
 				return false;
 			}
-			accessory->name = name;
-			accessory->posX = x;
-			accessory->posY = y;
-			accessory->posZ = z;
-			accessory->controlID = controlID;
-			accessory->protocol = protocol;
-			accessory->address = address;
-			accessory->type = type;
-			accessory->state = state;
-			accessory->timeout = timeout;
+			loco->name = name;
+			loco->controlID = controlID;
+			loco->protocol = protocol;
+			loco->address = address;
 		}
 		else {
-			// create new accessory
-			accessoryID_t newAccessoryID = 0;
-			// get next accessoryID
-			for (auto accessory : accessories) {
-				if (accessory.first > newAccessoryID) {
-					newAccessoryID = accessory.first;
+			// create new loco
+			locoID_t newLocoID = 0;
+			// get next locoID
+			for (auto loco : locos) {
+				if (loco.first > newLocoID) {
+					newLocoID = loco.first;
 				}
 			}
-			++newAccessoryID;
-			accessory = new Accessory(newAccessoryID, name, x, y, z, controlID, protocol, address, type, state, timeout);
-			if (accessory == nullptr) {
+			++newLocoID;
+			loco = new Loco(this, newLocoID, name, controlID, protocol, address);
+			if (loco == nullptr) {
 				return false;
 			}
 			// save in map
-			accessories[newAccessoryID] = accessory;
+			locos[newLocoID] = loco;
 		}
 	}
 	// save in db
 	if (storage) {
-		storage->accessory(*accessory);
+		storage->loco(*loco);
 	}
 	return true;
 }
 
-bool Manager::accessoryDelete(const accessoryID_t accessoryID) {
-	Accessory* accessory = nullptr;
+bool Manager::locoDelete(const locoID_t locoID) {
+	Loco* loco = nullptr;
 	{
-		std::lock_guard<std::mutex> Guard(accessoryMutex);
-		if (accessoryID == ACCESSORY_NONE || accessories.count(accessoryID) == 0) {
+		std::lock_guard<std::mutex> Guard(locoMutex);
+		if (locoID == LOCO_NONE || locos.count(locoID) == 0) {
 			return false;
 		}
 
-		accessory = accessories.at(accessoryID);
-		accessories.erase(accessoryID);
+		loco = locos.at(locoID);
+		if (loco->isInUse()) {
+			return false;
+		}
+
+		locos.erase(locoID);
 	}
 
-	delete accessory;
+	delete loco;
 	if (storage) {
-		storage->deleteAccessory(accessoryID);
+		storage->deleteLoco(locoID);
 	}
 	return true;
 }
 
-const std::string& Manager::getBlockName(const blockID_t blockID) {
-	if (blocks.count(blockID) != 1) {
-		return unknownBlock;
+bool Manager::locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
+	std::lock_guard<std::mutex> Guard(locoMutex);
+	if (locos.count(locoID) < 1) {
+		controlID = 0;
+		protocol = PROTOCOL_NONE;
+		address = 0;
+		return false;
 	}
-	return blocks.at(blockID)->name;
-}
-
-const std::map<blockID_t,datamodel::Block*>& Manager::blockList() const {
-	return blocks;
-}
-
-bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {
-	Block* block;
-	{
-		std::lock_guard<std::mutex> Guard(blockMutex);
-		if (blockID != BLOCK_NONE && blocks.count(blockID)) {
-			// update existing block
-			block = blocks.at(blockID);
-			if (block == nullptr) {
-				return false;
-			}
-			block->name = name;
-			block->width = width;
-			block->rotation = rotation;
-			block->posX = posX;
-			block->posY = posY;
-			block->posZ = posZ;
-		}
-		else {
-			// create new block
-			blockID_t newblockID = 0;
-			// get next blockID
-			for (auto block : blocks) {
-				if (block.first > newblockID) {
-					newblockID = block.first;
-				}
-			}
-			++newblockID;
-			block = new Block(newblockID, name, width, rotation, posX, posY, posZ);
-			if (block == nullptr) {
-				return false;
-			}
-			// save in map
-			blocks[newblockID] = block;
-		}
-	}
-	// save in db
-	if (storage) {
-		storage->block(*block);
-	}
-	return true;
-}
-
-bool Manager::blockDelete(const blockID_t blockID) {
-	Block* block = nullptr;
-	{
-		std::lock_guard<std::mutex> Guard(blockMutex);
-		if (blockID == BLOCK_NONE || blocks.count(blockID) == 0) {
-			return false;
-		}
-
-		block = blocks.at(blockID);
-		if (block == nullptr || block->isInUse()) {
-			return false;
-		}
-
-		blocks.erase(blockID);
-	}
-
-	delete block;
-	if (storage) {
-		storage->deleteBlock(blockID);
-	}
+	Loco* loco = locos.at(locoID);
+	controlID = loco->controlID;
+	protocol = loco->protocol;
+	address = loco->address;
 	return true;
 }
 
@@ -678,72 +569,118 @@ void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, c
 	}
 }
 
-const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
-	return locos;
+/***************************
+* Accessory                *
+***************************/
+
+void Manager::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->accessory(managerID, accessoryID, state);
+	}
 }
 
-bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) {
-	Loco* loco;
+Accessory* Manager::getAccessory(const accessoryID_t accessoryID) {
+	std::lock_guard<std::mutex> Guard(accessoryMutex);
+	if (accessories.count(accessoryID) != 1) {
+		return NULL;
+	}
+	return accessories.at(accessoryID);
+}
+
+const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
+	if (accessories.count(accessoryID) != 1) {
+		return unknownAccessory;
+	}
+	return accessories.at(accessoryID)->name;
+}
+
+const std::map<accessoryID_t,datamodel::Accessory*>& Manager::accessoryList() const {
+	return accessories;
+}
+
+bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout) {
+	Accessory* accessory;
 	{
-		std::lock_guard<std::mutex> Guard(locoMutex);
-		if (locoID != LOCO_NONE && locos.count(locoID)) {
-			// update existing loco
-			loco = locos.at(locoID);
-			if (loco == nullptr) {
+		std::lock_guard<std::mutex> Guard(accessoryMutex);
+		if (accessoryID != ACCESSORY_NONE && accessories.count(accessoryID)) {
+			// update existing accessory
+			accessory = accessories.at(accessoryID);
+			if (accessory == nullptr) {
 				return false;
 			}
-			loco->name = name;
-			loco->controlID = controlID;
-			loco->protocol = protocol;
-			loco->address = address;
+			accessory->name = name;
+			accessory->posX = x;
+			accessory->posY = y;
+			accessory->posZ = z;
+			accessory->controlID = controlID;
+			accessory->protocol = protocol;
+			accessory->address = address;
+			accessory->type = type;
+			accessory->state = state;
+			accessory->timeout = timeout;
 		}
 		else {
-			// create new loco
-			locoID_t newLocoID = 0;
-			// get next locoID
-			for (auto loco : locos) {
-				if (loco.first > newLocoID) {
-					newLocoID = loco.first;
+			// create new accessory
+			accessoryID_t newAccessoryID = 0;
+			// get next accessoryID
+			for (auto accessory : accessories) {
+				if (accessory.first > newAccessoryID) {
+					newAccessoryID = accessory.first;
 				}
 			}
-			++newLocoID;
-			loco = new Loco(this, newLocoID, name, controlID, protocol, address);
-			if (loco == nullptr) {
+			++newAccessoryID;
+			accessory = new Accessory(newAccessoryID, name, x, y, z, controlID, protocol, address, type, state, timeout);
+			if (accessory == nullptr) {
 				return false;
 			}
 			// save in map
-			locos[newLocoID] = loco;
+			accessories[newAccessoryID] = accessory;
 		}
 	}
 	// save in db
 	if (storage) {
-		storage->loco(*loco);
+		storage->accessory(*accessory);
 	}
 	return true;
 }
 
-bool Manager::locoDelete(const locoID_t locoID) {
-	Loco* loco = nullptr;
+bool Manager::accessoryDelete(const accessoryID_t accessoryID) {
+	Accessory* accessory = nullptr;
 	{
-		std::lock_guard<std::mutex> Guard(locoMutex);
-		if (locoID == LOCO_NONE || locos.count(locoID) == 0) {
+		std::lock_guard<std::mutex> Guard(accessoryMutex);
+		if (accessoryID == ACCESSORY_NONE || accessories.count(accessoryID) == 0) {
 			return false;
 		}
 
-		loco = locos.at(locoID);
-		if (loco->isInUse()) {
-			return false;
-		}
-
-		locos.erase(locoID);
+		accessory = accessories.at(accessoryID);
+		accessories.erase(accessoryID);
 	}
 
-	delete loco;
+	delete accessory;
 	if (storage) {
-		storage->deleteLoco(locoID);
+		storage->deleteAccessory(accessoryID);
 	}
 	return true;
 }
+
+bool Manager::accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
+	if (accessories.count(accessoryID) < 1) {
+		controlID = 0;
+		protocol = PROTOCOL_NONE;
+		address = 0;
+		return false;
+	}
+	Accessory* accessory = accessories.at(accessoryID);
+	controlID = accessory->controlID;
+	protocol = accessory->protocol;
+	address = accessory->address;
+	return true;
+}
+
+/***************************
+* Feedback                 *
+***************************/
 
 void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	Feedback* feedback = getFeedback(pin);
@@ -843,12 +780,9 @@ bool Manager::feedbackDelete(const feedbackID_t feedbackID) {
 	return true;
 }
 
-void Manager::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
-	std::lock_guard<std::mutex> Guard(controlMutex);
-	for (auto control : controls) {
-		control.second->accessory(managerID, accessoryID, state);
-	}
-}
+/***************************
+* Block                    *
+***************************/
 
 void Manager::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
@@ -865,11 +799,105 @@ Block* Manager::getBlock(const blockID_t blockID) {
 	return blocks.at(blockID);
 }
 
+const std::string& Manager::getBlockName(const blockID_t blockID) {
+	if (blocks.count(blockID) != 1) {
+		return unknownBlock;
+	}
+	return blocks.at(blockID)->name;
+}
+
+const std::map<blockID_t,datamodel::Block*>& Manager::blockList() const {
+	return blocks;
+}
+
+bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {
+	Block* block;
+	{
+		std::lock_guard<std::mutex> Guard(blockMutex);
+		if (blockID != BLOCK_NONE && blocks.count(blockID)) {
+			// update existing block
+			block = blocks.at(blockID);
+			if (block == nullptr) {
+				return false;
+			}
+			block->name = name;
+			block->width = width;
+			block->rotation = rotation;
+			block->posX = posX;
+			block->posY = posY;
+			block->posZ = posZ;
+		}
+		else {
+			// create new block
+			blockID_t newblockID = 0;
+			// get next blockID
+			for (auto block : blocks) {
+				if (block.first > newblockID) {
+					newblockID = block.first;
+				}
+			}
+			++newblockID;
+			block = new Block(newblockID, name, width, rotation, posX, posY, posZ);
+			if (block == nullptr) {
+				return false;
+			}
+			// save in map
+			blocks[newblockID] = block;
+		}
+	}
+	// save in db
+	if (storage) {
+		storage->block(*block);
+	}
+	return true;
+}
+
+bool Manager::blockDelete(const blockID_t blockID) {
+	Block* block = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(blockMutex);
+		if (blockID == BLOCK_NONE || blocks.count(blockID) == 0) {
+			return false;
+		}
+
+		block = blocks.at(blockID);
+		if (block == nullptr || block->isInUse()) {
+			return false;
+		}
+
+		blocks.erase(blockID);
+	}
+
+	delete block;
+	if (storage) {
+		storage->deleteBlock(blockID);
+	}
+	return true;
+}
+
+/***************************
+* Switch                   *
+***************************/
+
 const std::string& Manager::getSwitchName(const switchID_t switchID) {
 	if (switches.count(switchID) != 1) {
 		return unknownSwitch;
 	}
 	return switches.at(switchID)->name;
+}
+
+bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
+	if (switches.count(switchID) < 1) {
+		controlID = 0;
+		protocol = PROTOCOL_NONE;
+		address = 0;
+		return false;
+	}
+	Switch* mySwitch = switches.at(switchID);
+	controlID = mySwitch->controlID;
+	protocol = mySwitch->protocol;
+	address = mySwitch->address;
+	return true;
 }
 
 Street* Manager::getStreet(const streetID_t streetID) {
@@ -886,6 +914,10 @@ const string& Manager::getStreetName(const streetID_t streetID) {
 	}
 	return streets.at(streetID)->name;
 }
+
+/***************************
+* Automode                 *
+***************************/
 
 bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	Block* block = getBlock(blockID);

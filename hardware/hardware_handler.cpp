@@ -132,7 +132,7 @@ namespace hardware {
 			controlID_t controlID = 0;
 			protocol_t protocol = PROTOCOL_NONE;
 			address_t address = ADDRESS_NONE;
-			manager.getProtocolAddress(locoID, controlID, protocol, address);
+			manager.locoProtocolAddress(locoID, controlID, protocol, address);
 			if (controlID == getControlID()) {
 				instance->locoSpeed(protocol, address, speed);
 			}
@@ -144,7 +144,7 @@ namespace hardware {
 			controlID_t controlID = 0;
 			protocol_t protocol = PROTOCOL_NONE;
 			address_t address = ADDRESS_NONE;
-			manager.getProtocolAddress(locoID, controlID, protocol, address);
+			manager.locoProtocolAddress(locoID, controlID, protocol, address);
 			if (controlID == getControlID()) {
 				instance->locoDirection(protocol, address, direction);
 			}
@@ -156,7 +156,7 @@ namespace hardware {
 			controlID_t controlID = 0;
 			protocol_t protocol = PROTOCOL_NONE;
 			address_t address = ADDRESS_NONE;
-			manager.getProtocolAddress(locoID, controlID, protocol, address);
+			manager.locoProtocolAddress(locoID, controlID, protocol, address);
 			if (controlID == getControlID()) {
 				instance->locoFunction(protocol, address, function, on);
 			}
@@ -168,7 +168,7 @@ namespace hardware {
 			controlID_t controlID = 0;
 			protocol_t protocol = PROTOCOL_NONE;
 			address_t address = ADDRESS_NONE;
-			manager.getAccessoryProtocolAddress(accessoryID, controlID, protocol, address);
+			manager.accessoryProtocolAddress(accessoryID, controlID, protocol, address);
 			if (controlID == getControlID()) {
 				instance->accessory(protocol, address, state);
 			}
@@ -180,7 +180,7 @@ namespace hardware {
 			controlID_t controlID = 0;
 			protocol_t protocol = PROTOCOL_NONE;
 			address_t address = ADDRESS_NONE;
-			manager.getSwitchProtocolAddress(switchID, controlID, protocol, address);
+			manager.switchProtocolAddress(switchID, controlID, protocol, address);
 			if (controlID == getControlID()) {
 				instance->accessory(protocol, address, state);
 			}
