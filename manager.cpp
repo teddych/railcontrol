@@ -359,10 +359,6 @@ bool Manager::hardwareLibraryRemove(const hardwareType_t hardwareType) {
 	return true;
 }
 
-const std::map<controlID_t,hardware::HardwareParams*> Manager::controlList() const {
-	return hardwareParams;
-}
-
 const std::map<controlID_t,std::string> Manager::controlListNames() const {
 	std::map<controlID_t,std::string> ret;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
@@ -417,10 +413,6 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 		return unknownLoco;
 	}
 	return locos.at(locoID)->name;
-}
-
-const std::map<locoID_t,datamodel::Loco*>& Manager::locoList() const {
-	return locos;
 }
 
 bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) {
@@ -595,10 +587,6 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
 	return accessories.at(accessoryID)->name;
 }
 
-const std::map<accessoryID_t,datamodel::Accessory*>& Manager::accessoryList() const {
-	return accessories;
-}
-
 bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout) {
 	Accessory* accessory;
 	{
@@ -711,10 +699,6 @@ const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) {
 	return feedbacks.at(feedbackID)->name;
 }
 
-const std::map<feedbackID_t,datamodel::Feedback*>& Manager::feedbackList() const {
-	return feedbacks;
-}
-
 bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin) {
 	Feedback* feedback;
 	{
@@ -804,10 +788,6 @@ const std::string& Manager::getBlockName(const blockID_t blockID) {
 		return unknownBlock;
 	}
 	return blocks.at(blockID)->name;
-}
-
-const std::map<blockID_t,datamodel::Block*>& Manager::blockList() const {
-	return blocks;
 }
 
 bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {

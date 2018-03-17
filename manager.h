@@ -30,14 +30,14 @@ class Manager {
 		bool hardwareLibraryRemove(const hardwareType_t hardwareType);
 
 		// control (console, web, ...)
-		const std::map<controlID_t,hardware::HardwareParams*> controlList() const;
+		inline const std::map<controlID_t,hardware::HardwareParams*> controlList() const { return hardwareParams; }
 		const std::map<controlID_t,std::string> controlListNames() const;
 		const std::map<protocol_t,std::string> protocolsOfControl(controlID_t) const;
 
 		// loco
 		datamodel::Loco* getLoco(const locoID_t locoID) const;
 		const std::string& getLocoName(const locoID_t locoID);
-		const std::map<locoID_t,datamodel::Loco*>& locoList() const;
+		inline const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
 		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
@@ -52,7 +52,7 @@ class Manager {
 		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
 		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID);
 		const std::string& getAccessoryName(const accessoryID_t accessoryID);
-		const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const;
+		inline const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
 		bool accessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout);
 		bool accessoryDelete(const accessoryID_t accessoryID);
 		bool accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
@@ -61,7 +61,7 @@ class Manager {
 		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
 		const std::string& getFeedbackName(const feedbackID_t feedbackID);
-		const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const;
+		inline const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
 		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin);
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
@@ -69,7 +69,7 @@ class Manager {
 		void block(const managerID_t managerID, const feedbackID_t feedbackID, const blockState_t);
 		datamodel::Block* getBlock(const blockID_t blockID);
 		const std::string& getBlockName(const blockID_t blockID);
-		const std::map<blockID_t,datamodel::Block*>& blockList() const;
+		inline const std::map<blockID_t,datamodel::Block*>& blockList() const { return blocks; }
 		bool blockSave(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
 		bool blockDelete(const blockID_t blockID);
 
