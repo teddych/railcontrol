@@ -505,10 +505,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 				return false;
 			}
 			// save in map
-			{
-				std::lock_guard<std::mutex> Guard(accessoryMutex);
-				accessories[newAccessoryID] = accessory;
-			}
+			accessories[newAccessoryID] = accessory;
 		}
 	}
 	// save in db
