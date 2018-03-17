@@ -171,6 +171,83 @@ namespace console {
 		return text;
 	}
 
+	switchType_t Console::readSwitchType(string& s, size_t& i) {
+		switchType_t type;
+		switch (s[i]) {
+			case 'l':
+			case 'L':
+				type = SWITCH_LEFT;
+				i++;
+				break;
+			case 'r':
+			case 'R':
+				type = SWITCH_RIGHT;
+				i++;
+				break;
+			default:
+				type = readNumber(s, i);
+				break;
+		}
+		return type;
+	}
+
+	layoutRotation_t Console::readRotation(string& s, size_t& i) {
+		uint16_t rotation;
+		switch (s[i]) {
+			case 'n':
+			case 'N':
+			case 't':
+			case 'T': // north/top
+				rotation = ROTATION_0;
+				i++;
+				break;
+			case 'e':
+			case 'E':
+			case 'r':
+			case 'R': // east/right
+				rotation = ROTATION_90;
+				i++;
+				break;
+			case 's':
+			case 'S':
+			case 'b':
+			case 'B': // south/bottom
+				rotation = ROTATION_180;
+				i++;
+				break;
+			case 'w':
+			case 'W':
+			case 'l':
+			case 'L': // west/left
+				rotation = ROTATION_270;
+				i++;
+				break;
+			default:
+				rotation = readNumber(s, i);
+				switch (rotation) {
+					case ROTATION_0:
+					case ROTATION_90:
+					case ROTATION_180:
+					case ROTATION_270:
+						break;
+					case 90:
+						rotation = ROTATION_90;
+						break;
+					case 180:
+						rotation = ROTATION_180;
+						break;
+					case 270:
+						rotation = ROTATION_270;
+						break;
+					default:
+						rotation = ROTATION_0;
+						break;
+				}
+				break;
+		}
+		return (layoutRotation_t)rotation;
+	}
+
 	void Console::handleClient() {
 		addUpdate("Welcome to railcontrol console!\nType h for help\n");
 		char buffer_in[1024];
@@ -253,12 +330,8 @@ namespace console {
 									readBlanks(s, i);
 									address_t address = readNumber(s, i);
 									readBlanks(s, i);
-									accessoryType_t type = readNumber(s, i);
-									readBlanks(s, i);
-									accessoryState_t state = readNumber(s, i);
-									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
-									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, type, state, timeout)) {
+									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, ACCESSORY_TYPE_DEFAULT, ACCESSORY_STATE_OFF, timeout)) {
 										addUpdate("Unable to add accessory");
 										break;
 									}
@@ -326,7 +399,7 @@ namespace console {
 									readBlanks(s, i);
 									layoutItemSize_t width = readNumber(s, i);
 									readBlanks(s, i);
-									layoutRotation_t rotation = readNumber(s, i);
+									layoutRotation_t rotation = readRotation(s, i);
 									readBlanks(s, i);
 									layoutPosition_t posX = readNumber(s, i);
 									readBlanks(s, i);
@@ -663,7 +736,7 @@ namespace console {
 								"A D accessory#                    Delete accessory\n"
 								"A L A                             List all accessories\n"
 								"A L accessory#                    List accessory\n"
-								"A N Name X Y Z Control Protocol Address Type State Timeout\n"
+								"A N Name X Y Z Control Protocol Address Timeout(ms)\n"
 								"                                  New Accessory\n"
 								"\n"
 								"Block commands\n"
@@ -701,7 +774,11 @@ namespace console {
 								"T L A                             List all streets\n"
 								"\n"
 								"Switch commands\n"
+								"W D switch#                       Delete switch\n"
 								"W L A                             List all switches\n"
+								"W L switch#                       List switch\n"
+								"W N Name Rotation X Y Z Control Protocol Address Type(L/R) Timeout(ms)\n"
+								"                                  New Switch\n"
 								"\n"
 								"Other commands\n"
 								"H                                 Show this help\n"
@@ -775,7 +852,7 @@ namespace console {
 									readBlanks(s, i);
 									string name = readText(s, i);
 									readBlanks(s, i);
-									layoutRotation_t rotation = readNumber(s, i);
+									layoutRotation_t rotation = readRotation(s, i);
 									readBlanks(s, i);
 									layoutPosition_t posX = readNumber(s, i);
 									readBlanks(s, i);
@@ -789,12 +866,10 @@ namespace console {
 									readBlanks(s, i);
 									address_t address = readNumber(s, i);
 									readBlanks(s, i);
-									accessoryType_t type = readNumber(s, i);
-									readBlanks(s, i);
-									accessoryState_t state = readNumber(s, i);
+									accessoryType_t type = readSwitchType(s, i);
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
-									if (!manager.switchSave(SWITCH_NONE, name, rotation, posX, posY, posZ, controlID, protocol, address, type, state, timeout)) {
+									if (!manager.switchSave(SWITCH_NONE, name, rotation, posX, posY, posZ, controlID, protocol, address, type, SWITCH_STRAIGHT, timeout)) {
 										addUpdate("Unable to add switch");
 										break;
 									}

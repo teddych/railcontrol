@@ -152,6 +152,10 @@ enum accessoryColor : accessoryColor_t {
 	ACCESSORY_COLOR_WHITE
 };
 
+enum accessoryType : accessoryType_t {
+	ACCESSORY_TYPE_DEFAULT = 0
+};
+
 enum accessoryState : accessoryState_t {
 	ACCESSORY_STATE_OFF = 0,
 	ACCESSORY_STATE_ON
