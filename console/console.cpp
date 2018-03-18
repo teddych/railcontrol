@@ -271,7 +271,15 @@ namespace console {
 			size_t pos = 0;
 			string s;
 			while(run && pos < sizeof(buffer_in) - 1 && s.find("\n") == string::npos && s.find("\r") == string::npos) {
-				pos += recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+				ssize_t ret = recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+				if (ret <= 0) {
+					if (errno == ETIMEDOUT) {
+						continue;
+					}
+					close(clientSocket);
+					return;
+				}
+				pos += ret;
 				s = string(buffer_in);
 			}
 
