@@ -191,7 +191,6 @@ namespace console {
 	}
 
 	layoutRotation_t Console::readRotation(string& s, size_t& i) {
-		uint16_t rotation;
 		if (s.length() <= i) {
 			return ROTATION_0;
 		}
@@ -221,7 +220,7 @@ namespace console {
 				i++;
 				return ROTATION_270;
 			default:
-				rotation = readNumber(s, i);
+				uint16_t rotation = readNumber(s, i);
 				switch (rotation) {
 					case ROTATION_90:
 					case ROTATION_180:
@@ -236,6 +235,30 @@ namespace console {
 					default:
 						return ROTATION_0;
 				}
+		}
+	}
+
+	direction_t Console::readDirection(string& s, size_t& i) {
+		if (s.length() <= i) {
+			return DIRECTION_LEFT;
+		}
+		switch (s[i]) {
+			case 'l':
+			case 'L':
+			case '-':
+				i++;
+				return DIRECTION_LEFT;
+			case 'r':
+			case 'R':
+			case '+':
+				i++;
+				return DIRECTION_RIGHT;
+			default:
+				unsigned char direction = readNumber(s, i);
+				if (direction == 0) {
+					return DIRECTION_LEFT;
+				}
+				return DIRECTION_RIGHT;
 		}
 	}
 
@@ -762,7 +785,11 @@ namespace console {
 								"L S loco# speed                   Set loco speed between 0 and 1024\n"
 								"\n"
 								"Street commands\n"
+								"T D street#                       Delete street\n"
 								"T L A                             List all streets\n"
+								"T L street#                       List street\n"
+								"T N Name FromBlock FromDirektion ToBlock ToDirection FeedbackStop\n"
+								"                                  New Feedback\n"
 								"\n"
 								"Switch commands\n"
 								"W D switch#                       Delete switch\n"
@@ -778,16 +805,91 @@ namespace console {
 						addUpdate(status);
 						break;
 					}
+				case 't':
+				case 'T': // steet commands
+					{
+						readBlanks(s, i);
+						char subcmd = s[i];
+						i++;
+						switch (subcmd) {
+							case 'd':
+							case 'D': // delete street
+								{
+									readBlanks(s, i);
+									streetID_t streetID = readNumber(s, i);
+									if (!manager.streetDelete(streetID)) {
+										addUpdate("Street not found or street in use");
+										break;
+									}
+									addUpdate("Street deleted");
+									break;
+								}
+							case 'l':
+							case 'L': // list streets
+								{
+									readBlanks(s, i);
+									if (s[i] == 'a') { // list all streetes
+										std::map<streetID_t,datamodel::Street*> streets = manager.streetList();
+										stringstream status;
+										for (auto street : streets) {
+											status << street.first << " " << street.second->name << "\n";
+										}
+										status << "Total number of streets: " << streets.size();
+										addUpdate(status.str());
+										break;
+									}
+									streetID_t streetID = readNumber(s, i);
+									datamodel::Street* street = manager.getStreet(streetID);
+									if (street == nullptr) {
+										addUpdate("Unknwown street");
+										break;
+									}
+									stringstream status;
+									status << streetID << " " << street->name;
+									addUpdate(status.str());
+									break;
+								}
+							case 'n':
+							case 'N': // new street
+								{
+									readBlanks(s, i);
+									string name = readText(s, i);
+									readBlanks(s, i);
+									blockID_t fromBlock = readNumber(s, i);
+									readBlanks(s, i);
+									direction_t fromDirection = readDirection(s, i);
+									readBlanks(s, i);
+									blockID_t toBlock = readNumber(s, i);
+									readBlanks(s, i);
+									direction_t toDirection = readDirection(s, i);
+									readBlanks(s, i);
+									feedbackID_t feedbackID = readNumber(s, i);
+									if (!manager.streetSave(STREET_NONE, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID)) {
+										addUpdate("Unable to add street");
+										break;
+									}
+									stringstream status;
+									status << "street \"" << name << "\" added";
+									addUpdate(status.str());
+									break;
+								}
+							default:
+								{
+									addUpdate("Unknown street command");
+								}
+						}
+						break;
+					}
 				case 's':
 				case 'S': // shut down railcontrol
 					{
 						string status("Shutting down railcontrol");
 						addUpdate(status);
 						stopRailControlConsole();
-						// no break, fall throught
+						// no break, fall throught to quit
 					}
 				case 'q':
-				case 'Q': // quit
+				case 'Q': // quit (must be next to shut down!)
 					{
 						addUpdate("Quit railcontrol console");
 						close(clientSocket);

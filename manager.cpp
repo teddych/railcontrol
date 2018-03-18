@@ -874,35 +874,6 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) {
 	return switches.at(switchID)->name;
 }
 
-bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
-	if (switches.count(switchID) < 1) {
-		controlID = 0;
-		protocol = PROTOCOL_NONE;
-		address = 0;
-		return false;
-	}
-	Switch* mySwitch = switches.at(switchID);
-	controlID = mySwitch->controlID;
-	protocol = mySwitch->protocol;
-	address = mySwitch->address;
-	return true;
-}
-
-Street* Manager::getStreet(const streetID_t streetID) {
-	std::lock_guard<std::mutex> Guard(streetMutex);
-	if (streets.count(streetID) != 1) {
-		return NULL;
-	}
-	return streets.at(streetID);
-}
-
-const string& Manager::getStreetName(const streetID_t streetID) {
-	if (streets.count(streetID) != 1) {
-		return unknownStreet;
-	}
-	return streets.at(streetID)->name;
-}
-
 bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout) {
 	Switch* mySwitch;
 	{
@@ -969,6 +940,99 @@ bool Manager::switchDelete(const switchID_t switchID) {
 	return true;
 }
 
+bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
+	if (switches.count(switchID) < 1) {
+		controlID = 0;
+		protocol = PROTOCOL_NONE;
+		address = 0;
+		return false;
+	}
+	Switch* mySwitch = switches.at(switchID);
+	controlID = mySwitch->controlID;
+	protocol = mySwitch->protocol;
+	address = mySwitch->address;
+	return true;
+}
+
+/***************************
+* Street                   *
+***************************/
+
+Street* Manager::getStreet(const streetID_t streetID) {
+	std::lock_guard<std::mutex> Guard(streetMutex);
+	if (streets.count(streetID) != 1) {
+		return NULL;
+	}
+	return streets.at(streetID);
+}
+
+const string& Manager::getStreetName(const streetID_t streetID) {
+	if (streets.count(streetID) != 1) {
+		return unknownStreet;
+	}
+	return streets.at(streetID)->name;
+}
+
+bool Manager::streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID) {
+	Street* street;
+	{
+		std::lock_guard<std::mutex> Guard(streetMutex);
+		if (streetID != STREET_NONE && streets.count(streetID)) {
+			// update existing street
+			street = streets.at(streetID);
+			if (street == nullptr) {
+				return false;
+			}
+			street->name = name;
+			street->fromBlock = fromBlock;
+			street->fromDirection = fromDirection;
+			street->toBlock = toBlock;
+			street->toDirection = toDirection;
+			street->feedbackIDStop = feedbackID;
+		}
+		else {
+			// create new street
+			streetID_t newStreetID = 0;
+			// get next streetID
+			for (auto street : streets) {
+				if (street.first > newStreetID) {
+					newStreetID = street.first;
+				}
+			}
+			++newStreetID;
+			street = new Street(this, newStreetID, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID);
+			if (street == nullptr) {
+				return false;
+			}
+			// save in map
+			streets[newStreetID] = street;
+		}
+	}
+	// save in db
+	if (storage) {
+		storage->street(*street);
+	}
+	return true;
+}
+
+bool Manager::streetDelete(const streetID_t streetID) {
+	Street* street = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(streetMutex);
+		if (streetID == STREET_NONE || streets.count(streetID) == 0) {
+			return false;
+		}
+
+		street = streets.at(streetID);
+		streets.erase(streetID);
+	}
+
+	delete street;
+	if (storage) {
+		storage->deleteStreet(streetID);
+	}
+	return true;
+}
 
 /***************************
 * Automode                 *

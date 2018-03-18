@@ -76,15 +76,17 @@ class Manager {
 		// switch
 		datamodel::Switch* getSwitch(const switchID_t switchID);
 		const std::string& getSwitchName(const switchID_t switchID);
-		bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
 		bool switchSave(const switchID_t switchID, const std::string& name, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout);
 		bool switchDelete(const switchID_t switchID);
-		//bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+		bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// street
 		datamodel::Street* getStreet(const streetID_t streetID);
 		const std::string& getStreetName(const streetID_t streetID);
+		inline const std::map<streetID_t,datamodel::Street*>& streetList() const { return streets; }
+		bool streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID);
+		bool streetDelete(const streetID_t streetID);
 
 		// automode
 		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);

@@ -172,6 +172,11 @@ enum blockState : blockState_t {
 	BLOCK_STATE_LOCKED
 };
 
+enum directionState : direction_t {
+	DIRECTION_LEFT = false,
+	DIRECTION_RIGHT = true
+};
+
 enum streetState : streetState_t {
 	STREET_STATE_FREE = 0,
 	STREET_STATE_RESERVED,

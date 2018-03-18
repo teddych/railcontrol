@@ -37,6 +37,7 @@ namespace console {
             static std::string readText(std::string& s, size_t& i);
 			static switchType_t readSwitchType(std::string& s, size_t& i);
 			static layoutRotation_t readRotation(std::string& s, size_t& i);
+			static direction_t readDirection(std::string& s, size_t& i);
 
 			unsigned short port;
 			int serverSocket;

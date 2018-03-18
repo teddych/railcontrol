@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_STREET_H
-#define DATAMODEL_STREET_H
+#pragma once
 
 #include <mutex>
 #include <string>
@@ -27,14 +26,15 @@ namespace datamodel {
 
 			blockID_t destinationBlock();
 
-		private:
-			Manager* manager;
-			streetState_t state;
 			blockID_t fromBlock;
 			direction_t fromDirection;
 			blockID_t toBlock;
 			direction_t toDirection;
 			feedbackID_t feedbackIDStop;
+
+		private:
+			Manager* manager;
+			streetState_t state;
 			locoID_t locoID;
 			std::mutex updateMutex;
 	};
@@ -49,4 +49,3 @@ namespace datamodel {
 
 } // namespace datamodel
 
-#endif // DATAMODEL_STREET_H

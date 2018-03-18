@@ -13,13 +13,13 @@ namespace datamodel {
 
 	Street::Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackIDStop) :
 		Object(streetID, name),
-		manager(manager),
-		state(STREET_STATE_FREE),
 		fromBlock(fromBlock),
 		fromDirection(fromDirection),
 		toBlock(toBlock),
 		toDirection(toDirection),
 		feedbackIDStop(feedbackIDStop),
+		manager(manager),
+		state(STREET_STATE_FREE),
 		locoID(LOCO_NONE) {
 		Block* block = manager->getBlock(fromBlock);
 		if (!block) return;
