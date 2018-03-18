@@ -15,7 +15,6 @@ class Manager {
 	public:
 		Manager(Config& config);
 		~Manager();
-		void loadDefaultValuesToDB();
 
 		// booster
 		void booster(const managerID_t managerID, const boosterStatus_t status);
@@ -70,14 +69,14 @@ class Manager {
 		datamodel::Block* getBlock(const blockID_t blockID);
 		const std::string& getBlockName(const blockID_t blockID);
 		inline const std::map<blockID_t,datamodel::Block*>& blockList() const { return blocks; }
-		bool blockSave(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
+		bool blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation);
 		bool blockDelete(const blockID_t blockID);
 
 		// switch
 		datamodel::Switch* getSwitch(const switchID_t switchID);
 		const std::string& getSwitchName(const switchID_t switchID);
 		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
-		bool switchSave(const switchID_t switchID, const std::string& name, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout);
+		bool switchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout);
 		bool switchDelete(const switchID_t switchID);
 		bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
@@ -88,6 +87,9 @@ class Manager {
 		bool streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID);
 		bool streetDelete(const streetID_t streetID);
 
+		// layout
+		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation);
+
 		// automode
 		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);
 		bool locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
@@ -96,9 +98,19 @@ class Manager {
 		bool locoStop(const locoID_t locoID);
 		bool locoStartAll();
 		bool locoStopAll();
+
 		bool autoMode;
 
 	private:
+		void loadDefaultValuesToDB();
+
+		// layout
+		bool mapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
+		bool checkAccessoryPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
+		bool checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
+		bool checkFeedbackPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
+		bool checkSwitchPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
+
 		// FIXME: check usage of all mutexes
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;
 

@@ -13,7 +13,7 @@ namespace datamodel {
 
 	class Block : public LayoutItem {
 		public:
-			Block(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z);
+			Block(const blockID_t blockID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutItemSize_t width, const layoutRotation_t rotation);
 			Block(const std::string& serialized);
 
 			std::string serialize() const override;

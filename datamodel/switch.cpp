@@ -11,17 +11,17 @@ namespace datamodel {
 
 	Switch::Switch(switchID_t switchID,
 		std::string name,
-		layoutRotation_t rotation,
 		layoutPosition_t x,
 		layoutPosition_t y,
 		layoutPosition_t z,
+		layoutRotation_t rotation,
 		controlID_t controlID,
 		protocol_t protocol,
 		address_t address,
 		switchType_t type,
 		switchState_t state,
 		switchTimeout_t timeout) :
-		Accessory(switchID, name, rotation, x, y, z, controlID, protocol, address, type, state << 1, timeout) {
+		Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, state << 1, timeout) {
 	}
 
 	Switch::Switch(const std::string& serialized) {

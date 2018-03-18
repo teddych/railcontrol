@@ -353,6 +353,12 @@ namespace console {
 									address_t address = readNumber(s, i);
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
+									if (!manager.checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0)) {
+										stringstream status;
+										status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is alread used. Unable to add accessory";
+										addUpdate(status.str());
+										break;
+									}
 									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, ACCESSORY_TYPE_DEFAULT, ACCESSORY_STATE_OFF, timeout)) {
 										addUpdate("Unable to add accessory");
 										break;
@@ -419,16 +425,22 @@ namespace console {
 									readBlanks(s, i);
 									string name = readText(s, i);
 									readBlanks(s, i);
-									layoutItemSize_t width = readNumber(s, i);
-									readBlanks(s, i);
-									layoutRotation_t rotation = readRotation(s, i);
-									readBlanks(s, i);
 									layoutPosition_t posX = readNumber(s, i);
 									readBlanks(s, i);
 									layoutPosition_t posY = readNumber(s, i);
 									readBlanks(s, i);
 									layoutPosition_t posZ = readNumber(s, i);
-									if (!manager.blockSave(BLOCK_NONE, name, width, rotation, posX, posY, posZ)) {
+									readBlanks(s, i);
+									layoutItemSize_t width = readNumber(s, i);
+									readBlanks(s, i);
+									layoutRotation_t rotation = readRotation(s, i);
+									if (!manager.checkPositionFree(posX, posY, posZ, width, HEIGHT_1, rotation)) {
+										stringstream status;
+										status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is alread used. Unable to add block";
+										addUpdate(status.str());
+										break;
+									}
+									if (!manager.blockSave(BLOCK_NONE, name, posX, posY, posZ, width, rotation)) {
 										addUpdate("Unable to add block");
 										break;
 									}
@@ -583,6 +595,12 @@ namespace console {
 									controlID_t control = readNumber(s, i);
 									readBlanks(s, i);
 									feedbackPin_t pin = readNumber(s, i);
+									if (!manager.checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0)) {
+										stringstream status;
+										status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is alread used. Unable to add feedback";
+										addUpdate(status.str());
+										break;
+									}
 									if(!manager.feedbackSave(FEEDBACK_NONE, name, posX, posY, posZ, control, pin)) {
 										addUpdate("Unable to add feedback");
 										break;
@@ -765,7 +783,7 @@ namespace console {
 								"B D block#                        Delete block\n"
 								"B L A                             List all blocks\n"
 								"B L block#                        List block\n"
-								"B N Name Width Rotation X Y Z     New block\n"
+								"B N Name X Y Z Width Rotation     New block\n"
 								"\n"
 								"Control commands\n"
 								"C D control#                      Delete control\n"
@@ -803,7 +821,7 @@ namespace console {
 								"W D switch#                       Delete switch\n"
 								"W L A                             List all switches\n"
 								"W L switch#                       List switch\n"
-								"W N Name Rotation X Y Z Control Protocol Address Type(L/R) Timeout(ms)\n"
+								"W N Name X Y Z Rotation Control Protocol Address Type(L/R) Timeout(ms)\n"
 								"                                  New Switch\n"
 								"\n"
 								"Other commands\n"
@@ -812,6 +830,15 @@ namespace console {
 								"S                                 Shut down railcontrol\n");
 						addUpdate(status);
 						break;
+					}
+				case 's':
+				case 'S': // shut down railcontrol
+					{
+						string status("Shutting down railcontrol");
+						addUpdate(status);
+						stopRailControlConsole();
+						close(clientSocket);
+						return;
 					}
 				case 't':
 				case 'T': // steet commands
@@ -888,14 +915,6 @@ namespace console {
 						}
 						break;
 					}
-				case 's':
-				case 'S': // shut down railcontrol
-					{
-						string status("Shutting down railcontrol");
-						addUpdate(status);
-						stopRailControlConsole();
-						// no break, fall throught to quit
-					}
 				case 'q':
 				case 'Q': // quit (must be next to shut down!)
 					{
@@ -953,13 +972,13 @@ namespace console {
 									readBlanks(s, i);
 									string name = readText(s, i);
 									readBlanks(s, i);
-									layoutRotation_t rotation = readRotation(s, i);
-									readBlanks(s, i);
 									layoutPosition_t posX = readNumber(s, i);
 									readBlanks(s, i);
 									layoutPosition_t posY = readNumber(s, i);
 									readBlanks(s, i);
 									layoutPosition_t posZ = readNumber(s, i);
+									readBlanks(s, i);
+									layoutRotation_t rotation = readRotation(s, i);
 									readBlanks(s, i);
 									controlID_t controlID = readNumber(s, i);
 									readBlanks(s, i);
@@ -970,6 +989,12 @@ namespace console {
 									accessoryType_t type = readSwitchType(s, i);
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
+									if (!manager.checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, rotation)) {
+										stringstream status;
+										status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is alread used. Unable to add switch";
+										addUpdate(status.str());
+										break;
+									}
 									if (!manager.switchSave(SWITCH_NONE, name, rotation, posX, posY, posZ, controlID, protocol, address, type, SWITCH_STRAIGHT, timeout)) {
 										addUpdate("Unable to add switch");
 										break;

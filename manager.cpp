@@ -150,80 +150,6 @@ Manager::~Manager() {
 	storage = NULL;
 }
 
-void Manager::loadDefaultValuesToDB() {
-	HardwareParams newHardwareParams1(1, 1, "Virtuelle Zentrale", "");
-	storage->hardwareParams(newHardwareParams1);
-
-	HardwareParams newHardwareParams2(2, 2, "CS2 Zentrale", "192.168.0.190");
-	storage->hardwareParams(newHardwareParams2);
-
-	Loco newloco1(this, 1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
-	storage->loco(newloco1);
-
-	Loco newloco2(this, 2, "ICN", 1, PROTOCOL_DCC, 1118);
-	storage->loco(newloco2);
-
-	Accessory newAccessory1(1, "Schalter 1", ROTATION_0, 3, 5, 0, 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200);
-	storage->accessory(newAccessory1);
-
-	Accessory newAccessory2(2, "Schalter 2", ROTATION_0, 3, 6, 0, 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200);
-	storage->accessory(newAccessory2);
-
-	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0);
-	storage->feedback(newFeedback1);
-
-	Feedback newFeedback2(this, 2, "Rückmelder Bahnhof 2", 1, 2, 4, 6, 0);
-	storage->feedback(newFeedback2);
-
-	Feedback newFeedback3(this, 3, "Rückmelder Ausfahrt", 1, 3, 4, 6, 0);
-	storage->feedback(newFeedback3);
-
-	Feedback newFeedback4(this, 4, "Rückmelder Strecke", 1, 4, 4, 6, 0);
-	storage->feedback(newFeedback4);
-
-	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0);
-	storage->feedback(newFeedback5);
-
-	Block newBlock1(1, "Block Bahnhof 1", 4, ROTATION_0, 5, 5, 0);
-	storage->block(newBlock1);
-
-	Block newBlock2(2, "Block Bahnhof 2", 4, ROTATION_90, 5, 6, 0);
-	storage->block(newBlock2);
-
-	Block newBlock3(3, "Block Ausfahrt", 4, ROTATION_90, 5, 6, 0);
-	storage->block(newBlock3);
-
-	Block newBlock4(4, "Block Einfahrt", 4, ROTATION_90, 5, 6, 0);
-	storage->block(newBlock4);
-
-	Block newBlock5(5, "Block Strecke", 4, ROTATION_90, 5, 6, 0);
-	storage->block(newBlock5);
-
-	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 200);
-	storage->saveSwitch(newSwitch1);
-
-	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 200);
-	storage->saveSwitch(newSwitch2);
-
-	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false, 3);
-	storage->street(newStreet1);
-
-	Street newStreet2(this, 2, "Fahrstrasse Ausfahrt 2", 2, false, 3, false, 3);
-	storage->street(newStreet2);
-
-	Street newStreet3(this, 3, "Fahrstrasse Auf Strecke", 3, false, 4, false, 4);
-	storage->street(newStreet3);
-
-	Street newStreet4(this, 4, "Fahrstrasse Von Strecke", 4, false, 5, false, 5);
-	storage->street(newStreet4);
-
-	Street newStreet5(this, 5, "Fahrstrasse Einfahrt 1", 5, false, 1, false, 1);
-	storage->street(newStreet5);
-
-	Street newStreet6(this, 6, "Fahrstrasse Einfahrt 2", 5, false, 2, false, 2);
-	storage->street(newStreet6);
-}
-
 /***************************
 * Booster                  *
 ***************************/
@@ -618,7 +544,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 				}
 			}
 			++newAccessoryID;
-			accessory = new Accessory(newAccessoryID, name, ROTATION_0, x, y, z, controlID, protocol, address, type, state, timeout);
+			accessory = new Accessory(newAccessoryID, name, x, y, z, ROTATION_0, controlID, protocol, address, type, state, timeout);
 			if (accessory == nullptr) {
 				return false;
 			}
@@ -790,7 +716,7 @@ const std::string& Manager::getBlockName(const blockID_t blockID) {
 	return blocks.at(blockID)->name;
 }
 
-bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutItemSize_t width, const layoutRotation_t rotation, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {
+bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation) {
 	Block* block;
 	{
 		std::lock_guard<std::mutex> Guard(blockMutex);
@@ -817,7 +743,7 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 				}
 			}
 			++newblockID;
-			block = new Block(newblockID, name, width, rotation, posX, posY, posZ);
+			block = new Block(newblockID, name, posX, posY, posZ, width, rotation);
 			if (block == nullptr) {
 				return false;
 			}
@@ -874,7 +800,7 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) {
 	return switches.at(switchID)->name;
 }
 
-bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutRotation_t rotation, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout) {
+bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout) {
 	Switch* mySwitch;
 	{
 		std::lock_guard<std::mutex> Guard(switchMutex);
@@ -885,10 +811,10 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 				return false;
 			}
 			mySwitch->name = name;
-			mySwitch->rotation = rotation;
 			mySwitch->posX = x;
 			mySwitch->posY = y;
 			mySwitch->posZ = z;
+			mySwitch->rotation = rotation;
 			mySwitch->controlID = controlID;
 			mySwitch->protocol = protocol;
 			mySwitch->address = address;
@@ -906,7 +832,7 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 				}
 			}
 			++newswitchID;
-			mySwitch = new Switch(newswitchID, name, rotation, x, y, z, controlID, protocol, address, type, state, timeout);
+			mySwitch = new Switch(newswitchID, name, x, y, z, rotation, controlID, protocol, address, type, state, timeout);
 			if (mySwitch == nullptr) {
 				return false;
 			}
@@ -1035,6 +961,46 @@ bool Manager::streetDelete(const streetID_t streetID) {
 }
 
 /***************************
+* Layout                   *
+***************************/
+
+bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation) {
+	if (width == 0 || height == 0) {
+		return false;
+	}
+	layoutPosition_t x;
+	layoutPosition_t y;
+	layoutPosition_t z = posZ;
+	layoutItemSize_t w;
+	layoutItemSize_t h;
+	bool ret = mapPosition(posX, posY, width, height, rotation, x, y, w, h);
+	if (ret == false) {
+		return false;
+	}
+	for(layoutPosition_t ix = x; ix < x + w; ix++) {
+		for(layoutPosition_t iy = y; iy < y + h; iy++) {
+			bool ret = checkAccessoryPositionFree(ix, iy, z);
+			if (ret == false) {
+				return false;
+			}
+			ret = checkBlockPositionFree(ix, iy, z);
+			if (ret == false) {
+				return false;
+			}
+			ret = checkFeedbackPositionFree(ix, iy, z);
+			if (ret == false) {
+				return false;
+			}
+			ret = checkSwitchPositionFree(ix, iy, z);
+			if (ret == false) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+/***************************
 * Automode                 *
 ***************************/
 
@@ -1156,3 +1122,191 @@ bool Manager::locoStopAll() {
 	}
 	return ret1;
 }
+
+/***************************
+* Default Values           *
+***************************/
+
+void Manager::loadDefaultValuesToDB() {
+	HardwareParams newHardwareParams1(1, 1, "Virtuelle Zentrale", "");
+	storage->hardwareParams(newHardwareParams1);
+
+	HardwareParams newHardwareParams2(2, 2, "CS2 Zentrale", "192.168.0.190");
+	storage->hardwareParams(newHardwareParams2);
+
+	Loco newloco1(this, 1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
+	storage->loco(newloco1);
+
+	Loco newloco2(this, 2, "ICN", 1, PROTOCOL_DCC, 1118);
+	storage->loco(newloco2);
+
+	Accessory newAccessory1(1, "Schalter 1", ROTATION_0, 3, 5, 0, 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200);
+	storage->accessory(newAccessory1);
+
+	Accessory newAccessory2(2, "Schalter 2", ROTATION_0, 3, 6, 0, 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200);
+	storage->accessory(newAccessory2);
+
+	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0);
+	storage->feedback(newFeedback1);
+
+	Feedback newFeedback2(this, 2, "Rückmelder Bahnhof 2", 1, 2, 4, 6, 0);
+	storage->feedback(newFeedback2);
+
+	Feedback newFeedback3(this, 3, "Rückmelder Ausfahrt", 1, 3, 4, 6, 0);
+	storage->feedback(newFeedback3);
+
+	Feedback newFeedback4(this, 4, "Rückmelder Strecke", 1, 4, 4, 6, 0);
+	storage->feedback(newFeedback4);
+
+	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0);
+	storage->feedback(newFeedback5);
+
+	Block newBlock1(1, "Block Bahnhof 1", 4, ROTATION_0, 5, 5, 0);
+	storage->block(newBlock1);
+
+	Block newBlock2(2, "Block Bahnhof 2", 4, ROTATION_90, 5, 6, 0);
+	storage->block(newBlock2);
+
+	Block newBlock3(3, "Block Ausfahrt", 4, ROTATION_90, 5, 6, 0);
+	storage->block(newBlock3);
+
+	Block newBlock4(4, "Block Einfahrt", 4, ROTATION_90, 5, 6, 0);
+	storage->block(newBlock4);
+
+	Block newBlock5(5, "Block Strecke", 4, ROTATION_90, 5, 6, 0);
+	storage->block(newBlock5);
+
+	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 200);
+	storage->saveSwitch(newSwitch1);
+
+	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 200);
+	storage->saveSwitch(newSwitch2);
+
+	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false, 3);
+	storage->street(newStreet1);
+
+	Street newStreet2(this, 2, "Fahrstrasse Ausfahrt 2", 2, false, 3, false, 3);
+	storage->street(newStreet2);
+
+	Street newStreet3(this, 3, "Fahrstrasse Auf Strecke", 3, false, 4, false, 4);
+	storage->street(newStreet3);
+
+	Street newStreet4(this, 4, "Fahrstrasse Von Strecke", 4, false, 5, false, 5);
+	storage->street(newStreet4);
+
+	Street newStreet5(this, 5, "Fahrstrasse Einfahrt 1", 5, false, 1, false, 1);
+	storage->street(newStreet5);
+
+	Street newStreet6(this, 6, "Fahrstrasse Einfahrt 2", 5, false, 2, false, 2);
+	storage->street(newStreet6);
+}
+
+/***************************
+* Layout                   *
+***************************/
+
+bool Manager::mapPosition(const layoutPosition_t posX,
+	const layoutPosition_t posY,
+	const layoutItemSize_t width,
+	const layoutItemSize_t height,
+	const layoutRotation_t rotation,
+	layoutPosition_t& x,
+	layoutPosition_t& y,
+	layoutItemSize_t& w,
+	layoutItemSize_t& h) {
+
+	switch (rotation) {
+		case ROTATION_0:
+			x = posX;
+			y = posY;
+			w = width;
+			h = height;
+			return true;
+		case ROTATION_90:
+			if (posX < height) {
+				return false;
+			}
+			x = posX + 1 - height;
+			y = posY;
+			w = height;
+			h = width;
+			return true;
+		case ROTATION_180:
+			if (posX < width || posY < height) {
+				return false;
+			}
+			x = posX + 1 - width;
+			y = posY + 1 - height;
+			w = width;
+			h = height;
+			return true;
+		case ROTATION_270:
+			if (posY < width) {
+				return false;
+			}
+			x = posX;
+			y = posY + 1 - width;
+			w = height;
+			h = width;
+			return true;
+		default:
+			return false;
+	}
+}
+
+bool Manager::checkAccessoryPositionFree(const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) {
+	std::lock_guard<std::mutex> Guard(accessoryMutex);
+	for (auto accessory : accessories) {
+		if (accessory.second->posX == x && accessory.second->posY == y && accessory.second->posZ == z) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Manager::checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {
+	std::lock_guard<std::mutex> Guard(blockMutex);
+	for (auto block : blocks) {
+		Block* b = block.second;
+		if (b->posZ != posZ) {
+			continue;
+		}
+		layoutPosition_t x;
+		layoutPosition_t y;
+		layoutItemSize_t w;
+		layoutItemSize_t h;
+		bool ret = mapPosition(b->posX, b->posY, b->width, b->height, b->rotation, x, y, w, h);
+		if (ret == false) {
+			return false;
+		}
+		for(layoutPosition_t ix = x; ix < x + w; ix++) {
+			for(layoutPosition_t iy = y; iy < y + h; iy++) {
+				if (ix == posX && iy == posY) {
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+
+bool Manager::checkFeedbackPositionFree(const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) {
+	std::lock_guard<std::mutex> Guard(feedbackMutex);
+	for (auto feedback : feedbacks) {
+		if (feedback.second->posX == x && feedback.second->posY == y && feedback.second->posZ == z) {
+			return false;
+		}
+	}
+	return true;
+}
+
+bool Manager::checkSwitchPositionFree(const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) {
+	std::lock_guard<std::mutex> Guard(switchMutex);
+	for (auto mySwitch : switches) {
+		if (mySwitch.second->posX == x && mySwitch.second->posY == y && mySwitch.second->posZ == z) {
+			return false;
+		}
+	}
+	return true;
+}
+

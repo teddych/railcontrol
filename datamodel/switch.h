@@ -12,10 +12,10 @@ namespace datamodel {
 		public:
 			Switch(switchID_t switchID,
 				std::string name,
-				layoutRotation_t rotation,
 				layoutPosition_t x,
 				layoutPosition_t y,
 				layoutPosition_t z,
+				layoutRotation_t rotation,
 				controlID_t controlID,
 				protocol_t protocol,
 				address_t address,
