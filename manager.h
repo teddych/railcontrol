@@ -20,7 +20,7 @@ class Manager {
 		void booster(const managerID_t managerID, const boosterStatus_t status);
 
 		// hardware (virt, CS2, ...)
-		bool controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip);
+		bool controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip, std::string& result);
 		bool controlDelete(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
 		unsigned int controlsOfHardwareType(const hardwareType_t hardwareType);
@@ -37,7 +37,7 @@ class Manager {
 		datamodel::Loco* getLoco(const locoID_t locoID) const;
 		const std::string& getLocoName(const locoID_t locoID);
 		inline const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
-		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
+		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, std::string& result);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 		void locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed);
@@ -52,7 +52,7 @@ class Manager {
 		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID);
 		const std::string& getAccessoryName(const accessoryID_t accessoryID);
 		inline const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
-		bool accessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout);
+		bool accessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, std::string& result);
 		bool accessoryDelete(const accessoryID_t accessoryID);
 		bool accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
@@ -61,7 +61,7 @@ class Manager {
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
 		const std::string& getFeedbackName(const feedbackID_t feedbackID);
 		inline const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
-		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin);
+		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, std::string& result);
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
 		// block
@@ -69,14 +69,14 @@ class Manager {
 		datamodel::Block* getBlock(const blockID_t blockID);
 		const std::string& getBlockName(const blockID_t blockID);
 		inline const std::map<blockID_t,datamodel::Block*>& blockList() const { return blocks; }
-		bool blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation);
+		bool blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, std::string& result);
 		bool blockDelete(const blockID_t blockID);
 
 		// switch
 		datamodel::Switch* getSwitch(const switchID_t switchID);
 		const std::string& getSwitchName(const switchID_t switchID);
 		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
-		bool switchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout);
+		bool switchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout, std::string& result);
 		bool switchDelete(const switchID_t switchID);
 		bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
@@ -84,11 +84,8 @@ class Manager {
 		datamodel::Street* getStreet(const streetID_t streetID);
 		const std::string& getStreetName(const streetID_t streetID);
 		inline const std::map<streetID_t,datamodel::Street*>& streetList() const { return streets; }
-		bool streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID);
+		bool streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID, std::string& result);
 		bool streetDelete(const streetID_t streetID);
-
-		// layout
-		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation);
 
 		// automode
 		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);
@@ -106,10 +103,11 @@ class Manager {
 
 		// layout
 		bool mapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
-		bool checkAccessoryPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
-		bool checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
-		bool checkFeedbackPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
-		bool checkSwitchPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
+		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result);
+		bool checkAccessoryPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
+		bool checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
+		bool checkFeedbackPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
+		bool checkSwitchPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
 
 		// FIXME: check usage of all mutexes
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;

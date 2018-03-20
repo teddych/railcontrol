@@ -429,8 +429,13 @@ namespace webserver {
 			if (arguments.count("control")) controlID = stoi(arguments.at("control"));
 			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
 			if (arguments.count("address")) address = stoi(arguments.at("address"));
-			manager.locoSave(locoID, name, controlID, protocol, address);
-			ss << "<p>Loco &quot;" << locoID << "&quot; saved.</p>";
+			string result;
+			if (!manager.locoSave(locoID, name, controlID, protocol, address, result)) {
+				ss << "<p>" << result << "</p>";
+			}
+			else {
+				ss << "<p>Loco &quot;" << locoID << "&quot; saved.</p>";
+			}
 		}
 		else {
 			ss << "<p>Unable to save loco.</p>";

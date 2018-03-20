@@ -21,6 +21,7 @@ using hardware::HardwareHandler;
 using hardware::HardwareParams;
 using std::map;
 using std::string;
+using std::stringstream;
 using storage::StorageHandler;
 using storage::StorageParams;
 using webserver::WebServer;
@@ -165,8 +166,9 @@ void Manager::booster(const managerID_t managerID, const boosterStatus_t status)
 * Control                  *
 ***************************/
 
-bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip) {
+bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip, string& result) {
 	if (controlID != CONTROL_ID_NONE && controlID < CONTROL_ID_FIRST_HARDWARE) {
+		result.assign("Invalid controlID");
 		return false;
 	}
 	HardwareParams* params;
@@ -175,6 +177,7 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 		if (hardwareParams.count(controlID) == 1) {
 			params = hardwareParams.at(controlID);
 			if (params == nullptr) {
+				result.assign("Control does not exist");
 				return false;
 			}
 			params->name = name;
@@ -194,6 +197,7 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 			// create new control
 			params = new HardwareParams(newControlID, hardwareType, name, ip);
 			if (params == nullptr) {
+				result.assign("Unable to allocate memory for control");
 				return false;
 			}
 			hardwareParams[newControlID] = params;
@@ -341,7 +345,7 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 	return locos.at(locoID)->name;
 }
 
-bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) {
+bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
 	Loco* loco;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
@@ -349,6 +353,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 			// update existing loco
 			loco = locos.at(locoID);
 			if (loco == nullptr) {
+				result.assign("Loco does not exist");
 				return false;
 			}
 			loco->name = name;
@@ -368,6 +373,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 			++newLocoID;
 			loco = new Loco(this, newLocoID, name, controlID, protocol, address);
 			if (loco == nullptr) {
+				result.assign("Unable to allocate memory for loco");
 				return false;
 			}
 			// save in map
@@ -513,20 +519,25 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
 	return accessories.at(accessoryID)->name;
 }
 
-bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout) {
+bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, string& result) {
 	Accessory* accessory;
 	{
+		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0, result)) {
+			result.append(" Unable to add or move accessory");
+			return false;
+		}
 		std::lock_guard<std::mutex> Guard(accessoryMutex);
 		if (accessoryID != ACCESSORY_NONE && accessories.count(accessoryID)) {
 			// update existing accessory
 			accessory = accessories.at(accessoryID);
 			if (accessory == nullptr) {
+				result.assign("Accessory does not exist");
 				return false;
 			}
 			accessory->name = name;
-			accessory->posX = x;
-			accessory->posY = y;
-			accessory->posZ = z;
+			accessory->posX = posX;
+			accessory->posY = posY;
+			accessory->posZ = posZ;
 			accessory->controlID = controlID;
 			accessory->protocol = protocol;
 			accessory->address = address;
@@ -544,8 +555,9 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 				}
 			}
 			++newAccessoryID;
-			accessory = new Accessory(newAccessoryID, name, x, y, z, ROTATION_0, controlID, protocol, address, type, state, timeout);
+			accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, ROTATION_0, controlID, protocol, address, type, state, timeout);
 			if (accessory == nullptr) {
+				result.assign("Unable to allocate memory for accessory");
 				return false;
 			}
 			// save in map
@@ -625,14 +637,19 @@ const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) {
 	return feedbacks.at(feedbackID)->name;
 }
 
-bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin) {
+bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, string& result) {
 	Feedback* feedback;
 	{
+		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0, result)) {
+			result.append(" Unable to add or move feedback");
+			return false;
+		}
 		std::lock_guard<std::mutex> Guard(feedbackMutex);
 		if (feedbackID != FEEDBACK_NONE && feedbacks.count(feedbackID)) {
 			// update existing feedback
 			feedback = feedbacks.at(feedbackID);
 			if (feedback == nullptr) {
+				result.assign("Feedback does not exist");
 				return false;
 			}
 			feedback->name = name;
@@ -654,6 +671,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 			++newFeedbackID;
 			feedback = new Feedback(this, newFeedbackID, name, posX, posY, posZ, controlID, pin);
 			if (feedback == nullptr) {
+				result.assign("Unable to allocate memory for feedback");
 				return false;
 			}
 			// save in map
@@ -716,14 +734,19 @@ const std::string& Manager::getBlockName(const blockID_t blockID) {
 	return blocks.at(blockID)->name;
 }
 
-bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation) {
+bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, string& result) {
 	Block* block;
 	{
+		if (!checkPositionFree(posX, posY, posZ, width, HEIGHT_1, rotation, result)) {
+			result.append(" Unable to add or move  block.");
+			return false;
+		}
 		std::lock_guard<std::mutex> Guard(blockMutex);
 		if (blockID != BLOCK_NONE && blocks.count(blockID)) {
 			// update existing block
 			block = blocks.at(blockID);
 			if (block == nullptr) {
+				result.assign("Block does not exist");
 				return false;
 			}
 			block->name = name;
@@ -745,6 +768,7 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 			++newblockID;
 			block = new Block(newblockID, name, posX, posY, posZ, width, rotation);
 			if (block == nullptr) {
+				result.assign("Unable to allocate memory for block");
 				return false;
 			}
 			// save in map
@@ -800,20 +824,25 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) {
 	return switches.at(switchID)->name;
 }
 
-bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout) {
+bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout, string& result) {
 	Switch* mySwitch;
 	{
+		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, rotation, result)) {
+			result.append(" Unable to add or move switch");
+			return false;
+		}
 		std::lock_guard<std::mutex> Guard(switchMutex);
 		if (switchID != SWITCH_NONE && switches.count(switchID)) {
 			// update existing switch
 			mySwitch = switches.at(switchID);
 			if (mySwitch == nullptr) {
+				result.assign("Block does not exist");
 				return false;
 			}
 			mySwitch->name = name;
-			mySwitch->posX = x;
-			mySwitch->posY = y;
-			mySwitch->posZ = z;
+			mySwitch->posX = posX;
+			mySwitch->posY = posY;
+			mySwitch->posZ = posZ;
 			mySwitch->rotation = rotation;
 			mySwitch->controlID = controlID;
 			mySwitch->protocol = protocol;
@@ -832,8 +861,9 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 				}
 			}
 			++newswitchID;
-			mySwitch = new Switch(newswitchID, name, x, y, z, rotation, controlID, protocol, address, type, state, timeout);
+			mySwitch = new Switch(newswitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, state, timeout);
 			if (mySwitch == nullptr) {
+				result.assign("Unable to allocate memory for switch");
 				return false;
 			}
 			// save in map
@@ -899,7 +929,7 @@ const string& Manager::getStreetName(const streetID_t streetID) {
 	return streets.at(streetID)->name;
 }
 
-bool Manager::streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID) {
+bool Manager::streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID, string& result) {
 	Street* street;
 	{
 		std::lock_guard<std::mutex> Guard(streetMutex);
@@ -907,6 +937,7 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 			// update existing street
 			street = streets.at(streetID);
 			if (street == nullptr) {
+				result.assign("Street does not exist");
 				return false;
 			}
 			street->name = name;
@@ -928,6 +959,7 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 			++newStreetID;
 			street = new Street(this, newStreetID, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID);
 			if (street == nullptr) {
+				result.assign("Unable to allocate memory for street");
 				return false;
 			}
 			// save in map
@@ -956,46 +988,6 @@ bool Manager::streetDelete(const streetID_t streetID) {
 	delete street;
 	if (storage) {
 		storage->deleteStreet(streetID);
-	}
-	return true;
-}
-
-/***************************
-* Layout                   *
-***************************/
-
-bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation) {
-	if (width == 0 || height == 0) {
-		return false;
-	}
-	layoutPosition_t x;
-	layoutPosition_t y;
-	layoutPosition_t z = posZ;
-	layoutItemSize_t w;
-	layoutItemSize_t h;
-	bool ret = mapPosition(posX, posY, width, height, rotation, x, y, w, h);
-	if (ret == false) {
-		return false;
-	}
-	for(layoutPosition_t ix = x; ix < x + w; ix++) {
-		for(layoutPosition_t iy = y; iy < y + h; iy++) {
-			bool ret = checkAccessoryPositionFree(ix, iy, z);
-			if (ret == false) {
-				return false;
-			}
-			ret = checkBlockPositionFree(ix, iy, z);
-			if (ret == false) {
-				return false;
-			}
-			ret = checkFeedbackPositionFree(ix, iy, z);
-			if (ret == false) {
-				return false;
-			}
-			ret = checkSwitchPositionFree(ix, iy, z);
-			if (ret == false) {
-				return false;
-			}
-		}
 	}
 	return true;
 }
@@ -1254,17 +1246,57 @@ bool Manager::mapPosition(const layoutPosition_t posX,
 	}
 }
 
-bool Manager::checkAccessoryPositionFree(const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) {
+bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) {
+	if (width == 0 || height == 0) {
+		result.assign("Width or height is zero.");
+		return false;
+	}
+	layoutPosition_t x;
+	layoutPosition_t y;
+	layoutPosition_t z = posZ;
+	layoutItemSize_t w;
+	layoutItemSize_t h;
+	bool ret = mapPosition(posX, posY, width, height, rotation, x, y, w, h);
+	if (ret == false) {
+		return false;
+	}
+	for(layoutPosition_t ix = x; ix < x + w; ix++) {
+		for(layoutPosition_t iy = y; iy < y + h; iy++) {
+			bool ret = checkAccessoryPositionFree(ix, iy, z, result);
+			if (ret == false) {
+				return false;
+			}
+			ret = checkBlockPositionFree(ix, iy, z, result);
+			if (ret == false) {
+				return false;
+			}
+			ret = checkFeedbackPositionFree(ix, iy, z, result);
+			if (ret == false) {
+				return false;
+			}
+			ret = checkSwitchPositionFree(ix, iy, z, result);
+			if (ret == false) {
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool Manager::checkAccessoryPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
 	for (auto accessory : accessories) {
-		if (accessory.second->posX == x && accessory.second->posY == y && accessory.second->posZ == z) {
+		if (accessory.second->posX == posX && accessory.second->posY == posY && accessory.second->posZ == posZ) {
+			stringstream status;
+			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by accessory \"" << accessory.second->name << "\".";
+			result.assign(status.str());
 			return false;
 		}
 	}
 	return true;
 }
 
-bool Manager::checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {
+bool Manager::checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
 	std::lock_guard<std::mutex> Guard(blockMutex);
 	for (auto block : blocks) {
 		Block* b = block.second;
@@ -1277,11 +1309,17 @@ bool Manager::checkBlockPositionFree(const layoutPosition_t posX, const layoutPo
 		layoutItemSize_t h;
 		bool ret = mapPosition(b->posX, b->posY, b->width, b->height, b->rotation, x, y, w, h);
 		if (ret == false) {
+			stringstream status;
+			status << "Block \"" << block.second->name << "\" has an invalid position.";
+			result.assign(status.str());
 			return false;
 		}
 		for(layoutPosition_t ix = x; ix < x + w; ix++) {
 			for(layoutPosition_t iy = y; iy < y + h; iy++) {
 				if (ix == posX && iy == posY) {
+					stringstream status;
+					status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by block \"" << block.second->name << "\".";
+					result.assign(status.str());
 					return false;
 				}
 			}
@@ -1290,20 +1328,26 @@ bool Manager::checkBlockPositionFree(const layoutPosition_t posX, const layoutPo
 	return true;
 }
 
-bool Manager::checkFeedbackPositionFree(const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) {
+bool Manager::checkFeedbackPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	for (auto feedback : feedbacks) {
-		if (feedback.second->posX == x && feedback.second->posY == y && feedback.second->posZ == z) {
+		if (feedback.second->posX == posX && feedback.second->posY == posY && feedback.second->posZ == posZ) {
+			stringstream status;
+			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by feedback \"" << feedback.second->name << "\".";
+			result.assign(status.str());
 			return false;
 		}
 	}
 	return true;
 }
 
-bool Manager::checkSwitchPositionFree(const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) {
+bool Manager::checkSwitchPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
 	std::lock_guard<std::mutex> Guard(switchMutex);
 	for (auto mySwitch : switches) {
-		if (mySwitch.second->posX == x && mySwitch.second->posY == y && mySwitch.second->posZ == z) {
+		if (mySwitch.second->posX == posX && mySwitch.second->posY == posY && mySwitch.second->posZ == posZ) {
+			stringstream status;
+			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by switch \"" << mySwitch.second->name << "\".";
+			result.assign(status.str());
 			return false;
 		}
 	}

@@ -353,14 +353,9 @@ namespace console {
 									address_t address = readNumber(s, i);
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
-									if (!manager.checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0)) {
-										stringstream status;
-										status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is alread used. Unable to add accessory";
-										addUpdate(status.str());
-										break;
-									}
-									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, ACCESSORY_TYPE_DEFAULT, ACCESSORY_STATE_OFF, timeout)) {
-										addUpdate("Unable to add accessory");
+									string result;
+									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, ACCESSORY_TYPE_DEFAULT, ACCESSORY_STATE_OFF, timeout, result)) {
+										addUpdate(result);
 										break;
 									}
 									stringstream status;
@@ -434,14 +429,9 @@ namespace console {
 									layoutItemSize_t width = readNumber(s, i);
 									readBlanks(s, i);
 									layoutRotation_t rotation = readRotation(s, i);
-									if (!manager.checkPositionFree(posX, posY, posZ, width, HEIGHT_1, rotation)) {
-										stringstream status;
-										status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is alread used. Unable to add block";
-										addUpdate(status.str());
-										break;
-									}
-									if (!manager.blockSave(BLOCK_NONE, name, posX, posY, posZ, width, rotation)) {
-										addUpdate("Unable to add block");
+									string result;
+									if (!manager.blockSave(BLOCK_NONE, name, posX, posY, posZ, width, rotation, result)) {
+										addUpdate(result);
 										break;
 									}
 									stringstream status;
@@ -520,8 +510,9 @@ namespace console {
 										addUpdate("Unknown hardware type");
 										break;
 									}
-									if (!manager.controlSave(CONTROL_NONE, hardwareType, name, ip)) {
-										addUpdate("Unable to add control");
+									string result;
+									if (!manager.controlSave(CONTROL_NONE, hardwareType, name, ip, result)) {
+										addUpdate(result);
 										break;
 									}
 									stringstream status;
@@ -595,14 +586,9 @@ namespace console {
 									controlID_t control = readNumber(s, i);
 									readBlanks(s, i);
 									feedbackPin_t pin = readNumber(s, i);
-									if (!manager.checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0)) {
-										stringstream status;
-										status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is alread used. Unable to add feedback";
-										addUpdate(status.str());
-										break;
-									}
-									if(!manager.feedbackSave(FEEDBACK_NONE, name, posX, posY, posZ, control, pin)) {
-										addUpdate("Unable to add feedback");
+									string result;
+									if(!manager.feedbackSave(FEEDBACK_NONE, name, posX, posY, posZ, control, pin, result)) {
+										addUpdate(result);
 										break;
 									}
 									stringstream status;
@@ -738,9 +724,9 @@ namespace console {
 									protocol_t protocol = readNumber(s, i);
 									readBlanks(s, i);
 									address_t address = readNumber(s, i);
-									if (!manager.locoSave(LOCO_NONE, name, control, protocol, address)) {
-										string status("Unable to add loco");
-										addUpdate(status);
+									string result;
+									if (!manager.locoSave(LOCO_NONE, name, control, protocol, address, result)) {
+										addUpdate(result);
 										break;
 									}
 									stringstream status;
@@ -899,12 +885,13 @@ namespace console {
 									direction_t toDirection = readDirection(s, i);
 									readBlanks(s, i);
 									feedbackID_t feedbackID = readNumber(s, i);
-									if (!manager.streetSave(STREET_NONE, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID)) {
-										addUpdate("Unable to add street");
+									string result;
+									if (!manager.streetSave(STREET_NONE, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID, result)) {
+										addUpdate(result);
 										break;
 									}
 									stringstream status;
-									status << "street \"" << name << "\" added";
+									status << "Street \"" << name << "\" added";
 									addUpdate(status.str());
 									break;
 								}
@@ -989,14 +976,9 @@ namespace console {
 									accessoryType_t type = readSwitchType(s, i);
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
-									if (!manager.checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, rotation)) {
-										stringstream status;
-										status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is alread used. Unable to add switch";
-										addUpdate(status.str());
-										break;
-									}
-									if (!manager.switchSave(SWITCH_NONE, name, rotation, posX, posY, posZ, controlID, protocol, address, type, SWITCH_STRAIGHT, timeout)) {
-										addUpdate("Unable to add switch");
+									string result;
+									if (!manager.switchSave(SWITCH_NONE, name, rotation, posX, posY, posZ, controlID, protocol, address, type, SWITCH_STRAIGHT, timeout, result)) {
+										addUpdate(result);
 										break;
 									}
 									stringstream status;
