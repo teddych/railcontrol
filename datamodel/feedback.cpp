@@ -61,11 +61,11 @@ namespace datamodel {
 		}
 
 		this->state = state;
-		if (!state) {
+		if (state == FEEDBACK_STATE_FREE) {
 			return true;
 		}
 
-		if (!locoID) {
+		if (locoID == LOCO_NONE) {
 			return true;
 		}
 

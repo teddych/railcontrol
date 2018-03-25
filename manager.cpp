@@ -90,12 +90,12 @@ Manager::Manager(Config& config) :
 }
 
 Manager::~Manager() {
-	if (storage == nullptr) {
-		return;
-	}
-
 	while (!locoStopAll()) {
 		sleep(1);
+	}
+
+	if (storage == nullptr) {
+		return;
 	}
 
 	for (auto street : streets) {
@@ -1100,6 +1100,9 @@ bool Manager::locoStartAll() {
 bool Manager::locoStopAll() {
 	bool ret1 = true;
 	for (auto loco : locos) {
+		if (!loco.second->isInUse()) {
+			continue;
+		}
 		bool ret2 = loco.second->stop();
 		ret1 &= ret2;
 		if (ret2 == false) {

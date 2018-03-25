@@ -126,6 +126,7 @@ namespace datamodel {
 			std::lock_guard<std::mutex> Guard(stateMutex);
 			switch (state) {
 				case LOCO_STATE_MANUAL:
+					manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
 					return true;
 
 				case LOCO_STATE_OFF:
@@ -138,7 +139,7 @@ namespace datamodel {
 				case LOCO_STATE_STOPPING:
 					xlog("Loco %s is actually running, waiting until loco reached its destination", name.c_str());
 					state = LOCO_STATE_STOPPING;
-					return true;
+					return false;
 
 				default:
 					xlog("Loco %s is in unknown state. Setting to error state and setting speed to 0.", name.c_str());
@@ -197,7 +198,7 @@ namespace datamodel {
 						// start loco
 						manager->locoStreet(objectID, streetID, blockID);
 						// FIXME: make maxspeed configurable
-						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, MAX_SPEED);
+						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, MAX_SPEED >> 1);
 						loco->state = LOCO_STATE_RUNNING;
 						break;
 					}
@@ -226,7 +227,7 @@ namespace datamodel {
 		manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
 		// set loco to new block
 		Street* street = manager->getStreet(streetID);
-		if (!street) {
+		if (street != nullptr) {
 			state = LOCO_STATE_ERROR;
 			xlog("Loco %s is running in automode without a street. Putting loco into error state", name.c_str());
 			return;
