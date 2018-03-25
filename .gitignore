@@ -3,5 +3,6 @@ railcontrol.sqlite
 storage/sqlite/sqlite3
 *.o
 *.so
+*.bak
 test/testloco
 gmon.out
