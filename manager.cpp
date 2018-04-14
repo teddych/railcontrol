@@ -2,6 +2,7 @@
 #include <sstream>
 #include <unistd.h>
 
+#include "datamodel/layout_item.h"
 #include "console/console.h"
 #include "hardware/hardware_handler.h"
 #include "hardware/hardware_params.h"
@@ -1200,55 +1201,6 @@ void Manager::loadDefaultValuesToDB() {
 * Layout                   *
 ***************************/
 
-bool Manager::mapPosition(const layoutPosition_t posX,
-	const layoutPosition_t posY,
-	const layoutItemSize_t width,
-	const layoutItemSize_t height,
-	const layoutRotation_t rotation,
-	layoutPosition_t& x,
-	layoutPosition_t& y,
-	layoutItemSize_t& w,
-	layoutItemSize_t& h) {
-
-	switch (rotation) {
-		case ROTATION_0:
-			x = posX;
-			y = posY;
-			w = width;
-			h = height;
-			return true;
-		case ROTATION_90:
-			if (posX < height) {
-				return false;
-			}
-			x = posX + 1 - height;
-			y = posY;
-			w = height;
-			h = width;
-			return true;
-		case ROTATION_180:
-			if (posX < width || posY < height) {
-				return false;
-			}
-			x = posX + 1 - width;
-			y = posY + 1 - height;
-			w = width;
-			h = height;
-			return true;
-		case ROTATION_270:
-			if (posY < width) {
-				return false;
-			}
-			x = posX;
-			y = posY + 1 - width;
-			w = height;
-			h = width;
-			return true;
-		default:
-			return false;
-	}
-}
-
 bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) {
 	if (width == 0 || height == 0) {
 		result.assign("Width or height is zero.");
@@ -1259,7 +1211,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 	layoutPosition_t z = posZ;
 	layoutItemSize_t w;
 	layoutItemSize_t h;
-	bool ret = mapPosition(posX, posY, width, height, rotation, x, y, w, h);
+	bool ret = datamodel::LayoutItem::mapPosition(posX, posY, width, height, rotation, x, y, w, h);
 	if (ret == false) {
 		return false;
 	}
@@ -1289,7 +1241,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 bool Manager::checkAccessoryPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
 	for (auto accessory : accessories) {
-		if (accessory.second->posX == posX && accessory.second->posY == posY && accessory.second->posZ == posZ) {
+		if (!accessory.second->checkPositionFree(posX, posY, posZ)) {
 			stringstream status;
 			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by accessory \"" << accessory.second->name << "\".";
 			result.assign(status.str());
@@ -1302,30 +1254,11 @@ bool Manager::checkAccessoryPositionFree(const layoutPosition_t posX, const layo
 bool Manager::checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
 	std::lock_guard<std::mutex> Guard(blockMutex);
 	for (auto block : blocks) {
-		Block* b = block.second;
-		if (b->posZ != posZ) {
-			continue;
-		}
-		layoutPosition_t x;
-		layoutPosition_t y;
-		layoutItemSize_t w;
-		layoutItemSize_t h;
-		bool ret = mapPosition(b->posX, b->posY, b->width, b->height, b->rotation, x, y, w, h);
-		if (ret == false) {
+		if (!block.second->checkPositionFree(posX, posY, posZ)) {
 			stringstream status;
-			status << "Block \"" << block.second->name << "\" has an invalid position.";
+			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by block \"" << block.second->name << "\".";
 			result.assign(status.str());
 			return false;
-		}
-		for(layoutPosition_t ix = x; ix < x + w; ix++) {
-			for(layoutPosition_t iy = y; iy < y + h; iy++) {
-				if (ix == posX && iy == posY) {
-					stringstream status;
-					status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by block \"" << block.second->name << "\".";
-					result.assign(status.str());
-					return false;
-				}
-			}
 		}
 	}
 	return true;
@@ -1334,7 +1267,7 @@ bool Manager::checkBlockPositionFree(const layoutPosition_t posX, const layoutPo
 bool Manager::checkFeedbackPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	for (auto feedback : feedbacks) {
-		if (feedback.second->posX == posX && feedback.second->posY == posY && feedback.second->posZ == posZ) {
+		if (!feedback.second->checkPositionFree(posX, posY, posZ)) {
 			stringstream status;
 			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by feedback \"" << feedback.second->name << "\".";
 			result.assign(status.str());
@@ -1347,7 +1280,7 @@ bool Manager::checkFeedbackPositionFree(const layoutPosition_t posX, const layou
 bool Manager::checkSwitchPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
 	std::lock_guard<std::mutex> Guard(switchMutex);
 	for (auto mySwitch : switches) {
-		if (mySwitch.second->posX == posX && mySwitch.second->posY == posY && mySwitch.second->posZ == posZ) {
+		if (!mySwitch.second->checkPositionFree(posX, posY, posZ)) {
 			stringstream status;
 			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by switch \"" << mySwitch.second->name << "\".";
 			result.assign(status.str());

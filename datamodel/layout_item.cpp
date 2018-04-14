@@ -20,6 +20,77 @@ namespace datamodel {
 		rotation(rotation) {
 	}
 
+	bool LayoutItem::mapPosition(const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutItemSize_t width,
+			const layoutItemSize_t height,
+			const layoutRotation_t rotation,
+			layoutPosition_t& x,
+			layoutPosition_t& y,
+			layoutItemSize_t& w,
+			layoutItemSize_t& h) {
+
+		switch (rotation) {
+			case ROTATION_0:
+				x = posX;
+				y = posY;
+				w = width;
+				h = height;
+				return true;
+			case ROTATION_90:
+				if (posX < height) {
+					return false;
+				}
+				x = posX + 1 - height;
+				y = posY;
+				w = height;
+				h = width;
+				return true;
+			case ROTATION_180:
+				if (posX < width || posY < height) {
+					return false;
+				}
+				x = posX + 1 - width;
+				y = posY + 1 - height;
+				w = width;
+				h = height;
+				return true;
+			case ROTATION_270:
+				if (posY < width) {
+					return false;
+				}
+				x = posX;
+				y = posY + 1 - width;
+				w = height;
+				h = width;
+				return true;
+			default:
+				return false;
+		}
+	}
+
+	bool LayoutItem::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {
+		if (this->posZ != posZ) {
+			return true;
+		}
+		layoutPosition_t x;
+		layoutPosition_t y;
+		layoutItemSize_t w;
+		layoutItemSize_t h;
+		bool ret = mapPosition(this->posX, this->posY, this->width, this->height, this->rotation, x, y, w, h);
+		if (ret == false) {
+			return false;
+		}
+		for(layoutPosition_t ix = x; ix < x + w; ix++) {
+			for(layoutPosition_t iy = y; iy < y + h; iy++) {
+				if (ix == posX && iy == posY) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
 	std::string LayoutItem::serialize() const {
 		stringstream ss;
 		ss << Object::serialize() << ";posX=" << (int)posX << ";posY=" << (int)posY << ";posZ=" << (int)posZ << ";width=" << (int)width << ";height=" << (int)height << ";rotation=" << (int)rotation;
