@@ -185,7 +185,7 @@ namespace datamodel {
 								street->lock(objectID);
 								streetID = street->objectID;
 								toBlockID = street->destinationBlock();
-								xlog("Loco &s found street \"%s\" with destination %s", name, street->name.c_str(), manager->getBlockName(toBlockID));
+								xlog("Loco &s found street \"%s\" with destination %s", name, street->name.c_str(), manager->getBlockName(toBlockID).c_str());
 								break; // break for
 							}
 						}
