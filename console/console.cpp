@@ -73,15 +73,16 @@ namespace console {
 	}
 
 	Console::~Console() {
-		if (run) {
-			xlog("Stopping console");
-			run = false;
-
-			// join server thread
-			serverThread.join();
+		if (!run) {
+            return;
 		}
-	}
 
+        xlog("Stopping console");
+        run = false;
+
+        // join server thread
+        serverThread.join();
+	}
 
 	// worker is a seperate thread listening on the server socket
 	void Console::worker() {
@@ -125,6 +126,7 @@ namespace console {
 	}
 
 	int Console::readNumber(string& s, size_t& i) {
+        // read integer
 		int number = 0;
 		while (s.length() > i) {
 			unsigned char input = s[i];
@@ -144,25 +146,25 @@ namespace console {
 		bool escape = false;
 		while (s.length() > i) {
 			if (s[i] == '\n' || s[i] == '\r') {
-				i++;
+				++i;
 				break;
 			}
 			if (s[i] == '"' && escape == false) {
 				escape = true;
-				i++;
-				start++;
+				++i;
+				++start;
 				continue;
 			}
 			if (s[i] == '"' && escape == true) {
-				i++;
+				++i;
 				break;
 			}
 			if (escape == false && s[i] == 0x20) {
-				i++;
+				++i;
 				break;
 			}
-			length++;
-			i++;
+			++length;
+			++i;
 		}
 		string text(s, start, length);
 		return text;
@@ -175,11 +177,11 @@ namespace console {
 		switch (s[i]) {
 			case 'l':
 			case 'L':
-				i++;
+				++i;
 				return SWITCH_LEFT;
 			case 'r':
 			case 'R':
-				i++;
+				++i;
 				return SWITCH_RIGHT;
 			default:
 				switchType_t type = readNumber(s, i);
@@ -199,25 +201,25 @@ namespace console {
 			case 'N':
 			case 't':
 			case 'T': // north/top
-				i++;
+				++i;
 				return ROTATION_0;
 			case 'e':
 			case 'E':
 			case 'r':
 			case 'R': // east/right
-				i++;
+				++i;
 				return ROTATION_90;
 			case 's':
 			case 'S':
 			case 'b':
 			case 'B': // south/bottom
-				i++;
+				++i;
 				return ROTATION_180;
 			case 'w':
 			case 'W':
 			case 'l':
 			case 'L': // west/left
-				i++;
+				++i;
 				return ROTATION_270;
 			default:
 				uint16_t rotation = readNumber(s, i);
@@ -246,12 +248,12 @@ namespace console {
 			case 'l':
 			case 'L':
 			case '-':
-				i++;
+				++i;
 				return DIRECTION_LEFT;
 			case 'r':
 			case 'R':
 			case '+':
-				i++;
+				++i;
 				return DIRECTION_RIGHT;
 			default:
 				unsigned char direction = readNumber(s, i);
@@ -287,7 +289,7 @@ namespace console {
 			size_t i = 0;
 			readBlanks(s, i);
 			char cmd = s[i];
-			i++;
+			++i;
 			switch (cmd)
 			{
 				case 'a':
@@ -295,7 +297,7 @@ namespace console {
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
-						i++;
+						++i;
 						switch (subcmd) {
 							case 'd':
 							case 'D': // delete accessory
@@ -375,7 +377,7 @@ namespace console {
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
-						i++;
+						++i;
 						switch (subcmd) {
 							case 'd':
 							case 'D': // delete block
@@ -451,7 +453,7 @@ namespace console {
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
-						i++;
+						++i;
 						switch (subcmd) {
 							case 'd':
 							case 'D': // delete control
@@ -532,7 +534,7 @@ namespace console {
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
-						i++;
+						++i;
 						switch (subcmd) {
 							case 'd':
 							case 'D': // delete feedback
@@ -632,7 +634,7 @@ namespace console {
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
-						i++;
+						++i;
 						switch (subcmd) {
 							case 'a': // set loco to automode
 							case 'A': // set loco to automode
@@ -831,7 +833,7 @@ namespace console {
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
-						i++;
+						++i;
 						switch (subcmd) {
 							case 'd':
 							case 'D': // delete street
@@ -914,7 +916,7 @@ namespace console {
 					{
 						readBlanks(s, i);
 						char subcmd = s[i];
-						i++;
+						++i;
 						switch (subcmd) {
 							case 'd':
 							case 'D': // delete switch
