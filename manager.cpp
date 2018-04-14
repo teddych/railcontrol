@@ -299,7 +299,7 @@ const std::map<controlID_t,std::string> Manager::controlListNames() const {
 	return ret;
 }
 
-const std::map<protocol_t,std::string> Manager::protocolsOfControl(controlID_t controlID) const {
+const std::map<protocol_t,std::string> Manager::protocolsOfControl(const controlID_t controlID) const {
 	std::map<protocol_t,std::string> ret;
 	std::vector<protocol_t> protocols;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
@@ -349,6 +349,13 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
 	Loco* loco;
 	{
+		{
+			std::lock_guard<std::mutex> Guard(controlMutex);
+			if (controls.count(controlID) != 1) {
+				result.assign("Control does not exist");
+				return false;
+			}
+		}
 		std::lock_guard<std::mutex> Guard(locoMutex);
 		if (locoID != LOCO_NONE && locos.count(locoID)) {
 			// update existing loco
