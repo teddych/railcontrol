@@ -1,5 +1,4 @@
-#ifndef HARDWARE_HARDWARE_HANDLER_H
-#define HARDWARE_HARDWARE_HANDLER_H
+#pragma once
 
 #include <string>
 
@@ -29,14 +28,14 @@ namespace hardware {
 			void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) override;
 			void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) override;
 			void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) override;
-			void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
-			void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) override;
+			void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) override {};
+			void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) override {};
 			void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) override;
-			void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) override;
-			void locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
-			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
-			void locoStart(const locoID_t locoID) override;
-			void locoStop(const locoID_t locoID) override;
+			void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) override {};
+			void locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override {};
+			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override {};
+			void locoStart(const locoID_t locoID) override {};
+			void locoStop(const locoID_t locoID) override {};
 		private:
 			Manager& manager;
 			createHardware_t* createHardware;
@@ -45,15 +44,5 @@ namespace hardware {
 			const HardwareParams* params;
 	};
 
-	inline void HardwareHandler::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {};
-	inline void HardwareHandler::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {};
-	inline void HardwareHandler::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {}
-	inline void HardwareHandler::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {}
-	inline void HardwareHandler::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {}
-	inline void HardwareHandler::locoStart(const locoID_t locoID) {}
-	inline void HardwareHandler::locoStop(const locoID_t locoID) {}
-};
-// namespace hardware
-
-#endif // HARDWARE_HARDWARE_HANDLER_H
+}; // namespace hardware
 
