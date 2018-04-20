@@ -22,6 +22,7 @@ namespace hardware {
 			controlID_t getControlID() const;
 			std::string getName() const;
 			void getProtocols(std::vector<protocol_t>& protocols) const;
+			bool protocolSupported(protocol_t protocol) const;
 
 			void booster(const managerID_t managerID, boosterStatus_t status) override;
 			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;

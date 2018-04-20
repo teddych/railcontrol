@@ -1,5 +1,4 @@
-#ifndef HARDWARE_HARDAWRE_INTERFACE_H
-#define HARDWARE_HARDWARE_INTERFACE_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -22,6 +21,9 @@ namespace hardware {
 			// get available protocols of this control
 			virtual void getProtocols(std::vector<protocol_t>& protocols) const = 0;
 
+			// is given protocol supported
+			virtual bool protocolSupported(protocol_t protocol) const = 0;
+
 			// turn booster on or off
 			virtual void booster(const boosterStatus_t status) = 0;
 
@@ -39,7 +41,4 @@ namespace hardware {
 	};
 
 } // namespace
-
-
-#endif // HARDWARE_HARDWARE_INTERFACE_H
 

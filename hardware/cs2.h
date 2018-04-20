@@ -1,5 +1,4 @@
-#ifndef HARDWARE_CS2_H
-#define HARDWARE_CS2_H
+#pragma once
 
 #include <cstring>
 #include <string>
@@ -22,6 +21,7 @@ namespace hardware {
 			~CS2();
 			std::string getName() const override;
 			void getProtocols(std::vector<protocol_t>& protocols) const override;
+			virtual bool protocolSupported(protocol_t protocol) const override;
 			void booster(const boosterStatus_t status) override;
 			void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
 			void locoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
@@ -43,6 +43,4 @@ namespace hardware {
 	};
 
 } // namespace
-
-#endif // HARDWARE_CS2_H
 

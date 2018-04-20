@@ -1,5 +1,4 @@
-#ifndef HARDWARE_VIRTUAL_H
-#define HARDWARE_VIRTUAL_H
+#pragma once
 
 #include <cstring>
 
@@ -19,11 +18,11 @@ namespace hardware {
 			// get available protocols of this control
 			void getProtocols(std::vector<protocol_t>& protocols) const override;
 
-		  // All possible methods that can be implemented
-			// if not the method of the abstract class hardware is used
+			// is given protocol supported
+			bool protocolSupported(protocol_t protocol) const override;
 
 			// turn booster on or off
-      void booster(const boosterStatus_t status) override;
+			void booster(const boosterStatus_t status) override;
 
 			// set loco speed
 			void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
@@ -42,6 +41,4 @@ namespace hardware {
   };
 
 } // namespace
-
-#endif // HARDWARE_VIRTUAL_H
 

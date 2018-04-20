@@ -352,8 +352,13 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 	{
 		{
 			std::lock_guard<std::mutex> Guard(controlMutex);
-			if (controls.count(controlID) != 1) {
+			if (controlID < CONTROL_ID_FIRST_HARDWARE || controls.count(controlID) != 1) {
 				result.assign("Control does not exist");
+				return false;
+			}
+			hardware::HardwareInterface* control = reinterpret_cast<hardware::HardwareInterface*>(controls.at(controlID));
+			if (!control->protocolSupported(protocol)) {
+				result.assign("Protocol is not supported by control");
 				return false;
 			}
 		}
@@ -853,7 +858,7 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 			// update existing switch
 			mySwitch = switches.at(switchID);
 			if (mySwitch == nullptr) {
-				result.assign("Block does not exist");
+				result.assign("Switch does not exist");
 				return false;
 			}
 			mySwitch->name = name;

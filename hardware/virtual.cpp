@@ -41,6 +41,10 @@ namespace hardware {
 		protocols.push_back(PROTOCOL_SERVER);
 	}
 
+	bool Virtual::protocolSupported(protocol_t protocol) const {
+		return (protocol == PROTOCOL_SERVER);
+	}
+
 	// set loco speed
 	void Virtual::locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) {
 		xlog("Setting speed of virtual loco %i/%i to speed %i", protocol, address, speed);

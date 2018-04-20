@@ -62,6 +62,10 @@ namespace hardware {
 		protocols.push_back(PROTOCOL_DCC);
 	}
 
+	bool CS2::protocolSupported(protocol_t protocol) const {
+		return (protocol == PROTOCOL_MM2 || protocol == PROTOCOL_DCC);
+	}
+
 	void CS2::createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length) {
 		buffer[0] = (prio << 1) | (command >> 7);
 		buffer[1] = (command << 1) | (response & 0x01);

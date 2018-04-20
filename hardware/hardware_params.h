@@ -1,5 +1,4 @@
-#ifndef HARDWARE_HARDWARE_PARAMS_H
-#define HARDWARE_HARDWARE_PARAMS_H
+#pragma once
 
 #include "datatypes.h"
 
@@ -19,5 +18,4 @@ namespace hardware {
 	};
 
 } // namespace hardware
-#endif // HARDWARE_HARDWARE_PARAMS_H
 
