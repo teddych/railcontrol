@@ -18,6 +18,7 @@ namespace datamodel {
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
+			virtual std::string layoutType() const override { return "block"; };
 
 			bool reserve(const locoID_t locoID);
 			bool lock(const locoID_t locoID);

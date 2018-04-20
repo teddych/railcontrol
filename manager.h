@@ -103,10 +103,7 @@ class Manager {
 
 		// layout
 		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result);
-		bool checkAccessoryPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
-		bool checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
-		bool checkFeedbackPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
-		bool checkSwitchPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
+		template<class Type> bool checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result, std::map<objectID_t, Type*>& layoutVector, std::mutex& mutex);
 
 		// FIXME: check usage of all mutexes
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;

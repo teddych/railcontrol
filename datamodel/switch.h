@@ -27,6 +27,7 @@ namespace datamodel {
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
+			virtual std::string layoutType() const { return "switch"; };
 
 			static void getTexts(const switchState_t state, char*& stateText);
 	};

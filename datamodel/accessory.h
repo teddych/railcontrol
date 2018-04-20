@@ -16,6 +16,7 @@ namespace datamodel {
 
 			virtual std::string serialize() const override;
 			virtual bool deserialize(const std::string& serialized) override;
+			virtual std::string layoutType() const override { return "accessory"; };
 
 			controlID_t controlID;
 			protocol_t protocol;

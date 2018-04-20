@@ -15,6 +15,7 @@ using console::Console;
 using datamodel::Accessory;
 using datamodel::Block;
 using datamodel::Feedback;
+using datamodel::LayoutItem;
 using datamodel::Loco;
 using datamodel::Street;
 using datamodel::Switch;
@@ -531,7 +532,9 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 	Accessory* accessory;
 	{
 		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0, result)) {
-			result.append(" Unable to add or move accessory");
+			result.append(" Unable to ");
+			result.append(accessoryID == ACCESSORY_NONE ? "add" : "move");
+			result.append(" accessory.");
 			return false;
 		}
 		std::lock_guard<std::mutex> Guard(accessoryMutex);
@@ -649,7 +652,9 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 	Feedback* feedback;
 	{
 		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0, result)) {
-			result.append(" Unable to add or move feedback");
+			result.append(" Unable to ");
+			result.append(feedbackID == FEEDBACK_NONE ? "add" : "move");
+			result.append(" feedback.");
 			return false;
 		}
 		std::lock_guard<std::mutex> Guard(feedbackMutex);
@@ -746,7 +751,9 @@ bool Manager::blockSave(const blockID_t blockID, const std::string& name, const 
 	Block* block;
 	{
 		if (!checkPositionFree(posX, posY, posZ, width, HEIGHT_1, rotation, result)) {
-			result.append(" Unable to add or move  block.");
+			result.append(" Unable to ");
+			result.append(blockID == BLOCK_NONE ? "add" : "move");
+			result.append(" block.");
 			return false;
 		}
 		std::lock_guard<std::mutex> Guard(blockMutex);
@@ -836,7 +843,9 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 	Switch* mySwitch;
 	{
 		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, rotation, result)) {
-			result.append(" Unable to add or move switch");
+			result.append(" Unable to ");
+			result.append(switchID == SWITCH_NONE ? "add" : "move");
+			result.append(" switch.");
 			return false;
 		}
 		std::lock_guard<std::mutex> Guard(switchMutex);
@@ -1224,19 +1233,19 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 	}
 	for(layoutPosition_t ix = x; ix < x + w; ix++) {
 		for(layoutPosition_t iy = y; iy < y + h; iy++) {
-			bool ret = checkAccessoryPositionFree(ix, iy, z, result);
+			bool ret = checkLayoutPositionFree(ix, iy, z, result, accessories, accessoryMutex);
 			if (ret == false) {
 				return false;
 			}
-			ret = checkBlockPositionFree(ix, iy, z, result);
+			ret = checkLayoutPositionFree(ix, iy, z, result, blocks, blockMutex);
 			if (ret == false) {
 				return false;
 			}
-			ret = checkFeedbackPositionFree(ix, iy, z, result);
+			ret = checkLayoutPositionFree(ix, iy, z, result, feedbacks, feedbackMutex);
 			if (ret == false) {
 				return false;
 			}
-			ret = checkSwitchPositionFree(ix, iy, z, result);
+			ret = checkLayoutPositionFree(ix, iy, z, result, switches, switchMutex);
 			if (ret == false) {
 				return false;
 			}
@@ -1245,51 +1254,13 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 	return true;
 }
 
-bool Manager::checkAccessoryPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
-	std::lock_guard<std::mutex> Guard(accessoryMutex);
-	for (auto accessory : accessories) {
-		if (!accessory.second->checkPositionFree(posX, posY, posZ)) {
+template<class Type>
+bool Manager::checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result, map<objectID_t, Type*>& layoutVector, std::mutex& mutex) {
+	std::lock_guard<std::mutex> Guard(mutex);
+	for (auto layout : layoutVector) {
+		if (!layout.second->checkPositionFree(posX, posY, posZ)) {
 			stringstream status;
-			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by accessory \"" << accessory.second->name << "\".";
-			result.assign(status.str());
-			return false;
-		}
-	}
-	return true;
-}
-
-bool Manager::checkBlockPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
-	std::lock_guard<std::mutex> Guard(blockMutex);
-	for (auto block : blocks) {
-		if (!block.second->checkPositionFree(posX, posY, posZ)) {
-			stringstream status;
-			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by block \"" << block.second->name << "\".";
-			result.assign(status.str());
-			return false;
-		}
-	}
-	return true;
-}
-
-bool Manager::checkFeedbackPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
-	std::lock_guard<std::mutex> Guard(feedbackMutex);
-	for (auto feedback : feedbacks) {
-		if (!feedback.second->checkPositionFree(posX, posY, posZ)) {
-			stringstream status;
-			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by feedback \"" << feedback.second->name << "\".";
-			result.assign(status.str());
-			return false;
-		}
-	}
-	return true;
-}
-
-bool Manager::checkSwitchPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) {
-	std::lock_guard<std::mutex> Guard(switchMutex);
-	for (auto mySwitch : switches) {
-		if (!mySwitch.second->checkPositionFree(posX, posY, posZ)) {
-			stringstream status;
-			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by switch \"" << mySwitch.second->name << "\".";
+			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by " << layout.second->layoutType() << " \"" << layout.second->name << "\".";
 			result.assign(status.str());
 			return false;
 		}
