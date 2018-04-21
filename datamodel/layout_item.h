@@ -15,6 +15,12 @@ namespace datamodel {
 
 			static bool mapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
 
+			bool position(layoutPosition_t& x, layoutPosition_t& y, layoutPosition_t& z, layoutItemSize_t& w, layoutItemSize_t& h) const {
+				z = posZ;
+				return mapPosition(posX, posY, width, height, rotation, x, y, w, h);
+			}
+
+
 			virtual bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
 			virtual std::string serialize() const override;
 			virtual bool deserialize(const std::string& serialized) override;

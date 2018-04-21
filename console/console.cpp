@@ -835,16 +835,49 @@ namespace console {
 								"\n"
 								"Other commands\n"
 								"H                                 Show this help\n"
+								"P                                 Print layout\n"
 								"Q                                 Quit console\n"
 								"S                                 Shut down railcontrol\n");
 						addUpdate(status);
 						break;
 					}
+				case 'p':
+				case 'P': // print layout
+					{
+						stringstream status;
+						status << "\033[2J";
+						status << "\033[0;0H";
+						status << "Layout 0";
+						const map<blockID_t,datamodel::Block*>& blocks = manager.blockList();
+						for (auto block : blocks) {
+							layoutPosition_t posX;
+							layoutPosition_t posY;
+							layoutPosition_t posZ;
+							layoutItemSize_t w;
+							layoutItemSize_t h;
+							block.second->position(posX, posY, posZ, w, h);
+							if (posZ != 0) {
+								continue;
+							}
+							status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
+							status << "Bloc";
+						}
+						status << "\033[20;0H";
+						addUpdate(status.str());
+						break;
+					}
+					break;
+				case 'q':
+				case 'Q': // quit (must be next to shut down!)
+					{
+						addUpdate("Quit railcontrol console");
+						close(clientSocket);
+						return;
+					}
 				case 's':
 				case 'S': // shut down railcontrol
 					{
-						string status("Shutting down railcontrol");
-						addUpdate(status);
+						addUpdate("Shutting down railcontrol");
 						stopRailControlConsole();
 						close(clientSocket);
 						return;
@@ -924,13 +957,6 @@ namespace console {
 								}
 						}
 						break;
-					}
-				case 'q':
-				case 'Q': // quit (must be next to shut down!)
-					{
-						addUpdate("Quit railcontrol console");
-						close(clientSocket);
-						return;
 					}
 				case 'w':
 				case 'W': // Switch commands
