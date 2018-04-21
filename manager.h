@@ -61,7 +61,7 @@ class Manager {
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
 		const std::string& getFeedbackName(const feedbackID_t feedbackID);
 		inline const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
-		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, std::string& result);
+		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted,  std::string& result);
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
 		// block

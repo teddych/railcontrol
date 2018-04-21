@@ -140,6 +140,25 @@ namespace console {
 		return number;
 	}
 
+	bool Console::readBool(string& s, size_t& i) {
+		// read bool
+		if (s.length() <= i) {
+			return false;
+		}
+		if (s[i] == 'o') {
+			++i;
+			if (s.length() <= i) {
+				return false;
+			}
+			bool ret = s[i] == 'n';
+			while (s.length() > i && s[i] != ' ') {
+				++i;
+			}
+			return ret;
+		}
+		return (bool)readNumber(s, i);
+	}
+
 	string Console::readText(string& s, size_t& i) {
 		size_t start = i;
 		size_t length = 0;
@@ -588,8 +607,10 @@ namespace console {
 									controlID_t control = readNumber(s, i);
 									readBlanks(s, i);
 									feedbackPin_t pin = readNumber(s, i);
+									readBlanks(s, i);
+									bool inverted = readBool(s, i);
 									string result;
-									if(!manager.feedbackSave(FEEDBACK_NONE, name, posX, posY, posZ, control, pin, result)) {
+									if(!manager.feedbackSave(FEEDBACK_NONE, name, posX, posY, posZ, control, pin, inverted, result)) {
 										addUpdate(result);
 										break;
 									}
@@ -784,7 +805,7 @@ namespace console {
 								"F L A                             List all feedbacks\n"
 								"F L feedback#                     List feedback\n"
 								"F S pin# [X]                      Turn feedback on (with X) or of (without X)\n"
-								"F N Name X Y Z Control Pin        New feedback\n"
+								"F N Name X Y Z Control Pin Invert New feedback\n"
 								"\n"
 								"Loco commands\n"
 								"L A A                             Start all locos into automode\n"

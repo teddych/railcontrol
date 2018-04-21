@@ -34,7 +34,8 @@ namespace console {
 			void addUpdate(const std::string& status);
 			static void readBlanks(std::string& s, size_t& i);
 			static int readNumber(std::string& s, size_t& i);
-            static std::string readText(std::string& s, size_t& i);
+			static bool readBool(std::string& s, size_t& i);
+			static std::string readText(std::string& s, size_t& i);
 			static switchType_t readSwitchType(std::string& s, size_t& i);
 			static layoutRotation_t readRotation(std::string& s, size_t& i);
 			static direction_t readDirection(std::string& s, size_t& i);

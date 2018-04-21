@@ -644,7 +644,7 @@ const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) {
 	return feedbacks.at(feedbackID)->name;
 }
 
-bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, string& result) {
+bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result) {
 	Feedback* feedback;
 	{
 		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0, result)) {
@@ -678,7 +678,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 				}
 			}
 			++newFeedbackID;
-			feedback = new Feedback(this, newFeedbackID, name, posX, posY, posZ, controlID, pin);
+			feedback = new Feedback(this, newFeedbackID, name, posX, posY, posZ, controlID, pin, inverted);
 			if (feedback == nullptr) {
 				result.assign("Unable to allocate memory for feedback");
 				return false;
@@ -1154,19 +1154,19 @@ void Manager::loadDefaultValuesToDB() {
 	Accessory newAccessory2(2, "Schalter 2", ROTATION_0, 3, 6, 0, 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200);
 	storage->accessory(newAccessory2);
 
-	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0);
+	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0, false);
 	storage->feedback(newFeedback1);
 
-	Feedback newFeedback2(this, 2, "Rückmelder Bahnhof 2", 1, 2, 4, 6, 0);
+	Feedback newFeedback2(this, 2, "Rückmelder Bahnhof 2", 1, 2, 4, 6, 0, false);
 	storage->feedback(newFeedback2);
 
-	Feedback newFeedback3(this, 3, "Rückmelder Ausfahrt", 1, 3, 4, 6, 0);
+	Feedback newFeedback3(this, 3, "Rückmelder Ausfahrt", 1, 3, 4, 6, 0, false);
 	storage->feedback(newFeedback3);
 
-	Feedback newFeedback4(this, 4, "Rückmelder Strecke", 1, 4, 4, 6, 0);
+	Feedback newFeedback4(this, 4, "Rückmelder Strecke", 1, 4, 4, 6, 0, false);
 	storage->feedback(newFeedback4);
 
-	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0);
+	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0, false);
 	storage->feedback(newFeedback5);
 
 	Block newBlock1(1, "Block Bahnhof 1", 4, ROTATION_0, 5, 5, 0);

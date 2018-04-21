@@ -10,13 +10,14 @@ using std::string;
 
 namespace datamodel {
 
-	Feedback::Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const feedbackPin_t pin) :
+	Feedback::Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const feedbackPin_t pin, bool inverted) :
 		LayoutItem(feedbackID, name, x, y, z, WIDTH_1, HEIGHT_1, ROTATION_0),
 		controlID(controlID),
 		pin(pin),
 		manager(manager),
 		state(FEEDBACK_STATE_FREE),
-		locoID(LOCO_NONE) {
+		locoID(LOCO_NONE),
+		inverted(inverted) {
 	}
 
 	Feedback::Feedback(Manager* manager, const std::string& serialized) :
@@ -27,7 +28,7 @@ namespace datamodel {
 
 	std::string Feedback::serialize() const {
 		stringstream ss;
-		ss << "objectType=Feedback;" << LayoutItem::serialize() << ";controlID=" << (int)controlID << ";pin=" << (int)pin << ";state=" << (int)state;
+		ss << "objectType=Feedback;" << LayoutItem::serialize() << ";controlID=" << (int)controlID << ";pin=" << (int)pin << ";inverted=" << (int)inverted << ";state=" << (int)state;
 		return ss.str();
 	}
 
@@ -38,6 +39,7 @@ namespace datamodel {
 			LayoutItem::deserialize(arguments);
 			if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
 			if (arguments.count("pin")) pin = stoi(arguments.at("pin"));
+			if (arguments.count("inverted")) inverted = (bool)stoi(arguments.at("inverted"));
 			if (arguments.count("state")) state = stoi(arguments.at("state"));
 			return true;
 		}
@@ -56,11 +58,7 @@ namespace datamodel {
 	}
 
 	bool Feedback::setState(const feedbackState_t state) {
-		if (this->state == state) {
-			return false;
-		}
-
-		this->state = state;
+		this->state = (state ^ inverted) & 0x01;
 		if (state == FEEDBACK_STATE_FREE) {
 			return true;
 		}

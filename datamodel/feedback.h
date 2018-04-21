@@ -12,7 +12,7 @@ namespace datamodel {
 
 	class Feedback : public LayoutItem {
 		public:
-			Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const feedbackPin_t pin);
+			Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const feedbackPin_t pin, bool inverted);
 			Feedback(Manager* manager, const std::string& serialized);
 
 			std::string serialize() const override;
@@ -29,6 +29,7 @@ namespace datamodel {
 			Manager* manager;
 			feedbackState_t state;
 			locoID_t locoID;
+			bool inverted;
 	};
 
 } // namespace datamodel
