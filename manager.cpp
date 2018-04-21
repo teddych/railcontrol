@@ -349,19 +349,10 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 
 bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
 	Loco* loco;
+	if (!checkControlProtocolAddress(controlID, protocol, address, result)) {
+		return false;
+	}
 	{
-		{
-			std::lock_guard<std::mutex> Guard(controlMutex);
-			if (controlID < CONTROL_ID_FIRST_HARDWARE || controls.count(controlID) != 1) {
-				result.assign("Control does not exist");
-				return false;
-			}
-			hardware::HardwareInterface* control = reinterpret_cast<hardware::HardwareInterface*>(controls.at(controlID));
-			if (!control->protocolSupported(protocol)) {
-				result.assign("Protocol is not supported by control");
-				return false;
-			}
-		}
 		std::lock_guard<std::mutex> Guard(locoMutex);
 		if (locoID != LOCO_NONE && locos.count(locoID)) {
 			// update existing loco
@@ -1263,12 +1254,52 @@ template<class Type>
 bool Manager::checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result, map<objectID_t, Type*>& layoutVector, std::mutex& mutex) {
 	std::lock_guard<std::mutex> Guard(mutex);
 	for (auto layout : layoutVector) {
-		if (!layout.second->checkPositionFree(posX, posY, posZ)) {
-			stringstream status;
-			status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by " << layout.second->layoutType() << " \"" << layout.second->name << "\".";
-			result.assign(status.str());
+		if (layout.second->checkPositionFree(posX, posY, posZ)) {
+			continue;
+		}
+		stringstream status;
+		status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by " << layout.second->layoutType() << " \"" << layout.second->name << "\".";
+		result.assign(status.str());
+		return false;
+	}
+	return true;
+}
+
+bool Manager::checkControlProtocolAddress(const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
+	{
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		if (controlID < CONTROL_ID_FIRST_HARDWARE || controls.count(controlID) != 1) {
+			result.assign("Control does not exist");
 			return false;
 		}
+		hardware::HardwareInterface* control = reinterpret_cast<hardware::HardwareInterface*>(controls.at(controlID));
+		if (!control->protocolSupported(protocol)) {
+			result.assign("Protocol is not supported by control");
+			return false;
+		}
+	}
+	if (address == 0) {
+		result.assign("Address must be higher then 0");
+		return false;
+	}
+	switch (protocol) {
+		case PROTOCOL_DCC:
+			if (address > 10239) {
+				result.assign("Address higher then 10239 is not supported by DCC");
+				return false;
+			}
+			break;
+		case PROTOCOL_MM1:
+			if (address > 80) {
+				result.assign("Address higher then 80 is not supported by MM1");
+				return false;
+			}
+		case PROTOCOL_MM2:
+			if (address > 255) {
+				result.assign("Address higher then 255 is not supported by MM2");
+				return false;
+			}
+			break;
 	}
 	return true;
 }
