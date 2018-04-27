@@ -106,8 +106,8 @@ namespace hardware {
 		return params->controlID;
 	}
 
-	std::string HardwareHandler::getName() const {
-		if (instance != nullptr) {
+	const std::string HardwareHandler::getName() const {
+		if (instance == nullptr) {
 			return "Unknown, not running";
 		}
 		return instance->getName();

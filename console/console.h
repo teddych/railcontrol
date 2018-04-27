@@ -15,6 +15,7 @@ namespace console {
 		public:
 			Console(Manager& manager, const unsigned short port);
 			~Console();
+			const std::string getName() const override { return "Console"; }
 			void booster(const managerID_t managerID, const boosterStatus_t status) override;
 			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
 			void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) override;

@@ -7,13 +7,13 @@
 
 namespace hardware {
 
-  class Virtual : HardwareInterface {
-    public:
+	class Virtual : HardwareInterface {
+		public:
 			// Constructor
 			Virtual(const HardwareParams* params);
 
 			// name() must be implemented
-			std::string getName() const override;
+			const std::string getName() const override { return name; };
 
 			// get available protocols of this control
 			void getProtocols(std::vector<protocol_t>& protocols) const override;
@@ -38,7 +38,7 @@ namespace hardware {
 
 		private:
 			std::string name;
-  };
+	};
 
 } // namespace
 

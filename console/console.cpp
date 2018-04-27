@@ -697,7 +697,7 @@ namespace console {
 									break;
 								}
 							case 'l':
-							case 'L':
+							case 'L': // list loco
 								{
 									readBlanks(s, i);
 									if (s[i] == 'a') { // list all locos
@@ -710,6 +710,7 @@ namespace console {
 										addUpdate(status.str());
 										break;
 									}
+									// list one loco
 									locoID_t locoID = readNumber(s, i);
 									datamodel::Loco* loco = manager.getLoco(locoID);
 									if (loco == nullptr) {
@@ -717,7 +718,7 @@ namespace console {
 										break;
 									}
 									stringstream status;
-									status << locoID << " " << loco->name << " (" << static_cast<int>(loco->controlID) << "/" << static_cast<int>(loco->protocol) << "/" << loco->address << ")";
+									status << locoID << " " << loco->name << " (Control: " << manager.getControlName(loco->controlID) << " Protocol: " << protocolSymbols[loco->protocol] << " Address: " << loco->address << ")";
 									addUpdate(status.str());
 									break;
 								}

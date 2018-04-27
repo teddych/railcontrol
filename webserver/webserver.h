@@ -17,6 +17,7 @@ namespace webserver {
 		public:
 			WebServer(Manager& manager, const unsigned short port);
 			~WebServer();
+			const std::string getName() const override { return "Webserver"; }
 			bool nextUpdate(unsigned int& updateID, std::string& s);
 			void booster(const managerID_t managerID, const boosterStatus_t status) override;
 			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;

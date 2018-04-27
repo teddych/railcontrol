@@ -52,11 +52,6 @@ namespace hardware {
 		receiverThread.join();
 	}
 
-  // return the name
-	std::string CS2::getName() const {
-		return name;
-  }
-
 	void CS2::getProtocols(std::vector<protocol_t>& protocols) const {
 		protocols.push_back(PROTOCOL_MM2);
 		protocols.push_back(PROTOCOL_DCC);

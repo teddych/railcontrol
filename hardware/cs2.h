@@ -19,7 +19,7 @@ namespace hardware {
 		public:
 			CS2(const HardwareParams* params);
 			~CS2();
-			std::string getName() const override;
+			const std::string getName() const override { return name; };
 			void getProtocols(std::vector<protocol_t>& protocols) const override;
 			virtual bool protocolSupported(protocol_t protocol) const override;
 			void booster(const boosterStatus_t status) override;

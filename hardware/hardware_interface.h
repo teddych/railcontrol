@@ -16,7 +16,7 @@ namespace hardware {
 			virtual ~HardwareInterface() {};
 
 			// get the name of the hardware
-			virtual std::string getName() const = 0;
+			virtual const std::string getName() const = 0;
 
 			// get available protocols of this control
 			virtual void getProtocols(std::vector<protocol_t>& protocols) const = 0;

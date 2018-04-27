@@ -20,21 +20,16 @@ namespace hardware {
 	}
 
 
-  Virtual::Virtual(const HardwareParams* params) {
+	Virtual::Virtual(const HardwareParams* params) {
 		std::stringstream ss;
 		ss << "Virtual Command Station / " << params->name;
 		name = ss.str();
 	}
 
 	// turn booster on or off
-  void Virtual::booster(const boosterStatus_t status) {
+	void Virtual::booster(const boosterStatus_t status) {
 		if (status) xlog("Turning virtual booster on");
 		else xlog("Turning virtual booster off");
-  }
-
-	// return the name
-	std::string Virtual::getName() const {
-		return name;
 	}
 
 	void Virtual::getProtocols(std::vector<protocol_t>& protocols) const {

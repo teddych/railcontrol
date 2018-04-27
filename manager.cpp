@@ -31,6 +31,7 @@ using webserver::WebServer;
 Manager::Manager(Config& config) :
 	autoMode(false),
 	storage(NULL),
+	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
 	unknownFeedback("Unknown Feedback"),
@@ -289,6 +290,15 @@ bool Manager::hardwareLibraryRemove(const hardwareType_t hardwareType) {
 	}
 	hardwareLibraries.erase(hardwareType);
 	return true;
+}
+
+const std::string Manager::getControlName(const controlID_t controlID) {
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	if (controls.count(controlID) != 1) {
+		return unknownControl;
+	}
+	ManagerInterface* c = controls.at(controlID);
+	return c->getName();
 }
 
 const std::map<controlID_t,std::string> Manager::controlListNames() const {
