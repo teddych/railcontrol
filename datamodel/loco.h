@@ -35,6 +35,7 @@ namespace datamodel {
 
 			bool isInUse() const;
 
+			// FIXME: make private:
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;

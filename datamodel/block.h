@@ -23,6 +23,7 @@ namespace datamodel {
 			bool reserve(const locoID_t locoID);
 			bool lock(const locoID_t locoID);
 			bool release(const locoID_t locoID);
+			locoID_t getLoco() const { return locoID; }
 
 			bool addStreet(Street* street);
 			bool removeStreet(Street* street);

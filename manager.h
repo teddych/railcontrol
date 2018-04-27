@@ -29,7 +29,7 @@ class Manager {
 		bool hardwareLibraryRemove(const hardwareType_t hardwareType);
 
 		// control (console, web, ...)
-		const std::string getControlName(const controlID_t controlID);
+		const std::string getControlName(const controlID_t controlID); // FIXME: => string& (reference)
 		inline const std::map<controlID_t,hardware::HardwareParams*> controlList() const { return hardwareParams; }
 		const std::map<controlID_t,std::string> controlListNames() const;
 		const std::map<protocol_t,std::string> protocolsOfControl(const controlID_t) const;

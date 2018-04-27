@@ -424,6 +424,7 @@ namespace console {
 										addUpdate(status.str());
 										break;
 									}
+									// list one block
 									blockID_t blockID = readNumber(s, i);
 									datamodel::Block* block = manager.getBlock(blockID);
 									if (block == nullptr) {
@@ -431,7 +432,19 @@ namespace console {
 										break;
 									}
 									stringstream status;
-									status << blockID << " " << block->name << " (" << static_cast<int>(block->posX) << "/" << static_cast<int>(block->posY) << "/" << static_cast<int>(block->posZ) << ")";
+									status
+										<< "Block ID: " << blockID
+										<< "\nName:     " << block->name
+										<< "\nX:        " << static_cast<int>(block->posX)
+										<< "\nY:        " << static_cast<int>(block->posY)
+										<< "\nZ:        " << static_cast<int>(block->posZ)
+										<< "\nLoco:     ";
+									if (block->getLoco() == LOCO_NONE) {
+										status << "-";
+									}
+									else {
+										status << manager.getLocoName(block->getLoco()) << " (" << block->getLoco() << ")";
+									}
 									addUpdate(status.str());
 									break;
 								}
@@ -725,8 +738,20 @@ namespace console {
 										<< "\nControl:  " << manager.getControlName(loco->controlID)
 										<< "\nProtocol: " << protocolSymbols[loco->protocol]
 										<< "\nAddress:  " << loco->address
-										<< "\nBlock:    " << manager.getBlockName(loco->block())
-										<< "\nStreet:   " << manager.getStreetName(loco->street());
+										<< "\nBlock:    ";
+									if (loco->block() == BLOCK_NONE) {
+										status << "-";
+									}
+									else {
+										status << manager.getBlockName(loco->block()) << " (" << loco->block() << ")";
+									}
+									status << "\nStreet:   ";
+									if (loco->street() == STREET_NONE) {
+										status << "-";
+									}
+									else {
+										status << manager.getStreetName(loco->street()) << " (" << loco->street() << ")";
+									}
 									addUpdate(status.str());
 									break;
 								}
