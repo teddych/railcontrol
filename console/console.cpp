@@ -864,8 +864,6 @@ namespace console {
 							status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
 							status << "Bloc";
 						}
-						status << "\033[20;0H";
-						addUpdate(status.str());
 						// print switches
 						const map<switchID_t,datamodel::Switch*>& switches = manager.switchList();
 						for (auto mySwitch : switches) {
@@ -882,6 +880,23 @@ namespace console {
 							status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
 							status << "S";
 						}
+						// print accessories
+						const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
+						for (auto accessory : accessories) {
+							layoutPosition_t posX;
+							layoutPosition_t posY;
+							layoutPosition_t posZ;
+							layoutItemSize_t w;
+							layoutItemSize_t h;
+							layoutRotation_t r;
+							accessory.second->position(posX, posY, posZ, w, h, r);
+							if (posZ != 0) {
+								continue;
+							}
+							status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
+							status << "A";
+						}
+						// print cursor at correct position
 						status << "\033[20;0H";
 						addUpdate(status.str());
 						break;
