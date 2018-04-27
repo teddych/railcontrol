@@ -15,6 +15,7 @@ typedef unsigned short objectID_t;
 typedef objectID_t locoID_t;
 typedef unsigned char protocol_t;
 typedef unsigned short address_t;
+typedef unsigned char addressType_t;
 typedef unsigned short speed_t;
 typedef bool direction_t;
 typedef unsigned char function_t;
@@ -105,6 +106,11 @@ static std::string protocolSymbols[] = {
 	"DCC",
 	"SX1",
 	"SX2"
+};
+
+enum addressTypes : addressType_t {
+	ADDRESS_TYPE_LOCO = 0,
+	ADDRESS_TYPE_ACCESSORY
 };
 
 enum hardwareTypes : hardwareType_t {

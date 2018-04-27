@@ -349,7 +349,7 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 
 bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
 	Loco* loco;
-	if (!checkControlProtocolAddress(controlID, protocol, address, result)) {
+	if (!checkControlProtocolAddress(ADDRESS_TYPE_LOCO, controlID, protocol, address, result)) {
 		return false;
 	}
 	{
@@ -526,6 +526,9 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
 
 bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, string& result) {
 	Accessory* accessory;
+	if (!checkControlProtocolAddress(ADDRESS_TYPE_ACCESSORY, controlID, protocol, address, result)) {
+		return false;
+	}
 	{
 		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0, result)) {
 			result.append(" Unable to ");
@@ -837,6 +840,9 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) {
 
 bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout, string& result) {
 	Switch* mySwitch;
+	if (!checkControlProtocolAddress(ADDRESS_TYPE_ACCESSORY, controlID, protocol, address, result)) {
+		return false;
+	}
 	{
 		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, rotation, result)) {
 			result.append(" Unable to ");
@@ -1265,7 +1271,47 @@ bool Manager::checkLayoutPositionFree(const layoutPosition_t posX, const layoutP
 	return true;
 }
 
-bool Manager::checkControlProtocolAddress(const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
+bool Manager::checkAddressLoco(const protocol_t protocol, const address_t address, string& result) {
+	switch (protocol) {
+		case PROTOCOL_DCC:
+			if (address > 10239) {
+				result.assign("Address higher then 10239 is not supported by DCC");
+				return false;
+			}
+			return true;
+		case PROTOCOL_MM1:
+		case PROTOCOL_MM2:
+			if (address > 80) {
+				result.assign("Address higher then 80 is not supported by MM1/MM2");
+				return false;
+			}
+			return true;
+		default:
+			return true;
+	}
+}
+
+bool Manager::checkAddressAccessory(const protocol_t protocol, const address_t address, string& result) {
+	switch (protocol) {
+		case PROTOCOL_DCC:
+			if (address > 2044) {
+				result.assign("Address higher then 2044 is not supported by DCC");
+				return false;
+			}
+			return true;
+		case PROTOCOL_MM1:
+		case PROTOCOL_MM2:
+			if (address > 320) {
+				result.assign("Address higher then 320 is not supported by MM1/MM2");
+				return false;
+			}
+			return true;
+		default:
+			return true;
+	}
+}
+
+bool Manager::checkControlProtocolAddress(const addressType_t type, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
 	{
 		std::lock_guard<std::mutex> Guard(controlMutex);
 		if (controlID < CONTROL_ID_FIRST_HARDWARE || controls.count(controlID) != 1) {
@@ -1282,25 +1328,13 @@ bool Manager::checkControlProtocolAddress(const controlID_t controlID, const pro
 		result.assign("Address must be higher then 0");
 		return false;
 	}
-	switch (protocol) {
-		case PROTOCOL_DCC:
-			if (address > 10239) {
-				result.assign("Address higher then 10239 is not supported by DCC");
-				return false;
-			}
-			break;
-		case PROTOCOL_MM1:
-			if (address > 80) {
-				result.assign("Address higher then 80 is not supported by MM1");
-				return false;
-			}
-		case PROTOCOL_MM2:
-			if (address > 255) {
-				result.assign("Address higher then 255 is not supported by MM2");
-				return false;
-			}
-			break;
+	switch (type) {
+		case ADDRESS_TYPE_LOCO:
+			return checkAddressLoco(protocol, address, result);
+		case ADDRESS_TYPE_ACCESSORY:
+			return checkAddressAccessory(protocol, address, result);
+		default:
+			return false;
 	}
-	return true;
 }
 
