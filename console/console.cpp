@@ -718,7 +718,15 @@ namespace console {
 										break;
 									}
 									stringstream status;
-									status << locoID << " " << loco->name << " (Control: " << manager.getControlName(loco->controlID) << " Protocol: " << protocolSymbols[loco->protocol] << " Address: " << loco->address << ")";
+									status
+										<< "Loco ID:  " << locoID
+										<< "\nName:     " << loco->name
+										<< "\nSpeed:    " << manager.locoSpeed(locoID)
+										<< "\nControl:  " << manager.getControlName(loco->controlID)
+										<< "\nProtocol: " << protocolSymbols[loco->protocol]
+										<< "\nAddress:  " << loco->address
+										<< "\nBlock:    " << manager.getBlockName(loco->block())
+										<< "\nStreet:   " << manager.getStreetName(loco->street());
 									addUpdate(status.str());
 									break;
 								}

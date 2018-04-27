@@ -26,10 +26,12 @@ namespace datamodel {
 			bool toBlock(const blockID_t blockID);
 			bool toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew);
 			bool releaseBlock();
+			blockID_t block() const { return blockID; }
+			streetID_t street() const { return streetID; }
 			void destinationReached();
 
-			void Speed(const speed_t speed);
-			const speed_t Speed() const;
+			void Speed(const speed_t speed) { this->speed = speed; }
+			const speed_t Speed() const { return speed; }
 
 			bool isInUse() const;
 
@@ -48,14 +50,6 @@ namespace datamodel {
 			std::mutex stateMutex;
 			std::thread locoThread;
 	};
-
-	inline void Loco::Speed(const speed_t speed) {
-		this->speed = speed;
-	}
-
-	inline const speed_t Loco::Speed() const {
-		return this->speed;
-	}
 
 	inline bool Loco::isInUse() const {
 		return this->speed > 0 || this->state != LOCO_STATE_MANUAL || this->blockID != BLOCK_NONE || this->streetID != STREET_NONE;
