@@ -1046,7 +1046,7 @@ namespace console {
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
 									string result;
-									if (!manager.switchSave(SWITCH_NONE, name, rotation, posX, posY, posZ, controlID, protocol, address, type, SWITCH_STRAIGHT, timeout, result)) {
+									if (!manager.switchSave(SWITCH_NONE, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SWITCH_STRAIGHT, timeout, result)) {
 										addUpdate(result);
 										break;
 									}
