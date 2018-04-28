@@ -605,7 +605,7 @@ namespace console {
 									status
 										<< "FeedbackID" << feedbackID
 										<< "\nName:     " << feedback->name
-										<< "\nControl:  " << manager.getFeedbackName(feedback->controlID)
+										<< "\nControl:  " << manager.getControlName(feedback->controlID)
 										<< "\nPin:      " << feedback->pin
 										<< "\nX:        " << static_cast<int>(feedback->posX)
 										<< "\nY:        " << static_cast<int>(feedback->posY)
