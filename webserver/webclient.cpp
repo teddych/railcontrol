@@ -340,56 +340,50 @@ namespace webserver {
 	void WebClient::handleLocoEdit(const map<string, string>& arguments) {
 		stringstream ss;
 		locoID_t locoID = 0;
-		if (!manager.autoMode) {
-			controlID_t controlID = 0;
-			protocol_t protocol = 0;
-			address_t address = 0;
-			string name("New Loco");
-			if (arguments.count("loco")) {
-				locoID = stoi(arguments.at("loco"));
-				const datamodel::Loco* loco = manager.getLoco(locoID);
-				controlID = loco->controlID;
-				protocol = loco->protocol;
-				address = loco->address;
-				name = loco->name;
-			}
-			ss << "<h1>Edit loco &quot;";
-			ss << name;
-			ss << "&quot;</h1>";
-			ss << "<form id=\"editform\">";
-			ss << inputHidden("cmd", "locosave");
-			ss << inputHidden("loco", locoID);
-			ss << inputText("Loco name:", "name", name);
-
-			std::map<controlID_t,string> controls = manager.controlListNames();
-			std::map<string, string> controlOptions;
-			for(auto control : controls) {
-				controlOptions[to_string(control.first)] = control.second;
-			}
-			ss << "<label>Control:</label>";
-			ss << select("control", controlOptions, to_string(controlID));
-
-			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
-			std::map<string, string> protocolOptions;
-			for(auto protocol : protocols) {
-				protocolOptions[to_string(protocol.first)] = protocol.second;
-			}
-			ss << "<label>Protocol:</label>";
-			ss << "<div id=\"protocol\">";
-			ss << select("protocol", protocolOptions, to_string(protocol));
-			ss << "</div>";
-			ss << inputText("Address:", "address", address);
-			ss << "</form>";
-			ss << buttonPopupCancel();
-			ss << buttonPopupOK();
-			ss << "<script>\n";
-			ss << "//# sourceURL=handleLocoEdit.js";
-			ss << "</script>\n";
+		controlID_t controlID = 0;
+		protocol_t protocol = 0;
+		address_t address = 0;
+		string name("New Loco");
+		if (arguments.count("loco")) {
+			locoID = stoi(arguments.at("loco"));
+			const datamodel::Loco* loco = manager.getLoco(locoID);
+			controlID = loco->controlID;
+			protocol = loco->protocol;
+			address = loco->address;
+			name = loco->name;
 		}
-		else {
-			ss << "<h1>Unable to edit locos in auto mode</h1>";
-			ss << buttonPopupCancel();
+		ss << "<h1>Edit loco &quot;";
+		ss << name;
+		ss << "&quot;</h1>";
+		ss << "<form id=\"editform\">";
+		ss << inputHidden("cmd", "locosave");
+		ss << inputHidden("loco", locoID);
+		ss << inputText("Loco name:", "name", name);
+
+		std::map<controlID_t,string> controls = manager.controlListNames();
+		std::map<string, string> controlOptions;
+		for(auto control : controls) {
+			controlOptions[to_string(control.first)] = control.second;
 		}
+		ss << "<label>Control:</label>";
+		ss << select("control", controlOptions, to_string(controlID));
+
+		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
+		std::map<string, string> protocolOptions;
+		for(auto protocol : protocols) {
+			protocolOptions[to_string(protocol.first)] = protocol.second;
+		}
+		ss << "<label>Protocol:</label>";
+		ss << "<div id=\"protocol\">";
+		ss << select("protocol", protocolOptions, to_string(protocol));
+		ss << "</div>";
+		ss << inputText("Address:", "address", address);
+		ss << "</form>";
+		ss << buttonPopupCancel();
+		ss << buttonPopupOK();
+		ss << "<script>\n";
+		ss << "//# sourceURL=handleLocoEdit.js";
+		ss << "</script>\n";
 		string sOut = ss.str();
 		simpleReply(sOut);
 	}

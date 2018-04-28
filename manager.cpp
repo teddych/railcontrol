@@ -29,7 +29,6 @@ using storage::StorageParams;
 using webserver::WebServer;
 
 Manager::Manager(Config& config) :
-	autoMode(false),
 	storage(NULL),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),

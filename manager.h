@@ -97,8 +97,6 @@ class Manager {
 		bool locoStartAll();
 		bool locoStopAll();
 
-		bool autoMode;
-
 	private:
 		void loadDefaultValuesToDB();
 
