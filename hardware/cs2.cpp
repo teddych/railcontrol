@@ -20,35 +20,35 @@ namespace hardware {
 	// create instance of cs2
 	extern "C" CS2* create_cs2(const HardwareParams* params) {
 		return new CS2(params);
-  }
+	}
 
 	// delete instance of cs2
-  extern "C" void destroy_cs2(CS2* cs2) {
-    delete(cs2);
-  }
+	extern "C" void destroy_cs2(CS2* cs2) {
+		delete(cs2);
+	}
 
-  // start the thing
+	// start the thing
 	CS2::CS2(const HardwareParams* params) :
 		manager(params->manager) {
 		std::stringstream ss;
 		ss << "Maerklin Central Station 2 (CS2) / " << params->name;
 		name = ss.str();
 		run = true;
-    senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->ip.c_str(), CS2_PORT_SEND);
-    if (senderSocket < 0) {
-      xlog("Unable to create UDP socket for sending data to CS2");
-    }
+		senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->ip.c_str(), CS2_PORT_SEND);
+		if (senderSocket < 0) {
+			xlog("Unable to create UDP socket for sending data to CS2");
+		}
 		else {
 			xlog("CS2 sender socket created");
 		}
 		receiverThread = std::thread([this] {receiver();});
 	}
 
-  // stop the thing
+	// stop the thing
 	CS2::~CS2() {
 		run = false;
-    close (senderSocket);
-    xlog("CS2 sender socket closed");
+		close (senderSocket);
+		xlog("CS2 sender socket closed");
 		receiverThread.join();
 	}
 
@@ -129,7 +129,7 @@ namespace hardware {
 			xlog("Unable to send data to CS2");
 			return;
 		}
-  }
+	}
 
 	// set the speed of a loco
 	void CS2::locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) {
@@ -220,22 +220,22 @@ namespace hardware {
 		}
 	}
 
-  // the receiver thread of the CS2
-  void CS2::receiver() {
-    xlog("CS2 receiver started");
-    struct sockaddr_in sockaddr_in;
-    int sock;
-    sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), "0.0.0.0", CS2_PORT_RECV);
-    if (sock < 0) {
-      xlog("Unable to create UDP connection for receiving data from CS2");
-      return;
-    }
+	// the receiver thread of the CS2
+	void CS2::receiver() {
+		xlog("CS2 receiver started");
+		struct sockaddr_in sockaddr_in;
+		int sock;
+		sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), "0.0.0.0", CS2_PORT_RECV);
+		if (sock < 0) {
+			xlog("Unable to create UDP connection for receiving data from CS2");
+			return;
+		}
 
-    if (bind(sock, (struct sockaddr*)&sockaddr_in, sizeof(sockaddr_in)) == -1) {
-      xlog("Unable to bind the socket for CS2 receiver");
-    }
-    char buffer[CS2_CMD_BUF_LEN];
-    while(run) {
+		if (bind(sock, (struct sockaddr*)&sockaddr_in, sizeof(sockaddr_in)) == -1) {
+			xlog("Unable to bind the socket for CS2 receiver");
+		}
+		char buffer[CS2_CMD_BUF_LEN];
+		while(run) {
 			ssize_t datalen;
 			do {
 				//try to receive some data, this is a blocking call
@@ -243,11 +243,11 @@ namespace hardware {
 				datalen = recvfrom(sock, buffer, sizeof(buffer), 0, NULL, NULL);
 			} while (datalen < 0 && errno == EAGAIN && run);
 
-      if (datalen < 0 && errno != EAGAIN) {
-        xlog("Unable to receive data from CS2. Closing socket.");
-        close(sock);
-        return;
-      }
+			if (datalen < 0 && errno != EAGAIN) {
+				xlog("Unable to receive data from CS2. Closing socket.");
+				close(sock);
+				return;
+			}
 			else if (datalen == 13) {
 				//xlog("Receiver %i bytes received", datalen);
 				//hexlog(buffer, datalen);
@@ -300,10 +300,10 @@ namespace hardware {
 			}
 			else if (run) {
 				xlog("Unable to receive valid data from CS2. Continuing with next packet.");
-      }
-    }
-    close(sock);
-    xlog("CS2 receiver ended");
-  }
+			}
+		}
+		close(sock);
+		xlog("CS2 receiver ended");
+	}
 
 } // namespace
