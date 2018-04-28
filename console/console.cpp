@@ -999,6 +999,7 @@ namespace console {
 										addUpdate(status.str());
 										break;
 									}
+									// list one street
 									streetID_t streetID = readNumber(s, i);
 									datamodel::Street* street = manager.getStreet(streetID);
 									if (street == nullptr) {
@@ -1006,7 +1007,30 @@ namespace console {
 										break;
 									}
 									stringstream status;
-									status << streetID << " " << street->name;
+									status
+										<< "Street ID " << streetID
+										<< "\nName:     " << street->name
+										<< "\nStart:    ";
+									if (street->fromBlock == BLOCK_NONE) {
+										status << "-";
+									}
+									else {
+										status << manager.getBlockName(street->fromBlock) << " (" << street->fromBlock << ") " << (street->fromDirection ? ">" : "<");
+									}
+									status << "\nEnd:      ";
+									if (street->toBlock == BLOCK_NONE) {
+										status << "-";
+									}
+									else {
+										status << manager.getBlockName(street->toBlock) << " (" << street->toBlock << ") " << (street->toDirection ? ">" : "<");
+									}
+									status << "\nLoco:     ";
+									if (street->getLoco() == LOCO_NONE) {
+										status << "-";
+									}
+									else {
+										status << manager.getLocoName(street->getLoco()) << " (" << street->getLoco() << ")";
+									}
 									addUpdate(status.str());
 									break;
 								}
