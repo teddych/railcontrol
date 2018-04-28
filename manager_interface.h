@@ -23,9 +23,11 @@ class ManagerInterface {
 		virtual void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) = 0;
 		virtual void locoStart(const locoID_t locoID) = 0;
 		virtual void locoStop(const locoID_t locoID) = 0;
+		virtual void getProtocols(std::vector<protocol_t>& protocols) const {};
+		virtual bool protocolSupported(protocol_t protocol) const { return false; };
 
-  private:
-    managerID_t managerID;
+	private:
+		managerID_t managerID;
 };
 
 inline ManagerInterface::ManagerInterface(managerID_t managerID) :

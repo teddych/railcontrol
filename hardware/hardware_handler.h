@@ -21,8 +21,6 @@ namespace hardware {
 			~HardwareHandler();
 			controlID_t getControlID() const { return params->controlID; }
 			const std::string getName() const override;
-			void getProtocols(std::vector<protocol_t>& protocols) const;
-			bool protocolSupported(protocol_t protocol) const;
 
 			void booster(const managerID_t managerID, boosterStatus_t status) override;
 			void locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) override;
@@ -37,6 +35,8 @@ namespace hardware {
 			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override {};
 			void locoStart(const locoID_t locoID) override {};
 			void locoStop(const locoID_t locoID) override {};
+			void getProtocols(std::vector<protocol_t>& protocols) const override;
+			bool protocolSupported(protocol_t protocol) const override;
 		private:
 			Manager& manager;
 			createHardware_t* createHardware;

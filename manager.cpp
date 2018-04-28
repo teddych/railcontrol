@@ -1328,11 +1328,10 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 			result.assign("Control does not exist");
 			return false;
 		}
-		hardware::HardwareInterface* control = reinterpret_cast<hardware::HardwareInterface*>(controls.at(controlID));
+		ManagerInterface* control = controls.at(controlID);
 		if (!control->protocolSupported(protocol)) {
 			stringstream status;
 			status << "Protocol " << static_cast<int>(protocol);
-			//if (static_cast<int>(protocol) > PROTOCOL_NONE && static_cast<int>(protocol) <= PROTOCOL_END) {
 			if (protocol > PROTOCOL_NONE && protocol <= PROTOCOL_END) {
 				status << "/" << protocolSymbols[protocol];
 			}
@@ -1340,7 +1339,7 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 			std::vector<protocol_t> protocols;
 			control->getProtocols(protocols);
 			for (auto p : protocols) {
-				status << p << " " << protocolSymbols[p] << " ";
+				status << static_cast<int>(p) << "/" << protocolSymbols[p] << " ";
 			}
 			result.assign(status.str());
 			return false;

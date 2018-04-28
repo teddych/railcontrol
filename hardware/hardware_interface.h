@@ -9,7 +9,7 @@ namespace hardware {
 
 	class HardwareInterface {
 		public:
-		  // non virtual default constructor is needed to prevent polymorphism
+			// non virtual default constructor is needed to prevent polymorphism
 			HardwareInterface() {};
 
 			// pure virtual destructor prevents polymorphism in derived class
