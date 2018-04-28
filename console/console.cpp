@@ -594,6 +594,7 @@ namespace console {
 										addUpdate(status.str());
 										break;
 									}
+									// list one feedback
 									feedbackID_t feedbackID = readNumber(s, i);
 									datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
 									if (feedback == nullptr) {
@@ -601,7 +602,21 @@ namespace console {
 										break;
 									}
 									stringstream status;
-									status << feedbackID << " " << feedback->name << " (" << static_cast<int>(feedback->posX) << "/" << static_cast<int>(feedback->posY) << "/" << static_cast<int>(feedback->posZ) << ")";
+									status
+										<< "FeedbackID" << feedbackID
+										<< "\nName:     " << feedback->name
+										<< "\nControl:  " << manager.getFeedbackName(feedback->controlID)
+										<< "\nPin:      " << feedback->pin
+										<< "\nX:        " << static_cast<int>(feedback->posX)
+										<< "\nY:        " << static_cast<int>(feedback->posY)
+										<< "\nZ:        " << static_cast<int>(feedback->posZ)
+										<< "\nLoco:     ";
+									if (feedback->getLoco() == LOCO_NONE) {
+										status << "-";
+									}
+									else {
+										status << manager.getLocoName(feedback->getLoco()) << " (" << feedback->getLoco() << ")";
+									}
 									addUpdate(status.str());
 									break;
 								}
