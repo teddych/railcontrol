@@ -44,7 +44,7 @@ Config::Config(std::string fileName) {
 	}
 }
 
-string Config::getValue(const string& key, const string& value) {
+const string& Config::getValue(const string& key, const string& value) {
 	if (config.count(key) == 1) {
 		return config[key];
 	}
