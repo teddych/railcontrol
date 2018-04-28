@@ -30,9 +30,9 @@ namespace datamodel {
 
 			bool getValidStreets(std::vector<Street*>& validStreets);
 
-			static void getTexts(const blockState_t state, char*& stateText);
-
 			bool isInUse() const;
+
+			static void getTexts(const blockState_t state, std::string& stateText);
 
 		private:
 			blockState_t state;

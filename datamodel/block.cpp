@@ -107,19 +107,19 @@ namespace datamodel {
 		return true;
 	}
 
-	void Block::getTexts(const blockState_t state, char*& stateText) {
+	void Block::getTexts(const blockState_t state, string& stateText) {
 		switch (state) {
 			case BLOCK_STATE_FREE:
-				stateText = (char*)"free";
+				stateText.assign("free");
 				break;
 			case BLOCK_STATE_RESERVED:
-				stateText = (char*)"reserved";
+				stateText.assign("reserved");
 				break;
 			case BLOCK_STATE_LOCKED:
-				stateText = (char*)"locked";
+				stateText.assign("locked");
 				break;
 			default:
-				stateText = (char*)"unknown";
+				stateText.assign("unknown");
 		}
 	}
 

@@ -1099,6 +1099,7 @@ namespace console {
 										addUpdate(status.str());
 										break;
 									}
+									// list one switch
 									switchID_t switchID = readNumber(s, i);
 									datamodel::Switch* mySwitch = manager.getSwitch(switchID);
 									if (mySwitch == nullptr) {
@@ -1106,7 +1107,42 @@ namespace console {
 										break;
 									}
 									stringstream status;
-									status << switchID << " " << mySwitch->name << " (" << static_cast<int>(mySwitch->posX) << "/" << static_cast<int>(mySwitch->posY) << "/" << static_cast<int>(mySwitch->posZ) << ")";
+									status
+										<< "Switch ID " << switchID
+										<< "\nName:     " << mySwitch->name
+										<< "\nX:        " << static_cast<int>(mySwitch->posX)
+										<< "\nY:        " << static_cast<int>(mySwitch->posY)
+										<< "\nZ:        " << static_cast<int>(mySwitch->posZ)
+										<< "\nRotation: ";
+									switch (mySwitch->rotation) {
+										case ROTATION_0:
+											status << "0";
+											break;
+										case ROTATION_90:
+											status << "90";
+											break;
+										case ROTATION_180:
+											status << "180";
+											break;
+										case ROTATION_270:
+											status << "270";
+											break;
+										default:
+											status << "unknown";
+									}
+									string state;
+									datamodel::Switch::getTexts(mySwitch->state, state);
+									status
+										<< "\nState:    " << state;
+									/*
+									status << "\nLoco:     ";
+									if (mySwitch->getLoco() == LOCO_NONE) {
+										status << "-";
+									}
+									else {
+										status << manager.getLocoName(mySwitch->getLoco()) << " (" << mySwitch->getLoco() << ")";
+									}
+									*/
 									addUpdate(status.str());
 									break;
 								}
@@ -1214,7 +1250,7 @@ namespace console {
 
 	void Console::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
 		std::stringstream status;
-		char* stateText;
+		string stateText;
 		datamodel::Block::getTexts(state, stateText);
 		status << manager.getBlockName(blockID) << " is " << stateText;
 		addUpdate(status.str());
@@ -1222,7 +1258,7 @@ namespace console {
 
 	void Console::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
 		std::stringstream status;
-		char* stateText;
+		string stateText;
 		datamodel::Switch::getTexts(state, stateText);
 		status << manager.getSwitchName(switchID) << " is " << stateText;
 		addUpdate(status.str());

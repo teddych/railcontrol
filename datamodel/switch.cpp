@@ -44,16 +44,16 @@ namespace datamodel {
 		return false;
 	}
 
-	void Switch::getTexts(const switchState_t state, char*& stateText) {
+	void Switch::getTexts(const switchState_t state, string& stateText) {
 		switch (state >> 1) {
 			case SWITCH_STRAIGHT:
-				stateText = (char*)"straight";
+				stateText.assign("straight");
 				break;
 			case SWITCH_TURNOUT:
-				stateText = (char*)"turnout";
+				stateText.assign("turnout");
 				break;
 			default:
-				stateText = (char*)"unknown";
+				stateText.assign("unknown");
 		}
 	}
 

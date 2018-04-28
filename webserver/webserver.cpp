@@ -187,7 +187,7 @@ void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, c
 void WebServer::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
 	std::stringstream command;
 	std::stringstream status;
-	char* stateText;
+	string stateText;
 	datamodel::Block::getTexts(state, stateText);
 	command << "block;block=" << blockID << ";state=" << stateText;
 	status << manager.getBlockName(blockID) << " is " << stateText;
@@ -197,7 +197,7 @@ void WebServer::block(const managerID_t managerID, const blockID_t blockID, cons
 void WebServer::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
 	std::stringstream command;
 	std::stringstream status;
-	char* stateText;
+	string stateText;
 	datamodel::Switch::getTexts(state, stateText);
 	command << "switch;switch=" << switchID << ";state=" << stateText;
 	status << manager.getSwitchName(switchID) << " is " << stateText;

@@ -18,6 +18,7 @@ namespace datamodel {
 			virtual bool deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const override { return "accessory"; };
 
+			// FIXME: make this private
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;
