@@ -102,10 +102,6 @@ namespace hardware {
 		xlog("Hardware library %s unloaded", hardwareSymbols[type].c_str());
 	}
 
-	controlID_t HardwareHandler::getControlID() const {
-		return params->controlID;
-	}
-
 	const std::string HardwareHandler::getName() const {
 		if (instance == nullptr) {
 			return "Unknown, not running";

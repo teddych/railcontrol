@@ -1330,7 +1330,19 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 		}
 		hardware::HardwareInterface* control = reinterpret_cast<hardware::HardwareInterface*>(controls.at(controlID));
 		if (!control->protocolSupported(protocol)) {
-			result.assign("Protocol is not supported by control");
+			stringstream status;
+			status << "Protocol " << static_cast<int>(protocol);
+			//if (static_cast<int>(protocol) > PROTOCOL_NONE && static_cast<int>(protocol) <= PROTOCOL_END) {
+			if (protocol > PROTOCOL_NONE && protocol <= PROTOCOL_END) {
+				status << "/" << protocolSymbols[protocol];
+			}
+			status << " is not supported by control. Please use one of: ";
+			std::vector<protocol_t> protocols;
+			control->getProtocols(protocols);
+			for (auto p : protocols) {
+				status << p << " " << protocolSymbols[p] << " ";
+			}
+			result.assign(status.str());
 			return false;
 		}
 	}

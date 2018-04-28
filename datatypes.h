@@ -94,7 +94,8 @@ enum protocols : protocol_t {
 	PROTOCOL_DCC_SHORT,
 	PROTOCOL_DCC_LONG,
 	PROTOCOL_SX1,
-	PROTOCOL_SX2
+	PROTOCOL_SX2,
+	PROTOCOL_END = PROTOCOL_SX2
 };
 
 static std::string protocolSymbols[] = {
