@@ -28,6 +28,9 @@ namespace webserver {
 			void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) override;
 			void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) override;
 			void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) override;
+			void locoRelease(const locoID_t locoID) override;
+			void blockRelease(const blockID_t blockID) override;
+			void streetRelease(const streetID_t streetID) override;
 			void locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
 			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
 			void locoStart(const locoID_t locoID) override;

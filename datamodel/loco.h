@@ -25,7 +25,7 @@ namespace datamodel {
 
 			bool toBlock(const blockID_t blockID);
 			bool toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew);
-			bool releaseBlock();
+			bool release();
 			blockID_t block() const { return blockID; }
 			streetID_t street() const { return streetID; }
 			void destinationReached();

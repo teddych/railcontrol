@@ -685,7 +685,7 @@ namespace console {
 						char subcmd = s[i];
 						++i;
 						switch (subcmd) {
-							case 'a': // set loco to automode
+							case 'a':
 							case 'A': // set loco to automode
 								{
 									readBlanks(s, i);
@@ -1269,6 +1269,24 @@ namespace console {
 		status << manager.getLocoName(locoID) << " is in block " << manager.getBlockName(blockID);
 		addUpdate(status.str());
 	}
+
+	void Console::locoRelease(const locoID_t locoID) {
+		stringstream status;
+		status << manager.getLocoName(locoID) << " is not in a block anymore";
+		addUpdate(status.str());
+	};
+
+	void Console::blockRelease(const blockID_t blockID) {
+		stringstream status;
+		status << manager.getBlockName(blockID) << " is released";
+		addUpdate(status.str());
+	};
+
+	void Console::streetRelease(const streetID_t streetID) {
+		stringstream status;
+		status << manager.getStreetName(streetID) << " is  released";
+		addUpdate(status.str());
+	};
 
 	void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 		std::stringstream status;

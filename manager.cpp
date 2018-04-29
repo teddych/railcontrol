@@ -477,7 +477,7 @@ bool Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, cons
 const speed_t Manager::locoSpeed(const locoID_t locoID) const {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr) {
-		return 0;
+		return MIN_SPEED;
 	}
 	return loco->Speed();
 }
@@ -1036,7 +1036,7 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	}
 
 	bool reserved = block->reserve(locoID);
-	if (!reserved) {
+	if (reserved == false) {
 		return false;
 	}
 
@@ -1048,7 +1048,7 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 
 	reserved = block->lock(locoID);
 	if (reserved == false) {
-		loco->releaseBlock();
+		loco->release();
 		block->release(locoID);
 		return false;
 	}
@@ -1060,6 +1060,34 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 		control.second->locoIntoBlock(locoID, blockID);
 	}
 	return true;
+}
+
+bool Manager::locoRelease(const locoID_t locoID) {
+	locoSpeed(MANAGER_ID_AUTOMODE, locoID, MIN_SPEED);
+
+	Loco* loco = getLoco(locoID);
+	if (loco == nullptr) {
+		return false;
+	}
+	streetRelease(loco->street());
+	blockRelease(loco->block());
+	return loco->release();
+}
+
+bool Manager::blockRelease(const blockID_t blockID) {
+	Block* block = getBlock(blockID);
+	if (block == nullptr) {
+		return false;
+	}
+	return block->release(blockID);
+}
+
+bool Manager::streetRelease(const streetID_t streetID) {
+	Street* street = getStreet(streetID);
+	if (street == nullptr) {
+		return false;
+	}
+	return street->release(streetID);
 }
 
 bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {

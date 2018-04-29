@@ -90,6 +90,9 @@ class Manager {
 
 		// automode
 		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);
+		bool locoRelease(const locoID_t locoID);
+		bool blockRelease(const blockID_t blockID);
+		bool streetRelease(const streetID_t streetID);
 		bool locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
 		bool locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
 		bool locoStart(const locoID_t locoID);

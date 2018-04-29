@@ -219,6 +219,31 @@ void WebServer::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 	addUpdate(command.str(), status.str());
 }
 
+	void WebServer::locoRelease(const locoID_t locoID) {
+		stringstream command;
+		stringstream status;
+		command << "locoRelease;loco=" << locoID;
+		status << manager.getLocoName(locoID) << " is not in a block anymore";
+		addUpdate(command.str(), status.str());
+	};
+
+	void WebServer::blockRelease(const blockID_t blockID) {
+		stringstream command;
+		stringstream status;
+		command << "blockRelease;block=" << blockID;
+		status << manager.getBlockName(blockID) << " is released";
+		addUpdate(command.str(), status.str());
+	};
+
+	void WebServer::streetRelease(const streetID_t streetID) {
+		stringstream command;
+		stringstream status;
+		command << "streetRelease;street=" << streetID;
+		status << manager.getStreetName(streetID) << " is  released";
+		addUpdate(command.str(), status.str());
+	};
+
+
 void WebServer::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 	std::stringstream command;
 	std::stringstream status;
