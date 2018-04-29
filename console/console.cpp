@@ -438,8 +438,11 @@ namespace console {
 										<< "\nName:     " << block->name
 										<< "\nX:        " << static_cast<int>(block->posX)
 										<< "\nY:        " << static_cast<int>(block->posY)
-										<< "\nZ:        " << static_cast<int>(block->posZ)
-										<< "\nLoco:     ";
+										<< "\nZ:        " << static_cast<int>(block->posZ);
+									string stateText;
+									text::Converters::blockStatus(block->getState(), stateText);
+									status << "\nStatus:   " << stateText;
+									status << "\nLoco:     ";
 									if (block->getLoco() == LOCO_NONE) {
 										status << "-";
 									}
@@ -622,8 +625,11 @@ namespace console {
 										<< "\nPin:      " << feedback->pin
 										<< "\nX:        " << static_cast<int>(feedback->posX)
 										<< "\nY:        " << static_cast<int>(feedback->posY)
-										<< "\nZ:        " << static_cast<int>(feedback->posZ)
-										<< "\nLoco:     ";
+										<< "\nZ:        " << static_cast<int>(feedback->posZ);
+									string stateText;
+									text::Converters::feedbackStatus(feedback->getState(), stateText);
+									status << "\nStatus:   " << stateText;
+									status << "\nLoco:     ";
 									if (feedback->getLoco() == LOCO_NONE) {
 										status << "-";
 									}
@@ -765,8 +771,11 @@ namespace console {
 										<< "\nSpeed:    " << manager.locoSpeed(locoID)
 										<< "\nControl:  " << manager.getControlName(loco->controlID)
 										<< "\nProtocol: " << protocolSymbols[loco->protocol]
-										<< "\nAddress:  " << loco->address
-										<< "\nBlock:    ";
+										<< "\nAddress:  " << loco->address;
+									string stateText;
+									text::Converters::locoStatus(loco->getState(), stateText);
+									status << "\nStatus:   " << stateText;
+									status << "\nBlock:    ";
 									if (loco->block() == BLOCK_NONE) {
 										status << "-";
 									}

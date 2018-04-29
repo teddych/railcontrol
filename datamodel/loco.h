@@ -28,6 +28,7 @@ namespace datamodel {
 			bool release();
 			blockID_t block() const { return blockID; }
 			streetID_t street() const { return streetID; }
+			locoState_t getState() const { return state; }
 			void destinationReached();
 
 			void Speed(const speed_t speed) { this->speed = speed; }
