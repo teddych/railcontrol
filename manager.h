@@ -94,6 +94,7 @@ class Manager {
 		bool blockRelease(const blockID_t blockID);
 		bool feedbackRelease(const feedbackID_t feedbackID);
 		bool streetRelease(const streetID_t streetID);
+		//bool switchRelease(const switchID_t switchID);
 		bool locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
 		bool locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
 		bool locoStart(const locoID_t locoID);

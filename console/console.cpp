@@ -1245,6 +1245,20 @@ namespace console {
 									addUpdate(status.str());
 									break;
 								}
+							/*
+							case 'r':
+							case 'R': // release switch
+								{
+									readBlanks(s, i);
+									switchID_t switchID = readNumber(s, i);
+									if (!manager.switchRelease(switchID)) {
+										addUpdate("Switch not found");
+										break;
+									}
+									addUpdate("Switch released");
+									break;
+								}
+							*/
 							default:
 								{
 									addUpdate("Unknown switch command");

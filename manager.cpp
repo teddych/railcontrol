@@ -1100,6 +1100,17 @@ bool Manager::streetRelease(const streetID_t streetID) {
 	return street->release(locoID);
 }
 
+/*
+bool Manager::switchRelease(const switchID_t switchID) {
+	Switch* mySwitch = getSwitch(switchID);
+	if (mySwitch == nullptr) {
+		return false;
+	}
+	locoID_t locoID = mySwitch->getLoco();
+	return mySwitch->release(locoID);
+}
+*/
+
 bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
