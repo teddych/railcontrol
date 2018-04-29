@@ -1079,7 +1079,8 @@ bool Manager::blockRelease(const blockID_t blockID) {
 	if (block == nullptr) {
 		return false;
 	}
-	return block->release(blockID);
+	locoID_t locoID = block->getLoco();
+	return block->release(locoID);
 }
 
 bool Manager::streetRelease(const streetID_t streetID) {
@@ -1087,7 +1088,8 @@ bool Manager::streetRelease(const streetID_t streetID) {
 	if (street == nullptr) {
 		return false;
 	}
-	return street->release(streetID);
+	locoID_t locoID = street->getLoco();
+	return street->release(locoID);
 }
 
 bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
