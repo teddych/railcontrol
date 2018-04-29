@@ -5,9 +5,11 @@
 #include <cstring>    //memset
 #include <iostream>
 #include <sstream>
+#include <string>
 #include <thread>
 #include <unistd.h>   //close;
 
+#include "../text/converters.h"
 #include "../util.h"
 #include "cs2.h"
 
@@ -195,11 +197,9 @@ namespace hardware {
 	}
 
 	void CS2::accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) {
-		unsigned char color;
-		unsigned char on;
-		char* colorText;
-		char* onText;
-		datamodel::Accessory::getAccessoryTexts(state, color, on, colorText, onText);
+		std::string colorText;
+		std::string onText;
+		text::Converters::accessoryStatus(state, colorText, onText);
 		xlog("Setting state of cs2 accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
@@ -209,8 +209,8 @@ namespace hardware {
 		*buffer_data = 0L;
 		// set locID
 		createLocID(buffer + 5, protocol, address);
-		buffer[9] = color;
-		buffer[10] = on;
+		buffer[9] = state >> 1;
+		buffer[10] = state & 0x01;
 
 		hexlog(buffer, sizeof(buffer));
 

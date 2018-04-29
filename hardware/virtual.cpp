@@ -1,5 +1,7 @@
 #include <sstream>
+#include <string>
 
+#include "../text/converters.h"
 #include "manager.h"
 #include "util.h"
 #include "virtual.h"
@@ -57,11 +59,9 @@ namespace hardware {
 
 	// accessory command
 	void Virtual::accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) {
-		unsigned char color;
-		unsigned char on;
-		char* colorText;
-		char* onText;
-		datamodel::Accessory::getAccessoryTexts(state, color, on, colorText, onText);
+		std::string colorText;
+		std::string onText;
+		text::Converters::accessoryStatus(state, colorText, onText);
 		xlog("Setting state of virtual accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
 	}
 

@@ -174,11 +174,9 @@ void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID,
 void WebServer::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
 	std::stringstream command;
 	std::stringstream status;
-	unsigned char color;
-	unsigned char on;
-	char* colorText;
-	char* stateText;
-	datamodel::Accessory::getAccessoryTexts(state, color, on, colorText, stateText);
+	string colorText;
+	string stateText;
+	text::Converters::accessoryStatus(state, colorText, stateText);
 	command << "accessory;accessory=" << accessoryID << ";color=" << colorText << ";on=" << stateText;
 	status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText;
 	addUpdate(command.str(), status.str());

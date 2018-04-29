@@ -65,42 +65,4 @@ namespace datamodel {
 		if (arguments.count("timeout")) timeout = stoi(arguments.at("timeout"));
 		return true;
 	}
-
-
-	void Accessory::getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText) {
-		// calculate color as number
-		color = state >> 1;
-		// calculate color as text
-		switch (color) {
-			case ACCESSORY_COLOR_RED:
-				colorText = (char*)"red";
-				break;
-			case ACCESSORY_COLOR_GREEN:
-				colorText = (char*)"green";
-				break;
-			case ACCESSORY_COLOR_YELLOW:
-				colorText = (char*)"yellow";
-				break;
-			case ACCESSORY_COLOR_WHITE:
-				colorText = (char*)"white";
-				break;
-			default:
-				colorText = (char*)"unknown";
-		}
-		// calculate on as number
-		on = state & 0x01;
-		// calculate on as text
-		switch (on) {
-			case ACCESSORY_STATE_OFF:
-				onText = (char*)"off";
-				break;
-			case ACCESSORY_STATE_ON:
-				onText = (char*)"on";
-				break;
-			default:
-				onText = (char*)"unknown";
-		}
-	}
-
 } // namespace datamodel
-

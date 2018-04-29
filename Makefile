@@ -38,7 +38,7 @@ all: $(OBJ)
 sqlite-shell:
 	make -C storage/sqlite
 
-%.o: %.cpp *.h datamodel/*.h console/*.h webserver/*.h storage/*.h hardware/*.h
+%.o: %.cpp *.h datamodel/*.h console/*.h webserver/*.h storage/*.h hardware/*.h text/*.h
 	$(CC) $(CPPFLAGS) -c -o $@ $<
 
 clean:

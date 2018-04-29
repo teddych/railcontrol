@@ -26,8 +26,6 @@ namespace datamodel {
 			accessoryState_t state; // first 7 bits are for state/color, last bit is for on/off
 			accessoryTimeout_t timeout; // timeout in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
 
-			static void getAccessoryTexts(const accessoryState_t state, unsigned char& color, unsigned char& on, char*& colorText, char*& onText);
-
 		protected:
 			std::string serializeWithoutType() const;
 			virtual bool deserialize(const std::map<std::string,std::string>& arguments);

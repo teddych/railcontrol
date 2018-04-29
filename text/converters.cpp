@@ -28,6 +28,39 @@ namespace text {
 		}
 	}
 
+	void Converters::accessoryStatus(const accessoryState_t state, string& colorText, string& onText) {
+		// calculate color
+		switch (state >> 1) {
+			case ACCESSORY_COLOR_RED:
+				colorText.assign("red");
+				break;
+			case ACCESSORY_COLOR_GREEN:
+				colorText.assign("green");
+				break;
+			case ACCESSORY_COLOR_YELLOW:
+				colorText.assign("yellow");
+				break;
+			case ACCESSORY_COLOR_WHITE:
+				colorText.assign("white");
+				break;
+			default:
+				colorText.assign("unknown");
+		}
+		// calculate on
+		switch (state & 0x01) {
+			case ACCESSORY_STATE_OFF:
+				onText.assign("off");
+				break;
+			case ACCESSORY_STATE_ON:
+				onText.assign("on");
+				break;
+			default:
+				onText.assign("unknown");
+		}
+	}
+
+
+
 	void Converters::blockStatus(const blockState_t state, string& stateText) {
 		switch (state) {
 			case BLOCK_STATE_FREE:
