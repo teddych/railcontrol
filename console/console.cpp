@@ -727,7 +727,7 @@ namespace console {
 									// set specific loco to auto mode
 									locoID_t locoID = readNumber(s, i);
 									if (!manager.locoStart(locoID)) {
-										addUpdate("Unknwon loco");
+										addUpdate("Unknown loco or loco is not in a block");
 									}
 									break;
 								}
