@@ -473,6 +473,18 @@ namespace console {
 									addUpdate(status.str());
 									break;
 								}
+							case 'r':
+							case 'R': // release block
+								{
+									readBlanks(s, i);
+									blockID_t blockID = readNumber(s, i);
+									if (!manager.blockRelease(blockID)) {
+										addUpdate("Block not found or block in use");
+										break;
+									}
+									addUpdate("Block released");
+									break;
+								}
 							default:
 								{
 									addUpdate("Unknown block command");
@@ -818,6 +830,18 @@ namespace console {
 									}
 									break;
 								}
+							case 'r':
+							case 'R': // release loco
+								{
+									readBlanks(s, i);
+									locoID_t locoID = readNumber(s, i);
+									if (!manager.locoRelease(locoID)) {
+										addUpdate("Loco not found or block in use");
+										break;
+									}
+									addUpdate("Loco released");
+									break;
+								}
 							default:
 								{
 									addUpdate("Unknown loco command");
@@ -842,6 +866,7 @@ namespace console {
 								"B L A                             List all blocks\n"
 								"B L block#                        List block\n"
 								"B N Name X Y Z Width Rotation     New block\n"
+								"B R block#                        Release block\n"
 								"\n"
 								"Control commands\n"
 								"C D control#                      Delete control\n"
@@ -866,6 +891,7 @@ namespace console {
 								"L M A                             Stop all locos and go to manual mode\n"
 								"L M loco#                         Stop loco and go to manual mode\n"
 								"L N Name Control Protocol Address New loco\n"
+								"L R loco#                         Release loco\n"
 								"L S loco# speed                   Set loco speed between 0 and 1024\n"
 								"\n"
 								"Street commands\n"
@@ -873,6 +899,7 @@ namespace console {
 								"T L A                             List all streets\n"
 								"T L street#                       List street\n"
 								"T N Name FromBlock FromDirektion ToBlock ToDirection FeedbackStop\n"
+								"T R street#                       Release street\n"
 								"                                  New Feedback\n"
 								"\n"
 								"Switch commands\n"
@@ -1057,6 +1084,18 @@ namespace console {
 									stringstream status;
 									status << "Street \"" << name << "\" added";
 									addUpdate(status.str());
+									break;
+								}
+							case 'r':
+							case 'R': // release street
+								{
+									readBlanks(s, i);
+									streetID_t streetID = readNumber(s, i);
+									if (!manager.streetRelease(streetID)) {
+										addUpdate("Street not found or block in use");
+										break;
+									}
+									addUpdate("Street released");
 									break;
 								}
 							default:
