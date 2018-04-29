@@ -228,7 +228,7 @@ namespace datamodel {
 		manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, 0);
 		// set loco to new block
 		Street* street = manager->getStreet(streetID);
-		if (street != nullptr) {
+		if (street == nullptr) {
 			state = LOCO_STATE_ERROR;
 			xlog("Loco %s is running in automode without a street. Putting loco into error state", name.c_str());
 			return;
