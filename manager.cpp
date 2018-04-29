@@ -1082,6 +1082,14 @@ bool Manager::blockRelease(const blockID_t blockID) {
 	locoID_t locoID = block->getLoco();
 	return block->release(locoID);
 }
+bool Manager::feedbackRelease(const feedbackID_t feedbackID) {
+	Feedback* feedback = getFeedback(feedbackID);
+	if (feedback == nullptr) {
+		return false;
+	}
+	locoID_t locoID = feedback->getLoco();
+	return feedback->release(locoID);
+}
 
 bool Manager::streetRelease(const streetID_t streetID) {
 	Street* street = getStreet(streetID);

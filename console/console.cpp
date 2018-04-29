@@ -689,6 +689,18 @@ namespace console {
 									addUpdate(status.str());
 									break;
 								}
+							case 'r':
+							case 'R': // release feedback
+								{
+									readBlanks(s, i);
+									feedbackID_t feedbackID = readNumber(s, i);
+									if (!manager.feedbackRelease(feedbackID)) {
+										addUpdate("Feedback not found");
+										break;
+									}
+									addUpdate("Feedback released");
+									break;
+								}
 							default:
 								{
 									addUpdate("Unknown feedback command");
@@ -888,8 +900,10 @@ namespace console {
 								"F D feedback#                     Delete feedback\n"
 								"F L A                             List all feedbacks\n"
 								"F L feedback#                     List feedback\n"
-								"F S pin# [X]                      Turn feedback on (with X) or of (without X)\n"
-								"F N Name X Y Z Control Pin Invert New feedback\n"
+								"F N Name X Y Z Control Pin/Address Invert\n"
+								"                                  New feedback\n"
+								"L R feedback#                     Release feedback\n"
+								"F S feedback# [X]                 Turn feedback on (with X) or off (without X)\n"
 								"\n"
 								"Loco commands\n"
 								"L A A                             Start all locos into automode\n"
