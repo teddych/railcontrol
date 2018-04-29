@@ -102,24 +102,28 @@ WebServer::~WebServer() {
 	}
 }
 
-
-// worker is a seperate thread listening on the server socket
-void WebServer::worker() {
-	fd_set set;
-	struct timeval tv;
-	struct sockaddr_in6 client_addr;
-	socklen_t client_addr_len = sizeof(client_addr);
-	while (run) {
-		// wait for connection and abort on shutdown
-		int ret;
-		do {
-			FD_ZERO(&set);
-			FD_SET(serverSocket, &set);
-			tv.tv_sec = 1;
-			tv.tv_usec = 0;
-			ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
-		} while (ret == 0 && run);
-		if (ret > 0 && run) {
+	// worker is a seperate thread listening on the server socket
+	void WebServer::worker() {
+		fd_set set;
+		struct timeval tv;
+		struct sockaddr_in6 client_addr;
+		socklen_t client_addr_len = sizeof(client_addr);
+		while (run) {
+			// wait for connection and abort on shutdown
+			int ret;
+			do {
+				FD_ZERO(&set);
+				FD_SET(serverSocket, &set);
+				tv.tv_sec = 1;
+				tv.tv_usec = 0;
+				ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
+				if (!run) {
+					return;
+				}
+			} while (ret == 0);
+			if (ret < 0) {
+				continue;
+			}
 			// accept connection
 			int socketClient = accept(serverSocket, (struct sockaddr *) &client_addr, &client_addr_len);
 			if (socketClient < 0) {
@@ -131,12 +135,15 @@ void WebServer::worker() {
 			}
 		}
 	}
-}
 
-void WebServer::booster(const managerID_t managerID, const boosterStatus_t status) {
-	if (status) addUpdate("boosteron", "Booster is on");
-	else addUpdate("boosteroff", "Booster is off");
-}
+	void WebServer::booster(const managerID_t managerID, const boosterStatus_t status) {
+		if (status) {
+			addUpdate("boosteron", "Booster is on");
+		}
+		else {
+			addUpdate("boosteroff", "Booster is off");
+		}
+	}
 
 void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
 	std::stringstream command;
