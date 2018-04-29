@@ -24,6 +24,7 @@ namespace datamodel {
 			bool lock(const locoID_t locoID);
 			bool release(const locoID_t locoID);
 			locoID_t getLoco() const { return locoID; }
+			streetState_t getState() const { return state; }
 
 			blockID_t destinationBlock() const { return toBlock; };
 

@@ -1052,6 +1052,9 @@ namespace console {
 									else {
 										status << manager.getBlockName(street->toBlock) << " (" << street->toBlock << ") " << (street->toDirection ? ">" : "<");
 									}
+									string stateText;
+									text::Converters::streetStatus(street->getState(), stateText);
+									status << "\nStatus:   " << stateText;
 									status << "\nLoco:     ";
 									if (street->getLoco() == LOCO_NONE) {
 										status << "-";
