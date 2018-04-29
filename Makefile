@@ -25,6 +25,7 @@ OBJ= \
 	manager.o \
 	railcontrol.o \
 	storage/storage_handler.o \
+	text/converters.o \
 	util.o \
 	webserver/webserver.o \
 	webserver/webclient.o
@@ -43,7 +44,7 @@ sqlite-shell:
 clean:
 	make -C hardware clean
 	make -C storage clean
-	rm -f *.o webserver/*.o datamodel/*.o console/*.o
+	rm -f *.o webserver/*.o datamodel/*.o console/*.o text/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:

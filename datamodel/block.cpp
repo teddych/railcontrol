@@ -106,22 +106,4 @@ namespace datamodel {
 		}
 		return true;
 	}
-
-	void Block::getTexts(const blockState_t state, string& stateText) {
-		switch (state) {
-			case BLOCK_STATE_FREE:
-				stateText.assign("free");
-				break;
-			case BLOCK_STATE_RESERVED:
-				stateText.assign("reserved");
-				break;
-			case BLOCK_STATE_LOCKED:
-				stateText.assign("locked");
-				break;
-			default:
-				stateText.assign("unknown");
-		}
-	}
-
 } // namespace datamodel
-

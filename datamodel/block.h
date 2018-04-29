@@ -32,8 +32,6 @@ namespace datamodel {
 
 			bool isInUse() const;
 
-			static void getTexts(const blockState_t state, std::string& stateText);
-
 		private:
 			blockState_t state;
 			locoID_t locoID;

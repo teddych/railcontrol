@@ -43,19 +43,5 @@ namespace datamodel {
 		}
 		return false;
 	}
-
-	void Switch::getTexts(const switchState_t state, string& stateText) {
-		switch (state >> 1) {
-			case SWITCH_STRAIGHT:
-				stateText.assign("straight");
-				break;
-			case SWITCH_TURNOUT:
-				stateText.assign("turnout");
-				break;
-			default:
-				stateText.assign("unknown");
-		}
-	}
-
 } // namespace datamodel
 

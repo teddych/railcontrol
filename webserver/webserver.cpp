@@ -9,6 +9,7 @@
 
 #include "datatypes.h"
 #include "railcontrol.h"
+#include "text/converters.h"
 #include "util.h"
 #include "webclient.h"
 #include "webserver.h"
@@ -195,7 +196,7 @@ void WebServer::block(const managerID_t managerID, const blockID_t blockID, cons
 	std::stringstream command;
 	std::stringstream status;
 	string stateText;
-	datamodel::Block::getTexts(state, stateText);
+	text::Converters::blockStatus(state, stateText);
 	command << "block;block=" << blockID << ";state=" << stateText;
 	status << manager.getBlockName(blockID) << " is " << stateText;
 	addUpdate(command.str(), status.str());
@@ -205,7 +206,7 @@ void WebServer::handleSwitch(const managerID_t managerID, const switchID_t switc
 	std::stringstream command;
 	std::stringstream status;
 	string stateText;
-	datamodel::Switch::getTexts(state, stateText);
+	text::Converters::switchStatus(state, stateText);
 	command << "switch;switch=" << switchID << ";state=" << stateText;
 	status << manager.getSwitchName(switchID) << " is " << stateText;
 	addUpdate(command.str(), status.str());

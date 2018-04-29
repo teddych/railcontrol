@@ -9,6 +9,7 @@
 
 #include "datatypes.h"
 #include "railcontrol.h"
+#include "text/converters.h"
 #include "util.h"
 #include "console.h"
 
@@ -1170,7 +1171,7 @@ namespace console {
 											status << "unknown";
 									}
 									string state;
-									datamodel::Switch::getTexts(mySwitch->state, state);
+									text::Converters::switchStatus(mySwitch->state, state);
 									status
 										<< "\nState:    " << state;
 									/*
@@ -1290,7 +1291,7 @@ namespace console {
 	void Console::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
 		std::stringstream status;
 		string stateText;
-		datamodel::Block::getTexts(state, stateText);
+		text::Converters::blockStatus(state, stateText);
 		status << manager.getBlockName(blockID) << " is " << stateText;
 		addUpdate(status.str());
 	}
@@ -1298,7 +1299,7 @@ namespace console {
 	void Console::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
 		std::stringstream status;
 		string stateText;
-		datamodel::Switch::getTexts(state, stateText);
+		text::Converters::switchStatus(state, stateText);
 		status << manager.getSwitchName(switchID) << " is " << stateText;
 		addUpdate(status.str());
 	}
