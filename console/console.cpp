@@ -348,7 +348,7 @@ namespace console {
 									accessoryID_t accessoryID = readNumber(s, i);
 									datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
 									if (accessory == nullptr) {
-										addUpdate("Unknwown accessory");
+										addUpdate("Unknown accessory");
 										break;
 									}
 									stringstream status;
@@ -429,7 +429,7 @@ namespace console {
 									blockID_t blockID = readNumber(s, i);
 									datamodel::Block* block = manager.getBlock(blockID);
 									if (block == nullptr) {
-										addUpdate("Unknwown block");
+										addUpdate("Unknown block");
 										break;
 									}
 									stringstream status;
@@ -532,7 +532,7 @@ namespace console {
 									controlID_t controlID = readNumber(s, i);
 									hardware::HardwareParams* param = manager.getHardware(controlID);
 									if (param == nullptr) {
-										addUpdate("Unknwown Control");
+										addUpdate("Unknown Control");
 										break;
 									}
 									stringstream status;
@@ -614,7 +614,7 @@ namespace console {
 									feedbackID_t feedbackID = readNumber(s, i);
 									datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
 									if (feedback == nullptr) {
-										addUpdate("Unknwown feedback");
+										addUpdate("Unknown feedback");
 										break;
 									}
 									stringstream status;
@@ -727,6 +727,7 @@ namespace console {
 									// set specific loco to auto mode
 									locoID_t locoID = readNumber(s, i);
 									if (!manager.locoStart(locoID)) {
+										// FIXME: bether errormessage
 										addUpdate("Unknown loco or loco is not in a block");
 									}
 									break;
@@ -739,7 +740,8 @@ namespace console {
 									readBlanks(s, i);
 									blockID_t blockID = readNumber(s, i);
 									if (!manager.locoIntoBlock(locoID, blockID)) {
-										addUpdate("Unknwon loco or unknown block");
+										// FIXME: bether errormessage
+										addUpdate("Unknown loco or unknown block");
 									}
 									break;
 								}
@@ -815,7 +817,8 @@ namespace console {
 									// set specific loco to manual mode
 									locoID_t locoID = readNumber(s, i);
 									if (!manager.locoStop(locoID)) {
-										addUpdate("Unknwon loco");
+										// FIXME: bether errormessage
+										addUpdate("Unknown loco");
 									}
 									break;
 								}
@@ -848,7 +851,8 @@ namespace console {
 									readBlanks(s, i);
 									speed_t speed = readNumber(s, i);
 									if (!manager.locoSpeed(MANAGER_ID_CONSOLE, locoID, speed)) {
-										addUpdate("Unknwon loco");
+										// FIXME: bether errormessage
+										addUpdate("Unknown loco");
 									}
 									break;
 								}
@@ -858,6 +862,7 @@ namespace console {
 									readBlanks(s, i);
 									locoID_t locoID = readNumber(s, i);
 									if (!manager.locoRelease(locoID)) {
+										// FIXME: bether errormessage
 										addUpdate("Loco not found or block in use");
 										break;
 									}
@@ -1054,7 +1059,7 @@ namespace console {
 									streetID_t streetID = readNumber(s, i);
 									datamodel::Street* street = manager.getStreet(streetID);
 									if (street == nullptr) {
-										addUpdate("Unknwown street");
+										addUpdate("Unknown street");
 										break;
 									}
 									stringstream status;
@@ -1169,7 +1174,7 @@ namespace console {
 									switchID_t switchID = readNumber(s, i);
 									datamodel::Switch* mySwitch = manager.getSwitch(switchID);
 									if (mySwitch == nullptr) {
-										addUpdate("Unknwown switch");
+										addUpdate("Unknown switch");
 										break;
 									}
 									stringstream status;
