@@ -28,6 +28,25 @@ namespace text {
 		}
 	}
 
+	void Converters::lockStatus(const lockState_t state, string& stateText) {
+		switch (state) {
+			case LOCK_STATE_FREE:
+				stateText.assign("free");
+				break;
+			case LOCK_STATE_RESERVED:
+				stateText.assign("reserved");
+				break;
+			case LOCK_STATE_SOFT_LOCKED:
+				stateText.assign("soft locked");
+				break;
+			case LOCK_STATE_HARD_LOCKED:
+				stateText.assign("locked");
+				break;
+			default:
+				stateText.assign("unknown");
+		}
+	}
+
 	void Converters::accessoryStatus(const accessoryState_t state, string& colorText, string& onText) {
 		// calculate color
 		switch (state >> 1) {
@@ -56,24 +75,6 @@ namespace text {
 				break;
 			default:
 				onText.assign("unknown");
-		}
-	}
-
-
-
-	void Converters::blockStatus(const lockState_t state, string& stateText) {
-		switch (state) {
-			case LOCK_STATE_FREE:
-				stateText.assign("free");
-				break;
-			case LOCK_STATE_RESERVED:
-				stateText.assign("reserved");
-				break;
-			case LOCK_STATE_HARD_LOCKED:
-				stateText.assign("locked");
-				break;
-			default:
-				stateText.assign("unknown");
 		}
 	}
 

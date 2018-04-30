@@ -194,7 +194,7 @@ void WebServer::block(const managerID_t managerID, const blockID_t blockID, cons
 	std::stringstream command;
 	std::stringstream status;
 	string stateText;
-	text::Converters::blockStatus(state, stateText);
+	text::Converters::lockStatus(state, stateText);
 	command << "block;block=" << blockID << ";state=" << stateText;
 	status << manager.getBlockName(blockID) << " is " << stateText;
 	addUpdate(command.str(), status.str());

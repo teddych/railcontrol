@@ -440,7 +440,7 @@ namespace console {
 										<< "\nY:        " << static_cast<int>(block->posY)
 										<< "\nZ:        " << static_cast<int>(block->posZ);
 									string stateText;
-									text::Converters::blockStatus(block->getState(), stateText);
+									text::Converters::lockStatus(block->getState(), stateText);
 									status << "\nStatus:   " << stateText;
 									status << "\nLoco:     ";
 									if (block->getLoco() == LOCO_NONE) {
@@ -1081,7 +1081,7 @@ namespace console {
 										status << manager.getBlockName(street->toBlock) << " (" << street->toBlock << ") " << (street->toDirection ? ">" : "<");
 									}
 									string stateText;
-									text::Converters::streetStatus(street->getState(), stateText);
+									text::Converters::lockStatus(street->getState(), stateText);
 									status << "\nStatus:   " << stateText;
 									status << "\nLoco:     ";
 									if (street->getLoco() == LOCO_NONE) {
@@ -1334,7 +1334,7 @@ namespace console {
 	void Console::block(const managerID_t managerID, const blockID_t blockID, const lockState_t lockState) {
 		std::stringstream status;
 		string stateText;
-		text::Converters::blockStatus(lockState, stateText);
+		text::Converters::lockStatus(lockState, stateText);
 		status << manager.getBlockName(blockID) << " is " << stateText;
 		addUpdate(status.str());
 	}

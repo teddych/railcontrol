@@ -1,6 +1,8 @@
 #pragma once
 
+#include <mutex>
 #include <string>
+#include <vector>
 
 #include "accessory.h"
 #include "datatypes.h"
@@ -29,8 +31,16 @@ namespace datamodel {
 			bool deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const { return "switch"; };
 
+			bool reserve(const locoID_t locoID);
+			bool hardLock(const locoID_t locoID);
+			bool softLock(const locoID_t locoID);
+			bool release(const locoID_t locoID);
+
 		private:
-			//lockState_t lockState;
+			lockState_t lockState;
+			locoID_t locoIDHardLock;
+			//vector<locoID_t> locoIDSoftLock;
+			std::mutex updateMutex;
 	};
 
 } // namespace datamodel
