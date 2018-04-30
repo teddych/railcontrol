@@ -24,7 +24,7 @@ namespace datamodel {
 			bool lock(const locoID_t locoID);
 			bool release(const locoID_t locoID);
 			locoID_t getLoco() const { return locoID; }
-			streetState_t getState() const { return state; }
+			lockState_t getState() const { return lockState; }
 
 			blockID_t destinationBlock() const { return toBlock; };
 
@@ -37,7 +37,7 @@ namespace datamodel {
 
 		private:
 			Manager* manager;
-			streetState_t state;
+			lockState_t lockState;
 			locoID_t locoID;
 			std::mutex updateMutex;
 	};

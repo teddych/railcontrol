@@ -28,6 +28,9 @@ namespace datamodel {
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const { return "switch"; };
+
+		private:
+			//lockState_t lockState;
 	};
 
 } // namespace datamodel

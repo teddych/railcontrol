@@ -190,7 +190,7 @@ void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, c
 	addUpdate(command.str(), status.str());
 }
 
-void WebServer::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
+void WebServer::block(const managerID_t managerID, const blockID_t blockID, const lockState_t state) {
 	std::stringstream command;
 	std::stringstream status;
 	string stateText;

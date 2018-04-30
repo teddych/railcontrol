@@ -16,7 +16,7 @@ class ManagerInterface {
 		virtual void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) = 0;
 		virtual void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) = 0;
 		virtual void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
-		virtual void block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) = 0;
+		virtual void block(const managerID_t managerID, const blockID_t blockID, const lockState_t state) = 0;
 		virtual void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) = 0;
 		virtual void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) = 0;
 		virtual void locoRelease(const locoID_t) = 0;

@@ -1331,10 +1331,10 @@ namespace console {
 		addUpdate(status.str());
 	}
 
-	void Console::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
+	void Console::block(const managerID_t managerID, const blockID_t blockID, const lockState_t lockState) {
 		std::stringstream status;
 		string stateText;
-		text::Converters::blockStatus(state, stateText);
+		text::Converters::blockStatus(lockState, stateText);
 		status << manager.getBlockName(blockID) << " is " << stateText;
 		addUpdate(status.str());
 	}

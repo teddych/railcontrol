@@ -61,15 +61,15 @@ namespace text {
 
 
 
-	void Converters::blockStatus(const blockState_t state, string& stateText) {
+	void Converters::blockStatus(const lockState_t state, string& stateText) {
 		switch (state) {
-			case BLOCK_STATE_FREE:
+			case LOCK_STATE_FREE:
 				stateText.assign("free");
 				break;
-			case BLOCK_STATE_RESERVED:
+			case LOCK_STATE_RESERVED:
 				stateText.assign("reserved");
 				break;
-			case BLOCK_STATE_LOCKED:
+			case LOCK_STATE_HARD_LOCKED:
 				stateText.assign("locked");
 				break;
 			default:

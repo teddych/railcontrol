@@ -35,7 +35,7 @@ typedef unsigned int feedbackPin_t;
 typedef unsigned char feedbackState_t;
 // block
 typedef objectID_t blockID_t;
-typedef unsigned char blockState_t;
+typedef unsigned char lockState_t;
 // switch
 typedef accessoryID_t switchID_t;
 typedef accessoryType_t switchType_t;
@@ -43,7 +43,7 @@ typedef accessoryState_t switchState_t;
 typedef accessoryTimeout_t switchTimeout_t;
 // street
 typedef objectID_t streetID_t;
-typedef unsigned char streetState_t;
+typedef unsigned char lockState_t;
 
 // relations in db
 typedef unsigned short relationID_t;
@@ -174,21 +174,16 @@ enum feedbackState : feedbackState_t {
 	FEEDBACK_STATE_OCCUPIED
 };
 
-enum blockState : blockState_t {
-	BLOCK_STATE_FREE = 0,
-	BLOCK_STATE_RESERVED,
-	BLOCK_STATE_LOCKED
+enum lockState : lockState_t {
+	LOCK_STATE_FREE = 0,
+	LOCK_STATE_RESERVED,
+	LOCK_STATE_SOFT_LOCKED,
+	LOCK_STATE_HARD_LOCKED
 };
 
 enum directionState : direction_t {
 	DIRECTION_LEFT = false,
 	DIRECTION_RIGHT = true
-};
-
-enum streetState : streetState_t {
-	STREET_STATE_FREE = 0,
-	STREET_STATE_RESERVED,
-	STREET_STATE_LOCKED
 };
 
 enum switchType : switchType_t {

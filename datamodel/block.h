@@ -24,7 +24,7 @@ namespace datamodel {
 			bool lock(const locoID_t locoID);
 			bool release(const locoID_t locoID);
 			locoID_t getLoco() const { return locoID; }
-			blockState_t getState() const { return state; }
+			lockState_t getState() const { return lockState; }
 
 			bool addStreet(Street* street);
 			bool removeStreet(Street* street);
@@ -34,7 +34,7 @@ namespace datamodel {
 			bool isInUse() const;
 
 		private:
-			blockState_t state;
+			lockState_t lockState;
 			locoID_t locoID;
 			direction_t locoDirection;
 			std::mutex updateMutex;
@@ -42,7 +42,7 @@ namespace datamodel {
 	};
 
 	inline bool Block::isInUse() const {
-		return this->state != BLOCK_STATE_FREE || this->locoID != LOCO_NONE || this->streets.size() > 0;
+		return this->lockState != LOCK_STATE_FREE || this->locoID != LOCO_NONE || this->streets.size() > 0;
 	}
 
 } // namespace datamodel

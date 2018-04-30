@@ -66,7 +66,7 @@ class Manager {
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
 		// block
-		void block(const managerID_t managerID, const feedbackID_t feedbackID, const blockState_t);
+		void block(const managerID_t managerID, const feedbackID_t feedbackID, const lockState_t);
 		datamodel::Block* getBlock(const blockID_t blockID);
 		const std::string& getBlockName(const blockID_t blockID);
 		inline const std::map<blockID_t,datamodel::Block*>& blockList() const { return blocks; }

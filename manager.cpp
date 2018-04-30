@@ -733,7 +733,7 @@ bool Manager::feedbackDelete(const feedbackID_t feedbackID) {
 * Block                    *
 ***************************/
 
-void Manager::block(const managerID_t managerID, const blockID_t blockID, const blockState_t state) {
+void Manager::block(const managerID_t managerID, const blockID_t blockID, const lockState_t state) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
 		control.second->block(managerID, blockID, state);
