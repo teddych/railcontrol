@@ -186,7 +186,7 @@ namespace datamodel {
 								street->lock(objectID);
 								streetID = street->objectID;
 								toBlockID = street->destinationBlock();
-								xlog("Loco &s found street \"%s\" with destination %s", name, street->name.c_str(), manager->getBlockName(toBlockID).c_str());
+								xlog("Loco \"%s\" found street \"%s\" with destination \"%s\"", name, street->name.c_str(), manager->getBlockName(toBlockID).c_str());
 								break; // break for
 							}
 						}
@@ -197,7 +197,7 @@ namespace datamodel {
 						}
 
 						// start loco
-						manager->locoStreet(objectID, streetID, blockID);
+						manager->locoStreet(objectID, streetID, toBlockID);
 						// FIXME: make maxspeed configurable
 						manager->locoSpeed(MANAGER_ID_AUTOMODE, objectID, MAX_SPEED >> 1);
 						loco->state = LOCO_STATE_RUNNING;
