@@ -17,6 +17,7 @@ OBJ= \
 	datamodel/layout_item.o \
 	datamodel/loco.o \
 	datamodel/object.o \
+	datamodel/relation.o \
 	datamodel/serializable.o \
 	datamodel/street.o \
 	datamodel/switch.o \
