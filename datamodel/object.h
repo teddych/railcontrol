@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_OBJECT_H
-#define DATAMODEL_OBJECT_H
+#pragma once
 
 #include <map>
 #include <string>
@@ -20,6 +19,7 @@ namespace datamodel {
 		protected:
 			virtual bool deserialize(const std::map<std::string,std::string>& arguments);
 
+		// FIXME: make private
 		public:
 			objectID_t objectID;
 			std::string name;
@@ -27,4 +27,3 @@ namespace datamodel {
 
 } // namespace datamodel
 
-#endif // DATAMODEL_OBJECT_H

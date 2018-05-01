@@ -1,15 +1,13 @@
-#ifndef STORAGE_STORAGE_PARAMS_H
-#define STORAGE_STORAGE_PARAMS_H
+#pragma once
 
 #include <string>
 
 namespace storage {
 
 	struct StorageParams {
-			std::string module;
-			std::string filename;
+		std::string module;
+		std::string filename;
 	};
 
 } // namespace storage
 
-#endif // STORAGE_STORAGE_PARAMS_H

@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_SERIALIZABLE_H
-#define DATAMODEL_SERIALIZABLE_H
+#pragma once
 
 #include <map>
 #include <string>
@@ -21,4 +20,3 @@ namespace datamodel {
 
 } // namespace datamodel
 
-#endif // DATAMODEL_SERIALIZABLE_H

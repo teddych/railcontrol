@@ -1,5 +1,4 @@
-#ifndef WEBSERVER_WEBSERVER_H
-#define WEBSERVER_WEBSERVER_H
+#pragma once
 
 #include <map>
 #include <mutex>
@@ -52,6 +51,4 @@ namespace webserver {
 	};
 
 }; // namespace webserver
-
-#endif // WEBSERVER_WEBSERVER_H
 

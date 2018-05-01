@@ -1,5 +1,4 @@
-#ifndef DATAMODEL_DATAMODEL_H
-#define DATAMODEL_DATAMODEL_H
+#pragma once
 
 #include "accessory.h"
 #include "block.h"
@@ -8,4 +7,3 @@
 #include "street.h"
 #include "switch.h"
 
-#endif // DATAMODEL_DATAMODEL_H
