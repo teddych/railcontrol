@@ -65,7 +65,7 @@ namespace datamodel {
 		return true;
 	}
 
-	bool Switch::hardLock(const locoID_t locoID) {
+	bool Switch::hardLock(const locoID_t locoID, const switchState_t switchState) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (lockState != LOCK_STATE_RESERVED) {
 			return false;
@@ -74,10 +74,11 @@ namespace datamodel {
 			return false;
 		}
 		lockState = LOCK_STATE_HARD_LOCKED;
+		state = switchState;
 		return true;
 	}
 
-	bool Switch::softLock(const locoID_t locoID) {
+	bool Switch::softLock(const locoID_t locoID, const switchState_t switchState) {
 		// FIXME: not implemented
 		return false;
 	}

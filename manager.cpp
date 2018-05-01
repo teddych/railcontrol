@@ -832,6 +832,13 @@ bool Manager::blockDelete(const blockID_t blockID) {
 * Switch                   *
 ***************************/
 
+void Manager::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t switchState) {
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls) {
+		control.second->handleSwitch(managerID, switchID, switchState);
+	}
+}
+
 Switch* Manager::getSwitch(const switchID_t switchID) {
 	std::lock_guard<std::mutex> Guard(switchMutex);
 	if (switches.count(switchID) != 1) {

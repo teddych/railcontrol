@@ -10,8 +10,17 @@ using std::string;
 
 namespace datamodel {
 
-	Relation::Relation(const relationID_t relationID, const std::string& name, const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const switchState_t switchState, const lockState_t lockState)
-	:	relationID(relationID),
+	Relation::Relation(Manager* const manager,
+		const relationID_t relationID,
+		const std::string& name,
+		const objectType_t objectType1,
+		const objectID_t objectID1,
+		const objectType_t objectType2,
+		const objectID_t objectID2,
+		const switchState_t switchState,
+		const lockState_t lockState)
+	:	manager(manager),
+		relationID(relationID),
 		name(name),
 		objectType1(objectType1),
 		objectID1(objectID1),
@@ -50,6 +59,39 @@ namespace datamodel {
 		if (arguments.count("switchState")) switchState = stoi(arguments.at("switchState"));
 		if (arguments.count("lockState")) lockState = stoi(arguments.at("lockState"));
 		return true;
+	}
+
+	bool Relation::execute(const locoID_t locoID) {
+		if (objectType2 != OBJECT_TYPE_SWITCH) {
+			return false;
+		}
+		Switch* mySwitch = manager->getSwitch(objectID2);
+		if (mySwitch == nullptr) {
+			return false;
+		}
+		if (!mySwitch->reserve(locoID)) {
+			return false;
+		}
+		if (lockState == LOCK_STATE_HARD_LOCKED) {
+			mySwitch->hardLock(locoID, switchState);
+		}
+		else {
+			mySwitch->softLock(locoID, switchState);
+		}
+
+		manager->handleSwitch(MANAGER_ID_AUTOMODE, objectID2, switchState);
+		return true;
+	}
+
+	bool Relation::release(const locoID_t locoID) {
+		if (objectType2 != OBJECT_TYPE_SWITCH) {
+			return false;
+		}
+		Switch* mySwitch = manager->getSwitch(objectID2);
+		if (mySwitch == nullptr) {
+			return false;
+		}
+		return mySwitch->release(locoID);
 	}
 
 } // namespace datamodel

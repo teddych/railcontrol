@@ -32,8 +32,8 @@ namespace datamodel {
 			virtual std::string layoutType() const { return "switch"; };
 
 			bool reserve(const locoID_t locoID);
-			bool hardLock(const locoID_t locoID);
-			bool softLock(const locoID_t locoID);
+			bool hardLock(const locoID_t locoID, const switchState_t switchState);
+			bool softLock(const locoID_t locoID, const switchState_t switchState);
 			bool release(const locoID_t locoID);
 
 		private:
