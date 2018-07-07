@@ -23,7 +23,7 @@ using std::vector;
 namespace console {
 
 	Console::Console(Manager& manager, const unsigned short port) :
-		ManagerInterface(MANAGER_ID_CONSOLE),
+		CommandInterface(ControlTypeConsole),
 		port(port),
 		serverSocket(0),
 		clientSocket(-1),
@@ -214,7 +214,7 @@ namespace console {
 
 	layoutRotation_t Console::readRotation(string& s, size_t& i) {
 		if (s.length() <= i) {
-			return ROTATION_0;
+			return Rotation0;
 		}
 		switch (s[i]) {
 			case 'n':
@@ -222,40 +222,40 @@ namespace console {
 			case 't':
 			case 'T': // north/top
 				++i;
-				return ROTATION_0;
+				return Rotation0;
 			case 'e':
 			case 'E':
 			case 'r':
 			case 'R': // east/right
 				++i;
-				return ROTATION_90;
+				return Rotation90;
 			case 's':
 			case 'S':
 			case 'b':
 			case 'B': // south/bottom
 				++i;
-				return ROTATION_180;
+				return Rotation180;
 			case 'w':
 			case 'W':
 			case 'l':
 			case 'L': // west/left
 				++i;
-				return ROTATION_270;
+				return Rotation270;
 			default:
 				uint16_t rotation = readNumber(s, i);
 				switch (rotation) {
-					case ROTATION_90:
-					case ROTATION_180:
-					case ROTATION_270:
+					case Rotation90:
+					case Rotation180:
+					case Rotation270:
 						return rotation;
 					case 90:
-						return ROTATION_90;
+						return Rotation90;
 					case 180:
-						return ROTATION_180;
+						return Rotation180;
 					case 270:
-						return ROTATION_270;
+						return Rotation270;
 					default:
-						return ROTATION_0;
+						return Rotation0;
 				}
 		}
 	}
@@ -376,7 +376,7 @@ namespace console {
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
 									string result;
-									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, ACCESSORY_TYPE_DEFAULT, ACCESSORY_STATE_OFF, timeout, result)) {
+									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result)) {
 										addUpdate(result);
 										break;
 									}
@@ -551,10 +551,10 @@ namespace console {
 									string ip = readText(s, i);
 									hardwareType_t hardwareType;
 									if (type.compare("virt") == 0) {
-										hardwareType = HARDWARE_TYPE_VIRT;
+										hardwareType = HardwareTypeVirt;
 									}
 									else if (type.compare("cs2") == 0) {
-										hardwareType = HARDWARE_TYPE_CS2;
+										hardwareType = HardwareTypeCS2;
 									}
 									else {
 										addUpdate("Unknown hardware type");
@@ -683,7 +683,7 @@ namespace console {
 										state = FEEDBACK_STATE_FREE;
 										text = (char*)"OFF";
 									}
-									manager.feedback(MANAGER_ID_CONSOLE, feedbackID, state);
+									manager.feedback(ControlTypeConsole, feedbackID, state);
 									stringstream status;
 									status << "Feedback \"" << manager.getFeedbackName(feedbackID) << "\" turned " << text;
 									addUpdate(status.str());
@@ -850,7 +850,7 @@ namespace console {
 									locoID_t locoID = readNumber(s, i);
 									readBlanks(s, i);
 									speed_t speed = readNumber(s, i);
-									if (!manager.locoSpeed(MANAGER_ID_CONSOLE, locoID, speed)) {
+									if (!manager.locoSpeed(ControlTypeConsole, locoID, speed)) {
 										// FIXME: bether errormessage
 										addUpdate("Unknown loco");
 									}
@@ -1186,16 +1186,16 @@ namespace console {
 										<< "\nZ:        " << static_cast<int>(mySwitch->posZ)
 										<< "\nRotation: ";
 									switch (mySwitch->rotation) {
-										case ROTATION_0:
+										case Rotation0:
 											status << "0";
 											break;
-										case ROTATION_90:
+										case Rotation90:
 											status << "90";
 											break;
-										case ROTATION_180:
+										case Rotation180:
 											status << "180";
 											break;
-										case ROTATION_270:
+										case Rotation270:
 											status << "270";
 											break;
 										default:
@@ -1288,7 +1288,7 @@ namespace console {
 		send_timeout(clientSocket, s.c_str(), s.length(), 0);
 	}
 
-	void Console::booster(const managerID_t managerID, const boosterStatus_t status) {
+	void Console::booster(const controlType_t managerID, const boosterStatus_t status) {
 		if (status) {
 			addUpdate("Booster is on");
 		}
@@ -1297,26 +1297,26 @@ namespace console {
 		}
 	}
 
-	void Console::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
+	void Console::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " speed is " << speed;
 		addUpdate(status.str());
 	}
 
-	void Console::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
+	void Console::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
 		std::stringstream status;
 		const char* directionText = (direction ? "forward" : "reverse");
 		status << manager.getLocoName(locoID) << " direction is " << directionText;
 		addUpdate(status.str());
 	}
 
-	void Console::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool state) {
+	void Console::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
 		addUpdate(status.str());
 	}
 
-	void Console::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
 		std::stringstream status;
 		string colorText;
 		string stateText;
@@ -1325,13 +1325,13 @@ namespace console {
 		addUpdate(status.str());
 	}
 
-	void Console::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
+	void Console::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 		std::stringstream status;
 		status << "Feedback " << pin << " is " << (state ? "on" : "off");
 		addUpdate(status.str());
 	}
 
-	void Console::block(const managerID_t managerID, const blockID_t blockID, const lockState_t lockState) {
+	void Console::block(const controlType_t managerID, const blockID_t blockID, const lockState_t lockState) {
 		std::stringstream status;
 		string stateText;
 		text::Converters::lockStatus(lockState, stateText);
@@ -1339,7 +1339,7 @@ namespace console {
 		addUpdate(status.str());
 	}
 
-	void Console::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
+	void Console::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) {
 		std::stringstream status;
 		string stateText;
 		text::Converters::switchStatus(state, stateText);

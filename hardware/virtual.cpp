@@ -35,11 +35,11 @@ namespace hardware {
 	}
 
 	void Virtual::getProtocols(std::vector<protocol_t>& protocols) const {
-		protocols.push_back(PROTOCOL_SERVER);
+		protocols.push_back(ProtocolServer);
 	}
 
 	bool Virtual::protocolSupported(protocol_t protocol) const {
-		return (protocol == PROTOCOL_SERVER);
+		return (protocol == ProtocolServer);
 	}
 
 	// set loco speed

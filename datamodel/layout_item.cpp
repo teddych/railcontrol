@@ -31,13 +31,13 @@ namespace datamodel {
 			layoutItemSize_t& h) {
 
 		switch (rotation) {
-			case ROTATION_0:
+			case Rotation0:
 				x = posX;
 				y = posY;
 				w = width;
 				h = height;
 				return true;
-			case ROTATION_90:
+			case Rotation90:
 				if (posX < height) {
 					return false;
 				}
@@ -46,7 +46,7 @@ namespace datamodel {
 				w = height;
 				h = width;
 				return true;
-			case ROTATION_180:
+			case Rotation180:
 				if (posX < width || posY < height) {
 					return false;
 				}
@@ -55,7 +55,7 @@ namespace datamodel {
 				w = width;
 				h = height;
 				return true;
-			case ROTATION_270:
+			case Rotation270:
 				if (posY < width) {
 					return false;
 				}

@@ -3,7 +3,7 @@
 #include <string>
 
 // common
-typedef unsigned char managerID_t;
+typedef unsigned char controlType_t;
 typedef unsigned char controlID_t;
 typedef unsigned char hardwareType_t;
 // booster
@@ -66,37 +66,37 @@ typedef unsigned char locoState_t;
 #define WIDTH_1 1
 #define HEIGHT_1 1
 
-enum managerIDs : managerID_t {
-	MANAGER_ID_HARDWARE = 0,
-	MANAGER_ID_AUTOMODE,
-	MANAGER_ID_CONSOLE,
-	MANAGER_ID_WEBSERVER
+enum controlTypes : controlType_t {
+	ControlTypeHardware = 0,
+	ControlTypeAutomode,
+	ControlTypeConsole,
+	ControlTypeWebserver
 };
 
 enum controlIDs : controlID_t {
-	CONTROL_ID_NONE = 0,
-	CONTROL_ID_CONSOLE,
-	CONTROL_ID_WEBSERVER,
-	CONTROL_ID_FIRST_HARDWARE = 10
+	ControlIdNone = 0,
+	ControlIdConsole,
+	ControlIdWebserver,
+	ControlIdFirstHardware = 10
 };
 
 enum boosterStatus : boosterStatus_t {
-	BOOSTER_STOP = 0,
-	BOOSTER_GO
+	BoosterStop = 0,
+	BoosterGo
 };
 
 enum protocols : protocol_t {
-	PROTOCOL_NONE = 0,
-	PROTOCOL_SERVER,
-	PROTOCOL_MM1,
-	PROTOCOL_MM2,
-	PROTOCOL_MFX,
-	PROTOCOL_DCC,
-	PROTOCOL_DCC_SHORT,
-	PROTOCOL_DCC_LONG,
-	PROTOCOL_SX1,
-	PROTOCOL_SX2,
-	PROTOCOL_END = PROTOCOL_SX2
+	ProtocolNone = 0,
+	ProtocolServer,
+	ProtocolMM1,
+	ProtocolMM2,
+	ProtocolMFX,
+	ProtocolDCC,
+	ProtocolDCCShort,
+	ProtocolDCCLong,
+	ProtocolSX1,
+	ProtocolSX2,
+	ProtocolEnd = ProtocolSX2
 };
 
 static std::string protocolSymbols[] = {
@@ -111,15 +111,15 @@ static std::string protocolSymbols[] = {
 };
 
 enum addressTypes : addressType_t {
-	ADDRESS_TYPE_LOCO = 0,
-	ADDRESS_TYPE_ACCESSORY
+	AddressTypeLoco = 0,
+	AddressTypeAccessory
 };
 
 enum hardwareTypes : hardwareType_t {
-	HARDWARE_TYPE_NONE = 0,
-	HARDWARE_TYPE_VIRT,
-	HARDWARE_TYPE_CS2,
-	HARDWARE_TYPE_NUM
+	HardwareTypeNone = 0,
+	HardwareTypeVirt,
+	HardwareTypeCS2,
+	HardwareTypeNumbers
 };
 
 static std::string hardwareSymbols[] = {
@@ -129,44 +129,44 @@ static std::string hardwareSymbols[] = {
 };
 
 enum rotations : layoutRotation_t {
-	ROTATION_0 = 0,
-	ROTATION_90,
-	ROTATION_180,
-	ROTATION_270
+	Rotation0 = 0,
+	Rotation90,
+	Rotation180,
+	Rotation270
 };
 
 typedef unsigned char objectType_t;
 
 enum objectType : objectType_t {
-	OBJECT_TYPE_LOCO = 1,
-	OBJECT_TYPE_BLOCK,
-	OBJECT_TYPE_FEEDBACK,
-	OBJECT_TYPE_ACCESSORY,
-	OBJECT_TYPE_SWITCH,
-	OBJECT_TYPE_STREET
+	ObjectTypeLoco = 1,
+	ObjectTypeBlock,
+	ObjectTypeFeedback,
+	ObjectTypeAccessory,
+	ObjectTypeSwitch,
+	ObjectTypeStreet
 };
 
 typedef unsigned char relationType_t;
 
 enum relationType : relationType_t {
-	RELATION_TYPE_BLOCK_STREET = 0,
-	RELATION_TYPE_STREET_FEEDBACK
+	RelationTypeBlockStreet = 0,
+	RelationTypeStreetFeedback
 };
 
 enum accessoryColor : accessoryColor_t {
-	ACCESSORY_COLOR_RED = 0,
-	ACCESSORY_COLOR_GREEN,
-	ACCESSORY_COLOR_YELLOW,
-	ACCESSORY_COLOR_WHITE
+	AccessoryColorRed = 0,
+	AccessoryColorGreen,
+	AccessoryColorYellow,
+	AccessoryColorWhite
 };
 
 enum accessoryType : accessoryType_t {
-	ACCESSORY_TYPE_DEFAULT = 0
+	AccessoryTypeDefault = 0
 };
 
 enum accessoryState : accessoryState_t {
-	ACCESSORY_STATE_OFF = 0,
-	ACCESSORY_STATE_ON
+	AccessoryStateOff = 0,
+	AccessoryStateOn
 };
 
 enum feedbackState : feedbackState_t {

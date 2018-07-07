@@ -11,7 +11,7 @@ using std::string;
 namespace hardware {
 
 	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params) :
-		ManagerInterface(MANAGER_ID_HARDWARE),
+		CommandInterface(ControlTypeHardware),
 		manager(manager),
 		createHardware(nullptr),
 		destroyHardware(nullptr),
@@ -111,7 +111,7 @@ namespace hardware {
 
 	void HardwareHandler::getProtocols(std::vector<protocol_t>& protocols) const {
 		if (instance == nullptr) {
-			protocols.push_back(PROTOCOL_NONE);
+			protocols.push_back(ProtocolNone);
 			return;
 		}
 
@@ -125,19 +125,19 @@ namespace hardware {
 		return instance->protocolSupported(protocol);
 	}
 
-	void HardwareHandler::booster(const managerID_t managerID, const boosterStatus_t status) {
-		if (managerID == MANAGER_ID_HARDWARE || instance == nullptr) {
+	void HardwareHandler::booster(const controlType_t managerID, const boosterStatus_t status) {
+		if (managerID == ControlTypeHardware || instance == nullptr) {
 			return;
 		}
 		instance->booster(status);
 	}
 
-	void HardwareHandler::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
-		if (managerID == MANAGER_ID_HARDWARE || instance == nullptr) {
+	void HardwareHandler::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) {
+		if (managerID == ControlTypeHardware || instance == nullptr) {
 			return;
 		}
 		controlID_t controlID = 0;
-		protocol_t protocol = PROTOCOL_NONE;
+		protocol_t protocol = ProtocolNone;
 		address_t address = ADDRESS_NONE;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != getControlID()) {
@@ -146,12 +146,12 @@ namespace hardware {
 		instance->locoSpeed(protocol, address, speed);
 	}
 
-	void HardwareHandler::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
-		if (managerID == MANAGER_ID_HARDWARE || instance == nullptr) {
+	void HardwareHandler::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
+		if (managerID == ControlTypeHardware || instance == nullptr) {
 			return;
 		}
 		controlID_t controlID = 0;
-		protocol_t protocol = PROTOCOL_NONE;
+		protocol_t protocol = ProtocolNone;
 		address_t address = ADDRESS_NONE;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != getControlID()) {
@@ -160,12 +160,12 @@ namespace hardware {
 		instance->locoDirection(protocol, address, direction);
 	}
 
-	void HardwareHandler::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
-		if (managerID == MANAGER_ID_HARDWARE || instance == nullptr) {
+	void HardwareHandler::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on) {
+		if (managerID == ControlTypeHardware || instance == nullptr) {
 			return;
 		}
 		controlID_t controlID = 0;
-		protocol_t protocol = PROTOCOL_NONE;
+		protocol_t protocol = ProtocolNone;
 		address_t address = ADDRESS_NONE;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != getControlID()) {
@@ -174,12 +174,12 @@ namespace hardware {
 		instance->locoFunction(protocol, address, function, on);
 	}
 
-	void HardwareHandler::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
-		if (managerID == MANAGER_ID_HARDWARE || instance == nullptr) {
+	void HardwareHandler::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+		if (managerID == ControlTypeHardware || instance == nullptr) {
 			return;
 		}
 		controlID_t controlID = 0;
-		protocol_t protocol = PROTOCOL_NONE;
+		protocol_t protocol = ProtocolNone;
 		address_t address = ADDRESS_NONE;
 		manager.accessoryProtocolAddress(accessoryID, controlID, protocol, address);
 		if (controlID != getControlID()) {
@@ -188,12 +188,12 @@ namespace hardware {
 		instance->accessory(protocol, address, state);
 	}
 
-	void HardwareHandler::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
-		if (managerID == MANAGER_ID_HARDWARE || instance == nullptr) {
+	void HardwareHandler::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) {
+		if (managerID == ControlTypeHardware || instance == nullptr) {
 			return;
 		}
 		controlID_t controlID = 0;
-		protocol_t protocol = PROTOCOL_NONE;
+		protocol_t protocol = ProtocolNone;
 		address_t address = ADDRESS_NONE;
 		manager.switchProtocolAddress(switchID, controlID, protocol, address);
 		if (controlID != getControlID()) {

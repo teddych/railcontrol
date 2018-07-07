@@ -5,9 +5,9 @@
 #include <string>
 #include <vector>
 
+#include "command_interface.h"
 #include "config.h"
 #include "datamodel/datamodel.h"
-#include "manager_interface.h"
 #include "storage/storage_handler.h"
 #include "hardware/hardware_params.h"
 
@@ -17,7 +17,7 @@ class Manager {
 		~Manager();
 
 		// booster
-		void booster(const managerID_t managerID, const boosterStatus_t status);
+		void booster(const controlType_t managerID, const boosterStatus_t status);
 
 		// hardware (virt, CS2, ...)
 		bool controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip, std::string& result);
@@ -41,15 +41,15 @@ class Manager {
 		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, std::string& result);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		void locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed);
-		bool locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed);
+		void locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const speed_t speed);
+		bool locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed);
 		const speed_t locoSpeed(const locoID_t locoID) const;
-		void locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
-		void locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction);
-		void locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on);
+		void locoDirection(const controlType_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
+		void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction);
+		void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on);
 
 		// accessory
-		void accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
+		void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
 		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID);
 		const std::string& getAccessoryName(const accessoryID_t accessoryID);
 		inline const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
@@ -58,7 +58,7 @@ class Manager {
 		bool accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
-		void feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state);
+		void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state);
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
 		const std::string& getFeedbackName(const feedbackID_t feedbackID);
 		inline const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
@@ -66,7 +66,7 @@ class Manager {
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
 		// block
-		void block(const managerID_t managerID, const feedbackID_t feedbackID, const lockState_t);
+		void block(const controlType_t managerID, const feedbackID_t feedbackID, const lockState_t);
 		datamodel::Block* getBlock(const blockID_t blockID);
 		const std::string& getBlockName(const blockID_t blockID);
 		inline const std::map<blockID_t,datamodel::Block*>& blockList() const { return blocks; }
@@ -74,7 +74,7 @@ class Manager {
 		bool blockDelete(const blockID_t blockID);
 
 		// switch
-		void handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t switchState);
+		void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t switchState);
 		datamodel::Switch* getSwitch(const switchID_t switchID);
 		const std::string& getSwitchName(const switchID_t switchID);
 		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
@@ -118,7 +118,7 @@ class Manager {
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;
 
 		// controls (Webserver, console & hardwareHandler. So each hardware is also added here).
-		std::map<controlID_t,ManagerInterface*> controls;
+		std::map<controlID_t,CommandInterface*> controls;
 		mutable std::mutex controlMutex;
 
 		// hardware (virt, CS2, ...)

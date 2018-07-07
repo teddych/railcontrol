@@ -97,16 +97,16 @@ namespace webserver {
 		// handle requests
 		if (arguments["cmd"].compare("quit") == 0) {
 			simpleReply("Stopping Railcontrol");
-			manager.booster(MANAGER_ID_WEBSERVER, BOOSTER_STOP);
+			manager.booster(ControlTypeWebserver, BoosterStop);
 			stopRailControlWebserver();
 		}
 		else if (arguments["cmd"].compare("on") == 0) {
 			simpleReply("Turning booster on");
-			manager.booster(MANAGER_ID_WEBSERVER, BOOSTER_GO);
+			manager.booster(ControlTypeWebserver, BoosterGo);
 		}
 		else if (arguments["cmd"].compare("off") == 0) {
 			simpleReply("Turning booster off");
-			manager.booster(MANAGER_ID_WEBSERVER, BOOSTER_STOP);
+			manager.booster(ControlTypeWebserver, BoosterStop);
 		}
 		else if (arguments["cmd"].compare("loco") == 0) {
 			printLoco(arguments);
@@ -285,7 +285,7 @@ namespace webserver {
 		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
 		if (arguments.count("speed")) speed = stoi(arguments.at("speed"));
 
-		manager.locoSpeed(MANAGER_ID_WEBSERVER, locoID, speed);
+		manager.locoSpeed(ControlTypeWebserver, locoID, speed);
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to speed " << speed;
@@ -299,7 +299,7 @@ namespace webserver {
 		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
 		if (arguments.count("direction")) direction = (arguments.at("direction").compare("forward") == 0 ? 1 : 0);
 
-		manager.locoDirection(MANAGER_ID_WEBSERVER, locoID, direction);
+		manager.locoDirection(ControlTypeWebserver, locoID, direction);
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to " << direction;
@@ -315,7 +315,7 @@ namespace webserver {
 		if (arguments.count("function")) function = stoi(arguments.at("function"));
 		if (arguments.count("on")) on = stoi(arguments.at("on"));
 
-		manager.locoFunction(MANAGER_ID_WEBSERVER, locoID, function, on);
+		manager.locoFunction(ControlTypeWebserver, locoID, function, on);
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now set f";
@@ -392,7 +392,7 @@ namespace webserver {
 		stringstream ss;
 		if (arguments.count("control")) {
 			controlID_t controlID = stoi(arguments.at("control"));
-			protocol_t selectedProtocol = PROTOCOL_NONE;
+			protocol_t selectedProtocol = ProtocolNone;
 			if (arguments.count("protocol")) {
 				selectedProtocol = stoi(arguments.at("protocol"));
 			}

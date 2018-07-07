@@ -49,8 +49,8 @@ Manager::Manager(Config& config) :
 
 	//loadDefaultValuesToDB();
 
-	controls[CONTROL_ID_CONSOLE] = new Console(*this, config.getValue("consoleport", 2222));
-	controls[CONTROL_ID_WEBSERVER] = new WebServer(*this, config.getValue("webserverport", 80));
+	controls[ControlIdConsole] = new Console(*this, config.getValue("consoleport", 2222));
+	controls[ControlIdWebserver] = new WebServer(*this, config.getValue("webserverport", 80));
 
 	storage->allHardwareParams(hardwareParams);
 	for (auto hardwareParam : hardwareParams) {
@@ -132,7 +132,7 @@ Manager::~Manager() {
 	}
 	for (auto control : controls) {
 		controlID_t controlID = control.first;
-		if (controlID < CONTROL_ID_FIRST_HARDWARE) {
+		if (controlID < ControlIdFirstHardware) {
 			delete control.second;
 			continue;
 		}
@@ -157,7 +157,7 @@ Manager::~Manager() {
 * Booster                  *
 ***************************/
 
-void Manager::booster(const managerID_t managerID, const boosterStatus_t status) {
+void Manager::booster(const controlType_t managerID, const boosterStatus_t status) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
 		control.second->booster(managerID, status);
@@ -169,7 +169,7 @@ void Manager::booster(const managerID_t managerID, const boosterStatus_t status)
 ***************************/
 
 bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip, string& result) {
-	if (controlID != CONTROL_ID_NONE && controlID < CONTROL_ID_FIRST_HARDWARE) {
+	if (controlID != ControlIdNone && controlID < ControlIdFirstHardware) {
 		result.assign("Invalid controlID");
 		return false;
 	}
@@ -188,7 +188,7 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 		}
 		else {
 			std::lock_guard<std::mutex> Guard(controlMutex);
-			controlID_t newControlID = CONTROL_ID_FIRST_HARDWARE - 1;
+			controlID_t newControlID = ControlIdFirstHardware - 1;
 			// get next controlID
 			for (auto control : controls) {
 				if (control.first > newControlID) {
@@ -216,7 +216,7 @@ bool Manager::controlDelete(controlID_t controlID) {
 	HardwareParams* params = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(hardwareMutex);
-		if (controlID < CONTROL_ID_FIRST_HARDWARE || hardwareParams.count(controlID) != 1) {
+		if (controlID < ControlIdFirstHardware || hardwareParams.count(controlID) != 1) {
 			return false;
 		}
 
@@ -233,7 +233,7 @@ bool Manager::controlDelete(controlID_t controlID) {
 		if (controls.count(controlID) != 1) {
 			return false;
 		}
-		ManagerInterface* control = controls.at(controlID);
+		CommandInterface* control = controls.at(controlID);
 		controls.erase(controlID);
 		delete control;
 	}
@@ -296,7 +296,7 @@ const std::string Manager::getControlName(const controlID_t controlID) {
 	if (controls.count(controlID) != 1) {
 		return unknownControl;
 	}
-	ManagerInterface* c = controls.at(controlID);
+	CommandInterface* c = controls.at(controlID);
 	return c->getName();
 }
 
@@ -316,7 +316,7 @@ const std::map<protocol_t,std::string> Manager::protocolsOfControl(const control
 	if (hardwareParams.count(controlID) == 1) {
 		std::lock_guard<std::mutex> Guard(controlMutex);
 		for (auto control : controls) {
-			if (control.second->getManagerID() != MANAGER_ID_HARDWARE) {
+			if (control.second->getManagerID() != ControlTypeHardware) {
 				continue;
 			}
 			const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control.second);
@@ -358,7 +358,7 @@ const std::string& Manager::getLocoName(const locoID_t locoID) {
 
 bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
 	Loco* loco;
-	if (!checkControlProtocolAddress(ADDRESS_TYPE_LOCO, controlID, protocol, address, result)) {
+	if (!checkControlProtocolAddress(AddressTypeLoco, controlID, protocol, address, result)) {
 		return false;
 	}
 	{
@@ -428,7 +428,7 @@ bool Manager::locoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) < 1) {
 		controlID = 0;
-		protocol = PROTOCOL_NONE;
+		protocol = ProtocolNone;
 		address = 0;
 		return false;
 	}
@@ -439,7 +439,7 @@ bool Manager::locoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 	return true;
 }
 
-void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
+void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
 	locoID_t locoID = LOCO_NONE;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
@@ -456,7 +456,7 @@ void Manager::locoSpeed(const managerID_t managerID, const protocol_t protocol, 
 	locoSpeed(managerID, locoID, speed);
 }
 
-bool Manager::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
+bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr) {
 		return false;
@@ -482,7 +482,7 @@ const speed_t Manager::locoSpeed(const locoID_t locoID) const {
 	return loco->Speed();
 }
 
-void Manager::locoDirection(const managerID_t managerID, const protocol_t protocol, const address_t address, const direction_t direction) {
+void Manager::locoDirection(const controlType_t managerID, const protocol_t protocol, const address_t address, const direction_t direction) {
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	for (auto loco : locos) {
 		if (loco.second->protocol == protocol && loco.second->address == address) {
@@ -491,7 +491,7 @@ void Manager::locoDirection(const managerID_t managerID, const protocol_t protoc
 		}
 	}
 }
-void Manager::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
+void Manager::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
 	xlog("%s (%i) direction is now %i", getLocoName(locoID).c_str(), locoID, direction);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
@@ -499,7 +499,7 @@ void Manager::locoDirection(const managerID_t managerID, const locoID_t locoID, 
 	}
 }
 
-void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool on) {
+void Manager::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on) {
 	xlog("%s (%i) function %i is now %s", getLocoName(locoID).c_str(), locoID, function, (on ? "on" : "off"));
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
@@ -511,7 +511,7 @@ void Manager::locoFunction(const managerID_t managerID, const locoID_t locoID, c
 * Accessory                *
 ***************************/
 
-void Manager::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+void Manager::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
 		control.second->accessory(managerID, accessoryID, state);
@@ -535,11 +535,11 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
 
 bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, string& result) {
 	Accessory* accessory;
-	if (!checkControlProtocolAddress(ADDRESS_TYPE_ACCESSORY, controlID, protocol, address, result)) {
+	if (!checkControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result)) {
 		return false;
 	}
 	{
-		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0, result)) {
+		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, Rotation0, result)) {
 			result.append(" Unable to ");
 			result.append(accessoryID == ACCESSORY_NONE ? "add" : "move");
 			result.append(" accessory.");
@@ -574,7 +574,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 				}
 			}
 			++newAccessoryID;
-			accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, ROTATION_0, controlID, protocol, address, type, state, timeout);
+			accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, Rotation0, controlID, protocol, address, type, state, timeout);
 			if (accessory == nullptr) {
 				result.assign("Unable to allocate memory for accessory");
 				return false;
@@ -612,7 +612,7 @@ bool Manager::accessoryDelete(const accessoryID_t accessoryID) {
 bool Manager::accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
 	if (accessories.count(accessoryID) < 1) {
 		controlID = 0;
-		protocol = PROTOCOL_NONE;
+		protocol = ProtocolNone;
 		address = 0;
 		return false;
 	}
@@ -627,7 +627,7 @@ bool Manager::accessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 * Feedback                 *
 ***************************/
 
-void Manager::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
+void Manager::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 	Feedback* feedback = getFeedback(pin);
 	if (feedback == nullptr) {
 		return;
@@ -659,7 +659,7 @@ const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) {
 bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result) {
 	Feedback* feedback;
 	{
-		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, ROTATION_0, result)) {
+		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, Rotation0, result)) {
 			result.append(" Unable to ");
 			result.append(feedbackID == FEEDBACK_NONE ? "add" : "move");
 			result.append(" feedback.");
@@ -733,7 +733,7 @@ bool Manager::feedbackDelete(const feedbackID_t feedbackID) {
 * Block                    *
 ***************************/
 
-void Manager::block(const managerID_t managerID, const blockID_t blockID, const lockState_t state) {
+void Manager::block(const controlType_t managerID, const blockID_t blockID, const lockState_t state) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
 		control.second->block(managerID, blockID, state);
@@ -832,7 +832,7 @@ bool Manager::blockDelete(const blockID_t blockID) {
 * Switch                   *
 ***************************/
 
-void Manager::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t switchState) {
+void Manager::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t switchState) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
 		control.second->handleSwitch(managerID, switchID, switchState);
@@ -856,7 +856,7 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) {
 
 bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout, string& result) {
 	Switch* mySwitch;
-	if (!checkControlProtocolAddress(ADDRESS_TYPE_ACCESSORY, controlID, protocol, address, result)) {
+	if (!checkControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result)) {
 		return false;
 	}
 	{
@@ -934,7 +934,7 @@ bool Manager::switchDelete(const switchID_t switchID) {
 bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const {
 	if (switches.count(switchID) < 1) {
 		controlID = 0;
-		protocol = PROTOCOL_NONE;
+		protocol = ProtocolNone;
 		address = 0;
 		return false;
 	}
@@ -1070,7 +1070,7 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 }
 
 bool Manager::locoRelease(const locoID_t locoID) {
-	locoSpeed(MANAGER_ID_AUTOMODE, locoID, MIN_SPEED);
+	locoSpeed(ControlTypeAutomode, locoID, MIN_SPEED);
 
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr) {
@@ -1213,16 +1213,16 @@ void Manager::loadDefaultValuesToDB() {
 	HardwareParams newHardwareParams2(2, 2, "CS2 Zentrale", "192.168.0.190");
 	storage->hardwareParams(newHardwareParams2);
 
-	Loco newloco1(this, 1, "Re 460 Teddy", 1, PROTOCOL_DCC, 1119);
+	Loco newloco1(this, 1, "Re 460 Teddy", 1, ProtocolDCC, 1119);
 	storage->loco(newloco1);
 
-	Loco newloco2(this, 2, "ICN", 1, PROTOCOL_DCC, 1118);
+	Loco newloco2(this, 2, "ICN", 1, ProtocolDCC, 1118);
 	storage->loco(newloco2);
 
-	Accessory newAccessory1(1, "Schalter 1", ROTATION_0, 3, 5, 0, 1, PROTOCOL_DCC, 1, 1, ACCESSORY_STATE_ON, 200);
+	Accessory newAccessory1(1, "Schalter 1", Rotation0, 3, 5, 0, 1, ProtocolDCC, 1, 1, AccessoryStateOn, 200);
 	storage->accessory(newAccessory1);
 
-	Accessory newAccessory2(2, "Schalter 2", ROTATION_0, 3, 6, 0, 1, PROTOCOL_DCC, 2, 1, ACCESSORY_STATE_OFF, 200);
+	Accessory newAccessory2(2, "Schalter 2", Rotation0, 3, 6, 0, 1, ProtocolDCC, 2, 1, AccessoryStateOff, 200);
 	storage->accessory(newAccessory2);
 
 	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0, false);
@@ -1240,25 +1240,25 @@ void Manager::loadDefaultValuesToDB() {
 	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0, false);
 	storage->feedback(newFeedback5);
 
-	Block newBlock1(1, "Block Bahnhof 1", 4, ROTATION_0, 5, 5, 0);
+	Block newBlock1(1, "Block Bahnhof 1", 4, Rotation0, 5, 5, 0);
 	storage->block(newBlock1);
 
-	Block newBlock2(2, "Block Bahnhof 2", 4, ROTATION_90, 5, 6, 0);
+	Block newBlock2(2, "Block Bahnhof 2", 4, Rotation90, 5, 6, 0);
 	storage->block(newBlock2);
 
-	Block newBlock3(3, "Block Ausfahrt", 4, ROTATION_90, 5, 6, 0);
+	Block newBlock3(3, "Block Ausfahrt", 4, Rotation90, 5, 6, 0);
 	storage->block(newBlock3);
 
-	Block newBlock4(4, "Block Einfahrt", 4, ROTATION_90, 5, 6, 0);
+	Block newBlock4(4, "Block Einfahrt", 4, Rotation90, 5, 6, 0);
 	storage->block(newBlock4);
 
-	Block newBlock5(5, "Block Strecke", 4, ROTATION_90, 5, 6, 0);
+	Block newBlock5(5, "Block Strecke", 4, Rotation90, 5, 6, 0);
 	storage->block(newBlock5);
 
-	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, PROTOCOL_DCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, ROTATION_90, 200);
+	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, ProtocolDCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, Rotation90, 200);
 	storage->saveSwitch(newSwitch1);
 
-	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, PROTOCOL_DCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, ROTATION_0, 200);
+	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, ProtocolDCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, Rotation0, 200);
 	storage->saveSwitch(newSwitch2);
 
 	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false, 3);
@@ -1338,14 +1338,14 @@ bool Manager::checkLayoutPositionFree(const layoutPosition_t posX, const layoutP
 
 bool Manager::checkAddressLoco(const protocol_t protocol, const address_t address, string& result) {
 	switch (protocol) {
-		case PROTOCOL_DCC:
+		case ProtocolDCC:
 			if (address > 10239) {
 				result.assign("Address higher then 10239 is not supported by DCC");
 				return false;
 			}
 			return true;
-		case PROTOCOL_MM1:
-		case PROTOCOL_MM2:
+		case ProtocolMM1:
+		case ProtocolMM2:
 			if (address > 80) {
 				result.assign("Address higher then 80 is not supported by MM1/MM2");
 				return false;
@@ -1358,14 +1358,14 @@ bool Manager::checkAddressLoco(const protocol_t protocol, const address_t addres
 
 bool Manager::checkAddressAccessory(const protocol_t protocol, const address_t address, string& result) {
 	switch (protocol) {
-		case PROTOCOL_DCC:
+		case ProtocolDCC:
 			if (address > 2044) {
 				result.assign("Address higher then 2044 is not supported by DCC");
 				return false;
 			}
 			return true;
-		case PROTOCOL_MM1:
-		case PROTOCOL_MM2:
+		case ProtocolMM1:
+		case ProtocolMM2:
 			if (address > 320) {
 				result.assign("Address higher then 320 is not supported by MM1/MM2");
 				return false;
@@ -1379,15 +1379,15 @@ bool Manager::checkAddressAccessory(const protocol_t protocol, const address_t a
 bool Manager::checkControlProtocolAddress(const addressType_t type, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result) {
 	{
 		std::lock_guard<std::mutex> Guard(controlMutex);
-		if (controlID < CONTROL_ID_FIRST_HARDWARE || controls.count(controlID) != 1) {
+		if (controlID < ControlIdFirstHardware || controls.count(controlID) != 1) {
 			result.assign("Control does not exist");
 			return false;
 		}
-		ManagerInterface* control = controls.at(controlID);
+		CommandInterface* control = controls.at(controlID);
 		if (!control->protocolSupported(protocol)) {
 			stringstream status;
 			status << "Protocol " << static_cast<int>(protocol);
-			if (protocol > PROTOCOL_NONE && protocol <= PROTOCOL_END) {
+			if (protocol > ProtocolNone && protocol <= ProtocolEnd) {
 				status << "/" << protocolSymbols[protocol];
 			}
 			status << " is not supported by control. Please use one of: ";
@@ -1405,9 +1405,9 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 		return false;
 	}
 	switch (type) {
-		case ADDRESS_TYPE_LOCO:
+		case AddressTypeLoco:
 			return checkAddressLoco(protocol, address, result);
-		case ADDRESS_TYPE_ACCESSORY:
+		case AddressTypeAccessory:
 			return checkAddressAccessory(protocol, address, result);
 		default:
 			return false;

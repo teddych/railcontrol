@@ -23,7 +23,7 @@ using std::vector;
 namespace webserver {
 
 	WebServer::WebServer(Manager& manager, const unsigned short port) :
-		ManagerInterface(MANAGER_ID_WEBSERVER),
+		CommandInterface(ControlTypeWebserver),
 		port(port),
 		serverSocket(0),
 		run(false),
@@ -139,7 +139,7 @@ namespace webserver {
 		}
 	}
 
-	void WebServer::booster(const managerID_t managerID, const boosterStatus_t status) {
+	void WebServer::booster(const controlType_t managerID, const boosterStatus_t status) {
 		if (status) {
 			addUpdate("boosteron", "Booster is on");
 		}
@@ -148,7 +148,7 @@ namespace webserver {
 		}
 	}
 
-	void WebServer::locoSpeed(const managerID_t managerID, const locoID_t locoID, const speed_t speed) {
+	void WebServer::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) {
 		stringstream command;
 		stringstream status;
 		command << "locospeed;loco=" << locoID << ";speed=" << speed;
@@ -156,7 +156,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoDirection(const managerID_t managerID, const locoID_t locoID, const direction_t direction) {
+	void WebServer::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
 		stringstream command;
 		stringstream status;
 		const char* directionText = (direction ? "forward" : "reverse");
@@ -165,7 +165,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoFunction(const managerID_t managerID, const locoID_t locoID, const function_t function, const bool state) {
+	void WebServer::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state) {
 		stringstream command;
 		stringstream status;
 		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int)function << ";on=" << (state ? "on" : "off");
@@ -173,7 +173,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::accessory(const managerID_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+	void WebServer::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
 		stringstream command;
 		stringstream status;
 		string colorText;
@@ -184,7 +184,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::feedback(const managerID_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
+	void WebServer::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 		stringstream command;
 		stringstream status;
 		command << "feedback;pin=" << pin << ";state=" << (state ? "on" : "off");
@@ -192,7 +192,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::block(const managerID_t managerID, const blockID_t blockID, const lockState_t state) {
+	void WebServer::block(const controlType_t managerID, const blockID_t blockID, const lockState_t state) {
 		stringstream command;
 		stringstream status;
 		string stateText;
@@ -202,7 +202,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::handleSwitch(const managerID_t managerID, const switchID_t switchID, const switchState_t state) {
+	void WebServer::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) {
 		stringstream command;
 		stringstream status;
 		string stateText;

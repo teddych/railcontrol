@@ -55,12 +55,12 @@ namespace hardware {
 	}
 
 	void CS2::getProtocols(std::vector<protocol_t>& protocols) const {
-		protocols.push_back(PROTOCOL_MM2);
-		protocols.push_back(PROTOCOL_DCC);
+		protocols.push_back(ProtocolMM2);
+		protocols.push_back(ProtocolDCC);
 	}
 
 	bool CS2::protocolSupported(protocol_t protocol) const {
-		return (protocol == PROTOCOL_MM2 || protocol == PROTOCOL_DCC);
+		return (protocol == ProtocolMM2 || protocol == ProtocolDCC);
 	}
 
 	void CS2::createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length) {
@@ -105,7 +105,7 @@ namespace hardware {
 
 	void CS2::createLocID(char* buffer, const protocol_t& protocol, const address_t& address) {
 		uint32_t locID = address;
-		if (protocol == PROTOCOL_DCC) {
+		if (protocol == ProtocolDCC) {
 			locID |= 0xC000;
 		}
 		// else expect PROTOCOL_MM2: do nothing
@@ -270,32 +270,32 @@ namespace hardware {
 						state = 0;
 					}
 					xlog("CS2 S88 Pin %u set to %s", pin, text);
-					manager->feedback(MANAGER_ID_HARDWARE, pin, state);
+					manager->feedback(ControlTypeHardware, pin, state);
 				}
 				else if (command == 0x04 && !response && length == 6) {
 					// speed event
 					uint32_t locID = dataToInt(buffer + 5);
 					address_t address = locID;
-					protocol_t protocol = PROTOCOL_MM2;
+					protocol_t protocol = ProtocolMM2;
 					if (locID & 0xC000) {
-						protocol = PROTOCOL_DCC;
+						protocol = ProtocolDCC;
 						address = locID - 0xC000;
 					}
 					speed_t speed = dataToShort(buffer + 9);
-					manager->locoSpeed(MANAGER_ID_HARDWARE, protocol, address, speed);
+					manager->locoSpeed(ControlTypeHardware, protocol, address, speed);
 				}
 				else if (command == 0x05 && !response && length == 5) {
 					// direction event (implies speed=0)
 					uint32_t locID = dataToInt(buffer + 5);
 					address_t address = locID;
-					protocol_t protocol = PROTOCOL_MM2;
+					protocol_t protocol = ProtocolMM2;
 					if (locID & 0xC000) {
-						protocol = PROTOCOL_DCC;
+						protocol = ProtocolDCC;
 						address = locID - 0xC000;
 					}
 					direction_t direction = (buffer[9] == 1 ? true : false);
-					manager->locoSpeed(MANAGER_ID_HARDWARE, protocol, address, 0);
-					manager->locoDirection(MANAGER_ID_HARDWARE, protocol, address, direction);
+					manager->locoSpeed(ControlTypeHardware, protocol, address, 0);
+					manager->locoDirection(ControlTypeHardware, protocol, address, direction);
 				}
 			}
 			else if (run) {

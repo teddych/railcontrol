@@ -62,7 +62,7 @@ namespace datamodel {
 	}
 
 	bool Relation::execute(const locoID_t locoID) {
-		if (objectType2 != OBJECT_TYPE_SWITCH) {
+		if (objectType2 != ObjectTypeSwitch) {
 			return false;
 		}
 		Switch* mySwitch = manager->getSwitch(objectID2);
@@ -79,12 +79,12 @@ namespace datamodel {
 			mySwitch->softLock(locoID, switchState);
 		}
 
-		manager->handleSwitch(MANAGER_ID_AUTOMODE, objectID2, switchState);
+		manager->handleSwitch(ControlTypeAutomode, objectID2, switchState);
 		return true;
 	}
 
 	bool Relation::release(const locoID_t locoID) {
-		if (objectType2 != OBJECT_TYPE_SWITCH) {
+		if (objectType2 != ObjectTypeSwitch) {
 			return false;
 		}
 		Switch* mySwitch = manager->getSwitch(objectID2);

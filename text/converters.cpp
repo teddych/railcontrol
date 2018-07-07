@@ -50,16 +50,16 @@ namespace text {
 	void Converters::accessoryStatus(const accessoryState_t state, string& colorText, string& onText) {
 		// calculate color
 		switch (state >> 1) {
-			case ACCESSORY_COLOR_RED:
+			case AccessoryColorRed:
 				colorText.assign("red");
 				break;
-			case ACCESSORY_COLOR_GREEN:
+			case AccessoryColorGreen:
 				colorText.assign("green");
 				break;
-			case ACCESSORY_COLOR_YELLOW:
+			case AccessoryColorYellow:
 				colorText.assign("yellow");
 				break;
-			case ACCESSORY_COLOR_WHITE:
+			case AccessoryColorWhite:
 				colorText.assign("white");
 				break;
 			default:
@@ -67,10 +67,10 @@ namespace text {
 		}
 		// calculate on
 		switch (state & 0x01) {
-			case ACCESSORY_STATE_OFF:
+			case AccessoryStateOff:
 				onText.assign("off");
 				break;
-			case ACCESSORY_STATE_ON:
+			case AccessoryStateOn:
 				onText.assign("on");
 				break;
 			default:
