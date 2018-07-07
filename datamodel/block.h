@@ -42,7 +42,7 @@ namespace datamodel {
 	};
 
 	inline bool Block::isInUse() const {
-		return this->lockState != LOCK_STATE_FREE || this->locoID != LOCO_NONE || this->streets.size() > 0;
+		return this->lockState != LockStateFree || this->locoID != LocoNone || this->streets.size() > 0;
 	}
 
 } // namespace datamodel

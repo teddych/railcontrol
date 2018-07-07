@@ -363,7 +363,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 	}
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
-		if (locoID != LOCO_NONE && locos.count(locoID)) {
+		if (locoID != LocoNone && locos.count(locoID)) {
 			// update existing loco
 			loco = locos.at(locoID);
 			if (loco == nullptr) {
@@ -405,7 +405,7 @@ bool Manager::locoDelete(const locoID_t locoID) {
 	Loco* loco = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
-		if (locoID == LOCO_NONE || locos.count(locoID) == 0) {
+		if (locoID == LocoNone || locos.count(locoID) == 0) {
 			return false;
 		}
 
@@ -440,7 +440,7 @@ bool Manager::locoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 }
 
 void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const speed_t speed) {
-	locoID_t locoID = LOCO_NONE;
+	locoID_t locoID = LocoNone;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
 		for (auto loco : locos) {
@@ -450,7 +450,7 @@ void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol
 			}
 		}
 	}
-	if (locoID == LOCO_NONE) {
+	if (locoID == LocoNone) {
 		return;
 	}
 	locoSpeed(managerID, locoID, speed);
@@ -462,8 +462,8 @@ bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, co
 		return false;
 	}
 	speed_t s = speed;
-	if (speed > MAX_SPEED) {
-		s = MAX_SPEED;
+	if (speed > MaxSpeed) {
+		s = MaxSpeed;
 	}
 	xlog("%s (%i) speed is now %i", loco->name.c_str(), locoID, s);
 	loco->Speed(s);
@@ -477,7 +477,7 @@ bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, co
 const speed_t Manager::locoSpeed(const locoID_t locoID) const {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr) {
-		return MIN_SPEED;
+		return MinSpeed;
 	}
 	return loco->Speed();
 }
@@ -539,14 +539,14 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 		return false;
 	}
 	{
-		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, Rotation0, result)) {
+		if (!checkPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result)) {
 			result.append(" Unable to ");
-			result.append(accessoryID == ACCESSORY_NONE ? "add" : "move");
+			result.append(accessoryID == AccessoryNone ? "add" : "move");
 			result.append(" accessory.");
 			return false;
 		}
 		std::lock_guard<std::mutex> Guard(accessoryMutex);
-		if (accessoryID != ACCESSORY_NONE && accessories.count(accessoryID)) {
+		if (accessoryID != AccessoryNone && accessories.count(accessoryID)) {
 			// update existing accessory
 			accessory = accessories.at(accessoryID);
 			if (accessory == nullptr) {
@@ -594,7 +594,7 @@ bool Manager::accessoryDelete(const accessoryID_t accessoryID) {
 	Accessory* accessory = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(accessoryMutex);
-		if (accessoryID == ACCESSORY_NONE || accessories.count(accessoryID) == 0) {
+		if (accessoryID == AccessoryNone || accessories.count(accessoryID) == 0) {
 			return false;
 		}
 
@@ -659,14 +659,14 @@ const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) {
 bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result) {
 	Feedback* feedback;
 	{
-		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, Rotation0, result)) {
+		if (!checkPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result)) {
 			result.append(" Unable to ");
-			result.append(feedbackID == FEEDBACK_NONE ? "add" : "move");
+			result.append(feedbackID == FeedbackNone ? "add" : "move");
 			result.append(" feedback.");
 			return false;
 		}
 		std::lock_guard<std::mutex> Guard(feedbackMutex);
-		if (feedbackID != FEEDBACK_NONE && feedbacks.count(feedbackID)) {
+		if (feedbackID != FeedbackNone && feedbacks.count(feedbackID)) {
 			// update existing feedback
 			feedback = feedbacks.at(feedbackID);
 			if (feedback == nullptr) {
@@ -710,7 +710,7 @@ bool Manager::feedbackDelete(const feedbackID_t feedbackID) {
 	Feedback* feedback = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(feedbackMutex);
-		if (feedbackID == FEEDBACK_NONE || feedbacks.count(feedbackID) == 0) {
+		if (feedbackID == FeedbackNone || feedbacks.count(feedbackID) == 0) {
 			return false;
 		}
 
@@ -758,14 +758,14 @@ const std::string& Manager::getBlockName(const blockID_t blockID) {
 bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, string& result) {
 	Block* block;
 	{
-		if (!checkPositionFree(posX, posY, posZ, width, HEIGHT_1, rotation, result)) {
+		if (!checkPositionFree(posX, posY, posZ, width, Height1, rotation, result)) {
 			result.append(" Unable to ");
-			result.append(blockID == BLOCK_NONE ? "add" : "move");
+			result.append(blockID == BlockNone ? "add" : "move");
 			result.append(" block.");
 			return false;
 		}
 		std::lock_guard<std::mutex> Guard(blockMutex);
-		if (blockID != BLOCK_NONE && blocks.count(blockID)) {
+		if (blockID != BlockNone && blocks.count(blockID)) {
 			// update existing block
 			block = blocks.at(blockID);
 			if (block == nullptr) {
@@ -809,7 +809,7 @@ bool Manager::blockDelete(const blockID_t blockID) {
 	Block* block = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(blockMutex);
-		if (blockID == BLOCK_NONE || blocks.count(blockID) == 0) {
+		if (blockID == BlockNone || blocks.count(blockID) == 0) {
 			return false;
 		}
 
@@ -860,14 +860,14 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 		return false;
 	}
 	{
-		if (!checkPositionFree(posX, posY, posZ, WIDTH_1, HEIGHT_1, rotation, result)) {
+		if (!checkPositionFree(posX, posY, posZ, Width1, Height1, rotation, result)) {
 			result.append(" Unable to ");
-			result.append(switchID == SWITCH_NONE ? "add" : "move");
+			result.append(switchID == SwitchNone ? "add" : "move");
 			result.append(" switch.");
 			return false;
 		}
 		std::lock_guard<std::mutex> Guard(switchMutex);
-		if (switchID != SWITCH_NONE && switches.count(switchID)) {
+		if (switchID != SwitchNone && switches.count(switchID)) {
 			// update existing switch
 			mySwitch = switches.at(switchID);
 			if (mySwitch == nullptr) {
@@ -916,7 +916,7 @@ bool Manager::switchDelete(const switchID_t switchID) {
 	Switch* mySwitch = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(switchMutex);
-		if (switchID == SWITCH_NONE || switches.count(switchID) == 0) {
+		if (switchID == SwitchNone || switches.count(switchID) == 0) {
 			return false;
 		}
 
@@ -968,7 +968,7 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 	Street* street;
 	{
 		std::lock_guard<std::mutex> Guard(streetMutex);
-		if (streetID != STREET_NONE && streets.count(streetID)) {
+		if (streetID != StreetNone && streets.count(streetID)) {
 			// update existing street
 			street = streets.at(streetID);
 			if (street == nullptr) {
@@ -1012,7 +1012,7 @@ bool Manager::streetDelete(const streetID_t streetID) {
 	Street* street = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(streetMutex);
-		if (streetID == STREET_NONE || streets.count(streetID) == 0) {
+		if (streetID == StreetNone || streets.count(streetID) == 0) {
 			return false;
 		}
 
@@ -1070,7 +1070,7 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 }
 
 bool Manager::locoRelease(const locoID_t locoID) {
-	locoSpeed(ControlTypeAutomode, locoID, MIN_SPEED);
+	locoSpeed(ControlTypeAutomode, locoID, MinSpeed);
 
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr) {
@@ -1255,10 +1255,10 @@ void Manager::loadDefaultValuesToDB() {
 	Block newBlock5(5, "Block Strecke", 4, Rotation90, 5, 6, 0);
 	storage->block(newBlock5);
 
-	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, ProtocolDCC, 3, SWITCH_LEFT, SWITCH_TURNOUT, Rotation90, 200);
+	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, ProtocolDCC, 3, SwitchStateLeft, SwitchStateTurnout, Rotation90, 200);
 	storage->saveSwitch(newSwitch1);
 
-	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, ProtocolDCC, 4, SWITCH_RIGHT, SWITCH_STRAIGHT, Rotation0, 200);
+	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, ProtocolDCC, 4, SwitchTypeRight, SwitchStateStraight, Rotation0, 200);
 	storage->saveSwitch(newSwitch2);
 
 	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false, 3);

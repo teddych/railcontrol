@@ -51,20 +51,20 @@ typedef unsigned short relationID_t;
 // automode
 typedef unsigned char locoState_t;
 
-#define CONTROL_NONE 0
-#define ADDRESS_NONE 0
-#define LOCO_NONE 0
-#define ACCESSORY_NONE 0
-#define FEEDBACK_NONE 0
-#define BLOCK_NONE 0
-#define SWITCH_NONE 0
-#define STREET_NONE 0
+static const controlID_t ControlNone = 0;
+static const address_t AddressNone = 0;
+static const locoID_t LocoNone = 0;
+static const accessoryID_t AccessoryNone = 0;
+static const feedbackID_t FeedbackNone = 0;
+static const blockID_t BlockNone = 0;
+static const switchID_t SwitchNone = 0;
+static const streetID_t StreetNone = 0;
 
-#define MAX_SPEED 1023
-#define MIN_SPEED 0
+static const speed_t MaxSpeed = 1023;
+static const speed_t MinSpeed = 0;
 
-#define WIDTH_1 1
-#define HEIGHT_1 1
+static const layoutItemSize_t Width1 = 1;
+static const layoutItemSize_t Height1 = 1;
 
 enum controlTypes : controlType_t {
 	ControlTypeHardware = 0,
@@ -170,38 +170,38 @@ enum accessoryState : accessoryState_t {
 };
 
 enum feedbackState : feedbackState_t {
-	FEEDBACK_STATE_FREE = 0,
-	FEEDBACK_STATE_OCCUPIED
+	FeedbackStateFree = 0,
+	FeedbackStateOccupied
 };
 
 enum lockState : lockState_t {
-	LOCK_STATE_FREE = 0,
-	LOCK_STATE_RESERVED,
-	LOCK_STATE_SOFT_LOCKED,
-	LOCK_STATE_HARD_LOCKED
+	LockStateFree = 0,
+	LockStateReserved,
+	LockStateSoftLocked,
+	LockStateHardLocked
 };
 
 enum directionState : direction_t {
-	DIRECTION_LEFT = false,
-	DIRECTION_RIGHT = true
+	DirectionLeft = false,
+	DirectionRight = true
 };
 
 enum switchType : switchType_t {
-	SWITCH_LEFT = 0,
-	SWITCH_RIGHT
+	SwitchStateLeft = 0,
+	SwitchTypeRight
 };
 
 enum switchState : switchState_t {
-	SWITCH_STRAIGHT = 0,
-	SWITCH_TURNOUT
+	SwitchStateStraight = 0,
+	SwitchStateTurnout
 };
 
 enum locoState : locoState_t {
-	LOCO_STATE_MANUAL = 0,
-	LOCO_STATE_OFF,
-	LOCO_STATE_SEARCHING,
-	LOCO_STATE_RUNNING,
-	LOCO_STATE_STOPPING,
-	LOCO_STATE_ERROR
+	LocoStateManual = 0,
+	LocoStateOff,
+	LocoStateSearching,
+	LocoStateRunning,
+	LocoStateStopping,
+	LocoStateError
 };
 

@@ -5,22 +5,22 @@ using std::string;
 namespace text {
 	void Converters::locoStatus(const locoState_t state, string& stateText) {
 		switch (state) {
-			case LOCO_STATE_MANUAL:
+			case LocoStateManual:
 				stateText.assign("manual");
 				break;
-			case LOCO_STATE_OFF:
+			case LocoStateOff:
 				stateText.assign("off");
 				break;
-			case LOCO_STATE_SEARCHING:
+			case LocoStateSearching:
 				stateText.assign("searching");
 				break;
-			case LOCO_STATE_RUNNING:
+			case LocoStateRunning:
 				stateText.assign("running");
 				break;
-			case LOCO_STATE_STOPPING:
+			case LocoStateStopping:
 				stateText.assign("stopping");
 				break;
-			case LOCO_STATE_ERROR:
+			case LocoStateError:
 				stateText.assign("error");
 				break;
 			default:
@@ -30,16 +30,16 @@ namespace text {
 
 	void Converters::lockStatus(const lockState_t state, string& stateText) {
 		switch (state) {
-			case LOCK_STATE_FREE:
+			case LockStateFree:
 				stateText.assign("free");
 				break;
-			case LOCK_STATE_RESERVED:
+			case LockStateReserved:
 				stateText.assign("reserved");
 				break;
-			case LOCK_STATE_SOFT_LOCKED:
+			case LockStateSoftLocked:
 				stateText.assign("soft locked");
 				break;
-			case LOCK_STATE_HARD_LOCKED:
+			case LockStateHardLocked:
 				stateText.assign("locked");
 				break;
 			default:
@@ -80,10 +80,10 @@ namespace text {
 
 	void Converters::feedbackStatus(const feedbackState_t state, string& stateText) {
 		switch (state) {
-			case FEEDBACK_STATE_FREE:
+			case FeedbackStateFree:
 				stateText.assign("free");
 				break;
-			case FEEDBACK_STATE_OCCUPIED:
+			case FeedbackStateOccupied:
 				stateText.assign("occupied");
 				break;
 			default:
@@ -93,10 +93,10 @@ namespace text {
 
 	void Converters::switchStatus(const switchState_t state, string& stateText) {
 		switch (state >> 1) {
-			case SWITCH_STRAIGHT:
+			case SwitchStateStraight:
 				stateText.assign("straight");
 				break;
-			case SWITCH_TURNOUT:
+			case SwitchStateTurnout:
 				stateText.assign("turnout");
 				break;
 			default:

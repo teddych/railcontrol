@@ -72,7 +72,7 @@ namespace datamodel {
 		if (!mySwitch->reserve(locoID)) {
 			return false;
 		}
-		if (lockState == LOCK_STATE_HARD_LOCKED) {
+		if (lockState == LockStateHardLocked) {
 			mySwitch->hardLock(locoID, switchState);
 		}
 		else {

@@ -632,7 +632,7 @@ namespace webserver {
 			ss << loco->name;
 			ss << "</p>";
 			unsigned int speed = loco->Speed();
-			ss << slider("speed", "locospeed", 0, MAX_SPEED, speed, buttonArguments);
+			ss << slider("speed", "locospeed", 0, MaxSpeed, speed, buttonArguments);
 			buttonArguments["speed"] = "0";
 			ss << button("0%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "255";

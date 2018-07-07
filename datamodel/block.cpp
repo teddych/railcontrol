@@ -12,8 +12,8 @@ using std::string;
 namespace datamodel {
 
 	Block::Block(const blockID_t blockID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutItemSize_t width, const layoutRotation_t rotation) :
-		LayoutItem(blockID, name, x, y, z, width, HEIGHT_1, rotation),
-		lockState(LOCK_STATE_FREE) /* FIXME */,
+		LayoutItem(blockID, name, x, y, z, width, Height1, rotation),
+		lockState(LockStateFree) /* FIXME */,
 		locoID(0) /* FIXME */,
 		locoDirection(false) {
 	}
@@ -44,41 +44,41 @@ namespace datamodel {
 	bool Block::reserve(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (locoID == this->locoID) {
-			if (lockState == LOCK_STATE_FREE) {
-				lockState = LOCK_STATE_RESERVED;
+			if (lockState == LockStateFree) {
+				lockState = LockStateReserved;
 			}
 			return true;
 		}
-		if (lockState != LOCK_STATE_FREE) {
+		if (lockState != LockStateFree) {
 			return false;
 		}
-		lockState = LOCK_STATE_RESERVED;
+		lockState = LockStateReserved;
 		this->locoID = locoID;
 		return true;
 	}
 
 	bool Block::lock(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LOCK_STATE_RESERVED) {
+		if (lockState != LockStateReserved) {
 			return false;
 		}
 		if (this->locoID != locoID) {
 			return false;
 		}
-		lockState = LOCK_STATE_HARD_LOCKED;
+		lockState = LockStateHardLocked;
 		return true;
 	}
 
 	bool Block::release(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState == LOCK_STATE_FREE) {
+		if (lockState == LockStateFree) {
 			return true;
 		}
 		if (this->locoID != locoID) {
 			return false;
 		}
-		this->locoID = LOCO_NONE;
-		lockState = LOCK_STATE_FREE;
+		this->locoID = LocoNone;
+		lockState = LockStateFree;
 		return true;
 	}
 

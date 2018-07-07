@@ -54,7 +54,7 @@ namespace datamodel {
 	};
 
 	inline bool Loco::isInUse() const {
-		return this->speed > 0 || this->state != LOCO_STATE_MANUAL || this->blockID != BLOCK_NONE || this->streetID != STREET_NONE;
+		return this->speed > 0 || this->state != LocoStateManual || this->blockID != BlockNone || this->streetID != StreetNone;
 	}
 
 } // namespace datamodel

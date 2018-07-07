@@ -21,7 +21,7 @@ namespace datamodel {
 		const accessoryType_t type,
 		const accessoryState_t state,
 		const accessoryTimeout_t timeout) :
-		LayoutItem(accessoryID, name, x, y, z, WIDTH_1, HEIGHT_1, rotation),
+		LayoutItem(accessoryID, name, x, y, z, Width1, Height1, rotation),
 		controlID(controlID),
 		protocol(protocol),
 		address(address),

@@ -138,7 +138,7 @@ namespace hardware {
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
-		address_t address = ADDRESS_NONE;
+		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != getControlID()) {
 			return;
@@ -152,7 +152,7 @@ namespace hardware {
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
-		address_t address = ADDRESS_NONE;
+		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != getControlID()) {
 			return;
@@ -166,7 +166,7 @@ namespace hardware {
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
-		address_t address = ADDRESS_NONE;
+		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != getControlID()) {
 			return;
@@ -180,7 +180,7 @@ namespace hardware {
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
-		address_t address = ADDRESS_NONE;
+		address_t address = AddressNone;
 		manager.accessoryProtocolAddress(accessoryID, controlID, protocol, address);
 		if (controlID != getControlID()) {
 			return;
@@ -194,7 +194,7 @@ namespace hardware {
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
-		address_t address = ADDRESS_NONE;
+		address_t address = AddressNone;
 		manager.switchProtocolAddress(switchID, controlID, protocol, address);
 		if (controlID != getControlID()) {
 			return;

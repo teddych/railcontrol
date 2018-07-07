@@ -22,8 +22,8 @@ namespace datamodel {
 		switchState_t state,
 		switchTimeout_t timeout)
 	:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, state << 1, timeout),
-		lockState(LOCK_STATE_FREE),
-		locoIDHardLock(LOCO_NONE) {
+		lockState(LockStateFree),
+		locoIDHardLock(LocoNone) {
 	}
 
 	Switch::Switch(const std::string& serialized) {
@@ -52,28 +52,28 @@ namespace datamodel {
 	bool Switch::reserve(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (locoID == this->locoIDHardLock) {
-			if (lockState == LOCK_STATE_FREE) {
-				lockState = LOCK_STATE_RESERVED;
+			if (lockState == LockStateFree) {
+				lockState = LockStateReserved;
 			}
 			return true;
 		}
-		if (lockState != LOCK_STATE_FREE) {
+		if (lockState != LockStateFree) {
 			return false;
 		}
-		lockState = LOCK_STATE_RESERVED;
+		lockState = LockStateReserved;
 		this->locoIDHardLock = locoID;
 		return true;
 	}
 
 	bool Switch::hardLock(const locoID_t locoID, const switchState_t switchState) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LOCK_STATE_RESERVED) {
+		if (lockState != LockStateReserved) {
 			return false;
 		}
 		if (this->locoIDHardLock != locoID) {
 			return false;
 		}
-		lockState = LOCK_STATE_HARD_LOCKED;
+		lockState = LockStateHardLocked;
 		state = switchState;
 		return true;
 	}
@@ -85,14 +85,14 @@ namespace datamodel {
 
 	bool Switch::release(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState == LOCK_STATE_FREE) {
+		if (lockState == LockStateFree) {
 			return true;
 		}
 		if (this->locoIDHardLock != locoID) {
 			return false;
 		}
-		this->locoIDHardLock = LOCO_NONE;
-		lockState = LOCK_STATE_FREE;
+		this->locoIDHardLock = LocoNone;
+		lockState = LockStateFree;
 		return true;
 	}
 } // namespace datamodel

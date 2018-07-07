@@ -19,8 +19,8 @@ namespace datamodel {
 		toDirection(toDirection),
 		feedbackIDStop(feedbackIDStop),
 		manager(manager),
-		lockState(LOCK_STATE_FREE),
-		locoID(LOCO_NONE) {
+		lockState(LockStateFree),
+		locoID(LocoNone) {
 		Block* block = manager->getBlock(fromBlock);
 		if (!block) return;
 		block->addStreet(this);
@@ -28,7 +28,7 @@ namespace datamodel {
 
 	Street::Street(Manager* manager, const std::string& serialized) :
 		manager(manager),
-		locoID(LOCO_NONE) {
+		locoID(LocoNone) {
 		deserialize(serialized);
 		Block* block = manager->getBlock(fromBlock);
 		if (!block) return;
@@ -62,7 +62,7 @@ namespace datamodel {
 		if (locoID == this->locoID) {
 			return true;
 		}
-		if (lockState != LOCK_STATE_FREE) {
+		if (lockState != LockStateFree) {
 			return false;
 		}
 		Block* block = manager->getBlock(toBlock);
@@ -72,14 +72,14 @@ namespace datamodel {
 		if (!block->reserve(locoID)) {
 			return false;
 		}
-		lockState = LOCK_STATE_RESERVED;
+		lockState = LockStateReserved;
 		this->locoID = locoID;
 		return true;
 	}
 
 	bool Street::lock(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LOCK_STATE_RESERVED) {
+		if (lockState != LockStateReserved) {
 			return false;
 		}
 		if (this->locoID != locoID) {
@@ -92,7 +92,7 @@ namespace datamodel {
 		if (!block->lock(locoID)) {
 			return false;
 		}
-		lockState = LOCK_STATE_HARD_LOCKED;
+		lockState = LockStateHardLocked;
 		Feedback* feedback = manager->getFeedback(feedbackIDStop);
 		feedback->setLoco(locoID);
 		return true;
@@ -100,7 +100,7 @@ namespace datamodel {
 
 	bool Street::release(const locoID_t locoID) {
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState == LOCK_STATE_FREE) {
+		if (lockState == LockStateFree) {
 			return true;
 		}
 		if (this->locoID != locoID) {
@@ -108,10 +108,10 @@ namespace datamodel {
 		}
 		Block* block = manager->getBlock(fromBlock);
 		block->release(locoID);
-		this->locoID = LOCO_NONE;
-		lockState = LOCK_STATE_FREE;
+		this->locoID = LocoNone;
+		lockState = LockStateFree;
 		Feedback* feedback = manager->getFeedback(feedbackIDStop);
-		feedback->setLoco(LOCO_NONE);
+		feedback->setLoco(LocoNone);
 		return true;
 	}
 

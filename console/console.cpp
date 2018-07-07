@@ -192,23 +192,23 @@ namespace console {
 
 	switchType_t Console::readSwitchType(string& s, size_t& i) {
 		if (s.length() <= i) {
-			return SWITCH_LEFT;
+			return SwitchStateLeft;
 		}
 		switch (s[i]) {
 			case 'l':
 			case 'L':
 				++i;
-				return SWITCH_LEFT;
+				return SwitchStateLeft;
 			case 'r':
 			case 'R':
 				++i;
-				return SWITCH_RIGHT;
+				return SwitchTypeRight;
 			default:
 				switchType_t type = readNumber(s, i);
-				if (type == SWITCH_RIGHT) {
-					return SWITCH_RIGHT;
+				if (type == SwitchTypeRight) {
+					return SwitchTypeRight;
 				}
-				return SWITCH_LEFT;
+				return SwitchStateLeft;
 		}
 	}
 
@@ -262,25 +262,25 @@ namespace console {
 
 	direction_t Console::readDirection(string& s, size_t& i) {
 		if (s.length() <= i) {
-			return DIRECTION_LEFT;
+			return DirectionLeft;
 		}
 		switch (s[i]) {
 			case 'l':
 			case 'L':
 			case '-':
 				++i;
-				return DIRECTION_LEFT;
+				return DirectionLeft;
 			case 'r':
 			case 'R':
 			case '+':
 				++i;
-				return DIRECTION_RIGHT;
+				return DirectionRight;
 			default:
 				unsigned char direction = readNumber(s, i);
 				if (direction == 0) {
-					return DIRECTION_LEFT;
+					return DirectionLeft;
 				}
-				return DIRECTION_RIGHT;
+				return DirectionRight;
 		}
 	}
 
@@ -376,7 +376,7 @@ namespace console {
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
 									string result;
-									if (!manager.accessorySave(ACCESSORY_NONE, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result)) {
+									if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result)) {
 										addUpdate(result);
 										break;
 									}
@@ -443,7 +443,7 @@ namespace console {
 									text::Converters::lockStatus(block->getState(), stateText);
 									status << "\nStatus:   " << stateText;
 									status << "\nLoco:     ";
-									if (block->getLoco() == LOCO_NONE) {
+									if (block->getLoco() == LocoNone) {
 										status << "-";
 									}
 									else {
@@ -468,7 +468,7 @@ namespace console {
 									readBlanks(s, i);
 									layoutRotation_t rotation = readRotation(s, i);
 									string result;
-									if (!manager.blockSave(BLOCK_NONE, name, posX, posY, posZ, width, rotation, result)) {
+									if (!manager.blockSave(BlockNone, name, posX, posY, posZ, width, rotation, result)) {
 										addUpdate(result);
 										break;
 									}
@@ -561,7 +561,7 @@ namespace console {
 										break;
 									}
 									string result;
-									if (!manager.controlSave(CONTROL_NONE, hardwareType, name, ip, result)) {
+									if (!manager.controlSave(ControlNone, hardwareType, name, ip, result)) {
 										addUpdate(result);
 										break;
 									}
@@ -630,7 +630,7 @@ namespace console {
 									text::Converters::feedbackStatus(feedback->getState(), stateText);
 									status << "\nStatus:   " << stateText;
 									status << "\nLoco:     ";
-									if (feedback->getLoco() == LOCO_NONE) {
+									if (feedback->getLoco() == LocoNone) {
 										status << "-";
 									}
 									else {
@@ -657,7 +657,7 @@ namespace console {
 									readBlanks(s, i);
 									bool inverted = readBool(s, i);
 									string result;
-									if(!manager.feedbackSave(FEEDBACK_NONE, name, posX, posY, posZ, control, pin, inverted, result)) {
+									if(!manager.feedbackSave(FeedbackNone, name, posX, posY, posZ, control, pin, inverted, result)) {
 										addUpdate(result);
 										break;
 									}
@@ -676,11 +676,11 @@ namespace console {
 									feedbackState_t state;
 									char* text;
 									if (input == 'X' || input == 'x') {
-										state = FEEDBACK_STATE_OCCUPIED;
+										state = FeedbackStateOccupied;
 										text = (char*)"ON";
 									}
 									else {
-										state = FEEDBACK_STATE_FREE;
+										state = FeedbackStateFree;
 										text = (char*)"OFF";
 									}
 									manager.feedback(ControlTypeConsole, feedbackID, state);
@@ -790,14 +790,14 @@ namespace console {
 									text::Converters::locoStatus(loco->getState(), stateText);
 									status << "\nStatus:   " << stateText;
 									status << "\nBlock:    ";
-									if (loco->block() == BLOCK_NONE) {
+									if (loco->block() == BlockNone) {
 										status << "-";
 									}
 									else {
 										status << manager.getBlockName(loco->block()) << " (" << loco->block() << ")";
 									}
 									status << "\nStreet:   ";
-									if (loco->street() == STREET_NONE) {
+									if (loco->street() == StreetNone) {
 										status << "-";
 									}
 									else {
@@ -834,7 +834,7 @@ namespace console {
 									readBlanks(s, i);
 									address_t address = readNumber(s, i);
 									string result;
-									if (!manager.locoSave(LOCO_NONE, name, control, protocol, address, result)) {
+									if (!manager.locoSave(LocoNone, name, control, protocol, address, result)) {
 										addUpdate(result);
 										break;
 									}
@@ -1067,14 +1067,14 @@ namespace console {
 										<< "Street ID " << streetID
 										<< "\nName:     " << street->name
 										<< "\nStart:    ";
-									if (street->fromBlock == BLOCK_NONE) {
+									if (street->fromBlock == BlockNone) {
 										status << "-";
 									}
 									else {
 										status << manager.getBlockName(street->fromBlock) << " (" << street->fromBlock << ") " << (street->fromDirection ? ">" : "<");
 									}
 									status << "\nEnd:      ";
-									if (street->toBlock == BLOCK_NONE) {
+									if (street->toBlock == BlockNone) {
 										status << "-";
 									}
 									else {
@@ -1084,7 +1084,7 @@ namespace console {
 									text::Converters::lockStatus(street->getState(), stateText);
 									status << "\nStatus:   " << stateText;
 									status << "\nLoco:     ";
-									if (street->getLoco() == LOCO_NONE) {
+									if (street->getLoco() == LocoNone) {
 										status << "-";
 									}
 									else {
@@ -1109,7 +1109,7 @@ namespace console {
 									readBlanks(s, i);
 									feedbackID_t feedbackID = readNumber(s, i);
 									string result;
-									if (!manager.streetSave(STREET_NONE, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID, result)) {
+									if (!manager.streetSave(StreetNone, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID, result)) {
 										addUpdate(result);
 										break;
 									}
@@ -1241,7 +1241,7 @@ namespace console {
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
 									string result;
-									if (!manager.switchSave(SWITCH_NONE, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SWITCH_STRAIGHT, timeout, result)) {
+									if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SwitchStateStraight, timeout, result)) {
 										addUpdate(result);
 										break;
 									}
