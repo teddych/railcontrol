@@ -48,9 +48,6 @@ typedef unsigned char lockState_t;
 // relations in db
 typedef unsigned short relationID_t;
 
-// automode
-typedef unsigned char locoState_t;
-
 static const controlID_t ControlNone = 0;
 static const address_t AddressNone = 0;
 static const locoID_t LocoNone = 0;
@@ -187,7 +184,7 @@ enum directionState : direction_t {
 };
 
 enum switchType : switchType_t {
-	SwitchStateLeft = 0,
+	SwitchTypeLeft = 0,
 	SwitchTypeRight
 };
 
@@ -195,13 +192,3 @@ enum switchState : switchState_t {
 	SwitchStateStraight = 0,
 	SwitchStateTurnout
 };
-
-enum locoState : locoState_t {
-	LocoStateManual = 0,
-	LocoStateOff,
-	LocoStateSearching,
-	LocoStateRunning,
-	LocoStateStopping,
-	LocoStateError
-};
-

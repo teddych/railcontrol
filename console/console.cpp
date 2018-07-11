@@ -192,13 +192,13 @@ namespace console {
 
 	switchType_t Console::readSwitchType(string& s, size_t& i) {
 		if (s.length() <= i) {
-			return SwitchStateLeft;
+			return SwitchTypeLeft;
 		}
 		switch (s[i]) {
 			case 'l':
 			case 'L':
 				++i;
-				return SwitchStateLeft;
+				return SwitchTypeLeft;
 			case 'r':
 			case 'R':
 				++i;
@@ -208,7 +208,7 @@ namespace console {
 				if (type == SwitchTypeRight) {
 					return SwitchTypeRight;
 				}
-				return SwitchStateLeft;
+				return SwitchTypeLeft;
 		}
 	}
 
@@ -786,9 +786,8 @@ namespace console {
 										<< "\nControl:  " << manager.getControlName(loco->controlID)
 										<< "\nProtocol: " << protocolSymbols[loco->protocol]
 										<< "\nAddress:  " << loco->address;
-									string stateText;
-									text::Converters::locoStatus(loco->getState(), stateText);
-									status << "\nStatus:   " << stateText;
+									const char* const locoStateText = loco->getStateText();
+									status << "\nStatus:   " << locoStateText;
 									status << "\nBlock:    ";
 									if (loco->block() == BlockNone) {
 										status << "-";

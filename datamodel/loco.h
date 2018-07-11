@@ -13,6 +13,16 @@ namespace datamodel {
 
 	class Loco : public Object {
 		public:
+			enum locoState_t : unsigned char
+			{
+				LocoStateManual = 0,
+				LocoStateOff,
+				LocoStateSearching,
+				LocoStateRunning,
+				LocoStateStopping,
+				LocoStateError
+			};
+
 			Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
 			Loco(Manager* manager, const std::string& serialized);
 			~Loco();
@@ -28,7 +38,7 @@ namespace datamodel {
 			bool release();
 			blockID_t block() const { return blockID; }
 			streetID_t street() const { return streetID; }
-			locoState_t getState() const { return state; }
+			const char* const getStateText() const;
 			void destinationReached();
 
 			void Speed(const speed_t speed) { this->speed = speed; }

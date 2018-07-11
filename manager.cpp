@@ -1255,7 +1255,7 @@ void Manager::loadDefaultValuesToDB() {
 	Block newBlock5(5, "Block Strecke", 4, Rotation90, 5, 6, 0);
 	storage->block(newBlock5);
 
-	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, ProtocolDCC, 3, SwitchStateLeft, SwitchStateTurnout, Rotation90, 200);
+	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, ProtocolDCC, 3, SwitchTypeLeft, SwitchStateTurnout, Rotation90, 200);
 	storage->saveSwitch(newSwitch1);
 
 	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, ProtocolDCC, 4, SwitchTypeRight, SwitchStateStraight, Rotation0, 200);

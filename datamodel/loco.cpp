@@ -223,6 +223,27 @@ namespace datamodel {
 		}
 	}
 
+	const char* const Loco::getStateText() const
+	{
+		switch (state)
+		{
+			case LocoStateManual:
+				return "manual";
+			case LocoStateOff:
+				return "off";
+			case LocoStateSearching:
+				return "searching";
+			case LocoStateRunning:
+				return "running";
+			case LocoStateStopping:
+				return "stopping";
+			case LocoStateError:
+				return "error";
+			default:
+				return "unknown";
+		}
+	}
+
 	void Loco::destinationReached() {
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		manager->locoSpeed(ControlTypeAutomode, objectID, 0);

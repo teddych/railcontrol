@@ -2,32 +2,8 @@
 
 using std::string;
 
-namespace text {
-	void Converters::locoStatus(const locoState_t state, string& stateText) {
-		switch (state) {
-			case LocoStateManual:
-				stateText.assign("manual");
-				break;
-			case LocoStateOff:
-				stateText.assign("off");
-				break;
-			case LocoStateSearching:
-				stateText.assign("searching");
-				break;
-			case LocoStateRunning:
-				stateText.assign("running");
-				break;
-			case LocoStateStopping:
-				stateText.assign("stopping");
-				break;
-			case LocoStateError:
-				stateText.assign("error");
-				break;
-			default:
-				stateText.assign("unknown");
-		}
-	}
-
+namespace text
+{
 	void Converters::lockStatus(const lockState_t state, string& stateText) {
 		switch (state) {
 			case LockStateFree:
