@@ -247,7 +247,7 @@ namespace console {
 					case Rotation90:
 					case Rotation180:
 					case Rotation270:
-						return rotation;
+						return static_cast<layoutRotation_t>(rotation);
 					case 90:
 						return Rotation90;
 					case 180:

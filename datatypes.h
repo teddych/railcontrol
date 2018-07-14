@@ -5,7 +5,7 @@
 // common
 typedef unsigned char controlType_t;
 typedef unsigned char controlID_t;
-typedef unsigned char hardwareType_t;
+
 // booster
 typedef unsigned char boosterStatus_t;
 
@@ -15,24 +15,20 @@ typedef unsigned short objectID_t;
 typedef objectID_t locoID_t;
 typedef unsigned char protocol_t;
 typedef unsigned short address_t;
-typedef unsigned char addressType_t;
 typedef unsigned short speed_t;
 typedef bool direction_t;
 typedef unsigned char function_t;
 // layoutItem
-typedef unsigned char layoutRotation_t;
 typedef unsigned char layoutItemSize_t;
 typedef unsigned char layoutPosition_t;
 // accessory
 typedef objectID_t accessoryID_t;
 typedef unsigned char accessoryType_t;
 typedef unsigned char accessoryState_t;
-typedef unsigned char accessoryColor_t;
 typedef unsigned short accessoryTimeout_t;
 // feedback
 typedef objectID_t feedbackID_t;
 typedef unsigned int feedbackPin_t;
-typedef unsigned char feedbackState_t;
 // block
 typedef objectID_t blockID_t;
 typedef unsigned char lockState_t;
@@ -96,7 +92,7 @@ enum protocols : protocol_t {
 	ProtocolEnd = ProtocolSX2
 };
 
-static std::string protocolSymbols[] = {
+static const std::string protocolSymbols[] = {
 	"none",
 	"all",
 	"MM1",
@@ -107,12 +103,12 @@ static std::string protocolSymbols[] = {
 	"SX2"
 };
 
-enum addressTypes : addressType_t {
+enum addressType_t : unsigned char {
 	AddressTypeLoco = 0,
 	AddressTypeAccessory
 };
 
-enum hardwareTypes : hardwareType_t {
+enum hardwareType_t : unsigned char {
 	HardwareTypeNone = 0,
 	HardwareTypeVirt,
 	HardwareTypeCS2,
@@ -125,7 +121,7 @@ static std::string hardwareSymbols[] = {
 	"cs2"
 };
 
-enum rotations : layoutRotation_t {
+enum layoutRotation_t : unsigned char {
 	Rotation0 = 0,
 	Rotation90,
 	Rotation180,
@@ -143,14 +139,12 @@ enum objectType : objectType_t {
 	ObjectTypeStreet
 };
 
-typedef unsigned char relationType_t;
-
-enum relationType : relationType_t {
+enum relationType_t : unsigned char {
 	RelationTypeBlockStreet = 0,
 	RelationTypeStreetFeedback
 };
 
-enum accessoryColor : accessoryColor_t {
+enum accessoryColor_t : unsigned char {
 	AccessoryColorRed = 0,
 	AccessoryColorGreen,
 	AccessoryColorYellow,
@@ -166,7 +160,7 @@ enum accessoryState : accessoryState_t {
 	AccessoryStateOn
 };
 
-enum feedbackState : feedbackState_t {
+enum feedbackState_t : unsigned char {
 	FeedbackStateFree = 0,
 	FeedbackStateOccupied
 };

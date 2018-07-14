@@ -1207,10 +1207,10 @@ bool Manager::locoStopAll() {
 ***************************/
 
 void Manager::loadDefaultValuesToDB() {
-	HardwareParams newHardwareParams1(1, 1, "Virtuelle Zentrale", "");
+	HardwareParams newHardwareParams1(1, HardwareTypeVirt, "Virtuelle Zentrale", "");
 	storage->hardwareParams(newHardwareParams1);
 
-	HardwareParams newHardwareParams2(2, 2, "CS2 Zentrale", "192.168.0.190");
+	HardwareParams newHardwareParams2(2, HardwareTypeCS2, "CS2 Zentrale", "192.168.0.190");
 	storage->hardwareParams(newHardwareParams2);
 
 	Loco newloco1(this, 1, "Re 460 Teddy", 1, ProtocolDCC, 1119);
@@ -1219,10 +1219,10 @@ void Manager::loadDefaultValuesToDB() {
 	Loco newloco2(this, 2, "ICN", 1, ProtocolDCC, 1118);
 	storage->loco(newloco2);
 
-	Accessory newAccessory1(1, "Schalter 1", Rotation0, 3, 5, 0, 1, ProtocolDCC, 1, 1, AccessoryStateOn, 200);
+	Accessory newAccessory1(1, "Schalter 1", 3, 5, 0, Rotation0, 1, ProtocolDCC, 1, 1, AccessoryStateOn, 200);
 	storage->accessory(newAccessory1);
 
-	Accessory newAccessory2(2, "Schalter 2", Rotation0, 3, 6, 0, 1, ProtocolDCC, 2, 1, AccessoryStateOff, 200);
+	Accessory newAccessory2(2, "Schalter 2", 3, 6, 0, Rotation0, 1, ProtocolDCC, 2, 1, AccessoryStateOff, 200);
 	storage->accessory(newAccessory2);
 
 	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0, false);
@@ -1240,25 +1240,25 @@ void Manager::loadDefaultValuesToDB() {
 	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0, false);
 	storage->feedback(newFeedback5);
 
-	Block newBlock1(1, "Block Bahnhof 1", 4, Rotation0, 5, 5, 0);
+	Block newBlock1(1, "Block Bahnhof 1", 4, 5, 5, 0, Rotation0);
 	storage->block(newBlock1);
 
-	Block newBlock2(2, "Block Bahnhof 2", 4, Rotation90, 5, 6, 0);
+	Block newBlock2(2, "Block Bahnhof 2", 4, 5, 6, 0, Rotation90);
 	storage->block(newBlock2);
 
-	Block newBlock3(3, "Block Ausfahrt", 4, Rotation90, 5, 6, 0);
+	Block newBlock3(3, "Block Ausfahrt", 4, 5, 6, 0, Rotation90);
 	storage->block(newBlock3);
 
-	Block newBlock4(4, "Block Einfahrt", 4, Rotation90, 5, 6, 0);
+	Block newBlock4(4, "Block Einfahrt", 4, 5, 6, 0, Rotation90);
 	storage->block(newBlock4);
 
-	Block newBlock5(5, "Block Strecke", 4, Rotation90, 5, 6, 0);
+	Block newBlock5(5, "Block Strecke", 4, 5, 6, 0, Rotation90);
 	storage->block(newBlock5);
 
-	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, 1, ProtocolDCC, 3, SwitchTypeLeft, SwitchStateTurnout, Rotation90, 200);
+	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, Rotation90, 1, ProtocolDCC, 3, SwitchTypeLeft, SwitchStateTurnout, 200);
 	storage->saveSwitch(newSwitch1);
 
-	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, 1, ProtocolDCC, 4, SwitchTypeRight, SwitchStateStraight, Rotation0, 200);
+	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, Rotation0, 1, ProtocolDCC, 4, SwitchTypeRight, SwitchStateStraight, 200);
 	storage->saveSwitch(newSwitch2);
 
 	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false, 3);

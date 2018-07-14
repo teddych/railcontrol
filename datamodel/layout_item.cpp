@@ -110,7 +110,7 @@ namespace datamodel {
 		if (arguments.count("posZ")) posZ = stoi(arguments.at("posZ"));
 		if (arguments.count("width")) width = stoi(arguments.at("width"));
 		if (arguments.count("height")) height = stoi(arguments.at("height"));
-		if (arguments.count("rotation")) rotation = stoi(arguments.at("rotation"));
+		if (arguments.count("rotation")) rotation = static_cast<layoutRotation_t>(stoi(arguments.at("rotation")));
 		return true;
 	}
 

@@ -263,11 +263,11 @@ namespace hardware {
 					feedbackState_t state;
 					if (buffer[10]) {
 						text = "on";
-						state = 1;
+						state = FeedbackStateOccupied;
 					}
 					else {
 						text = "off";
-						state = 0;
+						state = FeedbackStateFree;
 					}
 					xlog("CS2 S88 Pin %u set to %s", pin, text);
 					manager->feedback(ControlTypeHardware, pin, state);

@@ -40,7 +40,7 @@ namespace datamodel {
 			if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
 			if (arguments.count("pin")) pin = stoi(arguments.at("pin"));
 			if (arguments.count("inverted")) inverted = (bool)stoi(arguments.at("inverted"));
-			if (arguments.count("state")) state = stoi(arguments.at("state"));
+			if (arguments.count("state")) state = static_cast<feedbackState_t>(stoi(arguments.at("state")));
 			return true;
 		}
 		return false;
@@ -66,7 +66,7 @@ namespace datamodel {
 	}
 
 	bool Feedback::setState(const feedbackState_t state) {
-		this->state = (state ^ inverted) & 0x01;
+		this->state = static_cast<feedbackState_t>((state ^ inverted) & 0x01);
 		if (state == FeedbackStateFree) {
 			return true;
 		}
