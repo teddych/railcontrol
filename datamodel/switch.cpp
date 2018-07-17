@@ -32,7 +32,7 @@ namespace datamodel {
 
 	std::string Switch::serialize() const {
 		stringstream ss;
-		ss << "objectType=Switch;" << Accessory::serializeWithoutType() << ";lockState=" << (int)lockState << ";locoIDHardLock" << static_cast<int>(locoIDHardLock); // FIXME: locoIDSoftLock is missing
+		ss << "objectType=Switch;" << Accessory::serializeWithoutType() << ";lockState=" << static_cast<int>(lockState) << ";locoIDHardLock" << static_cast<int>(locoIDHardLock); // FIXME: locoIDSoftLock is missing
 		return ss.str();
 	}
 
@@ -40,7 +40,7 @@ namespace datamodel {
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Switch") == 0) {
-			if (arguments.count("lockState")) lockState = stoi(arguments.at("lockState"));
+			if (arguments.count("lockState")) lockState = static_cast<lockState_t>(stoi(arguments.at("lockState")));
 			if (arguments.count("locoIDHardLock")) locoIDHardLock = stoi(arguments.at("locoIDHardLock"));
 			// FIXME: if (arguments.count("locoIDSoftLock")) locoID = stoi(arguments.at("locoIDSoftLock"));
 			Accessory::deserialize(arguments);

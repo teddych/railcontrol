@@ -3,43 +3,40 @@
 #include <string>
 
 // common
-typedef unsigned char controlType_t;
 typedef unsigned char controlID_t;
-
-// booster
-typedef unsigned char boosterStatus_t;
 
 // objects in db
 typedef unsigned short objectID_t;
+
 // loco
 typedef objectID_t locoID_t;
-typedef unsigned char protocol_t;
 typedef unsigned short address_t;
 typedef unsigned short speed_t;
-typedef bool direction_t;
 typedef unsigned char function_t;
+
 // layoutItem
 typedef unsigned char layoutItemSize_t;
 typedef unsigned char layoutPosition_t;
+
 // accessory
 typedef objectID_t accessoryID_t;
 typedef unsigned char accessoryType_t;
 typedef unsigned char accessoryState_t;
 typedef unsigned short accessoryTimeout_t;
+
 // feedback
 typedef objectID_t feedbackID_t;
 typedef unsigned int feedbackPin_t;
+
 // block
 typedef objectID_t blockID_t;
-typedef unsigned char lockState_t;
+
 // switch
 typedef accessoryID_t switchID_t;
-typedef accessoryType_t switchType_t;
-typedef accessoryState_t switchState_t;
 typedef accessoryTimeout_t switchTimeout_t;
+
 // street
 typedef objectID_t streetID_t;
-typedef unsigned char lockState_t;
 
 // relations in db
 typedef unsigned short relationID_t;
@@ -59,26 +56,30 @@ static const speed_t MinSpeed = 0;
 static const layoutItemSize_t Width1 = 1;
 static const layoutItemSize_t Height1 = 1;
 
-enum controlTypes : controlType_t {
+enum controlType_t : unsigned char
+{
 	ControlTypeHardware = 0,
 	ControlTypeAutomode,
 	ControlTypeConsole,
 	ControlTypeWebserver
 };
 
-enum controlIDs : controlID_t {
+enum controlIDs : controlID_t
+{
 	ControlIdNone = 0,
 	ControlIdConsole,
 	ControlIdWebserver,
 	ControlIdFirstHardware = 10
 };
 
-enum boosterStatus : boosterStatus_t {
-	BoosterStop = 0,
-	BoosterGo
+enum boosterStatus_t : bool
+{
+	BoosterStop = false,
+	BoosterGo = true
 };
 
-enum protocols : protocol_t {
+enum protocol_t : unsigned char
+{
 	ProtocolNone = 0,
 	ProtocolServer,
 	ProtocolMM1,
@@ -92,7 +93,8 @@ enum protocols : protocol_t {
 	ProtocolEnd = ProtocolSX2
 };
 
-static const std::string protocolSymbols[] = {
+static const std::string protocolSymbols[] =
+{
 	"none",
 	"all",
 	"MM1",
@@ -103,34 +105,37 @@ static const std::string protocolSymbols[] = {
 	"SX2"
 };
 
-enum addressType_t : unsigned char {
+enum addressType_t : unsigned char
+{
 	AddressTypeLoco = 0,
 	AddressTypeAccessory
 };
 
-enum hardwareType_t : unsigned char {
+enum hardwareType_t : unsigned char
+{
 	HardwareTypeNone = 0,
 	HardwareTypeVirt,
 	HardwareTypeCS2,
 	HardwareTypeNumbers
 };
 
-static std::string hardwareSymbols[] = {
+static std::string hardwareSymbols[] =
+{
 	"none",
 	"virtual",
 	"cs2"
 };
 
-enum layoutRotation_t : unsigned char {
+enum layoutRotation_t : unsigned char
+{
 	Rotation0 = 0,
 	Rotation90,
 	Rotation180,
 	Rotation270
 };
 
-typedef unsigned char objectType_t;
-
-enum objectType : objectType_t {
+enum objectType_t : unsigned char
+{
 	ObjectTypeLoco = 1,
 	ObjectTypeBlock,
 	ObjectTypeFeedback,
@@ -139,50 +144,59 @@ enum objectType : objectType_t {
 	ObjectTypeStreet
 };
 
-enum relationType_t : unsigned char {
+enum relationType_t : unsigned char
+{
 	RelationTypeBlockStreet = 0,
 	RelationTypeStreetFeedback
 };
 
-enum accessoryColor_t : unsigned char {
+enum accessoryColor_t : unsigned char
+{
 	AccessoryColorRed = 0,
 	AccessoryColorGreen,
 	AccessoryColorYellow,
 	AccessoryColorWhite
 };
 
-enum accessoryType : accessoryType_t {
+enum accessoryType : accessoryType_t
+{
 	AccessoryTypeDefault = 0
 };
 
-enum accessoryState : accessoryState_t {
+enum accessoryState : accessoryState_t
+{
 	AccessoryStateOff = 0,
 	AccessoryStateOn
 };
 
-enum feedbackState_t : unsigned char {
+enum feedbackState_t : unsigned char
+{
 	FeedbackStateFree = 0,
 	FeedbackStateOccupied
 };
 
-enum lockState : lockState_t {
+enum lockState_t : unsigned char
+{
 	LockStateFree = 0,
 	LockStateReserved,
 	LockStateSoftLocked,
 	LockStateHardLocked
 };
 
-enum directionState : direction_t {
+enum direction_t : bool
+{
 	DirectionLeft = false,
 	DirectionRight = true
 };
 
-enum switchType : switchType_t {
+enum switchType_t : accessoryType_t
+{
 	SwitchTypeLeft = 0,
 	SwitchTypeRight
 };
 
-enum switchState : switchState_t {
+enum switchState_t : accessoryState_t
+{
 	SwitchStateStraight = 0,
 	SwitchStateTurnout
 };

@@ -20,14 +20,15 @@ namespace datamodel {
 		const address_t address,
 		const accessoryType_t type,
 		const accessoryState_t state,
-		const accessoryTimeout_t timeout) :
-		LayoutItem(accessoryID, name, x, y, z, Width1, Height1, rotation),
+		const accessoryTimeout_t timeout)
+	:	LayoutItem(accessoryID, name, x, y, z, Width1, Height1, rotation),
 		controlID(controlID),
 		protocol(protocol),
 		address(address),
 		type(type),
 		state(state),
-		timeout(timeout) {
+		timeout(timeout)
+	{
 	}
 
 	Accessory::Accessory(const std::string& serialized) {
@@ -42,7 +43,7 @@ namespace datamodel {
 
 	std::string Accessory::serializeWithoutType() const {
 		stringstream ss;
-		ss << LayoutItem::serialize() << ";controlID=" << (int)controlID << ";protocol=" << (int)protocol << ";address=" << (int)address << ";type=" << (int)type << ";state=" << (int)state << ";timeout=" << (int)timeout;
+		ss << LayoutItem::serialize() << ";controlID=" << static_cast<int>(controlID) << ";protocol=" << static_cast<int>(protocol) << ";address=" << static_cast<int>(address) << ";type=" << static_cast<int>(type) << ";state=" << static_cast<int>(state) << ";timeout=" << (int)timeout;
 		return ss.str();
 	}
 
@@ -58,7 +59,7 @@ namespace datamodel {
 	bool Accessory::deserialize(const map<string,string>& arguments) {
 		LayoutItem::deserialize(arguments);
 		if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
-		if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
+		if (arguments.count("protocol")) protocol = static_cast<protocol_t>(stoi(arguments.at("protocol")));
 		if (arguments.count("address")) address = stoi(arguments.at("address"));
 		if (arguments.count("type")) type = stoi(arguments.at("type"));
 		if (arguments.count("state")) state = stoi(arguments.at("state"));

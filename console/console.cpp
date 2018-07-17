@@ -204,7 +204,7 @@ namespace console {
 				++i;
 				return SwitchTypeRight;
 			default:
-				switchType_t type = readNumber(s, i);
+				switchType_t type = static_cast<switchType_t>(readNumber(s, i));
 				if (type == SwitchTypeRight) {
 					return SwitchTypeRight;
 				}
@@ -370,7 +370,7 @@ namespace console {
 									readBlanks(s, i);
 									controlID_t controlID = readNumber(s, i);
 									readBlanks(s, i);
-									protocol_t protocol = readNumber(s, i);
+									protocol_t protocol = static_cast<protocol_t>(readNumber(s, i));
 									readBlanks(s, i);
 									address_t address = readNumber(s, i);
 									readBlanks(s, i);
@@ -829,7 +829,7 @@ namespace console {
 									readBlanks(s, i);
 									controlID_t control = readNumber(s, i);
 									readBlanks(s, i);
-									protocol_t protocol = readNumber(s, i);
+									protocol_t protocol = static_cast<protocol_t>(readNumber(s, i));
 									readBlanks(s, i);
 									address_t address = readNumber(s, i);
 									string result;
@@ -1201,9 +1201,8 @@ namespace console {
 											status << "unknown";
 									}
 									string state;
-									text::Converters::switchStatus(mySwitch->state, state);
-									status
-										<< "\nState:    " << state;
+									text::Converters::switchStatus(static_cast<switchState_t>(mySwitch->state), state);
+									status << "\nState:    " << state;
 									/*
 									status << "\nLoco:     ";
 									if (mySwitch->getLoco() == LOCO_NONE) {
@@ -1232,11 +1231,11 @@ namespace console {
 									readBlanks(s, i);
 									controlID_t controlID = readNumber(s, i);
 									readBlanks(s, i);
-									protocol_t protocol = readNumber(s, i);
+									protocol_t protocol = static_cast<protocol_t>(readNumber(s, i));
 									readBlanks(s, i);
 									address_t address = readNumber(s, i);
 									readBlanks(s, i);
-									accessoryType_t type = readSwitchType(s, i);
+									switchType_t type = readSwitchType(s, i);
 									readBlanks(s, i);
 									accessoryTimeout_t timeout = readNumber(s, i);
 									string result;

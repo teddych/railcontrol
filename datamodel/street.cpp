@@ -37,7 +37,7 @@ namespace datamodel {
 
 	std::string Street::serialize() const {
 		stringstream ss;
-		ss << "objectType=Street;" << Object::serialize() << ";lockState=" << (int)lockState << ";fromBlock=" << (int)fromBlock << ";fromDirection=" << (int)fromDirection << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection << ";feedbackIDStop=" << (int)feedbackIDStop;
+		ss << "objectType=Street;" << Object::serialize() << ";lockState=" << static_cast<int>(lockState) << ";fromBlock=" << static_cast<int>(fromBlock) << ";fromDirection=" << static_cast<int>(fromDirection) << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection << ";feedbackIDStop=" << (int)feedbackIDStop;
 		return ss.str();
 	}
 
@@ -46,11 +46,11 @@ namespace datamodel {
 		parseArguments(serialized, arguments);
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Street") == 0) {
 			Object::deserialize(arguments);
-			if (arguments.count("lockState")) lockState = stoi(arguments.at("lockState"));
+			if (arguments.count("lockState")) lockState = static_cast<lockState_t>(stoi(arguments.at("lockState")));
 			if (arguments.count("fromBlock")) fromBlock = stoi(arguments.at("fromBlock"));
-			if (arguments.count("fromDirection")) fromDirection = (bool)stoi(arguments.at("fromDirection"));
+			if (arguments.count("fromDirection")) fromDirection = static_cast<direction_t>(stoi(arguments.at("fromDirection")));
 			if (arguments.count("toBlock")) toBlock = stoi(arguments.at("toBlock"));
-			if (arguments.count("toDirection")) toDirection = (bool)stoi(arguments.at("toDirection"));
+			if (arguments.count("toDirection")) toDirection = static_cast<direction_t>(stoi(arguments.at("toDirection")));
 			if (arguments.count("feedbackIDStop")) feedbackIDStop = stoi(arguments.at("feedbackIDStop"));
 			return true;
 		}

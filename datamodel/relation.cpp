@@ -32,11 +32,11 @@ namespace datamodel {
 
 	std::string Relation::serialize() const {
 		stringstream ss;
-		ss << "relationID=" << (int)relationID
+		ss << "relationID=" << static_cast<int>(relationID)
 			<< ";name=" << name
-			<< ";objectType1=" << objectType1
+			<< ";objectType1=" << static_cast<int>(objectType1)
 			<< ";objectID1=" << objectID1
-			<< ";objectType2=" << objectType2
+			<< ";objectType2=" << static_cast<int>(objectType2)
 			<< ";objectID2=" << objectID2
 			<< ";switchState=" << static_cast<int>(switchState)
 			<< ";lockState=" << static_cast<int>(lockState);
@@ -52,12 +52,12 @@ namespace datamodel {
 	bool Relation::deserialize(const map<string,string>& arguments) {
 		if (arguments.count("relationID")) relationID = stoi(arguments.at("relationID"));
 		if (arguments.count("name")) name = arguments.at("name");
-		if (arguments.count("objectType1")) objectType1 = stoi(arguments.at("objectType1"));
+		if (arguments.count("objectType1")) objectType1 = static_cast<objectType_t>(stoi(arguments.at("objectType1")));
 		if (arguments.count("objectID1")) objectID1 = stoi(arguments.at("objectID1"));
-		if (arguments.count("objectType2")) objectType2 = stoi(arguments.at("objectType2"));
+		if (arguments.count("objectType2")) objectType2 = static_cast<objectType_t>(stoi(arguments.at("objectType2")));
 		if (arguments.count("objectID2")) objectID2 = stoi(arguments.at("objectID2"));
-		if (arguments.count("switchState")) switchState = stoi(arguments.at("switchState"));
-		if (arguments.count("lockState")) lockState = stoi(arguments.at("lockState"));
+		if (arguments.count("switchState")) switchState = static_cast<switchState_t>(stoi(arguments.at("switchState")));
+		if (arguments.count("lockState")) lockState = static_cast<lockState_t>(stoi(arguments.at("lockState")));
 		return true;
 	}
 

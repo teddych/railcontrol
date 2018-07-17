@@ -293,7 +293,7 @@ namespace hardware {
 						protocol = ProtocolDCC;
 						address = locID - 0xC000;
 					}
-					direction_t direction = (buffer[9] == 1 ? true : false);
+					direction_t direction = (buffer[9] == 1 ? DirectionRight : DirectionLeft);
 					manager->locoSpeed(ControlTypeHardware, protocol, address, 0);
 					manager->locoDirection(ControlTypeHardware, protocol, address, direction);
 				}

@@ -49,7 +49,11 @@ namespace datamodel {
 
 	std::string Loco::serialize() const {
 		stringstream ss;
-		ss << "objectType=Loco;" << Object::serialize() << ";controlID=" << (int)controlID << ";protocol=" << (int)protocol << ";address=" << (int)address << ";blockID=" << (int)blockID;
+		ss << "objectType=Loco;" << Object::serialize()
+			<< ";controlID=" << static_cast<int>(controlID)
+			<< ";protocol=" << static_cast<int>(protocol)
+			<< ";address=" << static_cast<int>(address)
+			<< ";blockID=" << static_cast<int>(blockID);
 		return ss.str();
 	}
 
@@ -61,7 +65,7 @@ namespace datamodel {
 			return false;
 		}
 		if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
-		if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
+		if (arguments.count("protocol")) protocol = static_cast<protocol_t>(stoi(arguments.at("protocol")));
 		if (arguments.count("address")) address = stoi(arguments.at("address"));
 		if (arguments.count("blockID")) blockID = stoi(arguments.at("blockID"));
 		return true;

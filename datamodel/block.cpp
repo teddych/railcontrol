@@ -15,7 +15,7 @@ namespace datamodel {
 		LayoutItem(blockID, name, x, y, z, width, Height1, rotation),
 		lockState(LockStateFree) /* FIXME */,
 		locoID(0) /* FIXME */,
-		locoDirection(false) {
+		locoDirection(DirectionLeft) {
 	}
 
 	Block::Block(const std::string& serialized) {
@@ -24,7 +24,7 @@ namespace datamodel {
 
 	std::string Block::serialize() const {
 		std::stringstream ss;
-		ss << "objectType=Block;" << LayoutItem::serialize() << ";lockState=" << (int)lockState << ";locoID=" << (int)locoID << ";locoDirection=" << (int)locoDirection;
+		ss << "objectType=Block;" << LayoutItem::serialize() << ";lockState=" << static_cast<int>(lockState) << ";locoID=" << (int)locoID << ";locoDirection=" << static_cast<int>(locoDirection);
 		return ss.str();
 	}
 
@@ -33,9 +33,9 @@ namespace datamodel {
 		parseArguments(serialized, arguments);
 		LayoutItem::deserialize(arguments);
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Block") == 0) {
-			if (arguments.count("lockState")) lockState = stoi(arguments.at("lockState"));
+			if (arguments.count("lockState")) lockState = static_cast<lockState_t>(stoi(arguments.at("lockState")));
 			if (arguments.count("locoID")) locoID = stoi(arguments.at("locoID"));
-			if (arguments.count("locoDirection")) locoDirection = (bool)stoi(arguments.at("locoDirection"));
+			if (arguments.count("locoDirection")) locoDirection = static_cast<direction_t>(stoi(arguments.at("locoDirection")));
 			return true;
 		}
 		return false;

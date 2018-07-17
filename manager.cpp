@@ -309,29 +309,36 @@ const std::map<controlID_t,std::string> Manager::controlListNames() const {
 	return ret;
 }
 
-const std::map<protocol_t,std::string> Manager::protocolsOfControl(const controlID_t controlID) const {
+const std::map<protocol_t,std::string> Manager::protocolsOfControl(const controlID_t controlID) const
+{
 	std::map<protocol_t,std::string> ret;
-	std::vector<protocol_t> protocols;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	if (hardwareParams.count(controlID) == 1) {
-		std::lock_guard<std::mutex> Guard(controlMutex);
-		for (auto control : controls) {
-			if (control.second->getManagerID() != ControlTypeHardware) {
-				continue;
-			}
-			const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control.second);
-			if (hardware->getControlID() != controlID) {
-				continue;
-			}
-			hardware->getProtocols(protocols);
-			for(auto protocol : protocols) {
-				ret[protocol] = protocolSymbols[protocol];
-			}
-			return ret;
-		}
+	if (hardwareParams.count(controlID) != 1)
+	{
+		ret[ProtocolNone] = protocolSymbols[ProtocolNone];
 	}
-	else {
-		ret[0] = protocolSymbols[0];
+
+	std::lock_guard<std::mutex> Guard2(controlMutex);
+	for (auto control : controls)
+	{
+		if (control.second->getManagerID() != ControlTypeHardware)
+		{
+			continue;
+		}
+
+		const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control.second);
+		if (hardware->getControlID() != controlID)
+		{
+			continue;
+		}
+
+		// FIXME: is this a memory leak, when I twice add the same protocol?
+		std::vector<protocol_t> protocols;
+		hardware->getProtocols(protocols);
+		for (auto protocol : protocols)
+		{
+			ret[protocol] = protocolSymbols[protocol];
+		}
 	}
 	return ret;
 }
@@ -1261,22 +1268,22 @@ void Manager::loadDefaultValuesToDB() {
 	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, Rotation0, 1, ProtocolDCC, 4, SwitchTypeRight, SwitchStateStraight, 200);
 	storage->saveSwitch(newSwitch2);
 
-	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, false, 3, false, 3);
+	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, DirectionLeft, 3, DirectionLeft, 3);
 	storage->street(newStreet1);
 
-	Street newStreet2(this, 2, "Fahrstrasse Ausfahrt 2", 2, false, 3, false, 3);
+	Street newStreet2(this, 2, "Fahrstrasse Ausfahrt 2", 2, DirectionLeft, 3, DirectionLeft, 3);
 	storage->street(newStreet2);
 
-	Street newStreet3(this, 3, "Fahrstrasse Auf Strecke", 3, false, 4, false, 4);
+	Street newStreet3(this, 3, "Fahrstrasse Auf Strecke", 3, DirectionLeft, 4, DirectionLeft, 4);
 	storage->street(newStreet3);
 
-	Street newStreet4(this, 4, "Fahrstrasse Von Strecke", 4, false, 5, false, 5);
+	Street newStreet4(this, 4, "Fahrstrasse Von Strecke", 4, DirectionLeft, 5, DirectionLeft, 5);
 	storage->street(newStreet4);
 
-	Street newStreet5(this, 5, "Fahrstrasse Einfahrt 1", 5, false, 1, false, 1);
+	Street newStreet5(this, 5, "Fahrstrasse Einfahrt 1", 5, DirectionLeft, 1, DirectionLeft, 1);
 	storage->street(newStreet5);
 
-	Street newStreet6(this, 6, "Fahrstrasse Einfahrt 2", 5, false, 2, false, 2);
+	Street newStreet6(this, 6, "Fahrstrasse Einfahrt 2", 5, DirectionLeft, 2, DirectionLeft, 2);
 	storage->street(newStreet6);
 }
 

@@ -10,11 +10,6 @@
 
 namespace hardware {
 
-	typedef unsigned char cs2Prio_t;
-	typedef unsigned char cs2Command_t;
-	typedef unsigned char cs2Response_t;
-	typedef unsigned char cs2Length_t;
-
 	class CS2: HardwareInterface {
 		public:
 			CS2(const HardwareParams* params);
@@ -27,12 +22,8 @@ namespace hardware {
 			void locoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
 			void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 			void accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) override;
-		private:
-			void createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
-			void readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length);
-			void createLocID(char* buffer, const protocol_t& protocol, const address_t& address);
-			void receiver();
 
+		private:
 			volatile unsigned char run;
 			std::string name;
 			Manager* manager;
@@ -40,6 +31,15 @@ namespace hardware {
 			int senderSocket;
 			std::thread receiverThread;
 			static const unsigned short hash = 0x7337;
+			typedef unsigned char cs2Prio_t;
+			typedef unsigned char cs2Command_t;
+			typedef unsigned char cs2Response_t;
+			typedef unsigned char cs2Length_t;
+
+			void createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
+			void readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length);
+			void createLocID(char* buffer, const protocol_t& protocol, const address_t& address);
+			void receiver();
 	};
 
 } // namespace

@@ -280,8 +280,8 @@ namespace webserver {
 	}
 
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments) {
-		locoID_t locoID = 0;
-		speed_t speed = 0;
+		locoID_t locoID = LocoNone;
+		speed_t speed = MinSpeed;
 		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
 		if (arguments.count("speed")) speed = stoi(arguments.at("speed"));
 
@@ -295,9 +295,9 @@ namespace webserver {
 
 	void WebClient::handleLocoDirection(const map<string, string>& arguments) {
 		locoID_t locoID = 0;
-		direction_t direction = 0;
+		direction_t direction = DirectionLeft;
 		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
-		if (arguments.count("direction")) direction = (arguments.at("direction").compare("forward") == 0 ? 1 : 0);
+		if (arguments.count("direction")) direction = (arguments.at("direction").compare("forward") == 0 ? DirectionRight : DirectionLeft);
 
 		manager.locoDirection(ControlTypeWebserver, locoID, direction);
 
@@ -339,10 +339,10 @@ namespace webserver {
 
 	void WebClient::handleLocoEdit(const map<string, string>& arguments) {
 		stringstream ss;
-		locoID_t locoID = 0;
-		controlID_t controlID = 0;
-		protocol_t protocol = 0;
-		address_t address = 0;
+		locoID_t locoID = LocoNone;
+		controlID_t controlID = ControlNone;
+		protocol_t protocol = ProtocolNone;
+		address_t address = AddressNone;
 		string name("New Loco");
 		if (arguments.count("loco")) {
 			locoID = stoi(arguments.at("loco"));
@@ -394,7 +394,7 @@ namespace webserver {
 			controlID_t controlID = stoi(arguments.at("control"));
 			protocol_t selectedProtocol = ProtocolNone;
 			if (arguments.count("protocol")) {
-				selectedProtocol = stoi(arguments.at("protocol"));
+				selectedProtocol = static_cast<protocol_t>(stoi(arguments.at("protocol")));
 			}
 			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
 			ss << "<label>Protocol:</label><select name=\"protocol\">";
@@ -416,12 +416,12 @@ namespace webserver {
 		if (arguments.count("loco")) {
 			locoID = stoi(arguments.at("loco"));
 			string name;
-			controlID_t controlID = 0;
-			protocol_t protocol = 0;
-			address_t address = 0;
+			controlID_t controlID = ControlNone;
+			protocol_t protocol = ProtocolNone;
+			address_t address = AddressNone;
 			if (arguments.count("name")) name = arguments.at("name");
 			if (arguments.count("control")) controlID = stoi(arguments.at("control"));
-			if (arguments.count("protocol")) protocol = stoi(arguments.at("protocol"));
+			if (arguments.count("protocol")) protocol = static_cast<protocol_t>(stoi(arguments.at("protocol")));
 			if (arguments.count("address")) address = stoi(arguments.at("address"));
 			string result;
 			if (!manager.locoSave(locoID, name, controlID, protocol, address, result)) {
