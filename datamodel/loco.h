@@ -9,20 +9,11 @@
 
 class Manager;
 
-namespace datamodel {
-
-	class Loco : public Object {
+namespace datamodel
+{
+	class Loco : public Object
+	{
 		public:
-			enum locoState_t : unsigned char
-			{
-				LocoStateManual = 0,
-				LocoStateOff,
-				LocoStateSearching,
-				LocoStateRunning,
-				LocoStateStopping,
-				LocoStateError
-			};
-
 			Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
 			Loco(Manager* manager, const std::string& serialized);
 			~Loco();
@@ -52,18 +43,29 @@ namespace datamodel {
 			address_t address;
 
 		private:
-			void autoMode(Loco* loco);
-			Manager* manager;
+			enum locoState_t : unsigned char
+			{
+				LocoStateManual = 0,
+				LocoStateOff,
+				LocoStateSearching,
+				LocoStateRunning,
+				LocoStateStopping,
+				LocoStateError
+			};
 
+			Manager* manager;
 			speed_t speed;
 			locoState_t state;
 			blockID_t blockID;
 			streetID_t streetID;
 			std::mutex stateMutex;
 			std::thread locoThread;
+
+			void autoMode(Loco* loco);
 	};
 
-	inline bool Loco::isInUse() const {
+	inline bool Loco::isInUse() const
+	{
 		return this->speed > 0 || this->state != LocoStateManual || this->blockID != BlockNone || this->streetID != StreetNone;
 	}
 
