@@ -15,14 +15,15 @@ namespace webserver
 				OK = 200,
 				NotFound = 404
 			};
-			Response(responseCode_t responseCode, Tag& tag) : responseCode(responseCode), tag(tag) {}
+			Response(responseCode_t responseCode, Tag tag) : responseCode(responseCode), content(tag) {}
 			~Response() {};
+			void AddChildTag(Tag content);
 
 			friend std::ostream& operator<<(std::ostream& stream, const Response& response);
 
-		private:
+		protected:
 			responseCode_t responseCode;
-			Tag& tag;
+			Tag content;
 			typedef std::map<Response::responseCode_t,std::string> responseCodeMap;
 			static const responseCodeMap responseTexts;
 	};

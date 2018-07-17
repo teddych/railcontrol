@@ -36,9 +36,7 @@ namespace webserver {
 	}
 
 	WebClient::~WebClient() {
-		// inform thread to stop
 		run = false;
-		// join thread
 		clientThread.join();
 	}
 
