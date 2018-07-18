@@ -28,8 +28,8 @@ OBJ= \
 	storage/storage_handler.o \
 	text/converters.o \
 	util.o \
-	webserver/Response.o \
-	webserver/ResponseNotFound.o \
+	webserver/HtmlResponse.o \
+	webserver/HtmlResponseNotFound.o \
 	webserver/tag.o \
 	webserver/webserver.o \
 	webserver/webclient.o

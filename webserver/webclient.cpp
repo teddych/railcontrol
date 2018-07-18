@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <thread>
 #include <unistd.h>
-
+#include <webserver/HtmlResponseNotFound.h>
 #include "datamodel/datamodel.h"
 #include "railcontrol.h"
 #include "util.h"
@@ -269,12 +269,10 @@ namespace webserver {
 			}
 			fclose(f);
 		}
-		char reply[1024];
-		snprintf(reply, sizeof(reply),
-			"HTTP/1.0 404 Not found\r\n\r\n"
-			"<!DOCTYPE html><html><head><title>404 Not found</title></head><body><p>File %s not found</p></body></html>",
-			virtualFile.c_str());
-		send_timeout(clientSocket, reply, strlen(reply), 0);
+		HtmlResponseNotFound response(virtualFile);
+		std::stringstream reply;
+		reply << response;
+		send_timeout(clientSocket, reply.str().c_str(), reply.str().size(), 0);
 	}
 
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments) {

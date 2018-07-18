@@ -2,17 +2,17 @@
 
 namespace webserver
 {
-	void Tag::AddAttribute(std::string name, std::string value)
+	void Tag::AddAttribute(const std::string name, const std::string value)
 	{
 		this->attributes[name] = value;
 	}
 
-	void Tag::AddChildTag(Tag child)
+	void Tag::AddChildTag(const Tag child)
 	{
 		this->childTags.push_back(child);
 	}
 
-	void Tag::AddContent(std::string content)
+	void Tag::AddContent(const std::string content)
 	{
 		if (name.size() == 0)
 		{
