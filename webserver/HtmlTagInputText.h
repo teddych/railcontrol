@@ -1,0 +1,16 @@
+#pragma once
+
+#include <string>
+
+#include "webserver/HtmlTagInput.h"
+
+namespace webserver
+{
+	class HtmlTagInputText : public HtmlTagInput
+	{
+		public:
+			HtmlTagInputText(const std::string& label, const std::string& name, const std::string& value)
+			: HtmlTagInput("text", label, name, value) {};
+	};
+};
+

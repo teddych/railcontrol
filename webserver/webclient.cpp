@@ -13,6 +13,8 @@
 #include "util.h"
 #include "webclient.h"
 #include "webserver.h"
+#include "webserver/HtmlTagInputHidden.h"
+#include "webserver/HtmlTagInputText.h"
 
 using std::map;
 using std::stoi;
@@ -320,19 +322,6 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
-	template <typename T> string inputText(string label, string name, T value) {
-		stringstream ss;
-		// FIXME: label
-		ss << "<label>" << label << "</label><input type=\"text\" name=\"" << name << "\" value=\"" << value << "\"><br>";
-		return ss.str();
-	}
-
-	template <typename T> string inputHidden(string name, T value) {
-		stringstream ss;
-		ss << "<input type=\"hidden\" name=\"" << name << "\" value=\"" << value << "\">";
-		return ss.str();
-	}
-
 	void WebClient::handleLocoEdit(const map<string, string>& arguments) {
 		stringstream ss;
 		locoID_t locoID = LocoNone;
@@ -352,9 +341,9 @@ namespace webserver {
 		ss << name;
 		ss << "&quot;</h1>";
 		ss << "<form id=\"editform\">";
-		ss << inputHidden("cmd", "locosave");
-		ss << inputHidden("loco", locoID);
-		ss << inputText("Loco name:", "name", name);
+		ss << HtmlTagInputHidden("cmd", "locosave");
+		ss << HtmlTagInputHidden("loco", to_string(locoID));
+		ss << HtmlTagInputText("Loco Name:", "name", name);
 
 		std::map<controlID_t,string> controls = manager.controlListNames();
 		std::map<string, string> controlOptions;
@@ -373,7 +362,7 @@ namespace webserver {
 		ss << "<div id=\"protocol\">";
 		ss << select("protocol", protocolOptions, to_string(protocol));
 		ss << "</div>";
-		ss << inputText("Address:", "address", address);
+		ss << HtmlTagInputText("Address:", "address", to_string(address));
 		ss << "</form>";
 		ss << buttonPopupCancel();
 		ss << buttonPopupOK();

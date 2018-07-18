@@ -9,6 +9,12 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
+	webserver/HtmlResponse.o \
+	webserver/HtmlResponseNotFound.o \
+	webserver/HtmlTag.o \
+	webserver/HtmlTagInput.o \
+	webserver/webserver.o \
+	webserver/webclient.o \
 	config.o \
 	console/console.o \
 	datamodel/accessory.o \
@@ -27,12 +33,7 @@ OBJ= \
 	railcontrol.o \
 	storage/storage_handler.o \
 	text/converters.o \
-	util.o \
-	webserver/HtmlResponse.o \
-	webserver/HtmlResponseNotFound.o \
-	webserver/tag.o \
-	webserver/webserver.o \
-	webserver/webclient.o
+	util.o
 
 all: $(OBJ)
 	make -C hardware

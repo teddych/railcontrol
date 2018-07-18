@@ -3,7 +3,7 @@
 #include <ostream>
 #include <string>
 
-#include "webserver/tag.h"
+#include "HtmlTag.h"
 
 namespace webserver
 {
@@ -15,17 +15,17 @@ namespace webserver
 				OK = 200,
 				NotFound = 404
 			};
-			HtmlResponse(responseCode_t responseCode) : responseCode(responseCode), content(Tag("body")) {}
-			HtmlResponse(responseCode_t responseCode, Tag tag) : responseCode(responseCode), content(tag) {}
+			HtmlResponse(responseCode_t responseCode) : responseCode(responseCode), content(HtmlTag("body")) {}
+			HtmlResponse(responseCode_t responseCode, HtmlTag tag) : responseCode(responseCode), content(tag) {}
 			~HtmlResponse() {};
 			void AddAttribute(const std::string name, const std::string value);
-			void AddChildTag(Tag content);
+			void AddChildTag(HtmlTag content);
 
 			friend std::ostream& operator<<(std::ostream& stream, const HtmlResponse& response);
 
 		protected:
 			responseCode_t responseCode;
-			Tag content;
+			HtmlTag content;
 			typedef std::map<HtmlResponse::responseCode_t,std::string> responseCodeMap;
 			static const responseCodeMap responseTexts;
 	};
