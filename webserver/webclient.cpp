@@ -14,6 +14,7 @@
 #include "webclient.h"
 #include "webserver.h"
 #include "webserver/HtmlTagButtonCommand.h"
+#include "webserver/HtmlTagButtonPopup.h"
 #include "webserver/HtmlTagInputHidden.h"
 #include "webserver/HtmlTagInputText.h"
 #include "webserver/HtmlTagSelect.h"
@@ -505,27 +506,6 @@ namespace webserver {
 		return ss.str();
 	}
 
-	string WebClient::buttonPopup(const string& value, const string& cmd, const map<string,string>& arguments) {
-		stringstream ss;
-		ss <<
-			"<input class=\"button\" id=\"" << buttonID << "_" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
-			"<script type=\"application/javascript\">\n"
-			"$(function() {\n"
-			" $('#" << buttonID << "_"<< cmd << "').on('click', function() {\n"
-			"  var theUrl = '/?cmd=" << cmd;
-		for (auto argument : arguments) {
-			ss << "&" << argument.first << "=" << argument.second;
-		}
-		ss <<"';\n"
-			"  $('#popup').show();\n"
-			"  $('#popup').load(theUrl);\n"
-			" })\n"
-			"})\n"
-			"</script>";
-		++buttonID;
-		return ss.str();
-	}
-
 	string WebClient::buttonPopupCancel() {
 		stringstream ss;
 		ss <<
@@ -609,7 +589,7 @@ namespace webserver {
 			ss << HtmlTagButtonCommand("reverse", "locodirection", buttonArguments);
 			buttonArguments.erase("direction");
 
-			ss << buttonPopup("Edit", "locoedit", buttonArguments);
+			ss << HtmlTagButtonPopup("Edit", "locoedit", buttonArguments);
 			sOut = ss.str();
 		}
 		else {
@@ -640,7 +620,7 @@ namespace webserver {
 		ss << HtmlTagButtonCommand("X", "quit");
 		ss << HtmlTagButtonCommand("On", "on");
 		ss << HtmlTagButtonCommand("Off", "off");
-		ss << buttonPopup("NewLoco", "locoedit");
+		ss << HtmlTagButtonPopup("NewLoco", "locoedit");
 		ss << "</div>";
 		ss << "<div class=\"locolist\">";
 		// locolist

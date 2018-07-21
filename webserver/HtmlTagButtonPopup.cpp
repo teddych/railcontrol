@@ -1,10 +1,11 @@
 #include <sstream>
 
-#include "HtmlTagButtonCommand.h"
+#include "HtmlTagButtonPopup.h"
+#include "HtmlTagInput.h"
 
 namespace webserver
 {
-	HtmlTagButtonCommand::HtmlTagButtonCommand(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments)
+	HtmlTagButtonPopup::HtmlTagButtonPopup(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments)
 	:	HtmlTagButton(value, command)
 	{
 		std::stringstream ss;
@@ -17,10 +18,8 @@ namespace webserver
 			ss << "&" << argument.first << "=" << argument.second;
 		}
 		ss <<"';\n"
-			"  var xmlHttp = new XMLHttpRequest();\n"
-			"  xmlHttp.open('GET', theUrl, true);\n"
-			"  xmlHttp.send(null);\n"
-			"  return false;\n"
+			"  $('#popup').show();\n"
+			"  $('#popup').load(theUrl);\n"
 			" })\n"
 			"})\n";
 		javascriptTag.AddContent(ss.str());

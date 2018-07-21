@@ -12,7 +12,9 @@ OBJ= \
 	webserver/HtmlResponse.o \
 	webserver/HtmlResponseNotFound.o \
 	webserver/HtmlTag.o \
+	webserver/HtmlTagButton.o \
 	webserver/HtmlTagButtonCommand.o \
+	webserver/HtmlTagButtonPopup.o \
 	webserver/HtmlTagInput.o \
 	webserver/HtmlTagSelect.o \
 	webserver/webserver.o \
