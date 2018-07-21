@@ -16,6 +16,7 @@
 #include "webserver/HtmlTagButtonCommand.h"
 #include "webserver/HtmlTagInputHidden.h"
 #include "webserver/HtmlTagInputText.h"
+#include "webserver/HtmlTagSelect.h"
 
 using std::map;
 using std::stoi;
@@ -272,9 +273,8 @@ namespace webserver {
 			}
 			fclose(f);
 		}
-		HtmlResponseNotFound response(virtualFile);
 		std::stringstream reply;
-		reply << response;
+		reply << HtmlResponseNotFound(virtualFile);
 		send_timeout(clientSocket, reply.str().c_str(), reply.str().size(), 0);
 	}
 
@@ -352,7 +352,7 @@ namespace webserver {
 			controlOptions[to_string(control.first)] = control.second;
 		}
 		ss << "<label>Control:</label>";
-		ss << select("control", controlOptions, to_string(controlID));
+		ss << HtmlTagSelect("control", controlOptions, to_string(controlID));
 
 		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
 		std::map<string, string> protocolOptions;
@@ -361,7 +361,7 @@ namespace webserver {
 		}
 		ss << "<label>Protocol:</label>";
 		ss << "<div id=\"protocol\">";
-		ss << select("protocol", protocolOptions, to_string(protocol));
+		ss << HtmlTagSelect("protocol", protocolOptions, to_string(protocol));
 		ss << "</div>";
 		ss << HtmlTagInputText("address", to_string(address), "Address:");
 		ss << "</form>";
@@ -474,24 +474,11 @@ namespace webserver {
 	string WebClient::selectLoco(const map<string,string>& options) {
 		stringstream ss;
 		ss << "<form method=\"get\" action=\"/\" id=\"selectLoco_form\">";
-		ss << "<select name=\"loco\" onchange=\"loadDivFromForm('selectLoco_form', 'loco')\">";
-		for (auto option : options) {
-			ss << "<option value=\"" << option.first << "\">" << option.second << "</option>";
-		}
-		ss << "</select>";
+		HtmlTagSelect selectLoco("loco", options);
+		selectLoco.AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')");
+		ss << selectLoco;
 		ss << "<input type=\"hidden\" name=\"cmd\" value=\"loco\">";
 		ss << "</form>";
-		return ss.str();
-	}
-
-	string WebClient::select(const string& name, const map<string,string>& options, const std::string& defaultValue) {
-		stringstream ss;
-		ss << "<select name=\"" << name << "\" id=\"" << buttonID << "_" << name << "\" onchange=\"reloadProtocol()\">";
-		for (auto option : options) {
-			ss << "<option value=\"" << option.first << "\"" << (option.first.compare(defaultValue) ? "" : " selected") << ">" << option.second << "</option>";
-		}
-		ss << "</select>";
-		++buttonID;
 		return ss.str();
 	}
 

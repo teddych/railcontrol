@@ -35,7 +35,11 @@ namespace webserver
 			stream << "<" << tag.name;
 			for (auto attribute : tag.attributes)
 			{
-				stream << " " << attribute.first << "=" << "\"" << attribute.second << "\"";
+				stream << " " << attribute.first;
+				if (attribute.second.size() > 0)
+				{
+					stream << "=" << "\"" << attribute.second << "\"";
+				}
 			}
 
 			if (tag.childTags.size() == 0 && tag.content.size() == 0)

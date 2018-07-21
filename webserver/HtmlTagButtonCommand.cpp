@@ -8,7 +8,7 @@ namespace webserver
 	std::atomic<unsigned int> HtmlTagButtonCommand::buttonID(0);
 
 	HtmlTagButtonCommand::HtmlTagButtonCommand(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments)
-	:	commandID(std::to_string(++buttonID) + "_" + command),
+	:	commandID("b_" + std::to_string(++buttonID) + "_" + command),
 		inputTag("submit", commandID),
 	 	javascriptTag("script")
 	{

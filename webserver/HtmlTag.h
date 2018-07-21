@@ -20,7 +20,7 @@ namespace webserver
 			HtmlTag() {}
 			HtmlTag(const std::string& name) : name(name) {}
 			~HtmlTag() {};
-			virtual void AddAttribute(const std::string& name, const std::string& value);
+			virtual void AddAttribute(const std::string& name, const std::string& value = "");
 			virtual void AddChildTag(const HtmlTag& child);
 			virtual void AddContent(const std::string& content);
 			virtual size_t ContentSize() const { return content.size(); }
