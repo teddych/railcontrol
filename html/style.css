@@ -1,5 +1,6 @@
 body {
 	background-color: white;
+	font-family: verdana, sans-serif;
 }
 
 .loco {
@@ -22,7 +23,13 @@ body {
 }
 
 label {
-	width: 150px;
+	width: 110px;
+	display: inline-block;
+}
+
+input,
+select {
+	width: 400px;
 }
 
 .menu {
