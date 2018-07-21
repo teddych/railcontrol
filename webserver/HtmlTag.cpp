@@ -18,14 +18,7 @@ namespace webserver
 
 	void HtmlTag::AddContent(const std::string& content)
 	{
-		if (name.size() == 0)
-		{
-			this->content += content;
-			return;
-		}
-		HtmlTag child;
-		child.AddContent(content);
-		AddChildTag(child);
+		this->content += content;
 	}
 
 	std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag)

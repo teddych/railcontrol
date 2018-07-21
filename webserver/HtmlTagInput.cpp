@@ -7,7 +7,7 @@ namespace webserver
 		labelTag("label"),
 		inputTag("input")
 	{
-		if (label.size() > 0 && type.compare("text") == 0)
+		if (label.size() > 0)
 		{
 			labelTag.AddContent(label);
 			labelTag.AddAttribute("for", name);
@@ -17,7 +17,7 @@ namespace webserver
 		inputTag.AddAttribute("id", name);
 		if (value.size() > 0)
 		{
-			inputTag.AddContent(value);
+			inputTag.AddAttribute("value", value);
 		}
 	}
 
