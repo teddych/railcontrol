@@ -13,7 +13,9 @@
 #include "util.h"
 #include "webclient.h"
 #include "webserver.h"
+#include "webserver/HtmlTagButtonCancel.h"
 #include "webserver/HtmlTagButtonCommand.h"
+#include "webserver/HtmlTagButtonOK.h"
 #include "webserver/HtmlTagButtonPopup.h"
 #include "webserver/HtmlTagInputHidden.h"
 #include "webserver/HtmlTagInputText.h"
@@ -366,8 +368,8 @@ namespace webserver {
 		ss << "</div>";
 		ss << HtmlTagInputText("address", to_string(address), "Address:");
 		ss << "</form>";
-		ss << buttonPopupCancel();
-		ss << buttonPopupOK();
+		ss << HtmlTagButtonCancel();
+		ss << HtmlTagButtonOK();
 		ss << "<script>\n";
 		ss << "//# sourceURL=handleLocoEdit.js";
 		ss << "</script>\n";
@@ -503,49 +505,6 @@ namespace webserver {
 			" })\n"
 			"});\n"
 			"</script>";
-		return ss.str();
-	}
-
-	string WebClient::buttonPopupCancel() {
-		stringstream ss;
-		ss <<
-			"<input class=\"button\" id=\"popup_cancel\" type=\"submit\" value=\"Cancel\">"
-			"<script type=\"application/javascript\">\n"
-			"$(function() {\n"
-			" $('#popup_cancel').on('click', function() {\n"
-			"  $('#popup').hide();\n"
-			" })\n"
-			"})\n"
-			"</script>";
-		return ss.str();
-	}
-
-	string WebClient::buttonPopupOK() {
-		stringstream ss;
-		ss <<
-			"<input class=\"button\" id=\"popup_ok\" type=\"submit\" value=\"Save\">"
-			"<script type=\"application/javascript\">\n"
-			"$(function() {\n"
-			" $('#editform').on('submit', function() {\n"
-			"  $.ajax({\n"
-			"   data: $(this).serialize(),\n"
-			"   type: $(this).attr('get'),\n"
-			"   url: $(this).attr('/'),\n"
-			"   success: function(response) {\n"
-			"    $('#popup').html(response);\n"
-			"   }\n"
-			"  })\n"
-			"  $('#popup').hide(2000);\n"
-			"  return false;\n"
-			" });\n"
-			"});\n"
-			"$(function() {\n"
-			" $('#popup_ok').on('click', function() {\n"
-			"  $('#editform').submit();\n"
-			"  return false;\n"
-			" });\n"
-			"});\n"
-			"</script>\n";
 		return ss.str();
 	}
 

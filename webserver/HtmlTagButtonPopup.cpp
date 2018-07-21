@@ -12,14 +12,14 @@ namespace webserver
 		ss <<
 			"$(function() {\n"
 			" $('#" << commandID << "').on('click', function() {\n"
-			"  var theUrl = '/?cmd=" << command;
+			"  var myUrl = '/?cmd=" << command;
 		for (auto argument : arguments) {
 
 			ss << "&" << argument.first << "=" << argument.second;
 		}
 		ss <<"';\n"
-			"  $('#popup').show();\n"
-			"  $('#popup').load(theUrl);\n"
+			"  $('#popup').show(300);\n"
+			"  $('#popup').load(myUrl);\n"
 			" })\n"
 			"})\n";
 		javascriptTag.AddContent(ss.str());
