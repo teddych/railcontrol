@@ -9,8 +9,8 @@ namespace webserver
 	class HtmlTagInputText : public HtmlTagInput
 	{
 		public:
-			HtmlTagInputText(const std::string& label, const std::string& name, const std::string& value)
-			: HtmlTagInput("text", label, name, value) {};
+			HtmlTagInputText(const std::string& name, const std::string& value, const std::string& label = "")
+			: HtmlTagInput("text", name, value, label) {};
 	};
 };
 

@@ -2,18 +2,32 @@
 
 namespace webserver
 {
-	HtmlTagInput::HtmlTagInput(const std::string& type, const std::string& label, const std::string& name, const std::string& value)
-	: HtmlTag()
+	HtmlTagInput::HtmlTagInput(const std::string& type, const std::string& name, const std::string& value, const std::string& label)
+	:	HtmlTag(),
+		labelTag("label"),
+		inputTag("input")
 	{
-		if (!label.compare("") && type.compare("text"))
+		if (label.size() > 0 && type.compare("text") == 0)
 		{
-			HtmlTag labelTag("label");
 			labelTag.AddContent(label);
-			AddChildTag(labelTag);
+			labelTag.AddAttribute("for", name);
 		}
-		HtmlTag inputTag("input");
 		inputTag.AddAttribute("type", type);
-		inputTag.AddContent(value);
-		AddChildTag(inputTag);
+		inputTag.AddAttribute("name", name);
+		inputTag.AddAttribute("id", name);
+		if (value.size() > 0)
+		{
+			inputTag.AddContent(value);
+		}
+	}
+
+	std::ostream& operator<<(std::ostream& stream, const HtmlTagInput& tag)
+	{
+		if (tag.labelTag.ContentSize() > 0)
+		{
+			stream << tag.labelTag;
+		}
+		stream << tag.inputTag;
+		return stream;
 	}
 };

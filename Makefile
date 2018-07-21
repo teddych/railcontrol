@@ -13,6 +13,7 @@ OBJ= \
 	webserver/HtmlResponseNotFound.o \
 	webserver/HtmlTag.o \
 	webserver/HtmlTagInput.o \
+	webserver/HtmlTagButtonCommand.o \
 	webserver/webserver.o \
 	webserver/webclient.o \
 	config.o \

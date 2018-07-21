@@ -13,6 +13,7 @@
 #include "util.h"
 #include "webclient.h"
 #include "webserver.h"
+#include "webserver/HtmlTagButtonCommand.h"
 #include "webserver/HtmlTagInputHidden.h"
 #include "webserver/HtmlTagInputText.h"
 
@@ -343,7 +344,7 @@ namespace webserver {
 		ss << "<form id=\"editform\">";
 		ss << HtmlTagInputHidden("cmd", "locosave");
 		ss << HtmlTagInputHidden("loco", to_string(locoID));
-		ss << HtmlTagInputText("Loco Name:", "name", name);
+		ss << HtmlTagInputText("name", name, "Loco Name:");
 
 		std::map<controlID_t,string> controls = manager.controlListNames();
 		std::map<string, string> controlOptions;
@@ -362,7 +363,7 @@ namespace webserver {
 		ss << "<div id=\"protocol\">";
 		ss << select("protocol", protocolOptions, to_string(protocol));
 		ss << "</div>";
-		ss << HtmlTagInputText("Address:", "address", to_string(address));
+		ss << HtmlTagInputText("address", to_string(address), "Address:");
 		ss << "</form>";
 		ss << buttonPopupCancel();
 		ss << buttonPopupOK();
@@ -517,29 +518,6 @@ namespace webserver {
 		return ss.str();
 	}
 
-	string WebClient::button(const string& value, const string& cmd, const map<string,string>& arguments) {
-		stringstream ss;
-		ss <<
-			"<input class=\"button\" id=\"" << buttonID << "_" << cmd << "\" type=\"submit\" value=\"" << value << "\">"
-			"<script type=\"application/javascript\">\n"
-			"$(function() {\n"
-			" $('#" << buttonID << "_"<< cmd << "').on('click', function() {\n"
-			"  var theUrl = '/?cmd=" << cmd;
-		for (auto argument : arguments) {
-			ss << "&" << argument.first << "=" << argument.second;
-		}
-		ss <<"';\n"
-			"  var xmlHttp = new XMLHttpRequest();\n"
-			"  xmlHttp.open('GET', theUrl, true);\n"
-			"  xmlHttp.send(null);\n"
-			"  return false;\n"
-			" })\n"
-			"})\n"
-			"</script>";
-		++buttonID;
-		return ss.str();
-	}
-
 	string WebClient::buttonPopup(const string& value, const string& cmd, const map<string,string>& arguments) {
 		stringstream ss;
 		ss <<
@@ -619,29 +597,29 @@ namespace webserver {
 			unsigned int speed = loco->Speed();
 			ss << slider("speed", "locospeed", 0, MaxSpeed, speed, buttonArguments);
 			buttonArguments["speed"] = "0";
-			ss << button("0%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("0%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "255";
-			ss << button("25%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("25%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "511";
-			ss << button("50%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("50%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "767";
-			ss << button("75%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("75%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "1023";
-			ss << button("100%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("100%", "locospeed", buttonArguments);
 			buttonArguments.erase("speed");
 
 			buttonArguments["function"] = "0";
 			buttonArguments["on"] = "1";
-			ss << button("f0 on", "locofunction", buttonArguments);
+			ss << HtmlTagButtonCommand("f0 on", "locofunction", buttonArguments);
 			buttonArguments["on"] = "0";
-			ss << button("f0 off", "locofunction", buttonArguments);
+			ss << HtmlTagButtonCommand("f0 off", "locofunction", buttonArguments);
 			buttonArguments.erase("function");
 			buttonArguments.erase("on");
 
 			buttonArguments["direction"] = "forward";
-			ss << button("forward", "locodirection", buttonArguments);
+			ss << HtmlTagButtonCommand("forward", "locodirection", buttonArguments);
 			buttonArguments["direction"] = "reverse";
-			ss << button("reverse", "locodirection", buttonArguments);
+			ss << HtmlTagButtonCommand("reverse", "locodirection", buttonArguments);
 			buttonArguments.erase("direction");
 
 			ss << buttonPopup("Edit", "locoedit", buttonArguments);
@@ -672,9 +650,9 @@ namespace webserver {
 			"<body onload=\"loadDivFromForm('selectLoco_form', 'loco')\">"
 			"<h1>Railcontrol</h1>"
 			"<div class=\"menu\">";
-		ss << button("X", "quit");
-		ss << button("On", "on");
-		ss << button("Off", "off");
+		ss << HtmlTagButtonCommand("X", "quit");
+		ss << HtmlTagButtonCommand("On", "on");
+		ss << HtmlTagButtonCommand("Off", "off");
 		ss << buttonPopup("NewLoco", "locoedit");
 		ss << "</div>";
 		ss << "<div class=\"locolist\">";

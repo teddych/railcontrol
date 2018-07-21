@@ -9,14 +9,6 @@ namespace webserver
 {
 	class HtmlTag
 	{
-		public:
-			HtmlTag() {}
-			HtmlTag(const std::string& name) : name(name) {}
-			~HtmlTag() {};
-			void AddAttribute(const std::string& name, const std::string& value);
-			void AddChildTag(const HtmlTag& child);
-			void AddContent(const std::string& content);
-			friend std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag);
 
 		private:
 			std::string name;
@@ -24,6 +16,15 @@ namespace webserver
 			std::map<std::string, std::string> attributes;
 			std::string content;
 
+		public:
+			HtmlTag() {}
+			HtmlTag(const std::string& name) : name(name) {}
+			~HtmlTag() {};
+			virtual void AddAttribute(const std::string& name, const std::string& value);
+			virtual void AddChildTag(const HtmlTag& child);
+			virtual void AddContent(const std::string& content);
+			virtual size_t ContentSize() const { return content.size(); }
+			friend std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag);
 	};
 }; // namespace webserver
 
