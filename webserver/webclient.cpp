@@ -281,11 +281,10 @@ namespace webserver {
 		send_timeout(clientSocket, reply.str().c_str(), reply.str().size(), 0);
 	}
 
-	void WebClient::handleLocoSpeed(const map<string, string>& arguments) {
-		locoID_t locoID = LocoNone;
-		speed_t speed = MinSpeed;
-		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
-		if (arguments.count("speed")) speed = stoi(arguments.at("speed"));
+	void WebClient::handleLocoSpeed(const map<string, string>& arguments)
+	{
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		speed_t speed = GetIntegerMapEntry(arguments, "speed", MinSpeed);
 
 		manager.locoSpeed(ControlTypeWebserver, locoID, speed);
 
@@ -295,11 +294,11 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
-	void WebClient::handleLocoDirection(const map<string, string>& arguments) {
-		locoID_t locoID = 0;
-		direction_t direction = DirectionLeft;
-		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
-		if (arguments.count("direction")) direction = (arguments.at("direction").compare("forward") == 0 ? DirectionRight : DirectionLeft);
+	void WebClient::handleLocoDirection(const map<string, string>& arguments)
+	{
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		string directionText = GetStringMapEntry(arguments, "direction", "forward");
+		direction_t direction = (directionText.compare("forward") == 0 ? DirectionRight : DirectionLeft);
 
 		manager.locoDirection(ControlTypeWebserver, locoID, direction);
 
@@ -309,13 +308,11 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
-	void WebClient::handleLocoFunction(const map<string, string>& arguments) {
-		locoID_t locoID = 0;
-		function_t function = 0;
-		bool on = false;
-		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
-		if (arguments.count("function")) function = stoi(arguments.at("function"));
-		if (arguments.count("on")) on = stoi(arguments.at("on"));
+	void WebClient::handleLocoFunction(const map<string, string>& arguments)
+	{
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		function_t function = GetIntegerMapEntry(arguments, "function", 0);
+		bool on = GetIntegerMapEntry(arguments, "on", false);
 
 		manager.locoFunction(ControlTypeWebserver, locoID, function, on);
 
@@ -326,24 +323,25 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
-	void WebClient::handleLocoEdit(const map<string, string>& arguments) {
+	void WebClient::handleLocoEdit(const map<string, string>& arguments)
+	{
 		stringstream ss;
-		locoID_t locoID = LocoNone;
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		controlID_t controlID = ControlNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name("New Loco");
-		if (arguments.count("loco")) {
-			locoID = stoi(arguments.at("loco"));
+		if (locoID > LocoNone)
+		{
 			const datamodel::Loco* loco = manager.getLoco(locoID);
 			controlID = loco->controlID;
 			protocol = loco->protocol;
 			address = loco->address;
 			name = loco->name;
 		}
-		ss << "<h1>Edit loco &quot;";
-		ss << name;
-		ss << "&quot;</h1>";
+		HtmlTag h1("h1");
+		h1.AddContent("Edit loco &quot;" + name + "&quot;");
+		ss << h1;
 		ss << "<form id=\"editform\">";
 		ss << HtmlTagInputHidden("cmd", "locosave");
 		ss << HtmlTagInputHidden("loco", to_string(locoID));
@@ -351,7 +349,8 @@ namespace webserver {
 
 		std::map<controlID_t,string> controls = manager.controlListNames();
 		std::map<string, string> controlOptions;
-		for(auto control : controls) {
+		for(auto control : controls)
+		{
 			controlOptions[to_string(control.first)] = control.second;
 		}
 		ss << "<label>Control:</label>";
@@ -359,7 +358,8 @@ namespace webserver {
 
 		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
 		std::map<string, string> protocolOptions;
-		for(auto protocol : protocols) {
+		for(auto protocol : protocols)
+		{
 			protocolOptions[to_string(protocol.first)] = protocol.second;
 		}
 		ss << "<label>Protocol:</label>";
@@ -377,50 +377,52 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
-	void WebClient::handleProtocol(const map<string, string>& arguments) {
+	void WebClient::handleProtocol(const map<string, string>& arguments)
+	{
 		stringstream ss;
-		if (arguments.count("control")) {
-			controlID_t controlID = stoi(arguments.at("control"));
-			protocol_t selectedProtocol = ProtocolNone;
-			if (arguments.count("protocol")) {
-				selectedProtocol = static_cast<protocol_t>(stoi(arguments.at("protocol")));
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		if (controlId > ControlIdNone)
+		{
+			ss << "<label>Protocol:</label>";
+			protocol_t selectedProtocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlId);
+			std::map<string,string> protocolsTextMap;
+			for(auto protocol : protocols)
+			{
+				protocolsTextMap[to_string(protocol.first)] = protocol.second;
 			}
-			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
-			ss << "<label>Protocol:</label><select name=\"protocol\">";
-			for (auto protocol : protocols) {
-				ss << "<option value=\"" << (unsigned int)protocol.first << "\"" << (protocol.first == selectedProtocol ? " selected" : "") << ">" << protocol.second << "</option>";
-			}
-			ss << "</select>";
+			ss << HtmlTagSelect("protocol", protocolsTextMap, to_string(selectedProtocol));
 		}
-		else {
+		else
+		{
 			ss << "Unknown control";
 		}
 		string sOut = ss.str();
 		simpleReply(sOut);
 	}
 
-	void WebClient::handleLocoSave(const map<string, string>& arguments) {
+	void WebClient::handleLocoSave(const map<string, string>& arguments)
+	{
 		stringstream ss;
-		locoID_t locoID;
-		if (arguments.count("loco")) {
-			locoID = stoi(arguments.at("loco"));
-			string name;
-			controlID_t controlID = ControlNone;
-			protocol_t protocol = ProtocolNone;
-			address_t address = AddressNone;
-			if (arguments.count("name")) name = arguments.at("name");
-			if (arguments.count("control")) controlID = stoi(arguments.at("control"));
-			if (arguments.count("protocol")) protocol = static_cast<protocol_t>(stoi(arguments.at("protocol")));
-			if (arguments.count("address")) address = stoi(arguments.at("address"));
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		if (locoID > LocoNone)
+		{
+			string name = GetStringMapEntry(arguments, "name");
+			controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+			protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+			address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
 			string result;
-			if (!manager.locoSave(locoID, name, controlID, protocol, address, result)) {
+			if (!manager.locoSave(locoID, name, controlId, protocol, address, result))
+			{
 				ss << "<p>" << result << "</p>";
 			}
-			else {
+			else
+			{
 				ss << "<p>Loco &quot;" << locoID << "&quot; saved.</p>";
 			}
 		}
-		else {
+		else
+		{
 			ss << "<p>Unable to save loco.</p>";
 		}
 
@@ -428,7 +430,8 @@ namespace webserver {
 		simpleReply(sOut);
 	}
 
-	void WebClient::handleUpdater(const map<string, string>& headers) {
+	void WebClient::handleUpdater(const map<string, string>& headers)
+	{
 		char reply[1024];
 		int ret = snprintf(reply, sizeof(reply),
 			"HTTP/1.0 200 OK\r\n"
@@ -438,29 +441,30 @@ namespace webserver {
 			"Content-Type: text/event-stream; charset=utf-8\r\n\r\n");
 		send_timeout(clientSocket, reply, ret, 0);
 
-		unsigned int updateID = 0;
-		if (headers.count("Last-Event-ID") == 1) {
-			updateID = stoi(headers.at("Last-Event-ID"));
-		}
-		while(run) {
+		unsigned int updateID = GetIntegerMapEntry(headers, "Last-Event-ID");
+		while(run)
+		{
 			string s;
-			if (server.nextUpdate(updateID, s)) {
-				ret = snprintf(reply, sizeof(reply),
-						"id: %i\r\n%s\r\n\r\n", updateID, s.c_str());
+			if (server.nextUpdate(updateID, s))
+			{
+				ret = snprintf(reply, sizeof(reply), "id: %i\r\n%s\r\n\r\n", updateID, s.c_str());
 				ret = send_timeout(clientSocket, reply, ret, 0);
 				++updateID;
-				if (ret < 0) {
+				if (ret < 0)
+				{
 					return;
 				}
 			}
-			else {
+			else
+			{
 				// FIXME: use conditional variables instead of sleep
 				usleep(100000);
 			}
 		}
 	}
 
-	void WebClient::simpleReply(const string& text, const string& code) {
+	void WebClient::simpleReply(const string& text, const string& code)
+	{
 		size_t contentLength = text.length();
 		char reply[256 + contentLength];
 		snprintf(reply, sizeof(reply),
@@ -474,20 +478,21 @@ namespace webserver {
 		send_timeout(clientSocket, reply, strlen(reply), 0);
 	}
 
-	string WebClient::selectLoco(const map<string,string>& options) {
+	string WebClient::selectLoco(const map<string,string>& options)
+	{
 		stringstream ss;
 		ss << "<form method=\"get\" action=\"/\" id=\"selectLoco_form\">";
 		HtmlTagSelect selectLoco("loco", options);
 		selectLoco.AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')");
 		ss << selectLoco;
-		ss << "<input type=\"hidden\" name=\"cmd\" value=\"loco\">";
+		ss << HtmlTagInputHidden("cmd", "loco");
 		ss << "</form>";
 		return ss.str();
 	}
 
-	string WebClient::slider(const string& name, const string& cmd, const unsigned int min, const unsigned int max, const unsigned int value, const map<string,string>& arguments) {
-		locoID_t locoID = 0;
-		if (arguments.count("loco")) locoID = stoi(arguments.at("loco"));
+	string WebClient::slider(const string& name, const string& cmd, const unsigned int min, const unsigned int max, const unsigned int value, const map<string,string>& arguments)
+	{
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		stringstream ss;
 		ss << "<input class=\"slider\" type=\"range\" min=\"" << min << "\" max=\"" << max << "\" name=\"" << name << "\" id=\"" << cmd << "_" << locoID<< "\" value=\"" << value << "\">";
 		ss << "<script type=\"application/javascript\">\n"
@@ -508,13 +513,14 @@ namespace webserver {
 		return ss.str();
 	}
 
-	void WebClient::printLoco(const map<string, string>& arguments) {
+	void WebClient::printLoco(const map<string, string>& arguments)
+	{
 		string sOut;
-		if (arguments.count("loco")) {
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		if (locoID > LocoNone)
+		{
 			map<string,string> buttonArguments;
-			string locoIDString = arguments.at("loco");
-			locoID_t locoID = stoi(locoIDString);
-			buttonArguments["loco"] = locoIDString;
+			buttonArguments["loco"] = to_string(locoID);
 			stringstream ss;
 			Loco* loco = manager.getLoco(locoID);
 			ss << "<p>";
@@ -551,7 +557,8 @@ namespace webserver {
 			ss << HtmlTagButtonPopup("Edit", "locoedit", buttonArguments);
 			sOut = ss.str();
 		}
-		else {
+		else
+		{
 			sOut = "No locoID provided";
 		}
 		simpleReply(sOut);

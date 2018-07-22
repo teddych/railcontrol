@@ -7,7 +7,8 @@
 #include <sstream>
 #include <sys/time.h> // gettimeofday
 #include <unistd.h>   // close;
-#include <vector>
+
+#include "util.h"
 
 using std::cout;
 using std::endl;
@@ -179,3 +180,20 @@ int send_timeout(int sock, const char* buf, const size_t buflen, const int flags
 	return ret;
 }
 
+std::string GetStringMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const std::string& defaultValue)
+{
+	if (map.count(key) == 0)
+	{
+		return defaultValue;
+	}
+	return map.at(key);
+}
+
+int GetIntegerMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const int defaultValue)
+{
+	if (map.count(key) == 0)
+	{
+		return defaultValue;
+	}
+	return stoi(map.at(key));
+}
