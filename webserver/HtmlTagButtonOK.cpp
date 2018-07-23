@@ -32,6 +32,6 @@ namespace webserver
 			"  return false;\n"
 			" });\n"
 			"});\n";
-		javascriptTag.AddContent(s.str());
+		AddJavaScript(s.str());
 	}
 };

@@ -12,12 +12,13 @@ namespace webserver
 	{
 		public:
 			HtmlTagButton(const std::string& value, const std::string& command, const std::string& javascript = "");
-			friend std::ostream& operator<<(std::ostream& stream, const HtmlTagButton& tag);
+			void AddJavaScript(const std::string& content);
+			virtual void AddAttribute(const std::string& name, const std::string& value);
+			virtual void AddChildTag(const HtmlTag& child);
+			virtual void AddContent(const std::string& content);
 
 		protected:
 			static std::atomic<unsigned int> buttonID;
-			std::string commandID;
-			HtmlTagInput inputTag;
-			HtmlTag javascriptTag;
+			const std::string commandID;
 	};
 };

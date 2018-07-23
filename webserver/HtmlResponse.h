@@ -15,8 +15,8 @@ namespace webserver
 				OK = 200,
 				NotFound = 404
 			};
-			HtmlResponse(responseCode_t responseCode) : responseCode(responseCode), content(HtmlTag("body")) {}
-			HtmlResponse(responseCode_t responseCode, HtmlTag tag) : responseCode(responseCode), content(tag) {}
+			HtmlResponse(const responseCode_t responseCode) : responseCode(responseCode), content(HtmlTag("body")) {}
+			HtmlResponse(const responseCode_t responseCode, const HtmlTag tag) : responseCode(responseCode), content(tag) {}
 			~HtmlResponse() {};
 			void AddAttribute(const std::string name, const std::string value);
 			void AddChildTag(HtmlTag content);

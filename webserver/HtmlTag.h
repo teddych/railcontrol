@@ -10,7 +10,7 @@ namespace webserver
 	class HtmlTag
 	{
 
-		private:
+		protected:
 			std::string name;
 			std::vector<HtmlTag> childTags;
 			std::map<std::string, std::string> attributes;

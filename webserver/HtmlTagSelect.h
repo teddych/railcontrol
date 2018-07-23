@@ -12,7 +12,7 @@ namespace webserver
 	{
 		private:
 			static std::atomic<unsigned int> selectID;
-			std::string commandID;
+			const std::string commandID;
 
 		public:
 			HtmlTagSelect(const std::string& name, const std::map<std::string,std::string>& options, const std::string& defaultValue = "");

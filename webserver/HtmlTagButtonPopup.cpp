@@ -22,6 +22,6 @@ namespace webserver
 			"  $('#popup').load(myUrl);\n"
 			" })\n"
 			"})\n";
-		javascriptTag.AddContent(ss.str());
+		AddJavaScript(ss.str());
 	}
 };
