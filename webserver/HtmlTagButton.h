@@ -5,6 +5,7 @@
 #include <string>
 
 #include "webserver/HtmlTagInput.h"
+#include "webserver/HtmlTagJavascript.h"
 
 namespace webserver
 {
@@ -12,7 +13,12 @@ namespace webserver
 	{
 		public:
 			HtmlTagButton(const std::string& value, const std::string& command);
-			void AddJavaScript(const std::string& content);
+
+			void AddJavaScript(const std::string& content)
+			{
+				AddChildTag(HtmlTagJavascript(content));
+			}
+
 			virtual void AddAttribute(const std::string& name, const std::string& value)
 			{
 				childTags[0].AddAttribute(name, value);
