@@ -18,7 +18,7 @@
 #include "webserver/HtmlTagButtonOK.h"
 #include "webserver/HtmlTagButtonPopup.h"
 #include "webserver/HtmlTagInputHidden.h"
-#include "webserver/HtmlTagInputText.h"
+#include "webserver/HtmlTagInputTextWithLabel.h"
 #include "webserver/HtmlTagSelect.h"
 
 using std::map;
@@ -345,7 +345,7 @@ namespace webserver {
 		ss << "<form id=\"editform\">";
 		ss << HtmlTagInputHidden("cmd", "locosave");
 		ss << HtmlTagInputHidden("loco", to_string(locoID));
-		ss << HtmlTagInputText("name", name, "Loco Name:");
+		ss << HtmlTagInputTextWithLabel("name", "Loco Name:", name);
 
 		std::map<controlID_t,string> controls = manager.controlListNames();
 		std::map<string, string> controlOptions;
@@ -366,7 +366,7 @@ namespace webserver {
 		ss << "<div id=\"protocol\">";
 		ss << HtmlTagSelect("protocol", protocolOptions, to_string(protocol));
 		ss << "</div>";
-		ss << HtmlTagInputText("address", to_string(address), "Address:");
+		ss << HtmlTagInputTextWithLabel("address", "Address:", to_string(address));
 		ss << "</form>";
 		ss << HtmlTagButtonCancel();
 		ss << HtmlTagButtonOK();
