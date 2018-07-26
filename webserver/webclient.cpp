@@ -8,6 +8,7 @@
 #include <thread>
 #include <unistd.h>
 #include <webserver/HtmlResponseNotFound.h>
+#include <webserver/HtmlTagInputSliderLocoSpeed.h>
 #include "datamodel/datamodel.h"
 #include "railcontrol.h"
 #include "util.h"
@@ -490,44 +491,22 @@ namespace webserver {
 		return ss.str();
 	}
 
-	string WebClient::slider(const string& name, const string& cmd, const unsigned int min, const unsigned int max, const unsigned int value, const map<string,string>& arguments)
-	{
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		stringstream ss;
-		ss << "<input class=\"slider\" type=\"range\" min=\"" << min << "\" max=\"" << max << "\" name=\"" << name << "\" id=\"" << cmd << "_" << locoID<< "\" value=\"" << value << "\">";
-		ss << "<script type=\"application/javascript\">\n"
-			"$(function() {\n"
-			" $('#" << cmd << "_" << locoID << "').on('change', function() {\n"
-			"  var theUrl = '/?cmd=" << cmd;
-		for (auto argument : arguments) {
-			ss << "&" << argument.first << "=" << argument.second;
-		}
-		ss << "&" << name << "=" << "' + document.getElementById('" << cmd << "_" << locoID <<"').value;\n"
-			"  var xmlHttp = new XMLHttpRequest();\n"
-			"  xmlHttp.open('GET', theUrl, true);\n"
-			"  xmlHttp.send(null);\n"
-			"  return false;\n"
-			" })\n"
-			"});\n"
-			"</script>";
-		return ss.str();
-	}
-
 	void WebClient::printLoco(const map<string, string>& arguments)
 	{
 		string sOut;
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID > LocoNone)
 		{
-			map<string,string> buttonArguments;
-			buttonArguments["loco"] = to_string(locoID);
 			stringstream ss;
 			Loco* loco = manager.getLoco(locoID);
-			ss << "<p>";
-			ss << loco->name;
-			ss << "</p>";
+			HtmlTag p("p");
+			p.AddContent(loco->name);
+			ss << p;
+
 			unsigned int speed = loco->Speed();
-			ss << slider("speed", "locospeed", 0, MaxSpeed, speed, buttonArguments);
+			map<string,string> buttonArguments;
+			buttonArguments["loco"] = to_string(locoID);
+			ss << HtmlTagInputSliderLocoSpeed("speed", "locospeed", MinSpeed, MaxSpeed, speed, locoID);
 			buttonArguments["speed"] = "0";
 			ss << HtmlTagButtonCommand("0%", "locospeed", buttonArguments);
 			buttonArguments["speed"] = "255";
