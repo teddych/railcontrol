@@ -479,12 +479,9 @@ namespace webserver {
 
 	string WebClient::selectLoco(const map<string,string>& options)
 	{
-		stringstream ss;
-		ss << "<form method=\"get\" action=\"/\" id=\"selectLoco_form\">";
-		ss << HtmlTagSelect("loco", options).AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')");
-		ss << HtmlTagInputHidden("cmd", "loco");
-		ss << "</form>";
-		return ss.str();
+		return HtmlTag("form").AddAttribute("method", "get").AddAttribute("action", "/").AddAttribute("id", "selectLoco_form")
+		.AddContent(HtmlTagSelect("loco", options).AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')"))
+		.AddContent(HtmlTagInputHidden("cmd", "loco"));
 	}
 
 	void WebClient::printLoco(const map<string, string>& arguments)

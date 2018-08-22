@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "HtmlTag.h"
 
 namespace webserver
@@ -22,6 +24,13 @@ namespace webserver
 	{
 		this->content += content;
 		return *this;
+	}
+
+	HtmlTag::operator std::string () const
+	{
+		std::stringstream ss;
+		ss << *this;
+		return ss.str();
 	}
 
 	std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag)

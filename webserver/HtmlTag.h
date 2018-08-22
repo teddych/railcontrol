@@ -24,6 +24,7 @@ namespace webserver
 			virtual HtmlTag AddChildTag(const HtmlTag& child);
 			virtual HtmlTag AddContent(const std::string& content);
 			virtual size_t ContentSize() const { return content.size(); }
+			operator std::string () const;
 			friend std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag);
 	};
 }; // namespace webserver
