@@ -7,13 +7,7 @@ namespace webserver
 	HtmlResponseNotFound::HtmlResponseNotFound(const string& file)
 	: HtmlResponse(HtmlResponse::NotFound)
 	{
-		HtmlTag title("h1");
-		title.AddContent("File not found");
-		HtmlTag p("p");
-		p.AddContent("File ");
-		p.AddContent(file);
-		p.AddContent(" not found");
-		content.AddChildTag(title);
-		content.AddChildTag(p);
+		content.AddChildTag(HtmlTag("h1").AddContent("File not found"));
+		content.AddChildTag(HtmlTag("p").AddContent("File ").AddContent(file).AddContent(" not found"));
 	}
 };

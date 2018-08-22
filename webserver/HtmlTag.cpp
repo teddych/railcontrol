@@ -2,23 +2,26 @@
 
 namespace webserver
 {
-	void HtmlTag::AddAttribute(const std::string& name, const std::string& value)
+	HtmlTag HtmlTag::AddAttribute(const std::string& name, const std::string& value)
 	{
 		if (name.size() == 0)
 		{
-			return;
+			return *this;
 		}
 		this->attributes[name] = value;
+		return *this;
 	}
 
-	void HtmlTag::AddChildTag(const HtmlTag& child)
+	HtmlTag HtmlTag::AddChildTag(const HtmlTag& child)
 	{
 		this->childTags.push_back(child);
+		return *this;
 	}
 
-	void HtmlTag::AddContent(const std::string& content)
+	HtmlTag HtmlTag::AddContent(const std::string& content)
 	{
 		this->content += content;
+		return *this;
 	}
 
 	std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag)

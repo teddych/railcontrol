@@ -14,14 +14,15 @@ namespace webserver
 		public:
 			HtmlTagButton(const std::string& value, const std::string& command);
 
-			void AddJavaScript(const std::string& content)
+			HtmlTag AddJavaScript(const std::string& content)
 			{
-				AddChildTag(HtmlTagJavascript(content));
+				return AddChildTag(HtmlTagJavascript(content));
 			}
 
-			virtual void AddAttribute(const std::string& name, const std::string& value)
+			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value)
 			{
 				childTags[0].AddAttribute(name, value);
+				return *this;
 			}
 
 		protected:

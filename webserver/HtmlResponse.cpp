@@ -22,17 +22,15 @@ namespace webserver
 		stream << "HTTP/1.0 " << response.responseCode << " " << HtmlResponse::responseTexts.at(response.responseCode) << "\r\n\r\n";
 		stream << "<!DOCTYPE html>";
 
-		HtmlTag head("head");
 		HtmlTag title("title");
 		title.AddContent(std::to_string(response.responseCode));
 		title.AddContent(" ");
 		title.AddContent(HtmlResponse::responseTexts.at(response.responseCode));
-		head.AddChildTag(title);
-		HtmlTag html("html");
-		html.AddChildTag(head);
-		html.AddChildTag(response.content);
 
-		stream << html;
+		HtmlTag head("head");
+		head.AddChildTag(title);
+
+		stream << HtmlTag("html").AddChildTag(head).AddChildTag(response.content);
 		return stream;
 	}
 };

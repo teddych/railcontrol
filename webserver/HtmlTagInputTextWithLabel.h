@@ -18,9 +18,10 @@ namespace webserver
 				AddChildTag(HtmlTagInputText(name, value));
 			}
 
-			virtual void AddAttribute(const std::string& name, const std::string& value)
+			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value)
 			{
 				childTags[1].AddAttribute(name, value);
+				return *this;
 			}
 	};
 };

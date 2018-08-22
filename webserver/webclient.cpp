@@ -340,9 +340,7 @@ namespace webserver {
 			address = loco->address;
 			name = loco->name;
 		}
-		HtmlTag h1("h1");
-		h1.AddContent("Edit loco &quot;" + name + "&quot;");
-		ss << h1;
+		ss << HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;");
 		ss << "<form id=\"editform\">";
 		ss << HtmlTagInputHidden("cmd", "locosave");
 		ss << HtmlTagInputHidden("loco", to_string(locoID));
@@ -483,9 +481,7 @@ namespace webserver {
 	{
 		stringstream ss;
 		ss << "<form method=\"get\" action=\"/\" id=\"selectLoco_form\">";
-		HtmlTagSelect selectLoco("loco", options);
-		selectLoco.AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')");
-		ss << selectLoco;
+		ss << HtmlTagSelect("loco", options).AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')");
 		ss << HtmlTagInputHidden("cmd", "loco");
 		ss << "</form>";
 		return ss.str();
@@ -499,9 +495,7 @@ namespace webserver {
 		{
 			stringstream ss;
 			Loco* loco = manager.getLoco(locoID);
-			HtmlTag p("p");
-			p.AddContent(loco->name);
-			ss << p;
+			ss << HtmlTag("p").AddContent(loco->name);
 
 			unsigned int speed = loco->Speed();
 			map<string,string> buttonArguments;

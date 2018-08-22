@@ -12,9 +12,10 @@ namespace webserver
 		public:
 			HtmlTagInputSlider(const std::string& name, const unsigned int min, const unsigned int max, const unsigned int value = 0);
 
-			virtual void AddAttribute(const std::string& name, const std::string& value)
+			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value)
 			{
 				childTags[0].AddAttribute(name, value);
+				return *this;
 			}
 	};
 };
