@@ -37,6 +37,8 @@ namespace webserver {
 			void handleLocoSave(const std::map<std::string, std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void handleProtocol(const std::map<std::string, std::string>& arguments);
+			void UrlDecode(std::string& argumentValue);
+			char ConvertHexToInt(char c);
 
 			unsigned int id;
 			int clientSocket;

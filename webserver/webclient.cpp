@@ -155,75 +155,90 @@ namespace webserver {
 		return 0;
 	}
 
+	char WebClient::ConvertHexToInt(char c)
+	{
+		if (c >= 'a')
+		{
+			c -= 'a' - 10;
+		}
+		else if (c >= 'A')
+		{
+			c -= 'A' - 10;
+		}
+		else if (c >= '0')
+		{
+			c -= '0';
+		}
+
+		if (c > 15)
+		{
+			return 0;
+		}
+
+		return c;
+	}
+
+	void WebClient::UrlDecode(string& argumentValue)
+	{
+		// decode %20 and similar
+		while (true)
+		{
+			size_t pos = argumentValue.find('%');
+			if (pos == string::npos || pos + 3 > argumentValue.length())
+			{
+				break;
+			}
+			char c = ConvertHexToInt(argumentValue[pos + 1]) * 16 + ConvertHexToInt(argumentValue[pos + 2]);
+			argumentValue.replace(pos, 3, 1, c);
+		}
+	}
+
 	void WebClient::interpretClientRequest(const vector<string>& lines, string& method, string& uri, string& protocol, map<string,string>& arguments, map<string,string>& headers) {
-		if (lines.size()) {
-			for (auto line : lines) {
-				if (line.find("HTTP/1.") != string::npos) {
-					vector<string> list;
-					str_split(line, string(" "), list);
-					if (list.size() == 3) {
-						method = list[0];
-						// transform method to uppercase
-						std::transform(method.begin(), method.end(), method.begin(), ::toupper);
-						// if method == HEAD set membervariable
-						headOnly = false;
-						if (method.compare("HEAD") == 0) {
-							headOnly = true;
-						}
-						// set uri and protocol
-						uri = list[1];
-						protocol = list[2];
-						// read GET-arguments from uri
-						vector<string> uri_parts;
-						str_split(uri, "?", uri_parts);
-						if (uri_parts.size() == 2) {
-							vector<string> argumentStrings;
-							str_split(uri_parts[1], "&", argumentStrings);
-							for (auto argument : argumentStrings) {
-								vector<string> argumentParts;
-								str_split(argument, "=", argumentParts);
-								string argumentValue = argumentParts[1];
-								// decode %20 and similar
-								while (true) {
-									size_t pos = argumentValue.find('%');
-									if (pos == string::npos || pos + 3 > argumentValue.length()) {
-										break;
-									}
-									char c1 = argumentValue[pos + 1];
-									char c2 = argumentValue[pos + 2];
-									if (c1 >= 'a') {
-										c1 -= 'a' - 10;
-									}
-									else if (c1 >= 'A') {
-										c1 -= 'A' - 10;
-									}
-									else if (c1 >= '0') {
-										c1 -= '0';
-									}
-									if (c2 >= 'a') {
-										c2 -= 'a' - 10;
-									}
-									else if (c2 >= 'A') {
-										c2 -= 'A' - 10;
-									}
-									else if (c2 >= '0') {
-										c2 -= '0';
-									}
-									char c = c1 * 16 + c2;
-									argumentValue.replace(pos, 3, 1, c);
-								}
-								arguments[argumentParts[0]] = argumentValue;
-							}
-						}
-					}
+		if (lines.size() == 0) {
+			return;
+		}
+
+		for (auto line : lines) {
+			if (line.find("HTTP/1.") == string::npos) {
+				vector<string> list;
+				str_split(line, string(": "), list);
+				if (list.size() == 2) {
+					headers[list[0]] = list[1];
 				}
-				else {
-					vector<string> list;
-					str_split(line, string(": "), list);
-					if (list.size() == 2) {
-						headers[list[0]] = list[1];
-					}
-				}
+				continue;
+			}
+
+			vector<string> list;
+			str_split(line, string(" "), list);
+			if (list.size() != 3) {
+				continue;
+			}
+
+			method = list[0];
+			// transform method to uppercase
+			std::transform(method.begin(), method.end(), method.begin(), ::toupper);
+			// if method == HEAD set membervariable
+			headOnly = false;
+			if (method.compare("HEAD") == 0) {
+				headOnly = true;
+			}
+			// set uri and protocol
+			uri = list[1];
+			UrlDecode(uri);
+			protocol = list[2];
+			// read GET-arguments from uri
+			vector<string> uri_parts;
+			str_split(uri, "?", uri_parts);
+			if (uri_parts.size() != 2) {
+				continue;
+			}
+
+			vector<string> argumentStrings;
+			str_split(uri_parts[1], "&", argumentStrings);
+			for (auto argument : argumentStrings) {
+				vector<string> argumentParts;
+				str_split(argument, "=", argumentParts);
+				arguments[argumentParts[0]] = argumentParts[1];
 			}
 		}
 	}
