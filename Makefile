@@ -9,6 +9,7 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
+	webserver/Response.o \
 	webserver/HtmlResponse.o \
 	webserver/HtmlResponseNotFound.o \
 	webserver/HtmlTag.o \

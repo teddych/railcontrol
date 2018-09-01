@@ -2,11 +2,6 @@
 
 namespace webserver
 {
-	const HtmlResponse::responseCodeMap HtmlResponse::responseTexts = {
-		{ HtmlResponse::OK, "OK" },
-		{ HtmlResponse::NotFound, "Not found"}
-	};
-
 	void HtmlResponse::AddAttribute(const std::string name, const std::string value)
 	{
 		this->content.AddAttribute(name, value);
@@ -19,7 +14,12 @@ namespace webserver
 
 	std::ostream& operator<<(std::ostream& stream, const HtmlResponse& response)
 	{
-		stream << "HTTP/1.0 " << response.responseCode << " " << HtmlResponse::responseTexts.at(response.responseCode) << "\r\n\r\n";
+		stream << "HTTP/1.0 " << response.responseCode << " " << HtmlResponse::responseTexts.at(response.responseCode) << "\r\n";
+		for(auto header : response.headers)
+		{
+			stream << header.first << ": " << header.second << "\r\n";
+		}
+		stream << "\r\n";
 		stream << "<!DOCTYPE html>";
 
 		HtmlTag title("title");

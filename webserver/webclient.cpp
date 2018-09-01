@@ -7,18 +7,19 @@
 #include <sys/stat.h>
 #include <thread>
 #include <unistd.h>
-#include <webserver/HtmlResponseNotFound.h>
-#include <webserver/HtmlTagInputSliderLocoSpeed.h>
 #include "datamodel/datamodel.h"
 #include "railcontrol.h"
 #include "util.h"
 #include "webclient.h"
 #include "webserver.h"
+#include "webserver/HtmlResponse.h"
+#include "webserver/HtmlResponseNotFound.h"
 #include "webserver/HtmlTagButtonCancel.h"
 #include "webserver/HtmlTagButtonCommand.h"
 #include "webserver/HtmlTagButtonOK.h"
 #include "webserver/HtmlTagButtonPopup.h"
 #include "webserver/HtmlTagInputHidden.h"
+#include "webserver/HtmlTagInputSliderLocoSpeed.h"
 #include "webserver/HtmlTagInputTextWithLabel.h"
 #include "webserver/HtmlTagSelect.h"
 
@@ -64,6 +65,7 @@ namespace webserver {
 			str_replace(s, string("\r\n"), string("\n"));
 			str_replace(s, string("\r"), string("\n"));
 		}
+
 		vector<string> lines;
 		str_split(s, string("\n"), lines);
 
@@ -72,6 +74,7 @@ namespace webserver {
 			close(clientSocket);
 			return;
 		}
+
 		string method;
 		string uri;
 		string protocol;
@@ -254,31 +257,38 @@ namespace webserver {
 		const char* realFile = sFile.c_str();
 		xlog(realFile);
 		FILE* f = fopen(realFile, "r");
-		if (f) {
+		if (f)
+		{
 			struct stat s;
 			rc = stat(realFile, &s);
-			if (rc == 0) {
+			if (rc == 0)
+			{
 				size_t length = virtualFile.length();
 				const char* contentType = NULL;
-				if (length > 3 && virtualFile[length - 3] == '.' && virtualFile[length - 2] == 'j' && virtualFile[length - 1] == 's') {
+				if (length > 3 && virtualFile[length - 3] == '.' && virtualFile[length - 2] == 'j' && virtualFile[length - 1] == 's')
+				{
 					contentType = "application/javascript";
 				}
-				else if (length > 4 && virtualFile[length - 4] == '.') {
-					if (virtualFile[length - 3] == 'i' && virtualFile[length - 2] == 'c' && virtualFile[length - 1] == 'o') {
+				else if (length > 4 && virtualFile[length - 4] == '.')
+				{
+					if (virtualFile[length - 3] == 'i' && virtualFile[length - 2] == 'c' && virtualFile[length - 1] == 'o')
+					{
 						contentType = "image/x-icon";
 					}
-					else if (virtualFile[length - 3] == 'c' && virtualFile[length - 2] == 's' && virtualFile[length - 1] == 's') {
+					else if (virtualFile[length - 3] == 'c' && virtualFile[length - 2] == 's' && virtualFile[length - 1] == 's')
+					{
 						contentType = "text/css";
 					}
 				}
-				char header[1024];
-				snprintf(header, sizeof(header),
-					"HTTP/1.0 200 OK\r\n"
-					"Cache-Control: max-age=3600"
-					"Content-Lenth: %lu\r\n"
-					"Content-Type: %s\r\n\r\n",
-					s.st_size, contentType);
-				send_timeout(clientSocket, header, strlen(header), 0);
+
+				Response response(Response::OK, HtmlTag());
+				response.AddHeader("Cache-Control", "max-age=3600");
+				response.AddHeader("Content-Length", to_string(s.st_size));
+				response.AddHeader("Content-Type", contentType);
+				std::stringstream reply;
+				reply << response;
+				send_timeout(clientSocket, reply.str().c_str(), reply.str().size(), 0);
+
 				if (headOnly == false) {
 					char* buffer = static_cast<char*>(malloc(s.st_size));
 					if (buffer) {
