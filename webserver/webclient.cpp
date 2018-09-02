@@ -34,23 +34,33 @@ using datamodel::Loco;
 
 namespace webserver {
 
-	WebClient::WebClient(const unsigned int id, int socket, WebServer& webserver, Manager& m) :
+	WebClient::WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer& webserver, Manager& m) :
 		id(id),
-		clientSocket(socket),
+		connection(connection),
 		run(false),
 		server(webserver),
 		clientThread(thread([this] {worker();})),
 		manager(m),
-		buttonID(0) {
+		buttonID(0)
+	{
 	}
 
-	WebClient::~WebClient() {
+	WebClient::~WebClient()
+	{
 		run = false;
 		clientThread.join();
+		connection->Terminate();
 	}
 
 	// worker is the thread that handles client requests
-	void WebClient::worker() {
+	void WebClient::worker()
+	{
+		WorkerImpl();
+		connection->Terminate();
+	}
+
+	void WebClient::WorkerImpl()
+	{
 		xlog("Executing webclient");
 		run = true;
 
@@ -59,8 +69,9 @@ namespace webserver {
 
 		size_t pos = 0;
 		string s;
-		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos) {
-			pos += recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos)
+		{
+			pos += connection->Receive(buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
 			s = string(buffer_in);
 			str_replace(s, string("\r\n"), string("\n"));
 			str_replace(s, string("\r"), string("\n"));
@@ -69,9 +80,9 @@ namespace webserver {
 		vector<string> lines;
 		str_split(s, string("\n"), lines);
 
-		if (lines.size() < 1) {
+		if (lines.size() < 1)
+		{
 			xlog("Invalid request");
-			close(clientSocket);
 			return;
 		}
 
@@ -84,13 +95,13 @@ namespace webserver {
 		xlog("%s %s", method.c_str(), uri.c_str());
 
 		// if method is not implemented
-		if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0)) {
+		if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0))
+		{
 			xlog("Method %s not implemented", method.c_str());
 			const char* reply =
 				"HTTP/1.0 501 Not implemented\r\n\r\n"
 				"<!DOCTYPE html><html><head><title>501 Not implemented</title></head><body><p>Method not implemented</p></body></html>";
-			send_timeout(clientSocket, reply, strlen(reply), 0);
-			close(clientSocket);
+			connection->Send(reply, strlen(reply), 0);
 			return;
 		}
 
@@ -104,7 +115,8 @@ namespace webserver {
 		*/
 
 		// handle requests
-		if (arguments["cmd"].compare("quit") == 0) {
+		if (arguments["cmd"].compare("quit") == 0)
+		{
 			simpleReply("Stopping Railcontrol");
 			manager.booster(ControlTypeWebserver, BoosterStop);
 			stopRailControlWebserver();
@@ -149,7 +161,6 @@ namespace webserver {
 		}
 
 		xlog("Terminating webclient");
-		close(clientSocket);
 	}
 
 	int WebClient::stop() {
@@ -287,13 +298,13 @@ namespace webserver {
 				response.AddHeader("Content-Type", contentType);
 				std::stringstream reply;
 				reply << response;
-				send_timeout(clientSocket, reply.str().c_str(), reply.str().size(), 0);
+				connection->Send(reply.str().c_str(), reply.str().size(), 0);
 
 				if (headOnly == false) {
 					char* buffer = static_cast<char*>(malloc(s.st_size));
 					if (buffer) {
 						size_t r = fread(buffer, 1, s.st_size, f);
-						send_timeout(clientSocket, buffer, r, 0);
+						connection->Send(buffer, r, 0);
 						free(buffer);
 						fclose(f);
 						return;
@@ -304,7 +315,7 @@ namespace webserver {
 		}
 		std::stringstream reply;
 		reply << HtmlResponseNotFound(virtualFile);
-		send_timeout(clientSocket, reply.str().c_str(), reply.str().size(), 0);
+		connection->Send(reply.str().c_str(), reply.str().size(), 0);
 	}
 
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments)
@@ -463,7 +474,7 @@ namespace webserver {
 			"Pragma: no-cache\r\n"
 			"Expires: Sun, 12 Feb 2016 00:00:00 GMT\r\n"
 			"Content-Type: text/event-stream; charset=utf-8\r\n\r\n");
-		send_timeout(clientSocket, reply, ret, 0);
+		connection->Send(reply, ret, 0);
 
 		unsigned int updateID = GetIntegerMapEntry(headers, "Last-Event-ID");
 		while(run)
@@ -472,7 +483,7 @@ namespace webserver {
 			if (server.nextUpdate(updateID, s))
 			{
 				ret = snprintf(reply, sizeof(reply), "id: %i\r\n%s\r\n\r\n", updateID, s.c_str());
-				ret = send_timeout(clientSocket, reply, ret, 0);
+				ret = connection->Send(reply, ret, 0);
 				++updateID;
 				if (ret < 0)
 				{
@@ -499,7 +510,7 @@ namespace webserver {
 			"Content-Type: text/html; charset=utf-8\r\n\r\n"
 			"%s",
 			code.c_str(), text.c_str());
-		send_timeout(clientSocket, reply, strlen(reply), 0);
+		connection->Send(reply, strlen(reply), 0);
 	}
 
 	string WebClient::selectLoco(const map<string,string>& options)
@@ -626,7 +637,7 @@ namespace webserver {
 			"</html>";
 		string sOut = ss.str();
 		const char* html = sOut.c_str();
-		send_timeout(clientSocket, html, strlen(html), 0);
+		connection->Send(html, strlen(html), 0);
 	}
 
 } ; // namespace webserver

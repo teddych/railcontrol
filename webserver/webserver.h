@@ -2,20 +2,23 @@
 
 #include <map>
 #include <mutex>
-#include <thread>
 #include <vector>
 
-#include "../command_interface.h"
+#include "command_interface.h"
 #include "manager.h"
+#include "network/TcpServer.h"
 
 namespace webserver {
 
 	class WebClient;
 
-	class WebServer : public CommandInterface {
+	class WebServer : public CommandInterface, private Network::TcpServer {
 		public:
 			WebServer(Manager& manager, const unsigned short port);
 			~WebServer();
+
+			void Work(Network::TcpConnection* connection) override;
+
 			const std::string getName() const override { return "Webserver"; }
 			bool nextUpdate(unsigned int& updateID, std::string& s);
 			void booster(const controlType_t managerID, const boosterStatus_t status) override;
@@ -34,14 +37,12 @@ namespace webserver {
 			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) override;
 			void locoStart(const locoID_t locoID) override;
 			void locoStop(const locoID_t locoID) override;
+
 		private:
-			void worker();
 			void addUpdate(const std::string& command, const std::string& status);
-			unsigned short port;
-			int serverSocket;
-			volatile unsigned char run;
+
+			volatile bool run;
 			unsigned int lastClientID;
-			std::thread serverThread;
 			std::vector<WebClient*> clients;
 			Manager& manager;
 

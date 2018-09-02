@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "manager.h"
+#include "network/TcpConnection.h"
 
 namespace webserver {
 
@@ -13,10 +14,11 @@ namespace webserver {
 
 	class WebClient {
 		public:
-			WebClient(const unsigned int id, int socket, WebServer &webserver, Manager& manager);
+			WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer &webserver, Manager& manager);
 			~WebClient();
 			void worker();
 			int stop();
+
 		private:
 			void interpretClientRequest(const std::vector<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
 			std::string selectLoco(const std::map<std::string,std::string>& options);
@@ -39,9 +41,10 @@ namespace webserver {
 			void handleProtocol(const std::map<std::string, std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);
+			void WorkerImpl();
 
 			unsigned int id;
-			int clientSocket;
+			Network::TcpConnection* connection;
 			volatile unsigned char run;
 			WebServer &server;
 			std::thread clientThread;
