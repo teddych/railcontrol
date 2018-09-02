@@ -9,23 +9,6 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
-	network/TcpConnection.o \
-	network/TcpServer.o \
-	webserver/Response.o \
-	webserver/HtmlResponse.o \
-	webserver/HtmlResponseNotFound.o \
-	webserver/HtmlTag.o \
-	webserver/HtmlTagButton.o \
-	webserver/HtmlTagButtonCancel.o \
-	webserver/HtmlTagButtonCommand.o \
-	webserver/HtmlTagButtonOK.o \
-	webserver/HtmlTagButtonPopup.o \
-	webserver/HtmlTagInput.o \
-	webserver/HtmlTagInputSlider.o \
-	webserver/HtmlTagInputSliderLocoSpeed.o \
-	webserver/HtmlTagSelect.o \
-	webserver/webserver.o \
-	webserver/webclient.o \
 	config.o \
 	console/console.o \
 	datamodel/accessory.o \
@@ -41,10 +24,27 @@ OBJ= \
 	hardware/hardware_handler.o \
 	hardware/hardware_params.o \
 	manager.o \
+	network/TcpConnection.o \
+	network/TcpServer.o \
 	railcontrol.o \
 	storage/storage_handler.o \
 	text/converters.o \
-	util.o
+	util.o \
+	webserver/Response.o \
+	webserver/HtmlResponse.o \
+	webserver/HtmlResponseNotFound.o \
+	webserver/HtmlTag.o \
+	webserver/HtmlTagButton.o \
+	webserver/HtmlTagButtonCancel.o \
+	webserver/HtmlTagButtonCommand.o \
+	webserver/HtmlTagButtonOK.o \
+	webserver/HtmlTagButtonPopup.o \
+	webserver/HtmlTagInput.o \
+	webserver/HtmlTagInputSlider.o \
+	webserver/HtmlTagInputSliderLocoSpeed.o \
+	webserver/HtmlTagSelect.o \
+	webserver/webserver.o \
+	webserver/webclient.o
 
 all: $(OBJ)
 	make -C hardware

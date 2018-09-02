@@ -70,7 +70,7 @@ namespace console {
 		}
 
 		// create seperate thread that handles the client requests
-		serverThread = thread([this] { worker(); });
+		serverThread = thread([this] { Worker(); });
 	}
 
 	Console::~Console() {
@@ -86,7 +86,7 @@ namespace console {
 	}
 
 	// worker is a seperate thread listening on the server socket
-	void Console::worker() {
+	void Console::Worker() {
 		fd_set set;
 		struct timeval tv;
 		struct sockaddr_in6 client_addr;
@@ -109,29 +109,43 @@ namespace console {
 				}
 				else {
 					// handle client and fill into vector
-					handleClient();
+					HandleClient();
 				}
 			}
 		}
 	}
 
-	void Console::readBlanks(string& s, size_t& i) {
+	void Console::ReadBlanks(string& s, size_t& i)
+	{
 		// read possible blanks
-		while (s.length() > i) {
+		while (s.length() > i)
+		{
 			unsigned char input = s[i];
-			if (input != ' ') {
+			if (input != ' ')
+			{
 				break;
 			}
 			++i;
 		}
 	}
 
-	int Console::readNumber(string& s, size_t& i) {
+	char Console::ReadCommand(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		char c = s[i];
+		++i;
+		return c;
+	}
+
+	int Console::ReadNumber(string& s, size_t& i)
+	{
         // read integer
 		int number = 0;
-		while (s.length() > i) {
+		while (s.length() > i)
+		{
 			unsigned char input = s[i];
-			if ( input < '0' || input > '9') {
+			if ( input < '0' || input > '9')
+			{
 				break;
 			}
 			number *= 10;
@@ -141,48 +155,64 @@ namespace console {
 		return number;
 	}
 
-	bool Console::readBool(string& s, size_t& i) {
+	bool Console::ReadBool(string& s, size_t& i)
+	{
 		// read bool
-		if (s.length() <= i) {
+		if (s.length() <= i)
+		{
 			return false;
 		}
-		if (s[i] == 'o') {
+
+		if (s[i] == 'o')
+		{
 			++i;
-			if (s.length() <= i) {
+			if (s.length() <= i)
+			{
 				return false;
 			}
 			bool ret = s[i] == 'n';
-			while (s.length() > i && s[i] != ' ') {
+			while (s.length() > i && s[i] != ' ')
+			{
 				++i;
 			}
 			return ret;
 		}
-		return (bool)readNumber(s, i);
+		return (bool)ReadNumber(s, i);
 	}
 
-	string Console::readText(string& s, size_t& i) {
+	string Console::ReadText(string& s, size_t& i)
+	{
 		size_t start = i;
 		size_t length = 0;
 		bool escape = false;
-		while (s.length() > i) {
-			if (s[i] == '\n' || s[i] == '\r') {
+		while (s.length() > i)
+		{
+			if (s[i] == '\n' || s[i] == '\r')
+			{
 				++i;
 				break;
 			}
-			if (s[i] == '"' && escape == false) {
+
+			if (s[i] == '"' && escape == false)
+			{
 				escape = true;
 				++i;
 				++start;
 				continue;
 			}
-			if (s[i] == '"' && escape == true) {
+
+			if (s[i] == '"' && escape == true)
+			{
 				++i;
 				break;
 			}
-			if (escape == false && s[i] == 0x20) {
+
+			if (escape == false && s[i] == 0x20)
+			{
 				++i;
 				break;
 			}
+
 			++length;
 			++i;
 		}
@@ -190,7 +220,8 @@ namespace console {
 		return text;
 	}
 
-	switchType_t Console::readSwitchType(string& s, size_t& i) {
+	switchType_t Console::ReadSwitchType(string& s, size_t& i)
+	{
 		if (s.length() <= i) {
 			return SwitchTypeLeft;
 		}
@@ -199,1085 +230,1329 @@ namespace console {
 			case 'L':
 				++i;
 				return SwitchTypeLeft;
+
 			case 'r':
 			case 'R':
 				++i;
 				return SwitchTypeRight;
+
 			default:
-				switchType_t type = static_cast<switchType_t>(readNumber(s, i));
-				if (type == SwitchTypeRight) {
-					return SwitchTypeRight;
-				}
-				return SwitchTypeLeft;
+				switchType_t type = static_cast<switchType_t>(ReadNumber(s, i));
+				return (type == SwitchTypeRight ? SwitchTypeRight : SwitchTypeLeft);
 		}
 	}
 
-	layoutRotation_t Console::readRotation(string& s, size_t& i) {
-		if (s.length() <= i) {
+	layoutRotation_t Console::ReadRotation(string& s, size_t& i)
+	{
+		if (s.length() <= i)
+		{
 			return Rotation0;
 		}
-		switch (s[i]) {
+		switch (s[i])
+		{
 			case 'n':
 			case 'N':
 			case 't':
 			case 'T': // north/top
 				++i;
 				return Rotation0;
+
 			case 'e':
 			case 'E':
 			case 'r':
 			case 'R': // east/right
 				++i;
 				return Rotation90;
+
 			case 's':
 			case 'S':
 			case 'b':
 			case 'B': // south/bottom
 				++i;
 				return Rotation180;
+
 			case 'w':
 			case 'W':
 			case 'l':
 			case 'L': // west/left
 				++i;
 				return Rotation270;
+
 			default:
-				uint16_t rotation = readNumber(s, i);
-				switch (rotation) {
+				uint16_t rotation = ReadNumber(s, i);
+				switch (rotation)
+				{
 					case Rotation90:
 					case Rotation180:
 					case Rotation270:
 						return static_cast<layoutRotation_t>(rotation);
+
 					case 90:
 						return Rotation90;
+
 					case 180:
 						return Rotation180;
+
 					case 270:
 						return Rotation270;
+
 					default:
 						return Rotation0;
 				}
 		}
 	}
 
-	direction_t Console::readDirection(string& s, size_t& i) {
-		if (s.length() <= i) {
+	direction_t Console::ReadDirection(string& s, size_t& i)
+	{
+		if (s.length() <= i)
+		{
 			return DirectionLeft;
 		}
-		switch (s[i]) {
+		switch (s[i])
+		{
 			case 'l':
 			case 'L':
 			case '-':
 				++i;
 				return DirectionLeft;
+
 			case 'r':
 			case 'R':
 			case '+':
 				++i;
 				return DirectionRight;
+
 			default:
-				unsigned char direction = readNumber(s, i);
-				if (direction == 0) {
-					return DirectionLeft;
-				}
-				return DirectionRight;
+				unsigned char direction = ReadNumber(s, i);
+				return (direction == 0 ? DirectionLeft : DirectionRight);
 		}
 	}
 
-	void Console::handleClient() {
-		addUpdate("Welcome to railcontrol console!\nType h for help\n");
+	void Console::HandleClient()
+	{
+		AddUpdate("Welcome to railcontrol console!\nType h for help\n");
 		char buffer_in[1024];
 		memset(buffer_in, 0, sizeof(buffer_in));
 
-		while(run) {
+		while(run)
+		{
 			size_t pos = 0;
 			string s;
-			while(run && pos < sizeof(buffer_in) - 1 && s.find("\n") == string::npos && s.find("\r") == string::npos) {
-				ssize_t ret = recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
-				if (ret <= 0) {
-					if (errno == ETIMEDOUT) {
-						continue;
-					}
-					close(clientSocket);
-					return;
-				}
-				pos += ret;
-				s = string(buffer_in);
-			}
-
-
-			size_t i = 0;
-			readBlanks(s, i);
-			char cmd = s[i];
-			++i;
-			switch (cmd)
+			while(run && pos < sizeof(buffer_in) - 1 && s.find("\n") == string::npos && s.find("\r") == string::npos)
 			{
-				case 'a':
-				case 'A': // accessory commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						++i;
-						switch (subcmd) {
-							case 'd':
-							case 'D': // delete accessory
-								{
-									readBlanks(s, i);
-									accessoryID_t accessoryID = readNumber(s, i);
-									if (!manager.accessoryDelete(accessoryID)) {
-										addUpdate("Accessory not found or accessory in use");
-										break;
-									}
-									addUpdate("Accessory deleted");
-									break;
-								}
-							case 'l':
-							case 'L': // list accessories
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all accessories
-										std::map<accessoryID_t,datamodel::Accessory*> accessories = manager.accessoryList();
-										stringstream status;
-										for (auto accessory : accessories) {
-											status << accessory.first << " " << accessory.second->name << "\n";
-										}
-										status << "Total number of accessorys: " << accessories.size();
-										addUpdate(status.str());
-										break;
-									}
-									accessoryID_t accessoryID = readNumber(s, i);
-									datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
-									if (accessory == nullptr) {
-										addUpdate("Unknown accessory");
-										break;
-									}
-									stringstream status;
-									status << accessoryID << " " << accessory->name << " (" << static_cast<int>(accessory->posX) << "/" << static_cast<int>(accessory->posY) << "/" << static_cast<int>(accessory->posZ) << ")";
-									addUpdate(status.str());
-									break;
-								}
-							case 'n':
-							case 'N': // add new accessory
-								{
-									readBlanks(s, i);
-									string name = readText(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posX = readNumber(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posY = readNumber(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posZ = readNumber(s, i);
-									readBlanks(s, i);
-									controlID_t controlID = readNumber(s, i);
-									readBlanks(s, i);
-									protocol_t protocol = static_cast<protocol_t>(readNumber(s, i));
-									readBlanks(s, i);
-									address_t address = readNumber(s, i);
-									readBlanks(s, i);
-									accessoryTimeout_t timeout = readNumber(s, i);
-									string result;
-									if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result)) {
-										addUpdate(result);
-										break;
-									}
-									stringstream status;
-									status << "Accessory \"" << name << "\" added";
-									addUpdate(status.str());
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown accessory command");
-								}
-						}
-						break;
-					}
-				case 'b':
-				case 'B': // block commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						++i;
-						switch (subcmd) {
-							case 'd':
-							case 'D': // delete block
-								{
-									readBlanks(s, i);
-									blockID_t blockID = readNumber(s, i);
-									if (!manager.blockDelete(blockID)) {
-										addUpdate("Block not found or block in use");
-										break;
-									}
-									addUpdate("Block deleted");
-									break;
-								}
-							case 'l':
-							case 'L': // list blocks
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all blocks
-										std::map<blockID_t,datamodel::Block*> blocks = manager.blockList();
-										stringstream status;
-										for (auto block : blocks) {
-											status << block.first << " " << block.second->name << "\n";
-										}
-										status << "Total number of Blocks: " << blocks.size();
-										addUpdate(status.str());
-										break;
-									}
-									// list one block
-									blockID_t blockID = readNumber(s, i);
-									datamodel::Block* block = manager.getBlock(blockID);
-									if (block == nullptr) {
-										addUpdate("Unknown block");
-										break;
-									}
-									stringstream status;
-									status
-										<< "Block ID: " << blockID
-										<< "\nName:     " << block->name
-										<< "\nX:        " << static_cast<int>(block->posX)
-										<< "\nY:        " << static_cast<int>(block->posY)
-										<< "\nZ:        " << static_cast<int>(block->posZ);
-									string stateText;
-									text::Converters::lockStatus(block->getState(), stateText);
-									status << "\nStatus:   " << stateText;
-									status << "\nLoco:     ";
-									if (block->getLoco() == LocoNone) {
-										status << "-";
-									}
-									else {
-										status << manager.getLocoName(block->getLoco()) << " (" << block->getLoco() << ")";
-									}
-									addUpdate(status.str());
-									break;
-								}
-							case 'n':
-							case 'N': // new block
-								{
-									readBlanks(s, i);
-									string name = readText(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posX = readNumber(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posY = readNumber(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posZ = readNumber(s, i);
-									readBlanks(s, i);
-									layoutItemSize_t width = readNumber(s, i);
-									readBlanks(s, i);
-									layoutRotation_t rotation = readRotation(s, i);
-									string result;
-									if (!manager.blockSave(BlockNone, name, posX, posY, posZ, width, rotation, result)) {
-										addUpdate(result);
-										break;
-									}
-									stringstream status;
-									status << "Block \"" << name << "\" added";
-									addUpdate(status.str());
-									break;
-								}
-							case 'r':
-							case 'R': // release block
-								{
-									readBlanks(s, i);
-									blockID_t blockID = readNumber(s, i);
-									if (!manager.blockRelease(blockID)) {
-										addUpdate("Block not found or block in use");
-										break;
-									}
-									addUpdate("Block released");
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown block command");
-								}
-						}
-						break;
-					}
-				case 'c':
-				case 'C': // control commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						++i;
-						switch (subcmd) {
-							case 'd':
-							case 'D': // delete control
-								{
-									readBlanks(s, i);
-									controlID_t controlID = readNumber(s, i);
-									if (!manager.controlDelete(controlID)) {
-										addUpdate("Control not found or control in use");
-										break;
-									}
-									addUpdate("Control deleted");
-									break;
-								}
-							case 'l':
-							case 'L': // list controls
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all controls
-										std::map<controlID_t,hardware::HardwareParams*> params = manager.controlList();
-										stringstream status;
-										for (auto param : params) {
-											status << static_cast<int>(param.first) << " " << param.second->name << "\n";
-										}
-										status << "Total number of controls: " << params.size();
-										addUpdate(status.str());
-										break;
-									}
-									controlID_t controlID = readNumber(s, i);
-									hardware::HardwareParams* param = manager.getHardware(controlID);
-									if (param == nullptr) {
-										addUpdate("Unknown Control");
-										break;
-									}
-									stringstream status;
-									status << static_cast<int>(controlID) << " " << param->name;
-									addUpdate(status.str());
-									break;
-								}
-							case 'n':
-							case 'N': // new control
-								{
-									readBlanks(s, i);
-									string name = readText(s, i);
-									readBlanks(s, i);
-									string type = readText(s, i);
-									readBlanks(s, i);
-									string ip = readText(s, i);
-									hardwareType_t hardwareType;
-									if (type.compare("virt") == 0) {
-										hardwareType = HardwareTypeVirt;
-									}
-									else if (type.compare("cs2") == 0) {
-										hardwareType = HardwareTypeCS2;
-									}
-									else {
-										addUpdate("Unknown hardware type");
-										break;
-									}
-									string result;
-									if (!manager.controlSave(ControlNone, hardwareType, name, ip, result)) {
-										addUpdate(result);
-										break;
-									}
-									stringstream status;
-									status << "Control \"" << name << "\" added";
-									addUpdate(status.str());
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown control command");
-								}
-						}
-						break;
-					}
-				case 'f':
-				case 'F': // feedback commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						++i;
-						switch (subcmd) {
-							case 'd':
-							case 'D': // delete feedback
-								{
-									readBlanks(s, i);
-									feedbackID_t feedbackID = readNumber(s, i);
-									if (!manager.feedbackDelete(feedbackID)) {
-										addUpdate("Feedback not found or feedback in use");
-										break;
-									}
-									addUpdate("Feedback deleted");
-									break;
-								}
-							case 'l':
-							case 'L': // list feedbacks
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all feedbacks
-										std::map<feedbackID_t,datamodel::Feedback*> feedbacks = manager.feedbackList();
-										stringstream status;
-										for (auto feedback : feedbacks) {
-											status << feedback.first << " " << feedback.second->name << "\n";
-										}
-										status << "Total number of feedbacks: " << feedbacks.size();
-										addUpdate(status.str());
-										break;
-									}
-									// list one feedback
-									feedbackID_t feedbackID = readNumber(s, i);
-									datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
-									if (feedback == nullptr) {
-										addUpdate("Unknown feedback");
-										break;
-									}
-									stringstream status;
-									status
-										<< "FeedbackID" << feedbackID
-										<< "\nName:     " << feedback->name
-										<< "\nControl:  " << manager.getControlName(feedback->controlID)
-										<< "\nPin:      " << feedback->pin
-										<< "\nX:        " << static_cast<int>(feedback->posX)
-										<< "\nY:        " << static_cast<int>(feedback->posY)
-										<< "\nZ:        " << static_cast<int>(feedback->posZ);
-									string stateText;
-									text::Converters::feedbackStatus(feedback->getState(), stateText);
-									status << "\nStatus:   " << stateText;
-									status << "\nLoco:     ";
-									if (feedback->getLoco() == LocoNone) {
-										status << "-";
-									}
-									else {
-										status << manager.getLocoName(feedback->getLoco()) << " (" << feedback->getLoco() << ")";
-									}
-									addUpdate(status.str());
-									break;
-								}
-							case 'n':
-							case 'N': // new feedback
-								{
-									readBlanks(s, i);
-									string name = readText(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posX = readNumber(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posY = readNumber(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posZ = readNumber(s, i);
-									readBlanks(s, i);
-									controlID_t control = readNumber(s, i);
-									readBlanks(s, i);
-									feedbackPin_t pin = readNumber(s, i);
-									readBlanks(s, i);
-									bool inverted = readBool(s, i);
-									string result;
-									if(!manager.feedbackSave(FeedbackNone, name, posX, posY, posZ, control, pin, inverted, result)) {
-										addUpdate(result);
-										break;
-									}
-									stringstream status;
-									status << "Feedback \"" << name << "\" added";
-									addUpdate(status.str());
-									break;
-								}
-							case 's':
-							case 'S': // set feedback
-								{
-									feedbackID_t feedbackID = readNumber(s, i);
-									readBlanks(s, i);
-									// read state
-									unsigned char input = s[i];
-									feedbackState_t state;
-									char* text;
-									if (input == 'X' || input == 'x') {
-										state = FeedbackStateOccupied;
-										text = (char*)"ON";
-									}
-									else {
-										state = FeedbackStateFree;
-										text = (char*)"OFF";
-									}
-									manager.feedback(ControlTypeConsole, feedbackID, state);
-									stringstream status;
-									status << "Feedback \"" << manager.getFeedbackName(feedbackID) << "\" turned " << text;
-									addUpdate(status.str());
-									break;
-								}
-							case 'r':
-							case 'R': // release feedback
-								{
-									readBlanks(s, i);
-									feedbackID_t feedbackID = readNumber(s, i);
-									if (!manager.feedbackRelease(feedbackID)) {
-										addUpdate("Feedback not found");
-										break;
-									}
-									addUpdate("Feedback released");
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown feedback command");
-									break;
-								}
-						}
-						break;
-					}
-				case 'l':
-				case 'L': // loco commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						++i;
-						switch (subcmd) {
-							case 'a':
-							case 'A': // set loco to automode
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // set all locos to automode
-										manager.locoStartAll();
-										break;
-									}
-									// set specific loco to auto mode
-									locoID_t locoID = readNumber(s, i);
-									if (!manager.locoStart(locoID)) {
-										// FIXME: bether errormessage
-										addUpdate("Unknown loco or loco is not in a block");
-									}
-									break;
-								}
-							case 'b':
-							case 'B': // loco into block
-								{
-									readBlanks(s, i);
-									locoID_t locoID = readNumber(s, i);
-									readBlanks(s, i);
-									blockID_t blockID = readNumber(s, i);
-									if (!manager.locoIntoBlock(locoID, blockID)) {
-										// FIXME: bether errormessage
-										addUpdate("Unknown loco or unknown block");
-									}
-									break;
-								}
-							case 'd':
-							case 'D': // delete loco
-								{
-									readBlanks(s, i);
-									locoID_t locoID = readNumber(s, i);
-									if (!manager.locoDelete(locoID)) {
-										addUpdate("Loco not found or loco in use");
-										break;
-									}
-									addUpdate("Loco deleted");
-									break;
-								}
-							case 'l':
-							case 'L': // list loco
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all locos
-										std::map<locoID_t,datamodel::Loco*> locos = manager.locoList();
-										stringstream status;
-										for (auto loco : locos) {
-											status << loco.first << " " << loco.second->name << "\n";
-										}
-										status << "Total number of locos: " << locos.size();
-										addUpdate(status.str());
-										break;
-									}
-									// list one loco
-									locoID_t locoID = readNumber(s, i);
-									datamodel::Loco* loco = manager.getLoco(locoID);
-									if (loco == nullptr) {
-										addUpdate("Unknown loco");
-										break;
-									}
-									stringstream status;
-									status
-										<< "Loco ID:  " << locoID
-										<< "\nName:     " << loco->name
-										<< "\nSpeed:    " << manager.locoSpeed(locoID)
-										<< "\nControl:  " << manager.getControlName(loco->controlID)
-										<< "\nProtocol: " << protocolSymbols[loco->protocol]
-										<< "\nAddress:  " << loco->address;
-									const char* const locoStateText = loco->getStateText();
-									status << "\nStatus:   " << locoStateText;
-									status << "\nBlock:    ";
-									if (loco->block() == BlockNone) {
-										status << "-";
-									}
-									else {
-										status << manager.getBlockName(loco->block()) << " (" << loco->block() << ")";
-									}
-									status << "\nStreet:   ";
-									if (loco->street() == StreetNone) {
-										status << "-";
-									}
-									else {
-										status << manager.getStreetName(loco->street()) << " (" << loco->street() << ")";
-									}
-									addUpdate(status.str());
-									break;
-								}
-							case 'm':
-							case 'M': // set loco to manual mode
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // set all locos to manual mode
-										manager.locoStopAll();
-										break;
-									}
-									// set specific loco to manual mode
-									locoID_t locoID = readNumber(s, i);
-									if (!manager.locoStop(locoID)) {
-										// FIXME: bether errormessage
-										addUpdate("Unknown loco");
-									}
-									break;
-								}
-							case 'n':
-							case 'N': // new loco
-								{
-									readBlanks(s, i);
-									string name = readText(s, i);
-									readBlanks(s, i);
-									controlID_t control = readNumber(s, i);
-									readBlanks(s, i);
-									protocol_t protocol = static_cast<protocol_t>(readNumber(s, i));
-									readBlanks(s, i);
-									address_t address = readNumber(s, i);
-									string result;
-									if (!manager.locoSave(LocoNone, name, control, protocol, address, result)) {
-										addUpdate(result);
-										break;
-									}
-									stringstream status;
-									status << "Loco \"" << name << "\" added";
-									addUpdate(status.str());
-									break;
-								}
-							case 's':
-							case 'S': // set loco speed
-								{
-									readBlanks(s, i);
-									locoID_t locoID = readNumber(s, i);
-									readBlanks(s, i);
-									speed_t speed = readNumber(s, i);
-									if (!manager.locoSpeed(ControlTypeConsole, locoID, speed)) {
-										// FIXME: bether errormessage
-										addUpdate("Unknown loco");
-									}
-									break;
-								}
-							case 'r':
-							case 'R': // release loco
-								{
-									readBlanks(s, i);
-									locoID_t locoID = readNumber(s, i);
-									if (!manager.locoRelease(locoID)) {
-										// FIXME: bether errormessage
-										addUpdate("Loco not found or block in use");
-										break;
-									}
-									addUpdate("Loco released");
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown loco command");
-								}
-						}
-						break;
-					}
-				case 'h':
-				case 'H': // help
-					{
-						string status("Available console commands:\n"
-								"\n"
-								"Accessory commands\n"
-								"A D accessory#                    Delete accessory\n"
-								"A L A                             List all accessories\n"
-								"A L accessory#                    List accessory\n"
-								"A N Name X Y Z Control Protocol Address Timeout(ms)\n"
-								"                                  New Accessory\n"
-								"\n"
-								"Block commands\n"
-								"B D block#                        Delete block\n"
-								"B L A                             List all blocks\n"
-								"B L block#                        List block\n"
-								"B N Name X Y Z Width Rotation     New block\n"
-								"B R block#                        Release block\n"
-								"\n"
-								"Control commands\n"
-								"C D control#                      Delete control\n"
-								"C L A                             List all controls\n"
-								"C L control#                      List control\n"
-								"C N Name Type IP                  New control\n"
-								"\n"
-								"Feedback commands\n"
-								"F D feedback#                     Delete feedback\n"
-								"F L A                             List all feedbacks\n"
-								"F L feedback#                     List feedback\n"
-								"F N Name X Y Z Control Pin/Address Invert\n"
-								"                                  New feedback\n"
-								"L R feedback#                     Release feedback\n"
-								"F S feedback# [X]                 Turn feedback on (with X) or off (without X)\n"
-								"\n"
-								"Loco commands\n"
-								"L A A                             Start all locos into automode\n"
-								"L A loco#                         Start loco into automode\n"
-								"L B loco# block#                  Set loco into block\n"
-								"L D loco#                         Delete loco\n"
-								"L L A                             List all locos\n"
-								"L L loco#                         List loco\n"
-								"L M A                             Stop all locos and go to manual mode\n"
-								"L M loco#                         Stop loco and go to manual mode\n"
-								"L N Name Control Protocol Address New loco\n"
-								"L R loco#                         Release loco\n"
-								"L S loco# speed                   Set loco speed between 0 and 1024\n"
-								"\n"
-								"Street commands\n"
-								"T D street#                       Delete street\n"
-								"T L A                             List all streets\n"
-								"T L street#                       List street\n"
-								"T N Name FromBlock FromDirektion ToBlock ToDirection FeedbackStop\n"
-								"T R street#                       Release street\n"
-								"                                  New Feedback\n"
-								"\n"
-								"Switch commands\n"
-								"W D switch#                       Delete switch\n"
-								"W L A                             List all switches\n"
-								"W L switch#                       List switch\n"
-								"W N Name X Y Z Rotation Control Protocol Address Type(L/R) Timeout(ms)\n"
-								"                                  New Switch\n"
-								"\n"
-								"Other commands\n"
-								"H                                 Show this help\n"
-								"P                                 Print layout\n"
-								"Q                                 Quit console\n"
-								"S                                 Shut down railcontrol\n");
-						addUpdate(status);
-						break;
-					}
-				case 'p':
-				case 'P': // print layout
-					{
-						stringstream status;
-						status << "\033[2J";
-						status << "\033[0;0H";
-						status << "Layout 0";
-						// print blocks
-						const map<blockID_t,datamodel::Block*>& blocks = manager.blockList();
-						for (auto block : blocks) {
-							layoutPosition_t posX;
-							layoutPosition_t posY;
-							layoutPosition_t posZ;
-							layoutItemSize_t w;
-							layoutItemSize_t h;
-							layoutRotation_t r;
-							block.second->position(posX, posY, posZ, w, h, r);
-							if (posZ != 0) {
-								continue;
-							}
-							status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
-							status << "Bloc";
-						}
-						// print switches
-						const map<switchID_t,datamodel::Switch*>& switches = manager.switchList();
-						for (auto mySwitch : switches) {
-							layoutPosition_t posX;
-							layoutPosition_t posY;
-							layoutPosition_t posZ;
-							layoutItemSize_t w;
-							layoutItemSize_t h;
-							layoutRotation_t r;
-							mySwitch.second->position(posX, posY, posZ, w, h, r);
-							if (posZ != 0) {
-								continue;
-							}
-							status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
-							status << "S";
-						}
-						// print accessories
-						const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
-						for (auto accessory : accessories) {
-							layoutPosition_t posX;
-							layoutPosition_t posY;
-							layoutPosition_t posZ;
-							layoutItemSize_t w;
-							layoutItemSize_t h;
-							layoutRotation_t r;
-							accessory.second->position(posX, posY, posZ, w, h, r);
-							if (posZ != 0) {
-								continue;
-							}
-							status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
-							status << "A";
-						}
-						// print cursor at correct position
-						status << "\033[20;0H";
-						addUpdate(status.str());
-						break;
-					}
-					break;
-				case 'q':
-				case 'Q': // quit (must be next to shut down!)
-					{
-						addUpdate("Quit railcontrol console");
-						close(clientSocket);
-						return;
-					}
-				case 's':
-				case 'S': // shut down railcontrol
-					{
-						addUpdate("Shutting down railcontrol");
-						stopRailControlConsole();
-						close(clientSocket);
-						return;
-					}
-				case 't':
-				case 'T': // steet commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						++i;
-						switch (subcmd) {
-							case 'd':
-							case 'D': // delete street
-								{
-									readBlanks(s, i);
-									streetID_t streetID = readNumber(s, i);
-									if (!manager.streetDelete(streetID)) {
-										addUpdate("Street not found or street in use");
-										break;
-									}
-									addUpdate("Street deleted");
-									break;
-								}
-							case 'l':
-							case 'L': // list streets
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all streetes
-										std::map<streetID_t,datamodel::Street*> streets = manager.streetList();
-										stringstream status;
-										for (auto street : streets) {
-											status << street.first << " " << street.second->name << "\n";
-										}
-										status << "Total number of streets: " << streets.size();
-										addUpdate(status.str());
-										break;
-									}
-									// list one street
-									streetID_t streetID = readNumber(s, i);
-									datamodel::Street* street = manager.getStreet(streetID);
-									if (street == nullptr) {
-										addUpdate("Unknown street");
-										break;
-									}
-									stringstream status;
-									status
-										<< "Street ID " << streetID
-										<< "\nName:     " << street->name
-										<< "\nStart:    ";
-									if (street->fromBlock == BlockNone) {
-										status << "-";
-									}
-									else {
-										status << manager.getBlockName(street->fromBlock) << " (" << street->fromBlock << ") " << (street->fromDirection ? ">" : "<");
-									}
-									status << "\nEnd:      ";
-									if (street->toBlock == BlockNone) {
-										status << "-";
-									}
-									else {
-										status << manager.getBlockName(street->toBlock) << " (" << street->toBlock << ") " << (street->toDirection ? ">" : "<");
-									}
-									string stateText;
-									text::Converters::lockStatus(street->getState(), stateText);
-									status << "\nStatus:   " << stateText;
-									status << "\nLoco:     ";
-									if (street->getLoco() == LocoNone) {
-										status << "-";
-									}
-									else {
-										status << manager.getLocoName(street->getLoco()) << " (" << street->getLoco() << ")";
-									}
-									addUpdate(status.str());
-									break;
-								}
-							case 'n':
-							case 'N': // new street
-								{
-									readBlanks(s, i);
-									string name = readText(s, i);
-									readBlanks(s, i);
-									blockID_t fromBlock = readNumber(s, i);
-									readBlanks(s, i);
-									direction_t fromDirection = readDirection(s, i);
-									readBlanks(s, i);
-									blockID_t toBlock = readNumber(s, i);
-									readBlanks(s, i);
-									direction_t toDirection = readDirection(s, i);
-									readBlanks(s, i);
-									feedbackID_t feedbackID = readNumber(s, i);
-									string result;
-									if (!manager.streetSave(StreetNone, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID, result)) {
-										addUpdate(result);
-										break;
-									}
-									stringstream status;
-									status << "Street \"" << name << "\" added";
-									addUpdate(status.str());
-									break;
-								}
-							case 'r':
-							case 'R': // release street
-								{
-									readBlanks(s, i);
-									streetID_t streetID = readNumber(s, i);
-									if (!manager.streetRelease(streetID)) {
-										addUpdate("Street not found or block in use");
-										break;
-									}
-									addUpdate("Street released");
-									break;
-								}
-							default:
-								{
-									addUpdate("Unknown street command");
-								}
-						}
-						break;
-					}
-				case 'w':
-				case 'W': // Switch commands
-					{
-						readBlanks(s, i);
-						char subcmd = s[i];
-						++i;
-						switch (subcmd) {
-							case 'd':
-							case 'D': // delete switch
-								{
-									readBlanks(s, i);
-									switchID_t switchID = readNumber(s, i);
-									if (!manager.switchDelete(switchID)) {
-										addUpdate("Switch not found or switch in use");
-										break;
-									}
-									addUpdate("Switch deleted");
-									break;
-								}
-							case 'l':
-							case 'L': // list switchs
-								{
-									readBlanks(s, i);
-									if (s[i] == 'a') { // list all switches
-										std::map<switchID_t,datamodel::Switch*> switches = manager.switchList();
-										stringstream status;
-										for (auto mySwitch : switches) {
-											status << mySwitch.first << " " << mySwitch.second->name << "\n";
-										}
-										status << "Total number of switches: " << switches.size();
-										addUpdate(status.str());
-										break;
-									}
-									// list one switch
-									switchID_t switchID = readNumber(s, i);
-									datamodel::Switch* mySwitch = manager.getSwitch(switchID);
-									if (mySwitch == nullptr) {
-										addUpdate("Unknown switch");
-										break;
-									}
-									stringstream status;
-									status
-										<< "Switch ID " << switchID
-										<< "\nName:     " << mySwitch->name
-										<< "\nX:        " << static_cast<int>(mySwitch->posX)
-										<< "\nY:        " << static_cast<int>(mySwitch->posY)
-										<< "\nZ:        " << static_cast<int>(mySwitch->posZ)
-										<< "\nRotation: ";
-									switch (mySwitch->rotation) {
-										case Rotation0:
-											status << "0";
-											break;
-										case Rotation90:
-											status << "90";
-											break;
-										case Rotation180:
-											status << "180";
-											break;
-										case Rotation270:
-											status << "270";
-											break;
-										default:
-											status << "unknown";
-									}
-									string state;
-									text::Converters::switchStatus(static_cast<switchState_t>(mySwitch->state), state);
-									status << "\nState:    " << state;
-									/*
-									status << "\nLoco:     ";
-									if (mySwitch->getLoco() == LOCO_NONE) {
-										status << "-";
-									}
-									else {
-										status << manager.getLocoName(mySwitch->getLoco()) << " (" << mySwitch->getLoco() << ")";
-									}
-									*/
-									addUpdate(status.str());
-									break;
-								}
-							case 'n':
-							case 'N': // new switch
-								{
-									readBlanks(s, i);
-									string name = readText(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posX = readNumber(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posY = readNumber(s, i);
-									readBlanks(s, i);
-									layoutPosition_t posZ = readNumber(s, i);
-									readBlanks(s, i);
-									layoutRotation_t rotation = readRotation(s, i);
-									readBlanks(s, i);
-									controlID_t controlID = readNumber(s, i);
-									readBlanks(s, i);
-									protocol_t protocol = static_cast<protocol_t>(readNumber(s, i));
-									readBlanks(s, i);
-									address_t address = readNumber(s, i);
-									readBlanks(s, i);
-									switchType_t type = readSwitchType(s, i);
-									readBlanks(s, i);
-									accessoryTimeout_t timeout = readNumber(s, i);
-									string result;
-									if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SwitchStateStraight, timeout, result)) {
-										addUpdate(result);
-										break;
-									}
-									stringstream status;
-									status << "Switch \"" << name << "\" added";
-									addUpdate(status.str());
-									break;
-								}
-							/*
-							case 'r':
-							case 'R': // release switch
-								{
-									readBlanks(s, i);
-									switchID_t switchID = readNumber(s, i);
-									if (!manager.switchRelease(switchID)) {
-										addUpdate("Switch not found");
-										break;
-									}
-									addUpdate("Switch released");
-									break;
-								}
-							*/
-							default:
-								{
-									addUpdate("Unknown switch command");
-								}
-						}
-						break;
-					}
-				default:
-					{
-						addUpdate("Unknown command");
-					}
+				ssize_t ret = recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+				if (ret > 0)
+				{
+					pos += ret;
+					s = string(buffer_in);
+					continue;
+				}
+
+				if (errno == ETIMEDOUT)
+				{
+					continue;
+				}
+
+				close(clientSocket);
+				return;
 			}
+
+			HandleCommand(s);
 		}
 	}
 
-	void Console::addUpdate(const string& status) {
+	void Console::HandleCommand(string& s)
+	{
+		size_t i = 0;
+		switch (ReadCommand(s, i))
+		{
+			case 'a':
+			case 'A':
+				HandleAccessoryCommand(s, i);
+				break;
+
+			case 'b':
+			case 'B':
+				HandleBlockCommand(s, i);
+				break;
+
+			case 'c':
+			case 'C':
+				HandleControlCommand(s, i);
+				break;
+
+			case 'f':
+			case 'F':
+				HandleFeedbackCommand(s, i);
+				break;
+
+			case 'l':
+			case 'L':
+				HandleLocoCommand(s, i);
+				break;
+
+			case 'h':
+			case 'H':
+				HandleHelp();
+				break;
+
+			case 'p':
+			case 'P':
+				HandlePrintLayout();
+				break;
+
+			case 'q':
+			case 'Q':
+				HandleQuit();
+				return;
+
+			case 's':
+			case 'S':
+				HandleShutdown();
+				return;
+
+			case 't':
+			case 'T':
+				HandleStreetCommand(s, i);
+				break;
+
+			case 'w':
+			case 'W':
+				HandleSwitchCommand(s, i);
+				break;
+
+			default:
+				AddUpdate("Unknown command");
+		}
+	}
+
+	void Console::HandleAccessoryCommand(string& s, size_t& i)
+	{
+		switch (ReadCommand(s, i)) {
+			case 'd':
+			case 'D':
+				HandleAccessoryDelete(s, i);
+				break;
+
+			case 'l':
+			case 'L':
+				HandleAccessoryList(s, i);
+				break;
+
+			case 'n':
+			case 'N':
+				HandleAccessoryNew(s, i);
+				break;
+
+			default:
+				AddUpdate("Unknown accessory command");
+		}
+	}
+
+	void Console::HandleBlockCommand(string& s, size_t& i)
+	{
+		switch (ReadCommand(s, i)) {
+			case 'd':
+			case 'D':
+				HandleBlockDelete(s, i);
+				break;
+
+			case 'l':
+			case 'L':
+				HandleBlockList(s, i);
+				break;
+
+			case 'n':
+			case 'N':
+				HandleBlockNew(s, i);
+				break;
+
+			case 'r':
+			case 'R':
+				HandleBlockRelease(s, i);
+				break;
+
+			default:
+				AddUpdate("Unknown block command");
+		}
+	}
+
+	void Console::HandleControlCommand(string& s, size_t& i)
+	{
+		switch (ReadCommand(s, i)) {
+			case 'd':
+			case 'D':
+				HandleControlDelete(s, i);
+				break;
+
+			case 'l':
+			case 'L':
+				HandleControlList(s, i);
+				break;
+
+			case 'n':
+			case 'N':
+				HandleControlNew(s, i);
+				break;
+
+			default:
+				AddUpdate("Unknown control command");
+		}
+	}
+
+	void Console::HandleFeedbackCommand(string& s, size_t& i)
+	{
+		switch (ReadCommand(s, i)) {
+			case 'd':
+			case 'D':
+				HandleFeedbackDelete(s, i);
+				break;
+
+			case 'l':
+			case 'L':
+				HandleFeedbackList(s, i);
+				break;
+
+			case 'n':
+			case 'N':
+				HandleFeedbackNew(s, i);
+				break;
+
+			case 's':
+			case 'S':
+				HandleFeedbackSet(s, i);
+				break;
+
+			case 'r':
+			case 'R':
+				HandleFeedbackRelease(s, i);
+				break;
+
+			default:
+				AddUpdate("Unknown feedback command");
+		}
+	}
+
+	void Console::HandleLocoCommand(string& s, size_t& i)
+	{
+		switch (ReadCommand(s, i)) {
+			case 'a':
+			case 'A':
+				HandleLocoAutomode(s, i);
+				break;
+
+			case 'b':
+			case 'B':
+				HandleLocoBlock(s, i);
+				break;
+
+			case 'd':
+			case 'D':
+				HandleLocoDelete(s, i);
+				break;
+
+			case 'l':
+			case 'L':
+				HandleLocoList(s, i);
+				break;
+
+			case 'm':
+			case 'M':
+				HandleLocoManualmode(s, i);
+				break;
+
+			case 'n':
+			case 'N':
+				HandleLocoNew(s, i);
+				break;
+
+			case 's':
+			case 'S':
+				HandleLocoSpeed(s, i);
+				break;
+
+			case 'r':
+			case 'R':
+				HandleLocoRelease(s, i);
+				break;
+
+			default:
+				AddUpdate("Unknown loco command");
+		}
+	}
+
+	void Console::HandleStreetCommand(string& s, size_t& i)
+	{
+		switch (ReadCommand(s, i)) {
+			case 'd':
+			case 'D':
+				HandleStreetDelete(s, i);
+				break;
+
+			case 'l':
+			case 'L':
+				HandleStreetList(s, i);
+				break;
+
+			case 'n':
+			case 'N':
+				HandleStreetNew(s, i);
+				break;
+
+			case 'r':
+			case 'R':
+				HandleStreetRelease(s, i);
+				break;
+
+			default:
+				AddUpdate("Unknown street command");
+		}
+	}
+
+	void Console::HandleSwitchCommand(string& s, size_t& i)
+	{
+		switch (ReadCommand(s, i)) {
+			case 'd':
+			case 'D':
+				HandleSwitchDelete(s, i);
+				break;
+
+			case 'l':
+			case 'L':
+				HandleSwitchList(s, i);
+				break;
+
+			case 'n':
+			case 'N':
+				HandleSwitchNew(s, i);
+				break;
+
+			/*
+			case 'r':
+			case 'R':
+				HandleSwitchRelease(s, i);
+				break;
+
+			*/
+			default:
+				AddUpdate("Unknown switch command");
+		}
+	}
+
+	void Console::HandleAccessoryDelete(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		accessoryID_t accessoryID = ReadNumber(s, i);
+		if (!manager.accessoryDelete(accessoryID))
+		{
+			AddUpdate("Accessory not found or accessory in use");
+			return;
+		}
+		AddUpdate("Accessory deleted");
+	}
+
+	void Console::HandleAccessoryList(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{
+			// list all accessories
+			std::map<accessoryID_t,datamodel::Accessory*> accessories = manager.accessoryList();
+			stringstream status;
+			for (auto accessory : accessories)
+			{
+				status << accessory.first << " " << accessory.second->name << "\n";
+			}
+			status << "Total number of accessorys: " << accessories.size();
+			AddUpdate(status.str());
+			return;
+		}
+
+		accessoryID_t accessoryID = ReadNumber(s, i);
+		datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		if (accessory == nullptr)
+		{
+			AddUpdate("Unknown accessory");
+			return;
+		}
+
+		stringstream status;
+		status << accessoryID << " " << accessory->name << " (" << static_cast<int>(accessory->posX) << "/" << static_cast<int>(accessory->posY) << "/" << static_cast<int>(accessory->posZ) << ")";
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleAccessoryNew(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		string name = ReadText(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posX = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posY = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posZ = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		controlID_t controlID = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
+		ReadBlanks(s, i);
+		address_t address = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		accessoryTimeout_t timeout = ReadNumber(s, i);
+		string result;
+		if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result))
+		{
+			AddUpdate(result);
+			return;
+		}
+		stringstream status;
+		status << "Accessory \"" << name << "\" added";
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleBlockDelete(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		blockID_t blockID = ReadNumber(s, i);
+		if (!manager.blockDelete(blockID))
+		{
+			AddUpdate("Block not found or block in use");
+			return;
+		}
+		AddUpdate("Block deleted");
+	}
+
+	void Console::HandleBlockList(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{
+			// list all blocks
+			std::map<blockID_t,datamodel::Block*> blocks = manager.blockList();
+			stringstream status;
+			for (auto block : blocks)
+			{
+				status << block.first << " " << block.second->name << "\n";
+			}
+			status << "Total number of Blocks: " << blocks.size();
+			AddUpdate(status.str());
+			return;
+		}
+
+		// list one block
+		blockID_t blockID = ReadNumber(s, i);
+		datamodel::Block* block = manager.getBlock(blockID);
+		if (block == nullptr)
+		{
+			AddUpdate("Unknown block");
+			return;
+		}
+		stringstream status;
+		status
+			<< "Block ID: " << blockID
+			<< "\nName:     " << block->name
+			<< "\nX:        " << static_cast<int>(block->posX)
+			<< "\nY:        " << static_cast<int>(block->posY)
+			<< "\nZ:        " << static_cast<int>(block->posZ);
+		string stateText;
+		text::Converters::lockStatus(block->getState(), stateText);
+		status << "\nStatus:   " << stateText;
+		status << "\nLoco:     ";
+		if (block->getLoco() == LocoNone)
+		{
+			status << "-";
+		}
+		else
+		{
+			status << manager.getLocoName(block->getLoco()) << " (" << block->getLoco() << ")";
+		}
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleBlockNew(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		string name = ReadText(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posX = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posY = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posZ = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutItemSize_t width = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutRotation_t rotation = ReadRotation(s, i);
+		string result;
+		if (!manager.blockSave(BlockNone, name, posX, posY, posZ, width, rotation, result))
+		{
+			AddUpdate(result);
+			return;
+		}
+		stringstream status;
+		status << "Block \"" << name << "\" added";
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleBlockRelease(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		blockID_t blockID = ReadNumber(s, i);
+		if (!manager.blockRelease(blockID))
+		{
+			AddUpdate("Block not found or block in use");
+			return;
+		}
+		AddUpdate("Block released");
+	}
+
+	void Console::HandleControlDelete(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		controlID_t controlID = ReadNumber(s, i);
+		if (!manager.controlDelete(controlID))
+		{
+			AddUpdate("Control not found or control in use");
+			return;
+		}
+		AddUpdate("Control deleted");
+	}
+
+	void Console::HandleControlList(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{
+			// list all controls
+			std::map<controlID_t,hardware::HardwareParams*> params = manager.controlList();
+			stringstream status;
+			for (auto param : params) {
+				status << static_cast<int>(param.first) << " " << param.second->name << "\n";
+			}
+			status << "Total number of controls: " << params.size();
+			AddUpdate(status.str());
+			return;
+		}
+
+		controlID_t controlID = ReadNumber(s, i);
+		hardware::HardwareParams* param = manager.getHardware(controlID);
+		if (param == nullptr)
+		{
+			AddUpdate("Unknown Control");
+			return;
+		}
+
+		stringstream status;
+		status << static_cast<int>(controlID) << " " << param->name;
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleControlNew(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		string name = ReadText(s, i);
+		ReadBlanks(s, i);
+		string type = ReadText(s, i);
+		ReadBlanks(s, i);
+		string ip = ReadText(s, i);
+		hardwareType_t hardwareType;
+		if (type.compare("virt") == 0)
+		{
+			hardwareType = HardwareTypeVirt;
+		}
+		else if (type.compare("cs2") == 0)
+		{
+			hardwareType = HardwareTypeCS2;
+		}
+		else
+		{
+			AddUpdate("Unknown hardware type");
+			return;
+		}
+
+		string result;
+		if (!manager.controlSave(ControlNone, hardwareType, name, ip, result)) {
+			AddUpdate(result);
+			return;
+		}
+
+		stringstream status;
+		status << "Control \"" << name << "\" added";
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleFeedbackDelete(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		feedbackID_t feedbackID = ReadNumber(s, i);
+		if (!manager.feedbackDelete(feedbackID))
+		{
+			AddUpdate("Feedback not found or feedback in use");
+			return;
+		}
+		AddUpdate("Feedback deleted");
+	}
+
+	void Console::HandleFeedbackList(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{
+			// list all feedbacks
+			std::map<feedbackID_t,datamodel::Feedback*> feedbacks = manager.feedbackList();
+			stringstream status;
+			for (auto feedback : feedbacks)
+			{
+				status << feedback.first << " " << feedback.second->name << "\n";
+			}
+			status << "Total number of feedbacks: " << feedbacks.size();
+			AddUpdate(status.str());
+			return;
+		}
+
+		// list one feedback
+		feedbackID_t feedbackID = ReadNumber(s, i);
+		datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		if (feedback == nullptr)
+		{
+			AddUpdate("Unknown feedback");
+			return;
+		}
+
+		stringstream status;
+		status
+			<< "FeedbackID" << feedbackID
+			<< "\nName:     " << feedback->name
+			<< "\nControl:  " << manager.getControlName(feedback->controlID)
+			<< "\nPin:      " << feedback->pin
+			<< "\nX:        " << static_cast<int>(feedback->posX)
+			<< "\nY:        " << static_cast<int>(feedback->posY)
+			<< "\nZ:        " << static_cast<int>(feedback->posZ);
+		string stateText;
+		text::Converters::feedbackStatus(feedback->getState(), stateText);
+		status << "\nStatus:   " << stateText;
+		status << "\nLoco:     ";
+		if (feedback->getLoco() == LocoNone)
+		{
+			status << "-";
+		}
+		else
+		{
+			status << manager.getLocoName(feedback->getLoco()) << " (" << feedback->getLoco() << ")";
+		}
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleFeedbackNew(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		string name = ReadText(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posX = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posY = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posZ = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		controlID_t control = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		feedbackPin_t pin = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		bool inverted = ReadBool(s, i);
+		string result;
+		if(!manager.feedbackSave(FeedbackNone, name, posX, posY, posZ, control, pin, inverted, result))
+		{
+			AddUpdate(result);
+			return;
+		}
+		stringstream status;
+		status << "Feedback \"" << name << "\" added";
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleFeedbackSet(string& s, size_t& i)
+	{
+		feedbackID_t feedbackID = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		// read state
+		unsigned char input = s[i];
+		feedbackState_t state;
+		char* text;
+		if (input == 'X' || input == 'x')
+		{
+			state = FeedbackStateOccupied;
+			text = (char*)"ON";
+		}
+		else
+		{
+			state = FeedbackStateFree;
+			text = (char*)"OFF";
+		}
+		manager.feedback(ControlTypeConsole, feedbackID, state);
+		stringstream status;
+		status << "Feedback \"" << manager.getFeedbackName(feedbackID) << "\" turned " << text;
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleFeedbackRelease(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		feedbackID_t feedbackID = ReadNumber(s, i);
+		if (!manager.feedbackRelease(feedbackID))
+		{
+			AddUpdate("Feedback not found");
+			return;
+		}
+		AddUpdate("Feedback released");
+	}
+
+	void Console::HandleLocoAutomode(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{ // set all locos to automode
+			manager.locoStartAll();
+			return;
+		}
+		// set specific loco to auto mode
+		locoID_t locoID = ReadNumber(s, i);
+		if (!manager.locoStart(locoID))
+		{
+			// FIXME: bether errormessage
+			AddUpdate("Unknown loco or loco is not in a block");
+		}
+	}
+
+	void Console::HandleLocoBlock(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		locoID_t locoID = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		blockID_t blockID = ReadNumber(s, i);
+		if (!manager.locoIntoBlock(locoID, blockID))
+		{
+			// FIXME: bether errormessage
+			AddUpdate("Unknown loco or unknown block");
+		}
+	}
+
+	void Console::HandleLocoDelete(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		locoID_t locoID = ReadNumber(s, i);
+		if (!manager.locoDelete(locoID))
+		{
+			AddUpdate("Loco not found or loco in use");
+			return;
+		}
+		AddUpdate("Loco deleted");
+	}
+
+	void Console::HandleLocoList(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{
+			// list all locos
+			std::map<locoID_t,datamodel::Loco*> locos = manager.locoList();
+			stringstream status;
+			for (auto loco : locos) {
+				status << loco.first << " " << loco.second->name << "\n";
+			}
+			status << "Total number of locos: " << locos.size();
+			AddUpdate(status.str());
+			return;
+		}
+
+		// list one loco
+		locoID_t locoID = ReadNumber(s, i);
+		datamodel::Loco* loco = manager.getLoco(locoID);
+		if (loco == nullptr)
+		{
+			AddUpdate("Unknown loco");
+			return;
+		}
+		stringstream status;
+		status
+			<< "Loco ID:  " << locoID
+			<< "\nName:     " << loco->name
+			<< "\nSpeed:    " << manager.locoSpeed(locoID)
+			<< "\nControl:  " << manager.getControlName(loco->controlID)
+			<< "\nProtocol: " << protocolSymbols[loco->protocol]
+			<< "\nAddress:  " << loco->address;
+		const char* const locoStateText = loco->getStateText();
+		status << "\nStatus:   " << locoStateText;
+		status << "\nBlock:    ";
+		if (loco->block() == BlockNone)
+		{
+			status << "-";
+		}
+		else
+		{
+			status << manager.getBlockName(loco->block()) << " (" << loco->block() << ")";
+		}
+		status << "\nStreet:   ";
+		if (loco->street() == StreetNone)
+		{
+			status << "-";
+		}
+		else
+		{
+			status << manager.getStreetName(loco->street()) << " (" << loco->street() << ")";
+		}
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleLocoManualmode(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{
+			// set all locos to manual mode
+			manager.locoStopAll();
+			return;
+		}
+		// set specific loco to manual mode
+		locoID_t locoID = ReadNumber(s, i);
+		if (!manager.locoStop(locoID))
+		{
+			// FIXME: bether errormessage
+			AddUpdate("Unknown loco");
+		}
+	}
+
+	void Console::HandleLocoNew(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		string name = ReadText(s, i);
+		ReadBlanks(s, i);
+		controlID_t control = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
+		ReadBlanks(s, i);
+		address_t address = ReadNumber(s, i);
+		string result;
+		if (!manager.locoSave(LocoNone, name, control, protocol, address, result))
+		{
+			AddUpdate(result);
+			return;
+		}
+		stringstream status;
+		status << "Loco \"" << name << "\" added";
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleLocoSpeed(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		locoID_t locoID = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		speed_t speed = ReadNumber(s, i);
+		if (!manager.locoSpeed(ControlTypeConsole, locoID, speed))
+		{
+			// FIXME: bether errormessage
+			AddUpdate("Unknown loco");
+		}
+	}
+
+	void Console::HandleLocoRelease(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		locoID_t locoID = ReadNumber(s, i);
+		if (!manager.locoRelease(locoID))
+		{
+			// FIXME: bether errormessage
+			AddUpdate("Loco not found or block in use");
+			return;
+		}
+		AddUpdate("Loco released");
+	}
+
+	void Console::HandleHelp()
+	{
+		string status("Available console commands:\n"
+				"\n"
+				"Accessory commands\n"
+				"A D accessory#                    Delete accessory\n"
+				"A L A                             List all accessories\n"
+				"A L accessory#                    List accessory\n"
+				"A N Name X Y Z Control Protocol Address Timeout(ms)\n"
+				"                                  New Accessory\n"
+				"\n"
+				"Block commands\n"
+				"B D block#                        Delete block\n"
+				"B L A                             List all blocks\n"
+				"B L block#                        List block\n"
+				"B N Name X Y Z Width Rotation     New block\n"
+				"B R block#                        Release block\n"
+				"\n"
+				"Control commands\n"
+				"C D control#                      Delete control\n"
+				"C L A                             List all controls\n"
+				"C L control#                      List control\n"
+				"C N Name Type IP                  New control\n"
+				"\n"
+				"Feedback commands\n"
+				"F D feedback#                     Delete feedback\n"
+				"F L A                             List all feedbacks\n"
+				"F L feedback#                     List feedback\n"
+				"F N Name X Y Z Control Pin/Address Invert\n"
+				"                                  New feedback\n"
+				"L R feedback#                     Release feedback\n"
+				"F S feedback# [X]                 Turn feedback on (with X) or off (without X)\n"
+				"\n"
+				"Loco commands\n"
+				"L A A                             Start all locos into automode\n"
+				"L A loco#                         Start loco into automode\n"
+				"L B loco# block#                  Set loco into block\n"
+				"L D loco#                         Delete loco\n"
+				"L L A                             List all locos\n"
+				"L L loco#                         List loco\n"
+				"L M A                             Stop all locos and go to manual mode\n"
+				"L M loco#                         Stop loco and go to manual mode\n"
+				"L N Name Control Protocol Address New loco\n"
+				"L R loco#                         Release loco\n"
+				"L S loco# speed                   Set loco speed between 0 and 1024\n"
+				"\n"
+				"Street commands\n"
+				"T D street#                       Delete street\n"
+				"T L A                             List all streets\n"
+				"T L street#                       List street\n"
+				"T N Name FromBlock FromDirektion ToBlock ToDirection FeedbackStop\n"
+				"T R street#                       Release street\n"
+				"                                  New Feedback\n"
+				"\n"
+				"Switch commands\n"
+				"W D switch#                       Delete switch\n"
+				"W L A                             List all switches\n"
+				"W L switch#                       List switch\n"
+				"W N Name X Y Z Rotation Control Protocol Address Type(L/R) Timeout(ms)\n"
+				"                                  New Switch\n"
+				"\n"
+				"Other commands\n"
+				"H                                 Show this help\n"
+				"P                                 Print layout\n"
+				"Q                                 Quit console\n"
+				"S                                 Shut down railcontrol\n");
+		AddUpdate(status);
+	}
+
+	void Console::HandlePrintLayout()
+	{
+		stringstream status;
+		status << "\033[2J";
+		status << "\033[0;0H";
+		status << "Layout 0";
+		// print blocks
+		const map<blockID_t,datamodel::Block*>& blocks = manager.blockList();
+		for (auto block : blocks)
+		{
+			layoutPosition_t posX;
+			layoutPosition_t posY;
+			layoutPosition_t posZ;
+			layoutItemSize_t w;
+			layoutItemSize_t h;
+			layoutRotation_t r;
+			block.second->position(posX, posY, posZ, w, h, r);
+			if (posZ != 0)
+			{
+				continue;
+			}
+			status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
+			status << "Bloc";
+		}
+		// print switches
+		const map<switchID_t,datamodel::Switch*>& switches = manager.switchList();
+		for (auto mySwitch : switches)
+		{
+			layoutPosition_t posX;
+			layoutPosition_t posY;
+			layoutPosition_t posZ;
+			layoutItemSize_t w;
+			layoutItemSize_t h;
+			layoutRotation_t r;
+			mySwitch.second->position(posX, posY, posZ, w, h, r);
+			if (posZ != 0)
+			{
+				continue;
+			}
+			status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
+			status << "S";
+		}
+		// print accessories
+		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
+		for (auto accessory : accessories)
+		{
+			layoutPosition_t posX;
+			layoutPosition_t posY;
+			layoutPosition_t posZ;
+			layoutItemSize_t w;
+			layoutItemSize_t h;
+			layoutRotation_t r;
+			accessory.second->position(posX, posY, posZ, w, h, r);
+			if (posZ != 0)
+			{
+				continue;
+			}
+			status << "\033[" << (int)(posY + 2) << ";" << (int)(posX + 1) << "H";
+			status << "A";
+		}
+		// print cursor at correct position
+		status << "\033[20;0H";
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleQuit()
+	{
+		AddUpdate("Quit railcontrol console");
+		close(clientSocket);
+	}
+
+	void Console::HandleShutdown()
+	{
+		AddUpdate("Shutting down railcontrol");
+		stopRailControlConsole();
+		close(clientSocket);
+	}
+
+	void Console::HandleStreetDelete(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		streetID_t streetID = ReadNumber(s, i);
+		if (!manager.streetDelete(streetID))
+		{
+			AddUpdate("Street not found or street in use");
+			return;
+		}
+		AddUpdate("Street deleted");
+	}
+
+	void Console::HandleStreetList(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{
+			// list all streetes
+			std::map<streetID_t,datamodel::Street*> streets = manager.streetList();
+			stringstream status;
+			for (auto street : streets) {
+				status << street.first << " " << street.second->name << "\n";
+			}
+			status << "Total number of streets: " << streets.size();
+			AddUpdate(status.str());
+			return;
+		}
+
+		// list one street
+		streetID_t streetID = ReadNumber(s, i);
+		datamodel::Street* street = manager.getStreet(streetID);
+		if (street == nullptr)
+		{
+			AddUpdate("Unknown street");
+			return;
+		}
+		stringstream status;
+		status
+			<< "Street ID " << streetID
+			<< "\nName:     " << street->name
+			<< "\nStart:    ";
+		if (street->fromBlock == BlockNone)
+		{
+			status << "-";
+		}
+		else
+		{
+			status << manager.getBlockName(street->fromBlock) << " (" << street->fromBlock << ") " << (street->fromDirection ? ">" : "<");
+		}
+		status << "\nEnd:      ";
+		if (street->toBlock == BlockNone)
+		{
+			status << "-";
+		}
+		else
+		{
+			status << manager.getBlockName(street->toBlock) << " (" << street->toBlock << ") " << (street->toDirection ? ">" : "<");
+		}
+		string stateText;
+		text::Converters::lockStatus(street->getState(), stateText);
+		status << "\nStatus:   " << stateText;
+		status << "\nLoco:     ";
+		if (street->getLoco() == LocoNone)
+		{
+			status << "-";
+		}
+		else
+		{
+			status << manager.getLocoName(street->getLoco()) << " (" << street->getLoco() << ")";
+		}
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleStreetNew(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		string name = ReadText(s, i);
+		ReadBlanks(s, i);
+		blockID_t fromBlock = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		direction_t fromDirection = ReadDirection(s, i);
+		ReadBlanks(s, i);
+		blockID_t toBlock = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		direction_t toDirection = ReadDirection(s, i);
+		ReadBlanks(s, i);
+		feedbackID_t feedbackID = ReadNumber(s, i);
+		string result;
+		if (!manager.streetSave(StreetNone, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID, result))
+		{
+			AddUpdate(result);
+			return;
+		}
+		stringstream status;
+		status << "Street \"" << name << "\" added";
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleStreetRelease(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		streetID_t streetID = ReadNumber(s, i);
+		if (!manager.streetRelease(streetID))
+		{
+			AddUpdate("Street not found or block in use");
+			return;
+		}
+		AddUpdate("Street released");
+	}
+
+	void Console::HandleSwitchDelete(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		switchID_t switchID = ReadNumber(s, i);
+		if (!manager.switchDelete(switchID))
+		{
+			AddUpdate("Switch not found or switch in use");
+			return;
+		}
+		AddUpdate("Switch deleted");
+	}
+
+	void Console::HandleSwitchList(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		if (s[i] == 'a')
+		{
+			// list all switches
+			std::map<switchID_t,datamodel::Switch*> switches = manager.switchList();
+			stringstream status;
+			for (auto mySwitch : switches) {
+				status << mySwitch.first << " " << mySwitch.second->name << "\n";
+			}
+			status << "Total number of switches: " << switches.size();
+			AddUpdate(status.str());
+			return;
+		}
+		// list one switch
+		switchID_t switchID = ReadNumber(s, i);
+		datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+		if (mySwitch == nullptr)
+		{
+			AddUpdate("Unknown switch");
+			return;
+		}
+		stringstream status;
+		status
+			<< "Switch ID " << switchID
+			<< "\nName:     " << mySwitch->name
+			<< "\nX:        " << static_cast<int>(mySwitch->posX)
+			<< "\nY:        " << static_cast<int>(mySwitch->posY)
+			<< "\nZ:        " << static_cast<int>(mySwitch->posZ)
+			<< "\nRotation: ";
+		switch (mySwitch->rotation) {
+			case Rotation0:
+				status << "0";
+				break;
+
+			case Rotation90:
+				status << "90";
+				break;
+
+			case Rotation180:
+				status << "180";
+				break;
+
+			case Rotation270:
+				status << "270";
+				break;
+
+			default:
+				status << "unknown";
+		}
+		string state;
+		text::Converters::switchStatus(static_cast<switchState_t>(mySwitch->state), state);
+		status << "\nState:    " << state;
+		/*
+		status << "\nLoco:     ";
+		if (mySwitch->getLoco() == LOCO_NONE)
+		{
+			status << "-";
+		}
+		else
+		{
+			status << manager.getLocoName(mySwitch->getLoco()) << " (" << mySwitch->getLoco() << ")";
+		}
+		*/
+		AddUpdate(status.str());
+	}
+
+	void Console::HandleSwitchNew(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		string name = ReadText(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posX = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posY = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutPosition_t posZ = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		layoutRotation_t rotation = ReadRotation(s, i);
+		ReadBlanks(s, i);
+		controlID_t controlID = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
+		ReadBlanks(s, i);
+		address_t address = ReadNumber(s, i);
+		ReadBlanks(s, i);
+		switchType_t type = ReadSwitchType(s, i);
+		ReadBlanks(s, i);
+		accessoryTimeout_t timeout = ReadNumber(s, i);
+		string result;
+		if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SwitchStateStraight, timeout, result))
+		{
+			AddUpdate(result);
+			return;
+		}
+		stringstream status;
+		status << "Switch \"" << name << "\" added";
+		AddUpdate(status.str());
+	}
+
+	/*
+	void Console::HandleSwitchRelease(string& s, size_t& i)
+	{
+		readBlanks(s, i);
+		switchID_t switchID = readNumber(s, i);
+		if (!manager.switchRelease(switchID))
+		{
+			addUpdate("Switch not found");
+			return;
+		}
+		addUpdate("Switch released");
+	}
+	*/
+
+	void Console::AddUpdate(const string& status) {
 		if (clientSocket < 0) {
 			return;
 		}
@@ -1288,30 +1563,30 @@ namespace console {
 
 	void Console::booster(const controlType_t managerID, const boosterStatus_t status) {
 		if (status) {
-			addUpdate("Booster is on");
+			AddUpdate("Booster is on");
 		}
 		else {
-			addUpdate("Booster is off");
+			AddUpdate("Booster is off");
 		}
 	}
 
 	void Console::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " speed is " << speed;
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
 		std::stringstream status;
 		const char* directionText = (direction ? "forward" : "reverse");
 		status << manager.getLocoName(locoID) << " direction is " << directionText;
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
@@ -1320,13 +1595,13 @@ namespace console {
 		string stateText;
 		text::Converters::accessoryStatus(state, colorText, stateText);
 		status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText;
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 		std::stringstream status;
 		status << "Feedback " << pin << " is " << (state ? "on" : "off");
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::block(const controlType_t managerID, const blockID_t blockID, const lockState_t lockState) {
@@ -1334,7 +1609,7 @@ namespace console {
 		string stateText;
 		text::Converters::lockStatus(lockState, stateText);
 		status << manager.getBlockName(blockID) << " is " << stateText;
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) {
@@ -1342,55 +1617,55 @@ namespace console {
 		string stateText;
 		text::Converters::switchStatus(state, stateText);
 		status << manager.getSwitchName(switchID) << " is " << stateText;
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " is in block " << manager.getBlockName(blockID);
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::locoRelease(const locoID_t locoID) {
 		stringstream status;
 		status << manager.getLocoName(locoID) << " is not in a block anymore";
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	};
 
 	void Console::blockRelease(const blockID_t blockID) {
 		stringstream status;
 		status << manager.getBlockName(blockID) << " is released";
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	};
 
 	void Console::streetRelease(const streetID_t streetID) {
 		stringstream status;
 		status << manager.getStreetName(streetID) << " is  released";
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	};
 
 	void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID);
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID);
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::locoStart(const locoID_t locoID) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " is in auto mode";
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 	void Console::locoStop(const locoID_t locoID) {
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " is in manual mode";
-		addUpdate(status.str());
+		AddUpdate(status.str());
 	}
 
 }; // namespace console
