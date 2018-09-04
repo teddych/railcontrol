@@ -4,8 +4,8 @@
 
 #include "datamodel/layout_item.h"
 #include "console/console.h"
-#include "hardware/hardware_handler.h"
-#include "hardware/hardware_params.h"
+#include "hardware/HardwareHandler.h"
+#include "hardware/HardwareParams.h"
 #include "manager.h"
 #include "railcontrol.h"
 #include "util.h"

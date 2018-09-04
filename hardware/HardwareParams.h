@@ -4,9 +4,11 @@
 
 class Manager;
 
-namespace hardware {
+namespace hardware
+{
 
-	class HardwareParams {
+	class HardwareParams
+	{
 		public:
 			HardwareParams(controlID_t controlID, hardwareType_t hardwareType, std::string name, std::string ip);
 			HardwareParams(Manager* manager, controlID_t controlID, hardwareType_t hardwareType, std::string name, std::string ip);

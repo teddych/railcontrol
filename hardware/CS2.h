@@ -4,24 +4,26 @@
 #include <string>
 #include <thread>
 
-#include "hardware_interface.h"
-#include "hardware_params.h"
+#include "HardwareInterface.h"
+#include "HardwareParams.h"
 #include "manager.h"
 
-namespace hardware {
+namespace hardware
+{
 
-	class CS2: HardwareInterface {
+	class CS2 : HardwareInterface
+	{
 		public:
 			CS2(const HardwareParams* params);
 			~CS2();
-			const std::string getName() const override { return name; };
-			void getProtocols(std::vector<protocol_t>& protocols) const override;
-			virtual bool protocolSupported(protocol_t protocol) const override;
-			void booster(const boosterStatus_t status) override;
-			void locoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
-			void locoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
-			void locoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
-			void accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) override;
+			const std::string GetName() const override { return name; };
+			void GetProtocols(std::vector<protocol_t>& protocols) const override;
+			virtual bool ProtocolSupported(protocol_t protocol) const override;
+			void Booster(const boosterStatus_t status) override;
+			void LocoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
+			void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
+			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
+			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) override;
 
 		private:
 			volatile unsigned char run;

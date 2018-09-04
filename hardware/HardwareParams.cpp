@@ -1,11 +1,13 @@
-#include "hardware_params.h"
+#include <hardware/HardwareParams.h>
 
-namespace hardware {
+namespace hardware
+{
 	HardwareParams::HardwareParams(controlID_t controlID, hardwareType_t hardwareType, std::string name, std::string ip) :
 		controlID(controlID),
 		hardwareType(hardwareType),
 		name(name),
-		ip(ip) {
+		ip(ip)
+	{
 	}
 
 	HardwareParams::HardwareParams(Manager* manager, controlID_t controlID, hardwareType_t hardwareType, std::string name, std::string ip) :
@@ -13,6 +15,7 @@ namespace hardware {
 		controlID(controlID),
 		hardwareType(hardwareType),
 		name(name),
-		ip(ip) {
+		ip(ip)
+	{
 	}
 } // namespace hardware

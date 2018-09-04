@@ -21,8 +21,8 @@ OBJ= \
 	datamodel/serializable.o \
 	datamodel/street.o \
 	datamodel/switch.o \
-	hardware/hardware_handler.o \
-	hardware/hardware_params.o \
+	hardware/HardwareHandler.o \
+	hardware/HardwareParams.o \
 	manager.o \
 	network/TcpConnection.o \
 	network/TcpServer.o \

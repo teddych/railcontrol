@@ -8,8 +8,8 @@
 #include "command_interface.h"
 #include "config.h"
 #include "datamodel/datamodel.h"
+#include "hardware/HardwareParams.h"
 #include "storage/storage_handler.h"
-#include "hardware/hardware_params.h"
 
 class Manager {
 	public:

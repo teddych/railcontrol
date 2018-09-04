@@ -4,7 +4,7 @@
 
 #include "datamodel/datamodel.h"
 #include "datatypes.h"
-#include "hardware/hardware_params.h"
+#include "hardware/HardwareParams.h"
 #include "storage_interface.h"
 #include "storage_params.h"
 

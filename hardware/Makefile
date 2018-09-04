@@ -6,8 +6,8 @@ CPPFLAGS=-I. -I.. -g -fpic -O2 -Wall -std=c++11
 LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \
-	cs2.so \
-	virtual.so
+	CS2.so \
+	Virtual.so
 
 %.so: %.cpp *.h ../*.h ../datamodel/*.h
 	$(CC) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<

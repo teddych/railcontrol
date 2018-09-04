@@ -8,7 +8,7 @@
 #include <unistd.h>		//close;
 #include <vector>
 
-#include "hardware/hardware_handler.h"
+#include "hardware/HardwareHandler.h"
 #include "manager.h"
 #include "railcontrol.h"
 #include "util.h"

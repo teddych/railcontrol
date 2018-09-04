@@ -4,8 +4,8 @@
 
 #include "command_interface.h"
 #include "datatypes.h"
-#include "hardware_interface.h"
-#include "hardware_params.h"
+#include "hardware/HardwareInterface.h"
+#include "hardware/HardwareParams.h"
 #include "manager.h"
 #include "util.h"
 
