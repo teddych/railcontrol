@@ -107,11 +107,10 @@ namespace webserver {
 	void WebServer::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
 		stringstream command;
 		stringstream status;
-		string colorText;
 		string stateText;
-		text::Converters::accessoryStatus(state, colorText, stateText);
-		command << "accessory;accessory=" << accessoryID << ";color=" << colorText << ";on=" << stateText;
-		status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText;
+		text::Converters::accessoryStatus(state, stateText);
+		command << "accessory;accessory=" << accessoryID << ";on=" << stateText;
+		status << manager.getAccessoryName(accessoryID) << " is " << stateText;
 		addUpdate(command.str(), status.str());
 	}
 

@@ -20,7 +20,8 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-namespace console {
+namespace console
+{
 
 	Console::Console(Manager& manager, const unsigned short port) :
 		CommandInterface(ControlTypeConsole),
@@ -28,18 +29,17 @@ namespace console {
 		serverSocket(0),
 		clientSocket(-1),
 		run(false),
-		manager(manager) {
-
-		run = true;
+		manager(manager)
+	{
 		struct sockaddr_in6 server_addr;
 
 		xlog("Starting console on port %i", port);
 
 		// create server socket
 		serverSocket = socket(AF_INET6, SOCK_STREAM, 0);
-		if (serverSocket < 0) {
+		if (serverSocket < 0)
+		{
 			xlog("Unable to create socket for console. Unable to serve clients.");
-			run = false;
 			return;
 		}
 
@@ -50,31 +50,35 @@ namespace console {
 		server_addr.sin6_port = htons(port);
 
 		int on = 1;
-		if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (const void*)&on, sizeof(on)) < 0) {
+		if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (const void*)&on, sizeof(on)) < 0)
+		{
 			xlog("Unable to set console socket option SO_REUSEADDR.");
 		}
 
-		if (bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0) {
+		if (bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
+		{
 			xlog("Unable to bind socket for console to port %i. Unable to serve clients.", port);
 			close(serverSocket);
-			run = false;
 			return;
 		}
 
 		// listen on the socket
-		if (listen(serverSocket, 5) != 0) {
+		if (listen(serverSocket, 5) != 0)
+		{
 			xlog("Unable to listen on socket for console server on port %i. Unable to serve clients.", port);
 			close(serverSocket);
-			run = false;
 			return;
 		}
 
 		// create seperate thread that handles the client requests
+		run = true;
 		serverThread = thread([this] { Worker(); });
 	}
 
-	Console::~Console() {
-		if (!run) {
+	Console::~Console()
+	{
+		if (!run)
+		{
             return;
 		}
 
@@ -86,28 +90,34 @@ namespace console {
 	}
 
 	// worker is a seperate thread listening on the server socket
-	void Console::Worker() {
+	void Console::Worker()
+	{
 		fd_set set;
 		struct timeval tv;
 		struct sockaddr_in6 client_addr;
 		socklen_t client_addr_len = sizeof(client_addr);
-		while (run) {
+		while (run)
+		{
 			// wait for connection and abort on shutdown
 			int ret;
-			do {
+			do
+			{
 				FD_ZERO(&set);
 				FD_SET(serverSocket, &set);
 				tv.tv_sec = 1;
 				tv.tv_usec = 0;
 				ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
 			} while (ret == 0 && run);
-			if (ret > 0 && run) {
+			if (ret > 0 && run)
+			{
 				// accept connection
 				clientSocket = accept(serverSocket, (struct sockaddr *) &client_addr, &client_addr_len);
-				if (clientSocket < 0) {
+				if (clientSocket < 0)
+				{
 					xlog("Unable to accept client connection for console: %i, %i", clientSocket, errno);
 				}
-				else {
+				else
+				{
 					// handle client and fill into vector
 					HandleClient();
 				}
@@ -139,6 +149,7 @@ namespace console {
 
 	int Console::ReadNumber(string& s, size_t& i)
 	{
+		ReadBlanks(s, i);
         // read integer
 		int number = 0;
 		while (s.length() > i)
@@ -163,21 +174,23 @@ namespace console {
 			return false;
 		}
 
-		if (s[i] == 'o')
+		if (s[i] != 'o')
+		{
+			return (bool)ReadNumber(s, i);
+		}
+
+		++i;
+		if (s.length() <= i)
+		{
+			return false;
+		}
+
+		bool ret = s[i] == 'n';
+		while (s.length() > i && s[i] != ' ')
 		{
 			++i;
-			if (s.length() <= i)
-			{
-				return false;
-			}
-			bool ret = s[i] == 'n';
-			while (s.length() > i && s[i] != ' ')
-			{
-				++i;
-			}
-			return ret;
 		}
-		return (bool)ReadNumber(s, i);
+		return ret;
 	}
 
 	string Console::ReadText(string& s, size_t& i)
@@ -222,10 +235,12 @@ namespace console {
 
 	switchType_t Console::ReadSwitchType(string& s, size_t& i)
 	{
-		if (s.length() <= i) {
+		if (s.length() <= i)
+		{
 			return SwitchTypeLeft;
 		}
-		switch (s[i]) {
+		switch (s[i])
+		{
 			case 'l':
 			case 'L':
 				++i;
@@ -326,6 +341,13 @@ namespace console {
 				unsigned char direction = ReadNumber(s, i);
 				return (direction == 0 ? DirectionLeft : DirectionRight);
 		}
+	}
+
+	accessoryState_t Console::ReadAccessoryState(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		bool state = ReadBool(s, i);
+		return (state ? AccessoryStateOn : AccessoryStateOff);
 	}
 
 	void Console::HandleClient()
@@ -442,6 +464,11 @@ namespace console {
 			case 'n':
 			case 'N':
 				HandleAccessoryNew(s, i);
+				break;
+
+			case 's':
+			case 'S':
+				HandleAccessorySwitch(s, i);
 				break;
 
 			default:
@@ -708,6 +735,20 @@ namespace console {
 		stringstream status;
 		status << "Accessory \"" << name << "\" added";
 		AddUpdate(status.str());
+	}
+
+	void Console::HandleAccessorySwitch(string& s, size_t& i)
+	{
+		accessoryID_t accessoryID = ReadNumber(s, i);
+		datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		if (accessory == nullptr)
+		{
+			AddUpdate("Unknown accessory");
+			return;
+		}
+
+		accessoryState_t state = ReadAccessoryState(s, i);
+		manager.accessory(ControlTypeConsole, accessoryID, state);
 	}
 
 	void Console::HandleBlockDelete(string& s, size_t& i)
@@ -1177,6 +1218,7 @@ namespace console {
 				"A L A                             List all accessories\n"
 				"A L accessory#                    List accessory\n"
 				"A N Name X Y Z Control Protocol Address Timeout(ms)\n"
+				"A S accessory# state              Switch accessory\n"
 				"                                  New Accessory\n"
 				"\n"
 				"Block commands\n"
@@ -1591,10 +1633,9 @@ namespace console {
 
 	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
 		std::stringstream status;
-		string colorText;
 		string stateText;
-		text::Converters::accessoryStatus(state, colorText, stateText);
-		status << manager.getAccessoryName(accessoryID) << " " << colorText << " is " << stateText;
+		text::Converters::accessoryStatus(state, stateText);
+		status << manager.getAccessoryName(accessoryID)  << " is " << stateText;
 		AddUpdate(status.str());
 	}
 

@@ -43,6 +43,7 @@ namespace console {
 			static switchType_t ReadSwitchType(std::string& s, size_t& i);
 			static layoutRotation_t ReadRotation(std::string& s, size_t& i);
 			static direction_t ReadDirection(std::string& s, size_t& i);
+			static accessoryState_t ReadAccessoryState(std::string& s, size_t& i);
 			void HandleClient();
 			void HandleCommand(std::string& s);
 			void HandleAccessoryCommand(std::string& s, size_t& i);
@@ -55,6 +56,7 @@ namespace console {
 			void HandleAccessoryDelete(std::string& s, size_t& i);
 			void HandleAccessoryList(std::string& s, size_t& i);
 			void HandleAccessoryNew(std::string& s, size_t& i);
+			void HandleAccessorySwitch(std::string& s, size_t& i);
 			void HandleBlockDelete(std::string& s, size_t& i);
 			void HandleBlockList(std::string& s, size_t& i);
 			void HandleBlockNew(std::string& s, size_t& i);

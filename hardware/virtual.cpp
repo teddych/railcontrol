@@ -1,9 +1,9 @@
 #include <sstream>
 #include <string>
 
-#include "text/converters.h"
-#include "hardware/Virtual.h"
+#include "hardware/virtual.h"
 #include "manager.h"
+#include "text/converters.h"
 #include "util.h"
 
 namespace hardware
@@ -76,10 +76,9 @@ namespace hardware
 	// accessory command
 	void Virtual::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state)
 	{
-		std::string colorText;
 		std::string onText;
-		text::Converters::accessoryStatus(state, colorText, onText);
-		xlog("Setting state of virtual accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
+		text::Converters::accessoryStatus(state, onText);
+		xlog("Setting state of virtual accessory %i/%i to \"%s\"", (int)protocol, (int)address, onText);
 	}
 
 } // namespace

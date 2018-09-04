@@ -150,14 +150,6 @@ enum relationType_t : unsigned char
 	RelationTypeStreetFeedback
 };
 
-enum accessoryColor_t : unsigned char
-{
-	AccessoryColorRed = 0,
-	AccessoryColorGreen,
-	AccessoryColorYellow,
-	AccessoryColorWhite
-};
-
 enum accessoryType : accessoryType_t
 {
 	AccessoryTypeDefault = 0

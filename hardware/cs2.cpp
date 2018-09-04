@@ -9,8 +9,8 @@
 #include <thread>
 #include <unistd.h>   //close;
 
-#include "hardware/CS2.h"
 #include "text/converters.h"
+#include "hardware/cs2.h"
 #include "util.h"
 
 #define CS2_CMD_BUF_LEN 13    // Length of the commandbuffer
@@ -226,10 +226,9 @@ namespace hardware
 
 	void CS2::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state)
 	{
-		std::string colorText;
 		std::string onText;
-		text::Converters::accessoryStatus(state, colorText, onText);
-		xlog("Setting state of cs2 accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, colorText, onText);
+		text::Converters::accessoryStatus(state, onText);
+		xlog("Setting state of cs2 accessory %i/%i to \"%s\"", (int)protocol, (int)address, onText);
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x0B, 0, 6);
