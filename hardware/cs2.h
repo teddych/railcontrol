@@ -8,6 +8,8 @@
 #include "HardwareParams.h"
 #include "manager.h"
 
+// CAN protocol specification at http://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
+
 namespace hardware
 {
 
@@ -37,10 +39,15 @@ namespace hardware
 			typedef unsigned char cs2Command_t;
 			typedef unsigned char cs2Response_t;
 			typedef unsigned char cs2Length_t;
+			typedef uint32_t cs2Address_t;
 
+			void intToData(const uint32_t i, char* buffer);
+			uint32_t dataToInt(const char* buffer);
+			uint16_t dataToShort(const char* buffer);
 			void createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
-			void readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length);
+			void readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol);
 			void createLocID(char* buffer, const protocol_t& protocol, const address_t& address);
+			void createAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address);
 			void receiver();
 	};
 

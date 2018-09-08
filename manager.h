@@ -49,6 +49,7 @@ class Manager {
 		void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on);
 
 		// accessory
+		void accessory(const controlType_t managerID, const protocol_t protocol, const address_t address, const accessoryState_t state);
 		void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
 		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID);
 		const std::string& getAccessoryName(const accessoryID_t accessoryID);

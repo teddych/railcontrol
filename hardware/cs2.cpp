@@ -37,8 +37,9 @@ namespace hardware
 		manager(params->manager)
 	{
 		std::stringstream ss;
-		ss << "Maerklin Central Station 2 (CS2) / " << params->name;
+		ss << "Maerklin Central Station 2 (CS2) / " << params->name << " at IP " << params->ip;
 		name = ss.str();
+		xlog(name.c_str());
 		run = true;
 		senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->ip.c_str(), CS2_PORT_SEND);
 		if (senderSocket < 0)
@@ -81,15 +82,7 @@ namespace hardware
 		buffer[4] = length;
 	}
 
-	void CS2::readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length)
-	{
-		prio = buffer[0] >> 1;
-		command = (cs2Command_t)(buffer[0]) << 7 | (cs2Command_t)(buffer[1]) >> 1;
-		response = buffer[1] & 0x01;
-		length = buffer[4];
-	}
-
-	inline void intToData(const uint32_t i, char* buffer)
+	void CS2::intToData(const uint32_t i, char* buffer)
 	{
 		buffer[0] = (i >> 24);
 		buffer[1] = ((i >> 16) & 0xFF);
@@ -97,7 +90,7 @@ namespace hardware
 		buffer[3] = (i & 0xFF);
 	}
 
-	inline uint32_t dataToInt(const char* buffer)
+	uint32_t CS2::dataToInt(const char* buffer)
 	{
 		uint32_t i = (const unsigned char)buffer[0];
 		i <<= 8;
@@ -109,12 +102,36 @@ namespace hardware
 		return i;
 	}
 
-	inline uint16_t dataToShort(const char* buffer)
+	uint16_t CS2::dataToShort(const char* buffer)
 	{
 		uint16_t i = (const unsigned char)buffer[0];
 		i <<= 8;
 		i |= (const unsigned char)buffer[1];
 		return i;
+	}
+
+	void CS2::readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol)
+	{
+		prio = buffer[0] >> 1;
+		command = (cs2Command_t)(buffer[0]) << 7 | (cs2Command_t)(buffer[1]) >> 1;
+		response = buffer[1] & 0x01;
+		length = buffer[4];
+		address = dataToInt(buffer + 5);
+		cs2Address_t maskedAddress = address & 0x0000FC00;
+		address &= 0x03FF;
+
+		switch (maskedAddress)
+		{
+			case 0x3800:
+			case 0x3C00:
+			case 0xC000:
+				protocol = ProtocolDCC;
+				return;
+
+			default:
+				protocol = ProtocolMM2;
+				return;
+		}
 	}
 
 	void CS2::createLocID(char* buffer, const protocol_t& protocol, const address_t& address)
@@ -125,6 +142,20 @@ namespace hardware
 			locID |= 0xC000;
 		}
 		// else expect PROTOCOL_MM2: do nothing
+		intToData(locID, buffer);
+	}
+
+	void CS2::createAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address)
+	{
+		uint32_t locID = address;
+		if (protocol == ProtocolDCC)
+		{
+			locID |= 0x3800;
+		}
+		else
+		{
+			locID |= 0x3000;
+		}
 		intToData(locID, buffer);
 	}
 
@@ -236,9 +267,9 @@ namespace hardware
 		int64_t* buffer_data = (int64_t*) (buffer + 5);
 		*buffer_data = 0L;
 		// set locID
-		createLocID(buffer + 5, protocol, address);
-		buffer[9] = state >> 1;
-		buffer[10] = state & 0x01;
+		createAccessoryID(buffer + 5, protocol, address - 1); // GUI-address is 1-based, protocol-address is 0-based
+		buffer[9] = state & 0x03;
+		buffer[10] = 0x01;
 
 		hexlog(buffer, sizeof(buffer));
 
@@ -291,11 +322,12 @@ namespace hardware
 				cs2Command_t command;
 				cs2Response_t response;
 				cs2Length_t length;
-				readCommandHeader(buffer, prio, command, response, length);
+				cs2Address_t address;
+				protocol_t protocol;
+				readCommandHeader(buffer, prio, command, response, length, address, protocol);
 				if (command == 0x11 && response)
 				{
 					// s88 event
-					feedbackPin_t pin = dataToInt(buffer + 5);
 					const char* text;
 					feedbackState_t state;
 					if (buffer[10])
@@ -308,37 +340,29 @@ namespace hardware
 						text = "off";
 						state = FeedbackStateFree;
 					}
-					xlog("CS2 S88 Pin %u set to %s", pin, text);
-					manager->feedback(ControlTypeHardware, pin, state);
+					xlog("CS2 S88 Pin %u set to %s", address, text);
+					manager->feedback(ControlTypeHardware, address, state);
 				}
 				else if (command == 0x04 && !response && length == 6)
 				{
 					// speed event
-					uint32_t locID = dataToInt(buffer + 5);
-					address_t address = locID;
-					protocol_t protocol = ProtocolMM2;
-					if (locID & 0xC000)
-					{
-						protocol = ProtocolDCC;
-						address = locID - 0xC000;
-					}
 					speed_t speed = dataToShort(buffer + 9);
-					manager->locoSpeed(ControlTypeHardware, protocol, address, speed);
+					manager->locoSpeed(ControlTypeHardware, protocol, static_cast<address_t>(address), speed);
 				}
 				else if (command == 0x05 && !response && length == 5)
 				{
 					// direction event (implies speed=0)
-					uint32_t locID = dataToInt(buffer + 5);
-					address_t address = locID;
-					protocol_t protocol = ProtocolMM2;
-					if (locID & 0xC000)
-					{
-						protocol = ProtocolDCC;
-						address = locID - 0xC000;
-					}
 					direction_t direction = (buffer[9] == 1 ? DirectionRight : DirectionLeft);
-					manager->locoSpeed(ControlTypeHardware, protocol, address, 0);
-					manager->locoDirection(ControlTypeHardware, protocol, address, direction);
+					manager->locoSpeed(ControlTypeHardware, protocol, static_cast<address_t>(address), 0);
+					manager->locoDirection(ControlTypeHardware, protocol, static_cast<address_t>(address), direction);
+				}
+				else if (command == 0x0B && !response && length == 6 && buffer[10] == 1)
+				{
+					// accessory event
+					accessoryState_t state = buffer[9];
+					// GUI-address is 1-based, protocol-address is 0-based
+					++address;
+					manager->accessory(ControlTypeHardware, protocol, address, state);
 				}
 			}
 			else if (run)

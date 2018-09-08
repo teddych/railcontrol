@@ -518,6 +518,27 @@ void Manager::locoFunction(const controlType_t managerID, const locoID_t locoID,
 * Accessory                *
 ***************************/
 
+void Manager::accessory(const controlType_t managerID, const protocol_t protocol, const address_t address, const accessoryState_t state)
+{
+	accessoryID_t accessoryID = AccessoryNone;
+	{
+		std::lock_guard<std::mutex> Guard(accessoryMutex);
+		for (auto accessory : accessories)
+		{
+			if (accessory.second->protocol == protocol && accessory.second->address == address)
+			{
+				accessoryID = accessory.first;
+				break;
+			}
+		}
+	}
+	if (accessoryID == AccessoryNone)
+	{
+		return;
+	}
+	accessory(managerID, accessoryID, state);
+}
+
 void Manager::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls) {
