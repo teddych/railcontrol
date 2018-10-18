@@ -47,9 +47,11 @@ namespace webserver
 				}
 			}
 
-			if (tag.childTags.size() == 0 && tag.content.size() == 0)
+			if (tag.childTags.size() == 0 && tag.content.size() == 0 && (
+				tag.name.compare("input") == 0 ||
+				tag.name.compare("meta") == 0))
 			{
-				stream << "/>";
+				stream << " />";
 				return stream;
 			}
 			stream << ">";

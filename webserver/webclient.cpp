@@ -621,14 +621,11 @@ namespace webserver {
 		}
 		ss << selectLoco(options);
 		ss <<"</div>";
-		ss << "<div class=\"loco\" id=\"loco\">";
-		ss << "</div>";
-		ss << "<div class=\"layout\" id=\"layout\">";
-		ss << "</div>";
-		ss << "<div class=\"popup\" id=\"popup\">Popup</div>"
-			"<div class=\"status\" id=\"status\"></div>"
-			"<script type=\"application/javascript\">\n"
-			"var updater = new EventSource('/?cmd=updater');\n"
+		ss << HtmlTag("div").AddAttribute("class", "loco").AddAttribute("id", "loco");
+		ss << HtmlTag("div").AddAttribute("class", "layout").AddAttribute("id", "layout");
+		ss << HtmlTag("div").AddAttribute("class", "popup").AddAttribute("id", "popup");
+		ss << HtmlTag("div").AddAttribute("class", "status").AddAttribute("id", "status");
+		ss << HtmlTagJavascript("\nvar updater = new EventSource('/?cmd=updater');\n"
 			"updater.onmessage = function(e) {\n"
 			" var status = document.getElementById('status');\n"
 			" var arguments = e.data.split(';');\n"
@@ -648,11 +645,10 @@ namespace webserver {
 			"  var element = document.getElementById(elementName);\n"
 			"  if (element) element.value = argumentMap.get('speed');\n"
 			" }\n"
-			"};\n"
+			"};\n");
 
 			// FIXME: get first locoid in db
-			"</script>"
-			"</body>"
+		ss << "</body>"
 			"</html>";
 		string sOut = ss.str();
 		const char* html = sOut.c_str();
