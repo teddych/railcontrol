@@ -6,7 +6,8 @@ namespace webserver
 {
 	const Response::responseCodeMap Response::responseTexts = {
 		{ Response::OK, "OK" },
-		{ Response::NotFound, "Not found"}
+		{ Response::NotFound, "Not found"},
+		{ Response::NotImplemented, "Not Implemented"}
 	};
 
 	void Response::AddHeader(const std::string& key, const std::string& value)

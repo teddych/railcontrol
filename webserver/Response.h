@@ -14,7 +14,8 @@ namespace webserver
 			enum responseCode_t : unsigned short
 			{
 				OK = 200,
-				NotFound = 404
+				NotFound = 404,
+				NotImplemented = 501
 			};
 			Response(const responseCode_t responseCode) : responseCode(responseCode) {}
 			Response(const responseCode_t responseCode, const HtmlTag& content) : responseCode(responseCode), content(content) {}

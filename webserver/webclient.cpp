@@ -15,6 +15,7 @@
 #include "webserver/webserver.h"
 #include "webserver/HtmlResponse.h"
 #include "webserver/HtmlResponseNotFound.h"
+#include "webserver/HtmlResponseNotImplemented.h"
 #include "webserver/HtmlTagButtonCancel.h"
 #include "webserver/HtmlTagButtonCommand.h"
 #include "webserver/HtmlTagButtonOK.h"
@@ -98,11 +99,9 @@ namespace webserver {
 		// if method is not implemented
 		if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0))
 		{
-			xlog("Method %s not implemented", method.c_str());
-			const char* reply =
-				"HTTP/1.0 501 Not implemented\r\n\r\n"
-				"<!DOCTYPE html><html><head><title>501 Not implemented</title></head><body><p>Method not implemented</p></body></html>";
-			connection->Send(reply, strlen(reply), 0);
+			xlog("HTTP method %s not implemented", method.c_str());
+			HtmlResponseNotImplemented response(method);
+			connection->Send(response);
 			return;
 		}
 
@@ -272,9 +271,8 @@ namespace webserver {
 		FILE* f = fopen(realFile, "r");
 		if (f == nullptr)
 		{
-			std::stringstream reply;
-			reply << HtmlResponseNotFound(virtualFile);
-			connection->Send(reply.str().c_str(), reply.str().size(), 0);
+			HtmlResponseNotFound response(virtualFile);
+			connection->Send(response);
 			return;
 		}
 
@@ -478,33 +476,37 @@ namespace webserver {
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
 	{
-		char reply[1024];
-		int ret = snprintf(reply, sizeof(reply),
-			"HTTP/1.0 200 OK\r\n"
-			"Cache-Control: no-cache, must-revalidate\r\n"
-			"Pragma: no-cache\r\n"
-			"Expires: Sun, 12 Feb 2016 00:00:00 GMT\r\n"
-			"Content-Type: text/event-stream; charset=utf-8\r\n\r\n");
-		connection->Send(reply, ret, 0);
+		Response response(Response::OK);
+		response.AddHeader("Cache-Control", "no-cache, must-revalidate");
+		response.AddHeader("Pragma", "no-cache");
+		response.AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
+		response.AddHeader("Content-Type", "text/event-stream; charset=utf-8");
+		connection->Send(response);
 
 		unsigned int updateID = GetIntegerMapEntry(headers, "Last-Event-ID");
 		while(run)
 		{
 			string s;
-			if (server.nextUpdate(updateID, s))
+			bool ok = server.nextUpdate(updateID, s);
+			if (ok == false)
 			{
-				ret = snprintf(reply, sizeof(reply), "id: %i\r\n%s\r\n\r\n", updateID, s.c_str());
-				ret = connection->Send(reply, ret, 0);
-				++updateID;
-				if (ret < 0)
-				{
-					return;
-				}
-			}
-			else
-			{
-				// FIXME: use conditional variables instead of sleep
+				// FIXME: use signaling instead of sleep
 				usleep(100000);
+				continue;
+			}
+
+			string reply("id: ");
+			reply += updateID;
+			reply += "\r\n";
+			reply += s;
+			reply += "\r\n\r\n";
+
+			++updateID;
+
+			int ret = connection->Send(reply);
+			if (ret < 0)
+			{
+				return;
 			}
 		}
 	}
