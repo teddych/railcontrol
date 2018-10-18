@@ -1,12 +1,25 @@
 body {
 	background-color: white;
 	font-family: verdana, sans-serif;
+	margin: 0px;
 }
 
 .loco {
 	height: 200px;
 	width: 250px;
 	border: solid 1px;
+}
+
+.layout {
+	height: 200px;
+	width: calc(100% - 254px);
+	border: solid 1px;
+	overflow: auto;
+	position: fixed;
+	right: 0px;
+	top: 162px;
+	background-image: url("/layout_background.png");
+	background-repeat: repeat, repeat;
 }
 
 .popup {

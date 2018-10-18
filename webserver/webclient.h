@@ -32,6 +32,7 @@ namespace webserver {
 			void printMainHTML();
 			void simpleReply(const std::string& text, const std::string& code = "200 OK");
 			void deliverFile(const std::string& file);
+			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			void handleLocoSpeed(const std::map<std::string,std::string>& arguments);
 			void handleLocoDirection(const std::map<std::string,std::string>& arguments);
 			void handleLocoFunction(const std::map<std::string, std::string>& arguments);

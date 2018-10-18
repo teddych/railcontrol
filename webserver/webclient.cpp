@@ -258,65 +258,83 @@ namespace webserver {
 		}
 	}
 
-	void WebClient::deliverFile(const string& virtualFile) {
+	void WebClient::deliverFile(const string& virtualFile)
+	{
 		stringstream ss;
 		char workingDir[128];
-		int rc;
-		if (getcwd(workingDir, sizeof(workingDir))) {
+		if (getcwd(workingDir, sizeof(workingDir)))
+		{
 			ss << workingDir << "/html" << virtualFile;
 		}
 		string sFile = ss.str();
 		const char* realFile = sFile.c_str();
 		xlog(realFile);
 		FILE* f = fopen(realFile, "r");
-		if (f)
+		if (f == nullptr)
 		{
-			struct stat s;
-			rc = stat(realFile, &s);
-			if (rc == 0)
-			{
-				size_t length = virtualFile.length();
-				const char* contentType = NULL;
-				if (length > 3 && virtualFile[length - 3] == '.' && virtualFile[length - 2] == 'j' && virtualFile[length - 1] == 's')
-				{
-					contentType = "application/javascript";
-				}
-				else if (length > 4 && virtualFile[length - 4] == '.')
-				{
-					if (virtualFile[length - 3] == 'i' && virtualFile[length - 2] == 'c' && virtualFile[length - 1] == 'o')
-					{
-						contentType = "image/x-icon";
-					}
-					else if (virtualFile[length - 3] == 'c' && virtualFile[length - 2] == 's' && virtualFile[length - 1] == 's')
-					{
-						contentType = "text/css";
-					}
-				}
-
-				Response response(Response::OK, HtmlTag());
-				response.AddHeader("Cache-Control", "max-age=3600");
-				response.AddHeader("Content-Length", to_string(s.st_size));
-				response.AddHeader("Content-Type", contentType);
-				std::stringstream reply;
-				reply << response;
-				connection->Send(reply.str().c_str(), reply.str().size(), 0);
-
-				if (headOnly == false) {
-					char* buffer = static_cast<char*>(malloc(s.st_size));
-					if (buffer) {
-						size_t r = fread(buffer, 1, s.st_size, f);
-						connection->Send(buffer, r, 0);
-						free(buffer);
-						fclose(f);
-						return;
-					}
-				}
-			}
-			fclose(f);
+			std::stringstream reply;
+			reply << HtmlResponseNotFound(virtualFile);
+			connection->Send(reply.str().c_str(), reply.str().size(), 0);
+			return;
 		}
-		std::stringstream reply;
-		reply << HtmlResponseNotFound(virtualFile);
-		connection->Send(reply.str().c_str(), reply.str().size(), 0);
+
+		deliverFileInternal(f, realFile, virtualFile);
+		fclose(f);
+	}
+
+	void WebClient::deliverFileInternal(FILE* f, const char* realFile, const string& virtualFile)
+	{
+	struct stat s;
+	int rc = stat(realFile, &s);
+	if (rc != 0)
+	{
+		return;
+	}
+
+	size_t length = virtualFile.length();
+	const char* contentType = NULL;
+	if (length > 4 && virtualFile[length - 4] == '.')
+	{
+		if (virtualFile[length - 3] == 'i' && virtualFile[length - 2] == 'c' && virtualFile[length - 1] == 'o')
+		{
+			contentType = "image/x-icon";
+		}
+		else if (virtualFile[length - 3] == 'c' && virtualFile[length - 2] == 's' && virtualFile[length - 1] == 's')
+		{
+			contentType = "text/css";
+		}
+		else if (virtualFile[length - 3] == 'p' && virtualFile[length - 2] == 'n' && virtualFile[length - 1] == 'g')
+		{
+			contentType = "image/png";
+		}
+	}
+	else if (length > 3 && virtualFile[length - 3] == '.' && virtualFile[length - 2] == 'j' && virtualFile[length - 1] == 's')
+	{
+		contentType = "application/javascript";
+	}
+
+	Response response(Response::OK, HtmlTag());
+	response.AddHeader("Cache-Control", "max-age=3600");
+	response.AddHeader("Content-Length", to_string(s.st_size));
+	response.AddHeader("Content-Type", contentType);
+	std::stringstream reply;
+	reply << response;
+	connection->Send(reply.str().c_str(), reply.str().size(), 0);
+
+	if (headOnly == true)
+	{
+		return;
+	}
+
+	char* buffer = static_cast<char*>(malloc(s.st_size));
+	if (buffer == nullptr)
+	{
+		return;
+	}
+
+	size_t r = fread(buffer, 1, s.st_size, f);
+	connection->Send(buffer, r, 0);
+	free(buffer);
 	}
 
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments)
@@ -606,6 +624,8 @@ namespace webserver {
 		ss << selectLoco(options);
 		ss <<"</div>";
 		ss << "<div class=\"loco\" id=\"loco\">";
+		ss << "</div>";
+		ss << "<div class=\"layout\" id=\"layout\">";
 		ss << "</div>";
 		ss << "<div class=\"popup\" id=\"popup\">Popup</div>"
 			"<div class=\"status\" id=\"status\"></div>"
