@@ -21,7 +21,7 @@ namespace webserver
 			Response(const responseCode_t responseCode, const std::string& content) : responseCode(responseCode) { this->content.AddContent(content); }
 			~Response() {};
 			void AddHeader(const std::string& key, const std::string& value);
-			std::string ToString();
+			operator std::string();
 
 			friend std::ostream& operator<<(std::ostream& stream, const Response& response);
 

@@ -317,7 +317,7 @@ namespace webserver {
 		response.AddHeader("Cache-Control", "max-age=3600");
 		response.AddHeader("Content-Length", to_string(s.st_size));
 		response.AddHeader("Content-Type", contentType);
-		connection->Send(response.ToString());
+		connection->Send(response);
 
 		if (headOnly == true)
 		{
@@ -509,19 +509,14 @@ namespace webserver {
 		}
 	}
 
-	void WebClient::simpleReply(const string& text, const string& code)
+	void WebClient::simpleReply(const string& text, const Response::responseCode_t code)
 	{
-		size_t contentLength = text.length();
-		char reply[256 + contentLength];
-		snprintf(reply, sizeof(reply),
-			"HTTP/1.0 %s\r\n"
-			"Cache-Control: no-cache, must-revalidate\r\n"
-			"Pragma: no-cache\r\n"
-			"Expires: Sun, 12 Feb 2016 00:00:00 GMT\r\n"
-			"Content-Type: text/html; charset=utf-8\r\n\r\n"
-			"%s",
-			code.c_str(), text.c_str());
-		connection->Send(reply, strlen(reply), 0);
+		Response response(code, text);
+		response.AddHeader("Cache-Control", "no-cache, must-revalidate");
+		response.AddHeader("Pragma", "no-cache");
+		response.AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
+		response.AddHeader("Content-Type", "text/html; charset=utf-8");
+		connection->Send(response);
 	}
 
 	string WebClient::selectLoco(const map<string,string>& options)

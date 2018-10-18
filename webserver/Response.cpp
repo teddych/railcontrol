@@ -14,7 +14,7 @@ namespace webserver
 		headers[key] = value;
 	}
 
-	std::string Response::ToString()
+	Response::operator std::string()
 	{
 		std::stringstream reply;
 		reply << *this;
