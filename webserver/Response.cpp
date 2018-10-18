@@ -17,8 +17,8 @@ namespace webserver
 	std::string Response::ToString()
 	{
 		std::stringstream reply;
-		return reply.str();
 		reply << *this;
+		return reply.str();
 	}
 
 	std::ostream& operator<<(std::ostream& stream, const Response& response)
