@@ -1,7 +1,7 @@
 #include <map>
 #include <sstream>
 
-#include "feedback.h"
+#include "datamodel/feedback.h"
 #include "manager.h"
 
 using std::map;

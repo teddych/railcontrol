@@ -1,7 +1,7 @@
 #include <map>
 #include <sstream>
 
-#include "switch.h"
+#include "datamodel/switch.h"
 
 using std::map;
 using std::stringstream;

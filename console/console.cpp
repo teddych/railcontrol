@@ -11,7 +11,7 @@
 #include "railcontrol.h"
 #include "text/converters.h"
 #include "util.h"
-#include "console.h"
+#include "console/console.h"
 
 using std::map;
 using std::thread;

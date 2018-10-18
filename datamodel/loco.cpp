@@ -3,8 +3,8 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "block.h"
-#include "loco.h"
+#include "datamodel/block.h"
+#include "datamodel/loco.h"
 #include "manager.h"
 
 using std::map;

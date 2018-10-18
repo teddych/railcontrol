@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 
-#include "layout_item.h"
+#include "datamodel/layout_item.h"
 
 using std::map;
 using std::stringstream;

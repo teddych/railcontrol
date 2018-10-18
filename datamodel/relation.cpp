@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 
-#include "relation.h"
+#include "datamodel/relation.h"
 
 using std::map;
 using std::stringstream;

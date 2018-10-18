@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "util.h"
-#include "storage_handler.h"
+#include "storage/storage_handler.h"
 
 using datamodel::Accessory;
 using datamodel::Block;

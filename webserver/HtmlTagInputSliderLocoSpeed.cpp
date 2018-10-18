@@ -1,4 +1,4 @@
-#include "HtmlTagInputSliderLocoSpeed.h"
+#include "webserver/HtmlTagInputSliderLocoSpeed.h"
 
 namespace webserver
 {

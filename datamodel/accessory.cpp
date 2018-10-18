@@ -1,7 +1,7 @@
 #include <map>
 #include <sstream>
 
-#include "accessory.h"
+#include "datamodel/accessory.h"
 
 using std::map;
 using std::stringstream;

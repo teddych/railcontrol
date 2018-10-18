@@ -2,7 +2,7 @@
 #include <map>
 #include <sstream>
 
-#include "street.h"
+#include "datamodel/street.h"
 #include "manager.h"
 
 using std::map;

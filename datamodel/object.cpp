@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 
-#include "object.h"
+#include "datamodel/object.h"
 
 using std::map;
 using std::stringstream;

@@ -7,11 +7,12 @@
 #include <sys/stat.h>
 #include <thread>
 #include <unistd.h>
+
 #include "datamodel/datamodel.h"
 #include "railcontrol.h"
 #include "util.h"
-#include "webclient.h"
-#include "webserver.h"
+#include "webserver/webclient.h"
+#include "webserver/webserver.h"
 #include "webserver/HtmlResponse.h"
 #include "webserver/HtmlResponseNotFound.h"
 #include "webserver/HtmlTagButtonCancel.h"

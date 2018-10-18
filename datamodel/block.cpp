@@ -3,7 +3,7 @@
 #include <sstream>
 #include <string>
 
-#include "block.h"
+#include "datamodel/block.h"
 
 using std::map;
 using std::stoi;

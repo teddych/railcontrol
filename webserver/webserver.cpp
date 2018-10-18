@@ -11,8 +11,8 @@
 #include "railcontrol.h"
 #include "text/converters.h"
 #include "util.h"
-#include "webclient.h"
-#include "webserver.h"
+#include "webserver/webclient.h"
+#include "webserver/webserver.h"
 
 using std::map;
 using std::thread;

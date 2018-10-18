@@ -1,7 +1,7 @@
 #include <map>
 #include <sstream>
 
-#include "sqlite.h"
+#include "storage/sqlite.h"
 #include "util.h"
 
 using datamodel::Accessory;
@@ -20,12 +20,12 @@ namespace storage {
 	// create instance of sqlite
 	extern "C" SQLite* create_sqlite(const StorageParams& params) {
 		return new SQLite(params);
-  }
+	}
 
 	// delete instance of sqlite
-  extern "C" void destroy_sqlite(SQLite* sqlite) {
-    delete(sqlite);
-  }
+	extern "C" void destroy_sqlite(SQLite* sqlite) {
+		delete(sqlite);
+	}
 
 	SQLite::SQLite(const StorageParams& params) {
 		int rc;
