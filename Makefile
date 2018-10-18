@@ -33,6 +33,7 @@ OBJ= \
 	webserver/Response.o \
 	webserver/HtmlResponse.o \
 	webserver/HtmlResponseNotFound.o \
+	webserver/HtmlResponseNotImplemented.o \
 	webserver/HtmlTag.o \
 	webserver/HtmlTagButton.o \
 	webserver/HtmlTagButtonCancel.o \
