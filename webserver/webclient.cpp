@@ -393,11 +393,6 @@ namespace webserver {
 			address = loco->address;
 			name = loco->name;
 		}
-		ss << HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;");
-		ss << "<form id=\"editform\">";
-		ss << HtmlTagInputHidden("cmd", "locosave");
-		ss << HtmlTagInputHidden("loco", to_string(locoID));
-		ss << HtmlTagInputTextWithLabel("name", "Loco Name:", name);
 
 		std::map<controlID_t,string> controls = manager.controlListNames();
 		std::map<string, string> controlOptions;
@@ -405,8 +400,6 @@ namespace webserver {
 		{
 			controlOptions[to_string(control.first)] = control.second;
 		}
-		ss << "<label>Control:</label>";
-		ss << HtmlTagSelect("control", controlOptions, to_string(controlID));
 
 		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
 		std::map<string, string> protocolOptions;
@@ -414,19 +407,20 @@ namespace webserver {
 		{
 			protocolOptions[to_string(protocol.first)] = protocol.second;
 		}
-		ss << "<label>Protocol:</label>";
-		ss << "<div id=\"protocol\">";
-		ss << HtmlTagSelect("protocol", protocolOptions, to_string(protocol));
-		ss << "</div>";
-		ss << HtmlTagInputTextWithLabel("address", "Address:", to_string(address));
-		ss << "</form>";
+
+		ss << HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;");
+		ss << HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "locosave"))
+			.AddContent(HtmlTagInputHidden("loco", to_string(locoID)))
+			.AddContent(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
+			.AddContent(HtmlTagLabel("Control:", "control"))
+			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
+			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
+			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)));
 		ss << HtmlTagButtonCancel();
 		ss << HtmlTagButtonOK();
-		ss << "<script>\n";
-		ss << "//# sourceURL=handleLocoEdit.js";
-		ss << "</script>\n";
-		string sOut = ss.str();
-		simpleReply(sOut);
+		simpleReply(ss.str());
 	}
 
 	void WebClient::handleProtocol(const map<string, string>& arguments)
