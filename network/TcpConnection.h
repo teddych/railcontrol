@@ -12,6 +12,8 @@ namespace Network
 
 			void Terminate();
 			int Send(const char* buf, const size_t buflen, const int flags);
+			int Send(const std::string& string, const int flags);
+			int Send(const std::string& string);
 			int Receive(char* buf, const size_t buflen, const int flags);
 
 		private:

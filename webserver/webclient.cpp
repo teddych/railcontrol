@@ -284,57 +284,55 @@ namespace webserver {
 
 	void WebClient::deliverFileInternal(FILE* f, const char* realFile, const string& virtualFile)
 	{
-	struct stat s;
-	int rc = stat(realFile, &s);
-	if (rc != 0)
-	{
-		return;
-	}
-
-	size_t length = virtualFile.length();
-	const char* contentType = NULL;
-	if (length > 4 && virtualFile[length - 4] == '.')
-	{
-		if (virtualFile[length - 3] == 'i' && virtualFile[length - 2] == 'c' && virtualFile[length - 1] == 'o')
+		struct stat s;
+		int rc = stat(realFile, &s);
+		if (rc != 0)
 		{
-			contentType = "image/x-icon";
+			return;
 		}
-		else if (virtualFile[length - 3] == 'c' && virtualFile[length - 2] == 's' && virtualFile[length - 1] == 's')
+
+		size_t length = virtualFile.length();
+		const char* contentType = NULL;
+		if (length > 4 && virtualFile[length - 4] == '.')
 		{
-			contentType = "text/css";
+			if (virtualFile[length - 3] == 'i' && virtualFile[length - 2] == 'c' && virtualFile[length - 1] == 'o')
+			{
+				contentType = "image/x-icon";
+			}
+			else if (virtualFile[length - 3] == 'c' && virtualFile[length - 2] == 's' && virtualFile[length - 1] == 's')
+			{
+				contentType = "text/css";
+			}
+			else if (virtualFile[length - 3] == 'p' && virtualFile[length - 2] == 'n' && virtualFile[length - 1] == 'g')
+			{
+				contentType = "image/png";
+			}
 		}
-		else if (virtualFile[length - 3] == 'p' && virtualFile[length - 2] == 'n' && virtualFile[length - 1] == 'g')
+		else if (length > 3 && virtualFile[length - 3] == '.' && virtualFile[length - 2] == 'j' && virtualFile[length - 1] == 's')
 		{
-			contentType = "image/png";
+			contentType = "application/javascript";
 		}
-	}
-	else if (length > 3 && virtualFile[length - 3] == '.' && virtualFile[length - 2] == 'j' && virtualFile[length - 1] == 's')
-	{
-		contentType = "application/javascript";
-	}
 
-	Response response(Response::OK, HtmlTag());
-	response.AddHeader("Cache-Control", "max-age=3600");
-	response.AddHeader("Content-Length", to_string(s.st_size));
-	response.AddHeader("Content-Type", contentType);
-	std::stringstream reply;
-	reply << response;
-	connection->Send(reply.str().c_str(), reply.str().size(), 0);
+		Response response(Response::OK, HtmlTag());
+		response.AddHeader("Cache-Control", "max-age=3600");
+		response.AddHeader("Content-Length", to_string(s.st_size));
+		response.AddHeader("Content-Type", contentType);
+		connection->Send(response.ToString());
 
-	if (headOnly == true)
-	{
-		return;
-	}
+		if (headOnly == true)
+		{
+			return;
+		}
 
-	char* buffer = static_cast<char*>(malloc(s.st_size));
-	if (buffer == nullptr)
-	{
-		return;
-	}
+		char* buffer = static_cast<char*>(malloc(s.st_size));
+		if (buffer == nullptr)
+		{
+			return;
+		}
 
-	size_t r = fread(buffer, 1, s.st_size, f);
-	connection->Send(buffer, r, 0);
-	free(buffer);
+		size_t r = fread(buffer, 1, s.st_size, f);
+		connection->Send(buffer, r, 0);
+		free(buffer);
 	}
 
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments)

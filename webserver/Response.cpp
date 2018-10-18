@@ -1,3 +1,5 @@
+#include <sstream>
+
 #include "webserver/Response.h"
 
 namespace webserver
@@ -12,6 +14,12 @@ namespace webserver
 		headers[key] = value;
 	}
 
+	std::string Response::ToString()
+	{
+		std::stringstream reply;
+		reply << this;
+		return reply.str();
+	}
 
 	std::ostream& operator<<(std::ostream& stream, const Response& response)
 	{
