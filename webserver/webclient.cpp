@@ -163,7 +163,8 @@ namespace webserver {
 		xlog("Terminating webclient");
 	}
 
-	int WebClient::stop() {
+	int WebClient::stop()
+	{
 		// inform thread to stop
 		run = false;
 		return 0;
@@ -207,16 +208,21 @@ namespace webserver {
 		}
 	}
 
-	void WebClient::interpretClientRequest(const vector<string>& lines, string& method, string& uri, string& protocol, map<string,string>& arguments, map<string,string>& headers) {
-		if (lines.size() == 0) {
+	void WebClient::interpretClientRequest(const vector<string>& lines, string& method, string& uri, string& protocol, map<string,string>& arguments, map<string,string>& headers)
+	{
+		if (lines.size() == 0)
+		{
 			return;
 		}
 
-		for (auto line : lines) {
-			if (line.find("HTTP/1.") == string::npos) {
+		for (auto line : lines)
+		{
+			if (line.find("HTTP/1.") == string::npos)
+			{
 				vector<string> list;
 				str_split(line, string(": "), list);
-				if (list.size() == 2) {
+				if (list.size() == 2)
+				{
 					headers[list[0]] = list[1];
 				}
 				continue;
@@ -224,32 +230,35 @@ namespace webserver {
 
 			vector<string> list;
 			str_split(line, string(" "), list);
-			if (list.size() != 3) {
+			if (list.size() != 3)
+			{
 				continue;
 			}
 
 			method = list[0];
 			// transform method to uppercase
 			std::transform(method.begin(), method.end(), method.begin(), ::toupper);
+
 			// if method == HEAD set membervariable
-			headOnly = false;
-			if (method.compare("HEAD") == 0) {
-				headOnly = true;
-			}
+			headOnly = method.compare("HEAD") == 0;
+
 			// set uri and protocol
 			uri = list[1];
 			UrlDecode(uri);
 			protocol = list[2];
+
 			// read GET-arguments from uri
 			vector<string> uri_parts;
 			str_split(uri, "?", uri_parts);
-			if (uri_parts.size() != 2) {
+			if (uri_parts.size() != 2)
+			{
 				continue;
 			}
 
 			vector<string> argumentStrings;
 			str_split(uri_parts[1], "&", argumentStrings);
-			for (auto argument : argumentStrings) {
+			for (auto argument : argumentStrings)
+			{
 				vector<string> argumentParts;
 				str_split(argument, "=", argumentParts);
 				arguments[argumentParts[0]] = argumentParts[1];
