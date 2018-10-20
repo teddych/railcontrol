@@ -34,18 +34,17 @@ using std::to_string;
 using std::vector;
 using datamodel::Loco;
 
-namespace webserver {
-
-	WebClient::WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer& webserver, Manager& m) :
-		id(id),
+namespace webserver
+{
+	WebClient::WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer& webserver, Manager& m)
+	:	id(id),
 		connection(connection),
 		run(false),
 		server(webserver),
 		clientThread(thread([this] {worker();})),
 		manager(m),
 		buttonID(0)
-	{
-	}
+	{}
 
 	WebClient::~WebClient()
 	{
@@ -121,42 +120,54 @@ namespace webserver {
 			manager.booster(ControlTypeWebserver, BoosterStop);
 			stopRailControlWebserver();
 		}
-		else if (arguments["cmd"].compare("on") == 0) {
+		else if (arguments["cmd"].compare("on") == 0)
+		{
 			simpleReply("Turning booster on");
 			manager.booster(ControlTypeWebserver, BoosterGo);
 		}
-		else if (arguments["cmd"].compare("off") == 0) {
+		else if (arguments["cmd"].compare("off") == 0)
+		{
 			simpleReply("Turning booster off");
 			manager.booster(ControlTypeWebserver, BoosterStop);
 		}
-		else if (arguments["cmd"].compare("loco") == 0) {
+		else if (arguments["cmd"].compare("loco") == 0)
+		{
 			printLoco(arguments);
 		}
-		else if (arguments["cmd"].compare("locospeed") == 0) {
+		else if (arguments["cmd"].compare("locospeed") == 0)
+		{
 			handleLocoSpeed(arguments);
 		}
-		else if (arguments["cmd"].compare("locodirection") == 0) {
+		else if (arguments["cmd"].compare("locodirection") == 0)
+		{
 			handleLocoDirection(arguments);
 		}
-		else if (arguments["cmd"].compare("locofunction") == 0) {
+		else if (arguments["cmd"].compare("locofunction") == 0)
+		{
 			handleLocoFunction(arguments);
 		}
-		else if (arguments["cmd"].compare("locoedit") == 0) {
+		else if (arguments["cmd"].compare("locoedit") == 0)
+		{
 			handleLocoEdit(arguments);
 		}
-		else if (arguments["cmd"].compare("locosave") == 0) {
+		else if (arguments["cmd"].compare("locosave") == 0)
+		{
 			handleLocoSave(arguments);
 		}
-		else if (arguments["cmd"].compare("protocol") == 0) {
+		else if (arguments["cmd"].compare("protocol") == 0)
+		{
 			handleProtocol(arguments);
 		}
-		else if (arguments["cmd"].compare("updater") == 0) {
+		else if (arguments["cmd"].compare("updater") == 0)
+		{
 			handleUpdater(headers);
 		}
-		else if (uri.compare("/") == 0) {
+		else if (uri.compare("/") == 0)
+		{
 			printMainHTML();
 		}
-		else {
+		else
+		{
 			deliverFile(uri);
 		}
 
@@ -165,7 +176,7 @@ namespace webserver {
 
 	int WebClient::stop()
 	{
-		// inform thread to stop
+		// inform working thread to stop
 		run = false;
 		return 0;
 	}
@@ -351,8 +362,7 @@ namespace webserver {
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to speed " << speed;
-		string sOut = ss.str();
-		simpleReply(sOut);
+		simpleReply(ss.str());
 	}
 
 	void WebClient::handleLocoDirection(const map<string, string>& arguments)
@@ -365,8 +375,7 @@ namespace webserver {
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to " << direction;
-		string sOut = ss.str();
-		simpleReply(sOut);
+		simpleReply(ss.str());
 	}
 
 	void WebClient::handleLocoFunction(const map<string, string>& arguments)
@@ -380,8 +389,7 @@ namespace webserver {
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now set f";
 		ss << function << " to " << (on ? "on" : "off");
-		string sOut = ss.str();
-		simpleReply(sOut);
+		simpleReply(ss.str());
 	}
 
 	void WebClient::handleLocoEdit(const map<string, string>& arguments)
@@ -450,8 +458,7 @@ namespace webserver {
 		{
 			ss << "Unknown control";
 		}
-		string sOut = ss.str();
-		simpleReply(sOut);
+		simpleReply(ss.str());
 	}
 
 	void WebClient::handleLocoSave(const map<string, string>& arguments)
@@ -479,8 +486,7 @@ namespace webserver {
 			ss << "<p>Unable to save loco.</p>";
 		}
 
-		string sOut = ss.str();
-		simpleReply(sOut);
+		simpleReply(ss.str());
 	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
@@ -628,8 +634,7 @@ namespace webserver {
 			" }"
 			"};"));
 
-		HtmlResponse response("Railcontrol", body);
-		connection->Send(response);
+		connection->Send(HtmlResponse("Railcontrol", body));
 	}
 
 } ; // namespace webserver
