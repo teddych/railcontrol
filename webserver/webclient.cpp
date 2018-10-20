@@ -605,27 +605,28 @@ namespace webserver {
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "layout").AddAttribute("id", "layout"));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "popup").AddAttribute("id", "popup"));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "status").AddAttribute("id", "status"));
-		body.AddChildTag(HtmlTagJavascript("\nvar updater = new EventSource('/?cmd=updater');\n"
-			"updater.onmessage = function(e) {\n"
-			" var status = document.getElementById('status');\n"
-			" var arguments = e.data.split(';');\n"
-			" var argumentMap = new Map();\n"
-			" arguments.forEach(function(argument) {\n"
-			"  var parts = argument.split('=');\n"
-			"  if (parts[0] == 'status') {\n"
-			"   status.innerHTML += parts[1] + '<br>';\n"
-			"   status.scrollTop = status.scrollHeight - status.clientHeight;\n"
-			"  }\n"
-			"  else {\n"
-			"   argumentMap.set(parts[0], parts[1]);\n"
-			"  }\n"
-			" })\n"
-			" if (argumentMap.get('command') == 'locospeed') {\n"
-			"  var elementName = 'locospeed_' + argumentMap.get('loco');\n"
-			"  var element = document.getElementById(elementName);\n"
-			"  if (element) element.value = argumentMap.get('speed');\n"
-			" }\n"
-			"};\n"));
+		body.AddChildTag(HtmlTagJavascript(
+			"var updater = new EventSource('/?cmd=updater');"
+			"updater.onmessage = function(e) {"
+			" var status = document.getElementById('status');"
+			" var arguments = e.data.split(';');"
+			" var argumentMap = new Map();"
+			" arguments.forEach(function(argument) {"
+			"  var parts = argument.split('=');"
+			"  if (parts[0] == 'status') {"
+			"   status.innerHTML += parts[1] + '<br>';"
+			"   status.scrollTop = status.scrollHeight - status.clientHeight;"
+			"  }"
+			"  else {"
+			"   argumentMap.set(parts[0], parts[1]);"
+			"  }"
+			" });"
+			" if (argumentMap.get('command') == 'locospeed') {"
+			"  var elementName = 'locospeed_' + argumentMap.get('loco');"
+			"  var element = document.getElementById(elementName);"
+			"  if (element) element.value = argumentMap.get('speed');"
+			" }"
+			"};"));
 
 		HtmlResponse response("Railcontrol", body);
 		connection->Send(response);

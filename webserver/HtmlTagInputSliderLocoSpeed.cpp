@@ -10,15 +10,15 @@ namespace webserver
 		AddAttribute("class", "slider");
 
 		std::stringstream ss;
-		ss <<"$(function() {\n"
-			" $('#" << reference << "').on('change', function() {\n"
-			"  var myUrl = '/?cmd=locospeed&loco=" << locoID << "&speed=' + document.getElementById('" << reference << "').value;\n"
-			"  var xmlHttp = new XMLHttpRequest();\n"
-			"  xmlHttp.open('GET', myUrl, true);\n"
-			"  xmlHttp.send(null);\n"
-			"  return false;\n"
-			" })\n"
-			"});\n";
+		ss <<"$(function() {"
+			" $('#" << reference << "').on('change', function() {"
+			"  var myUrl = '/?cmd=locospeed&loco=" << locoID << "&speed=' + document.getElementById('" << reference << "').value;"
+			"  var xmlHttp = new XMLHttpRequest();"
+			"  xmlHttp.open('GET', myUrl, true);"
+			"  xmlHttp.send(null);"
+			"  return false;"
+			" })"
+			"});";
 
 		AddJavaScript(ss.str());
 	};

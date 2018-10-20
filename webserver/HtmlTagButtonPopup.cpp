@@ -10,18 +10,18 @@ namespace webserver
 	{
 		std::stringstream ss;
 		ss <<
-			"$(function() {\n"
-			" $('#" << commandID << "').on('click', function() {\n"
+			"$(function() {"
+			" $('#" << commandID << "').on('click', function() {"
 			"  var myUrl = '/?cmd=" << command;
 		for (auto argument : arguments) {
 
 			ss << "&" << argument.first << "=" << argument.second;
 		}
-		ss <<"';\n"
-			"  $('#popup').show(300);\n"
-			"  $('#popup').load(myUrl);\n"
-			" })\n"
-			"})\n";
+		ss <<"';"
+			"  $('#popup').show(300);"
+			"  $('#popup').load(myUrl);"
+			" })"
+			"})";
 		AddJavaScript(ss.str());
 	}
 };

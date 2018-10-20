@@ -9,11 +9,11 @@ namespace webserver
 	{
 		std::stringstream s;
 		s <<
-			"$(function() {\n"
-			" $('#" << commandID << "').on('click', function() {\n"
-			"  $('#popup').hide(300);\n"
-			" })\n"
-			"})\n";
+			"$(function() {"
+			" $('#" << commandID << "').on('click', function() {"
+			"  $('#popup').hide(300);"
+			" })"
+			"})";
 		AddJavaScript(s.str());
 	}
 };
