@@ -71,7 +71,7 @@ namespace webserver {
 
 		size_t pos = 0;
 		string s;
-		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos)
+		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos && run)
 		{
 			pos += connection->Receive(buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
 			s = string(buffer_in);
@@ -82,9 +82,9 @@ namespace webserver {
 		vector<string> lines;
 		str_split(s, string("\n"), lines);
 
-		if (lines.size() < 1)
+		if (lines.size() <= 1)
 		{
-			xlog("Invalid request");
+			xlog("Ignoring invalid request");
 			return;
 		}
 
@@ -522,12 +522,7 @@ namespace webserver {
 
 	void WebClient::simpleReply(const string& text, const Response::responseCode_t code)
 	{
-		Response response(code, text);
-		response.AddHeader("Cache-Control", "no-cache, must-revalidate");
-		response.AddHeader("Pragma", "no-cache");
-		response.AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
-		response.AddHeader("Content-Type", "text/html; charset=utf-8");
-		connection->Send(response);
+		connection->Send(HtmlResponse(code, "Railcontrol", HtmlTag("body").AddContent(text)));
 	}
 
 	HtmlTag WebClient::selectLoco()
