@@ -520,9 +520,9 @@ namespace webserver {
 		}
 	}
 
-	void WebClient::simpleReply(const string& text, const Response::responseCode_t code)
+	void WebClient::simpleReply(const string& text)
 	{
-		connection->Send(HtmlResponse(code, "Railcontrol", HtmlTag("body").AddContent(text)));
+		connection->Send(HtmlResponse("Railcontrol", HtmlTag("body").AddContent(text)));
 	}
 
 	HtmlTag WebClient::selectLoco()
