@@ -530,8 +530,14 @@ namespace webserver {
 		connection->Send(response);
 	}
 
-	string WebClient::selectLoco(const map<string,string>& options)
+	HtmlTag WebClient::selectLoco()
 	{
+		const map<locoID_t, Loco*>& locos = manager.locoList();
+		map<string,string> options;
+		for (auto locoTMP : locos) {
+			Loco* loco = locoTMP.second;
+			options[to_string(loco->objectID)] = loco->name;
+		}
 		return HtmlTag("form").AddAttribute("method", "get").AddAttribute("action", "/").AddAttribute("id", "selectLoco_form")
 		.AddContent(HtmlTagSelect("loco", options).AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')"))
 		.AddContent(HtmlTagInputHidden("cmd", "loco"));
@@ -590,37 +596,14 @@ namespace webserver {
 	void WebClient::printMainHTML() {
 		// handle base request
 		stringstream ss;
-		ss << "HTTP/1.0 200 OK\r\n"
-			"Cache-Control: no-cache, must-revalidate\r\n"
-			"Pragma: no-cache\r\n"
-			"Expires: Sun, 12 Feb 2016 00:00:00 GMT\r\n"
-			"Content-Type: text/html; charset=utf-8\r\n\r\n"
-			"<!DOCTYPE html><html><head>"
-			"<title>RailControl</title>"
-			"<link rel=\"stylesheet\" type=\"text/css\" href=\"/style.css\" />"
-			"<script src=\"/jquery-3.1.1.min.js\"></script>"
-			"<script src=\"/javascript.js\"></script>"
-			"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">"
-			"<meta name=\"robots\" content=\"noindex,nofollow\">"
-			"</head>"
-			"<body onload=\"loadDivFromForm('selectLoco_form', 'loco')\">"
-			"<h1>Railcontrol</h1>"
-			"<div class=\"menu\">";
-		ss << HtmlTagButtonCommand("X", "quit");
-		ss << HtmlTagButtonCommand("On", "on");
-		ss << HtmlTagButtonCommand("Off", "off");
-		ss << HtmlTagButtonPopup("NewLoco", "locoedit");
-		ss << "</div>";
-		ss << "<div class=\"locolist\">";
-		// locolist
-		const map<locoID_t, Loco*>& locos = manager.locoList();
-		map<string,string> options;
-		for (auto locoTMP : locos) {
-			Loco* loco = locoTMP.second;
-			options[to_string(loco->objectID)] = loco->name;
-		}
-		ss << selectLoco(options);
-		ss <<"</div>";
+		ss << HtmlTag("h1").AddContent("Railcontrol");
+		ss << HtmlTag("div").AddAttribute("class", "menu")
+			.AddContent(HtmlTagButtonCommand("X", "quit"))
+			.AddContent(HtmlTagButtonCommand("On", "on"))
+			.AddContent(HtmlTagButtonCommand("Off", "off"))
+			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit"));
+
+		ss << HtmlTag("div").AddAttribute("class", "locolist").AddChildTag(selectLoco());
 		ss << HtmlTag("div").AddAttribute("class", "loco").AddAttribute("id", "loco");
 		ss << HtmlTag("div").AddAttribute("class", "layout").AddAttribute("id", "layout");
 		ss << HtmlTag("div").AddAttribute("class", "popup").AddAttribute("id", "popup");
@@ -648,11 +631,12 @@ namespace webserver {
 			"};\n");
 
 			// FIXME: get first locoid in db
-		ss << "</body>"
-			"</html>";
-		string sOut = ss.str();
-		const char* html = sOut.c_str();
-		connection->Send(html, strlen(html), 0);
+
+		HtmlTag body("body");
+		body.AddAttribute("onload","loadDivFromForm('selectLoco_form', 'loco')");
+		body.AddContent(ss.str());
+		HtmlResponse response("Railcontrol", body);
+		connection->Send(response);
 	}
 
 } ; // namespace webserver
