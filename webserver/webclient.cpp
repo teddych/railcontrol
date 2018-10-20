@@ -590,20 +590,22 @@ namespace webserver {
 
 	void WebClient::printMainHTML() {
 		// handle base request
-		stringstream ss;
-		ss << HtmlTag("h1").AddContent("Railcontrol");
-		ss << HtmlTag("div").AddAttribute("class", "menu")
+		HtmlTag body("body");
+		body.AddAttribute("onload","loadDivFromForm('selectLoco_form', 'loco')");
+
+		body.AddChildTag(HtmlTag("h1").AddContent("Railcontrol"));
+		body.AddChildTag(HtmlTag("div").AddAttribute("class", "menu")
 			.AddContent(HtmlTagButtonCommand("X", "quit"))
 			.AddContent(HtmlTagButtonCommand("On", "on"))
 			.AddContent(HtmlTagButtonCommand("Off", "off"))
-			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit"));
+			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit")));
 
-		ss << HtmlTag("div").AddAttribute("class", "locolist").AddChildTag(selectLoco());
-		ss << HtmlTag("div").AddAttribute("class", "loco").AddAttribute("id", "loco");
-		ss << HtmlTag("div").AddAttribute("class", "layout").AddAttribute("id", "layout");
-		ss << HtmlTag("div").AddAttribute("class", "popup").AddAttribute("id", "popup");
-		ss << HtmlTag("div").AddAttribute("class", "status").AddAttribute("id", "status");
-		ss << HtmlTagJavascript("\nvar updater = new EventSource('/?cmd=updater');\n"
+		body.AddChildTag(HtmlTag("div").AddAttribute("class", "locolist").AddChildTag(selectLoco()));
+		body.AddChildTag(HtmlTag("div").AddAttribute("class", "loco").AddAttribute("id", "loco"));
+		body.AddChildTag(HtmlTag("div").AddAttribute("class", "layout").AddAttribute("id", "layout"));
+		body.AddChildTag(HtmlTag("div").AddAttribute("class", "popup").AddAttribute("id", "popup"));
+		body.AddChildTag(HtmlTag("div").AddAttribute("class", "status").AddAttribute("id", "status"));
+		body.AddChildTag(HtmlTagJavascript("\nvar updater = new EventSource('/?cmd=updater');\n"
 			"updater.onmessage = function(e) {\n"
 			" var status = document.getElementById('status');\n"
 			" var arguments = e.data.split(';');\n"
@@ -623,13 +625,8 @@ namespace webserver {
 			"  var element = document.getElementById(elementName);\n"
 			"  if (element) element.value = argumentMap.get('speed');\n"
 			" }\n"
-			"};\n");
+			"};\n"));
 
-			// FIXME: get first locoid in db
-
-		HtmlTag body("body");
-		body.AddAttribute("onload","loadDivFromForm('selectLoco_form', 'loco')");
-		body.AddContent(ss.str());
 		HtmlResponse response("Railcontrol", body);
 		connection->Send(response);
 	}
