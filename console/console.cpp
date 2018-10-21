@@ -23,8 +23,8 @@ using std::vector;
 namespace console
 {
 
-	Console::Console(Manager& manager, const unsigned short port) :
-		CommandInterface(ControlTypeConsole),
+	Console::Console(Manager& manager, const unsigned short port)
+	:	CommandInterface(ControlTypeConsole),
 		port(port),
 		serverSocket(0),
 		clientSocket(-1),
@@ -150,7 +150,6 @@ namespace console
 	int Console::ReadNumber(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
-        // read integer
 		int number = 0;
 		while (s.length() > i)
 		{
@@ -450,7 +449,8 @@ namespace console
 
 	void Console::HandleAccessoryCommand(string& s, size_t& i)
 	{
-		switch (ReadCommand(s, i)) {
+		switch (ReadCommand(s, i))
+		{
 			case 'd':
 			case 'D':
 				HandleAccessoryDelete(s, i);
@@ -478,7 +478,8 @@ namespace console
 
 	void Console::HandleBlockCommand(string& s, size_t& i)
 	{
-		switch (ReadCommand(s, i)) {
+		switch (ReadCommand(s, i))
+		{
 			case 'd':
 			case 'D':
 				HandleBlockDelete(s, i);
@@ -506,7 +507,8 @@ namespace console
 
 	void Console::HandleControlCommand(string& s, size_t& i)
 	{
-		switch (ReadCommand(s, i)) {
+		switch (ReadCommand(s, i))
+		{
 			case 'd':
 			case 'D':
 				HandleControlDelete(s, i);
@@ -529,7 +531,8 @@ namespace console
 
 	void Console::HandleFeedbackCommand(string& s, size_t& i)
 	{
-		switch (ReadCommand(s, i)) {
+		switch (ReadCommand(s, i))
+		{
 			case 'd':
 			case 'D':
 				HandleFeedbackDelete(s, i);
@@ -562,7 +565,8 @@ namespace console
 
 	void Console::HandleLocoCommand(string& s, size_t& i)
 	{
-		switch (ReadCommand(s, i)) {
+		switch (ReadCommand(s, i))
+		{
 			case 'a':
 			case 'A':
 				HandleLocoAutomode(s, i);
@@ -610,7 +614,8 @@ namespace console
 
 	void Console::HandleStreetCommand(string& s, size_t& i)
 	{
-		switch (ReadCommand(s, i)) {
+		switch (ReadCommand(s, i))
+		{
 			case 'd':
 			case 'D':
 				HandleStreetDelete(s, i);
@@ -638,7 +643,8 @@ namespace console
 
 	void Console::HandleSwitchCommand(string& s, size_t& i)
 	{
-		switch (ReadCommand(s, i)) {
+		switch (ReadCommand(s, i))
+		{
 			case 'd':
 			case 'D':
 				HandleSwitchDelete(s, i);
@@ -867,7 +873,8 @@ namespace console
 			// list all controls
 			std::map<controlID_t,hardware::HardwareParams*> params = manager.controlList();
 			stringstream status;
-			for (auto param : params) {
+			for (auto param : params)
+			{
 				status << static_cast<int>(param.first) << " " << param.second->name << "\n";
 			}
 			status << "Total number of controls: " << params.size();
@@ -912,7 +919,8 @@ namespace console
 		}
 
 		string result;
-		if (!manager.controlSave(ControlNone, hardwareType, name, ip, result)) {
+		if (!manager.controlSave(ControlNone, hardwareType, name, ip, result))
+		{
 			AddUpdate(result);
 			return;
 		}
@@ -1494,6 +1502,7 @@ namespace console
 			AddUpdate(status.str());
 			return;
 		}
+
 		// list one switch
 		switchID_t switchID = ReadNumber(s, i);
 		datamodel::Switch* mySwitch = manager.getSwitch(switchID);
@@ -1594,8 +1603,10 @@ namespace console
 	}
 	*/
 
-	void Console::AddUpdate(const string& status) {
-		if (clientSocket < 0) {
+	void Console::AddUpdate(const string& status)
+	{
+		if (clientSocket < 0)
+		{
 			return;
 		}
 		string s(status);
@@ -1603,35 +1614,42 @@ namespace console
 		send_timeout(clientSocket, s.c_str(), s.length(), 0);
 	}
 
-	void Console::booster(const controlType_t managerID, const boosterStatus_t status) {
-		if (status) {
+	void Console::booster(const controlType_t managerID, const boosterStatus_t status)
+	{
+		if (status)
+		{
 			AddUpdate("Booster is on");
 		}
-		else {
+		else
+		{
 			AddUpdate("Booster is off");
 		}
 	}
 
-	void Console::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) {
+	void Console::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed)
+	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " speed is " << speed;
 		AddUpdate(status.str());
 	}
 
-	void Console::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
+	void Console::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction)
+	{
 		std::stringstream status;
 		const char* directionText = (direction ? "forward" : "reverse");
 		status << manager.getLocoName(locoID) << " direction is " << directionText;
 		AddUpdate(status.str());
 	}
 
-	void Console::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state) {
+	void Console::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state)
+	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
 		AddUpdate(status.str());
 	}
 
-	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state)
+	{
 		std::stringstream status;
 		string stateText;
 		text::Converters::accessoryStatus(state, stateText);
@@ -1639,13 +1657,15 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void Console::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
+	void Console::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state)
+	{
 		std::stringstream status;
 		status << "Feedback " << pin << " is " << (state ? "on" : "off");
 		AddUpdate(status.str());
 	}
 
-	void Console::block(const controlType_t managerID, const blockID_t blockID, const lockState_t lockState) {
+	void Console::block(const controlType_t managerID, const blockID_t blockID, const lockState_t lockState)
+	{
 		std::stringstream status;
 		string stateText;
 		text::Converters::lockStatus(lockState, stateText);
@@ -1653,7 +1673,8 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void Console::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) {
+	void Console::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state)
+	{
 		std::stringstream status;
 		string stateText;
 		text::Converters::switchStatus(state, stateText);
@@ -1661,49 +1682,57 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void Console::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
+	void Console::locoIntoBlock(const locoID_t locoID, const blockID_t blockID)
+	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " is in block " << manager.getBlockName(blockID);
 		AddUpdate(status.str());
 	}
 
-	void Console::locoRelease(const locoID_t locoID) {
+	void Console::locoRelease(const locoID_t locoID)
+	{
 		stringstream status;
 		status << manager.getLocoName(locoID) << " is not in a block anymore";
 		AddUpdate(status.str());
 	};
 
-	void Console::blockRelease(const blockID_t blockID) {
+	void Console::blockRelease(const blockID_t blockID)
+	{
 		stringstream status;
 		status << manager.getBlockName(blockID) << " is released";
 		AddUpdate(status.str());
 	};
 
-	void Console::streetRelease(const streetID_t streetID) {
+	void Console::streetRelease(const streetID_t streetID)
+	{
 		stringstream status;
 		status << manager.getStreetName(streetID) << " is  released";
 		AddUpdate(status.str());
 	};
 
-	void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+	void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID)
+	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID);
 		AddUpdate(status.str());
 	}
 
-	void Console::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+	void Console::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID)
+	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID);
 		AddUpdate(status.str());
 	}
 
-	void Console::locoStart(const locoID_t locoID) {
+	void Console::locoStart(const locoID_t locoID)
+	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " is in auto mode";
 		AddUpdate(status.str());
 	}
 
-	void Console::locoStop(const locoID_t locoID) {
+	void Console::locoStop(const locoID_t locoID)
+	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " is in manual mode";
 		AddUpdate(status.str());
