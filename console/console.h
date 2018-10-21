@@ -36,6 +36,7 @@ namespace console {
 			void Worker();
 			void AddUpdate(const std::string& status);
 			static void ReadBlanks(std::string& s, size_t& i);
+			static char ReadCharacterWithoutEating(std::string& s, size_t& i);
 			static char ReadCommand(std::string& s, size_t& i);
 			static int ReadNumber(std::string& s, size_t& i);
 			static bool ReadBool(std::string& s, size_t& i);

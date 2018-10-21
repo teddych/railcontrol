@@ -139,6 +139,12 @@ namespace console
 		}
 	}
 
+	char Console::ReadCharacterWithoutEating(string& s, size_t& i)
+	{
+		ReadBlanks(s, i);
+		return s[i];
+	}
+
 	char Console::ReadCommand(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
@@ -167,7 +173,7 @@ namespace console
 
 	bool Console::ReadBool(string& s, size_t& i)
 	{
-		// read bool
+		ReadBlanks(s, i);
 		if (s.length() <= i)
 		{
 			return false;
@@ -194,6 +200,8 @@ namespace console
 
 	string Console::ReadText(string& s, size_t& i)
 	{
+		ReadBlanks(s, i);
+
 		size_t start = i;
 		size_t length = 0;
 		bool escape = false;
@@ -234,6 +242,7 @@ namespace console
 
 	switchType_t Console::ReadSwitchType(string& s, size_t& i)
 	{
+		ReadBlanks(s, i);
 		if (s.length() <= i)
 		{
 			return SwitchTypeLeft;
@@ -258,6 +267,7 @@ namespace console
 
 	layoutRotation_t Console::ReadRotation(string& s, size_t& i)
 	{
+		ReadBlanks(s, i);
 		if (s.length() <= i)
 		{
 			return Rotation0;
@@ -318,6 +328,7 @@ namespace console
 
 	direction_t Console::ReadDirection(string& s, size_t& i)
 	{
+		ReadBlanks(s, i);
 		if (s.length() <= i)
 		{
 			return DirectionLeft;
@@ -344,7 +355,6 @@ namespace console
 
 	accessoryState_t Console::ReadAccessoryState(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		bool state = ReadBool(s, i);
 		return (state ? AccessoryStateOn : AccessoryStateOff);
 	}
@@ -674,7 +684,6 @@ namespace console
 
 	void Console::HandleAccessoryDelete(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		accessoryID_t accessoryID = ReadNumber(s, i);
 		if (!manager.accessoryDelete(accessoryID))
 		{
@@ -686,8 +695,7 @@ namespace console
 
 	void Console::HandleAccessoryList(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all accessories
 			std::map<accessoryID_t,datamodel::Accessory*> accessories = manager.accessoryList();
@@ -716,21 +724,13 @@ namespace console
 
 	void Console::HandleAccessoryNew(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		string name = ReadText(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posY = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posZ = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		controlID_t controlID = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
-		ReadBlanks(s, i);
 		address_t address = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		accessoryTimeout_t timeout = ReadNumber(s, i);
 		string result;
 		if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result))
@@ -759,7 +759,6 @@ namespace console
 
 	void Console::HandleBlockDelete(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		blockID_t blockID = ReadNumber(s, i);
 		if (!manager.blockDelete(blockID))
 		{
@@ -771,8 +770,7 @@ namespace console
 
 	void Console::HandleBlockList(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all blocks
 			std::map<blockID_t,datamodel::Block*> blocks = manager.blockList();
@@ -818,17 +816,11 @@ namespace console
 
 	void Console::HandleBlockNew(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		string name = ReadText(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posY = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posZ = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutItemSize_t width = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutRotation_t rotation = ReadRotation(s, i);
 		string result;
 		if (!manager.blockSave(BlockNone, name, posX, posY, posZ, width, rotation, result))
@@ -843,7 +835,6 @@ namespace console
 
 	void Console::HandleBlockRelease(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		blockID_t blockID = ReadNumber(s, i);
 		if (!manager.blockRelease(blockID))
 		{
@@ -855,7 +846,6 @@ namespace console
 
 	void Console::HandleControlDelete(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		controlID_t controlID = ReadNumber(s, i);
 		if (!manager.controlDelete(controlID))
 		{
@@ -867,8 +857,7 @@ namespace console
 
 	void Console::HandleControlList(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all controls
 			std::map<controlID_t,hardware::HardwareParams*> params = manager.controlList();
@@ -897,12 +886,10 @@ namespace console
 
 	void Console::HandleControlNew(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		string name = ReadText(s, i);
-		ReadBlanks(s, i);
 		string type = ReadText(s, i);
-		ReadBlanks(s, i);
 		string ip = ReadText(s, i);
+
 		hardwareType_t hardwareType;
 		if (type.compare("virt") == 0)
 		{
@@ -932,7 +919,6 @@ namespace console
 
 	void Console::HandleFeedbackDelete(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		if (!manager.feedbackDelete(feedbackID))
 		{
@@ -944,8 +930,7 @@ namespace console
 
 	void Console::HandleFeedbackList(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all feedbacks
 			std::map<feedbackID_t,datamodel::Feedback*> feedbacks = manager.feedbackList();
@@ -994,19 +979,12 @@ namespace console
 
 	void Console::HandleFeedbackNew(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		string name = ReadText(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posY = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posZ = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		controlID_t control = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		feedbackPin_t pin = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
 		if(!manager.feedbackSave(FeedbackNone, name, posX, posY, posZ, control, pin, inverted, result))
@@ -1022,9 +1000,7 @@ namespace console
 	void Console::HandleFeedbackSet(string& s, size_t& i)
 	{
 		feedbackID_t feedbackID = ReadNumber(s, i);
-		ReadBlanks(s, i);
-		// read state
-		unsigned char input = s[i];
+		unsigned char input = ReadCharacterWithoutEating(s, i);
 		feedbackState_t state;
 		char* text;
 		if (input == 'X' || input == 'x')
@@ -1045,7 +1021,6 @@ namespace console
 
 	void Console::HandleFeedbackRelease(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		if (!manager.feedbackRelease(feedbackID))
 		{
@@ -1057,12 +1032,12 @@ namespace console
 
 	void Console::HandleLocoAutomode(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{ // set all locos to automode
 			manager.locoStartAll();
 			return;
 		}
+
 		// set specific loco to auto mode
 		locoID_t locoID = ReadNumber(s, i);
 		if (!manager.locoStart(locoID))
@@ -1074,9 +1049,7 @@ namespace console
 
 	void Console::HandleLocoBlock(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		locoID_t locoID = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		blockID_t blockID = ReadNumber(s, i);
 		if (!manager.locoIntoBlock(locoID, blockID))
 		{
@@ -1087,7 +1060,6 @@ namespace console
 
 	void Console::HandleLocoDelete(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		locoID_t locoID = ReadNumber(s, i);
 		if (!manager.locoDelete(locoID))
 		{
@@ -1099,8 +1071,7 @@ namespace console
 
 	void Console::HandleLocoList(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all locos
 			std::map<locoID_t,datamodel::Loco*> locos = manager.locoList();
@@ -1154,8 +1125,7 @@ namespace console
 
 	void Console::HandleLocoManualmode(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// set all locos to manual mode
 			manager.locoStopAll();
@@ -1172,13 +1142,9 @@ namespace console
 
 	void Console::HandleLocoNew(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		string name = ReadText(s, i);
-		ReadBlanks(s, i);
 		controlID_t control = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
-		ReadBlanks(s, i);
 		address_t address = ReadNumber(s, i);
 		string result;
 		if (!manager.locoSave(LocoNone, name, control, protocol, address, result))
@@ -1193,9 +1159,7 @@ namespace console
 
 	void Console::HandleLocoSpeed(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		locoID_t locoID = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		speed_t speed = ReadNumber(s, i);
 		if (!manager.locoSpeed(ControlTypeConsole, locoID, speed))
 		{
@@ -1206,7 +1170,6 @@ namespace console
 
 	void Console::HandleLocoRelease(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		locoID_t locoID = ReadNumber(s, i);
 		if (!manager.locoRelease(locoID))
 		{
@@ -1367,7 +1330,6 @@ namespace console
 
 	void Console::HandleStreetDelete(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		streetID_t streetID = ReadNumber(s, i);
 		if (!manager.streetDelete(streetID))
 		{
@@ -1379,8 +1341,7 @@ namespace console
 
 	void Console::HandleStreetList(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all streetes
 			std::map<streetID_t,datamodel::Street*> streets = manager.streetList();
@@ -1440,17 +1401,11 @@ namespace console
 
 	void Console::HandleStreetNew(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		string name = ReadText(s, i);
-		ReadBlanks(s, i);
 		blockID_t fromBlock = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		direction_t fromDirection = ReadDirection(s, i);
-		ReadBlanks(s, i);
 		blockID_t toBlock = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		direction_t toDirection = ReadDirection(s, i);
-		ReadBlanks(s, i);
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		string result;
 		if (!manager.streetSave(StreetNone, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID, result))
@@ -1465,7 +1420,6 @@ namespace console
 
 	void Console::HandleStreetRelease(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		streetID_t streetID = ReadNumber(s, i);
 		if (!manager.streetRelease(streetID))
 		{
@@ -1477,7 +1431,6 @@ namespace console
 
 	void Console::HandleSwitchDelete(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		switchID_t switchID = ReadNumber(s, i);
 		if (!manager.switchDelete(switchID))
 		{
@@ -1489,8 +1442,7 @@ namespace console
 
 	void Console::HandleSwitchList(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
-		if (s[i] == 'a')
+		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all switches
 			std::map<switchID_t,datamodel::Switch*> switches = manager.switchList();
@@ -1558,25 +1510,15 @@ namespace console
 
 	void Console::HandleSwitchNew(string& s, size_t& i)
 	{
-		ReadBlanks(s, i);
 		string name = ReadText(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posY = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutPosition_t posZ = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		layoutRotation_t rotation = ReadRotation(s, i);
-		ReadBlanks(s, i);
 		controlID_t controlID = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
-		ReadBlanks(s, i);
 		address_t address = ReadNumber(s, i);
-		ReadBlanks(s, i);
 		switchType_t type = ReadSwitchType(s, i);
-		ReadBlanks(s, i);
 		accessoryTimeout_t timeout = ReadNumber(s, i);
 		string result;
 		if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SwitchStateStraight, timeout, result))
@@ -1592,7 +1534,6 @@ namespace console
 	/*
 	void Console::HandleSwitchRelease(string& s, size_t& i)
 	{
-		readBlanks(s, i);
 		switchID_t switchID = readNumber(s, i);
 		if (!manager.switchRelease(switchID))
 		{
