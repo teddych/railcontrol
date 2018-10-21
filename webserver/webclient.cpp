@@ -116,18 +116,18 @@ namespace webserver
 		// handle requests
 		if (arguments["cmd"].compare("quit") == 0)
 		{
-			simpleReply("Stopping Railcontrol");
+			HtmlReplyWithoutHeader("Stopping Railcontrol");
 			manager.booster(ControlTypeWebserver, BoosterStop);
 			stopRailControlWebserver();
 		}
 		else if (arguments["cmd"].compare("on") == 0)
 		{
-			simpleReply("Turning booster on");
+			HtmlReplyWithoutHeader("Turning booster on");
 			manager.booster(ControlTypeWebserver, BoosterGo);
 		}
 		else if (arguments["cmd"].compare("off") == 0)
 		{
-			simpleReply("Turning booster off");
+			HtmlReplyWithoutHeader("Turning booster off");
 			manager.booster(ControlTypeWebserver, BoosterStop);
 		}
 		else if (arguments["cmd"].compare("loco") == 0)
@@ -362,7 +362,7 @@ namespace webserver
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to speed " << speed;
-		simpleReply(ss.str());
+		HtmlReplyWithoutHeader(ss.str());
 	}
 
 	void WebClient::handleLocoDirection(const map<string, string>& arguments)
@@ -375,7 +375,7 @@ namespace webserver
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to " << direction;
-		simpleReply(ss.str());
+		HtmlReplyWithoutHeader(ss.str());
 	}
 
 	void WebClient::handleLocoFunction(const map<string, string>& arguments)
@@ -389,7 +389,7 @@ namespace webserver
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now set f";
 		ss << function << " to " << (on ? "on" : "off");
-		simpleReply(ss.str());
+		HtmlReplyWithoutHeader(ss.str());
 	}
 
 	void WebClient::handleLocoEdit(const map<string, string>& arguments)
@@ -435,30 +435,7 @@ namespace webserver
 			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)));
 		ss << HtmlTagButtonCancel();
 		ss << HtmlTagButtonOK();
-		simpleReply(ss.str());
-	}
-
-	void WebClient::handleProtocol(const map<string, string>& arguments)
-	{
-		stringstream ss;
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		if (controlId > ControlIdNone)
-		{
-			ss << "<label>Protocol:</label>";
-			protocol_t selectedProtocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlId);
-			std::map<string,string> protocolsTextMap;
-			for(auto protocol : protocols)
-			{
-				protocolsTextMap[to_string(protocol.first)] = protocol.second;
-			}
-			ss << HtmlTagSelect("protocol", protocolsTextMap, to_string(selectedProtocol));
-		}
-		else
-		{
-			ss << "Unknown control";
-		}
-		simpleReply(ss.str());
+		HtmlReplyWithoutHeader(ss.str());
 	}
 
 	void WebClient::handleLocoSave(const map<string, string>& arguments)
@@ -486,7 +463,31 @@ namespace webserver
 			ss << "<p>Unable to save loco.</p>";
 		}
 
-		simpleReply(ss.str());
+		HtmlReplyWithoutHeader(ss.str());
+	}
+
+	void WebClient::handleProtocol(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		if (controlId > ControlIdNone)
+		{
+			ss << "<label>Protocol:</label>";
+			protocol_t selectedProtocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlId);
+			std::map<string,string> protocolsTextMap;
+			for(auto protocol : protocols)
+			{
+				protocolsTextMap[to_string(protocol.first)] = protocol.second;
+			}
+			ss << HtmlTagSelect("protocol", protocolsTextMap, to_string(selectedProtocol));
+		}
+		else
+		{
+			ss << "Unknown control";
+		}
+		HtmlReplyWithoutHeader(ss.str());
+	}
 	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
@@ -526,9 +527,9 @@ namespace webserver
 		}
 	}
 
-	void WebClient::simpleReply(const string& text)
+	void WebClient::HtmlReplyWithoutHeader(const string& text)
 	{
-		connection->Send(HtmlResponse("Railcontrol", HtmlTag("body").AddContent(text)));
+		connection->Send(Response(Response::OK, text));
 	}
 
 	HtmlTag WebClient::selectLoco()
@@ -591,7 +592,7 @@ namespace webserver
 		{
 			sOut = "No locoID provided";
 		}
-		simpleReply(sOut);
+		HtmlReplyWithoutHeader(sOut);
 	}
 
 	void WebClient::printMainHTML() {

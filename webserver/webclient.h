@@ -31,7 +31,7 @@ namespace webserver {
 			std::string buttonPopupOK();
 			void printLoco(const std::map<std::string, std::string>& arguments);
 			void printMainHTML();
-			void simpleReply(const std::string& text);
+			void HtmlReplyWithoutHeader(const std::string& text);
 			void deliverFile(const std::string& file);
 			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			void handleLocoSpeed(const std::map<std::string,std::string>& arguments);
@@ -39,8 +39,8 @@ namespace webserver {
 			void handleLocoFunction(const std::map<std::string, std::string>& arguments);
 			void handleLocoEdit(const std::map<std::string, std::string>& arguments);
 			void handleLocoSave(const std::map<std::string, std::string>& arguments);
-			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void handleProtocol(const std::map<std::string, std::string>& arguments);
+			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);
 			void WorkerImpl();
