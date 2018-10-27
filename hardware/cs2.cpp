@@ -65,12 +65,13 @@ namespace hardware
 	void CS2::GetProtocols(std::vector<protocol_t>& protocols) const
 	{
 		protocols.push_back(ProtocolMM2);
+		protocols.push_back(ProtocolMFX);
 		protocols.push_back(ProtocolDCC);
 	}
 
 	bool CS2::ProtocolSupported(protocol_t protocol) const
 	{
-		return (protocol == ProtocolMM2 || protocol == ProtocolDCC);
+		return (protocol == ProtocolMM2 || protocol == ProtocolMFX || protocol == ProtocolDCC);
 	}
 
 	void CS2::createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length)
@@ -128,6 +129,10 @@ namespace hardware
 				protocol = ProtocolDCC;
 				return;
 
+			case 0x4000:
+				protocol = ProtocolMFX;
+				return;
+
 			default:
 				protocol = ProtocolMM2;
 				return;
@@ -140,6 +145,10 @@ namespace hardware
 		if (protocol == ProtocolDCC)
 		{
 			locID |= 0xC000;
+		}
+		else if (protocol == ProtocolMFX)
+		{
+			locID |= 0x4000;
 		}
 		// else expect PROTOCOL_MM2: do nothing
 		intToData(locID, buffer);
