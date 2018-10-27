@@ -259,7 +259,7 @@ namespace hardware
 	{
 		std::string onText;
 		text::Converters::accessoryStatus(state, onText);
-		xlog("Setting state of cs2 accessory %i/%i to \"%s\"", (int)protocol, (int)address, onText);
+		xlog("Setting state of cs2 accessory %i/%i to \"%s\"", (int)protocol, (int)address, onText.c_str());
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x0B, 0, 6);

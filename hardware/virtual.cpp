@@ -78,7 +78,7 @@ namespace hardware
 	{
 		std::string onText;
 		text::Converters::accessoryStatus(state, onText);
-		xlog("Setting state of virtual accessory %i/%i to \"%s\"", (int)protocol, (int)address, onText);
+		xlog("Setting state of virtual accessory %i/%i to \"%s\"", (int)protocol, (int)address, onText.c_str());
 	}
 
 } // namespace
