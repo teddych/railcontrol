@@ -31,6 +31,7 @@ OBJ= \
 	text/converters.o \
 	util.o \
 	webserver/Response.o \
+	webserver/HtmlFullResponse.o \
 	webserver/HtmlResponse.o \
 	webserver/HtmlResponseNotFound.o \
 	webserver/HtmlResponseNotImplemented.o \
