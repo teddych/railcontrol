@@ -489,7 +489,6 @@ namespace webserver
 		}
 		HtmlReplyWithHeader(ss.str());
 	}
-	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
 	{
@@ -498,7 +497,11 @@ namespace webserver
 		response.AddHeader("Pragma", "no-cache");
 		response.AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
 		response.AddHeader("Content-Type", "text/event-stream; charset=utf-8");
-		connection->Send(response);
+		int ret = connection->Send(response);
+		if (ret <= 0)
+		{
+			return;
+		}
 
 		unsigned int updateID = GetIntegerMapEntry(headers, "Last-Event-ID", 1);
 		while(run)
@@ -520,7 +523,7 @@ namespace webserver
 
 			++updateID;
 
-			int ret = connection->Send(reply);
+			ret = connection->Send(reply);
 			if (ret < 0)
 			{
 				return;
