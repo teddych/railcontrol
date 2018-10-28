@@ -212,28 +212,25 @@ namespace webserver {
 		ss << "data: command=" << command << ";status=" << status << "\r\n\r\n";
 		std::lock_guard<std::mutex> lock(updateMutex);
 		updates[++updateID] = ss.str();
-		updates.erase(updateID - 10);
+		updates.erase(updateID - MaxUpdates);
 	}
 
-	bool WebServer::nextUpdate(unsigned int& updateIDClient, string& s) {
+	bool WebServer::nextUpdate(const unsigned int updateIDClient, string& s)
+	{
 		std::lock_guard<std::mutex> lock(updateMutex);
-		// updateIDClient found
-		if(updates.count(updateIDClient) == 1) {
-			s = updates.at(updateIDClient);
+
+		unsigned int internalID = updateIDClient;
+		if (internalID + MaxUpdates < updateID)
+		{
+			internalID = updateID - MaxUpdates;
+		}
+
+		if(updates.count(internalID) == 1)
+		{
+			s = updates.at(internalID);
 			return true;
 		}
 
-		// updateIDClient is lower then available data
-		for (auto& update : updates) {
-			if (update.first > updateIDClient) {
-				updateIDClient = update.first;
-				s = update.second;
-				return true;
-			}
-		}
-
-		// updateIDClient is bigger then available data
-		updateID = updateIDClient;
 		return false;
 	}
 

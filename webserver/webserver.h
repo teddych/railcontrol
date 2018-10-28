@@ -20,7 +20,7 @@ namespace webserver {
 			void Work(Network::TcpConnection* connection) override;
 
 			const std::string getName() const override { return "Webserver"; }
-			bool nextUpdate(unsigned int& updateID, std::string& s);
+			bool nextUpdate(const unsigned int updateIDClient, std::string& s);
 			void booster(const controlType_t managerID, const boosterStatus_t status) override;
 			void locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) override;
 			void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) override;
@@ -49,6 +49,7 @@ namespace webserver {
 			std::map<unsigned int,std::string> updates;
 			std::mutex updateMutex;
 			unsigned int updateID;
+			const unsigned int MaxUpdates = 10;
 	};
 
 }; // namespace webserver

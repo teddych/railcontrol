@@ -500,7 +500,7 @@ namespace webserver
 		response.AddHeader("Content-Type", "text/event-stream; charset=utf-8");
 		connection->Send(response);
 
-		unsigned int updateID = GetIntegerMapEntry(headers, "Last-Event-ID");
+		unsigned int updateID = GetIntegerMapEntry(headers, "Last-Event-ID", 1);
 		while(run)
 		{
 			string s;
@@ -513,7 +513,7 @@ namespace webserver
 			}
 
 			string reply("id: ");
-			reply += updateID;
+			reply += to_string(updateID);
 			reply += "\r\n";
 			reply += s;
 			reply += "\r\n\r\n";
