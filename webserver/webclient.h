@@ -31,7 +31,7 @@ namespace webserver {
 			std::string buttonPopupOK();
 			void printLoco(const std::map<std::string, std::string>& arguments);
 			void printMainHTML();
-			void HtmlReplyWithoutHeader(const std::string& text);
+			void HtmlReplyWithHeader(const HtmlTag& tag);
 			void deliverFile(const std::string& file);
 			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			void handleLocoSpeed(const std::map<std::string,std::string>& arguments);

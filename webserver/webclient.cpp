@@ -13,6 +13,7 @@
 #include "util.h"
 #include "webserver/webclient.h"
 #include "webserver/webserver.h"
+#include "webserver/HtmlFullResponse.h"
 #include "webserver/HtmlResponse.h"
 #include "webserver/HtmlResponseNotFound.h"
 #include "webserver/HtmlResponseNotImplemented.h"
@@ -116,18 +117,18 @@ namespace webserver
 		// handle requests
 		if (arguments["cmd"].compare("quit") == 0)
 		{
-			HtmlReplyWithoutHeader("Stopping Railcontrol");
+			HtmlReplyWithHeader(string("Stopping Railcontrol"));
 			manager.booster(ControlTypeWebserver, BoosterStop);
 			stopRailControlWebserver();
 		}
 		else if (arguments["cmd"].compare("on") == 0)
 		{
-			HtmlReplyWithoutHeader("Turning booster on");
+			HtmlReplyWithHeader(string("Turning booster on"));
 			manager.booster(ControlTypeWebserver, BoosterGo);
 		}
 		else if (arguments["cmd"].compare("off") == 0)
 		{
-			HtmlReplyWithoutHeader("Turning booster off");
+			HtmlReplyWithHeader(string("Turning booster off"));
 			manager.booster(ControlTypeWebserver, BoosterStop);
 		}
 		else if (arguments["cmd"].compare("loco") == 0)
@@ -362,7 +363,7 @@ namespace webserver
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to speed " << speed;
-		HtmlReplyWithoutHeader(ss.str());
+		HtmlReplyWithHeader(ss.str());
 	}
 
 	void WebClient::handleLocoDirection(const map<string, string>& arguments)
@@ -375,7 +376,7 @@ namespace webserver
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to " << direction;
-		HtmlReplyWithoutHeader(ss.str());
+		HtmlReplyWithHeader(ss.str());
 	}
 
 	void WebClient::handleLocoFunction(const map<string, string>& arguments)
@@ -389,7 +390,7 @@ namespace webserver
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now set f";
 		ss << function << " to " << (on ? "on" : "off");
-		HtmlReplyWithoutHeader(ss.str());
+		HtmlReplyWithHeader(ss.str());
 	}
 
 	void WebClient::handleLocoEdit(const map<string, string>& arguments)
@@ -435,7 +436,7 @@ namespace webserver
 			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)));
 		ss << HtmlTagButtonCancel();
 		ss << HtmlTagButtonOK();
-		HtmlReplyWithoutHeader(ss.str());
+		HtmlReplyWithHeader(ss.str());
 	}
 
 	void WebClient::handleLocoSave(const map<string, string>& arguments)
@@ -463,7 +464,7 @@ namespace webserver
 			ss << "<p>Unable to save loco.</p>";
 		}
 
-		HtmlReplyWithoutHeader(ss.str());
+		HtmlReplyWithHeader(ss.str());
 	}
 
 	void WebClient::handleProtocol(const map<string, string>& arguments)
@@ -486,7 +487,7 @@ namespace webserver
 		{
 			ss << "Unknown control";
 		}
-		HtmlReplyWithoutHeader(ss.str());
+		HtmlReplyWithHeader(ss.str());
 	}
 	}
 
@@ -527,9 +528,9 @@ namespace webserver
 		}
 	}
 
-	void WebClient::HtmlReplyWithoutHeader(const string& text)
+	void WebClient::HtmlReplyWithHeader(const HtmlTag& tag)
 	{
-		connection->Send(Response(Response::OK, text));
+		connection->Send(HtmlResponse("Railcontrol", tag));
 	}
 
 	HtmlTag WebClient::selectLoco()
@@ -547,7 +548,7 @@ namespace webserver
 
 	void WebClient::printLoco(const map<string, string>& arguments)
 	{
-		string sOut;
+		HtmlTag out;
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID > LocoNone)
 		{
@@ -586,13 +587,13 @@ namespace webserver
 			buttonArguments.erase("direction");
 
 			ss << HtmlTagButtonPopup("Edit", "locoedit", buttonArguments);
-			sOut = ss.str();
+			out = HtmlTag("div").AddContent(ss.str());
 		}
 		else
 		{
-			sOut = "No locoID provided";
+			out = HtmlTag("div").AddContent("No locoID provided");
 		}
-		HtmlReplyWithoutHeader(sOut);
+		HtmlReplyWithHeader(out);
 	}
 
 	void WebClient::printMainHTML() {
@@ -635,7 +636,7 @@ namespace webserver
 			" }"
 			"};"));
 
-		connection->Send(HtmlResponse("Railcontrol", body));
+		connection->Send(HtmlFullResponse("Railcontrol", body));
 	}
 
 } ; // namespace webserver
