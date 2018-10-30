@@ -17,9 +17,42 @@ body {
 	overflow: auto;
 	position: fixed;
 	right: 0px;
-	top: 162px;
+	top: 190px;
 	background-image: url("/layout_background.png");
 	background-repeat: repeat, repeat;
+}
+
+.layout_item {
+	line-height: 35px;
+	text-align: center;
+	height: 35px;
+	width: 35px;
+	position: relative;
+	border: 0px;
+}
+
+.layout_item .tooltip {
+	line-height: 1;
+	top: 25px;
+	visibility: hidden;
+	background-color: yellow;
+	border: solid 1px black;
+	border-radius: 5px;
+	padding: 5px;
+	position: absolute;
+	z-index: 1;
+}
+
+.layout_item:hover .tooltip {
+	visibility: visible;
+}
+
+.accessory_item {
+	color: red;
+}
+
+.accessory_on {
+	color: green;
 }
 
 .popup {

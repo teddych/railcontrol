@@ -159,6 +159,14 @@ namespace webserver
 		{
 			handleProtocol(arguments);
 		}
+		else if (arguments["cmd"].compare("layout") == 0)
+		{
+			handleLayout(arguments);
+		}
+		else if (arguments["cmd"].compare("accessorystate") == 0)
+		{
+			handleAccessoryState(arguments);
+		}
 		else if (arguments["cmd"].compare("updater") == 0)
 		{
 			handleUpdater(headers);
@@ -490,6 +498,77 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
+	HtmlTag WebClient::selectLayout()
+	{
+		map<string,string> options;
+		// FIXME: select layers with content
+		options["0"] = "Layer 0";
+		return HtmlTag("form").AddAttribute("method", "get").AddAttribute("action", "/").AddAttribute("id", "selectLayout_form")
+		.AddContent(HtmlTagSelect("layout", options).AddAttribute("onchange", "loadDivFromForm('selectLayout_form', 'layout')"))
+		.AddContent(HtmlTagInputHidden("cmd", "layout"));
+	}
+
+	void WebClient::handleLayout(const map<string, string>& arguments)
+	{
+		layoutPosition_t layer = static_cast<layoutPosition_t>(GetIntegerMapEntry(arguments, "layer", 0));
+		HtmlTag content;
+		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
+		for (auto accessory : accessories)
+		{
+			layoutPosition_t posX;
+			layoutPosition_t posY;
+			layoutPosition_t posZ;
+			layoutItemSize_t w;
+			layoutItemSize_t h;
+			layoutRotation_t r;
+			accessory.second->position(posX, posY, posZ, w, h, r);
+			if (posZ != layer)
+			{
+				continue;
+			}
+			HtmlTag a("div");
+			string id("a_" + to_string(accessory.first));
+			a.AddAttribute("id", id);
+			string classes("layout_item accessory_item");
+			if (accessory.second->state == AccessoryStateOn)
+			{
+				classes += " accessory_on";
+			}
+			a.AddAttribute("class", classes);
+			a.AddContent("A");
+			a.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(accessory.second->name));
+			stringstream javascript;
+			javascript << "$(function() {"
+				" $('#" << id << "').on('click', function() {"
+				"  var element = document.getElementById('" << id << "');"
+				"  element.classList.toggle('accessory_on');"
+				"  var url = '/?cmd=accessorystate';"
+				"  url += '&state=' + (element.classList.contains('accessory_on') ? 'on' : 'off');"
+				"  url += '&accessory=" << accessory.first << "';"
+				"  var xmlHttp = new XMLHttpRequest();"
+				"  xmlHttp.open('GET', url, true);"
+				"  xmlHttp.send(null);"
+				"  return false;"
+				" });"
+				"});";
+			a.AddChildTag(HtmlTagJavascript(javascript.str()));
+			content.AddContent(a);
+		}
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleAccessoryState(const map<string, string>& arguments)
+	{
+		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		accessoryState_t accessoryState = (GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? AccessoryStateOff : AccessoryStateOn);
+
+		manager.accessory(ControlTypeWebserver, accessoryID, accessoryState);
+
+		stringstream ss;
+		ss << "Accessory &quot;" << manager.getAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
+		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+	}
+
 	void WebClient::handleUpdater(const map<string, string>& headers)
 	{
 		Response response(Response::OK);
@@ -601,7 +680,7 @@ namespace webserver
 	void WebClient::printMainHTML() {
 		// handle base request
 		HtmlTag body("body");
-		body.AddAttribute("onload","loadDivFromForm('selectLoco_form', 'loco')");
+		body.AddAttribute("onload","loadDivFromForm('selectLoco_form', 'loco');loadDivFromForm('selectLayout_form', 'layout');");
 
 		body.AddChildTag(HtmlTag("h1").AddContent("Railcontrol"));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "menu")
@@ -611,6 +690,7 @@ namespace webserver
 			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit")));
 
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "locolist").AddChildTag(selectLoco()));
+		body.AddChildTag(HtmlTag("div").AddAttribute("class", "layoutlist").AddChildTag(selectLayout()));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "loco").AddAttribute("id", "loco"));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "layout").AddAttribute("id", "layout"));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "popup").AddAttribute("id", "popup"));
