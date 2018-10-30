@@ -9,7 +9,6 @@ namespace webserver
 	{
 		std::stringstream s;
 		s <<
-			"function sleep(secs) { secs = (+new Date) + secs *1000; while ((+new Date) < secs); }"
 			"$(function() {"
 			" $('#editform').on('submit', function() {"
 			"  $.ajax({"
