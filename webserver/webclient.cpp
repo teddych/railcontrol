@@ -363,7 +363,7 @@ namespace webserver
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to speed " << speed;
-		HtmlReplyWithHeader(ss.str());
+		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
 	void WebClient::handleLocoDirection(const map<string, string>& arguments)
@@ -376,7 +376,7 @@ namespace webserver
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to " << direction;
-		HtmlReplyWithHeader(ss.str());
+		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
 	void WebClient::handleLocoFunction(const map<string, string>& arguments)
@@ -390,12 +390,12 @@ namespace webserver
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now set f";
 		ss << function << " to " << (on ? "on" : "off");
-		HtmlReplyWithHeader(ss.str());
+		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
 	void WebClient::handleLocoEdit(const map<string, string>& arguments)
 	{
-		stringstream ss;
+		HtmlTag content;
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		controlID_t controlID = ControlNone;
 		protocol_t protocol = ProtocolNone;
@@ -424,8 +424,8 @@ namespace webserver
 			protocolOptions[to_string(protocol.first)] = protocol.second;
 		}
 
-		ss << HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;");
-		ss << HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "locosave"))
 			.AddContent(HtmlTagInputHidden("loco", to_string(locoID)))
 			.AddContent(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
@@ -433,10 +433,10 @@ namespace webserver
 			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
 			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
 			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
-			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)));
-		ss << HtmlTagButtonCancel();
-		ss << HtmlTagButtonOK();
-		HtmlReplyWithHeader(ss.str());
+			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address))));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
 	}
 
 	void WebClient::handleLocoSave(const map<string, string>& arguments)
@@ -452,19 +452,19 @@ namespace webserver
 			string result;
 			if (!manager.locoSave(locoID, name, controlId, protocol, address, result))
 			{
-				ss << "<p>" << result << "</p>";
+				ss << result;
 			}
 			else
 			{
-				ss << "<p>Loco &quot;" << locoID << "&quot; saved.</p>";
+				ss << "Loco &quot;" << locoID << "&quot; saved.";
 			}
 		}
 		else
 		{
-			ss << "<p>Unable to save loco.</p>";
+			ss << "Unable to save loco.";
 		}
 
-		HtmlReplyWithHeader(ss.str());
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
 	}
 
 	void WebClient::handleProtocol(const map<string, string>& arguments)
@@ -487,7 +487,7 @@ namespace webserver
 		{
 			ss << "Unknown control";
 		}
-		HtmlReplyWithHeader(ss.str());
+		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
@@ -551,14 +551,13 @@ namespace webserver
 
 	void WebClient::printLoco(const map<string, string>& arguments)
 	{
-		HtmlTag out;
+		string content;
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID > LocoNone)
 		{
 			stringstream ss;
 			Loco* loco = manager.getLoco(locoID);
 			ss << HtmlTag("p").AddContent(loco->name);
-
 			unsigned int speed = loco->Speed();
 			map<string,string> buttonArguments;
 			buttonArguments["loco"] = to_string(locoID);
@@ -590,13 +589,13 @@ namespace webserver
 			buttonArguments.erase("direction");
 
 			ss << HtmlTagButtonPopup("Edit", "locoedit", buttonArguments);
-			out = HtmlTag("div").AddContent(ss.str());
+			content = ss.str();
 		}
 		else
 		{
-			out = HtmlTag("div").AddContent("No locoID provided");
+			content = "No locoID provided";
 		}
-		HtmlReplyWithHeader(out);
+		HtmlReplyWithHeader(HtmlTag().AddContent(content));
 	}
 
 	void WebClient::printMainHTML() {
