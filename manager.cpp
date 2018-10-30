@@ -540,22 +540,34 @@ void Manager::accessory(const controlType_t managerID, const protocol_t protocol
 }
 
 void Manager::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+	Accessory* accessory = getAccessory(accessoryID);
+	if (accessory == nullptr)
+	{
+		return;
+	}
+	accessory->state = state;
+
 	std::lock_guard<std::mutex> Guard(controlMutex);
-	for (auto control : controls) {
+	for (auto control : controls)
+	{
 		control.second->accessory(managerID, accessoryID, state);
 	}
 }
 
-Accessory* Manager::getAccessory(const accessoryID_t accessoryID) {
+Accessory* Manager::getAccessory(const accessoryID_t accessoryID)
+{
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
-	if (accessories.count(accessoryID) != 1) {
-		return NULL;
+	if (accessories.count(accessoryID) != 1)
+	{
+		return nullptr;
 	}
 	return accessories.at(accessoryID);
 }
 
-const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) {
-	if (accessories.count(accessoryID) != 1) {
+const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID)
+{
+	if (accessories.count(accessoryID) != 1)
+	{
 		return unknownAccessory;
 	}
 	return accessories.at(accessoryID)->name;
