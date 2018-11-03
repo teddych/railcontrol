@@ -109,7 +109,7 @@ namespace webserver {
 		stringstream status;
 		string stateText;
 		text::Converters::accessoryStatus(state, stateText);
-		command << "accessory;accessory=" << accessoryID << ";on=" << stateText;
+		command << "accessory;accessory=" << accessoryID << ";state=" << stateText;
 		status << manager.getAccessoryName(accessoryID) << " is " << stateText;
 		addUpdate(command.str(), status.str());
 	}

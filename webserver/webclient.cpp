@@ -715,6 +715,18 @@ namespace webserver
 			"  var element = document.getElementById(elementName);"
 			"  if (element) element.value = argumentMap.get('speed');"
 			" }"
+			" else if (argumentMap.get('command') == 'accessory') {"
+			"  var elementName = 'a_' + argumentMap.get('accessory');"
+			"  var state = argumentMap.get('state');"
+			"  var element = document.getElementById(elementName);"
+			"  if (element) {"
+			"   if (state == 'on') {"
+			"    element.classList.add('accessory_on');"
+			"   } else {"
+			"    element.classList.remove('accessory_on');"
+			"   }"
+			"  }"
+			" }"
 			"};"));
 
 		connection->Send(HtmlFullResponse("Railcontrol", body));
