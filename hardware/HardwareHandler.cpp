@@ -183,7 +183,8 @@ namespace hardware {
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.accessoryProtocolAddress(accessoryID, controlID, protocol, address);
-		if (controlID != getControlID()) {
+		if (controlID != getControlID())
+		{
 			return;
 		}
 		instance->Accessory(protocol, address, state, on);
