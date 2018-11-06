@@ -1591,10 +1591,14 @@ namespace console
 
 	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
+		if (on == false)
+		{
+			return;
+		}
 		std::stringstream status;
 		string stateText;
 		text::Converters::accessoryStatus(state, stateText);
-		status << manager.getAccessoryName(accessoryID)  << "/" << stateText << " is " << (on ? "on" : "off");
+		status << manager.getAccessoryName(accessoryID)  << " is " << stateText;
 		AddUpdate(status.str());
 	}
 

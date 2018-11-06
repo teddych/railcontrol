@@ -720,7 +720,7 @@ namespace webserver
 			"  var state = argumentMap.get('state');"
 			"  var element = document.getElementById(elementName);"
 			"  if (element) {"
-			"   if (state == 'on') {"
+			"   if (state == 'green') {"
 			"    element.classList.add('accessory_on');"
 			"   } else {"
 			"    element.classList.remove('accessory_on');"
