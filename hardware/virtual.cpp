@@ -74,11 +74,11 @@ namespace hardware
 	}
 
 	// accessory command
-	void Virtual::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state)
+	void Virtual::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
-		std::string onText;
-		text::Converters::accessoryStatus(state, onText);
-		xlog("Setting state of virtual accessory %i/%i to \"%s\"", (int)protocol, (int)address, onText.c_str());
+		std::string stateText;
+		text::Converters::accessoryStatus(state, stateText);
+		xlog("Setting state of virtual accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, stateText.c_str(), on ? "on" : "off");
 	}
 
 } // namespace

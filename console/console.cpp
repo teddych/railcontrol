@@ -1589,12 +1589,12 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state)
+	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
 		std::stringstream status;
 		string stateText;
 		text::Converters::accessoryStatus(state, stateText);
-		status << manager.getAccessoryName(accessoryID)  << " is " << stateText;
+		status << manager.getAccessoryName(accessoryID)  << "/" << stateText << " is " << (on ? "on" : "off");
 		AddUpdate(status.str());
 	}
 

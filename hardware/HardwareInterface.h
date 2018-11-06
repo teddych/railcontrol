@@ -39,7 +39,7 @@ namespace hardware
 			virtual void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) = 0;
 
 			// accessory command
-			virtual void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) = 0;
+			virtual void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) = 0;
 	};
 
 } // namespace

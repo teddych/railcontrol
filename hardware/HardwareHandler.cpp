@@ -173,8 +173,10 @@ namespace hardware {
 		instance->LocoFunction(protocol, address, function, on);
 	}
 
-	void HardwareHandler::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
-		if (managerID == ControlTypeHardware || instance == nullptr) {
+	void HardwareHandler::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	{
+		if (managerID == ControlTypeHardware || instance == nullptr)
+		{
 			return;
 		}
 		controlID_t controlID = 0;
@@ -184,7 +186,7 @@ namespace hardware {
 		if (controlID != getControlID()) {
 			return;
 		}
-		instance->Accessory(protocol, address, state);
+		instance->Accessory(protocol, address, state, on);
 	}
 
 	void HardwareHandler::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) {
@@ -198,7 +200,7 @@ namespace hardware {
 		if (controlID != getControlID()) {
 			return;
 		}
-		instance->Accessory(protocol, address, state);
+		instance->Accessory(protocol, address, state, true);
 	}
 
 } // namespace hardware

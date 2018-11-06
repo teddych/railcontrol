@@ -36,7 +36,7 @@ namespace hardware
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 
 			// accessory command
-			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state) override;
+			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
 		private:
 			std::string name;

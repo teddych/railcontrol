@@ -15,7 +15,7 @@ class CommandInterface {
 		virtual void locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) = 0;
 		virtual void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) = 0;
 		virtual void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on) = 0;
-		virtual void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) = 0;
+		virtual void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) = 0;
 		virtual void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
 		virtual void block(const controlType_t managerID, const blockID_t blockID, const lockState_t state) = 0;
 		virtual void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) = 0;

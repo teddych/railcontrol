@@ -25,7 +25,7 @@ namespace webserver {
 			void locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) override;
 			void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) override;
 			void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on) override;
-			void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) override;
+			void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
 			void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 			void block(const controlType_t managerID, const blockID_t blockID, const lockState_t state) override;
 			void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) override;

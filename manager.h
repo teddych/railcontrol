@@ -11,6 +11,8 @@
 #include "hardware/HardwareParams.h"
 #include "storage/storage_handler.h"
 
+class DelayedCall;
+
 class Manager {
 	public:
 		Manager(Config& config);
@@ -51,6 +53,7 @@ class Manager {
 		// accessory
 		void accessory(const controlType_t managerID, const protocol_t protocol, const address_t address, const accessoryState_t state);
 		void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
+		void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on);
 		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID);
 		const std::string& getAccessoryName(const accessoryID_t accessoryID);
 		inline const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
@@ -155,6 +158,7 @@ class Manager {
 
 		// storage
 		storage::StorageHandler* storage;
+		DelayedCall* delayedCall;
 
 		const std::string unknownControl;
 		const std::string unknownLoco;

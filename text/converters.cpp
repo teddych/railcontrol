@@ -26,10 +26,10 @@ namespace text
 	void Converters::accessoryStatus(const accessoryState_t state, string& onText) {
 		switch (state & 0x01) {
 			case AccessoryStateOff:
-				onText.assign("off");
+				onText.assign("red");
 				break;
 			case AccessoryStateOn:
-				onText.assign("on");
+				onText.assign("green");
 				break;
 			default:
 				onText.assign("unknown");

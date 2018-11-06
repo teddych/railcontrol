@@ -104,13 +104,13 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+	void WebServer::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) {
 		stringstream command;
 		stringstream status;
 		string stateText;
 		text::Converters::accessoryStatus(state, stateText);
 		command << "accessory;accessory=" << accessoryID << ";state=" << stateText;
-		status << manager.getAccessoryName(accessoryID) << " is " << stateText;
+		status << manager.getAccessoryName(accessoryID) << "/" << stateText << " is " << (on ? "on" : "off");
 		addUpdate(command.str(), status.str());
 	}
 

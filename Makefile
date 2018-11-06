@@ -21,6 +21,7 @@ OBJ= \
 	datamodel/serializable.o \
 	datamodel/street.o \
 	datamodel/switch.o \
+	DelayedCall.o \
 	hardware/HardwareHandler.o \
 	hardware/HardwareParams.o \
 	manager.o \

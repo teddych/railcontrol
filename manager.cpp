@@ -2,8 +2,9 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "datamodel/layout_item.h"
 #include "console/console.h"
+#include "datamodel/layout_item.h"
+#include "DelayedCall.h"
 #include "hardware/HardwareHandler.h"
 #include "hardware/HardwareParams.h"
 #include "manager.h"
@@ -28,8 +29,9 @@ using storage::StorageHandler;
 using storage::StorageParams;
 using webserver::WebServer;
 
-Manager::Manager(Config& config) :
-	storage(NULL),
+Manager::Manager(Config& config)
+:	storage(nullptr),
+ 	delayedCall(new DelayedCall(*this)),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
@@ -149,8 +151,11 @@ Manager::~Manager() {
 		delete params;
 	}
 
+	delete delayedCall;
+	delayedCall = nullptr;
+
 	delete storage;
-	storage = NULL;
+	storage = nullptr;
 }
 
 /***************************
@@ -539,7 +544,8 @@ void Manager::accessory(const controlType_t managerID, const protocol_t protocol
 	accessory(managerID, accessoryID, state);
 }
 
-void Manager::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state) {
+void Manager::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state)
+{
 	Accessory* accessory = getAccessory(accessoryID);
 	if (accessory == nullptr)
 	{
@@ -547,10 +553,17 @@ void Manager::accessory(const controlType_t managerID, const accessoryID_t acces
 	}
 	accessory->state = state;
 
+	this->accessory(managerID, accessoryID, state, true);
+
+	delayedCall->Accessory(managerID, accessoryID, state, accessory->timeout);
+}
+
+void Manager::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+{
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->accessory(managerID, accessoryID, state);
+		control.second->accessory(managerID, accessoryID, state, on);
 	}
 }
 

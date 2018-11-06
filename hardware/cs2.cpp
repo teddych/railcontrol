@@ -264,11 +264,13 @@ namespace hardware
 		}
 	}
 
-	void CS2::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state)
+	void CS2::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
-		std::string onText;
-		text::Converters::accessoryStatus(state, onText);
-		xlog("Setting state of cs2 accessory %i/%i to \"%s\"", (int)protocol, (int)address, onText.c_str());
+		std::string stateText;
+		text::Converters::accessoryStatus(state, stateText);
+		xlog("Setting state of cs2 accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, stateText.c_str(), on ? "on" : "off");
+		unsigned char stateInternal = state << 1;
+		stateInternal |= static_cast<unsigned char>(on);
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x0B, 0, 6);
@@ -277,7 +279,7 @@ namespace hardware
 		*buffer_data = 0L;
 		// set locID
 		createAccessoryID(buffer + 5, protocol, address - 1); // GUI-address is 1-based, protocol-address is 0-based
-		buffer[9] = state & 0x03;
+		buffer[9] = stateInternal & 0x03;
 		buffer[10] = 0x01;
 
 		hexlog(buffer, sizeof(buffer));
