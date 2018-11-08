@@ -526,17 +526,18 @@ namespace webserver
 			{
 				continue;
 			}
-			HtmlTag a("div");
+			HtmlTag div("div");
 			string id("a_" + to_string(accessory.first));
-			a.AddAttribute("id", id);
+			div.AddAttribute("id", id);
 			string classes("layout_item accessory_item");
 			if (accessory.second->state == AccessoryStateOn)
 			{
 				classes += " accessory_on";
 			}
-			a.AddAttribute("class", classes);
-			a.AddContent("A");
-			a.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(accessory.second->name));
+			div.AddAttribute("class", classes);
+			div.AddAttribute("style", "left:" + to_string(posX * 35) + "px;top:" + to_string(posY * 35) + "px;");
+			div.AddContent("A");
+			div.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(accessory.second->name));
 			stringstream javascript;
 			javascript << "$(function() {"
 				" $('#" << id << "').on('click', function() {"
@@ -550,8 +551,8 @@ namespace webserver
 				"  return false;"
 				" });"
 				"});";
-			a.AddChildTag(HtmlTagJavascript(javascript.str()));
-			content.AddContent(a);
+			div.AddChildTag(HtmlTagJavascript(javascript.str()));
+			content.AddContent(div);
 		}
 		HtmlReplyWithHeader(content);
 	}
@@ -717,9 +718,9 @@ namespace webserver
 			" }"
 			" else if (argumentMap.get('command') == 'accessory') {"
 			"  var elementName = 'a_' + argumentMap.get('accessory');"
-			"  var state = argumentMap.get('state');"
 			"  var element = document.getElementById(elementName);"
 			"  if (element) {"
+			"   var state = argumentMap.get('state');"
 			"   if (state == 'green') {"
 			"    element.classList.add('accessory_on');"
 			"   } else {"

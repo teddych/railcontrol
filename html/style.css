@@ -27,7 +27,7 @@ body {
 	text-align: center;
 	height: 35px;
 	width: 35px;
-	position: relative;
+	position: absolute;
 	border: 0px;
 }
 
