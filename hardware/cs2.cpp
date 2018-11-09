@@ -269,8 +269,6 @@ namespace hardware
 		std::string stateText;
 		text::Converters::accessoryStatus(state, stateText);
 		xlog("Setting state of cs2 accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, stateText.c_str(), on ? "on" : "off");
-		unsigned char stateInternal = state << 1;
-		stateInternal |= static_cast<unsigned char>(on);
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x0B, 0, 6);
@@ -279,8 +277,8 @@ namespace hardware
 		*buffer_data = 0L;
 		// set locID
 		createAccessoryID(buffer + 5, protocol, address - 1); // GUI-address is 1-based, protocol-address is 0-based
-		buffer[9] = stateInternal & 0x03;
-		buffer[10] = 0x01;
+		buffer[9] = state & 0x03;
+		buffer[10] = static_cast<unsigned char>(on);
 
 		hexlog(buffer, sizeof(buffer));
 
