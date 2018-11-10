@@ -109,3 +109,26 @@ select {
 .slider {
 	width: 230px;
 }
+
+.contextmenu {
+	width: 120px;
+	position: absolute;
+	display: none;
+	z-index: 1;
+}
+
+.contextentries {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.contextentry {
+	cursor: pointer;
+	background: lightgrey;
+	padding: 5px;
+}
+
+.contextentry:hover {
+	background: darkgrey;
+}

@@ -538,6 +538,7 @@ namespace webserver
 			div.AddAttribute("style", "left:" + to_string(posX * 35) + "px;top:" + to_string(posY * 35) + "px;");
 			div.AddContent("A");
 			div.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(accessory.second->name));
+
 			stringstream javascript;
 			javascript << "$(function() {"
 				" $('#" << id << "').on('click', function() {"
@@ -550,9 +551,20 @@ namespace webserver
 				"  xmlHttp.send(null);"
 				"  return false;"
 				" });"
-				"});";
+				" $('#" << id << "').on('contextmenu', function(e) {"
+				"  e.preventDefault();"
+				"  menu = document.querySelector('#" << id << "_context');"
+				"  menu.style.display = 'block';"
+				" });"
+				"});"
+				;
 			div.AddChildTag(HtmlTagJavascript(javascript.str()));
-			content.AddContent(div);
+			content.AddChildTag(div);
+			content.AddChildTag(HtmlTag("div").AddAttribute("class", "contextmenu").AddAttribute("id", id + "_context")
+				.AddAttribute("style", "left:" + to_string(posX * 35 + 5) + "px;top:" + to_string(posY * 35 + 30) + "px;")
+				.AddChildTag(HtmlTag("ul").AddAttribute("class", "contextentries")
+				.AddChildTag(HtmlTag("li").AddAttribute("class", "contextentry").AddContent("Edit").AddAttribute("onClick", "alert('" + id + "');"))
+				));
 		}
 		HtmlReplyWithHeader(content);
 	}
@@ -695,6 +707,7 @@ namespace webserver
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "layout").AddAttribute("id", "layout"));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "popup").AddAttribute("id", "popup"));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "status").AddAttribute("id", "status"));
+
 		body.AddChildTag(HtmlTagJavascript(
 			"var updater = new EventSource('/?cmd=updater');"
 			"updater.onmessage = function(e) {"
