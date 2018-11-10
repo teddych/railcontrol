@@ -18,8 +18,7 @@ namespace webserver
 			ss << "&" << argument.first << "=" << argument.second;
 		}
 		ss <<"';"
-			"  $('#popup').show(300);"
-			"  $('#popup').load(myUrl);"
+			"  loadPopup(myUrl);"
 			" })"
 			"})";
 		AddJavaScript(ss.str());

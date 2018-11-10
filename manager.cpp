@@ -674,21 +674,36 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID)
 	return accessories.at(accessoryID)->name;
 }
 
+bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+{
+	std::lock_guard<std::mutex> Guard(accessoryMutex);
+	Accessory* accessory = accessories.at(accessoryID);
+	if (accessory == nullptr)
+	{
+		return false;
+	}
+
+	return (accessory->posX == posX && accessory->posY == posY && accessory->posZ == posZ);
+}
+
 bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, string& result)
 {
 	Accessory* accessory;
 	if (!checkControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result))
 	{
+		result.append("Invalid control-protocol-address combination.");
 		return false;
 	}
+
+	if (!checkAccessoryPosition(accessoryID, posX, posY, posZ) && !checkPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
 	{
-		if (!checkPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
-		{
-			result.append(" Unable to ");
-			result.append(accessoryID == AccessoryNone ? "add" : "move");
-			result.append(" accessory.");
-			return false;
-		}
+		result.append("Unable to ");
+		result.append(accessoryID == AccessoryNone ? "add" : "move");
+		result.append(" accessory.");
+		return false;
+	}
+
+	{
 		std::lock_guard<std::mutex> Guard(accessoryMutex);
 		if (accessoryID != AccessoryNone && accessories.count(accessoryID))
 		{
@@ -737,6 +752,11 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 	if (storage)
 	{
 		storage->accessory(*accessory);
+	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->accessorySettings(accessoryID, name, posX, posY, posZ);
 	}
 	return true;
 }

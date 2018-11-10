@@ -113,6 +113,7 @@ class Manager {
 		// layout
 		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result);
 		template<class Type> bool checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result, std::map<objectID_t, Type*>& layoutVector, std::mutex& mutex);
+		bool checkAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
 
 		bool checkAddressLoco(const protocol_t protocol, const address_t address, std::string& result);
 		bool checkAddressAccessory(const protocol_t protocol, const address_t address, std::string& result);

@@ -119,6 +119,15 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+	{
+		stringstream command;
+		stringstream status;
+		command << "accessory;accessory=" << accessoryID << ";posx=" << static_cast<int>(posX) << ";posy=" << static_cast<int>(posY) << ";posz=" << static_cast<int>(posZ);
+		status << name << " has new position: " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ);
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 		stringstream command;
 		stringstream status;

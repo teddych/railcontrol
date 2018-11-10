@@ -42,6 +42,8 @@ namespace webserver {
 			void handleLocoSave(const std::map<std::string, std::string>& arguments);
 			void handleProtocol(const std::map<std::string, std::string>& arguments);
 			void handleLayout(const std::map<std::string,std::string>& arguments);
+			void handleAccessoryEdit(const std::map<std::string,std::string>& arguments);
+			void handleAccessorySave(const std::map<std::string,std::string>& arguments);
 			void handleAccessoryState(const std::map<std::string,std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);

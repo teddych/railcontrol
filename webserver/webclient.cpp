@@ -163,6 +163,14 @@ namespace webserver
 		{
 			handleLayout(arguments);
 		}
+		else if (arguments["cmd"].compare("accessoryedit") == 0)
+		{
+			handleAccessoryEdit(arguments);
+		}
+		else if (arguments["cmd"].compare("accessorysave") == 0)
+		{
+			handleAccessorySave(arguments);
+		}
 		else if (arguments["cmd"].compare("accessorystate") == 0)
 		{
 			handleAccessoryState(arguments);
@@ -563,10 +571,117 @@ namespace webserver
 			content.AddChildTag(HtmlTag("div").AddAttribute("class", "contextmenu").AddAttribute("id", id + "_context")
 				.AddAttribute("style", "left:" + to_string(posX * 35 + 5) + "px;top:" + to_string(posY * 35 + 30) + "px;")
 				.AddChildTag(HtmlTag("ul").AddAttribute("class", "contextentries")
-				.AddChildTag(HtmlTag("li").AddAttribute("class", "contextentry").AddContent("Edit").AddAttribute("onClick", "alert('" + id + "');"))
+				.AddChildTag(HtmlTag("li").AddAttribute("class", "contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=" + to_string(accessory.first) + "');"))
 				));
 		}
 		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleAccessoryEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		controlID_t controlID = ControlNone;
+		protocol_t protocol = ProtocolNone;
+		address_t address = AddressNone;
+		string name("New Accessory");
+		layoutPosition_t posx = 0;
+		layoutPosition_t posy = 0;
+		layoutPosition_t posz = 0;
+		accessoryTimeout_t timeout = 100;
+		if (accessoryID > AccessoryNone)
+		{
+			const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+			controlID = accessory->controlID;
+			protocol = accessory->protocol;
+			address = accessory->address;
+			name = accessory->name;
+			posx = accessory->posX;
+			posy = accessory->posY;
+			posz = accessory->posZ;
+		}
+
+		std::map<controlID_t,string> controls = manager.controlListNames();
+		std::map<string, string> controlOptions;
+		for(auto control : controls)
+		{
+			controlOptions[to_string(control.first)] = control.second;
+		}
+
+		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
+		std::map<string, string> protocolOptions;
+		for(auto protocol : protocols)
+		{
+			protocolOptions[to_string(protocol.first)] = protocol.second;
+		}
+
+		std::map<string, string> positionOptions;
+		for(int i = 0; i < 20; ++i)
+		{
+			string is(to_string(i));
+			positionOptions[is] = is;
+		}
+
+		std::map<string, string> timeoutOptions;
+		timeoutOptions["0"] = "0";
+		timeoutOptions["100"] = "100";
+		timeoutOptions["250"] = "250";
+		timeoutOptions["1000"] = "1000";
+
+		content.AddContent(HtmlTag("h1").AddContent("Edit acessory &quot;" + name + "&quot;"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "accessorysave"))
+			.AddContent(HtmlTagInputHidden("accessory", to_string(accessoryID)))
+			.AddContent(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
+			.AddContent(HtmlTagLabel("Control:", "control"))
+			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
+			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
+			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)))
+			.AddContent(HtmlTagLabel("Pos X:", "posx"))
+			.AddContent(HtmlTagSelect("posx", positionOptions, to_string(posx)))
+			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
+			.AddContent(HtmlTagSelect("posy", positionOptions, to_string(posy)))
+			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
+			.AddContent(HtmlTagSelect("posz", positionOptions, to_string(posz)))
+			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
+			.AddContent(HtmlTagSelect("timeout", timeoutOptions, to_string(timeout)))
+		);
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleAccessorySave(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		if (accessoryID > AccessoryNone)
+		{
+			string name = GetStringMapEntry(arguments, "name");
+			controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+			protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+			address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
+			layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
+			layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
+			layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+			accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
+			string result;
+			if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result))
+			{
+				ss << result;
+			}
+			else
+			{
+				ss << "Accessory &quot;" << accessoryID << "&quot; saved.";
+			}
+		}
+		else
+		{
+			ss << "Unable to save accessory.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
 	}
 
 	void WebClient::handleAccessoryState(const map<string, string>& arguments)
@@ -733,11 +848,24 @@ namespace webserver
 			"  var elementName = 'a_' + argumentMap.get('accessory');"
 			"  var element = document.getElementById(elementName);"
 			"  if (element) {"
-			"   var state = argumentMap.get('state');"
-			"   if (state == 'green') {"
-			"    element.classList.add('accessory_on');"
-			"   } else {"
-			"    element.classList.remove('accessory_on');"
+			"   if (argumentMap.has('state')) {"
+			"    var state = argumentMap.get('state');"
+			"    if (state == 'green') {"
+			"     element.classList.add('accessory_on');"
+			"    } else if (state == 'red') {"
+			"     element.classList.remove('accessory_on');"
+			"    }"
+			"   }"
+			"   if (argumentMap.has('posx')) {"
+			"    var posx = argumentMap.get('posx') * 35;"
+			"    var posy = argumentMap.get('posy') * 35;"
+			"    element.style.left = posx + 'px';"
+			"    element.style.top = posy + 'px';"
+			"    var contextElement = document.getElementById(elementName + '_context');"
+			"    if (contextElement) {"
+			"     contextElement.style.left = (posx + 5) + 'px';"
+			"     contextElement.style.top = (posy + 30) + 'px';"
+			"    }"
 			"   }"
 			"  }"
 			" }"

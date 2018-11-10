@@ -12,6 +12,12 @@ function loadDivFromForm(form, target) {
 	return false;
 }
 
+function loadPopup(url)
+{
+	$('#popup').show(300);
+	$('#popup').load(url);
+}
+
 function isInLayout(position)
 {
 	layoutPosition = document.querySelector(".layout").getBoundingClientRect();
