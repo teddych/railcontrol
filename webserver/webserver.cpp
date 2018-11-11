@@ -44,7 +44,7 @@ namespace webserver {
 		xlog("Stopping webserver");
 		{
 			std::lock_guard<std::mutex> lock(updateMutex);
-			updates[++updateID] = "Stopping Railcontrol";
+			updates[++updateID] = "data: status=Stopping Railcontrol";
 		}
 		sleep(1);
 		run = false;
