@@ -697,7 +697,7 @@ namespace webserver
 
 	void WebClient::HtmlReplyWithHeader(const HtmlTag& tag)
 	{
-		connection->Send(HtmlResponse("Railcontrol", tag));
+		connection->Send(HtmlResponse(tag));
 	}
 
 	HtmlTag WebClient::selectLoco()

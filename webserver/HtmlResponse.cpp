@@ -4,14 +4,6 @@
 
 namespace webserver
 {
-	HtmlResponse::HtmlResponse(const responseCode_t responseCode)
-	:	HtmlResponse(responseCode, std::to_string(responseCode) + " " + HtmlResponse::responseTexts.at(responseCode), HtmlTag("body"))
-	{}
-
-	HtmlResponse::HtmlResponse(const std::string& title, const HtmlTag body)
-	:	HtmlResponse(Response::OK, title, body)
-	{}
-
 	HtmlResponse::HtmlResponse(const responseCode_t responseCode, const std::string& title, const HtmlTag body)
 	:	Response(responseCode, body),
 	 	title(title)
@@ -49,10 +41,15 @@ namespace webserver
 		stream << "\r\n";
 		stream << "<!DOCTYPE html>";
 
-		HtmlTag head("head");
-		head.AddChildTag(HtmlTag("title").AddContent(response.title));
-
-		stream << HtmlTag("html").AddChildTag(head).AddChildTag(response.content);
+		HtmlTag html("html");
+		if (response.title.length() > 0)
+		{
+			HtmlTag head("head");
+			head.AddChildTag(HtmlTag("title").AddContent(response.title));
+			html.AddChildTag(head);
+		}
+		html.AddChildTag(response.content);
+		stream << html;
 		return stream;
 	}
 };

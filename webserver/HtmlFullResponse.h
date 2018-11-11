@@ -17,9 +17,6 @@ namespace webserver
 			operator std::string();
 
 			friend std::ostream& operator<<(std::ostream& stream, const HtmlFullResponse& response);
-
-		private:
-			std::string title;
 	};
 }; // namespace webserver
 

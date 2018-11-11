@@ -10,8 +10,18 @@ namespace webserver
 	class HtmlResponse : public Response
 	{
 		public:
-			HtmlResponse(const responseCode_t responseCode);
-			HtmlResponse(const std::string& title, const HtmlTag body);
+			HtmlResponse(const responseCode_t responseCode)
+			:	HtmlResponse(responseCode, std::to_string(responseCode) + " " + HtmlResponse::responseTexts.at(responseCode), HtmlTag("body"))
+			{}
+
+			HtmlResponse(const HtmlTag body)
+			:	HtmlResponse("", body)
+			{}
+
+			HtmlResponse(const std::string& title, const HtmlTag body)
+			:	HtmlResponse(Response::OK, title, body)
+			{}
+
 			HtmlResponse(const responseCode_t responseCode, const std::string& title, const HtmlTag body);
 			~HtmlResponse() {};
 			void AddAttribute(const std::string name, const std::string value);
@@ -20,7 +30,7 @@ namespace webserver
 
 			friend std::ostream& operator<<(std::ostream& stream, const HtmlResponse& response);
 
-		private:
+		protected:
 			std::string title;
 	};
 }; // namespace webserver
