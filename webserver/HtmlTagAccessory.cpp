@@ -24,7 +24,7 @@ namespace webserver
 		}
 		div1.AddAttribute("class", classes);
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
-		div1.AddContent("A");
+		div1.AddContent("&#9209;");
 		div1.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(name + " (addr=" + to_string(address) + ")"));
 
 		std::stringstream javascript;
