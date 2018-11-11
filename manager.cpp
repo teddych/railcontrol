@@ -676,8 +676,7 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID)
 
 bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
 {
-	std::lock_guard<std::mutex> Guard(accessoryMutex);
-	Accessory* accessory = accessories.at(accessoryID);
+	Accessory* accessory = getAccessory(accessoryID);
 	if (accessory == nullptr)
 	{
 		return false;

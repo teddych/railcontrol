@@ -12,9 +12,13 @@ function loadDivFromForm(form, target) {
 	return false;
 }
 
+window.layoutPosX = 0;
+window.layoutPosY = 0;
+
 function loadPopup(url)
 {
 	$('#popup').show(300);
+	url += '&posx=' + window.layoutPosX + '&posy=' + window.layoutPosY;
 	$('#popup').load(url);
 }
 

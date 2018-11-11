@@ -548,9 +548,9 @@ namespace webserver
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name("New Accessory");
-		layoutPosition_t posx = 0;
-		layoutPosition_t posy = 0;
-		layoutPosition_t posz = 0;
+		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
 		accessoryTimeout_t timeout = 100;
 		if (accessoryID > AccessoryNone)
 		{
@@ -569,6 +569,10 @@ namespace webserver
 		for(auto control : controls)
 		{
 			controlOptions[to_string(control.first)] = control.second;
+			if (controlID == ControlNone)
+			{
+				controlID = control.first;
+			}
 		}
 
 		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
@@ -595,7 +599,7 @@ namespace webserver
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "accessorysave"))
 			.AddContent(HtmlTagInputHidden("accessory", to_string(accessoryID)))
-			.AddContent(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
+			.AddContent(HtmlTagInputTextWithLabel("name", "Accessory Name:", name))
 			.AddContent(HtmlTagLabel("Control:", "control"))
 			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
 			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
@@ -619,29 +623,22 @@ namespace webserver
 	{
 		stringstream ss;
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		if (accessoryID > AccessoryNone)
+		string name = GetStringMapEntry(arguments, "name");
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
+		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
+		string result;
+		if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result))
 		{
-			string name = GetStringMapEntry(arguments, "name");
-			controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-			protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-			address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
-			layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
-			layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
-			layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
-			accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
-			string result;
-			if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result))
-			{
-				ss << result;
-			}
-			else
-			{
-				ss << "Accessory &quot;" << accessoryID << "&quot; saved.";
-			}
+			ss << result;
 		}
 		else
 		{
-			ss << "Unable to save accessory.";
+			ss << "Accessory &quot;" << name << "&quot; saved.";
 		}
 
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
@@ -853,6 +850,8 @@ namespace webserver
 			"  	menu.style.display = 'block';"
 			"   menu.style.left = event.pageX + 'px';"
 			"   menu.style.top = event.pageY + 'px';"
+			"   window.layoutPosX = Math.floor((event.pageX - 254) / 35);"
+			"   window.layoutPosY = Math.floor((event.pageY - 189) / 35);"
 			"  }"
 			"  return true;"
 			" });"
