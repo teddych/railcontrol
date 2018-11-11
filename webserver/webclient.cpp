@@ -432,6 +432,10 @@ namespace webserver
 		for(auto control : controls)
 		{
 			controlOptions[to_string(control.first)] = control.second;
+			if (controlID == ControlNone)
+			{
+				controlID = control.first;
+			}
 		}
 
 		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
@@ -460,25 +464,19 @@ namespace webserver
 	{
 		stringstream ss;
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		if (locoID > LocoNone)
+		string name = GetStringMapEntry(arguments, "name");
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
+		string result;
+
+		if (!manager.locoSave(locoID, name, controlId, protocol, address, result))
 		{
-			string name = GetStringMapEntry(arguments, "name");
-			controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-			protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-			address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
-			string result;
-			if (!manager.locoSave(locoID, name, controlId, protocol, address, result))
-			{
-				ss << result;
-			}
-			else
-			{
-				ss << "Loco &quot;" << locoID << "&quot; saved.";
-			}
+			ss << result;
 		}
 		else
 		{
-			ss << "Unable to save loco.";
+			ss << "Loco &quot;" << name << "&quot; saved.";
 		}
 
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
