@@ -533,7 +533,7 @@ namespace webserver
 			{
 				continue;
 			}
-			content.AddChildTag(HtmlTagAccessory(accessory.first, accessory.second->name, posX, posY, posZ, accessory.second->state));
+			content.AddChildTag(HtmlTagAccessory(accessory.first, accessory.second->name, posX, posY, posZ, accessory.second->state, accessory.second->address));
 		}
 		HtmlReplyWithHeader(content);
 	}

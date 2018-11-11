@@ -8,7 +8,7 @@ using std::to_string;
 
 namespace webserver
 {
-	HtmlTagAccessory::HtmlTagAccessory(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const accessoryState_t state)
+	HtmlTagAccessory::HtmlTagAccessory(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const accessoryState_t state, const address_t address)
 	{
 		unsigned int layoutPosX = posX * 35;
 		unsigned int layoutPosY = posY * 35;
@@ -25,7 +25,7 @@ namespace webserver
 		div1.AddAttribute("class", classes);
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		div1.AddContent("A");
-		div1.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(name));
+		div1.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(name + " (addr=" + to_string(address) + ")"));
 
 		std::stringstream javascript;
 		javascript << "$(function() {"
