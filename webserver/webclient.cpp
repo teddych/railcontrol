@@ -834,6 +834,32 @@ namespace webserver
 			" }"
 			"};"));
 
+
+		body.AddChildTag(HtmlTag("div").AddAttribute("class", "contextmenu").AddAttribute("id", "layout_context")
+			.AddChildTag(HtmlTag("ul").AddAttribute("class", "contextentries")
+			.AddChildTag(HtmlTag("li").AddAttribute("class", "contextentry").AddContent("New accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
+			));
+
+		std::stringstream javascript;
+		javascript << "$(function() {"
+			" $('#layout').on('contextmenu', function(event) {"
+			"  if (event.shiftKey) {"
+			"   return true;"
+			"  }"
+			"  event.preventDefault();"
+			"  hideAllContextMenus();"
+			"  menu = document.querySelector('#layout_context');"
+			"  if (menu) {"
+			"  	menu.style.display = 'block';"
+			"   menu.style.left = event.pageX + 'px';"
+			"   menu.style.top = event.pageY + 'px';"
+			"  }"
+			"  return true;"
+			" });"
+			"});"
+			;
+		body.AddChildTag(HtmlTagJavascript(javascript.str()));
+
 		connection->Send(HtmlFullResponse("Railcontrol", body));
 	}
 

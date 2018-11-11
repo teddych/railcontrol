@@ -111,7 +111,7 @@ select {
 }
 
 .contextmenu {
-	width: 120px;
+	width: 200px;
 	position: absolute;
 	display: none;
 	z-index: 1;
