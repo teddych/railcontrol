@@ -31,7 +31,7 @@ namespace webserver {
 		updateID(1)
 	{
 
-		updates[updateID] = "Railcontrol started";
+		updates[updateID] = "data: status=Railcontrol started";
 
 		run = true;
 	}
