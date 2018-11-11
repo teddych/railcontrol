@@ -17,6 +17,7 @@
 #include "webserver/HtmlResponse.h"
 #include "webserver/HtmlResponseNotFound.h"
 #include "webserver/HtmlResponseNotImplemented.h"
+#include "webserver/HtmlTagAccessory.h"
 #include "webserver/HtmlTagButtonCancel.h"
 #include "webserver/HtmlTagButtonCommand.h"
 #include "webserver/HtmlTagButtonOK.h"
@@ -534,45 +535,7 @@ namespace webserver
 			{
 				continue;
 			}
-			HtmlTag div("div");
-			string id("a_" + to_string(accessory.first));
-			div.AddAttribute("id", id);
-			string classes("layout_item accessory_item");
-			if (accessory.second->state == AccessoryStateOn)
-			{
-				classes += " accessory_on";
-			}
-			div.AddAttribute("class", classes);
-			div.AddAttribute("style", "left:" + to_string(posX * 35) + "px;top:" + to_string(posY * 35) + "px;");
-			div.AddContent("A");
-			div.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(accessory.second->name));
-
-			stringstream javascript;
-			javascript << "$(function() {"
-				" $('#" << id << "').on('click', function() {"
-				"  var element = document.getElementById('" << id << "');"
-				"  var url = '/?cmd=accessorystate';"
-				"  url += '&state=' + (element.classList.contains('accessory_on') ? 'off' : 'on');"
-				"  url += '&accessory=" << accessory.first << "';"
-				"  var xmlHttp = new XMLHttpRequest();"
-				"  xmlHttp.open('GET', url, true);"
-				"  xmlHttp.send(null);"
-				"  return false;"
-				" });"
-				" $('#" << id << "').on('contextmenu', function(e) {"
-				"  e.preventDefault();"
-				"  menu = document.querySelector('#" << id << "_context');"
-				"  menu.style.display = 'block';"
-				" });"
-				"});"
-				;
-			div.AddChildTag(HtmlTagJavascript(javascript.str()));
-			content.AddChildTag(div);
-			content.AddChildTag(HtmlTag("div").AddAttribute("class", "contextmenu").AddAttribute("id", id + "_context")
-				.AddAttribute("style", "left:" + to_string(posX * 35 + 5) + "px;top:" + to_string(posY * 35 + 30) + "px;")
-				.AddChildTag(HtmlTag("ul").AddAttribute("class", "contextentries")
-				.AddChildTag(HtmlTag("li").AddAttribute("class", "contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=" + to_string(accessory.first) + "');"))
-				));
+			content.AddChildTag(HtmlTagAccessory(accessory.first, accessory.second->name, posX, posY, posZ, accessory.second->state));
 		}
 		HtmlReplyWithHeader(content);
 	}
