@@ -41,6 +41,7 @@ namespace webserver
 			" });"
 			" $('#" << id << "').on('contextmenu', function(e) {"
 			"  e.preventDefault();"
+			"  hideAllContextMenus();"
 			"  menu = document.querySelector('#" << id << "_context');"
 			"  menu.style.display = 'block';"
 			" });"
