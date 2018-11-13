@@ -20,6 +20,7 @@
 #include "webserver/HtmlTagAccessory.h"
 #include "webserver/HtmlTagButtonCancel.h"
 #include "webserver/HtmlTagButtonCommand.h"
+#include "webserver/HtmlTagButtonCommandToggle.h"
 #include "webserver/HtmlTagButtonOK.h"
 #include "webserver/HtmlTagButtonPopup.h"
 #include "webserver/HtmlTagInputHidden.h"
@@ -122,15 +123,19 @@ namespace webserver
 			manager.booster(ControlTypeWebserver, BoosterStop);
 			stopRailControlWebserver();
 		}
-		else if (arguments["cmd"].compare("on") == 0)
+		else if (arguments["cmd"].compare("booster") == 0)
 		{
-			HtmlReplyWithHeader(string("Turning booster on"));
-			manager.booster(ControlTypeWebserver, BoosterGo);
-		}
-		else if (arguments["cmd"].compare("off") == 0)
-		{
-			HtmlReplyWithHeader(string("Turning booster off"));
-			manager.booster(ControlTypeWebserver, BoosterStop);
+			bool on = GetBoolMapEntry(arguments, "on");
+			if (on)
+			{
+				HtmlReplyWithHeader(string("Turning booster on"));
+				manager.booster(ControlTypeWebserver, BoosterGo);
+			}
+			else
+			{
+				HtmlReplyWithHeader(string("Turning booster off"));
+				manager.booster(ControlTypeWebserver, BoosterStop);
+			}
 		}
 		else if (arguments["cmd"].compare("loco") == 0)
 		{
@@ -343,6 +348,10 @@ namespace webserver
 			{
 				contentType = "image/png";
 			}
+			else if (virtualFile[length - 3] == 't' && virtualFile[length - 2] == 't' && virtualFile[length - 1] == 'f')
+			{
+				contentType = "application/x-font-ttf";
+			}
 		}
 		else if (length > 3 && virtualFile[length - 3] == '.' && virtualFile[length - 2] == 'j' && virtualFile[length - 1] == 's')
 		{
@@ -389,8 +398,7 @@ namespace webserver
 	void WebClient::handleLocoDirection(const map<string, string>& arguments)
 	{
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		string directionText = GetStringMapEntry(arguments, "direction", "forward");
-		direction_t direction = (directionText.compare("forward") == 0 ? DirectionRight : DirectionLeft);
+		direction_t direction = (GetBoolMapEntry(arguments, "on") ? DirectionRight : DirectionLeft);
 
 		manager.locoDirection(ControlTypeWebserver, locoID, direction);
 
@@ -403,13 +411,13 @@ namespace webserver
 	{
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		function_t function = GetIntegerMapEntry(arguments, "function", 0);
-		bool on = GetIntegerMapEntry(arguments, "on", false);
+		bool on = GetBoolMapEntry(arguments, "on");
 
 		manager.locoFunction(ControlTypeWebserver, locoID, function, on);
 
 		stringstream ss;
-		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now set f";
-		ss << function << " to " << (on ? "on" : "off");
+		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now f";
+		ss << function << " set to " << (on ? "on" : "off");
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
@@ -728,32 +736,32 @@ namespace webserver
 			unsigned int speed = loco->Speed();
 			map<string,string> buttonArguments;
 			buttonArguments["loco"] = to_string(locoID);
+
+			string id = "locospeed_" + to_string(locoID);
 			ss << HtmlTagInputSliderLocoSpeed("speed", "locospeed", MinSpeed, MaxSpeed, speed, locoID);
 			buttonArguments["speed"] = "0";
-			ss << HtmlTagButtonCommand("0%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("0%", id + "_0", buttonArguments);
 			buttonArguments["speed"] = "255";
-			ss << HtmlTagButtonCommand("25%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("25%", id + "_1", buttonArguments);
 			buttonArguments["speed"] = "511";
-			ss << HtmlTagButtonCommand("50%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("50%", id + "_2", buttonArguments);
 			buttonArguments["speed"] = "767";
-			ss << HtmlTagButtonCommand("75%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("75%", id + "_3", buttonArguments);
 			buttonArguments["speed"] = "1023";
-			ss << HtmlTagButtonCommand("100%", "locospeed", buttonArguments);
+			ss << HtmlTagButtonCommand("100%", id + "_4", buttonArguments);
 			buttonArguments.erase("speed");
 
+			id = "locofunction_" + to_string(locoID);
 			buttonArguments["function"] = "0";
-			buttonArguments["on"] = "1";
-			ss << HtmlTagButtonCommand("f0 on", "locofunction", buttonArguments);
-			buttonArguments["on"] = "0";
-			ss << HtmlTagButtonCommand("f0 off", "locofunction", buttonArguments);
+			ss << HtmlTagButtonCommandToggle("f0", id + "_0", false, buttonArguments);
+			buttonArguments["function"] = "1";
+			ss << HtmlTagButtonCommandToggle("f1", id + "_1", false, buttonArguments);
+			buttonArguments["function"] = "2";
+			ss << HtmlTagButtonCommandToggle("f2", id + "_2", false, buttonArguments);
 			buttonArguments.erase("function");
-			buttonArguments.erase("on");
 
-			buttonArguments["direction"] = "forward";
-			ss << HtmlTagButtonCommand("forward", "locodirection", buttonArguments);
-			buttonArguments["direction"] = "reverse";
-			ss << HtmlTagButtonCommand("reverse", "locodirection", buttonArguments);
-			buttonArguments.erase("direction");
+			id = "locodirection_" + to_string(locoID);
+			ss << HtmlTagButtonCommandToggle("direction", id, true, buttonArguments);
 
 			ss << HtmlTagButtonPopup("Edit", "locoedit", buttonArguments);
 			content = ss.str();
@@ -771,10 +779,12 @@ namespace webserver
 		body.AddAttribute("onload","loadDivFromForm('selectLoco_form', 'loco');loadDivFromForm('selectLayout_form', 'layout');");
 
 		body.AddChildTag(HtmlTag("h1").AddContent("Railcontrol"));
+
+		map<string,string> buttonArguments;
+
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "menu")
-			.AddContent(HtmlTagButtonCommand("X", "quit"))
-			.AddContent(HtmlTagButtonCommand("On", "on"))
-			.AddContent(HtmlTagButtonCommand("Off", "off"))
+			.AddContent(HtmlTagButtonCommand("&times;", "quit"))
+			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddAttribute("class", "symbola").AddContent("&#9211;"), "booster", false, buttonArguments))
 			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit")));
 
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "locolist").AddChildTag(selectLoco()));
@@ -787,51 +797,8 @@ namespace webserver
 		body.AddChildTag(HtmlTagJavascript(
 			"var updater = new EventSource('/?cmd=updater');"
 			"updater.onmessage = function(e) {"
-			" var status = document.getElementById('status');"
-			" var arguments = e.data.split(';');"
-			" var argumentMap = new Map();"
-			" arguments.forEach(function(argument) {"
-			"  var parts = argument.split('=');"
-			"  if (parts[0] == 'status') {"
-			"   status.innerHTML += parts[1] + '<br>';"
-			"   status.scrollTop = status.scrollHeight - status.clientHeight;"
-			"  }"
-			"  else {"
-			"   argumentMap.set(parts[0], parts[1]);"
-			"  }"
-			" });"
-			" if (argumentMap.get('command') == 'locospeed') {"
-			"  var elementName = 'locospeed_' + argumentMap.get('loco');"
-			"  var element = document.getElementById(elementName);"
-			"  if (element) element.value = argumentMap.get('speed');"
-			" }"
-			" else if (argumentMap.get('command') == 'accessory') {"
-			"  var elementName = 'a_' + argumentMap.get('accessory');"
-			"  var element = document.getElementById(elementName);"
-			"  if (element) {"
-			"   if (argumentMap.has('state')) {"
-			"    var state = argumentMap.get('state');"
-			"    if (state == 'green') {"
-			"     element.classList.add('accessory_on');"
-			"    } else if (state == 'red') {"
-			"     element.classList.remove('accessory_on');"
-			"    }"
-			"   }"
-			"   if (argumentMap.has('posx')) {"
-			"    var posx = argumentMap.get('posx') * 35;"
-			"    var posy = argumentMap.get('posy') * 35;"
-			"    element.style.left = posx + 'px';"
-			"    element.style.top = posy + 'px';"
-			"    var contextElement = document.getElementById(elementName + '_context');"
-			"    if (contextElement) {"
-			"     contextElement.style.left = (posx + 5) + 'px';"
-			"     contextElement.style.top = (posy + 30) + 'px';"
-			"    }"
-			"   }"
-			"  }"
-			" }"
+			" dataUpdate(e);"
 			"};"));
-
 
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "contextmenu").AddAttribute("id", "layout_context")
 			.AddChildTag(HtmlTag("ul").AddAttribute("class", "contextentries")

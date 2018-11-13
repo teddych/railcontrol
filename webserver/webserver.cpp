@@ -70,12 +70,15 @@ namespace webserver {
 		clients.push_back(new WebClient(++lastClientID, connection, *this, manager));
 	}
 
-	void WebServer::booster(const controlType_t managerID, const boosterStatus_t status) {
-		if (status) {
-			addUpdate("boosteron", "Booster is on");
+	void WebServer::booster(const controlType_t managerID, const boosterStatus_t status)
+	{
+		if (status)
+		{
+			addUpdate("booster;on=true", "Booster is on");
 		}
-		else {
-			addUpdate("boosteroff", "Booster is off");
+		else
+		{
+			addUpdate("booster;on=false", "Booster is off");
 		}
 	}
 
@@ -87,19 +90,19 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
+	void WebServer::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction)
+	{
 		stringstream command;
 		stringstream status;
-		const char* directionText = (direction ? "forward" : "reverse");
-		command << "locodirection;loco=" << locoID << ";direction=" << directionText;
-		status << manager.getLocoName(locoID) << " direction is " << directionText;
+		command << "locodirection;loco=" << locoID << ";direction=" << (direction ? "true" : "false");
+		status << manager.getLocoName(locoID) << " direction is " << (direction ? "forward" : "reverse");
 		addUpdate(command.str(), status.str());
 	}
 
 	void WebServer::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state) {
 		stringstream command;
 		stringstream status;
-		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int)function << ";on=" << (state ? "on" : "off");
+		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int)function << ";on=" << (state ? "true" : "false");
 		status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
 		addUpdate(command.str(), status.str());
 	}

@@ -3,15 +3,13 @@
 
 namespace webserver
 {
-	std::atomic<unsigned int> HtmlTagButton::buttonID(0);
-
 	HtmlTagButton::HtmlTagButton(const std::string& value, const std::string& command)
-	:	commandID("b_" + std::to_string(++buttonID) + "_" + command)
+	:	commandID("b_" + command)
 	{
 		HtmlTag buttonTag("button");
 		buttonTag.AddAttribute("name", commandID);
 		buttonTag.AddAttribute("id", commandID);
-		buttonTag.AddAttribute("class", "button");
+		buttonTag.AddClass("button");
 		buttonTag.AddContent(value);
 		AddChildTag(buttonTag);
 	}

@@ -25,8 +25,13 @@ namespace webserver
 				return *this;
 			}
 
+			virtual HtmlTag AddClass(const std::string& value) override
+			{
+				childTags[0].AddClass(value);
+				return *this;
+			}
+
 		protected:
-			static std::atomic<unsigned int> buttonID;
 			const std::string commandID;
 	};
 };

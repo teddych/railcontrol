@@ -1,7 +1,16 @@
+@font-face {
+	font-family: symbola;
+	src: url('/symbola.ttf');
+}
+
 body {
 	background-color: white;
 	font-family: verdana, sans-serif;
 	margin: 0px;
+}
+
+.symbola {
+	font-family: symbola;
 }
 
 .loco {
@@ -105,6 +114,14 @@ select {
 .button:active {
 	background-color: darkgray;
 	transform: translateY(1px);
+}
+
+.button_on {
+	background-color: lightgreen;
+}
+
+.button_off {
+	background-color: red;
 }
 
 .slider {

@@ -26,6 +26,12 @@ namespace webserver
 		return *this;
 	}
 
+	HtmlTag HtmlTag::AddClass(const std::string& _class)
+	{
+		classes.push_back(_class);
+		return *this;
+	}
+
 	HtmlTag::operator std::string () const
 	{
 		std::stringstream ss;
@@ -46,8 +52,18 @@ namespace webserver
 					stream << "=" << "\"" << attribute.second << "\"";
 				}
 			}
+			if (tag.classes.size() > 0)
+			{
+				stream << " class=\"";
+				for(auto c : tag.classes)
+				{
+					stream << " " << c;
+				}
+				stream << "\"";
+			}
 
 			stream << ">";
+
 			if (tag.childTags.size() == 0 && tag.content.size() == 0 && (
 				tag.name.compare("input") == 0 ||
 				tag.name.compare("link") == 0 ||

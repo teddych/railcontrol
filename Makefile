@@ -41,6 +41,7 @@ OBJ= \
 	webserver/HtmlTagButton.o \
 	webserver/HtmlTagButtonCancel.o \
 	webserver/HtmlTagButtonCommand.o \
+	webserver/HtmlTagButtonCommandToggle.o \
 	webserver/HtmlTagButtonOK.o \
 	webserver/HtmlTagButtonPopup.o \
 	webserver/HtmlTagInput.o \
