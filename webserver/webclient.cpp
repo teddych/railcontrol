@@ -761,9 +761,10 @@ namespace webserver
 			buttonArguments.erase("function");
 
 			id = "locodirection_" + to_string(locoID);
-			ss << HtmlTagButtonCommandToggle("direction", id, true, buttonArguments);
+			ss << HtmlTagButtonCommandToggle("dir", id, true, buttonArguments);
 
-			ss << HtmlTagButtonPopup("Edit", "locoedit", buttonArguments);
+			id = "locoedit_" + to_string(locoID);
+			ss << HtmlTagButtonPopup("Edit", id, buttonArguments);
 			content = ss.str();
 		}
 		else

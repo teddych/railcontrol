@@ -95,7 +95,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locodirection;loco=" << locoID << ";direction=" << (direction ? "true" : "false");
-		status << manager.getLocoName(locoID) << " direction is " << (direction ? "forward" : "reverse");
+		status << manager.getLocoName(locoID) << " direction is " << (direction ? "right" : "left");
 		addUpdate(command.str(), status.str());
 	}
 
