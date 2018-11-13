@@ -328,7 +328,7 @@ namespace webserver
 		}
 
 		size_t length = virtualFile.length();
-		const char* contentType = NULL;
+		const char* contentType = nullptr;
 		if (length > 4 && virtualFile[length - 4] == '.')
 		{
 			if (virtualFile[length - 3] == 'i' && virtualFile[length - 2] == 'c' && virtualFile[length - 1] == 'o')
@@ -352,7 +352,10 @@ namespace webserver
 		Response response(Response::OK, HtmlTag());
 		response.AddHeader("Cache-Control", "max-age=3600");
 		response.AddHeader("Content-Length", to_string(s.st_size));
-		response.AddHeader("Content-Type", contentType);
+		if (contentType != nullptr)
+		{
+			response.AddHeader("Content-Type", contentType);
+		}
 		connection->Send(response);
 
 		if (headOnly == true)
