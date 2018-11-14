@@ -786,7 +786,7 @@ namespace webserver
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "menu")
 			.AddContent(HtmlTagButtonCommand("&times;", "quit"))
 			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddAttribute("class", "symbola").AddContent("&#9211;"), "booster", false, buttonArguments))
-			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit")));
+			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0")));
 
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "locolist").AddChildTag(selectLoco()));
 		body.AddChildTag(HtmlTag("div").AddAttribute("class", "layoutlist").AddChildTag(selectLayout()));
