@@ -14,8 +14,8 @@ using std::vector;
 
 namespace datamodel {
 
-	Loco::Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address) :
-		Object(locoID, name),
+	Loco::Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address)
+	:	Object(locoID, name),
 		controlID(controlID),
 		protocol(protocol),
 		address(address),
@@ -23,14 +23,16 @@ namespace datamodel {
 		speed(0),
 		state(LocoStateManual),
 		blockID(BlockNone),
-		streetID(StreetNone) {
+		streetID(StreetNone)
+	{
 	}
 
-	Loco::Loco(Manager* manager, const std::string& serialized) :
-		manager(manager),
+	Loco::Loco(Manager* manager, const std::string& serialized)
+	:	manager(manager),
 		speed(0),
 		state(LocoStateManual),
-		streetID(StreetNone) {
+		streetID(StreetNone)
+	{
 		deserialize(serialized);
 	}
 
@@ -47,27 +49,33 @@ namespace datamodel {
 		}
 	}
 
-	std::string Loco::serialize() const {
+	std::string Loco::serialize() const
+	{
 		stringstream ss;
 		ss << "objectType=Loco;" << Object::serialize()
 			<< ";controlID=" << static_cast<int>(controlID)
 			<< ";protocol=" << static_cast<int>(protocol)
 			<< ";address=" << static_cast<int>(address)
+			<< ";functions=" << functions.Serialize()
 			<< ";blockID=" << static_cast<int>(blockID);
 		return ss.str();
 	}
 
-	bool Loco::deserialize(const std::string& serialized) {
+	bool Loco::deserialize(const std::string& serialized)
+	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
 		Object::deserialize(arguments);
-		if (!arguments.count("objectType") || arguments.at("objectType").compare("Loco") != 0) {
+		if (!arguments.count("objectType") || arguments.at("objectType").compare("Loco") != 0)
+		{
 			return false;
 		}
-		if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
-		if (arguments.count("protocol")) protocol = static_cast<protocol_t>(stoi(arguments.at("protocol")));
-		if (arguments.count("address")) address = stoi(arguments.at("address"));
-		if (arguments.count("blockID")) blockID = stoi(arguments.at("blockID"));
+		controlID = GetIntegerMapEntry(arguments, "controlID", ControlNone);
+		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address = GetIntegerMapEntry(arguments, "address", AddressNone);
+		blockID = GetIntegerMapEntry(arguments, "blockID", BlockNone);
+		string f = GetStringMapEntry(arguments, "functions", "0");
+		functions.Deserialize(f);
 		return true;
 	}
 

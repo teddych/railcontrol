@@ -11,6 +11,82 @@ class Manager;
 
 namespace datamodel
 {
+	class LocoFunctions
+	{
+		public:
+			LocoFunctions()
+			:	count(1),
+			 	states{0}
+			{
+			}
+
+			LocoFunctions(const std::string& serialized)
+			: LocoFunctions()
+			{
+				Deserialize(serialized);
+			}
+
+			void SetFunction(const function_t nr, const bool state)
+			{
+				if (nr >= maxCount)
+				{
+					return;
+				}
+				states[nr] = state;
+			}
+
+			bool GetFunction(const function_t nr) const
+			{
+				if (nr >= maxCount)
+				{
+					return false;
+				}
+				bool out = states[nr];
+				return out;
+			}
+
+			void SetNrOfFunctions(const function_t nr)
+			{
+				// externally we count the functions additional to F0
+				// internally we count all the functions including F0
+				count = nr + 1;
+			}
+
+			function_t GetNrOfFunctions()
+			{
+				return count - 1;
+			}
+
+			std::string Serialize() const
+			{
+				std::string out;
+				for (function_t i = 0; i < count; ++i)
+				{
+					out += (states[i] ? "1" : "0");
+				}
+				return out;
+			}
+
+			void Deserialize(const std::string& serialized)
+			{
+				count = serialized.size();
+				if (count > maxCount)
+				{
+					count = maxCount;
+				}
+				for (function_t i = 0; i < count; ++i)
+				{
+					states[i] = serialized[i] == '1';
+				}
+
+			}
+
+		private:
+			static const function_t maxCount = 33; // f0 - f32 = 33
+			function_t count;
+			bool states[maxCount];
+	};
+
 	class Loco : public Object
 	{
 		public:
@@ -34,6 +110,9 @@ namespace datamodel
 
 			void Speed(const speed_t speed) { this->speed = speed; }
 			const speed_t Speed() const { return speed; }
+
+			void SetFunction(const function_t nr, const bool state) { functions.SetFunction(nr, state); }
+			bool GetFunction(const function_t nr) const { return functions.GetFunction(nr); }
 
 			bool isInUse() const;
 
@@ -60,6 +139,8 @@ namespace datamodel
 			streetID_t streetID;
 			std::mutex stateMutex;
 			std::thread locoThread;
+
+			LocoFunctions functions;
 
 			void autoMode(Loco* loco);
 	};

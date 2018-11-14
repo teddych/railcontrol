@@ -599,7 +599,9 @@ void Manager::locoDirection(const controlType_t managerID, const locoID_t locoID
 
 void Manager::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on)
 {
-	xlog("%s (%i) function %i is now %s", getLocoName(locoID).c_str(), locoID, function, (on ? "on" : "off"));
+	Loco* loco = getLoco(locoID);
+	loco->SetFunction(function, on);
+	xlog("%s (%i) function %i is now %s", loco->name.c_str(), locoID, function, (on ? "on" : "off"));
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
