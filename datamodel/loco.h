@@ -52,7 +52,7 @@ namespace datamodel
 				count = nr + 1;
 			}
 
-			function_t GetNrOfFunctions()
+			function_t GetNrOfFunctions() const
 			{
 				return count - 1;
 			}
@@ -113,8 +113,10 @@ namespace datamodel
 
 			void SetFunction(const function_t nr, const bool state) { functions.SetFunction(nr, state); }
 			bool GetFunction(const function_t nr) const { return functions.GetFunction(nr); }
+			void SetNrOfFunctions(const function_t nr) { functions.SetNrOfFunctions(nr); }
+			function_t GetNrOfFunctions() const { return functions.GetNrOfFunctions(); }
 			void SetDirection(const direction_t direction) { this->direction = direction; }
-			direction_t GetDirection() { return direction; }
+			direction_t GetDirection() const { return direction; }
 
 			bool isInUse() const;
 

@@ -752,13 +752,13 @@ namespace webserver
 			buttonArguments.erase("speed");
 
 			id = "locofunction_" + to_string(locoID);
-
-			buttonArguments["function"] = "0";
-			ss << HtmlTagButtonCommandToggle("f0", id + "_0", loco->GetFunction(0), buttonArguments);
-			buttonArguments["function"] = "1";
-			ss << HtmlTagButtonCommandToggle("f1", id + "_1", loco->GetFunction(1), buttonArguments);
-			buttonArguments["function"] = "2";
-			ss << HtmlTagButtonCommandToggle("f2", id + "_2", loco->GetFunction(2), buttonArguments);
+			function_t nrOfFunctions = loco->GetNrOfFunctions();
+			for (function_t nr = 0; nr <= nrOfFunctions; ++nr)
+			{
+				string nrText(to_string(nr));
+				buttonArguments["function"] = nrText;
+				ss << HtmlTagButtonCommandToggle("f0", id + "_" + nrText, loco->GetFunction(nr), buttonArguments);
+			}
 			buttonArguments.erase("function");
 
 			id = "locodirection_" + to_string(locoID);
