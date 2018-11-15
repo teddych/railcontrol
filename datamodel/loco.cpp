@@ -57,6 +57,7 @@ namespace datamodel {
 			<< ";protocol=" << static_cast<int>(protocol)
 			<< ";address=" << static_cast<int>(address)
 			<< ";functions=" << functions.Serialize()
+			<< ";direction=" << (direction == DirectionRight ? "right" : "left")
 			<< ";blockID=" << static_cast<int>(blockID);
 		return ss.str();
 	}
@@ -74,8 +75,8 @@ namespace datamodel {
 		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		address = GetIntegerMapEntry(arguments, "address", AddressNone);
 		blockID = GetIntegerMapEntry(arguments, "blockID", BlockNone);
-		string f = GetStringMapEntry(arguments, "functions", "0");
-		functions.Deserialize(f);
+		functions.Deserialize(GetStringMapEntry(arguments, "functions", "0"));
+		direction = (GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
 		return true;
 	}
 

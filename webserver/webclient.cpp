@@ -752,6 +752,7 @@ namespace webserver
 			buttonArguments.erase("speed");
 
 			id = "locofunction_" + to_string(locoID);
+
 			buttonArguments["function"] = "0";
 			ss << HtmlTagButtonCommandToggle("f0", id + "_0", loco->GetFunction(0), buttonArguments);
 			buttonArguments["function"] = "1";
@@ -761,7 +762,7 @@ namespace webserver
 			buttonArguments.erase("function");
 
 			id = "locodirection_" + to_string(locoID);
-			ss << HtmlTagButtonCommandToggle("dir", id, true, buttonArguments);
+			ss << HtmlTagButtonCommandToggle("dir", id, loco->GetDirection(), buttonArguments);
 
 			id = "locoedit_" + to_string(locoID);
 			ss << HtmlTagButtonPopup("Edit", id, buttonArguments);

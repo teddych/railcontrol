@@ -589,7 +589,9 @@ void Manager::locoDirection(const controlType_t managerID, const protocol_t prot
 }
 void Manager::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction)
 {
-	xlog("%s (%i) direction is now %i", getLocoName(locoID).c_str(), locoID, direction);
+	Loco* loco = getLoco(locoID);
+	loco->SetDirection(direction);
+	xlog("%s (%i) direction is now %i", loco->name.c_str(), locoID, direction);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{

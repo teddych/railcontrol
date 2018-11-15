@@ -113,6 +113,8 @@ namespace datamodel
 
 			void SetFunction(const function_t nr, const bool state) { functions.SetFunction(nr, state); }
 			bool GetFunction(const function_t nr) const { return functions.GetFunction(nr); }
+			void SetDirection(const direction_t direction) { this->direction = direction; }
+			direction_t GetDirection() { return direction; }
 
 			bool isInUse() const;
 
@@ -141,6 +143,7 @@ namespace datamodel
 			std::thread locoThread;
 
 			LocoFunctions functions;
+			direction_t direction;
 
 			void autoMode(Loco* loco);
 	};
