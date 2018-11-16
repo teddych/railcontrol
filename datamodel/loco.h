@@ -81,8 +81,10 @@ namespace datamodel
 
 			}
 
+			static const function_t maxFunctions = 32;
+
 		private:
-			static const function_t maxCount = 33; // f0 - f32 = 33
+			static const function_t maxCount = maxFunctions - 1; // f0 - f32 = 33
 			function_t count;
 			bool states[maxCount];
 	};
@@ -90,7 +92,7 @@ namespace datamodel
 	class Loco : public Object
 	{
 		public:
-			Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address);
+			Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, function_t nr);
 			Loco(Manager* manager, const std::string& serialized);
 			~Loco();
 

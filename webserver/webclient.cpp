@@ -429,6 +429,7 @@ namespace webserver
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name("New Loco");
+		function_t nrOfFunctions = 0;
 		if (locoID > LocoNone)
 		{
 			const datamodel::Loco* loco = manager.getLoco(locoID);
@@ -436,6 +437,7 @@ namespace webserver
 			protocol = loco->protocol;
 			address = loco->address;
 			name = loco->name;
+			nrOfFunctions = loco->GetNrOfFunctions();
 		}
 
 		std::map<controlID_t,string> controls = manager.controlListNames();
@@ -456,6 +458,13 @@ namespace webserver
 			protocolOptions[to_string(protocol.first)] = protocol.second;
 		}
 
+		std::map<string, string> functionOptions;
+		for(function_t i = 0; i <= datamodel::LocoFunctions::maxFunctions; ++i)
+		{
+			string functionText(to_string(i));
+			functionOptions[functionText] = functionText;
+		}
+
 		content.AddContent(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "locosave"))
@@ -465,7 +474,10 @@ namespace webserver
 			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
 			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
 			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
-			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address))));
+			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)))
+			.AddContent(HtmlTagLabel("# of functions:", "function"))
+			.AddContent(HtmlTagSelect("function", functionOptions, to_string(nrOfFunctions)))
+			);
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
@@ -479,9 +491,10 @@ namespace webserver
 		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
+		function_t nrOfFunctions = GetIntegerMapEntry(arguments, "function", 0);
 		string result;
 
-		if (!manager.locoSave(locoID, name, controlId, protocol, address, result))
+		if (!manager.locoSave(locoID, name, controlId, protocol, address, nrOfFunctions, result))
 		{
 			ss << result;
 		}
@@ -751,21 +764,21 @@ namespace webserver
 			ss << HtmlTagButtonCommand("100%", id + "_4", buttonArguments);
 			buttonArguments.erase("speed");
 
+			id = "locoedit_" + to_string(locoID);
+			ss << HtmlTagButtonPopup("Edit", id, buttonArguments);
+
+			id = "locodirection_" + to_string(locoID);
+			ss << HtmlTagButtonCommandToggle("dir", id, loco->GetDirection(), buttonArguments);
+
 			id = "locofunction_" + to_string(locoID);
 			function_t nrOfFunctions = loco->GetNrOfFunctions();
 			for (function_t nr = 0; nr <= nrOfFunctions; ++nr)
 			{
 				string nrText(to_string(nr));
 				buttonArguments["function"] = nrText;
-				ss << HtmlTagButtonCommandToggle("f0", id + "_" + nrText, loco->GetFunction(nr), buttonArguments);
+				ss << HtmlTagButtonCommandToggle("f" + nrText, id + "_" + nrText, loco->GetFunction(nr), buttonArguments);
 			}
 			buttonArguments.erase("function");
-
-			id = "locodirection_" + to_string(locoID);
-			ss << HtmlTagButtonCommandToggle("dir", id, loco->GetDirection(), buttonArguments);
-
-			id = "locoedit_" + to_string(locoID);
-			ss << HtmlTagButtonPopup("Edit", id, buttonArguments);
 			content = ss.str();
 		}
 		else
@@ -779,8 +792,6 @@ namespace webserver
 		// handle base request
 		HtmlTag body("body");
 		body.AddAttribute("onload","loadDivFromForm('selectLoco_form', 'loco');loadDivFromForm('selectLayout_form', 'layout');");
-
-		body.AddChildTag(HtmlTag("h1").AddContent("Railcontrol"));
 
 		map<string,string> buttonArguments;
 

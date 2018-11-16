@@ -14,19 +14,21 @@ body {
 }
 
 .loco {
-	height: 200px;
+	height: 370px;
 	width: 250px;
+	position: fixed;
+	top: 120px;
 	border: solid 1px;
 }
 
 .layout {
-	height: 200px;
+	height: 370px;
 	width: calc(100% - 254px);
 	border: solid 1px;
 	overflow: auto;
 	position: fixed;
 	right: 0px;
-	top: 190px;
+	top: 120px;
 	background-image: url("/layout_background.png");
 	background-repeat: repeat, repeat;
 }
@@ -95,6 +97,8 @@ select {
 }
 
 .status {
+	position: fixed;
+	top: 490px;
 	height: 80px;
 	width: 100%;
 	border: solid 1px;

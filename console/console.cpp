@@ -1146,8 +1146,9 @@ namespace console
 		controlID_t control = ReadNumber(s, i);
 		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
 		address_t address = ReadNumber(s, i);
+		function_t functions = ReadNumber(s, i);
 		string result;
-		if (!manager.locoSave(LocoNone, name, control, protocol, address, result))
+		if (!manager.locoSave(LocoNone, name, control, protocol, address, functions, result))
 		{
 			AddUpdate(result);
 			return;
@@ -1223,7 +1224,7 @@ namespace console
 				"L L loco#                         List loco\n"
 				"L M A                             Stop all locos and go to manual mode\n"
 				"L M loco#                         Stop loco and go to manual mode\n"
-				"L N Name Control Protocol Address New loco\n"
+				"L N Name Control Protocol Address NrOfFunctions New loco\n"
 				"L R loco#                         Release loco\n"
 				"L S loco# speed                   Set loco speed between 0 and 1024\n"
 				"\n"

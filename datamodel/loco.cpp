@@ -14,7 +14,7 @@ using std::vector;
 
 namespace datamodel {
 
-	Loco::Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address)
+	Loco::Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr)
 	:	Object(locoID, name),
 		controlID(controlID),
 		protocol(protocol),

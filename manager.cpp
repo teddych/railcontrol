@@ -425,7 +425,7 @@ const std::string& Manager::getLocoName(const locoID_t locoID)
 	return locos.at(locoID)->name;
 }
 
-bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result)
+bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, string& result)
 {
 	Loco* loco;
 	if (!checkControlProtocolAddress(AddressTypeLoco, controlID, protocol, address, result))
@@ -447,6 +447,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 			loco->controlID = controlID;
 			loco->protocol = protocol;
 			loco->address = address;
+			loco->SetNrOfFunctions(nr);
 		}
 		else
 		{
@@ -461,7 +462,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 				}
 			}
 			++newLocoID;
-			loco = new Loco(this, newLocoID, name, controlID, protocol, address);
+			loco = new Loco(this, newLocoID, name, controlID, protocol, address, nr);
 			if (loco == nullptr)
 			{
 				result.assign("Unable to allocate memory for loco");
@@ -1503,10 +1504,10 @@ void Manager::loadDefaultValuesToDB()
 	HardwareParams newHardwareParams2(2, HardwareTypeCS2, "CS2 Zentrale", "192.168.0.190");
 	storage->hardwareParams(newHardwareParams2);
 
-	Loco newloco1(this, 1, "Re 460 Teddy", 1, ProtocolDCC, 1119);
+	Loco newloco1(this, 1, "Re 460 Teddy", 1, ProtocolDCC, 1119, 4);
 	storage->loco(newloco1);
 
-	Loco newloco2(this, 2, "ICN", 1, ProtocolDCC, 1118);
+	Loco newloco2(this, 2, "ICN", 1, ProtocolDCC, 1118, 4);
 	storage->loco(newloco2);
 
 	Accessory newAccessory1(1, "Schalter 1", 3, 5, 0, Rotation0, 1, ProtocolDCC, 1, 1, AccessoryStateOn, 200);
