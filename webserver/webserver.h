@@ -20,7 +20,7 @@ namespace webserver {
 			void Work(Network::TcpConnection* connection) override;
 
 			const std::string getName() const override { return "Webserver"; }
-			bool nextUpdate(const unsigned int updateIDClient, std::string& s);
+			bool nextUpdate(unsigned int& updateIDClient, std::string& s);
 			void booster(const controlType_t managerID, const boosterStatus_t status) override;
 			void locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) override;
 			void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) override;

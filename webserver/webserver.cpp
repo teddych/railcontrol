@@ -231,19 +231,18 @@ namespace webserver {
 		updates.erase(updateID - MaxUpdates);
 	}
 
-	bool WebServer::nextUpdate(const unsigned int updateIDClient, string& s)
+	bool WebServer::nextUpdate(unsigned int& updateIDClient, string& s)
 	{
 		std::lock_guard<std::mutex> lock(updateMutex);
 
-		unsigned int internalID = updateIDClient;
-		if (internalID + MaxUpdates < updateID)
+		if (updateIDClient + MaxUpdates <= updateID)
 		{
-			internalID = updateID - MaxUpdates;
+			updateIDClient = updateID - MaxUpdates + 1;
 		}
 
-		if(updates.count(internalID) == 1)
+		if(updates.count(updateIDClient) == 1)
 		{
-			s = updates.at(internalID);
+			s = updates.at(updateIDClient);
 			return true;
 		}
 
