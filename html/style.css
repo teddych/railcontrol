@@ -13,22 +13,46 @@ body {
 	font-family: symbola;
 }
 
+.loco_selector {
+	position: fixed;
+	left: 0px;
+	top: 55px;
+	height: 50px;
+	width: 250px;
+}
+
+.layout_selector {
+	position: fixed;
+	right: 0px;
+	top: 55px;
+	height: 50px;
+	width: calc(100% - 254px);
+}
+
+.loco_selector select {
+	width: 250px;
+}
+
+.layout_selector select {
+	width: calc(100% - 254px);
+}
+
 .loco {
-	height: 370px;
+	height: calc(100% - 174px);
 	width: 250px;
 	position: fixed;
-	top: 120px;
+	top: 90px;
 	border: solid 1px;
 }
 
 .layout {
-	height: 370px;
+	height: calc(100% - 92px);
 	width: calc(100% - 254px);
 	border: solid 1px;
 	overflow: auto;
 	position: fixed;
 	right: 0px;
-	top: 120px;
+	top: 90px;
 	background-image: url("/layout_background.png");
 	background-repeat: repeat, repeat;
 }
@@ -92,15 +116,18 @@ select {
 
 .menu {
 	height: 50px;
-	width: 200px;
-	border: solid 1px;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+	border: 1px;
+	position: fixed;
 }
 
 .status {
 	position: fixed;
-	top: 490px;
+	bottom: 0px;
 	height: 80px;
-	width: 100%;
+	width: 250px;
 	border: solid 1px;
 	overflow-y: scroll;
 }

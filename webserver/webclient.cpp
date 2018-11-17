@@ -811,12 +811,12 @@ namespace webserver
 			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddAttribute("class", "symbola").AddContent("&#9211;"), "booster", false, buttonArguments))
 			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0")));
 
-		body.AddChildTag(HtmlTag("div").AddAttribute("class", "locolist").AddChildTag(selectLoco()));
-		body.AddChildTag(HtmlTag("div").AddAttribute("class", "layoutlist").AddChildTag(selectLayout()));
-		body.AddChildTag(HtmlTag("div").AddAttribute("class", "loco").AddAttribute("id", "loco"));
-		body.AddChildTag(HtmlTag("div").AddAttribute("class", "layout").AddAttribute("id", "layout"));
-		body.AddChildTag(HtmlTag("div").AddAttribute("class", "popup").AddAttribute("id", "popup"));
-		body.AddChildTag(HtmlTag("div").AddAttribute("class", "status").AddAttribute("id", "status"));
+		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddChildTag(selectLoco()));
+		body.AddChildTag(HtmlTag("div").AddClass("layout_selector").AddChildTag(selectLayout()));
+		body.AddChildTag(HtmlTag("div").AddClass("loco").AddAttribute("id", "loco"));
+		body.AddChildTag(HtmlTag("div").AddClass("layout").AddAttribute("id", "layout"));
+		body.AddChildTag(HtmlTag("div").AddClass("popup").AddAttribute("id", "popup"));
+		body.AddChildTag(HtmlTag("div").AddClass("status").AddAttribute("id", "status"));
 
 		body.AddChildTag(HtmlTagJavascript(
 			"var updater = new EventSource('/?cmd=updater');"
