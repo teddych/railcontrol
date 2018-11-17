@@ -79,7 +79,7 @@ namespace webserver
 			while (pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos && run)
 			{
 				size_t ret = connection->Receive(buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
-				if (ret == -1)
+				if (ret == static_cast<size_t>(-1))
 				{
 					if (errno == ETIMEDOUT)
 					{
