@@ -25,13 +25,14 @@ namespace webserver
 
 	std::ostream& operator<<(std::ostream& stream, const HtmlFullResponse& response)
 	{
-		stream << "HTTP/1.0 " << response.responseCode << " " << HtmlResponse::responseTexts.at(response.responseCode) << "\r\n";
+		stream << "HTTP/1.1 " << response.responseCode << " " << HtmlResponse::responseTexts.at(response.responseCode) << "\r\n";
 		for(auto header : response.headers)
 		{
 			stream << header.first << ": " << header.second << "\r\n";
 		}
-		stream << "\r\n";
-		stream << "<!DOCTYPE html>";
+
+		std::stringstream body;
+		body << "<!DOCTYPE html>";
 
 		HtmlTag head("head");
 		head.AddChildTag(HtmlTag("title").AddContent(response.title));
@@ -41,7 +42,13 @@ namespace webserver
 		head.AddChildTag(HtmlTag("meta").AddAttribute("name", "viewport").AddAttribute("content", "width=device-width, initial-scale=1.0"));
 		head.AddChildTag(HtmlTag("meta").AddAttribute("name", "robots").AddAttribute("content", "noindex,nofollow"));
 
-		stream << HtmlTag("html").AddChildTag(head).AddChildTag(response.content);
+		body << HtmlTag("html").AddChildTag(head).AddChildTag(response.content);
+
+		std::string bodyString(body.str());
+
+		stream << "Content-Length: " << bodyString.size();
+		stream << "\r\n\r\n";
+		stream << bodyString;
 		return stream;
 	}
 };

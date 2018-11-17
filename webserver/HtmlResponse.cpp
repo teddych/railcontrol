@@ -12,6 +12,7 @@ namespace webserver
 		AddHeader("Pragma", "no-cache");
 		AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
 		AddHeader("Content-Type", "text/html; charset=utf-8");
+		AddHeader("Connection", "keep-alive");
 	}
 
 	void HtmlResponse::AddAttribute(const std::string name, const std::string value)
@@ -33,13 +34,14 @@ namespace webserver
 
 	std::ostream& operator<<(std::ostream& stream, const HtmlResponse& response)
 	{
-		stream << "HTTP/1.0 " << response.responseCode << " " << HtmlResponse::responseTexts.at(response.responseCode) << "\r\n";
+		stream << "HTTP/1.1 " << response.responseCode << " " << HtmlResponse::responseTexts.at(response.responseCode) << "\r\n";
 		for(auto header : response.headers)
 		{
 			stream << header.first << ": " << header.second << "\r\n";
 		}
-		stream << "\r\n";
-		stream << "<!DOCTYPE html>";
+
+		std::stringstream body;
+		body << "<!DOCTYPE html>";
 
 		HtmlTag html("html");
 		if (response.title.length() > 0)
@@ -49,7 +51,12 @@ namespace webserver
 			html.AddChildTag(head);
 		}
 		html.AddChildTag(response.content);
-		stream << html;
+		body << html;
+
+		std::string bodyString(body.str());
+		stream << "Content-Length: " << bodyString.size();
+		stream << "\r\n\r\n";
+		stream << bodyString;
 		return stream;
 	}
 };

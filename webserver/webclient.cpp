@@ -59,142 +59,154 @@ namespace webserver
 	// worker is the thread that handles client requests
 	void WebClient::worker()
 	{
+		xlog("HTTP connection %i: open", id);
 		WorkerImpl();
-		connection->Terminate();
+		xlog("HTTP connection %i: close", id);
 	}
 
 	void WebClient::WorkerImpl()
 	{
-		xlog("Executing webclient");
 		run = true;
+		bool keepalive = true;
 
-		char buffer_in[1024];
-		memset(buffer_in, 0, sizeof(buffer_in));
-
-		size_t pos = 0;
-		string s;
-		while(pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos && run)
+		while (run && keepalive)
 		{
-			pos += connection->Receive(buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
-			s = string(buffer_in);
-			str_replace(s, string("\r\n"), string("\n"));
-			str_replace(s, string("\r"), string("\n"));
-		}
+			char buffer_in[1024];
+			memset(buffer_in, 0, sizeof(buffer_in));
 
-		vector<string> lines;
-		str_split(s, string("\n"), lines);
-
-		if (lines.size() <= 1)
-		{
-			xlog("Ignoring invalid request");
-			return;
-		}
-
-		string method;
-		string uri;
-		string protocol;
-		map<string, string> arguments;
-		map<string, string> headers;
-		interpretClientRequest(lines, method, uri, protocol, arguments, headers);
-		xlog("%s %s", method.c_str(), uri.c_str());
-
-		// if method is not implemented
-		if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0))
-		{
-			xlog("HTTP method %s not implemented", method.c_str());
-			HtmlResponseNotImplemented response(method);
-			connection->Send(response);
-			return;
-		}
-
-		/*
-		for (auto argument : arguments) {
-			xlog("Argument: %s=%s", argument.first.c_str(), argument.second.c_str());
-		}
-		for (auto header : headers) {
-			xlog("Header: %s=%s", header.first.c_str(), header.second.c_str());
-		}
-		*/
-
-		// handle requests
-		if (arguments["cmd"].compare("quit") == 0)
-		{
-			HtmlReplyWithHeader(string("Stopping Railcontrol"));
-			manager.booster(ControlTypeWebserver, BoosterStop);
-			stopRailControlWebserver();
-		}
-		else if (arguments["cmd"].compare("booster") == 0)
-		{
-			bool on = GetBoolMapEntry(arguments, "on");
-			if (on)
+			size_t pos = 0;
+			string s;
+			while (pos < sizeof(buffer_in) - 1 && s.find("\n\n") == string::npos && run)
 			{
-				HtmlReplyWithHeader(string("Turning booster on"));
-				manager.booster(ControlTypeWebserver, BoosterGo);
+				size_t ret = connection->Receive(buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+				if (ret == -1)
+				{
+					if (errno == ETIMEDOUT)
+					{
+						continue;
+					}
+					return;
+				}
+				pos += ret;
+				s = string(buffer_in);
+				str_replace(s, string("\r\n"), string("\n"));
+				str_replace(s, string("\r"), string("\n"));
+			}
+
+			vector<string> lines;
+			str_split(s, string("\n"), lines);
+
+			if (lines.size() <= 1)
+			{
+				xlog("HTTP connection %i: Ignoring invalid request", id);
+				return;
+			}
+
+			string method;
+			string uri;
+			string protocol;
+			map<string, string> arguments;
+			map<string, string> headers;
+			interpretClientRequest(lines, method, uri, protocol, arguments, headers);
+			keepalive = (GetStringMapEntry(headers, "Connection", "close").compare("keep-alive") == 0);
+			xlog("HTTP connection %i: Request %s %s", id, method.c_str(), uri.c_str());
+
+			// if method is not implemented
+			if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0))
+			{
+				xlog("HTTP connection %i: HTTP method %s not implemented", id, method.c_str());
+				HtmlResponseNotImplemented response(method);
+				connection->Send(response);
+				return;
+			}
+
+			/*
+			 for (auto argument : arguments) {
+			 xlog("Argument: %s=%s", argument.first.c_str(), argument.second.c_str());
+			 }
+			 for (auto header : headers) {
+			 xlog("Header: %s=%s", header.first.c_str(), header.second.c_str());
+			 }
+			 */
+
+			// handle requests
+			if (arguments["cmd"].compare("quit") == 0)
+			{
+				HtmlReplyWithHeader(string("Stopping Railcontrol"));
+				manager.booster(ControlTypeWebserver, BoosterStop);
+				stopRailControlWebserver();
+			}
+			else if (arguments["cmd"].compare("booster") == 0)
+			{
+				bool on = GetBoolMapEntry(arguments, "on");
+				if (on)
+				{
+					HtmlReplyWithHeader(string("Turning booster on"));
+					manager.booster(ControlTypeWebserver, BoosterGo);
+				}
+				else
+				{
+					HtmlReplyWithHeader(string("Turning booster off"));
+					manager.booster(ControlTypeWebserver, BoosterStop);
+				}
+			}
+			else if (arguments["cmd"].compare("loco") == 0)
+			{
+				printLoco(arguments);
+			}
+			else if (arguments["cmd"].compare("locospeed") == 0)
+			{
+				handleLocoSpeed(arguments);
+			}
+			else if (arguments["cmd"].compare("locodirection") == 0)
+			{
+				handleLocoDirection(arguments);
+			}
+			else if (arguments["cmd"].compare("locofunction") == 0)
+			{
+				handleLocoFunction(arguments);
+			}
+			else if (arguments["cmd"].compare("locoedit") == 0)
+			{
+				handleLocoEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("locosave") == 0)
+			{
+				handleLocoSave(arguments);
+			}
+			else if (arguments["cmd"].compare("protocol") == 0)
+			{
+				handleProtocol(arguments);
+			}
+			else if (arguments["cmd"].compare("layout") == 0)
+			{
+				handleLayout(arguments);
+			}
+			else if (arguments["cmd"].compare("accessoryedit") == 0)
+			{
+				handleAccessoryEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("accessorysave") == 0)
+			{
+				handleAccessorySave(arguments);
+			}
+			else if (arguments["cmd"].compare("accessorystate") == 0)
+			{
+				handleAccessoryState(arguments);
+			}
+			else if (arguments["cmd"].compare("updater") == 0)
+			{
+				handleUpdater(headers);
+			}
+			else if (uri.compare("/") == 0)
+			{
+				printMainHTML();
 			}
 			else
 			{
-				HtmlReplyWithHeader(string("Turning booster off"));
-				manager.booster(ControlTypeWebserver, BoosterStop);
+				deliverFile(uri);
 			}
 		}
-		else if (arguments["cmd"].compare("loco") == 0)
-		{
-			printLoco(arguments);
-		}
-		else if (arguments["cmd"].compare("locospeed") == 0)
-		{
-			handleLocoSpeed(arguments);
-		}
-		else if (arguments["cmd"].compare("locodirection") == 0)
-		{
-			handleLocoDirection(arguments);
-		}
-		else if (arguments["cmd"].compare("locofunction") == 0)
-		{
-			handleLocoFunction(arguments);
-		}
-		else if (arguments["cmd"].compare("locoedit") == 0)
-		{
-			handleLocoEdit(arguments);
-		}
-		else if (arguments["cmd"].compare("locosave") == 0)
-		{
-			handleLocoSave(arguments);
-		}
-		else if (arguments["cmd"].compare("protocol") == 0)
-		{
-			handleProtocol(arguments);
-		}
-		else if (arguments["cmd"].compare("layout") == 0)
-		{
-			handleLayout(arguments);
-		}
-		else if (arguments["cmd"].compare("accessoryedit") == 0)
-		{
-			handleAccessoryEdit(arguments);
-		}
-		else if (arguments["cmd"].compare("accessorysave") == 0)
-		{
-			handleAccessorySave(arguments);
-		}
-		else if (arguments["cmd"].compare("accessorystate") == 0)
-		{
-			handleAccessoryState(arguments);
-		}
-		else if (arguments["cmd"].compare("updater") == 0)
-		{
-			handleUpdater(headers);
-		}
-		else if (uri.compare("/") == 0)
-		{
-			printMainHTML();
-		}
-		else
-		{
-			deliverFile(uri);
-		}
-
-		xlog("Terminating webclient");
 	}
 
 	int WebClient::stop()
@@ -310,7 +322,6 @@ namespace webserver
 		}
 		string sFile = ss.str();
 		const char* realFile = sFile.c_str();
-		xlog(realFile);
 		FILE* f = fopen(realFile, "r");
 		if (f == nullptr)
 		{

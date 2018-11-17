@@ -66,7 +66,6 @@ namespace webserver {
 
 	void WebServer::Work(Network::TcpConnection* connection)
 	{
-		xlog("Connection established to webserver");
 		clients.push_back(new WebClient(++lastClientID, connection, *this, manager));
 	}
 

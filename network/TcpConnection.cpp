@@ -10,7 +10,6 @@ namespace Network
 		connectionSocket(socket),
 		connected(true)
 	{
-		xlog("TCP connection established to ");
 	}
 
 	TcpConnection::~TcpConnection()
