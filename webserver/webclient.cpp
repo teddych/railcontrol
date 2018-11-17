@@ -802,7 +802,8 @@ namespace webserver
 	void WebClient::printMainHTML() {
 		// handle base request
 		HtmlTag body("body");
-		body.AddAttribute("onload","loadDivFromForm('selectLoco_form', 'loco');loadDivFromForm('selectLayout_form', 'layout');");
+		body.AddAttribute("onload","startUp();");
+		body.AddAttribute("id", "body");
 
 		map<string,string> buttonArguments;
 

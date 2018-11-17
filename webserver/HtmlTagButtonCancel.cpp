@@ -12,6 +12,7 @@ namespace webserver
 			"$(function() {"
 			" $('#" << commandID << "').on('click', function() {"
 			"  $('#popup').hide(300);"
+			"  return false;"
 			" })"
 			"})";
 		AddJavaScript(s.str());

@@ -135,12 +135,16 @@ function hideAllContextMenus()
 	}
 }
 
-window.addEventListener('click', event => {
-	if (event.button == 2)
-	{
-		return;
-	}
-
-	hideAllContextMenus();
-});
-
+function startUp()
+{
+	$('#body').on('click', function(event) {
+		if (event.button == 2)
+		{
+			return false;
+		}
+		hideAllContextMenus();
+		return true;
+	});
+	loadDivFromForm('selectLoco_form', 'loco');
+	loadDivFromForm('selectLayout_form', 'layout');
+}

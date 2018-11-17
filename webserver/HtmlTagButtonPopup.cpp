@@ -23,6 +23,7 @@ namespace webserver
 		}
 		ss <<"';"
 			"  loadPopup(myUrl);"
+			"  return false;"
 			" })"
 			"})";
 		AddJavaScript(ss.str());
