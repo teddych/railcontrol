@@ -20,50 +20,65 @@ namespace datamodel {
 		const address_t address,
 		const accessoryType_t type,
 		const accessoryState_t state,
-		const accessoryTimeout_t timeout)
+		const accessoryTimeout_t timeout,
+		const bool inverted)
 	:	LayoutItem(accessoryID, name, x, y, z, Width1, Height1, rotation),
 		controlID(controlID),
 		protocol(protocol),
 		address(address),
 		type(type),
 		state(state),
-		timeout(timeout)
+		timeout(timeout),
+		inverted(inverted)
 	{
 	}
 
-	Accessory::Accessory(const std::string& serialized) {
+	Accessory::Accessory(const std::string& serialized)
+	{
 		deserialize(serialized);
 	}
 
-	std::string Accessory::serialize() const {
+	std::string Accessory::serialize() const
+	{
 		stringstream ss;
 		ss << "objectType=Accessory;" << serializeWithoutType();
 		return ss.str();
 	}
 
-	std::string Accessory::serializeWithoutType() const {
+	std::string Accessory::serializeWithoutType() const
+	{
 		stringstream ss;
-		ss << LayoutItem::serialize() << ";controlID=" << static_cast<int>(controlID) << ";protocol=" << static_cast<int>(protocol) << ";address=" << static_cast<int>(address) << ";type=" << static_cast<int>(type) << ";state=" << static_cast<int>(state) << ";timeout=" << (int)timeout;
+		ss << LayoutItem::serialize()
+			<< ";controlID=" << static_cast<int>(controlID)
+			<< ";protocol=" << static_cast<int>(protocol)
+			<< ";address=" << static_cast<int>(address)
+			<< ";type=" << static_cast<int>(type)
+			<< ";state=" << static_cast<int>(state)
+			<< ";timeout=" << static_cast<int>(timeout)
+			<< ";inverted=" << static_cast<int>(inverted);
 		return ss.str();
 	}
 
-	bool Accessory::deserialize(const std::string& serialized) {
+	bool Accessory::deserialize(const std::string& serialized)
+	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
-		if (arguments.count("objectType") && arguments.at("objectType").compare("Accessory") == 0) {
+		if (arguments.count("objectType") && arguments.at("objectType").compare("Accessory") == 0)
+		{
 			return deserialize(arguments);
 		}
 		return false;
 	}
 
-	bool Accessory::deserialize(const map<string,string>& arguments) {
+	bool Accessory::deserialize(const map<string,string>& arguments)
+	{
 		LayoutItem::deserialize(arguments);
-		if (arguments.count("controlID")) controlID = stoi(arguments.at("controlID"));
-		if (arguments.count("protocol")) protocol = static_cast<protocol_t>(stoi(arguments.at("protocol")));
-		if (arguments.count("address")) address = stoi(arguments.at("address"));
-		if (arguments.count("type")) type = stoi(arguments.at("type"));
-		if (arguments.count("state")) state = stoi(arguments.at("state"));
-		if (arguments.count("timeout")) timeout = stoi(arguments.at("timeout"));
+		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
+		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address = GetIntegerMapEntry(arguments, "address");
+		type = GetIntegerMapEntry(arguments, "type");
+		state = GetIntegerMapEntry(arguments, "state");
+		inverted = GetBoolMapEntry(arguments, "inverted");
 		return true;
 	}
 } // namespace datamodel

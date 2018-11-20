@@ -21,7 +21,7 @@ typedef unsigned char layoutPosition_t;
 // accessory
 typedef objectID_t accessoryID_t;
 typedef unsigned char accessoryType_t;
-typedef unsigned char accessoryState_t;
+typedef bool accessoryState_t;
 typedef unsigned short accessoryTimeout_t;
 
 // feedback
@@ -157,8 +157,8 @@ enum accessoryType : accessoryType_t
 
 enum accessoryState : accessoryState_t
 {
-	AccessoryStateOff = 0,
-	AccessoryStateOn
+	AccessoryStateOff = false,
+	AccessoryStateOn = true
 };
 
 enum feedbackState_t : unsigned char
@@ -189,6 +189,6 @@ enum switchType_t : accessoryType_t
 
 enum switchState_t : accessoryState_t
 {
-	SwitchStateStraight = 0,
-	SwitchStateTurnout
+	SwitchStateStraight = false,
+	SwitchStateTurnout = true
 };

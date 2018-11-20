@@ -646,17 +646,18 @@ void Manager::accessory(const controlType_t managerID, const accessoryID_t acces
 	}
 	accessory->state = state;
 
-	this->accessory(managerID, accessoryID, state, true);
+	this->accessory(managerID, accessoryID, state, accessory->IsInverted(), true);
 
-	delayedCall->Accessory(managerID, accessoryID, state, accessory->timeout);
+	delayedCall->Accessory(managerID, accessoryID, state, accessory->IsInverted(), accessory->timeout);
 }
 
-void Manager::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+void Manager::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->accessory(managerID, accessoryID, state, on);
+		accessoryState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
+		control.second->accessory(managerID, accessoryID, tempState, on);
 	}
 }
 
@@ -690,7 +691,7 @@ bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layo
 	return (accessory->posX == posX && accessory->posY == posY && accessory->posZ == posZ);
 }
 
-bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, string& result)
+bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, const bool inverted, string& result)
 {
 	Accessory* accessory;
 	if (!checkControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result))
@@ -728,6 +729,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 			accessory->type = type;
 			accessory->state = state;
 			accessory->timeout = timeout;
+			accessory->Inverted(inverted);
 		}
 		else
 		{
@@ -742,7 +744,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 				}
 			}
 			++newAccessoryID;
-			accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, Rotation0, controlID, protocol, address, type, state, timeout);
+			accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, Rotation0, controlID, protocol, address, type, state, timeout, inverted);
 			if (accessory == nullptr)
 			{
 				result.assign("Unable to allocate memory for accessory");
@@ -1078,7 +1080,7 @@ const std::string& Manager::getSwitchName(const switchID_t switchID)
 	return switches.at(switchID)->name;
 }
 
-bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout, string& result)
+bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout, const bool inverted, string& result)
 {
 	Switch* mySwitch;
 	if (!checkControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result))
@@ -1114,6 +1116,7 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 			mySwitch->type = type;
 			mySwitch->state = state;
 			mySwitch->timeout = timeout;
+			mySwitch->Inverted(inverted);
 		}
 		else
 		{
@@ -1128,7 +1131,7 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 				}
 			}
 			++newswitchID;
-			mySwitch = new Switch(newswitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, state, timeout);
+			mySwitch = new Switch(newswitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, state, timeout, inverted);
 			if (mySwitch == nullptr)
 			{
 				result.assign("Unable to allocate memory for switch");
@@ -1510,10 +1513,10 @@ void Manager::loadDefaultValuesToDB()
 	Loco newloco2(this, 2, "ICN", 1, ProtocolDCC, 1118, 4);
 	storage->loco(newloco2);
 
-	Accessory newAccessory1(1, "Schalter 1", 3, 5, 0, Rotation0, 1, ProtocolDCC, 1, 1, AccessoryStateOn, 200);
+	Accessory newAccessory1(1, "Schalter 1", 3, 5, 0, Rotation0, 1, ProtocolDCC, 1, 1, AccessoryStateOn, 200, false);
 	storage->accessory(newAccessory1);
 
-	Accessory newAccessory2(2, "Schalter 2", 3, 6, 0, Rotation0, 1, ProtocolDCC, 2, 1, AccessoryStateOff, 200);
+	Accessory newAccessory2(2, "Schalter 2", 3, 6, 0, Rotation0, 1, ProtocolDCC, 2, 1, AccessoryStateOff, 200, false);
 	storage->accessory(newAccessory2);
 
 	Feedback newFeedback1(this, 1, "Rückmelder Bahnhof 1", 1, 1, 4, 5, 0, false);
@@ -1546,10 +1549,10 @@ void Manager::loadDefaultValuesToDB()
 	Block newBlock5(5, "Block Strecke", 4, 5, 6, 0, Rotation90);
 	storage->block(newBlock5);
 
-	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, Rotation90, 1, ProtocolDCC, 3, SwitchTypeLeft, SwitchStateTurnout, 200);
+	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, Rotation90, 1, ProtocolDCC, 3, SwitchTypeLeft, SwitchStateTurnout, 200, false);
 	storage->saveSwitch(newSwitch1);
 
-	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, Rotation0, 1, ProtocolDCC, 4, SwitchTypeRight, SwitchStateStraight, 200);
+	Switch newSwitch2(2, "Weiche Ausfahrt", 2, 6, 0, Rotation0, 1, ProtocolDCC, 4, SwitchTypeRight, SwitchStateStraight, 200, false);
 	storage->saveSwitch(newSwitch2);
 
 	Street newStreet1(this, 1, "Fahrstrasse Ausfahrt 1", 1, DirectionLeft, 3, DirectionLeft, 3);

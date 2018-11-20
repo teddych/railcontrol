@@ -50,10 +50,10 @@ void DelayedCall::Thread(DelayedCall* thisClass)
 	}
 }
 
-void DelayedCall::Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const unsigned long timeout)
+void DelayedCall::Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const unsigned long timeout)
 {
 	unsigned long count = (timeout * 1000 / CountStep) + counter + 1;
-	auto entry = new DelayedCallEntryAccessory(manager, controlType, accessoryID, state, count);
+	auto entry = new DelayedCallEntryAccessory(manager, controlType, accessoryID, state, inverted, count);
 	std::lock_guard<std::mutex> lock(mutex);
 	waitingCalls.push_back(entry);
 }

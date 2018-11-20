@@ -732,8 +732,9 @@ namespace console
 		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
 		address_t address = ReadNumber(s, i);
 		accessoryTimeout_t timeout = ReadNumber(s, i);
+		bool inverted = ReadBool(s, i);
 		string result;
-		if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result))
+		if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, inverted, result))
 		{
 			AddUpdate(result);
 			return;
@@ -1189,9 +1190,9 @@ namespace console
 				"A D accessory#                    Delete accessory\n"
 				"A L A                             List all accessories\n"
 				"A L accessory#                    List accessory\n"
-				"A N Name X Y Z Control Protocol Address Timeout(ms)\n"
-				"A S accessory# state              Switch accessory\n"
+				"A N Name X Y Z Control Protocol Address Timeout(ms) Inverted\n"
 				"                                  New Accessory\n"
+				"A S accessory# state              Switch accessory\n"
 				"\n"
 				"Block commands\n"
 				"B D block#                        Delete block\n"
@@ -1240,7 +1241,7 @@ namespace console
 				"W D switch#                       Delete switch\n"
 				"W L A                             List all switches\n"
 				"W L switch#                       List switch\n"
-				"W N Name X Y Z Rotation Control Protocol Address Type(L/R) Timeout(ms)\n"
+				"W N Name X Y Z Rotation Control Protocol Address Type(L/R) Timeout(ms) Inverted\n"
 				"                                  New Switch\n"
 				"\n"
 				"Other commands\n"
@@ -1521,8 +1522,9 @@ namespace console
 		address_t address = ReadNumber(s, i);
 		switchType_t type = ReadSwitchType(s, i);
 		accessoryTimeout_t timeout = ReadNumber(s, i);
+		bool inverted = ReadBool(s, i);
 		string result;
-		if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SwitchStateStraight, timeout, result))
+		if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SwitchStateStraight, timeout, inverted, result))
 		{
 			AddUpdate(result);
 			return;

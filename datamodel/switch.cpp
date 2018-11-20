@@ -20,8 +20,9 @@ namespace datamodel {
 		address_t address,
 		switchType_t type,
 		switchState_t state,
-		switchTimeout_t timeout)
-	:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, state << 1, timeout),
+		switchTimeout_t timeout,
+		bool inverted)
+	:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, state << 1, timeout, inverted),
 		lockState(LockStateFree),
 		locoIDHardLock(LocoNone) {
 	}

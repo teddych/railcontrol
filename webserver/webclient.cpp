@@ -23,6 +23,7 @@
 #include "webserver/HtmlTagButtonCommandToggle.h"
 #include "webserver/HtmlTagButtonOK.h"
 #include "webserver/HtmlTagButtonPopup.h"
+#include "webserver/HtmlTagInputCheckbox.h"
 #include "webserver/HtmlTagInputHidden.h"
 #include "webserver/HtmlTagInputSliderLocoSpeed.h"
 #include "webserver/HtmlTagInputTextWithLabel.h"
@@ -585,6 +586,7 @@ namespace webserver
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
 		accessoryTimeout_t timeout = 100;
+		bool inverted = false;
 		if (accessoryID > AccessoryNone)
 		{
 			const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
@@ -595,6 +597,7 @@ namespace webserver
 			posx = accessory->posX;
 			posy = accessory->posY;
 			posz = accessory->posZ;
+			inverted = accessory->IsInverted();
 		}
 
 		std::map<controlID_t,string> controls = manager.controlListNames();
@@ -646,6 +649,8 @@ namespace webserver
 			.AddContent(HtmlTagSelect("posz", positionOptions, to_string(posz)))
 			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
 			.AddContent(HtmlTagSelect("timeout", timeoutOptions, to_string(timeout)))
+			.AddContent(HtmlTagLabel("Inverted:", "inverted"))
+			.AddContent(HtmlTagInputCheckbox("inverted", "true", inverted))
 		);
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
@@ -664,8 +669,9 @@ namespace webserver
 		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
 		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
+		bool inverted = GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, result))
+		if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, inverted, result))
 		{
 			ss << result;
 		}

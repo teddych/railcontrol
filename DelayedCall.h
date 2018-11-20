@@ -26,17 +26,19 @@ class DelayedCallEntry
 class DelayedCallEntryAccessory : public DelayedCallEntry
 {
 	public:
-		DelayedCallEntryAccessory(Manager& manager, const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const unsigned long timeout)
+		DelayedCallEntryAccessory(Manager& manager, const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const unsigned long timeout)
 		:	DelayedCallEntry(manager, controlType, timeout),
 		 	accessoryID(accessoryID),
-		 	state(state)
+		 	state(state),
+		 	inverted(inverted)
 		{}
 
-		void Execute() override { manager.accessory(controlType, accessoryID, state, false); }
+		void Execute() override { manager.accessory(controlType, accessoryID, state, inverted, false); }
 
 	private:
 		accessoryID_t accessoryID;
 		accessoryState_t state;
+		bool inverted;
 };
 
 class DelayedCall
@@ -46,7 +48,7 @@ class DelayedCall
 		~DelayedCall();
 
 		static void Thread(DelayedCall* delayedCall);
-		void Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const unsigned long timeout);
+		void Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const unsigned long timeout);
 		unsigned long counter;
 
 	private:

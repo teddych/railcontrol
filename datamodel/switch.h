@@ -12,6 +12,7 @@ namespace datamodel {
 
 	class Switch : public Accessory {
 		public:
+			// FIXME: const
 			Switch(switchID_t switchID,
 				std::string name,
 				layoutPosition_t x,
@@ -23,7 +24,8 @@ namespace datamodel {
 				address_t address,
 				switchType_t type,
 				switchState_t state,
-				switchTimeout_t timeout);
+				switchTimeout_t timeout,
+				bool inverted);
 
 			Switch(const std::string& serialized);
 
