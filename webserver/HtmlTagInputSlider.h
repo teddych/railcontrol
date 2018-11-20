@@ -17,6 +17,12 @@ namespace webserver
 				childTags[0].AddAttribute(name, value);
 				return *this;
 			}
+
+			virtual HtmlTag AddClass(const std::string& value)
+			{
+				childTags[0].AddClass(value);
+				return *this;
+			}
 	};
 };
 

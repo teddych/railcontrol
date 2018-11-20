@@ -807,9 +807,9 @@ namespace webserver
 
 		map<string,string> buttonArguments;
 
-		body.AddChildTag(HtmlTag("div").AddAttribute("class", "menu")
+		body.AddChildTag(HtmlTag("div").AddClass("menu")
 			.AddContent(HtmlTagButtonCommand("&times;", "quit"))
-			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddAttribute("class", "symbola").AddContent("&#9211;"), "booster", false, buttonArguments))
+			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9211;"), "booster", false, buttonArguments))
 			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0")));
 
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddChildTag(selectLoco()));
@@ -825,9 +825,9 @@ namespace webserver
 			" dataUpdate(e);"
 			"};"));
 
-		body.AddChildTag(HtmlTag("div").AddAttribute("class", "contextmenu").AddAttribute("id", "layout_context")
-			.AddChildTag(HtmlTag("ul").AddAttribute("class", "contextentries")
-			.AddChildTag(HtmlTag("li").AddAttribute("class", "contextentry").AddContent("New accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
+		body.AddChildTag(HtmlTag("div").AddClass( "contextmenu").AddAttribute("id", "layout_context")
+			.AddChildTag(HtmlTag("ul").AddClass("contextentries")
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("New accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
 			));
 
 		std::stringstream javascript;

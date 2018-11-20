@@ -17,15 +17,15 @@ namespace webserver
 		string accessoryIdString = to_string(accessoryID);
 		string id("a_" + accessoryIdString);
 		div1.AddAttribute("id", id);
-		string classes("layout_item accessory_item");
+		div1.AddClass("layout_item");
+		div1.AddClass("accessory_item");
 		if (state == AccessoryStateOn)
 		{
-			classes += " accessory_on";
+			div1.AddClass("accessory_on");
 		}
-		div1.AddAttribute("class", classes);
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		div1.AddContent("&#9209;");
-		div1.AddChildTag(HtmlTag("span").AddAttribute("class", "tooltip").AddContent(name + " (addr=" + to_string(address) + ")"));
+		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name + " (addr=" + to_string(address) + ")"));
 
 		std::stringstream javascript;
 		javascript << "$(function() {"
@@ -57,11 +57,11 @@ namespace webserver
 		AddChildTag(div1);
 
 		HtmlTag div2("div");
-		div2.AddAttribute("class", "contextmenu");
+		div2.AddClass("contextmenu");
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
-		div2.AddChildTag(HtmlTag("ul").AddAttribute("class", "contextentries")
-			.AddChildTag(HtmlTag("li").AddAttribute("class", "contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=" + accessoryIdString + "');"))
+		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=" + accessoryIdString + "');"))
 			);
 		AddChildTag(div2);
 	}

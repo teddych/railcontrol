@@ -7,7 +7,7 @@ namespace webserver
 	{
 		std::string reference = "locospeed_" + std::to_string(locoID);
 		AddAttribute("id", reference);
-		AddAttribute("class", "slider");
+		AddClass("slider");
 
 		std::stringstream ss;
 		ss <<"$(function() {"
