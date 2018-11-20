@@ -779,7 +779,7 @@ namespace webserver
 			ss << HtmlTagButtonPopup("Edit", id, buttonArguments);
 
 			id = "locodirection_" + to_string(locoID);
-			ss << HtmlTagButtonCommandToggle("dir", id, loco->GetDirection(), buttonArguments);
+			ss << HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9193;"), id, loco->GetDirection(), buttonArguments).AddClass("button_direction");
 
 			id = "locofunction_" + to_string(locoID);
 			function_t nrOfFunctions = loco->GetNrOfFunctions();
@@ -809,7 +809,7 @@ namespace webserver
 
 		body.AddChildTag(HtmlTag("div").AddClass("menu")
 			.AddContent(HtmlTagButtonCommand("&times;", "quit"))
-			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9211;"), "booster", false, buttonArguments))
+			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9211;"), "booster", false, buttonArguments).AddClass("button_booster"))
 			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0")));
 
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddChildTag(selectLoco()));
