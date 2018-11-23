@@ -1,5 +1,7 @@
 #include <map>
 #include <sstream>
+#include <fstream>
+#include <string>
 
 #include "storage/sqlite.h"
 #include "util.h"
@@ -27,12 +29,14 @@ namespace storage {
 		delete(sqlite);
 	}
 
-	SQLite::SQLite(const StorageParams& params) {
+	SQLite::SQLite(const StorageParams& params)
+	:	filename(params.filename)
+	{
 		int rc;
 		char* dbError = NULL;
 
-		xlog("Loading SQLite database with filename %s", params.filename.c_str());
-		rc = sqlite3_open(params.filename.c_str(), &db);
+		xlog("Loading SQLite database with filename %s", filename.c_str());
+		rc = sqlite3_open(filename.c_str(), &db);
 		if (rc) {
 			xlog("Unable to load SQLite database: %s", sqlite3_errmsg(db));
 			sqlite3_close(db);
@@ -105,12 +109,25 @@ namespace storage {
 		}
 	}
 
-	SQLite::~SQLite() {
-		if (db) {
-			xlog("Closing SQLite database");
-			sqlite3_close(db);
-			db = NULL;
+	SQLite::~SQLite()
+	{
+		if (db == nullptr)
+		{
+			return;
 		}
+
+		xlog("Closing SQLite database");
+		sqlite3_close(db);
+		db = NULL;
+
+		string sourceFilename(filename);
+		string destinationFilename(filename + "." + std::to_string(time(0)));
+		xlog("Copying from %s to %s", sourceFilename.c_str(), destinationFilename.c_str());
+		std::ifstream source(sourceFilename, std::ios::binary);
+		std::ofstream destination(destinationFilename, std::ios::binary);
+		destination << source.rdbuf();
+		source.close();
+		destination.close();
 	}
 
 	int SQLite::callbackListTables(void* v, int argc, char **argv, char **colName) {

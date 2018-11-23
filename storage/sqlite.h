@@ -43,6 +43,7 @@ namespace storage {
 
 		private:
 			sqlite3 *db;
+			const std::string filename;
 
 			static int callbackListTables(void *v, int argc, char **argv, char **colName);
 			static int callbackAllHardwareParams(void *v, int argc, char **argv, char **colName);

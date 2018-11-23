@@ -1,6 +1,6 @@
 railcontrol
 railcontrol.sqlite
-railcontrol.sqlite-journal
+railcontrol.sqlite.??????????
 storage/sqlite/sqlite3
 *.o
 *.so
