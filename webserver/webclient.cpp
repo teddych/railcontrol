@@ -473,8 +473,7 @@ namespace webserver
 		std::map<string, string> functionOptions;
 		for(function_t i = 0; i <= datamodel::LocoFunctions::maxFunctions; ++i)
 		{
-			string functionText(to_string(i));
-			functionOptions[functionText] = functionText;
+			functionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
 		}
 
 		content.AddContent(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
@@ -488,7 +487,7 @@ namespace webserver
 			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
 			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)))
 			.AddContent(HtmlTagLabel("# of functions:", "function"))
-			.AddContent(HtmlTagSelect("function", functionOptions, to_string(nrOfFunctions)))
+			.AddContent(HtmlTagSelect("function", functionOptions, toStringWithLeadingZeros(nrOfFunctions, 2)))
 			);
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
