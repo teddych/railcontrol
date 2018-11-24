@@ -5,7 +5,7 @@
 namespace webserver
 {
 	HtmlTagButtonOK::HtmlTagButtonOK()
-	:	HtmlTagButton("OK", "popup_ok")
+	:	HtmlTagButton(HtmlTag("span").AddClass("symbola").AddContent("&#x2714;"), "popup_ok")
 	{
 		std::stringstream s;
 		s <<

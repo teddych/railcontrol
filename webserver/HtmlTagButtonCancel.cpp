@@ -5,7 +5,7 @@
 namespace webserver
 {
 	HtmlTagButtonCancel::HtmlTagButtonCancel()
-	:	HtmlTagButton("Cancel", "popup_cancel")
+	:	HtmlTagButton(HtmlTag("span").AddClass("symbola").AddContent("&#x2718;"), "popup_cancel")
 	{
 		std::stringstream s;
 		s <<

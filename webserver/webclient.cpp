@@ -780,7 +780,7 @@ namespace webserver
 			buttonArguments.erase("speed");
 
 			id = "locoedit_" + to_string(locoID);
-			ss << HtmlTagButtonPopup("Edit", id, buttonArguments);
+			ss << HtmlTagButtonPopup(HtmlTag("span").AddClass("symbola").AddContent("&#x270D;"), id, buttonArguments);
 
 			id = "locodirection_" + to_string(locoID);
 			ss << HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9193;"), id, loco->GetDirection(), buttonArguments).AddClass("button_direction");
@@ -812,7 +812,7 @@ namespace webserver
 		map<string,string> buttonArguments;
 
 		body.AddChildTag(HtmlTag("div").AddClass("menu")
-			.AddContent(HtmlTagButtonCommand("&times;", "quit"))
+			.AddContent(HtmlTagButtonCommand(HtmlTag("span").AddClass("symbola").AddContent("&#x274C;"), "quit"))
 			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9211;"), "booster", false, buttonArguments).AddClass("button_booster"))
 			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0")));
 
