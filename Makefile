@@ -48,6 +48,7 @@ OBJ= \
 	webserver/HtmlTagInputSlider.o \
 	webserver/HtmlTagInputSliderLocoSpeed.o \
 	webserver/HtmlTagSelect.o \
+	webserver/HtmlTagSwitch.o \
 	webserver/webserver.o \
 	webserver/webclient.o
 

@@ -94,11 +94,19 @@ body {
 	visibility: visible;
 }
 
-.accessory_item {
+.accessory_off {
 	color: red;
 }
 
 .accessory_on {
+	color: green;
+}
+
+.switch_turnout {
+	color: red;
+}
+
+.switch_straight {
 	color: green;
 }
 

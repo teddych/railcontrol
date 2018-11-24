@@ -189,6 +189,6 @@ enum switchType_t : accessoryType_t
 
 enum switchState_t : accessoryState_t
 {
-	SwitchStateStraight = false,
-	SwitchStateTurnout = true
+	SwitchStateTurnout = false,
+	SwitchStateStraight = true
 };

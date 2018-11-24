@@ -34,36 +34,38 @@ function dataUpdate(event)
 		}
 	});
 
-	if (argumentMap.get('command') == 'booster')
+	var elementName = "";
+	var command = argumentMap.get('command');
+	if (command == 'booster')
 	{
-		var elementName = 'b_booster';
+		elementName = 'b_booster';
 		var on = argumentMap.get('on');
 		setToggleButton(elementName, on);
 	}
-	else if (argumentMap.get('command') == 'locospeed')
+	else if (command == 'locospeed')
 	{
-		var elementName = 'locospeed_' + argumentMap.get('loco');
+		elementName = 'locospeed_' + argumentMap.get('loco');
 		var element = document.getElementById(elementName);
 		if (element)
 		{
 			element.value = argumentMap.get('speed');
 		}
 	}
-	else if (argumentMap.get('command') == 'locofunction')
+	else if (command == 'locofunction')
 	{
-		var elementName = 'b_locofunction_' + argumentMap.get('loco') + '_' + argumentMap.get('function');
+		elementName = 'b_locofunction_' + argumentMap.get('loco') + '_' + argumentMap.get('function');
 		var on = argumentMap.get('on');
 		setToggleButton(elementName, on);
 	}
-	else if (argumentMap.get('command') == 'locodirection')
+	else if (command == 'locodirection')
 	{
-		var elementName = 'b_locodirection_' + argumentMap.get('loco');
+		elementName = 'b_locodirection_' + argumentMap.get('loco');
 		var on = argumentMap.get('direction');
 		setToggleButton(elementName, on);
 	}
-	else if (argumentMap.get('command') == 'accessory')
+	else if (command == 'accessory')
 	{
-		var elementName = 'a_' + argumentMap.get('accessory');
+		elementName = 'a_' + argumentMap.get('accessory');
 		var element = document.getElementById(elementName);
 		if (element)
 		{
@@ -72,25 +74,47 @@ function dataUpdate(event)
 				var state = argumentMap.get('state');
 				if (state == 'green')
 				{
+					element.classList.remove('accessory_off');
 					element.classList.add('accessory_on');
-				} else if (state == 'red')
-				{
+				} else {
 					element.classList.remove('accessory_on');
+					element.classList.add('accessory_off');
 				}
 			}
-			if (argumentMap.has('posx'))
+		}
+	}
+	else if (command == 'switch')
+	{
+		elementName = 'sw_' + argumentMap.get('switch');
+		var element = document.getElementById(elementName);
+		if (element)
+		{
+			if (argumentMap.has('state'))
 			{
-				var posx = argumentMap.get('posx') * 35;
-				var posy = argumentMap.get('posy') * 35;
-				element.style.left = posx + 'px';
-				element.style.top = posy + 'px';
-				var contextElement = document.getElementById(elementName + '_context');
-				if (contextElement)
+				var state = argumentMap.get('state');
+				if (state == 'straight')
 				{
-					contextElement.style.left = (posx + 5) + 'px';
-					contextElement.style.top = (posy + 30) + 'px';
+					element.classList.remove('switch_turnout');
+					element.classList.add('switch_straight');
+				} else {
+					element.classList.remove('switch_straight');
+					element.classList.add('switch_turnout');
 				}
 			}
+		}
+	}
+
+	if (argumentMap.has('posx') && argumentMap.has('posy'))
+	{
+		var posx = argumentMap.get('posx') * 35;
+		var posy = argumentMap.get('posy') * 35;
+		element.style.left = posx + 'px';
+		element.style.top = posy + 'px';
+		var contextElement = document.getElementById(elementName + '_context');
+		if (contextElement)
+		{
+			contextElement.style.left = (posx + 5) + 'px';
+			contextElement.style.top = (posy + 30) + 'px';
 		}
 	}
 }

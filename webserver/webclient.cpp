@@ -28,6 +28,7 @@
 #include "webserver/HtmlTagInputSliderLocoSpeed.h"
 #include "webserver/HtmlTagInputTextWithLabel.h"
 #include "webserver/HtmlTagSelect.h"
+#include "webserver/HtmlTagSwitch.h"
 
 using std::map;
 using std::stoi;
@@ -194,6 +195,10 @@ namespace webserver
 			else if (arguments["cmd"].compare("accessorystate") == 0)
 			{
 				handleAccessoryState(arguments);
+			}
+			else if (arguments["cmd"].compare("switchstate") == 0)
+			{
+				handleSwitchState(arguments);
 			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
@@ -570,6 +575,22 @@ namespace webserver
 			}
 			content.AddChildTag(HtmlTagAccessory(accessory.first, accessory.second->name, posX, posY, posZ, accessory.second->state, accessory.second->address));
 		}
+		const map<switchID_t,datamodel::Switch*>& switches = manager.switchList();
+		for (auto mySwitch : switches)
+		{
+			layoutPosition_t posX;
+			layoutPosition_t posY;
+			layoutPosition_t posZ;
+			layoutItemSize_t w;
+			layoutItemSize_t h;
+			layoutRotation_t r;
+			mySwitch.second->position(posX, posY, posZ, w, h, r);
+			if (posZ != layer)
+			{
+				continue;
+			}
+			content.AddChildTag(HtmlTagSwitch(mySwitch.first, mySwitch.second->name, posX, posY, posZ, mySwitch.second->GetState(), mySwitch.second->address));
+		}
 		HtmlReplyWithHeader(content);
 	}
 
@@ -690,6 +711,18 @@ namespace webserver
 
 		stringstream ss;
 		ss << "Accessory &quot;" << manager.getAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
+		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+	}
+
+	void WebClient::handleSwitchState(const map<string, string>& arguments)
+	{
+		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		switchState_t switchState = (GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SwitchStateTurnout : SwitchStateStraight);
+
+		manager.handleSwitch(ControlTypeWebserver, switchID, switchState);
+
+		stringstream ss;
+		ss << "Switch &quot;" << manager.getSwitchName(switchID) << "&quot; is now set to " << switchState;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 

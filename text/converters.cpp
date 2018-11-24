@@ -24,7 +24,7 @@ namespace text
 	}
 
 	void Converters::accessoryStatus(const accessoryState_t state, string& onText) {
-		switch (state & 0x01) {
+		switch (state) {
 			case AccessoryStateOff:
 				onText.assign("red");
 				break;
@@ -50,7 +50,7 @@ namespace text
 	}
 
 	void Converters::switchStatus(const switchState_t state, string& stateText) {
-		switch (state >> 1) {
+		switch (state) {
 			case SwitchStateStraight:
 				stateText.assign("straight");
 				break;

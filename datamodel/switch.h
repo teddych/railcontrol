@@ -33,6 +33,8 @@ namespace datamodel {
 			bool deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const { return "switch"; };
 
+			switchState_t GetState() const { return static_cast<switchState_t>(state); }
+
 			bool reserve(const locoID_t locoID);
 			bool hardLock(const locoID_t locoID, const switchState_t switchState);
 			bool softLock(const locoID_t locoID, const switchState_t switchState);
