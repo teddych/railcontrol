@@ -848,7 +848,7 @@ namespace webserver
 			"   menu.style.left = event.pageX + 'px';"
 			"   menu.style.top = event.pageY + 'px';"
 			"   window.layoutPosX = Math.floor((event.pageX - 254) / 35);"
-			"   window.layoutPosY = Math.floor((event.pageY - 189) / 35);"
+			"   window.layoutPosY = Math.floor((event.pageY - 92) / 35);"
 			"  }"
 			"  return true;"
 			" });"
