@@ -61,6 +61,13 @@ body {
 	background-repeat: repeat, repeat;
 }
 
+@media (max-width: 667px) {
+	.layout_selector,
+	.layout {
+		display: none;
+	}
+}
+
 .layout_item {
 	line-height: 35px;
 	text-align: center;
