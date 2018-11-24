@@ -28,3 +28,5 @@ int send_timeout(int sock, const char* buf, const size_t buflen, const int flags
 std::string GetStringMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const std::string& defaultValue = "");
 int GetIntegerMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const int defaultValue = 0);
 bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const bool defaultValue = false);
+
+std::string toStringWithLeadingZeros(const unsigned int number, const unsigned char chars);

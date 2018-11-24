@@ -619,10 +619,9 @@ namespace webserver
 		}
 
 		std::map<string, string> positionOptions;
-		for(int i = 0; i < 20; ++i)
+		for(int i = 0; i < 50; ++i)
 		{
-			string is(to_string(i));
-			positionOptions[is] = is;
+			positionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
 		}
 
 		std::map<string, string> timeoutOptions;
@@ -642,11 +641,11 @@ namespace webserver
 			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
 			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)))
 			.AddContent(HtmlTagLabel("Pos X:", "posx"))
-			.AddContent(HtmlTagSelect("posx", positionOptions, to_string(posx)))
+			.AddContent(HtmlTagSelect("posx", positionOptions, toStringWithLeadingZeros(posx, 2)))
 			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
-			.AddContent(HtmlTagSelect("posy", positionOptions, to_string(posy)))
+			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
 			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
-			.AddContent(HtmlTagSelect("posz", positionOptions, to_string(posz)))
+			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
 			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
 			.AddContent(HtmlTagSelect("timeout", timeoutOptions, to_string(timeout)))
 			.AddContent(HtmlTagLabel("Inverted:", "inverted"))

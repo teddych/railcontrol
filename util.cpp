@@ -5,6 +5,7 @@
 #include <cstring>    // memset
 #include <iostream>   // cout
 #include <sstream>
+#include <string>
 #include <sys/time.h> // gettimeofday
 #include <unistd.h>   // close;
 
@@ -14,6 +15,7 @@ using std::cout;
 using std::endl;
 using std::string;
 using std::stringstream;
+using std::to_string;
 using std::vector;
 
 void str_replace(std::string& str, const std::string& from, const std::string& to) {
@@ -217,4 +219,14 @@ bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::st
 	}
 	string value = map.at(key);
 	return (value.compare("true") == 0 || value.compare("on") == 0 || value.compare("1") == 0);
+}
+
+string toStringWithLeadingZeros(const unsigned int number, const unsigned char chars)
+{
+	string out = to_string(number);
+	while (out.size() < chars)
+	{
+		out.insert(0, "0");
+	}
+	return out;
 }
