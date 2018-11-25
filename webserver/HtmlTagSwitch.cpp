@@ -28,7 +28,7 @@ namespace webserver
 			div1.AddClass("switch_turnout");
 		}
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
-		div1.AddChildTag(HtmlTag("span").AddContent("S"));
+		div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name + " (addr=" + to_string(address) + ")"));
 
 		std::stringstream javascript;

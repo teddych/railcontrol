@@ -110,6 +110,14 @@ body {
 	color: green;
 }
 
+.switch_turnout .turnout {
+	fill: black;
+}
+
+.switch_straight .straight {
+	fill: black;
+}
+
 .popup {
 	position: fixed;
 	display: none;
