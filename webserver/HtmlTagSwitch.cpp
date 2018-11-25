@@ -8,7 +8,7 @@ using std::to_string;
 
 namespace webserver
 {
-	HtmlTagSwitch::HtmlTagSwitch(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const switchState_t state, const address_t address)
+	HtmlTagSwitch::HtmlTagSwitch(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const switchState_t state, const switchType_t type, const address_t address)
 	{
 		unsigned int layoutPosX = posX * 35;
 		unsigned int layoutPosY = posY * 35;
@@ -28,7 +28,14 @@ namespace webserver
 			div1.AddClass("switch_turnout");
 		}
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
-		div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>"));
+		if (type == SwitchTypeLeft)
+		{
+			div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>"));
+		}
+		else
+		{
+			div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\"><polygon points=\"22,26 22,35 13,35\" fill=\"black\" /><polygon points=\"22,26 35,13 35,22 22,35\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,26 13,35\" fill=\"gray\" class=\"straight\"/></svg>"));
+		}
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name + " (addr=" + to_string(address) + ")"));
 
 		std::stringstream javascript;

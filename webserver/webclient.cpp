@@ -597,7 +597,9 @@ namespace webserver
 			{
 				continue;
 			}
-			content.AddChildTag(HtmlTagSwitch(mySwitch.first, mySwitch.second->name, posX, posY, posZ, mySwitch.second->GetState(), mySwitch.second->address));
+			switchState_t state = mySwitch.second->GetState();
+			switchType_t type = mySwitch.second->GetType();
+			content.AddChildTag(HtmlTagSwitch(mySwitch.first, mySwitch.second->name, posX, posY, posZ, state, type, mySwitch.second->address));
 		}
 		HtmlReplyWithHeader(content);
 	}
@@ -698,7 +700,7 @@ namespace webserver
 		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
 		bool inverted = GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, inverted, result))
+		if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
 		{
 			ss << result;
 		}
@@ -733,6 +735,7 @@ namespace webserver
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		switchType_t type = SwitchTypeLeft;
 		accessoryTimeout_t timeout = 100;
 		bool inverted = false;
 		if (switchID > SwitchNone)
@@ -745,6 +748,7 @@ namespace webserver
 			posx = mySwitch->posX;
 			posy = mySwitch->posY;
 			posz = mySwitch->posZ;
+			type = mySwitch->GetType();
 			inverted = mySwitch->IsInverted();
 		}
 
@@ -778,6 +782,9 @@ namespace webserver
 		timeoutOptions["250"] = "250";
 		timeoutOptions["1000"] = "1000";
 
+		std::map<string, string> typeOptions;
+		typeOptions[to_string(SwitchTypeLeft)] = "Left";
+		typeOptions[to_string(SwitchTypeRight)] = "Right";
 		content.AddContent(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "switchsave"))
@@ -794,6 +801,8 @@ namespace webserver
 			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
 			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
 			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			.AddContent(HtmlTagLabel("Type:", "type"))
+			.AddContent(HtmlTagSelect("type", typeOptions, to_string(type)))
 			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
 			.AddContent(HtmlTagSelect("timeout", timeoutOptions, to_string(timeout)))
 			.AddContent(HtmlTagLabel("Inverted:", "inverted"))
@@ -815,10 +824,11 @@ namespace webserver
 		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		switchType_t type = GetIntegerMapEntry(arguments, "type", SwitchTypeLeft);
 		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
 		bool inverted = GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.switchSave(switchID, name, posX, posY, posZ, Rotation0, controlId, protocol, address, SwitchTypeLeft, SwitchStateTurnout, timeout, inverted, result))
+		if (!manager.switchSave(switchID, name, posX, posY, posZ, Rotation0, controlId, protocol, address, type, timeout, inverted, result))
 		{
 			ss << result;
 		}

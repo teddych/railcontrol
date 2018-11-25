@@ -734,7 +734,7 @@ namespace console
 		accessoryTimeout_t timeout = ReadNumber(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
-		if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, AccessoryStateOff, timeout, inverted, result))
+		if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
 		{
 			AddUpdate(result);
 			return;
@@ -1524,7 +1524,7 @@ namespace console
 		accessoryTimeout_t timeout = ReadNumber(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
-		if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, SwitchStateStraight, timeout, inverted, result))
+		if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, timeout, inverted, result))
 		{
 			AddUpdate(result);
 			return;

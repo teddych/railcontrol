@@ -19,7 +19,6 @@ namespace datamodel {
 		const protocol_t protocol,
 		const address_t address,
 		const accessoryType_t type,
-		const accessoryState_t state,
 		const accessoryTimeout_t timeout,
 		const bool inverted)
 	:	LayoutItem(accessoryID, name, x, y, z, Width1, Height1, rotation),
@@ -27,7 +26,7 @@ namespace datamodel {
 		protocol(protocol),
 		address(address),
 		type(type),
-		state(state),
+		state(AccessoryStateOff),
 		timeout(timeout),
 		inverted(inverted)
 	{

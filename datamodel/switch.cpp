@@ -19,35 +19,44 @@ namespace datamodel {
 		protocol_t protocol,
 		address_t address,
 		switchType_t type,
-		switchState_t state,
 		switchTimeout_t timeout,
 		bool inverted)
-	:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, state << 1, timeout, inverted),
+	:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, timeout, inverted),
 		lockState(LockStateFree),
-		locoIDHardLock(LocoNone) {
+		locoIDHardLock(LocoNone)
+	{
 	}
 
-	Switch::Switch(const std::string& serialized) {
+	Switch::Switch(const std::string& serialized)
+	{
 		deserialize(serialized);
 	}
 
-	std::string Switch::serialize() const {
+	std::string Switch::serialize() const
+	{
 		stringstream ss;
-		ss << "objectType=Switch;" << Accessory::serializeWithoutType() << ";lockState=" << static_cast<int>(lockState) << ";locoIDHardLock" << static_cast<int>(locoIDHardLock); // FIXME: locoIDSoftLock is missing
+		ss << "objectType=Switch;"
+			<< Accessory::serializeWithoutType()
+			<< ";lockState=" << static_cast<int>(lockState)
+			<< ";locoIDHardLock" << static_cast<int>(locoIDHardLock); // FIXME: locoIDSoftLock is missing
 		return ss.str();
 	}
 
-	bool Switch::deserialize(const std::string& serialized) {
+	bool Switch::deserialize(const std::string& serialized)
+	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
-		if (arguments.count("objectType") && arguments.at("objectType").compare("Switch") == 0) {
-			if (arguments.count("lockState")) lockState = static_cast<lockState_t>(stoi(arguments.at("lockState")));
-			if (arguments.count("locoIDHardLock")) locoIDHardLock = stoi(arguments.at("locoIDHardLock"));
-			// FIXME: if (arguments.count("locoIDSoftLock")) locoID = stoi(arguments.at("locoIDSoftLock"));
-			Accessory::deserialize(arguments);
-			return true;
+		string objectType = GetStringMapEntry(arguments, "objectType");
+		if (objectType.compare("Switch") != 0)
+		{
+			return false;
 		}
-		return false;
+
+		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
+		locoIDHardLock = GetIntegerMapEntry(arguments, "locoIDHardLock", LocoNone);
+		// FIXME: locoIDSoftLock
+		Accessory::deserialize(arguments);
+		return true;
 	}
 
 	bool Switch::reserve(const locoID_t locoID) {

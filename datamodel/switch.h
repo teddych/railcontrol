@@ -23,7 +23,6 @@ namespace datamodel {
 				protocol_t protocol,
 				address_t address,
 				switchType_t type,
-				switchState_t state,
 				switchTimeout_t timeout,
 				bool inverted);
 
@@ -34,6 +33,7 @@ namespace datamodel {
 			virtual std::string layoutType() const { return "switch"; };
 
 			switchState_t GetState() const { return static_cast<switchState_t>(state); }
+			switchType_t GetType() const { return static_cast<switchType_t>(type); }
 
 			bool reserve(const locoID_t locoID);
 			bool hardLock(const locoID_t locoID, const switchState_t switchState);
