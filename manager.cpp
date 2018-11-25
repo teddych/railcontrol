@@ -690,7 +690,6 @@ bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layo
 
 	return (accessory->posX == posX && accessory->posY == posY && accessory->posZ == posZ);
 }
-
 bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryState_t state, const accessoryTimeout_t timeout, const bool inverted, string& result)
 {
 	Accessory* accessory;
@@ -1080,6 +1079,17 @@ const std::string& Manager::getSwitchName(const switchID_t switchID)
 	return switches.at(switchID)->name;
 }
 
+bool Manager::checkSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+{
+	Switch* mySwitch = getSwitch(switchID);
+	if (mySwitch == nullptr)
+	{
+		return false;
+	}
+
+	return (mySwitch->posX == posX && mySwitch->posY == posY && mySwitch->posZ == posZ);
+}
+
 bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchState_t state, const switchTimeout_t timeout, const bool inverted, string& result)
 {
 	Switch* mySwitch;
@@ -1087,14 +1097,16 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 	{
 		return false;
 	}
+
+	if (!checkSwitchPosition(switchID, posX, posY, posZ) && !checkPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
 	{
-		if (!checkPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
-		{
-			result.append(" Unable to ");
-			result.append(switchID == SwitchNone ? "add" : "move");
-			result.append(" switch.");
-			return false;
-		}
+		result.append("Unable to ");
+		result.append(switchID == SwitchNone ? "add" : "move");
+		result.append(" switch.");
+		return false;
+	}
+
+	{
 		std::lock_guard<std::mutex> Guard(switchMutex);
 		if (switchID != SwitchNone && switches.count(switchID))
 		{
@@ -1121,24 +1133,24 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 		else
 		{
 			// create new switch
-			switchID_t newswitchID = 0;
+			switchID_t newSwitchID = 0;
 			// get next switchID
 			for (auto mySwitch : switches)
 			{
-				if (mySwitch.first > newswitchID)
+				if (mySwitch.first > newSwitchID)
 				{
-					newswitchID = mySwitch.first;
+					newSwitchID = mySwitch.first;
 				}
 			}
-			++newswitchID;
-			mySwitch = new Switch(newswitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, state, timeout, inverted);
+			++newSwitchID;
+			mySwitch = new Switch(newSwitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, state, timeout, inverted);
 			if (mySwitch == nullptr)
 			{
 				result.assign("Unable to allocate memory for switch");
 				return false;
 			}
 			// save in map
-			switches[newswitchID] = mySwitch;
+			switches[newSwitchID] = mySwitch;
 		}
 	}
 	// save in db

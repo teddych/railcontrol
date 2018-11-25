@@ -196,6 +196,14 @@ namespace webserver
 			{
 				handleAccessoryState(arguments);
 			}
+			else if (arguments["cmd"].compare("switchedit") == 0)
+			{
+				handleSwitchEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("switchsave") == 0)
+			{
+				handleSwitchSave(arguments);
+			}
 			else if (arguments["cmd"].compare("switchstate") == 0)
 			{
 				handleSwitchState(arguments);
@@ -650,7 +658,7 @@ namespace webserver
 		timeoutOptions["250"] = "250";
 		timeoutOptions["1000"] = "1000";
 
-		content.AddContent(HtmlTag("h1").AddContent("Edit acessory &quot;" + name + "&quot;"));
+		content.AddContent(HtmlTag("h1").AddContent("Edit accessory &quot;" + name + "&quot;"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "accessorysave"))
 			.AddContent(HtmlTagInputHidden("accessory", to_string(accessoryID)))
@@ -712,6 +720,114 @@ namespace webserver
 		stringstream ss;
 		ss << "Accessory &quot;" << manager.getAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+	}
+
+	void WebClient::handleSwitchEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		controlID_t controlID = ControlNone;
+		protocol_t protocol = ProtocolNone;
+		address_t address = AddressNone;
+		string name("New Switch");
+		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		accessoryTimeout_t timeout = 100;
+		bool inverted = false;
+		if (switchID > SwitchNone)
+		{
+			const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+			controlID = mySwitch->controlID;
+			protocol = mySwitch->protocol;
+			address = mySwitch->address;
+			name = mySwitch->name;
+			posx = mySwitch->posX;
+			posy = mySwitch->posY;
+			posz = mySwitch->posZ;
+			inverted = mySwitch->IsInverted();
+		}
+
+		std::map<controlID_t,string> controls = manager.controlListNames();
+		std::map<string, string> controlOptions;
+		for(auto control : controls)
+		{
+			controlOptions[to_string(control.first)] = control.second;
+			if (controlID == ControlNone)
+			{
+				controlID = control.first;
+			}
+		}
+
+		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
+		std::map<string, string> protocolOptions;
+		for(auto protocol : protocols)
+		{
+			protocolOptions[to_string(protocol.first)] = protocol.second;
+		}
+
+		std::map<string, string> positionOptions;
+		for(int i = 0; i < 50; ++i)
+		{
+			positionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
+		}
+
+		std::map<string, string> timeoutOptions;
+		timeoutOptions["0"] = "0";
+		timeoutOptions["100"] = "100";
+		timeoutOptions["250"] = "250";
+		timeoutOptions["1000"] = "1000";
+
+		content.AddContent(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "switchsave"))
+			.AddContent(HtmlTagInputHidden("switch", to_string(switchID)))
+			.AddContent(HtmlTagInputTextWithLabel("name", "Switch Name:", name))
+			.AddContent(HtmlTagLabel("Control:", "control"))
+			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
+			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
+			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)))
+			.AddContent(HtmlTagLabel("Pos X:", "posx"))
+			.AddContent(HtmlTagSelect("posx", positionOptions, toStringWithLeadingZeros(posx, 2)))
+			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
+			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
+			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
+			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
+			.AddContent(HtmlTagSelect("timeout", timeoutOptions, to_string(timeout)))
+			.AddContent(HtmlTagLabel("Inverted:", "inverted"))
+			.AddContent(HtmlTagInputCheckbox("inverted", "true", inverted))
+		);
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleSwitchSave(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		string name = GetStringMapEntry(arguments, "name");
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
+		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
+		bool inverted = GetBoolMapEntry(arguments, "inverted");
+		string result;
+		if (!manager.switchSave(switchID, name, posX, posY, posZ, Rotation0, controlId, protocol, address, SwitchTypeLeft, SwitchStateTurnout, timeout, inverted, result))
+		{
+			ss << result;
+		}
+		else
+		{
+			ss << "Switch &quot;" << name << "&quot; saved.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
 	}
 
 	void WebClient::handleSwitchState(const map<string, string>& arguments)
