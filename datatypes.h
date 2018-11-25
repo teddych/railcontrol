@@ -34,6 +34,7 @@ typedef objectID_t blockID_t;
 // switch
 typedef accessoryID_t switchID_t;
 typedef accessoryTimeout_t switchTimeout_t;
+typedef accessoryState_t switchState_t;
 
 // street
 typedef objectID_t streetID_t;
@@ -187,7 +188,7 @@ enum switchType_t : accessoryType_t
 	SwitchTypeRight
 };
 
-enum switchState_t : accessoryState_t
+enum switchState : switchState_t
 {
 	SwitchStateTurnout = false,
 	SwitchStateStraight = true

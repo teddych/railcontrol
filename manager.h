@@ -78,7 +78,8 @@ class Manager {
 		bool blockDelete(const blockID_t blockID);
 
 		// switch
-		void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t switchState);
+		void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state);
+		void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
 		datamodel::Switch* getSwitch(const switchID_t switchID);
 		const std::string& getSwitchName(const switchID_t switchID);
 		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }

@@ -41,6 +41,24 @@ class DelayedCallEntryAccessory : public DelayedCallEntry
 		bool inverted;
 };
 
+class DelayedCallEntrySwitch : public DelayedCallEntry
+{
+	public:
+		DelayedCallEntrySwitch(Manager& manager, const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const unsigned long timeout)
+		:	DelayedCallEntry(manager, controlType, timeout),
+		 	switchID(switchID),
+		 	state(state),
+		 	inverted(inverted)
+		{}
+
+		void Execute() override { manager.handleSwitch(controlType, switchID, state, inverted, false); }
+
+	private:
+		switchID_t switchID;
+		switchState_t state;
+		bool inverted;
+};
+
 class DelayedCall
 {
 	public:
@@ -49,6 +67,7 @@ class DelayedCall
 
 		static void Thread(DelayedCall* delayedCall);
 		void Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const unsigned long timeout);
+		void Switch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const unsigned long timeout);
 		unsigned long counter;
 
 	private:

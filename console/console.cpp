@@ -1621,8 +1621,12 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void Console::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state)
+	void Console::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on)
 	{
+		if (on == false)
+		{
+			return;
+		}
 		std::stringstream status;
 		string stateText;
 		text::Converters::switchStatus(state, stateText);

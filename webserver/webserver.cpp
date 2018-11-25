@@ -148,7 +148,12 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) {
+	void WebServer::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on)
+	{
+		if (on == false)
+		{
+			return;
+		}
 		stringstream command;
 		stringstream status;
 		string stateText;

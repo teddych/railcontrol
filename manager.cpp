@@ -1051,12 +1051,27 @@ bool Manager::blockDelete(const blockID_t blockID)
 * Switch                   *
 ***************************/
 
-void Manager::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t switchState)
+void Manager::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state)
+{
+	Switch* mySwitch = getSwitch(switchID);
+	if (mySwitch == nullptr)
+	{
+		return;
+	}
+	mySwitch->state = state;
+
+	this->handleSwitch(managerID, switchID, state, mySwitch->IsInverted(), true);
+
+	delayedCall->Switch(managerID, switchID, state, mySwitch->IsInverted(), mySwitch->timeout);
+}
+
+void Manager::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->handleSwitch(managerID, switchID, switchState);
+		switchState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
+		control.second->handleSwitch(managerID, switchID, tempState, on);
 	}
 }
 

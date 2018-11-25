@@ -23,7 +23,7 @@ namespace console {
 			void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
 			void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 			void block(const controlType_t managerID, const blockID_t blockID, const lockState_t lockState) override;
-			void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) override;
+			void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on) override;
 			void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) override;
 			void locoRelease(const locoID_t locoID) override;
 			void blockRelease(const blockID_t blockID) override;

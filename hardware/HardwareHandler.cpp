@@ -190,18 +190,21 @@ namespace hardware {
 		instance->Accessory(protocol, address, state, on);
 	}
 
-	void HardwareHandler::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state) {
-		if (managerID == ControlTypeHardware || instance == nullptr) {
+	void HardwareHandler::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on)
+	{
+		if (managerID == ControlTypeHardware || instance == nullptr)
+		{
 			return;
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.switchProtocolAddress(switchID, controlID, protocol, address);
-		if (controlID != getControlID()) {
+		if (controlID != getControlID())
+		{
 			return;
 		}
-		instance->Accessory(protocol, address, state, true);
+		instance->Accessory(protocol, address, state, on);
 	}
 
 } // namespace hardware
