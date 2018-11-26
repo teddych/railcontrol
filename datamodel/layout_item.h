@@ -26,6 +26,7 @@ namespace datamodel {
 			virtual std::string serialize() const override;
 			virtual bool deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const { return "unknown type"; };
+			virtual std::string Rotation() const;
 			
 			layoutPosition_t posX;
 			layoutPosition_t posY;

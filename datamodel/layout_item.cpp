@@ -114,5 +114,30 @@ namespace datamodel {
 		return true;
 	}
 
+	std::string LayoutItem::Rotation() const
+	{
+		std::string rotationText;
+		switch (rotation)
+		{
+			case Rotation90:
+				rotationText = "90";
+				break;
+
+			case Rotation180:
+				rotationText = "180";
+				break;
+
+			case Rotation270:
+				rotationText = "270";
+				break;
+
+			case Rotation0:
+				default:
+				rotationText = "0";
+				break;
+		}
+		return rotationText;
+	}
+
 } // namespace datamodel
 

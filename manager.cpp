@@ -1171,6 +1171,11 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 	{
 		storage->saveSwitch(*mySwitch);
 	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->switchSettings(switchID, name, posX, posY, posZ, mySwitch->Rotation());
+	}
 	return true;
 }
 

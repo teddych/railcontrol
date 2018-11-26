@@ -163,6 +163,15 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const string rotation)
+	{
+		stringstream command;
+		stringstream status;
+		command << "switch;switch=" << switchID << ";posx=" << static_cast<int>(posX) << ";posy=" << static_cast<int>(posY) << ";posz=" << static_cast<int>(posZ) << ";rotation=" << rotation;
+		status << name << " has new position: " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << "/" << rotation;
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 		stringstream command;
 		stringstream status;

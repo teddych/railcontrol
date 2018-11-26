@@ -30,6 +30,7 @@ namespace webserver {
 			void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 			void block(const controlType_t managerID, const blockID_t blockID, const lockState_t state) override;
 			void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on) override;
+			void switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const std::string rotation);
 			void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) override;
 			void locoRelease(const locoID_t locoID) override;
 			void blockRelease(const blockID_t blockID) override;

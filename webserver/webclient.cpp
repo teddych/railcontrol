@@ -599,7 +599,7 @@ namespace webserver
 			}
 			switchState_t state = mySwitch.second->GetState();
 			switchType_t type = mySwitch.second->GetType();
-			content.AddChildTag(HtmlTagSwitch(mySwitch.first, mySwitch.second->name, posX, posY, posZ, state, type, mySwitch.second->address));
+			content.AddChildTag(HtmlTagSwitch(mySwitch.first, mySwitch.second->name, posX, posY, posZ, mySwitch.second->Rotation(), state, type, mySwitch.second->address));
 		}
 		HtmlReplyWithHeader(content);
 	}
@@ -735,6 +735,7 @@ namespace webserver
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		switchType_t type = SwitchTypeLeft;
 		accessoryTimeout_t timeout = 100;
 		bool inverted = false;
@@ -748,6 +749,7 @@ namespace webserver
 			posx = mySwitch->posX;
 			posy = mySwitch->posY;
 			posz = mySwitch->posZ;
+			rotation = mySwitch->rotation;
 			type = mySwitch->GetType();
 			inverted = mySwitch->IsInverted();
 		}
@@ -776,15 +778,22 @@ namespace webserver
 			positionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
 		}
 
-		std::map<string, string> timeoutOptions;
-		timeoutOptions["0"] = "0";
-		timeoutOptions["100"] = "100";
-		timeoutOptions["250"] = "250";
-		timeoutOptions["1000"] = "1000";
+		std::map<string, string> rotationOptions;
+		rotationOptions[to_string(Rotation0)] = "none";
+		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
+		rotationOptions[to_string(Rotation180)] = "180 deg";
+		rotationOptions[to_string(Rotation270)] = "90 deg anti-clockwise";
 
 		std::map<string, string> typeOptions;
 		typeOptions[to_string(SwitchTypeLeft)] = "Left";
 		typeOptions[to_string(SwitchTypeRight)] = "Right";
+
+		std::map<string, string> timeoutOptions;
+		timeoutOptions["0000"] = "0";
+		timeoutOptions["0100"] = "100";
+		timeoutOptions["0250"] = "250";
+		timeoutOptions["1000"] = "1000";
+
 		content.AddContent(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "switchsave"))
@@ -801,6 +810,8 @@ namespace webserver
 			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
 			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
 			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			.AddContent(HtmlTagLabel("Rotation:", "rotation"))
+			.AddContent(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
 			.AddContent(HtmlTagLabel("Type:", "type"))
 			.AddContent(HtmlTagSelect("type", typeOptions, to_string(type)))
 			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
@@ -824,11 +835,12 @@ namespace webserver
 		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		switchType_t type = GetIntegerMapEntry(arguments, "type", SwitchTypeLeft);
 		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
 		bool inverted = GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.switchSave(switchID, name, posX, posY, posZ, Rotation0, controlId, protocol, address, type, timeout, inverted, result))
+		if (!manager.switchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, timeout, inverted, result))
 		{
 			ss << result;
 		}

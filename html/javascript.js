@@ -117,6 +117,16 @@ function dataUpdate(event)
 			contextElement.style.top = (posy + 30) + 'px';
 		}
 	}
+
+	if (argumentMap.has('rotation'))
+	{
+		var rotation = argumentMap.get('rotation');
+		var imgElement = document.getElementById(elementName + '_img');
+		if (imgElement)
+		{
+			imgElement.style.transform = 'rotate(' + rotation + 'deg)';
+		}
+	}
 }
 
 function loadDivFromForm(form, target)
