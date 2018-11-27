@@ -20,7 +20,7 @@ void DelayedCall::Thread(DelayedCall* thisClass)
 {
 	while(thisClass->run)
 	{
-		usleep(DelayedCall::CountStep);
+		std::this_thread::sleep_for(std::chrono::milliseconds(DelayedCall::CountStep));
 		std::lock_guard<std::mutex> lock(thisClass->mutex);
 		++thisClass->counter;
 		auto callElement = thisClass->waitingCalls.begin();

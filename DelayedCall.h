@@ -71,8 +71,7 @@ class DelayedCall
 		unsigned long counter;
 
 	private:
-		static const unsigned long CountStep = 100000; // us
-		//static const unsigned long CountStep = 500000; // us
+		static const unsigned long CountStep = 100; // ms
 		Manager& manager;
 		std::mutex mutex;
 		std::vector<DelayedCallEntry*> waitingCalls;
