@@ -70,8 +70,9 @@ class DelayedCall
 		void Switch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const unsigned long timeout);
 		unsigned long counter;
 
+		const unsigned int CountStep = 100; // ms
+
 	private:
-		static const unsigned long CountStep = 100; // ms
 		Manager& manager;
 		std::mutex mutex;
 		std::vector<DelayedCallEntry*> waitingCalls;
