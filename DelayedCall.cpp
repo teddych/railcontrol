@@ -61,7 +61,6 @@ void DelayedCall::Accessory(const controlType_t controlType, const accessoryID_t
 void DelayedCall::Switch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const unsigned long timeout)
 {
 	unsigned int count = (timeout / CountStep) + counter + 1;
-	xlog("Waiting. Actual: %i. Until: %i", counter, count);
 	auto entry = new DelayedCallEntrySwitch(manager, controlType, switchID, state, inverted, count);
 	std::lock_guard<std::mutex> lock(mutex);
 	waitingCalls.push_back(entry);
