@@ -77,6 +77,7 @@ namespace datamodel {
 		address = GetIntegerMapEntry(arguments, "address");
 		type = GetIntegerMapEntry(arguments, "type");
 		state = GetIntegerMapEntry(arguments, "state");
+		timeout = GetIntegerMapEntry(arguments, "timeout", 100);
 		inverted = GetBoolMapEntry(arguments, "inverted");
 		return true;
 	}

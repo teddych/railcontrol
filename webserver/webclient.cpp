@@ -655,9 +655,9 @@ namespace webserver
 		}
 
 		std::map<string, string> timeoutOptions;
-		timeoutOptions["0"] = "0";
-		timeoutOptions["100"] = "100";
-		timeoutOptions["250"] = "250";
+		timeoutOptions["0000"] = "0";
+		timeoutOptions["0100"] = "100";
+		timeoutOptions["0250"] = "250";
 		timeoutOptions["1000"] = "1000";
 
 		content.AddContent(HtmlTag("h1").AddContent("Edit accessory &quot;" + name + "&quot;"));
@@ -677,7 +677,7 @@ namespace webserver
 			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
 			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
 			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
-			.AddContent(HtmlTagSelect("timeout", timeoutOptions, to_string(timeout)))
+			.AddContent(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
 			.AddContent(HtmlTagLabel("Inverted:", "inverted"))
 			.AddContent(HtmlTagInputCheckbox("inverted", "true", inverted))
 		);
@@ -751,6 +751,7 @@ namespace webserver
 			posz = mySwitch->posZ;
 			rotation = mySwitch->rotation;
 			type = mySwitch->GetType();
+			timeout = mySwitch->timeout;
 			inverted = mySwitch->IsInverted();
 		}
 
@@ -815,7 +816,7 @@ namespace webserver
 			.AddContent(HtmlTagLabel("Type:", "type"))
 			.AddContent(HtmlTagSelect("type", typeOptions, to_string(type)))
 			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
-			.AddContent(HtmlTagSelect("timeout", timeoutOptions, to_string(timeout)))
+			.AddContent(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
 			.AddContent(HtmlTagLabel("Inverted:", "inverted"))
 			.AddContent(HtmlTagInputCheckbox("inverted", "true", inverted))
 		);
