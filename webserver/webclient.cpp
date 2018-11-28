@@ -216,6 +216,14 @@ namespace webserver
 			{
 				handleSwitchState(arguments);
 			}
+			else if (arguments["cmd"].compare("switchaskdelete") == 0)
+			{
+				handleSwitchAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("switchdelete") == 0)
+			{
+				handleSwitchDelete(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				handleUpdater(headers);
@@ -925,6 +933,60 @@ namespace webserver
 		stringstream ss;
 		ss << "Switch &quot;" << manager.getSwitchName(switchID) << "&quot; is now set to " << switchState;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+	}
+
+	void WebClient::handleSwitchAskDelete(const map<string, string>& arguments)
+	{
+		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+
+		if (switchID == SwitchNone)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown switch"));
+			return;
+		}
+
+		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+		if (mySwitch == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown switch"));
+			return;
+		}
+
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Delete switch &quot;" + mySwitch->name + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the switch &quot;" + mySwitch->name + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "switchdelete"))
+			.AddContent(HtmlTagInputHidden("switch", to_string(switchID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleSwitchDelete(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+		if (mySwitch == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete switch"));
+			return;
+		}
+
+		string name = mySwitch->name;
+
+		if (!manager.switchDelete(switchID))
+		{
+			ss << "Unable to delete switch";
+		}
+		else
+		{
+			ss << "switch &quot;" << name << "&quot; deleted.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
 	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
