@@ -779,10 +779,17 @@ bool Manager::accessoryDelete(const accessoryID_t accessoryID)
 		accessories.erase(accessoryID);
 	}
 
+	string name = accessory->name;
+
 	delete accessory;
 	if (storage)
 	{
 		storage->deleteAccessory(accessoryID);
+	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->accessoryDelete(accessoryID, name);
 	}
 	return true;
 }

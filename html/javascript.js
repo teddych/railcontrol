@@ -83,6 +83,15 @@ function dataUpdate(event)
 			}
 		}
 	}
+	else if (command == 'accessorydelete')
+	{
+		elementName = 'a_' + argumentMap.get('accessory');
+		var element = document.getElementById(elementName);
+		if (element)
+		{
+			element.parentNode.removeChild(element);
+		}
+	}
 	else if (command == 'switch')
 	{
 		elementName = 'sw_' + argumentMap.get('switch');

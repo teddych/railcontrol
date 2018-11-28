@@ -130,6 +130,15 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::accessoryDelete(const accessoryID_t accessoryID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "accessorydelete;accessory=" << accessoryID;
+		status << name << " deleted";
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
 		stringstream command;
 		stringstream status;

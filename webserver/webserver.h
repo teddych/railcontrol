@@ -27,6 +27,7 @@ namespace webserver {
 			void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on) override;
 			void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
 			void accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) override;
+			void accessoryDelete(const accessoryID_t accessoryID, const std::string& name);
 			void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) override;
 			void block(const controlType_t managerID, const blockID_t blockID, const lockState_t state) override;
 			void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on) override;
