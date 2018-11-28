@@ -196,6 +196,14 @@ namespace webserver
 			{
 				handleAccessoryState(arguments);
 			}
+			else if (arguments["cmd"].compare("accessoryaskdelete") == 0)
+			{
+				handleAccessoryAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("accessorydelete") == 0)
+			{
+				handleAccessoryDelete(arguments);
+			}
 			else if (arguments["cmd"].compare("switchedit") == 0)
 			{
 				handleSwitchEdit(arguments);
@@ -722,6 +730,60 @@ namespace webserver
 		stringstream ss;
 		ss << "Accessory &quot;" << manager.getAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+	}
+
+	void WebClient::handleAccessoryAskDelete(const map<string, string>& arguments)
+	{
+		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+
+		if (accessoryID == AccessoryNone)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown accessory"));
+			return;
+		}
+
+		const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		if (accessory == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown accessory"));
+			return;
+		}
+
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Delete accessory &quot;" + accessory->name + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the accessory &quot;" + accessory->name + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "accessorydelete"))
+			.AddContent(HtmlTagInputHidden("accessory", to_string(accessoryID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleAccessoryDelete(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		if (accessory == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete accessory"));
+			return;
+		}
+
+		string name = accessory->name;
+
+		if (!manager.accessoryDelete(accessoryID))
+		{
+			ss << "Unable to delete accessory";
+		}
+		else
+		{
+			ss << "Accessory &quot;" << name << "&quot; deleted.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
 	}
 
 	void WebClient::handleSwitchEdit(const map<string, string>& arguments)
