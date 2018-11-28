@@ -112,6 +112,15 @@ function dataUpdate(event)
 			}
 		}
 	}
+	else if (command == 'switchdelete')
+	{
+		elementName = 'sw_' + argumentMap.get('switch');
+		var element = document.getElementById(elementName);
+		if (element)
+		{
+			element.parentNode.removeChild(element);
+		}
+	}
 
 	if (argumentMap.has('posx') && argumentMap.has('posy'))
 	{

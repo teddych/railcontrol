@@ -181,6 +181,15 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::switchDelete(const switchID_t switchID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "switchdelete;switch=" << switchID;
+		status << name << " deleted";
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
 		stringstream command;
 		stringstream status;

@@ -1200,10 +1200,18 @@ bool Manager::switchDelete(const switchID_t switchID)
 		switches.erase(switchID);
 	}
 
+	string name = mySwitch->name;
+
 	delete mySwitch;
 	if (storage)
 	{
 		storage->deleteSwitch(switchID);
+	}
+
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->switchDelete(switchID, name);
 	}
 	return true;
 }
