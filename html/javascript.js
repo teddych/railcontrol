@@ -25,6 +25,29 @@ function deleteLayoutElement(elementName)
 	}
 }
 
+function onClickSwitch(switchID)
+{
+	console.log('Switch clicked');
+
+	var element = document.getElementById('sw_' + switchID);
+	var url = '/?cmd=switchstate';
+	url += '&state=' + (element.classList.contains('switch_straight') ? 'turnout' : 'straight');
+	url += '&switch=' + switchID;
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
+}
+
+function onContextSwitch(switchID)
+{
+	hideAllContextMenus();
+	var menu = document.getElementById('sw_' + switchID + '_context');
+	if (menu)
+	{
+		menu.style.display = 'block';
+	}
+}
+
 function dataUpdate(event)
 {
 	var status = document.getElementById('status');
