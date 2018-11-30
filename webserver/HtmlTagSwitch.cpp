@@ -8,7 +8,21 @@ using std::to_string;
 
 namespace webserver
 {
-	HtmlTagSwitch::HtmlTagSwitch(const switchID_t switchID,
+	HtmlTagSwitch::HtmlTagSwitch(const datamodel::Switch* mySwitch)
+	{
+		layoutPosition_t posX;
+		layoutPosition_t posY;
+		layoutPosition_t posZ;
+		layoutItemSize_t w;
+		layoutItemSize_t h;
+		layoutRotation_t r;
+		mySwitch->position(posX, posY, posZ, w, h, r);
+		switchState_t state = mySwitch->GetState();
+		switchType_t type = mySwitch->GetType();
+		Init(mySwitch->objectID, mySwitch->name, posX, posY, posZ, mySwitch->Rotation(), state, type, mySwitch->address);
+	}
+
+	void HtmlTagSwitch::Init(const switchID_t switchID,
 		const std::string& name,
 		const layoutPosition_t posX,
 		const layoutPosition_t posY,
