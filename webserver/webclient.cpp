@@ -224,6 +224,10 @@ namespace webserver
 			{
 				handleSwitchDelete(arguments);
 			}
+			else if (arguments["cmd"].compare("switchget") == 0)
+			{
+				handleSwitchGet(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				handleUpdater(headers);
@@ -978,6 +982,13 @@ namespace webserver
 		}
 
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+	}
+
+	void WebClient::handleSwitchGet(const map<string, string>& arguments)
+	{
+		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
+		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
 	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
