@@ -126,7 +126,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "accessory;accessory=" << accessoryID << ";posx=" << static_cast<int>(posX) << ";posy=" << static_cast<int>(posY) << ";posz=" << static_cast<int>(posZ);
-		status << name << " has new position: " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ);
+		status << name << " updated";
 		addUpdate(command.str(), status.str());
 	}
 
@@ -176,8 +176,8 @@ namespace webserver {
 	{
 		stringstream command;
 		stringstream status;
-		command << "switch;switch=" << switchID << ";posx=" << static_cast<int>(posX) << ";posy=" << static_cast<int>(posY) << ";posz=" << static_cast<int>(posZ) << ";rotation=" << rotation;
-		status << name << " has new position: " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << "/" << rotation;
+		command << "switchsettings;switch=" << switchID << ";posx=" << static_cast<int>(posX) << ";posy=" << static_cast<int>(posY) << ";posz=" << static_cast<int>(posZ) << ";rotation=" << rotation;
+		status << name << " updated";
 		addUpdate(command.str(), status.str());
 	}
 
