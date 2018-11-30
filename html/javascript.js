@@ -27,8 +27,6 @@ function deleteLayoutElement(elementName)
 
 function onClickSwitch(switchID)
 {
-	console.log('Switch clicked');
-
 	var element = document.getElementById('sw_' + switchID);
 	var url = '/?cmd=switchstate';
 	url += '&state=' + (element.classList.contains('switch_straight') ? 'turnout' : 'straight');
@@ -45,6 +43,20 @@ function onContextSwitch(switchID)
 	if (menu)
 	{
 		menu.style.display = 'block';
+	}
+}
+
+function updateSwitch(switchID, data)
+{
+	var parentElement = document.getElementById('layout');
+	if (parentElement)
+	{
+		var elementName = 'sw_' + switchID;
+		var elementContextName = elementName + '_context';
+		deleteLayoutElement(elementName);
+		deleteLayoutElement(elementContextName);
+		parentElement.innerHTML += data;
+		eval(document.getElementById(elementName + '_script').innerHTML);
 	}
 }
 
@@ -140,6 +152,22 @@ function dataUpdate(event)
 				element.classList.add('switch_turnout');
 			}
 		}
+	}
+	else if (command == 'switchsettings')
+	{
+		var switchID = argumentMap.get('switch');
+		elementName = 'sw_' + switchID;
+		var url = '/?cmd=switchget';
+		url += '&switch=' + switchID;
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.onreadystatechange = function() { 
+			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+			{
+				updateSwitch(switchID, xmlHttp.responseText);
+			}
+		}
+		xmlHttp.open('GET', url, true);
+		xmlHttp.send(null);
 	}
 	else if (command == 'switchdelete')
 	{
