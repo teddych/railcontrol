@@ -16,6 +16,15 @@ function setToggleButton(elementName, on)
 	}
 }
 
+function deleteLayoutElement(elementName)
+{
+	var element = document.getElementById(elementName);
+	if (element)
+	{
+		element.parentNode.removeChild(element);
+	}
+}
+
 function dataUpdate(event)
 {
 	var status = document.getElementById('status');
@@ -98,41 +107,39 @@ function dataUpdate(event)
 		var element = document.getElementById(elementName);
 		if (element)
 		{
-			if (argumentMap.has('state'))
+			var state = argumentMap.get('state');
+			if (state == 'straight')
 			{
-				var state = argumentMap.get('state');
-				if (state == 'straight')
-				{
-					element.classList.remove('switch_turnout');
-					element.classList.add('switch_straight');
-				} else {
-					element.classList.remove('switch_straight');
-					element.classList.add('switch_turnout');
-				}
+				element.classList.remove('switch_turnout');
+				element.classList.add('switch_straight');
+			} else {
+				element.classList.remove('switch_straight');
+				element.classList.add('switch_turnout');
 			}
 		}
 	}
 	else if (command == 'switchdelete')
 	{
 		elementName = 'sw_' + argumentMap.get('switch');
-		var element = document.getElementById(elementName);
-		if (element)
-		{
-			element.parentNode.removeChild(element);
-		}
+		deleteLayoutElement(elementName);
+		deleteLayoutElement(elementName + '_context');
 	}
 
 	if (argumentMap.has('posx') && argumentMap.has('posy'))
 	{
-		var posx = argumentMap.get('posx') * 35;
-		var posy = argumentMap.get('posy') * 35;
-		element.style.left = posx + 'px';
-		element.style.top = posy + 'px';
-		var contextElement = document.getElementById(elementName + '_context');
-		if (contextElement)
+		var element = document.getElementById(elementName);
+		if (element)
 		{
-			contextElement.style.left = (posx + 5) + 'px';
-			contextElement.style.top = (posy + 30) + 'px';
+			var posx = argumentMap.get('posx') * 35;
+			var posy = argumentMap.get('posy') * 35;
+			element.style.left = posx + 'px';
+			element.style.top = posy + 'px';
+			var contextElement = document.getElementById(elementName + '_context');
+			if (contextElement)
+			{
+				contextElement.style.left = (posx + 5) + 'px';
+				contextElement.style.top = (posy + 30) + 'px';
+			}
 		}
 	}
 
