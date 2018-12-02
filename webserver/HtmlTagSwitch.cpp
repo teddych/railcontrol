@@ -59,7 +59,7 @@ namespace webserver
 			" $('#" << id << "').on('contextmenu', function(event) { if (event.shiftKey) return true; event.preventDefault(); onContextSwitch(" << switchID << "); return false; });"
 			"});"
 			;
-		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddAttribute("id", id + "_script"));
+		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));
 		AddChildTag(div1);
 
 		HtmlTag div2("div");

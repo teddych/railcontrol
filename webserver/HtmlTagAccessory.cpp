@@ -57,7 +57,7 @@ namespace webserver
 			" });"
 			"});"
 			;
-		div1.AddChildTag(HtmlTagJavascript(javascript.str()));
+		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));
 		AddChildTag(div1);
 
 		HtmlTag div2("div");

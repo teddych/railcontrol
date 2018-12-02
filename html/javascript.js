@@ -56,7 +56,12 @@ function updateSwitch(switchID, data)
 		deleteLayoutElement(elementName);
 		deleteLayoutElement(elementContextName);
 		parentElement.innerHTML += data;
-		eval(document.getElementById(elementName + '_script').innerHTML);
+		var scriptTags = document.getElementsByClassName('layout_item_script');
+		var i;
+		for (i = 0; i < scriptTags.length; i++)
+		{
+			eval(scriptTags[i].innerHTML);
+		}
 	}
 }
 
