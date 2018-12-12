@@ -1,5 +1,6 @@
 
-CC=g++
+CC=gcc
+CPP=g++
 
 #CPPFLAGS=-g -O2 -Wall
 #CPPFLAGS=-g -O0 -Wall -std=c++11
@@ -55,13 +56,13 @@ OBJ= \
 all: $(OBJ)
 	make -C hardware
 	make -C storage
-	$(CC) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
+	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 
 sqlite-shell:
 	make -C storage/sqlite
 
 %.o: %.cpp *.h datamodel/*.h console/*.h webserver/*.h storage/*.h hardware/*.h text/*.h
-	$(CC) $(CPPFLAGS) -c -o $@ $<
+	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
 	make -C hardware clean

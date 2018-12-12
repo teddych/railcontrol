@@ -1,5 +1,6 @@
 
-CC=g++
+CC=gcc
+CPP=g++
 
 #CPPFLAGS=-g -fpic -O0 -Wall -std=c++11
 CPPFLAGS=-I. -I.. -g -fpic -O2 -Wall -std=c++11
@@ -10,7 +11,7 @@ LIBS= \
 	virtual.so
 
 %.so: %.cpp *.h ../*.h ../datamodel/*.h
-	$(CC) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
+	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
 all: $(LIBS)
 
