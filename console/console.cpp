@@ -8,6 +8,7 @@
 #include <unistd.h>
 
 #include "datatypes.h"
+#include "network/Select.h"
 #include "railcontrol.h"
 #include "text/converters.h"
 #include "util.h"

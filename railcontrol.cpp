@@ -10,6 +10,7 @@
 
 #include "hardware/HardwareHandler.h"
 #include "manager.h"
+#include "network/Select.h"
 #include "railcontrol.h"
 #include "util.h"
 #include "webserver/webserver.h"

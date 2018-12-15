@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
+#include "network/Select.h"
 #include "util.h"
 
 namespace Network

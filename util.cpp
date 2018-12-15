@@ -9,6 +9,7 @@
 #include <sys/time.h> // gettimeofday
 #include <unistd.h>   // close;
 
+#include "network/Select.h"
 #include "util.h"
 
 using std::cout;

@@ -29,7 +29,7 @@ OBJ= \
 	network/TcpConnection.o \
 	network/TcpServer.o \
 	railcontrol.o \
-	storage/storage_handler.o \
+	storage/StorageHandler.o \
 	text/converters.o \
 	util.o \
 	webserver/Response.o \
@@ -62,7 +62,7 @@ amalgamation:
 	./amalgamation.bash
 	$(CPP) $(CPPFLAGS) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C storage sqlite/sqlite3.o
-	$(CPP) $(LDFLAGS) amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
+	$(CPP) -g amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
 
 
 sqlite-shell:

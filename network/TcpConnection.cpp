@@ -1,6 +1,7 @@
 #include <arpa/inet.h>
 #include <unistd.h>   // close & TEMP_FAILURE_RETRY;
 
+#include "network/Select.h"
 #include "network/TcpConnection.h"
 #include "util.h"
 
