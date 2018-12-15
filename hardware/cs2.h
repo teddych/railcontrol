@@ -1,5 +1,6 @@
 #pragma once
 
+#include <arpa/inet.h>
 #include <cstring>
 #include <string>
 #include <thread>
@@ -12,7 +13,6 @@
 
 namespace hardware
 {
-
 	class CS2 : HardwareInterface
 	{
 		public:
@@ -50,6 +50,9 @@ namespace hardware
 			void createAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address);
 			void receiver();
 	};
+
+	extern "C" CS2* create_cs2(const HardwareParams* params);
+	extern "C" void destroy_cs2(CS2* cs2);
 
 } // namespace
 

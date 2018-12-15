@@ -1,8 +1,14 @@
+
+#ifndef AMALGAMATION
 #include <dlfcn.h>              // dl*
+#endif
+
 #include <sstream>
 
 #include "datatypes.h"
 #include "hardware/HardwareHandler.h"
+#include "hardware/cs2.h"
+#include "hardware/virtual.h"
 #include "util.h"
 
 using std::string;
@@ -26,9 +32,25 @@ namespace hardware
 	{
 		hardwareType_t type = params->hardwareType;
 
+#ifdef AMALGAMATION
+		switch(type)
+		{
+			case HardwareTypeCS2:
+				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_cs2);
+				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_cs2);
+
+			case HardwareTypeVirt:
+				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_virtual);
+				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_virtual);
+
+			default:
+				createHardware = nullptr;
+				destroyHardware = nullptr;
+		}
+#else
 		// FIXME: if the same hardware library is loaded twice
 		// FIXME: the clean up does not work correctly
-		// FIXME: the second unload will creash
+		// FIXME: the second unload will crash
 
 		// generate symbol and library names
 		char* error;
@@ -37,15 +59,18 @@ namespace hardware
 		ss << "hardware/" << symbol << ".so";
 
 		void* dlhandle = manager.hardwareLibraryGet(type);
-		if (dlhandle == nullptr) {
+		if (dlhandle == nullptr)
+		{
 			// open dynamic library
 			dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
-			if (!dlhandle) {
+			if (!dlhandle)
+			{
 				xlog("Can not open library: %s", dlerror());
 				return;
 			}
 			xlog("Hardware library %s loaded", symbol.c_str());
-			if (!manager.hardwareLibraryAdd(type, dlhandle)) {
+			if (!manager.hardwareLibraryAdd(type, dlhandle))
+			{
 				xlog("Unable to store library address");
 				return;
 			}
@@ -57,7 +82,8 @@ namespace hardware
 		const char* s = ss.str().c_str();
 		createHardware_t* new_create_hardware = (createHardware_t*)dlsym(dlhandle, s);
 		error = dlerror();
-		if (error) {
+		if (error)
+		{
 			xlog("Unable to find symbol %s: %s", s, error);
 			return;
 		}
@@ -68,7 +94,8 @@ namespace hardware
 		s = ss.str().c_str();
 		destroyHardware_t* new_destroy_hardware = (destroyHardware_t*)dlsym(dlhandle, ss.str().c_str());
 		error = dlerror();
-		if (error) {
+		if (error)
+		{
 			xlog("Unable to find symbol %s: %s", s, error);
 			return;
 		}
@@ -76,36 +103,43 @@ namespace hardware
 		// register  valid symbols
 		createHardware = new_create_hardware;
 		destroyHardware = new_destroy_hardware;
+#endif
 
 		// start control
-		if (createHardware) {
+		if (createHardware)
+		{
 			instance = createHardware(params);
 		}
-
-		return;
 	}
 
-	HardwareHandler::~HardwareHandler() {
+	HardwareHandler::~HardwareHandler()
+	{
 		// stop control
-		if (instance) {
+		if (instance)
+		{
 			destroyHardware(instance);
 			instance = nullptr;
 		}
 
+#ifndef AMALGAMAGTION
 		hardwareType_t type = params->hardwareType;
 		// close library
-		if (manager.controlsOfHardwareType(type) > 1) {
+		if (manager.controlsOfHardwareType(type) > 1)
+		{
 			return;
 		}
 		void* dlhandle = manager.hardwareLibraryGet(type);
-		if (dlhandle == nullptr) {
+		if (dlhandle == nullptr)
+		{
 			return;
 		}
-		if (manager.hardwareLibraryRemove(type) == false) {
+		if (manager.hardwareLibraryRemove(type) == false)
+		{
 			return;
 		}
 		dlclose(dlhandle);
 		xlog("Hardware library %s unloaded", hardwareSymbols[type].c_str());
+#endif
 	}
 
 	const std::string HardwareHandler::getName() const {

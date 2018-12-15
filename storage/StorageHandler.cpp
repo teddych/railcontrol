@@ -1,10 +1,12 @@
+#ifndef AMALGAMATION
 #include <dlfcn.h>              // dl*
+#endif
 #include <sstream>
 #include <string>
 #include <vector>
 
+#include "storage/StorageHandler.h"
 #include "util.h"
-#include "storage/storage_handler.h"
 
 using datamodel::Accessory;
 using datamodel::Block;
@@ -18,19 +20,24 @@ using std::vector;
 
 namespace storage {
 
-	StorageHandler::StorageHandler(Manager* manager, const StorageParams& params) :
-		manager(manager),
-		createStorage(NULL),
-		destroyStorage(NULL),
-		instance(NULL),
-		dlhandle(NULL) {
-
+	StorageHandler::StorageHandler(Manager* manager, const StorageParams& params)
+	:	manager(manager),
+		createStorage(nullptr),
+		destroyStorage(nullptr),
+		instance(nullptr),
+		dlhandle(nullptr)
+	{
+#ifdef AMALGAMATION
+		createStorage = (storage::StorageInterface* (*)(storage::StorageParams))(&create_sqlite);
+		destroyStorage = (void (*)(storage::StorageInterface*))(&destroy_sqlite);
+#else
 		// generate symbol and library names
 		char* error;
 		std::stringstream ss;
 		ss << "storage/" << params.module << ".so";
 		dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
-		if (!dlhandle) {
+		if (!dlhandle)
+		{
 			xlog("Can not open storage library: %s", dlerror());
 			return;
 		}
@@ -41,7 +48,8 @@ namespace storage {
 		const char* s = ss.str().c_str();
 		createStorage_t* newCreateStorage = (createStorage_t*) dlsym(dlhandle, s);
 		error = dlerror();
-		if (error) {
+		if (error)
+		{
 			xlog("Unable to find symbol %s", s);
 			return;
 		}
@@ -53,7 +61,8 @@ namespace storage {
 		destroyStorage_t* newDestroyStorage = (destroyStorage_t*) dlsym(dlhandle,
 		    ss.str().c_str());
 		error = dlerror();
-		if (error) {
+		if (error)
+		{
 			xlog("Unable to find symbol %s", s);
 			return;
 		}
@@ -61,24 +70,32 @@ namespace storage {
 		// register  valid symbols
 		createStorage = newCreateStorage;
 		destroyStorage = newDestroyStorage;
+#endif
 
 		// start storage
-		if (createStorage) {
+		if (createStorage)
+		{
 			instance = createStorage(params);
 		}
 	}
 
-	StorageHandler::~StorageHandler() {
+	StorageHandler::~StorageHandler()
+	{
 		// stop storage
-		if (instance) {
+		if (instance)
+		{
 			destroyStorage(instance);
 			instance = NULL;
 		}
+
+#ifndef AMALGAMATION
 		// close library
-		if (dlhandle) {
+		if (dlhandle)
+		{
 			dlclose(dlhandle);
 			dlhandle = NULL;
 		}
+#endif
 	}
 
 	void StorageHandler::hardwareParams(const hardware::HardwareParams& hardwareParams) {

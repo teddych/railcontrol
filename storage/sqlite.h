@@ -3,9 +3,9 @@
 #include <map>
 
 #include "datamodel/datamodel.h"
-#include "storage_interface.h"
-#include "storage_params.h"
-#include "sqlite/sqlite3.h"
+#include "storage/sqlite/sqlite3.h"
+#include "storage/StorageInterface.h"
+#include "storage/StorageParams.h"
 
 namespace storage {
 
@@ -49,6 +49,9 @@ namespace storage {
 			static int callbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
 			static int callbackStringVector(void* v, int argc, char **argv, char **colName);
 	};
+
+	extern "C" SQLite* create_sqlite(const StorageParams& params);
+	extern "C" void destroy_sqlite(SQLite* sqlite);
 
 } // namespace storage
 

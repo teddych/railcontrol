@@ -42,5 +42,8 @@ namespace hardware
 			std::string name;
 	};
 
+	extern "C" Virtual* create_virtual(const HardwareParams* params);
+	extern "C" void destroy_virtual(Virtual* virt);
+
 } // namespace
 

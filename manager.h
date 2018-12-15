@@ -9,7 +9,7 @@
 #include "config.h"
 #include "datamodel/datamodel.h"
 #include "hardware/HardwareParams.h"
-#include "storage/storage_handler.h"
+#include "storage/StorageHandler.h"
 
 class DelayedCall;
 

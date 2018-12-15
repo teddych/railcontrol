@@ -5,8 +5,8 @@
 #include "datamodel/datamodel.h"
 #include "datatypes.h"
 #include "hardware/HardwareParams.h"
-#include "storage_interface.h"
-#include "storage_params.h"
+#include "storage/StorageInterface.h"
+#include "storage/StorageParams.h"
 
 namespace storage {
 
