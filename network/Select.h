@@ -1,3 +1,5 @@
+#pragma once
+
 #include <sys/select.h>
 
 #ifndef TEMP_FAILURE_RETRY
