@@ -58,6 +58,13 @@ all: $(OBJ)
 	make -C storage
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 
+amalgamation:
+	./amalgamation.bash
+	$(CPP) $(CPPFLAGS) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
+	make -C storage sqlite/sqlite3.o
+	$(CPP) $(LDFLAGS) amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
+
+
 sqlite-shell:
 	make -C storage/sqlite
 

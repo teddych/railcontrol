@@ -1,6 +1,6 @@
 #!/bin/bash
 
-EXEC=/tmp/make_amalgamation.bash
+EXEC=./make_amalgamation.bash
 CPP=amalgamation.cpp
 
 rm $CPP
@@ -18,6 +18,8 @@ chmod u+x $EXEC
 
 cat $EXEC
 
-find -type f -name "*.cpp" -exec $EXEC {} \;
+for dir in . datamodel console hardware network storage text webserver ; do
+	find $dir -maxdepth 1 -type f -name "*.cpp" -exec $EXEC {} \;
+done
 
 rm $EXEC
