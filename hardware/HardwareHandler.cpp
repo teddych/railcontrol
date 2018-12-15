@@ -7,10 +7,17 @@
 
 using std::string;
 
-namespace hardware {
+namespace hardware
+{
+	const std::string HardwareHandler::hardwareSymbols[] =
+	{
+		"none",
+		"virtual",
+		"cs2"
+	};
 
-	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params) :
-		CommandInterface(ControlTypeHardware),
+	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params)
+	:	CommandInterface(ControlTypeHardware),
 		manager(manager),
 		createHardware(nullptr),
 		destroyHardware(nullptr),
@@ -25,7 +32,7 @@ namespace hardware {
 
 		// generate symbol and library names
 		char* error;
-		string& symbol = hardwareSymbols[type];
+		const string& symbol = hardwareSymbols[type];
 		std::stringstream ss;
 		ss << "hardware/" << symbol << ".so";
 

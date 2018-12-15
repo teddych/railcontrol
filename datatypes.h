@@ -121,13 +121,6 @@ enum hardwareType_t : unsigned char
 	HardwareTypeNumbers
 };
 
-static std::string hardwareSymbols[] =
-{
-	"none",
-	"virtual",
-	"cs2"
-};
-
 enum layoutRotation_t : unsigned char
 {
 	Rotation0 = 0,

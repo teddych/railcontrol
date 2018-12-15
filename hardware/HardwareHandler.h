@@ -40,12 +40,15 @@ namespace hardware {
 			void locoStop(const locoID_t locoID) override {};
 			void getProtocols(std::vector<protocol_t>& protocols) const override;
 			bool protocolSupported(protocol_t protocol) const override;
+
 		private:
 			Manager& manager;
 			createHardware_t* createHardware;
 			destroyHardware_t* destroyHardware;
 			hardware::HardwareInterface* instance;
 			const HardwareParams* params;
+
+			static const std::string hardwareSymbols[];
 	};
 
 }; // namespace hardware
