@@ -9,3 +9,4 @@ storage/sqlite/sqlite3
 test/testloco
 gmon.out
 amalgamation.cpp
+.*.swp
