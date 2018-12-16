@@ -38,14 +38,17 @@ namespace hardware
 			case HardwareTypeCS2:
 				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_cs2);
 				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_cs2);
+				break;
 
 			case HardwareTypeVirt:
 				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_virtual);
 				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_virtual);
+				break;
 
 			default:
 				createHardware = nullptr;
 				destroyHardware = nullptr;
+				break;
 		}
 #else
 		// FIXME: if the same hardware library is loaded twice
