@@ -204,6 +204,10 @@ namespace webserver
 			{
 				handleAccessoryDelete(arguments);
 			}
+			else if (arguments["cmd"].compare("accessoryget") == 0)
+			{
+				handleAccessoryGet(arguments);
+			}
 			else if (arguments["cmd"].compare("switchedit") == 0)
 			{
 				handleSwitchEdit(arguments);
@@ -695,6 +699,13 @@ namespace webserver
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleAccessoryGet(const map<string, string>& arguments)
+	{
+		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory");
+		const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		HtmlReplyWithHeader(HtmlTagAccessory(accessory));
 	}
 
 	void WebClient::handleAccessorySave(const map<string, string>& arguments)

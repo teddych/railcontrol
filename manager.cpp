@@ -760,7 +760,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->accessorySettings(accessoryID, name, posX, posY, posZ);
+		control.second->accessorySettings(accessory->objectID, name, posX, posY, posZ);
 	}
 	return true;
 }

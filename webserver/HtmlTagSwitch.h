@@ -12,7 +12,6 @@ namespace webserver
 	{
 		public:
 			HtmlTagSwitch(const datamodel::Switch* mySwitch);
-
 			HtmlTagSwitch(const switchID_t switchID,
 				const std::string& name,
 				const layoutPosition_t posX,
@@ -26,6 +25,13 @@ namespace webserver
 				Init(switchID, name, posX, posY, posZ, rotation, state, type, address);
 			}
 
+			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
+			{
+				childTags[0].AddAttribute(name, value);
+				return *this;
+			}
+
+		private:
 			void Init(const switchID_t switchID,
 				const std::string& name,
 				const layoutPosition_t posX,
@@ -36,13 +42,6 @@ namespace webserver
 				const switchType_t type,
 				const address_t address
 			);
-
-			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
-			{
-				childTags[0].AddAttribute(name, value);
-				return *this;
-			}
-
 	};
 }; // namespace webserver
 

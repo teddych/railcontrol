@@ -25,6 +25,27 @@ function deleteLayoutElement(elementName)
 	}
 }
 
+function onClickAccessory(accessoryID)
+{
+	var element = document.getElementById('a_' + accessoryID);
+	var url = '/?cmd=accessorystate';
+	url += '&state=' + (element.classList.contains('accessory_off') ? 'on' : 'off');
+	url += '&accessory=' + accessoryID;
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
+}
+
+function onContextAccessory(accessoryID)
+{
+	hideAllContextMenus();
+	var menu = document.getElementById('a_' + accessoryID + '_context');
+	if (menu)
+	{
+		menu.style.display = 'block';
+	}
+}
+
 function onClickSwitch(switchID)
 {
 	var element = document.getElementById('sw_' + switchID);
@@ -46,12 +67,11 @@ function onContextSwitch(switchID)
 	}
 }
 
-function updateSwitch(switchID, data)
+function updateItem(elementName, data)
 {
 	var parentElement = document.getElementById('layout');
 	if (parentElement)
 	{
-		var elementName = 'sw_' + switchID;
 		var elementContextName = elementName + '_context';
 		deleteLayoutElement(elementName);
 		deleteLayoutElement(elementContextName);
@@ -70,6 +90,19 @@ function updateSwitch(switchID, data)
 			eval(scriptTags[i].innerHTML);
 		}
 	}
+}
+
+function requestUpdateItem(elementName, url)
+{
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+		{
+			updateItem(elementName, xmlHttp.responseText);
+		}
+	}
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
 }
 
 function dataUpdate(event)
@@ -141,6 +174,14 @@ function dataUpdate(event)
 			}
 		}
 	}
+	else if (command == 'accessorysettings')
+	{
+		var accessoryID = argumentMap.get('accessory');
+		elementName = 'a_' + accessoryID;
+		var url = '/?cmd=accessoryget';
+		url += '&accessory=' + accessoryID;
+		requestUpdateItem(elementName, url);
+	}
 	else if (command == 'accessorydelete')
 	{
 		elementName = 'a_' + argumentMap.get('accessory');
@@ -175,49 +216,13 @@ function dataUpdate(event)
 		elementName = 'sw_' + switchID;
 		var url = '/?cmd=switchget';
 		url += '&switch=' + switchID;
-		var xmlHttp = new XMLHttpRequest();
-		xmlHttp.onreadystatechange = function() { 
-			if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-			{
-				updateSwitch(switchID, xmlHttp.responseText);
-			}
-		}
-		xmlHttp.open('GET', url, true);
-		xmlHttp.send(null);
+		requestUpdateItem(elementName, url);
 	}
 	else if (command == 'switchdelete')
 	{
 		elementName = 'sw_' + argumentMap.get('switch');
 		deleteLayoutElement(elementName);
 		deleteLayoutElement(elementName + '_context');
-	}
-
-	if (argumentMap.has('posx') && argumentMap.has('posy'))
-	{
-		var element = document.getElementById(elementName);
-		if (element)
-		{
-			var posx = argumentMap.get('posx') * 35;
-			var posy = argumentMap.get('posy') * 35;
-			element.style.left = posx + 'px';
-			element.style.top = posy + 'px';
-			var contextElement = document.getElementById(elementName + '_context');
-			if (contextElement)
-			{
-				contextElement.style.left = (posx + 5) + 'px';
-				contextElement.style.top = (posy + 30) + 'px';
-			}
-		}
-	}
-
-	if (argumentMap.has('rotation'))
-	{
-		var rotation = argumentMap.get('rotation');
-		var imgElement = document.getElementById(elementName + '_img');
-		if (imgElement)
-		{
-			imgElement.style.transform = 'rotate(' + rotation + 'deg)';
-		}
 	}
 }
 

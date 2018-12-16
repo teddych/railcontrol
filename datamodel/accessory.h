@@ -21,6 +21,8 @@ namespace datamodel {
 			virtual void Inverted(const bool inverted) { this->inverted = inverted; }
 			virtual bool IsInverted() const { return inverted; }
 
+			accessoryState_t GetState() const { return state; }
+
 			// FIXME: make this private
 			controlID_t controlID;
 			protocol_t protocol;

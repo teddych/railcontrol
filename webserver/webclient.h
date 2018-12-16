@@ -47,6 +47,7 @@ namespace webserver {
 			void handleAccessoryState(const std::map<std::string,std::string>& arguments);
 			void handleAccessoryAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleAccessoryDelete(const std::map<std::string,std::string>& arguments);
+			void handleAccessoryGet(const std::map<std::string,std::string>& arguments);
 			void handleSwitchEdit(const std::map<std::string,std::string>& arguments);
 			void handleSwitchSave(const std::map<std::string,std::string>& arguments);
 			void handleSwitchState(const std::map<std::string,std::string>& arguments);
