@@ -63,7 +63,7 @@ amalgamation:
 	$(CPP) $(CPPFLAGS) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C storage sqlite/sqlite3.o
 	$(CPP) -g amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
-
+	rm -f amalgamation.cpp
 
 sqlite-shell:
 	make -C storage/sqlite
