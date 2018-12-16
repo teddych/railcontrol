@@ -56,8 +56,15 @@ function updateSwitch(switchID, data)
 		deleteLayoutElement(elementName);
 		deleteLayoutElement(elementContextName);
 		parentElement.innerHTML += data;
-		var scriptTags = document.getElementsByClassName('layout_item_script');
 		var i;
+		var tags = document.getElementsByClassName('layout_item');
+		for (i = 0; i < tags.length; i++)
+		{
+			var tag = tags[i];
+			var clone = tag.cloneNode(true);
+			tag.parentNode.replaceChild(clone, tag);
+		}
+		var scriptTags = document.getElementsByClassName('layout_item_script');
 		for (i = 0; i < scriptTags.length; i++)
 		{
 			eval(scriptTags[i].innerHTML);
@@ -125,7 +132,9 @@ function dataUpdate(event)
 				{
 					element.classList.remove('accessory_off');
 					element.classList.add('accessory_on');
-				} else {
+				}
+				else
+				{
 					element.classList.remove('accessory_on');
 					element.classList.add('accessory_off');
 				}
@@ -152,7 +161,9 @@ function dataUpdate(event)
 			{
 				element.classList.remove('switch_turnout');
 				element.classList.add('switch_straight');
-			} else {
+			}
+			else
+			{
 				element.classList.remove('switch_straight');
 				element.classList.add('switch_turnout');
 			}
