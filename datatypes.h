@@ -118,6 +118,7 @@ enum hardwareType_t : unsigned char
 	HardwareTypeNone = 0,
 	HardwareTypeVirt,
 	HardwareTypeCS2,
+	HardwareTypeM6051,
 	HardwareTypeNumbers
 };
 

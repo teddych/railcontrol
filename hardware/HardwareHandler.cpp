@@ -19,7 +19,8 @@ namespace hardware
 	{
 		"none",
 		"virtual",
-		"cs2"
+		"cs2",
+		"m6051"
 	};
 
 	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params)
