@@ -110,8 +110,8 @@ namespace datamodel
 			const char* const getStateText() const;
 			void destinationReached();
 
-			void Speed(const speed_t speed) { this->speed = speed; }
-			const speed_t Speed() const { return speed; }
+			void Speed(const Speed speed) { this->speed = speed; }
+			const Speed Speed() const { return speed; }
 
 			void SetFunction(const function_t nr, const bool state) { functions.SetFunction(nr, state); }
 			bool GetFunction(const function_t nr) const { return functions.GetFunction(nr); }
@@ -139,7 +139,7 @@ namespace datamodel
 			};
 
 			Manager* manager;
-			speed_t speed;
+			Speed speed;
 			locoState_t state;
 			blockID_t blockID;
 			streetID_t streetID;

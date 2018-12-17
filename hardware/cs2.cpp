@@ -196,7 +196,7 @@ namespace hardware
 	}
 
 	// set the speed of a loco
-	void CS2::LocoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed)
+	void CS2::LocoSpeed(const protocol_t& protocol, const address_t& address, const Speed& speed)
 	{
 		xlog("Setting speed of cs2 loco %i/%i to speed %i", protocol, address, speed);
 		char buffer[CS2_CMD_BUF_LEN];
@@ -354,7 +354,7 @@ namespace hardware
 				else if (command == 0x04 && !response && length == 6)
 				{
 					// speed event
-					speed_t speed = dataToShort(buffer + 9);
+					Speed speed = dataToShort(buffer + 9);
 					manager->locoSpeed(ControlTypeHardware, protocol, static_cast<address_t>(address), speed);
 				}
 				else if (command == 0x05 && !response && length == 5)

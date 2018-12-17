@@ -81,7 +81,7 @@ namespace webserver {
 		}
 	}
 
-	void WebServer::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) {
+	void WebServer::locoSpeed(const controlType_t managerID, const locoID_t locoID, const Speed speed) {
 		stringstream command;
 		stringstream status;
 		command << "locospeed;loco=" << locoID << ";speed=" << speed;

@@ -524,7 +524,7 @@ bool Manager::locoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 	return true;
 }
 
-void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const speed_t speed)
+void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const Speed speed)
 {
 	locoID_t locoID = LocoNone;
 	{
@@ -544,14 +544,14 @@ void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol
 	locoSpeed(managerID, locoID, speed);
 }
 
-bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed)
+bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, const Speed speed)
 {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;
 	}
-	speed_t s = speed;
+	Speed s = speed;
 	if (speed > MaxSpeed)
 	{
 		s = MaxSpeed;
@@ -566,7 +566,7 @@ bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, co
 	return true;
 }
 
-const speed_t Manager::locoSpeed(const locoID_t locoID) const
+const Speed Manager::locoSpeed(const locoID_t locoID) const
 {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr)

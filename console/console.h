@@ -17,7 +17,7 @@ namespace console {
 			~Console();
 			const std::string getName() const override { return "Console"; }
 			void booster(const controlType_t managerID, const boosterStatus_t status) override;
-			void locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) override;
+			void locoSpeed(const controlType_t managerID, const locoID_t locoID, const Speed speed) override;
 			void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) override;
 			void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on) override;
 			void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;

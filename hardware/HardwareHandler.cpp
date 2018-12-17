@@ -176,7 +176,7 @@ namespace hardware
 		instance->Booster(status);
 	}
 
-	void HardwareHandler::locoSpeed(const controlType_t managerID, const locoID_t locoID, const speed_t speed) {
+	void HardwareHandler::locoSpeed(const controlType_t managerID, const locoID_t locoID, const Speed speed) {
 		if (managerID == ControlTypeHardware || instance == nullptr) {
 			return;
 		}

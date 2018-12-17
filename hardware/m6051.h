@@ -17,7 +17,7 @@ namespace hardware
 			void GetProtocols(std::vector<protocol_t>& protocols) const override;
 			virtual bool ProtocolSupported(protocol_t protocol) const override;
 			void Booster(const boosterStatus_t status) override;
-			void LocoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed) override;
+			void LocoSpeed(const protocol_t& protocol, const address_t& address, const Speed& speed) override;
 			void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
