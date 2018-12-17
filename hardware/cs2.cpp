@@ -196,7 +196,7 @@ namespace hardware
 	}
 
 	// set the speed of a loco
-	void CS2::LocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
+	void CS2::SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
 	{
 		xlog("Setting speed of cs2 loco %i/%i to speed %i", protocol, address, speed);
 		char buffer[CS2_CMD_BUF_LEN];

@@ -557,7 +557,7 @@ bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, co
 		s = MaxSpeed;
 	}
 	xlog("%s (%i) speed is now %i", loco->name.c_str(), locoID, s);
-	loco->LocoSpeed(s);
+	loco->Speed(s);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -573,7 +573,7 @@ const LocoSpeed Manager::locoSpeed(const locoID_t locoID) const
 	{
 		return MinSpeed;
 	}
-	return loco->LocoSpeed();
+	return loco->Speed();
 }
 
 void Manager::locoDirection(const controlType_t managerID, const protocol_t protocol, const address_t address, const direction_t direction)

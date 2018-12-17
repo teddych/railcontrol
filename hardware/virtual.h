@@ -27,7 +27,7 @@ namespace hardware
 			void Booster(const boosterStatus_t status) override;
 
 			// set loco speed
-			void LocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed) override;
+			void SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed) override;
 
 			// set loco direction
 			void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;

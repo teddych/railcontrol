@@ -187,7 +187,7 @@ namespace hardware
 		if (controlID != getControlID()) {
 			return;
 		}
-		instance->LocoSpeed(protocol, address, speed);
+		instance->SetLocoSpeed(protocol, address, speed);
 	}
 
 	void HardwareHandler::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
