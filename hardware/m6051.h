@@ -25,6 +25,7 @@ namespace hardware
 		private:
 			std::string name;
 			Manager* manager;
+			int ttyFileDescriptor;
 	};
 
 	extern "C" M6051* create_m6051(const HardwareParams* params);
