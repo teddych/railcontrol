@@ -30,7 +30,7 @@ namespace hardware
 			virtual void Booster(const boosterStatus_t status) = 0;
 
 			// set loco speed
-			virtual void LocoSpeed(const protocol_t& protocol, const address_t& address, const Speed& speed) = 0;
+			virtual void LocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed) = 0;
 
 			// set loco direction
 			virtual void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) = 0;

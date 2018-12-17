@@ -43,9 +43,9 @@ class Manager {
 		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		void locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const Speed speed);
-		bool locoSpeed(const controlType_t managerID, const locoID_t locoID, const Speed speed);
-		const Speed locoSpeed(const locoID_t locoID) const;
+		void locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const LocoSpeed speed);
+		bool locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed);
+		const LocoSpeed locoSpeed(const locoID_t locoID) const;
 		void locoDirection(const controlType_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction);
 		void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on);

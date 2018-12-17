@@ -11,7 +11,7 @@ typedef unsigned short objectID_t;
 // loco
 typedef objectID_t locoID_t;
 typedef unsigned short address_t;
-typedef unsigned short Speed;
+typedef unsigned short LocoSpeed;
 typedef unsigned char function_t;
 
 // layoutItem
@@ -52,8 +52,8 @@ static const blockID_t BlockNone = 0;
 static const switchID_t SwitchNone = 0;
 static const streetID_t StreetNone = 0;
 
-static const Speed MaxSpeed = 1023;
-static const Speed MinSpeed = 0;
+static const LocoSpeed MaxSpeed = 1023;
+static const LocoSpeed MinSpeed = 0;
 
 static const layoutItemSize_t Width1 = 1;
 static const layoutItemSize_t Height1 = 1;

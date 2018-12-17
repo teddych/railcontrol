@@ -56,7 +56,7 @@ namespace hardware
 	}
 
 	// set loco speed
-	void Virtual::LocoSpeed(const protocol_t& protocol, const address_t& address, const Speed& speed)
+	void Virtual::LocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
 	{
 		xlog("Setting speed of virtual loco %i/%i to speed %i", protocol, address, speed);
 	}

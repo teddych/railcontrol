@@ -60,7 +60,7 @@ namespace hardware
 	}
 
 	// set the speed of a loco
-	void M6051::LocoSpeed(const protocol_t& protocol, const address_t& address, const speed_t& speed)
+	void M6051::LocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
 	{
 		xlog("Setting speed of Märklin Interface loco %i/%i to speed %i", protocol, address, speed);
 	}

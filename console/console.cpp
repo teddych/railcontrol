@@ -1189,7 +1189,7 @@ namespace console
 	void Console::HandleLocoSpeed(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
-		Speed speed = ReadNumber(s, i);
+		LocoSpeed speed = ReadNumber(s, i);
 		if (!manager.locoSpeed(ControlTypeConsole, locoID, speed))
 		{
 			// FIXME: bether errormessage
@@ -1597,7 +1597,7 @@ namespace console
 		}
 	}
 
-	void Console::locoSpeed(const controlType_t managerID, const locoID_t locoID, const Speed speed)
+	void Console::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed)
 	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " speed is " << speed;

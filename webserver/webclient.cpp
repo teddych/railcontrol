@@ -435,7 +435,7 @@ namespace webserver
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments)
 	{
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		Speed speed = GetIntegerMapEntry(arguments, "speed", MinSpeed);
+		LocoSpeed speed = GetIntegerMapEntry(arguments, "speed", MinSpeed);
 
 		manager.locoSpeed(ControlTypeWebserver, locoID, speed);
 

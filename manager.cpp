@@ -524,7 +524,7 @@ bool Manager::locoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 	return true;
 }
 
-void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const Speed speed)
+void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const LocoSpeed speed)
 {
 	locoID_t locoID = LocoNone;
 	{
@@ -544,20 +544,20 @@ void Manager::locoSpeed(const controlType_t managerID, const protocol_t protocol
 	locoSpeed(managerID, locoID, speed);
 }
 
-bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, const Speed speed)
+bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed)
 {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;
 	}
-	Speed s = speed;
+	LocoSpeed s = speed;
 	if (speed > MaxSpeed)
 	{
 		s = MaxSpeed;
 	}
 	xlog("%s (%i) speed is now %i", loco->name.c_str(), locoID, s);
-	loco->Speed(s);
+	loco->LocoSpeed(s);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -566,14 +566,14 @@ bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, co
 	return true;
 }
 
-const Speed Manager::locoSpeed(const locoID_t locoID) const
+const LocoSpeed Manager::locoSpeed(const locoID_t locoID) const
 {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr)
 	{
 		return MinSpeed;
 	}
-	return loco->Speed();
+	return loco->LocoSpeed();
 }
 
 void Manager::locoDirection(const controlType_t managerID, const protocol_t protocol, const address_t address, const direction_t direction)
