@@ -41,6 +41,7 @@ namespace console {
 			static int ReadNumber(std::string& s, size_t& i);
 			static bool ReadBool(std::string& s, size_t& i);
 			static std::string ReadText(std::string& s, size_t& i);
+			static hardwareType_t ReadHardwareType(std::string& s, size_t& i);
 			static switchType_t ReadSwitchType(std::string& s, size_t& i);
 			static layoutRotation_t ReadRotation(std::string& s, size_t& i);
 			static direction_t ReadDirection(std::string& s, size_t& i);

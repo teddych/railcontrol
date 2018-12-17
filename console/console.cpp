@@ -241,6 +241,41 @@ namespace console
 		return text;
 	}
 
+	hardwareType_t Console::ReadHardwareType(string& s, size_t& i)
+	{
+		string type = ReadText(s, i);
+
+		if (type.compare("virt") == 0)
+		{
+			return HardwareTypeVirt;
+		}
+		else if (type.compare("cs2") == 0)
+		{
+			return HardwareTypeCS2;
+		}
+		else if (type.compare("m6051") == 0)
+		{
+			return HardwareTypeM6051;
+		}
+		else
+		{
+			try
+			{
+				int in = std::stoi(s);
+				if (in <= HardwareTypeNone || in >= HardwareTypeNumbers)
+				{
+					return HardwareTypeNone;
+				}
+				return static_cast<hardwareType_t>(in);
+			}
+			catch (...)
+			{
+				return HardwareTypeNone;
+			}
+		}
+	}
+
+
 	switchType_t Console::ReadSwitchType(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
@@ -889,23 +924,14 @@ namespace console
 	void Console::HandleControlNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
-		string type = ReadText(s, i);
-		string ip = ReadText(s, i);
-
-		hardwareType_t hardwareType;
-		if (type.compare("virt") == 0)
+		hardwareType_t hardwareType = ReadHardwareType(s, i);
+		if (hardwareType == HardwareTypeNone)
 		{
-			hardwareType = HardwareTypeVirt;
-		}
-		else if (type.compare("cs2") == 0)
-		{
-			hardwareType = HardwareTypeCS2;
-		}
-		else
-		{
-			AddUpdate("Unknown hardware type");
+			AddUpdate("Unknown hardwaretype");
 			return;
 		}
+
+		string ip = ReadText(s, i);
 
 		string result;
 		if (!manager.controlSave(ControlNone, hardwareType, name, ip, result))
