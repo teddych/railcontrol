@@ -121,18 +121,20 @@ body {
 .popup {
 	position: fixed;
 	display: none;
-	height: 400px;
+	height: 500px;
 	width: 600px;
 	top: 20px;
 	left: 20px;
-	border: solid 3px darkblue;
+	z-index: 2;
+	border: solid 3px black;
 	border-radius: 10px;
-	background-color: lightblue;
+	background-color: lightgray;
 	padding: 10px;
 }
 
 label {
-	width: 110px;
+	width: 150px;
+	height: 30px;
 	display: inline-block;
 }
 
