@@ -196,6 +196,15 @@ void Manager::booster(const controlType_t managerID, const boosterStatus_t statu
 * Control                  *
 ***************************/
 
+const std::map<hardwareType_t,string> Manager::hardwareListNames()
+{
+	std::map<hardwareType_t,string> hardwareList;
+	hardwareList[HardwareTypeM6051] = "Märklin Interface 6051/6051";
+	hardwareList[HardwareTypeCS2] = "Märklin Control Station 2 (CS2)";
+	hardwareList[HardwareTypeVirtual] = "Virtual Command Station (no Hardware)";
+	return hardwareList;
+}
+
 bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& arg1, string& result)
 {
 	if (controlID != ControlIdNone && controlID < ControlIdFirstHardware)

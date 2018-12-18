@@ -152,6 +152,14 @@ namespace webserver
 					manager.booster(ControlTypeWebserver, BoosterStop);
 				}
 			}
+			else if (arguments["cmd"].compare("controledit") == 0)
+			{
+				handleControlEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("controlsave") == 0)
+			{
+				handleControlSave(arguments);
+			}
 			else if (arguments["cmd"].compare("loco") == 0)
 			{
 				printLoco(arguments);
@@ -430,6 +438,56 @@ namespace webserver
 		size_t r = fread(buffer, 1, s.st_size, f);
 		connection->Send(buffer, r, 0);
 		free(buffer);
+	}
+
+	void WebClient::handleControlEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		hardwareType_t hardwareType = HardwareTypeNone;
+		string name("New Control");
+		string arg1;
+
+		const std::map<hardwareType_t,string> hardwares = manager.hardwareListNames();
+		std::map<string, string> hardwareOptions;
+		for(auto hardware : hardwares)
+		{
+			hardwareOptions[to_string(hardware.first)] = hardware.second;
+		}
+
+		content.AddContent(HtmlTag("h1").AddContent("Edit contrl &quot;" + name + "&quot;"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "controlsave"))
+			.AddContent(HtmlTagInputHidden("control", to_string(controlID)))
+			.AddContent(HtmlTagLabel("Hardware type:", "hardwaretype"))
+			.AddContent(HtmlTagSelect("hardwaretype", hardwareOptions, to_string(hardwareType)))
+			.AddContent(HtmlTagInputTextWithLabel("name", "Control Name:", name))
+			.AddContent(HtmlTagInputTextWithLabel("arg1", "Argument 1:", arg1))
+			);
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleControlSave(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		string name = GetStringMapEntry(arguments, "name");
+		hardwareType_t hardwareType = static_cast<hardwareType_t>(GetIntegerMapEntry(arguments, "hardwaretype", HardwareTypeNone));
+		string arg1 = GetStringMapEntry(arguments, "arg1");
+		string result;
+
+		if (!manager.controlSave(controlID, hardwareType, name, arg1, result))
+		{
+			ss << result;
+		}
+		else
+		{
+			ss << "Loco &quot;" << name << "&quot; saved.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
 	}
 
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments)
@@ -1123,7 +1181,9 @@ namespace webserver
 		body.AddChildTag(HtmlTag("div").AddClass("menu")
 			.AddContent(HtmlTagButtonCommand(HtmlTag("span").AddClass("symbola").AddContent("&#x274C;"), "quit"))
 			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9211;"), "booster", false, buttonArguments).AddClass("button_booster"))
-			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0")));
+			.AddContent(HtmlTagButtonPopup("NewControl", "controledit_0"))
+			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0"))
+			);
 
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddChildTag(selectLoco()));
 		body.AddChildTag(HtmlTag("div").AddClass("layout_selector").AddChildTag(selectLayout()));

@@ -22,6 +22,7 @@ class Manager {
 		void booster(const controlType_t managerID, const boosterStatus_t status);
 
 		// hardware (virt, CS2, ...)
+		static const std::map<hardwareType_t,std::string> hardwareListNames();
 		bool controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip, std::string& result);
 		bool controlDelete(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
