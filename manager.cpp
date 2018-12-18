@@ -196,7 +196,7 @@ void Manager::booster(const controlType_t managerID, const boosterStatus_t statu
 * Control                  *
 ***************************/
 
-bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip, string& result)
+bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& arg1, string& result)
 {
 	if (controlID != ControlIdNone && controlID < ControlIdFirstHardware)
 	{
@@ -215,7 +215,7 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 				return false;
 			}
 			params->name = name;
-			params->ip = ip;
+			params->arg1 = arg1;
 			// FIXME: reload hardware
 		}
 		else
@@ -232,7 +232,7 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 			}
 			++newControlID;
 			// create new control
-			params = new HardwareParams(newControlID, hardwareType, name, ip);
+			params = new HardwareParams(newControlID, hardwareType, name, arg1);
 			if (params == nullptr)
 			{
 				result.assign("Unable to allocate memory for control");

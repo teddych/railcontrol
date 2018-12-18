@@ -36,11 +36,11 @@ namespace hardware
 		manager(params->manager)
 	{
 		std::stringstream ss;
-		ss << "Maerklin Central Station 2 (CS2) / " << params->name << " at IP " << params->ip;
+		ss << "Maerklin Central Station 2 (CS2) / " << params->name << " at IP " << params->arg1;
 		name = ss.str();
 		xlog(name.c_str());
 		run = true;
-		senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->ip.c_str(), CS2_PORT_SEND);
+		senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->arg1.c_str(), CS2_PORT_SEND);
 		if (senderSocket < 0)
 		{
 			xlog("Unable to create UDP socket for sending data to CS2");

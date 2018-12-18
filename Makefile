@@ -24,7 +24,6 @@ OBJ= \
 	datamodel/switch.o \
 	DelayedCall.o \
 	hardware/HardwareHandler.o \
-	hardware/HardwareParams.o \
 	manager.o \
 	network/TcpConnection.o \
 	network/TcpServer.o \

@@ -931,10 +931,10 @@ namespace console
 			return;
 		}
 
-		string ip = ReadText(s, i);
+		string arg1 = ReadText(s, i);
 
 		string result;
-		if (!manager.controlSave(ControlNone, hardwareType, name, ip, result))
+		if (!manager.controlSave(ControlNone, hardwareType, name, arg1, result))
 		{
 			AddUpdate(result);
 			return;
@@ -1232,7 +1232,7 @@ namespace console
 				"C D control#                      Delete control\n"
 				"C L A                             List all controls\n"
 				"C L control#                      List control\n"
-				"C N Name Type IP                  New control\n"
+				"C N Name Type Arg1                New control\n"
 				"\n"
 				"Feedback commands\n"
 				"F D feedback#                     Delete feedback\n"

@@ -28,14 +28,14 @@ namespace hardware
 		manager(params->manager)
 	{
 		std::stringstream ss;
-		ss << "Maerklin Interface (6050/6051) / " << params->name << " at " << params->ip;
+		ss << "Maerklin Interface (6050/6051) / " << params->name << " at serial port " << params->arg1;
 		name = ss.str();
 		xlog(name.c_str());
 
-		ttyFileDescriptor = open(params->ip.c_str(), O_RDWR | O_NOCTTY);
+		ttyFileDescriptor = open(params->arg1.c_str(), O_RDWR | O_NOCTTY);
 		if (ttyFileDescriptor == -1)
 		{
-			xlog("Maerklin Interface: unable to open %s", params->ip.c_str());
+			xlog("Maerklin Interface: unable to open %s", params->arg1.c_str());
 			return;
 		}
 
