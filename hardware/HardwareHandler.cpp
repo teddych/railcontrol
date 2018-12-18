@@ -46,6 +46,12 @@ namespace hardware
 				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_virtual);
 				break;
 
+
+			case HardwareTypeM6051:
+				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_m6051);
+				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_m6051);
+				break;
+
 			default:
 				createHardware = nullptr;
 				destroyHardware = nullptr;
