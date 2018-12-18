@@ -43,7 +43,6 @@ typedef objectID_t streetID_t;
 // relations in db
 typedef unsigned short relationID_t;
 
-static const controlID_t ControlNone = 0;
 static const address_t AddressNone = 0;
 static const locoID_t LocoNone = 0;
 static const accessoryID_t AccessoryNone = 0;
@@ -116,9 +115,9 @@ enum addressType_t : unsigned char
 enum hardwareType_t : unsigned char
 {
 	HardwareTypeNone = 0,
-	HardwareTypeVirt,
-	HardwareTypeCS2,
-	HardwareTypeM6051,
+	HardwareTypeVirtual = 1,
+	HardwareTypeCS2 = 2,
+	HardwareTypeM6051 = 3,
 	HardwareTypeNumbers
 };
 

@@ -1546,7 +1546,7 @@ bool Manager::locoStopAll()
 
 void Manager::loadDefaultValuesToDB()
 {
-	HardwareParams newHardwareParams1(1, HardwareTypeVirt, "Virtuelle Zentrale", "");
+	HardwareParams newHardwareParams1(1, HardwareTypeVirtual, "Virtuelle Zentrale", "");
 	storage->hardwareParams(newHardwareParams1);
 
 	HardwareParams newHardwareParams2(2, HardwareTypeCS2, "CS2 Zentrale", "192.168.0.190");

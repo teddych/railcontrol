@@ -474,7 +474,7 @@ namespace webserver
 	{
 		HtmlTag content;
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		controlID_t controlID = ControlNone;
+		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name("New Loco");
@@ -494,7 +494,7 @@ namespace webserver
 		for(auto control : controls)
 		{
 			controlOptions[to_string(control.first)] = control.second;
-			if (controlID == ControlNone)
+			if (controlID == ControlIdNone)
 			{
 				controlID = control.first;
 			}
@@ -623,7 +623,7 @@ namespace webserver
 	{
 		HtmlTag content;
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		controlID_t controlID = ControlNone;
+		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name("New Accessory");
@@ -650,7 +650,7 @@ namespace webserver
 		for(auto control : controls)
 		{
 			controlOptions[to_string(control.first)] = control.second;
-			if (controlID == ControlNone)
+			if (controlID == ControlIdNone)
 			{
 				controlID = control.first;
 			}
@@ -804,7 +804,7 @@ namespace webserver
 	{
 		HtmlTag content;
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		controlID_t controlID = ControlNone;
+		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name("New Switch");
@@ -836,7 +836,7 @@ namespace webserver
 		for(auto control : controls)
 		{
 			controlOptions[to_string(control.first)] = control.second;
-			if (controlID == ControlNone)
+			if (controlID == ControlIdNone)
 			{
 				controlID = control.first;
 			}

@@ -71,7 +71,7 @@ namespace datamodel {
 		{
 			return false;
 		}
-		controlID = GetIntegerMapEntry(arguments, "controlID", ControlNone);
+		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		address = GetIntegerMapEntry(arguments, "address", AddressNone);
 		blockID = GetIntegerMapEntry(arguments, "blockID", BlockNone);

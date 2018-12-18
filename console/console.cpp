@@ -247,7 +247,7 @@ namespace console
 
 		if (type.compare("virt") == 0)
 		{
-			return HardwareTypeVirt;
+			return HardwareTypeVirtual;
 		}
 		else if (type.compare("cs2") == 0)
 		{
@@ -934,7 +934,7 @@ namespace console
 		string arg1 = ReadText(s, i);
 
 		string result;
-		if (!manager.controlSave(ControlNone, hardwareType, name, arg1, result))
+		if (!manager.controlSave(ControlIdNone, hardwareType, name, arg1, result))
 		{
 			AddUpdate(result);
 			return;
