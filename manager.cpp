@@ -224,6 +224,7 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 				return false;
 			}
 			params->name = name;
+			params->hardwareType = hardwareType;
 			params->arg1 = arg1;
 			// FIXME: reload hardware
 		}
