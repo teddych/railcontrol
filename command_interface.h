@@ -19,16 +19,16 @@ class CommandInterface {
 		virtual void accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {}
 		virtual void accessoryDelete(const accessoryID_t accessoryID, const std::string& name) {}
 		virtual void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
-		virtual void block(const controlType_t managerID, const blockID_t blockID, const lockState_t state) = 0;
+		virtual void track(const controlType_t managerID, const trackID_t trackID, const lockState_t state) = 0;
 		virtual void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on) = 0;
 		virtual void switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const std::string rotation) {};
 		virtual void switchDelete(const switchID_t switchID, const std::string& name) {};
-		virtual void locoIntoBlock(const locoID_t locoID, const blockID_t blockID) = 0;
+		virtual void locoIntoTrack(const locoID_t locoID, const trackID_t trackID) = 0;
 		virtual void locoRelease(const locoID_t) = 0;
-		virtual void blockRelease(const blockID_t) = 0;
+		virtual void trackRelease(const trackID_t) = 0;
 		virtual void streetRelease(const streetID_t) = 0;
-		virtual void locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) = 0;
-		virtual void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) = 0;
+		virtual void locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) = 0;
+		virtual void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) = 0;
 		virtual void locoStart(const locoID_t locoID) = 0;
 		virtual void locoStop(const locoID_t locoID) = 0;
 		virtual void getProtocols(std::vector<protocol_t>& protocols) const {};

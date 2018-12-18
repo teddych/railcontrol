@@ -14,7 +14,7 @@
 
 using console::Console;
 using datamodel::Accessory;
-using datamodel::Block;
+using datamodel::Track;
 using datamodel::Feedback;
 using datamodel::LayoutItem;
 using datamodel::Loco;
@@ -36,7 +36,7 @@ Manager::Manager(Config& config)
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
 	unknownFeedback("Unknown Feedback"),
-	unknownBlock("Unknown Block"),
+	unknownTrack("Unknown Track"),
 	unknownSwitch("Unknown Switch"),
 	unknownStreet("Unknown Street")
 {
@@ -81,10 +81,10 @@ Manager::Manager(Config& config)
 		xlog("Loaded feedback %i: %s", feedback.second->objectID, feedback.second->name.c_str());
 	}
 
-	storage->allBlocks(blocks);
-	for (auto block : blocks)
+	storage->allTracks(tracks);
+	for (auto track : tracks)
 	{
-		xlog("Loaded block %i: %s", block.second->objectID, block.second->name.c_str());
+		xlog("Loaded track %i: %s", track.second->objectID, track.second->name.c_str());
 	}
 
 	storage->allSwitches(switches);
@@ -98,7 +98,7 @@ Manager::Manager(Config& config)
 	{
 		xlog("Loaded street %i: %s", street.second->objectID, street.second->name.c_str());
 	}
-	// FIXME: load locos into blocks
+	// FIXME: load locos into tracks
 }
 
 Manager::~Manager()
@@ -137,11 +137,11 @@ Manager::~Manager()
 		storage->feedback(*(feedback.second));
 		delete feedback.second;
 	}
-	for (auto block : blocks)
+	for (auto track : tracks)
 	{
-		xlog("Saving block %i: %s", block.second->objectID, block.second->name.c_str());
-		storage->block(*(block.second));
-		delete block.second;
+		xlog("Saving track %i: %s", track.second->objectID, track.second->name.c_str());
+		storage->track(*(track.second));
+		delete track.second;
 	}
 	for (auto loco : locos)
 	{
@@ -946,119 +946,119 @@ bool Manager::feedbackDelete(const feedbackID_t feedbackID)
 }
 
 /***************************
-* Block                    *
+* Track                    *
 ***************************/
 
-void Manager::block(const controlType_t managerID, const blockID_t blockID, const lockState_t state)
+void Manager::track(const controlType_t managerID, const trackID_t trackID, const lockState_t state)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->block(managerID, blockID, state);
+		control.second->track(managerID, trackID, state);
 	}
 }
 
-Block* Manager::getBlock(const blockID_t blockID)
+Track* Manager::getTrack(const trackID_t trackID)
 {
-	std::lock_guard<std::mutex> Guard(blockMutex);
-	if (blocks.count(blockID) != 1)
+	std::lock_guard<std::mutex> Guard(trackMutex);
+	if (tracks.count(trackID) != 1)
 	{
 		return NULL;
 	}
-	return blocks.at(blockID);
+	return tracks.at(trackID);
 }
 
-const std::string& Manager::getBlockName(const blockID_t blockID)
+const std::string& Manager::getTrackName(const trackID_t trackID)
 {
-	if (blocks.count(blockID) != 1)
+	if (tracks.count(trackID) != 1)
 	{
-		return unknownBlock;
+		return unknownTrack;
 	}
-	return blocks.at(blockID)->name;
+	return tracks.at(trackID)->name;
 }
 
-bool Manager::blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, string& result)
+bool Manager::trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, string& result)
 {
-	Block* block;
+	Track* track;
 	{
 		if (!checkPositionFree(posX, posY, posZ, width, Height1, rotation, result))
 		{
 			result.append(" Unable to ");
-			result.append(blockID == BlockNone ? "add" : "move");
-			result.append(" block.");
+			result.append(trackID == TrackNone ? "add" : "move");
+			result.append(" track.");
 			return false;
 		}
-		std::lock_guard<std::mutex> Guard(blockMutex);
-		if (blockID != BlockNone && blocks.count(blockID))
+		std::lock_guard<std::mutex> Guard(trackMutex);
+		if (trackID != TrackNone && tracks.count(trackID))
 		{
-			// update existing block
-			block = blocks.at(blockID);
-			if (block == nullptr)
+			// update existing track
+			track = tracks.at(trackID);
+			if (track == nullptr)
 			{
-				result.assign("Block does not exist");
+				result.assign("Track does not exist");
 				return false;
 			}
-			block->name = name;
-			block->width = width;
-			block->rotation = rotation;
-			block->posX = posX;
-			block->posY = posY;
-			block->posZ = posZ;
+			track->name = name;
+			track->width = width;
+			track->rotation = rotation;
+			track->posX = posX;
+			track->posY = posY;
+			track->posZ = posZ;
 		}
 		else
 		{
-			// create new block
-			blockID_t newblockID = 0;
-			// get next blockID
-			for (auto block : blocks)
+			// create new track
+			trackID_t newTrackID = 0;
+			// get next trackID
+			for (auto track : tracks)
 			{
-				if (block.first > newblockID)
+				if (track.first > newTrackID)
 				{
-					newblockID = block.first;
+					newTrackID = track.first;
 				}
 			}
-			++newblockID;
-			block = new Block(newblockID, name, posX, posY, posZ, width, rotation);
-			if (block == nullptr)
+			++newTrackID;
+			track = new Track(newTrackID, name, posX, posY, posZ, width, rotation);
+			if (track == nullptr)
 			{
-				result.assign("Unable to allocate memory for block");
+				result.assign("Unable to allocate memory for track");
 				return false;
 			}
 			// save in map
-			blocks[newblockID] = block;
+			tracks[newTrackID] = track;
 		}
 	}
 	// save in db
 	if (storage)
 	{
-		storage->block(*block);
+		storage->track(*track);
 	}
 	return true;
 }
 
-bool Manager::blockDelete(const blockID_t blockID)
+bool Manager::trackDelete(const trackID_t trackID)
 {
-	Block* block = nullptr;
+	Track* track = nullptr;
 	{
-		std::lock_guard<std::mutex> Guard(blockMutex);
-		if (blockID == BlockNone || blocks.count(blockID) == 0)
+		std::lock_guard<std::mutex> Guard(trackMutex);
+		if (trackID == TrackNone || tracks.count(trackID) == 0)
 		{
 			return false;
 		}
 
-		block = blocks.at(blockID);
-		if (block == nullptr || block->isInUse())
+		track = tracks.at(trackID);
+		if (track == nullptr || track->isInUse())
 		{
 			return false;
 		}
 
-		blocks.erase(blockID);
+		tracks.erase(trackID);
 	}
 
-	delete block;
+	delete track;
 	if (storage)
 	{
-		storage->deleteBlock(blockID);
+		storage->deleteTrack(trackID);
 	}
 	return true;
 }
@@ -1265,7 +1265,7 @@ const string& Manager::getStreetName(const streetID_t streetID)
 	return streets.at(streetID)->name;
 }
 
-bool Manager::streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID, string& result)
+bool Manager::streetSave(const streetID_t streetID, const std::string& name, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, string& result)
 {
 	Street* street;
 	{
@@ -1280,9 +1280,9 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 				return false;
 			}
 			street->name = name;
-			street->fromBlock = fromBlock;
+			street->fromTrack = fromTrack;
 			street->fromDirection = fromDirection;
-			street->toBlock = toBlock;
+			street->toTrack = toTrack;
 			street->toDirection = toDirection;
 			street->feedbackIDStop = feedbackID;
 		}
@@ -1299,7 +1299,7 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 				}
 			}
 			++newStreetID;
-			street = new Street(this, newStreetID, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID);
+			street = new Street(this, newStreetID, name, fromTrack, fromDirection, toTrack, toDirection, feedbackID);
 			if (street == nullptr)
 			{
 				result.assign("Unable to allocate memory for street");
@@ -1343,10 +1343,10 @@ bool Manager::streetDelete(const streetID_t streetID)
 * Automode                 *
 ***************************/
 
-bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID)
+bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 {
-	Block* block = getBlock(blockID);
-	if (block == nullptr)
+	Track* track = getTrack(trackID);
+	if (track == nullptr)
 	{
 		return false;
 	}
@@ -1357,33 +1357,33 @@ bool Manager::locoIntoBlock(const locoID_t locoID, const blockID_t blockID)
 		return false;
 	}
 
-	bool reserved = block->reserve(locoID);
+	bool reserved = track->reserve(locoID);
 	if (reserved == false)
 	{
 		return false;
 	}
 
-	reserved = loco->toBlock(blockID);
+	reserved = loco->toTrack(trackID);
 	if (reserved == false)
 	{
-		block->release(locoID);
+		track->release(locoID);
 		return false;
 	}
 
-	reserved = block->lock(locoID);
+	reserved = track->lock(locoID);
 	if (reserved == false)
 	{
 		loco->release();
-		block->release(locoID);
+		track->release(locoID);
 		return false;
 	}
 
-	xlog("%s (%i) is now in block %s (%i)", loco->name.c_str(), loco->objectID, block->name.c_str(), block->objectID);
+	xlog("%s (%i) is now on track %s (%i)", loco->name.c_str(), loco->objectID, track->name.c_str(), track->objectID);
 
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoIntoBlock(locoID, blockID);
+		control.second->locoIntoTrack(locoID, trackID);
 	}
 	return true;
 }
@@ -1398,19 +1398,19 @@ bool Manager::locoRelease(const locoID_t locoID)
 		return false;
 	}
 	streetRelease(loco->street());
-	blockRelease(loco->block());
+	trackRelease(loco->track());
 	return loco->release();
 }
 
-bool Manager::blockRelease(const blockID_t blockID)
+bool Manager::trackRelease(const trackID_t trackID)
 {
-	Block* block = getBlock(blockID);
-	if (block == nullptr)
+	Track* track = getTrack(trackID);
+	if (track == nullptr)
 	{
 		return false;
 	}
-	locoID_t locoID = block->getLoco();
-	return block->release(locoID);
+	locoID_t locoID = track->getLoco();
+	return track->release(locoID);
 }
 bool Manager::feedbackRelease(const feedbackID_t feedbackID)
 {
@@ -1445,21 +1445,21 @@ bool Manager::switchRelease(const switchID_t switchID) {
 }
 */
 
-bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID)
+bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoStreet(locoID, streetID, blockID);
+		control.second->locoStreet(locoID, streetID, trackID);
 	}
 	return true;
 }
-bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID)
+bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoDestinationReached(locoID, streetID, blockID);
+		control.second->locoDestinationReached(locoID, streetID, trackID);
 	}
 	return true;
 }
@@ -1589,20 +1589,20 @@ void Manager::loadDefaultValuesToDB()
 	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0, false);
 	storage->feedback(newFeedback5);
 
-	Block newBlock1(1, "Block Bahnhof 1", 4, 5, 5, 0, Rotation0);
-	storage->block(newBlock1);
+	Track newTrack1(1, "Gleis Bahnhof 1", 4, 5, 5, 0, Rotation0);
+	storage->track(newTrack1);
 
-	Block newBlock2(2, "Block Bahnhof 2", 4, 5, 6, 0, Rotation90);
-	storage->block(newBlock2);
+	Track newTrack2(2, "Gleis Bahnhof 2", 4, 5, 6, 0, Rotation90);
+	storage->track(newTrack2);
 
-	Block newBlock3(3, "Block Ausfahrt", 4, 5, 6, 0, Rotation90);
-	storage->block(newBlock3);
+	Track newTrack3(3, "Gleis Ausfahrt", 4, 5, 6, 0, Rotation90);
+	storage->track(newTrack3);
 
-	Block newBlock4(4, "Block Einfahrt", 4, 5, 6, 0, Rotation90);
-	storage->block(newBlock4);
+	Track newTrack4(4, "Gleis Einfahrt", 4, 5, 6, 0, Rotation90);
+	storage->track(newTrack4);
 
-	Block newBlock5(5, "Block Strecke", 4, 5, 6, 0, Rotation90);
-	storage->block(newBlock5);
+	Track newTrack5(5, "Gleis Strecke", 4, 5, 6, 0, Rotation90);
+	storage->track(newTrack5);
 
 	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, Rotation90, 1, ProtocolDCC, 3, SwitchTypeLeft, 200, false);
 	storage->saveSwitch(newSwitch1);
@@ -1659,7 +1659,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 			{
 				return false;
 			}
-			ret = checkLayoutPositionFree(ix, iy, z, result, blocks, blockMutex);
+			ret = checkLayoutPositionFree(ix, iy, z, result, tracks, trackMutex);
 			if (ret == false)
 			{
 				return false;

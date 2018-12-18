@@ -11,14 +11,14 @@
 
 namespace datamodel {
 
-	class Block : public LayoutItem {
+	class Track : public LayoutItem {
 		public:
-			Block(const blockID_t blockID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutItemSize_t width, const layoutRotation_t rotation);
-			Block(const std::string& serialized);
+			Track(const trackID_t trackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutItemSize_t width, const layoutRotation_t rotation);
+			Track(const std::string& serialized);
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
-			virtual std::string layoutType() const override { return "block"; };
+			virtual std::string layoutType() const override { return "track"; };
 
 			bool reserve(const locoID_t locoID);
 			bool lock(const locoID_t locoID);
@@ -41,7 +41,7 @@ namespace datamodel {
 			std::vector<Street*> streets;
 	};
 
-	inline bool Block::isInUse() const {
+	inline bool Track::isInUse() const {
 		return this->lockState != LockStateFree || this->locoID != LocoNone || this->streets.size() > 0;
 	}
 

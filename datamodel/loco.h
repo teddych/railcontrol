@@ -102,10 +102,10 @@ namespace datamodel
 			bool start();
 			bool stop();
 
-			bool toBlock(const blockID_t blockID);
-			bool toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew);
+			bool toTrack(const trackID_t trackID);
+			bool toTrack(const trackID_t trackIDOld, const trackID_t trackIDNew);
 			bool release();
-			blockID_t block() const { return blockID; }
+			trackID_t track() const { return trackID; }
 			streetID_t street() const { return streetID; }
 			const char* const getStateText() const;
 			void destinationReached();
@@ -141,7 +141,7 @@ namespace datamodel
 			Manager* manager;
 			LocoSpeed speed;
 			locoState_t state;
-			blockID_t blockID;
+			trackID_t trackID;
 			streetID_t streetID;
 			std::mutex stateMutex;
 			std::thread locoThread;
@@ -154,7 +154,7 @@ namespace datamodel
 
 	inline bool Loco::isInUse() const
 	{
-		return this->speed > 0 || this->state != LocoStateManual || this->blockID != BlockNone || this->streetID != StreetNone;
+		return this->speed > 0 || this->state != LocoStateManual || this->trackID != TrackNone || this->streetID != StreetNone;
 	}
 
 } // namespace datamodel

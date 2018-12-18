@@ -9,7 +9,7 @@
 #include "util.h"
 
 using datamodel::Accessory;
-using datamodel::Block;
+using datamodel::Track;
 using datamodel::Feedback;
 using datamodel::Loco;
 using datamodel::Street;
@@ -200,31 +200,31 @@ namespace storage {
 		instance->deleteObject(ObjectTypeFeedback, feedbackID);
 	}
 
-	void StorageHandler::block(const Block& block) {
+	void StorageHandler::track(const Track& track) {
 		if (!instance) {
 			return;
 		}
-		string serialized = block.serialize();
-		instance->saveObject(ObjectTypeBlock, block.objectID, block.name, serialized);
+		string serialized = track.serialize();
+		instance->saveObject(ObjectTypeTrack, track.objectID, track.name, serialized);
 	}
 
-	void StorageHandler::allBlocks(std::map<blockID_t,datamodel::Block*>& blocks) {
+	void StorageHandler::allTracks(std::map<trackID_t,datamodel::Track*>& tracks) {
 		if (!instance) {
 			return;
 		}
 		vector<string> objects;
-		instance->objectsOfType(ObjectTypeBlock, objects);
+		instance->objectsOfType(ObjectTypeTrack, objects);
 		for(auto object : objects) {
-			Block* block = new Block(object);
-			blocks[block->objectID] = block;
+			Track* track = new Track(object);
+			tracks[track->objectID] = track;
 		}
 	}
 
-	void StorageHandler::deleteBlock(const blockID_t blockID) {
+	void StorageHandler::deleteTrack(const trackID_t trackID) {
 		if (!instance) {
 			return;
 		}
-		instance->deleteObject(ObjectTypeBlock, blockID);
+		instance->deleteObject(ObjectTypeTrack, trackID);
 	}
 
 	void StorageHandler::saveSwitch(const Switch& mySwitch) {

@@ -30,9 +30,9 @@ namespace storage {
 			void feedback(const datamodel::Feedback& feedback);
 			void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks);
 			void deleteFeedback(feedbackID_t feedbackID);
-			void block(const datamodel::Block& block);
-			void allBlocks(std::map<blockID_t,datamodel::Block*>& blocks);
-			void deleteBlock(blockID_t blockID);
+			void track(const datamodel::Track& track);
+			void allTracks(std::map<trackID_t,datamodel::Track*>& tracks);
+			void deleteTrack(trackID_t trackID);
 			void saveSwitch(const datamodel::Switch& mySwitch);
 			void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches);
 			void deleteSwitch(switchID_t switchID);

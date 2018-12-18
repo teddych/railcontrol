@@ -440,7 +440,7 @@ namespace console
 
 			case 'b':
 			case 'B':
-				HandleBlockCommand(s, i);
+				HandleTrackCommand(s, i);
 				break;
 
 			case 'c':
@@ -522,32 +522,32 @@ namespace console
 		}
 	}
 
-	void Console::HandleBlockCommand(string& s, size_t& i)
+	void Console::HandleTrackCommand(string& s, size_t& i)
 	{
 		switch (ReadCommand(s, i))
 		{
 			case 'd':
 			case 'D':
-				HandleBlockDelete(s, i);
+				HandleTrackDelete(s, i);
 				break;
 
 			case 'l':
 			case 'L':
-				HandleBlockList(s, i);
+				HandleTrackList(s, i);
 				break;
 
 			case 'n':
 			case 'N':
-				HandleBlockNew(s, i);
+				HandleTrackNew(s, i);
 				break;
 
 			case 'r':
 			case 'R':
-				HandleBlockRelease(s, i);
+				HandleTrackRelease(s, i);
 				break;
 
 			default:
-				AddUpdate("Unknown block command");
+				AddUpdate("Unknown track command");
 		}
 	}
 
@@ -620,7 +620,7 @@ namespace console
 
 			case 'b':
 			case 'B':
-				HandleLocoBlock(s, i);
+				HandleLocoTrack(s, i);
 				break;
 
 			case 'd':
@@ -794,64 +794,64 @@ namespace console
 		manager.accessory(ControlTypeConsole, accessoryID, state);
 	}
 
-	void Console::HandleBlockDelete(string& s, size_t& i)
+	void Console::HandleTrackDelete(string& s, size_t& i)
 	{
-		blockID_t blockID = ReadNumber(s, i);
-		if (!manager.blockDelete(blockID))
+		trackID_t trackID = ReadNumber(s, i);
+		if (!manager.trackDelete(trackID))
 		{
-			AddUpdate("Block not found or block in use");
+			AddUpdate("Track not found or track in use");
 			return;
 		}
-		AddUpdate("Block deleted");
+		AddUpdate("Track deleted");
 	}
 
-	void Console::HandleBlockList(string& s, size_t& i)
+	void Console::HandleTrackList(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
-			// list all blocks
-			std::map<blockID_t,datamodel::Block*> blocks = manager.blockList();
+			// list all tracks
+			std::map<trackID_t,datamodel::Track*> tracks = manager.trackList();
 			stringstream status;
-			for (auto block : blocks)
+			for (auto track : tracks)
 			{
-				status << block.first << " " << block.second->name << "\n";
+				status << track.first << " " << track.second->name << "\n";
 			}
-			status << "Total number of Blocks: " << blocks.size();
+			status << "Total number of tracks: " << tracks.size();
 			AddUpdate(status.str());
 			return;
 		}
 
-		// list one block
-		blockID_t blockID = ReadNumber(s, i);
-		datamodel::Block* block = manager.getBlock(blockID);
-		if (block == nullptr)
+		// list one track
+		trackID_t trackID = ReadNumber(s, i);
+		datamodel::Track* track = manager.getTrack(trackID);
+		if (track == nullptr)
 		{
-			AddUpdate("Unknown block");
+			AddUpdate("Unknown track");
 			return;
 		}
 		stringstream status;
 		status
-			<< "Block ID: " << blockID
-			<< "\nName:     " << block->name
-			<< "\nX:        " << static_cast<int>(block->posX)
-			<< "\nY:        " << static_cast<int>(block->posY)
-			<< "\nZ:        " << static_cast<int>(block->posZ);
+			<< "Track ID: " << trackID
+			<< "\nName:     " << track->name
+			<< "\nX:        " << static_cast<int>(track->posX)
+			<< "\nY:        " << static_cast<int>(track->posY)
+			<< "\nZ:        " << static_cast<int>(track->posZ);
 		string stateText;
-		text::Converters::lockStatus(block->getState(), stateText);
+		text::Converters::lockStatus(track->getState(), stateText);
 		status << "\nStatus:   " << stateText;
 		status << "\nLoco:     ";
-		if (block->getLoco() == LocoNone)
+		if (track->getLoco() == LocoNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.getLocoName(block->getLoco()) << " (" << block->getLoco() << ")";
+			status << manager.getLocoName(track->getLoco()) << " (" << track->getLoco() << ")";
 		}
 		AddUpdate(status.str());
 	}
 
-	void Console::HandleBlockNew(string& s, size_t& i)
+	void Console::HandleTrackNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
@@ -860,25 +860,25 @@ namespace console
 		layoutItemSize_t width = ReadNumber(s, i);
 		layoutRotation_t rotation = ReadRotation(s, i);
 		string result;
-		if (!manager.blockSave(BlockNone, name, posX, posY, posZ, width, rotation, result))
+		if (!manager.trackSave(TrackNone, name, posX, posY, posZ, width, rotation, result))
 		{
 			AddUpdate(result);
 			return;
 		}
 		stringstream status;
-		status << "Block \"" << name << "\" added";
+		status << "Track \"" << name << "\" added";
 		AddUpdate(status.str());
 	}
 
-	void Console::HandleBlockRelease(string& s, size_t& i)
+	void Console::HandleTrackRelease(string& s, size_t& i)
 	{
-		blockID_t blockID = ReadNumber(s, i);
-		if (!manager.blockRelease(blockID))
+		trackID_t trackID = ReadNumber(s, i);
+		if (!manager.trackRelease(trackID))
 		{
-			AddUpdate("Block not found or block in use");
+			AddUpdate("Track not found or track in use");
 			return;
 		}
-		AddUpdate("Block released");
+		AddUpdate("Track released");
 	}
 
 	void Console::HandleControlDelete(string& s, size_t& i)
@@ -1071,18 +1071,18 @@ namespace console
 		if (!manager.locoStart(locoID))
 		{
 			// FIXME: bether errormessage
-			AddUpdate("Unknown loco or loco is not in a block");
+			AddUpdate("Unknown loco or loco is not in a track");
 		}
 	}
 
-	void Console::HandleLocoBlock(string& s, size_t& i)
+	void Console::HandleLocoTrack(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
-		blockID_t blockID = ReadNumber(s, i);
-		if (!manager.locoIntoBlock(locoID, blockID))
+		trackID_t trackID = ReadNumber(s, i);
+		if (!manager.locoIntoTrack(locoID, trackID))
 		{
 			// FIXME: bether errormessage
-			AddUpdate("Unknown loco or unknown block");
+			AddUpdate("Unknown loco or unknown track");
 		}
 	}
 
@@ -1130,14 +1130,14 @@ namespace console
 			<< "\nAddress:  " << loco->address;
 		const char* const locoStateText = loco->getStateText();
 		status << "\nStatus:   " << locoStateText;
-		status << "\nBlock:    ";
-		if (loco->block() == BlockNone)
+		status << "\nTrack:    ";
+		if (loco->track() == TrackNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.getBlockName(loco->block()) << " (" << loco->block() << ")";
+			status << manager.getTrackName(loco->track()) << " (" << loco->track() << ")";
 		}
 		status << "\nStreet:   ";
 		if (loco->street() == StreetNone)
@@ -1203,7 +1203,7 @@ namespace console
 		if (!manager.locoRelease(locoID))
 		{
 			// FIXME: bether errormessage
-			AddUpdate("Loco not found or block in use");
+			AddUpdate("Loco not found or track in use");
 			return;
 		}
 		AddUpdate("Loco released");
@@ -1221,12 +1221,12 @@ namespace console
 				"                                  New Accessory\n"
 				"A S accessory# state              Switch accessory\n"
 				"\n"
-				"Block commands\n"
-				"B D block#                        Delete block\n"
-				"B L A                             List all blocks\n"
-				"B L block#                        List block\n"
-				"B N Name X Y Z Width Rotation     New block\n"
-				"B R block#                        Release block\n"
+				"Track commands\n"
+				"B D track#                        Delete track\n"
+				"B L A                             List all tracks\n"
+				"B L track#                        List track\n"
+				"B N Name X Y Z Width Rotation     New track\n"
+				"B R track#                        Release track\n"
 				"\n"
 				"Control commands\n"
 				"C D control#                      Delete control\n"
@@ -1246,7 +1246,7 @@ namespace console
 				"Loco commands\n"
 				"L A A                             Start all locos into automode\n"
 				"L A loco#                         Start loco into automode\n"
-				"L B loco# block#                  Set loco into block\n"
+				"L B loco# track#                  Set loco on track\n"
 				"L D loco#                         Delete loco\n"
 				"L L A                             List all locos\n"
 				"L L loco#                         List loco\n"
@@ -1260,7 +1260,7 @@ namespace console
 				"T D street#                       Delete street\n"
 				"T L A                             List all streets\n"
 				"T L street#                       List street\n"
-				"T N Name FromBlock FromDirektion ToBlock ToDirection FeedbackStop\n"
+				"T N Name FromTrack FromDirektion ToTrack ToDirection FeedbackStop\n"
 				"T R street#                       Release street\n"
 				"                                  New Feedback\n"
 				"\n"
@@ -1285,9 +1285,9 @@ namespace console
 		status << "\033[2J";
 		status << "\033[0;0H";
 		status << "Layout 0";
-		// print blocks
-		const map<blockID_t,datamodel::Block*>& blocks = manager.blockList();
-		for (auto block : blocks)
+		// print tracks
+		const map<trackID_t,datamodel::Track*>& tracks = manager.trackList();
+		for (auto track : tracks)
 		{
 			layoutPosition_t posX;
 			layoutPosition_t posY;
@@ -1295,7 +1295,7 @@ namespace console
 			layoutItemSize_t w;
 			layoutItemSize_t h;
 			layoutRotation_t r;
-			block.second->position(posX, posY, posZ, w, h, r);
+			track.second->position(posX, posY, posZ, w, h, r);
 			if (posZ != 0)
 			{
 				continue;
@@ -1396,22 +1396,22 @@ namespace console
 			<< "Street ID " << streetID
 			<< "\nName:     " << street->name
 			<< "\nStart:    ";
-		if (street->fromBlock == BlockNone)
+		if (street->fromTrack == TrackNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.getBlockName(street->fromBlock) << " (" << street->fromBlock << ") " << (street->fromDirection ? ">" : "<");
+			status << manager.getTrackName(street->fromTrack) << " (" << street->fromTrack << ") " << (street->fromDirection ? ">" : "<");
 		}
 		status << "\nEnd:      ";
-		if (street->toBlock == BlockNone)
+		if (street->toTrack == TrackNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.getBlockName(street->toBlock) << " (" << street->toBlock << ") " << (street->toDirection ? ">" : "<");
+			status << manager.getTrackName(street->toTrack) << " (" << street->toTrack << ") " << (street->toDirection ? ">" : "<");
 		}
 		string stateText;
 		text::Converters::lockStatus(street->getState(), stateText);
@@ -1431,13 +1431,13 @@ namespace console
 	void Console::HandleStreetNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
-		blockID_t fromBlock = ReadNumber(s, i);
+		trackID_t fromTrack = ReadNumber(s, i);
 		direction_t fromDirection = ReadDirection(s, i);
-		blockID_t toBlock = ReadNumber(s, i);
+		trackID_t toTrack = ReadNumber(s, i);
 		direction_t toDirection = ReadDirection(s, i);
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		string result;
-		if (!manager.streetSave(StreetNone, name, fromBlock, fromDirection, toBlock, toDirection, feedbackID, result))
+		if (!manager.streetSave(StreetNone, name, fromTrack, fromDirection, toTrack, toDirection, feedbackID, result))
 		{
 			AddUpdate(result);
 			return;
@@ -1452,7 +1452,7 @@ namespace console
 		streetID_t streetID = ReadNumber(s, i);
 		if (!manager.streetRelease(streetID))
 		{
-			AddUpdate("Street not found or block in use");
+			AddUpdate("Street not found or track in use");
 			return;
 		}
 		AddUpdate("Street released");
@@ -1639,12 +1639,12 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void Console::block(const controlType_t managerID, const blockID_t blockID, const lockState_t lockState)
+	void Console::track(const controlType_t managerID, const trackID_t trackID, const lockState_t lockState)
 	{
 		std::stringstream status;
 		string stateText;
 		text::Converters::lockStatus(lockState, stateText);
-		status << manager.getBlockName(blockID) << " is " << stateText;
+		status << manager.getTrackName(trackID) << " is " << stateText;
 		AddUpdate(status.str());
 	}
 
@@ -1661,24 +1661,24 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void Console::locoIntoBlock(const locoID_t locoID, const blockID_t blockID)
+	void Console::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.getLocoName(locoID) << " is in block " << manager.getBlockName(blockID);
+		status << manager.getLocoName(locoID) << " is in track " << manager.getTrackName(trackID);
 		AddUpdate(status.str());
 	}
 
 	void Console::locoRelease(const locoID_t locoID)
 	{
 		stringstream status;
-		status << manager.getLocoName(locoID) << " is not in a block anymore";
+		status << manager.getLocoName(locoID) << " is not in a track anymore";
 		AddUpdate(status.str());
 	};
 
-	void Console::blockRelease(const blockID_t blockID)
+	void Console::trackRelease(const trackID_t trackID)
 	{
 		stringstream status;
-		status << manager.getBlockName(blockID) << " is released";
+		status << manager.getTrackName(trackID) << " is released";
 		AddUpdate(status.str());
 	};
 
@@ -1689,17 +1689,17 @@ namespace console
 		AddUpdate(status.str());
 	};
 
-	void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID)
+	void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID);
+		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.getTrackName(trackID);
 		AddUpdate(status.str());
 	}
 
-	void Console::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID)
+	void Console::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID);
+		status << manager.getLocoName(locoID) << " has reached the destination track " << manager.getTrackName(trackID) << " on street " << manager.getStreetName(streetID);
 		AddUpdate(status.str());
 	}
 

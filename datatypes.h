@@ -28,8 +28,8 @@ typedef unsigned short accessoryTimeout_t;
 typedef objectID_t feedbackID_t;
 typedef unsigned int feedbackPin_t;
 
-// block
-typedef objectID_t blockID_t;
+// track
+typedef objectID_t trackID_t;
 
 // switch
 typedef accessoryID_t switchID_t;
@@ -45,9 +45,10 @@ typedef unsigned short relationID_t;
 
 static const address_t AddressNone = 0;
 static const locoID_t LocoNone = 0;
+static const objectID_t ObjectNone = 0;
 static const accessoryID_t AccessoryNone = 0;
 static const feedbackID_t FeedbackNone = 0;
-static const blockID_t BlockNone = 0;
+static const trackID_t TrackNone = 0;
 static const switchID_t SwitchNone = 0;
 static const streetID_t StreetNone = 0;
 
@@ -132,7 +133,7 @@ enum layoutRotation_t : unsigned char
 enum objectType_t : unsigned char
 {
 	ObjectTypeLoco = 1,
-	ObjectTypeBlock,
+	ObjectTypeTrack,
 	ObjectTypeFeedback,
 	ObjectTypeAccessory,
 	ObjectTypeSwitch,
@@ -141,7 +142,7 @@ enum objectType_t : unsigned char
 
 enum relationType_t : unsigned char
 {
-	RelationTypeBlockStreet = 0,
+	RelationTypeTrackStreet = 0,
 	RelationTypeStreetFeedback
 };
 
@@ -156,10 +157,10 @@ enum accessoryState : accessoryState_t
 	AccessoryStateOn = true
 };
 
-enum feedbackState_t : unsigned char
+enum feedbackState_t : bool
 {
-	FeedbackStateFree = 0,
-	FeedbackStateOccupied
+	FeedbackStateFree = false,
+	FeedbackStateOccupied = true
 };
 
 enum lockState_t : unsigned char

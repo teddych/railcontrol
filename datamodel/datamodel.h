@@ -1,9 +1,9 @@
 #pragma once
 
-#include "accessory.h"
-#include "block.h"
-#include "feedback.h"
-#include "loco.h"
-#include "street.h"
-#include "switch.h"
+#include "datamodel/accessory.h"
+#include "datamodel/feedback.h"
+#include "datamodel/loco.h"
+#include "datamodel/street.h"
+#include "datamodel/switch.h"
+#include "datamodel/track.h"
 

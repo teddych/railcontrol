@@ -59,15 +59,19 @@ namespace datamodel {
 		return true;
 	}
 
-	bool Switch::reserve(const locoID_t locoID) {
+	bool Switch::reserve(const locoID_t locoID)
+	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (locoID == this->locoIDHardLock) {
-			if (lockState == LockStateFree) {
+		if (locoID == this->locoIDHardLock)
+		{
+			if (lockState == LockStateFree)
+			{
 				lockState = LockStateReserved;
 			}
 			return true;
 		}
-		if (lockState != LockStateFree) {
+		if (lockState != LockStateFree)
+		{
 			return false;
 		}
 		lockState = LockStateReserved;
@@ -75,12 +79,15 @@ namespace datamodel {
 		return true;
 	}
 
-	bool Switch::hardLock(const locoID_t locoID, const switchState_t switchState) {
+	bool Switch::hardLock(const locoID_t locoID, const switchState_t switchState)
+	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LockStateReserved) {
+		if (lockState != LockStateReserved)
+		{
 			return false;
 		}
-		if (this->locoIDHardLock != locoID) {
+		if (this->locoIDHardLock != locoID)
+		{
 			return false;
 		}
 		lockState = LockStateHardLocked;
@@ -88,17 +95,21 @@ namespace datamodel {
 		return true;
 	}
 
-	bool Switch::softLock(const locoID_t locoID, const switchState_t switchState) {
+	bool Switch::softLock(const locoID_t locoID, const switchState_t switchState)
+	{
 		// FIXME: not implemented
 		return false;
 	}
 
-	bool Switch::release(const locoID_t locoID) {
+	bool Switch::release(const locoID_t locoID)
+	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState == LockStateFree) {
+		if (lockState == LockStateFree)
+		{
 			return true;
 		}
-		if (this->locoIDHardLock != locoID) {
+		if (this->locoIDHardLock != locoID)
+		{
 			return false;
 		}
 		this->locoIDHardLock = LocoNone;

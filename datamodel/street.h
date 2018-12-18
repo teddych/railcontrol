@@ -13,13 +13,13 @@ namespace datamodel {
 
 	class Street : public Object {
 		public:
-			Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackIDStop);
+			Street(Manager* manager, const streetID_t streetID, const std::string& name, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackIDStop);
 			Street(Manager* manager, const std::string& serialized);
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
 
-			bool fromBlockDirection(blockID_t blockID, direction_t direction) { return (fromBlock == blockID && fromDirection == direction); }
+			bool fromTrackDirection(trackID_t trackID, direction_t direction) { return (fromTrack == trackID && fromDirection == direction); }
 
 			bool reserve(const locoID_t locoID);
 			bool lock(const locoID_t locoID);
@@ -27,12 +27,12 @@ namespace datamodel {
 			locoID_t getLoco() const { return locoID; }
 			lockState_t getState() const { return lockState; }
 
-			blockID_t destinationBlock() const { return toBlock; };
+			trackID_t destinationTrack() const { return toTrack; };
 
 			// FIXME: make private
-			blockID_t fromBlock;
+			trackID_t fromTrack;
 			direction_t fromDirection;
-			blockID_t toBlock;
+			trackID_t toTrack;
 			direction_t toDirection;
 			feedbackID_t feedbackIDStop;
 

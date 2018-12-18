@@ -22,21 +22,21 @@ using std::vector;
 
 namespace webserver {
 
-	WebServer::WebServer(Manager& manager, const unsigned short port) :
-		CommandInterface(ControlTypeWebserver),
+	WebServer::WebServer(Manager& manager, const unsigned short port)
+	:	CommandInterface(ControlTypeWebserver),
 		Network::TcpServer(port),
 		run(false),
 		lastClientID(0),
 		manager(manager),
 		updateID(1)
 	{
-
 		updates[updateID] = "data: status=Railcontrol started";
 
 		run = true;
 	}
 
-	WebServer::~WebServer() {
+	WebServer::~WebServer()
+	{
 		if (run == false)
 		{
 			return;
@@ -50,7 +50,7 @@ namespace webserver {
 		run = false;
 
 		// stopping all clients
-		for(auto client : clients)
+		for (auto client : clients)
 		{
 			client->stop();
 		}
@@ -81,7 +81,8 @@ namespace webserver {
 		}
 	}
 
-	void WebServer::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed) {
+	void WebServer::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed)
+	{
 		stringstream command;
 		stringstream status;
 		command << "locospeed;loco=" << locoID << ";speed=" << speed;
@@ -98,11 +99,12 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state) {
+	void WebServer::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state)
+	{
 		stringstream command;
 		stringstream status;
-		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int)function << ";on=" << (state ? "true" : "false");
-		status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
+		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int) function << ";on=" << (state ? "true" : "false");
+		status << manager.getLocoName(locoID) << " f" << (unsigned int) function << " is " << (state ? "on" : "off");
 		addUpdate(command.str(), status.str());
 	}
 
@@ -139,7 +141,8 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) {
+	void WebServer::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state)
+	{
 		stringstream command;
 		stringstream status;
 		command << "feedback;pin=" << pin << ";state=" << (state ? "on" : "off");
@@ -147,13 +150,14 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::block(const controlType_t managerID, const blockID_t blockID, const lockState_t state) {
+	void WebServer::track(const controlType_t managerID, const trackID_t trackID, const lockState_t state)
+	{
 		stringstream command;
 		stringstream status;
 		string stateText;
 		text::Converters::lockStatus(state, stateText);
-		command << "block;block=" << blockID << ";state=" << stateText;
-		status << manager.getBlockName(blockID) << " is " << stateText;
+		command << "track;track=" << trackID << ";state=" << stateText;
+		status << manager.getTrackName(trackID) << " is " << stateText;
 		addUpdate(command.str(), status.str());
 	}
 
@@ -190,56 +194,65 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoIntoBlock(const locoID_t locoID, const blockID_t blockID) {
+	void WebServer::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
+	{
 		stringstream command;
 		stringstream status;
-		command << "locoIntoBlock;loco=" << locoID << ";block=" << blockID;
-		status << manager.getLocoName(locoID) << " is in block " << manager.getBlockName(blockID);
+		command << "locoIntoTrack;loco=" << locoID << ";track=" << trackID;
+		status << manager.getLocoName(locoID) << " is on track " << manager.getTrackName(trackID);
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoRelease(const locoID_t locoID) {
+	void WebServer::locoRelease(const locoID_t locoID)
+	{
 		stringstream command;
 		stringstream status;
 		command << "locoRelease;loco=" << locoID;
-		status << manager.getLocoName(locoID) << " is not in a block anymore";
+		status << manager.getLocoName(locoID) << " is not on a track anymore";
 		addUpdate(command.str(), status.str());
-	};
+	}
+	;
 
-	void WebServer::blockRelease(const blockID_t blockID) {
+	void WebServer::trackRelease(const trackID_t trackID)
+	{
 		stringstream command;
 		stringstream status;
-		command << "blockRelease;block=" << blockID;
-		status << manager.getBlockName(blockID) << " is released";
+		command << "trackRelease;track=" << trackID;
+		status << manager.getTrackName(trackID) << " is released";
 		addUpdate(command.str(), status.str());
-	};
+	}
+	;
 
-	void WebServer::streetRelease(const streetID_t streetID) {
+	void WebServer::streetRelease(const streetID_t streetID)
+	{
 		stringstream command;
 		stringstream status;
 		command << "streetRelease;street=" << streetID;
 		status << manager.getStreetName(streetID) << " is  released";
 		addUpdate(command.str(), status.str());
-	};
+	}
+	;
 
-
-	void WebServer::locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+	void WebServer::locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
+	{
 		stringstream command;
 		stringstream status;
-		command << "locoStreet;loco=" << locoID << ";street=" << streetID << ";block=" << blockID;
-		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination block " << manager.getBlockName(blockID);
+		command << "locoStreet;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
+		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.getTrackName(trackID);
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID) {
+	void WebServer::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
+	{
 		stringstream command;
 		stringstream status;
-		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";block=" << blockID;
-		status << manager.getLocoName(locoID) << " has reached the destination block " << manager.getBlockName(blockID) << " on street " << manager.getStreetName(streetID);
+		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
+		status << manager.getLocoName(locoID) << " has reached the destination track " << manager.getTrackName(trackID) << " on street " << manager.getStreetName(streetID);
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoStart(const locoID_t locoID) {
+	void WebServer::locoStart(const locoID_t locoID)
+	{
 		stringstream command;
 		stringstream status;
 		command << "locoStart;loco=" << locoID;
@@ -247,7 +260,8 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoStop(const locoID_t locoID) {
+	void WebServer::locoStop(const locoID_t locoID)
+	{
 		stringstream command;
 		stringstream status;
 		command << "locoStop;loco=" << locoID;
@@ -255,7 +269,8 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::addUpdate(const string& command, const string& status) {
+	void WebServer::addUpdate(const string& command, const string& status)
+	{
 		stringstream ss;
 		ss << "data: command=" << command << ";status=" << status << "\r\n\r\n";
 		std::lock_guard<std::mutex> lock(updateMutex);
@@ -272,7 +287,7 @@ namespace webserver {
 			updateIDClient = updateID - MaxUpdates + 1;
 		}
 
-		if(updates.count(updateIDClient) == 1)
+		if (updates.count(updateIDClient) == 1)
 		{
 			s = updates.at(updateIDClient);
 			return true;

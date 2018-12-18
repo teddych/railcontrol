@@ -11,65 +11,85 @@ using std::string;
 
 namespace datamodel {
 
-	Street::Street(Manager* manager, const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackIDStop) :
-		Object(streetID, name),
-		fromBlock(fromBlock),
+	Street::Street(Manager* manager,
+		const streetID_t streetID,
+		const std::string& name,
+		const trackID_t fromTrack,
+		const direction_t fromDirection,
+		const trackID_t toTrack,
+		const direction_t toDirection,
+		const feedbackID_t feedbackIDStop)
+	:	Object(streetID, name),
+		fromTrack(fromTrack),
 		fromDirection(fromDirection),
-		toBlock(toBlock),
+		toTrack(toTrack),
 		toDirection(toDirection),
 		feedbackIDStop(feedbackIDStop),
 		manager(manager),
 		lockState(LockStateFree),
-		locoID(LocoNone) {
-		Block* block = manager->getBlock(fromBlock);
-		if (!block) return;
-		block->addStreet(this);
+		locoID(LocoNone)
+	{
+		Track* track = manager->getTrack(fromTrack);
+		if (!track) return;
+		track->addStreet(this);
 	}
 
-	Street::Street(Manager* manager, const std::string& serialized) :
-		manager(manager),
-		locoID(LocoNone) {
+	Street::Street(Manager* manager, const std::string& serialized)
+	:	manager(manager),
+		locoID(LocoNone)
+	{
 		deserialize(serialized);
-		Block* block = manager->getBlock(fromBlock);
-		if (!block) return;
-		block->addStreet(this);
+		Track* track = manager->getTrack(fromTrack);
+		if (!track)
+		{
+			return;
+		}
+		track->addStreet(this);
 	}
 
-	std::string Street::serialize() const {
+	std::string Street::serialize() const
+	{
 		stringstream ss;
-		ss << "objectType=Street;" << Object::serialize() << ";lockState=" << static_cast<int>(lockState) << ";fromBlock=" << static_cast<int>(fromBlock) << ";fromDirection=" << static_cast<int>(fromDirection) << ";toBlock=" << (int)toBlock << ";toDirection=" << (int)toDirection << ";feedbackIDStop=" << (int)feedbackIDStop;
+		ss << "objectType=Street;" << Object::serialize() << ";lockState=" << static_cast<int>(lockState) << ";fromTrack=" << static_cast<int>(fromTrack) << ";fromDirection=" << static_cast<int>(fromDirection) << ";toTrack=" << (int)toTrack << ";toDirection=" << (int)toDirection << ";feedbackIDStop=" << (int)feedbackIDStop;
 		return ss.str();
 	}
 
-	bool Street::deserialize(const std::string& serialized) {
+	bool Street::deserialize(const std::string& serialized)
+	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
-		if (arguments.count("objectType") && arguments.at("objectType").compare("Street") == 0) {
+		if (arguments.count("objectType") && arguments.at("objectType").compare("Street") == 0)
+		{
 			Object::deserialize(arguments);
-			if (arguments.count("lockState")) lockState = static_cast<lockState_t>(stoi(arguments.at("lockState")));
-			if (arguments.count("fromBlock")) fromBlock = stoi(arguments.at("fromBlock"));
-			if (arguments.count("fromDirection")) fromDirection = static_cast<direction_t>(stoi(arguments.at("fromDirection")));
-			if (arguments.count("toBlock")) toBlock = stoi(arguments.at("toBlock"));
-			if (arguments.count("toDirection")) toDirection = static_cast<direction_t>(stoi(arguments.at("toDirection")));
-			if (arguments.count("feedbackIDStop")) feedbackIDStop = stoi(arguments.at("feedbackIDStop"));
+			lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
+			fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
+			fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionLeft));
+			toTrack = GetIntegerMapEntry(arguments, "lockState", TrackNone);
+			toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
+			feedbackIDStop = GetIntegerMapEntry(arguments, "feedbackIDStop", FeedbackNone);
 			return true;
 		}
 		return false;
 	}
 
-	bool Street::reserve(const locoID_t locoID) {
+	bool Street::reserve(const locoID_t locoID)
+	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (locoID == this->locoID) {
+		if (locoID == this->locoID)
+		{
 			return true;
 		}
-		if (lockState != LockStateFree) {
+		if (lockState != LockStateFree)
+		{
 			return false;
 		}
-		Block* block = manager->getBlock(toBlock);
-		if (!block) {
+		Track* track = manager->getTrack(toTrack);
+		if (!track)
+		{
 			return false;
 		}
-		if (!block->reserve(locoID)) {
+		if (!track->reserve(locoID))
+		{
 			return false;
 		}
 		lockState = LockStateReserved;
@@ -77,19 +97,24 @@ namespace datamodel {
 		return true;
 	}
 
-	bool Street::lock(const locoID_t locoID) {
+	bool Street::lock(const locoID_t locoID)
+	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LockStateReserved) {
+		if (lockState != LockStateReserved)
+		{
 			return false;
 		}
-		if (this->locoID != locoID) {
+		if (this->locoID != locoID)
+		{
 			return false;
 		}
-		Block* block = manager->getBlock(toBlock);
-		if (!block) {
+		Track* track = manager->getTrack(toTrack);
+		if (!track)
+		{
 			return false;
 		}
-		if (!block->lock(locoID)) {
+		if (!track->lock(locoID))
+		{
 			return false;
 		}
 		lockState = LockStateHardLocked;
@@ -98,16 +123,19 @@ namespace datamodel {
 		return true;
 	}
 
-	bool Street::release(const locoID_t locoID) {
+	bool Street::release(const locoID_t locoID)
+	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState == LockStateFree) {
+		if (lockState == LockStateFree)
+		{
 			return true;
 		}
-		if (this->locoID != locoID) {
+		if (this->locoID != locoID)
+		{
 			return false;
 		}
-		Block* block = manager->getBlock(fromBlock);
-		block->release(locoID);
+		Track* track = manager->getTrack(fromTrack);
+		track->release(locoID);
 		this->locoID = LocoNone;
 		lockState = LockStateFree;
 		Feedback* feedback = manager->getFeedback(feedbackIDStop);

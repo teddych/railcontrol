@@ -70,13 +70,13 @@ class Manager {
 		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted,  std::string& result);
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
-		// block
-		void block(const controlType_t managerID, const feedbackID_t feedbackID, const lockState_t);
-		datamodel::Block* getBlock(const blockID_t blockID);
-		const std::string& getBlockName(const blockID_t blockID);
-		inline const std::map<blockID_t,datamodel::Block*>& blockList() const { return blocks; }
-		bool blockSave(const blockID_t blockID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, std::string& result);
-		bool blockDelete(const blockID_t blockID);
+		// track
+		void track(const controlType_t managerID, const feedbackID_t feedbackID, const lockState_t);
+		datamodel::Track* getTrack(const trackID_t trackID);
+		const std::string& getTrackName(const trackID_t trackID);
+		inline const std::map<trackID_t,datamodel::Track*>& trackList() const { return tracks; }
+		bool trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, std::string& result);
+		bool trackDelete(const trackID_t trackID);
 
 		// switch
 		void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state);
@@ -92,18 +92,18 @@ class Manager {
 		datamodel::Street* getStreet(const streetID_t streetID);
 		const std::string& getStreetName(const streetID_t streetID);
 		inline const std::map<streetID_t,datamodel::Street*>& streetList() const { return streets; }
-		bool streetSave(const streetID_t streetID, const std::string& name, const blockID_t fromBlock, const direction_t fromDirection, const blockID_t toBlock, const direction_t toDirection, const feedbackID_t feedbackID, std::string& result);
+		bool streetSave(const streetID_t streetID, const std::string& name, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, std::string& result);
 		bool streetDelete(const streetID_t streetID);
 
 		// automode
-		bool locoIntoBlock(const locoID_t locoID, const blockID_t blockID);
+		bool locoIntoTrack(const locoID_t locoID, const trackID_t trackID);
 		bool locoRelease(const locoID_t locoID);
-		bool blockRelease(const blockID_t blockID);
+		bool trackRelease(const trackID_t trackID);
 		bool feedbackRelease(const feedbackID_t feedbackID);
 		bool streetRelease(const streetID_t streetID);
 		//bool switchRelease(const switchID_t switchID);
-		bool locoStreet(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
-		bool locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const blockID_t blockID);
+		bool locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID);
+		bool locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID);
 		bool locoStart(const locoID_t locoID);
 		bool locoStop(const locoID_t locoID);
 		bool locoStartAll();
@@ -148,9 +148,9 @@ class Manager {
 		std::map<feedbackID_t,datamodel::Feedback*> feedbacks;
 		std::mutex feedbackMutex;
 
-		// block
-		std::map<blockID_t,datamodel::Block*> blocks;
-		std::mutex blockMutex;
+		// track
+		std::map<trackID_t,datamodel::Track*> tracks;
+		std::mutex trackMutex;
 
 		// switch
 		std::map<switchID_t,datamodel::Switch*> switches;
@@ -168,7 +168,7 @@ class Manager {
 		const std::string unknownLoco;
 		const std::string unknownAccessory;
 		const std::string unknownFeedback;
-		const std::string unknownBlock;
+		const std::string unknownTrack;
 		const std::string unknownSwitch;
 		const std::string unknownStreet;
 };

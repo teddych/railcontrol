@@ -13,7 +13,6 @@ OBJ= \
 	config.o \
 	console/console.o \
 	datamodel/accessory.o \
-	datamodel/block.o \
 	datamodel/feedback.o \
 	datamodel/layout_item.o \
 	datamodel/loco.o \
@@ -22,6 +21,7 @@ OBJ= \
 	datamodel/serializable.o \
 	datamodel/street.o \
 	datamodel/switch.o \
+	datamodel/track.o \
 	DelayedCall.o \
 	hardware/HardwareHandler.o \
 	manager.o \

@@ -7,7 +7,7 @@
 #include "util.h"
 
 using datamodel::Accessory;
-using datamodel::Block;
+using datamodel::Track;
 using datamodel::Feedback;
 using datamodel::Loco;
 using datamodel::Switch;

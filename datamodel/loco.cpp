@@ -1,9 +1,9 @@
 
+#include <datamodel/track.h>
 #include <map>
 #include <sstream>
 #include <unistd.h>
 
-#include "datamodel/block.h"
 #include "datamodel/loco.h"
 #include "manager.h"
 
@@ -22,7 +22,7 @@ namespace datamodel {
 		manager(manager),
 		speed(0),
 		state(LocoStateManual),
-		blockID(BlockNone),
+		trackID(TrackNone),
 		streetID(StreetNone)
 	{
 	}
@@ -36,11 +36,14 @@ namespace datamodel {
 		deserialize(serialized);
 	}
 
-	Loco::~Loco() {
-		while(true) {
+	Loco::~Loco()
+	{
+		while (true)
+		{
 			{
 				std::lock_guard<std::mutex> Guard(stateMutex);
-				if (state == LocoStateManual) {
+				if (state == LocoStateManual)
+				{
 					return;
 				}
 			}
@@ -58,7 +61,7 @@ namespace datamodel {
 			<< ";address=" << static_cast<int>(address)
 			<< ";functions=" << functions.Serialize()
 			<< ";direction=" << (direction == DirectionRight ? "right" : "left")
-			<< ";blockID=" << static_cast<int>(blockID);
+			<< ";trackID=" << static_cast<int>(trackID);
 		return ss.str();
 	}
 
@@ -74,57 +77,68 @@ namespace datamodel {
 		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		address = GetIntegerMapEntry(arguments, "address", AddressNone);
-		blockID = GetIntegerMapEntry(arguments, "blockID", BlockNone);
+		trackID = GetIntegerMapEntry(arguments, "trackID", TrackNone);
 		functions.Deserialize(GetStringMapEntry(arguments, "functions", "0"));
 		direction = (GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
 		return true;
 	}
 
-	bool Loco::toBlock(const blockID_t blockID) {
+	bool Loco::toTrack(const trackID_t trackID)
+	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		// there must not be set a block
-		if (this->blockID != BlockNone) {
+		// there must not be set a track
+		if (this->trackID != TrackNone)
+		{
 			return false;
 		}
-		this->blockID = blockID;
+		this->trackID = trackID;
 		return true;
 	}
 
-	bool Loco::toBlock(const blockID_t blockIDOld, const blockID_t blockIDNew) {
+	bool Loco::toTrack(const trackID_t trackIDOld, const trackID_t trackIDNew)
+	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		// the old block must be the currently set block
-		if (blockID != blockIDOld) {
+		// the old track must be the currently set track
+		if (trackID != trackIDOld)
+		{
 			return false;
 		}
-		blockID = blockIDNew;
+		trackID = trackIDNew;
 		return true;
 	}
 
-	bool Loco::release() {
+	bool Loco::release()
+	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (state != LocoStateManual) {
+		if (state != LocoStateManual)
+		{
 			state = LocoStateOff;
 		}
-		blockID = BlockNone;
+		trackID = TrackNone;
 		streetID = StreetNone;
 		return true;
 	}
 
-	bool Loco::start() {
+	bool Loco::start()
+	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (blockID == BlockNone) {
-			xlog("Can not start loco %s because it is not in a block", name.c_str());
+		if (trackID == TrackNone)
+		{
+			xlog("Can not start loco %s because it is not in a track", name.c_str());
 			return false;
 		}
-		if (state == LocoStateError) {
+		if (state == LocoStateError)
+		{
 			xlog("Can not start loco %s because it is in error state", name.c_str());
 			return false;
 		}
-		if (state == LocoStateOff) {
+		if (state == LocoStateOff)
+		{
 			locoThread.join();
 			state = LocoStateManual;
 		}
-		if (state != LocoStateManual) {
+		if (state != LocoStateManual)
+		{
 			xlog("Can not start loco %s because it is already running", name.c_str());
 			return false;
 		}
@@ -135,22 +149,24 @@ namespace datamodel {
 		return true;
 	}
 
-	bool Loco::stop() {
+	bool Loco::stop()
+	{
 		{
 			std::lock_guard<std::mutex> Guard(stateMutex);
-			switch (state) {
+			switch (state)
+			{
 				case LocoStateManual:
 					manager->locoSpeed(ControlTypeAutomode, objectID, 0);
 					return true;
 
 				case LocoStateOff:
-				case LocoStateSearching:
-				case LocoStateError:
+					case LocoStateSearching:
+					case LocoStateError:
 					state = LocoStateOff;
 					break;
 
 				case LocoStateRunning:
-				case LocoStateStopping:
+					case LocoStateStopping:
 					xlog("Loco %s is actually running, waiting until loco reached its destination", name.c_str());
 					state = LocoStateStopping;
 					return false;
@@ -167,50 +183,58 @@ namespace datamodel {
 		return true;
 	}
 
-	void Loco::autoMode(Loco* loco) {
+	void Loco::autoMode(Loco* loco)
+	{
 		const char* name = loco->name.c_str();
 		xlog("Loco %s is now in automode", name);
-		while (true) {
+		while (true)
+		{
 			{
 				std::lock_guard<std::mutex> Guard(loco->stateMutex);
-				switch (loco->state) {
+				switch (loco->state)
+				{
 					case LocoStateOff:
 						// automode is turned off, terminate thread
 						xlog("Loco %s is now in manual mode", name);
 						return;
 					case LocoStateSearching:
-					{
-						xlog("Looking for new Block for loco %s", name);
+						{
+						xlog("Looking for new track for loco %s", name);
 						// check if already running
-						if (streetID != StreetNone) {
+						if (streetID != StreetNone)
+						{
 							loco->state = LocoStateError;
 							xlog("Loco %s has already a street reserved. Going to error state.", name);
 							break;
 						}
 						// get possible destinations
-						Block* fromBlock = manager->getBlock(blockID);
-						if (!fromBlock) break;
+						Track* fromTrack = manager->getTrack(trackID);
+						if (!fromTrack)
+							break;
 						// get best fitting destination and reserve street
 						vector<Street*> streets;
-						fromBlock->getValidStreets(streets);
-						blockID_t toBlockID = BlockNone;
-						for (auto street : streets) {
-							if (street->reserve(objectID)) {
+						fromTrack->getValidStreets(streets);
+						trackID_t toTrackID = TrackNone;
+						for (auto street : streets)
+						{
+							if (street->reserve(objectID))
+							{
 								street->lock(objectID);
 								streetID = street->objectID;
-								toBlockID = street->destinationBlock();
-								xlog("Loco \"%s\" found street \"%s\" with destination \"%s\"", name, street->name.c_str(), manager->getBlockName(toBlockID).c_str());
+								toTrackID = street->destinationTrack();
+								xlog("Loco \"%s\" found street \"%s\" with destination \"%s\"", name, street->name.c_str(), manager->getTrackName(toTrackID).c_str());
 								break; // break for
 							}
 						}
 
-						if (streetID == StreetNone) {
+						if (streetID == StreetNone)
+						{
 							xlog("No valid street found for loco %s", name);
 							break; // break switch
 						}
 
 						// start loco
-						manager->locoStreet(objectID, streetID, toBlockID);
+						manager->locoStreet(objectID, streetID, toTrackID);
 						// FIXME: make maxspeed configurable
 						manager->locoSpeed(ControlTypeAutomode, objectID, MaxSpeed >> 1);
 						loco->state = LocoStateRunning;
@@ -257,26 +281,30 @@ namespace datamodel {
 		}
 	}
 
-	void Loco::destinationReached() {
+	void Loco::destinationReached()
+	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		manager->locoSpeed(ControlTypeAutomode, objectID, 0);
-		// set loco to new block
+		// set loco to new track
 		Street* street = manager->getStreet(streetID);
-		if (street == nullptr) {
+		if (street == nullptr)
+		{
 			state = LocoStateError;
 			xlog("Loco %s is running in automode without a street. Putting loco into error state", name.c_str());
 			return;
 		}
-		blockID = street->destinationBlock();
-		manager->locoDestinationReached(objectID, streetID, blockID);
-		// release old block & old street
+		trackID = street->destinationTrack();
+		manager->locoDestinationReached(objectID, streetID, trackID);
+		// release old track & old street
 		street->release(objectID);
 		streetID = StreetNone;
 		// set state
-		if (state == LocoStateRunning) {
+		if (state == LocoStateRunning)
+		{
 			state = LocoStateSearching;
 		}
-		else { // LOCO_STATE_STOPPING
+		else
+		{ // LOCO_STATE_STOPPING
 			state = LocoStateOff;
 		}
 		xlog("Loco %s reached its destination", name.c_str());
