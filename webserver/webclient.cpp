@@ -698,7 +698,7 @@ namespace webserver
 		string name("New Accessory");
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
 		accessoryTimeout_t timeout = 100;
 		bool inverted = false;
 		if (accessoryID > AccessoryNone)
@@ -710,7 +710,7 @@ namespace webserver
 			name = accessory->name;
 			posx = accessory->posX;
 			posy = accessory->posY;
-			posz = accessory->posZ;
+			// FIXME: layers not supported yet: posz = accessory->posZ;
 			inverted = accessory->IsInverted();
 		}
 
@@ -758,8 +758,10 @@ namespace webserver
 			.AddContent(HtmlTagSelect("posx", positionOptions, toStringWithLeadingZeros(posx, 2)))
 			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
 			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
+			/* FIXME: layers not supported
 			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
 			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			*/
 			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
 			.AddContent(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
 			.AddContent(HtmlTagLabel("Inverted:", "inverted"))
@@ -879,7 +881,7 @@ namespace webserver
 		string name("New Switch");
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		switchType_t type = SwitchTypeLeft;
 		accessoryTimeout_t timeout = 100;
@@ -893,7 +895,7 @@ namespace webserver
 			name = mySwitch->name;
 			posx = mySwitch->posX;
 			posy = mySwitch->posY;
-			posz = mySwitch->posZ;
+			// FIXME: layers not supported yet: posz = mySwitch->posZ;
 			rotation = mySwitch->rotation;
 			type = mySwitch->GetType();
 			timeout = mySwitch->timeout;
@@ -954,8 +956,10 @@ namespace webserver
 			.AddContent(HtmlTagSelect("posx", positionOptions, toStringWithLeadingZeros(posx, 2)))
 			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
 			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
+			/* FIXME: layers not supported
 			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
 			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			*/
 			.AddContent(HtmlTagLabel("Rotation:", "rotation"))
 			.AddContent(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
 			.AddContent(HtmlTagLabel("Type:", "type"))
