@@ -92,8 +92,35 @@ namespace datamodel
 	class Loco : public Object
 	{
 		public:
-			Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, function_t nr);
-			Loco(Manager* manager, const std::string& serialized);
+			Loco(Manager* manager,
+				const locoID_t locoID,
+				const std::string& name,
+				const controlID_t controlID,
+				const protocol_t protocol,
+				const address_t address,
+				const function_t nr)
+			:	Object(locoID, name),
+				controlID(controlID),
+				protocol(protocol),
+				address(address),
+				manager(manager),
+				speed(0),
+				state(LocoStateManual),
+				trackID(TrackNone),
+				streetID(StreetNone),
+				direction(DirectionLeft)
+			{
+			}
+
+			Loco(Manager* manager, const std::string& serialized)
+			:	manager(manager),
+				speed(0),
+				state(LocoStateManual),
+				streetID(StreetNone)
+			{
+				deserialize(serialized);
+			}
+
 			~Loco();
 
 			std::string serialize() const override;

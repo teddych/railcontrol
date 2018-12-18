@@ -12,30 +12,8 @@ using std::stringstream;
 using std::string;
 using std::vector;
 
-namespace datamodel {
-
-	Loco::Loco(Manager* manager, const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr)
-	:	Object(locoID, name),
-		controlID(controlID),
-		protocol(protocol),
-		address(address),
-		manager(manager),
-		speed(0),
-		state(LocoStateManual),
-		trackID(TrackNone),
-		streetID(StreetNone)
-	{
-	}
-
-	Loco::Loco(Manager* manager, const std::string& serialized)
-	:	manager(manager),
-		speed(0),
-		state(LocoStateManual),
-		streetID(StreetNone)
-	{
-		deserialize(serialized);
-	}
-
+namespace datamodel
+{
 	Loco::~Loco()
 	{
 		while (true)

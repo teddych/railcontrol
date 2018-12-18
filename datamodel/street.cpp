@@ -30,7 +30,10 @@ namespace datamodel {
 		locoID(LocoNone)
 	{
 		Track* track = manager->getTrack(fromTrack);
-		if (!track) return;
+		if (track == nullptr)
+		{
+			return;
+		}
 		track->addStreet(this);
 	}
 
@@ -40,7 +43,7 @@ namespace datamodel {
 	{
 		deserialize(serialized);
 		Track* track = manager->getTrack(fromTrack);
-		if (!track)
+		if (track == nullptr)
 		{
 			return;
 		}

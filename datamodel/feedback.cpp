@@ -8,34 +8,8 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel {
-
-	Feedback::Feedback(Manager* manager,
-		const feedbackID_t feedbackID,
-		const std::string& name,
-		const layoutPosition_t x,
-		const layoutPosition_t y,
-		const layoutPosition_t z,
-		const controlID_t controlID,
-		const feedbackPin_t pin,
-		bool inverted)
-	:	LayoutItem(feedbackID, name, x, y, z, Width1, Height1, Rotation0),
-		controlID(controlID),
-		pin(pin),
-		manager(manager),
-		state(FeedbackStateFree),
-		locoID(LocoNone),
-		inverted(inverted)
-	{
-	}
-
-	Feedback::Feedback(Manager* manager, const std::string& serialized)
-	:	manager(manager),
-		locoID(LocoNone)
-	{
-		deserialize(serialized);
-	}
-
+namespace datamodel
+{
 	std::string Feedback::serialize() const
 	{
 		stringstream ss;

@@ -10,16 +10,6 @@ using std::string;
 
 namespace datamodel {
 
-	LayoutItem::LayoutItem(const objectID_t objectID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation) :
-		Object(objectID, name),
-		posX(posX),
-		posY(posY),
-		posZ(posZ),
-		width(width),
-		height(height),
-		rotation(rotation) {
-	}
-
 	bool LayoutItem::mapPosition(const layoutPosition_t posX,
 			const layoutPosition_t posY,
 			const layoutItemSize_t width,

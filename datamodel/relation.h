@@ -11,7 +11,25 @@ namespace datamodel {
 
 	class Relation : protected Serializable {
 		public:
-			Relation(Manager* const manager, const relationID_t relationID, const std::string& name, const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const switchState_t switchState, const lockState_t lockState);
+			Relation(Manager* const manager,
+				const relationID_t relationID,
+				const std::string& name,
+				const objectType_t objectType1,
+				const objectID_t objectID1,
+				const objectType_t objectType2,
+				const objectID_t objectID2,
+				const switchState_t switchState,
+				const lockState_t lockState)
+			:	manager(manager),
+				relationID(relationID),
+				name(name),
+				objectType1(objectType1),
+				objectID1(objectID1),
+				objectType2(objectType2),
+				objectID2(objectID2),
+				switchState(switchState),
+				lockState(lockState)
+			{}
 
 			virtual std::string serialize() const override;
 			virtual bool deserialize(const std::string& serialized) override;

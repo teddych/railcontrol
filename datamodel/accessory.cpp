@@ -7,36 +7,8 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel {
-
-	Accessory::Accessory(const accessoryID_t accessoryID,
-		const std::string& name,
-		const layoutPosition_t x,
-		const layoutPosition_t y,
-		const layoutPosition_t z,
-		const layoutRotation_t rotation,
-		const controlID_t controlID,
-		const protocol_t protocol,
-		const address_t address,
-		const accessoryType_t type,
-		const accessoryTimeout_t timeout,
-		const bool inverted)
-	:	LayoutItem(accessoryID, name, x, y, z, Width1, Height1, rotation),
-		controlID(controlID),
-		protocol(protocol),
-		address(address),
-		type(type),
-		state(AccessoryStateOff),
-		timeout(timeout),
-		inverted(inverted)
-	{
-	}
-
-	Accessory::Accessory(const std::string& serialized)
-	{
-		deserialize(serialized);
-	}
-
+namespace datamodel
+{
 	std::string Accessory::serialize() const
 	{
 		stringstream ss;

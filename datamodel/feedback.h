@@ -8,12 +8,36 @@
 
 class Manager;
 
-namespace datamodel {
-
-	class Feedback : public LayoutItem {
+namespace datamodel
+{
+	class Feedback : public LayoutItem
+	{
 		public:
-			Feedback(Manager* manager, const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const feedbackPin_t pin, bool inverted);
-			Feedback(Manager* manager, const std::string& serialized);
+			Feedback(Manager* manager,
+				const feedbackID_t feedbackID,
+				const std::string& name,
+				const layoutPosition_t x,
+				const layoutPosition_t y,
+				const layoutPosition_t z,
+				const controlID_t controlID,
+				const feedbackPin_t pin,
+				bool inverted)
+			:	LayoutItem(feedbackID, name, x, y, z, Width1, Height1, Rotation0),
+				controlID(controlID),
+				pin(pin),
+				manager(manager),
+				state(FeedbackStateFree),
+				locoID(LocoNone),
+				inverted(inverted)
+			{
+			}
+
+			Feedback(Manager* manager, const std::string& serialized)
+			:	manager(manager),
+				locoID(LocoNone)
+			{
+				deserialize(serialized);
+			}
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;

@@ -13,8 +13,24 @@ namespace datamodel {
 
 	class Track : public LayoutItem {
 		public:
-			Track(const trackID_t trackID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutItemSize_t width, const layoutRotation_t rotation);
-			Track(const std::string& serialized);
+			Track(const trackID_t trackID,
+				const std::string& name,
+				const layoutPosition_t x,
+				const layoutPosition_t y,
+				const layoutPosition_t z,
+				const layoutItemSize_t width,
+				const layoutRotation_t rotation)
+			:	LayoutItem(trackID, name, x, y, z, width, Height1, rotation),
+				lockState(LockStateFree) /* FIXME */,
+			 	locoID(0) /* FIXME */,
+			 	locoDirection(DirectionLeft)
+			{
+			}
+
+			Track(const std::string& serialized)
+			{
+				deserialize(serialized);
+			}
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;

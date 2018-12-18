@@ -7,31 +7,8 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel {
-
-	Switch::Switch(switchID_t switchID,
-		std::string name,
-		layoutPosition_t x,
-		layoutPosition_t y,
-		layoutPosition_t z,
-		layoutRotation_t rotation,
-		controlID_t controlID,
-		protocol_t protocol,
-		address_t address,
-		switchType_t type,
-		switchTimeout_t timeout,
-		bool inverted)
-	:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, timeout, inverted),
-		lockState(LockStateFree),
-		locoIDHardLock(LocoNone)
-	{
-	}
-
-	Switch::Switch(const std::string& serialized)
-	{
-		deserialize(serialized);
-	}
-
+namespace datamodel
+{
 	std::string Switch::serialize() const
 	{
 		stringstream ss;

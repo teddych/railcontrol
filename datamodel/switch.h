@@ -24,9 +24,17 @@ namespace datamodel {
 				address_t address,
 				switchType_t type,
 				switchTimeout_t timeout,
-				bool inverted);
+				bool inverted)
+			:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, timeout, inverted),
+		 		lockState(LockStateFree),
+		 		locoIDHardLock(LocoNone)
+			{
+			}
 
-			Switch(const std::string& serialized);
+			Switch(const std::string& serialized)
+			{
+				deserialize(serialized);
+			}
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;

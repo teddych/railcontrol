@@ -6,13 +6,40 @@
 #include "layout_item.h"
 #include "serializable.h"
 
-namespace datamodel {
-
-	class Accessory : public LayoutItem {
+namespace datamodel
+{
+	class Accessory : public LayoutItem
+	{
 		public:
-			Accessory(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted);
-			Accessory(const std::string& serialized);
-			Accessory();
+			Accessory(const accessoryID_t accessoryID,
+				const std::string& name,
+				const layoutPosition_t x,
+				const layoutPosition_t y,
+				const layoutPosition_t z,
+				const layoutRotation_t rotation,
+				const controlID_t controlID,
+				const protocol_t protocol,
+				const address_t address,
+				const accessoryType_t type,
+				const accessoryTimeout_t timeout,
+				const bool inverted)
+			:	LayoutItem(accessoryID, name, x, y, z, Width1, Height1, rotation),
+				controlID(controlID),
+				protocol(protocol),
+				address(address),
+				type(type),
+				state(AccessoryStateOff),
+				timeout(timeout),
+				inverted(inverted)
+			{
+			}
+
+			Accessory(const std::string& serialized)
+			{
+				deserialize(serialized);
+			}
+
+			Accessory() {}
 
 			virtual std::string serialize() const override;
 			virtual bool deserialize(const std::string& serialized) override;
@@ -37,8 +64,5 @@ namespace datamodel {
 
 			bool inverted;
 	};
-
-	inline Accessory::Accessory() {}
-
 } // namespace datamodel
 

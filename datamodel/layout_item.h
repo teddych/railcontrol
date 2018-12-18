@@ -6,11 +6,29 @@
 #include "datatypes.h"
 #include "object.h"
 
-namespace datamodel {
-
-	class LayoutItem : public Object {
+namespace datamodel
+{
+	class LayoutItem : public Object
+	{
 		public:
-			LayoutItem(const objectID_t objectID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation);
+			LayoutItem(const objectID_t objectID,
+				const std::string& name,
+				const layoutPosition_t posX,
+				const layoutPosition_t posY,
+				const layoutPosition_t posZ,
+				const layoutItemSize_t width,
+				const layoutItemSize_t height,
+				const layoutRotation_t rotation)
+			:	Object(objectID, name),
+				posX(posX),
+				posY(posY),
+				posZ(posZ),
+				width(width),
+				height(height),
+				rotation(rotation)
+			{
+			}
+
 			LayoutItem() {};
 
 			static bool mapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
@@ -38,6 +56,5 @@ namespace datamodel {
 		protected:
 			virtual bool deserialize(const std::map<std::string,std::string>& arguments);
 	};
-
 } // namespace datamodel
 

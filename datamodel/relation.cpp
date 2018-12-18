@@ -8,28 +8,8 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel {
-
-	Relation::Relation(Manager* const manager,
-		const relationID_t relationID,
-		const std::string& name,
-		const objectType_t objectType1,
-		const objectID_t objectID1,
-		const objectType_t objectType2,
-		const objectID_t objectID2,
-		const switchState_t switchState,
-		const lockState_t lockState)
-	:	manager(manager),
-		relationID(relationID),
-		name(name),
-		objectType1(objectType1),
-		objectID1(objectID1),
-		objectType2(objectType2),
-		objectID2(objectID2),
-		switchState(switchState),
-		lockState(lockState)
-	{};
-
+namespace datamodel
+{
 	std::string Relation::serialize() const {
 		stringstream ss;
 		ss << "relationID=" << static_cast<int>(relationID)

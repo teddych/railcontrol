@@ -10,12 +10,6 @@ using std::string;
 
 namespace datamodel
 {
-	Object::Object(const objectID_t objectID, const string& name)
-	:	objectID(objectID),
-		name(name)
-	{
-	};
-
 	std::string Object::serialize() const
 	{
 		stringstream ss;
