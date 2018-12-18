@@ -448,6 +448,17 @@ namespace webserver
 		string name("New Control");
 		string arg1;
 
+		if (controlID != ControlIdNone)
+		{
+			hardware::HardwareParams* params = manager.getHardware(controlID);
+			if (params != nullptr)
+			{
+				hardwareType = params->hardwareType;
+				name = params->name;
+				arg1 = params->arg1;
+			}
+		}
+
 		const std::map<hardwareType_t,string> hardwares = manager.hardwareListNames();
 		std::map<string, string> hardwareOptions;
 		for(auto hardware : hardwares)
@@ -455,13 +466,13 @@ namespace webserver
 			hardwareOptions[to_string(hardware.first)] = hardware.second;
 		}
 
-		content.AddContent(HtmlTag("h1").AddContent("Edit contrl &quot;" + name + "&quot;"));
+		content.AddContent(HtmlTag("h1").AddContent("Edit control &quot;" + name + "&quot;"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "controlsave"))
 			.AddContent(HtmlTagInputHidden("control", to_string(controlID)))
+			.AddContent(HtmlTagInputTextWithLabel("name", "Control Name:", name))
 			.AddContent(HtmlTagLabel("Hardware type:", "hardwaretype"))
 			.AddContent(HtmlTagSelect("hardwaretype", hardwareOptions, to_string(hardwareType)))
-			.AddContent(HtmlTagInputTextWithLabel("name", "Control Name:", name))
 			.AddContent(HtmlTagInputTextWithLabel("arg1", "Argument 1:", arg1))
 			);
 		content.AddContent(HtmlTagButtonCancel());
@@ -484,7 +495,7 @@ namespace webserver
 		}
 		else
 		{
-			ss << "Loco &quot;" << name << "&quot; saved.";
+			ss << "Control &quot;" << name << "&quot; saved.";
 		}
 
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
@@ -1178,12 +1189,24 @@ namespace webserver
 
 		map<string,string> buttonArguments;
 
-		body.AddChildTag(HtmlTag("div").AddClass("menu")
-			.AddContent(HtmlTagButtonCommand(HtmlTag("span").AddClass("symbola").AddContent("&#x274C;"), "quit"))
-			.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9211;"), "booster", false, buttonArguments).AddClass("button_booster"))
-			.AddContent(HtmlTagButtonPopup("NewControl", "controledit_0"))
-			.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0"))
-			);
+		HtmlTag menu("div");
+		menu.AddClass("menu");
+		menu.AddContent(HtmlTagButtonCommand(HtmlTag("span").AddClass("symbola").AddContent("&#x274C;"), "quit"));
+		menu.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9211;"), "booster", false, buttonArguments).AddClass("button_booster"));
+		menu.AddContent(HtmlTagButtonPopup("NewControl", "controledit_0"));
+
+		std::map<controlID_t,hardware::HardwareParams*> controls = manager.controlList();
+		for (auto control : controls)
+		{
+			string controlID = to_string(control.first);
+			string id = "controledit_" + controlID;
+			std::map<std::string,std::string> arguments;
+			arguments["control"] = controlID;
+			menu.AddContent(HtmlTagButtonPopup(control.second->name, id, arguments));
+		}
+
+		menu.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0"));
+		body.AddChildTag(menu);
 
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddChildTag(selectLoco()));
 		body.AddChildTag(HtmlTag("div").AddClass("layout_selector").AddChildTag(selectLayout()));
