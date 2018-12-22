@@ -41,7 +41,7 @@ namespace hardware
 				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_cs2);
 				break;
 
-			case HardwareTypeVirt:
+			case HardwareTypeVirtual:
 				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_virtual);
 				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_virtual);
 				break;
