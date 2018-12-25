@@ -56,6 +56,8 @@ namespace webserver {
 			void handleSwitchAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchGet(const std::map<std::string,std::string>& arguments);
+			void handleTrackEdit(const std::map<std::string,std::string>& arguments);
+			void handleTrackSave(const std::map<std::string,std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

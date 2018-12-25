@@ -30,6 +30,7 @@ typedef unsigned int feedbackPin_t;
 
 // track
 typedef objectID_t trackID_t;
+typedef unsigned char trackType_t;
 
 // switch
 typedef accessoryID_t switchID_t;
@@ -187,4 +188,11 @@ enum switchState : switchState_t
 {
 	SwitchStateTurnout = false,
 	SwitchStateStraight = true
+};
+
+enum trackType : trackType_t
+{
+	TrackTypeStraight = 0,
+	TrackTypeLeft = 1,
+	TrackTypeRight = 2
 };

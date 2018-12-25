@@ -977,7 +977,7 @@ const std::string& Manager::getTrackName(const trackID_t trackID)
 	return tracks.at(trackID)->name;
 }
 
-bool Manager::trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, string& result)
+bool Manager::trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, const trackType_t type, string& result)
 {
 	Track* track;
 	{
@@ -1004,6 +1004,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 			track->posX = posX;
 			track->posY = posY;
 			track->posZ = posZ;
+			track->Type(type);
 		}
 		else
 		{
@@ -1018,7 +1019,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 				}
 			}
 			++newTrackID;
-			track = new Track(newTrackID, name, posX, posY, posZ, width, rotation);
+			track = new Track(newTrackID, name, posX, posY, posZ, width, rotation, type);
 			if (track == nullptr)
 			{
 				result.assign("Unable to allocate memory for track");
@@ -1589,19 +1590,19 @@ void Manager::loadDefaultValuesToDB()
 	Feedback newFeedback5(this, 5, "Rückmelder Einfahrt", 1, 5, 4, 6, 0, false);
 	storage->feedback(newFeedback5);
 
-	Track newTrack1(1, "Gleis Bahnhof 1", 4, 5, 5, 0, Rotation0);
+	Track newTrack1(1, "Gleis Bahnhof 1", 4, 5, 5, 0, Rotation0, TrackTypeStraight);
 	storage->track(newTrack1);
 
-	Track newTrack2(2, "Gleis Bahnhof 2", 4, 5, 6, 0, Rotation90);
+	Track newTrack2(2, "Gleis Bahnhof 2", 4, 5, 6, 0, Rotation90, TrackTypeStraight);
 	storage->track(newTrack2);
 
-	Track newTrack3(3, "Gleis Ausfahrt", 4, 5, 6, 0, Rotation90);
+	Track newTrack3(3, "Gleis Ausfahrt", 4, 5, 6, 0, Rotation90, TrackTypeStraight);
 	storage->track(newTrack3);
 
-	Track newTrack4(4, "Gleis Einfahrt", 4, 5, 6, 0, Rotation90);
+	Track newTrack4(4, "Gleis Einfahrt", 4, 5, 6, 0, Rotation90, TrackTypeStraight);
 	storage->track(newTrack4);
 
-	Track newTrack5(5, "Gleis Strecke", 4, 5, 6, 0, Rotation90);
+	Track newTrack5(5, "Gleis Strecke", 4, 5, 6, 0, Rotation90, TrackTypeStraight);
 	storage->track(newTrack5);
 
 	Switch newSwitch1(1, "Weiche Einfahrt", 2, 5, 0, Rotation90, 1, ProtocolDCC, 3, SwitchTypeLeft, 200, false);

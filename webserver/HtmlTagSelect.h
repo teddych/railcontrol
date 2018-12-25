@@ -16,6 +16,7 @@ namespace webserver
 
 		public:
 			HtmlTagSelect(const std::string& name, const std::map<std::string,std::string>& options, const std::string& defaultValue = "");
+			// FIXME: add map with <int,string>
 	};
 };
 

@@ -240,6 +240,14 @@ namespace webserver
 			{
 				handleSwitchGet(arguments);
 			}
+			else if (arguments["cmd"].compare("trackedit") == 0)
+			{
+				handleTrackEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("tracksave") == 0)
+			{
+				handleTrackSave(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				handleUpdater(headers);
@@ -1075,6 +1083,101 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
 	}
 
+	void WebClient::handleTrackEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		string name("New Track");
+		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
+		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutItemSize_t width = GetIntegerMapEntry(arguments, "width", 1);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		trackType_t type = TrackTypeStraight;
+		if (trackID > TrackNone)
+		{
+			const datamodel::Track* track = manager.getTrack(trackID);
+			name = track->name;
+			posx = track->posX;
+			posy = track->posY;
+			// FIXME: layers not supported yet: posz = track->posZ;
+			width = track->width;
+			rotation = track->rotation;
+			type = track->Type();
+		}
+
+		std::map<string, string> positionOptions;
+		for(int i = 0; i < 50; ++i)
+		{
+			positionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
+		}
+
+		std::map<string, string> widthOptions;
+		for(int i = 0; i < 5; ++i)
+		{
+			widthOptions[toStringWithLeadingZeros(i, 1)] = to_string(i);
+		}
+
+		std::map<string, string> rotationOptions;
+		rotationOptions[to_string(Rotation0)] = "none";
+		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
+		rotationOptions[to_string(Rotation180)] = "180 deg";
+		rotationOptions[to_string(Rotation270)] = "90 deg anti-clockwise";
+
+		std::map<string, string> typeOptions;
+		typeOptions[to_string(TrackTypeStraight)] = "Straight";
+		typeOptions[to_string(TrackTypeLeft)] = "Left";
+		typeOptions[to_string(TrackTypeRight)] = "Right";
+
+		content.AddContent(HtmlTag("h1").AddContent("Edit track &quot;" + name + "&quot;"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "tracksave"))
+			.AddContent(HtmlTagInputHidden("track", to_string(trackID)))
+			.AddContent(HtmlTagInputTextWithLabel("name", "Track Name:", name))
+			.AddContent(HtmlTagLabel("Pos X:", "posx"))
+			.AddContent(HtmlTagSelect("posx", positionOptions, toStringWithLeadingZeros(posx, 2)))
+			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
+			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
+			/* FIXME: layers not supported
+			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
+			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			*/
+			.AddContent(HtmlTagLabel("Width:", "width"))
+			.AddContent(HtmlTagSelect("width", widthOptions, to_string(width)))
+			.AddContent(HtmlTagLabel("Rotation:", "rotation"))
+			.AddContent(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
+			.AddContent(HtmlTagLabel("Type:", "type"))
+			.AddContent(HtmlTagSelect("type", typeOptions, to_string(type)))
+		);
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleTrackSave(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		string name = GetStringMapEntry(arguments, "name");
+		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutItemSize_t width = GetIntegerMapEntry(arguments, "width", 1);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		trackType_t type = GetIntegerMapEntry(arguments, "type", TrackTypeStraight);
+		string result;
+		if (!manager.trackSave(trackID, name, posX, posY, posZ, width, rotation, type, result))
+		{
+			ss << result;
+		}
+		else
+		{
+			ss << "Track &quot;" << name << "&quot; saved.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+	}
+
 	void WebClient::handleUpdater(const map<string, string>& headers)
 	{
 		Response response(Response::OK);
@@ -1227,6 +1330,7 @@ namespace webserver
 
 		body.AddChildTag(HtmlTag("div").AddClass( "contextmenu").AddAttribute("id", "layout_context")
 			.AddChildTag(HtmlTag("ul").AddClass("contextentries")
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add track").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add switch").AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))
 			));

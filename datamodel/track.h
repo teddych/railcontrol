@@ -19,8 +19,10 @@ namespace datamodel {
 				const layoutPosition_t y,
 				const layoutPosition_t z,
 				const layoutItemSize_t width,
-				const layoutRotation_t rotation)
+				const layoutRotation_t rotation,
+				const trackType_t type)
 			:	LayoutItem(trackID, name, x, y, z, width, Height1, rotation),
+				type(type),
 				lockState(LockStateFree) /* FIXME */,
 			 	locoID(0) /* FIXME */,
 			 	locoDirection(DirectionLeft)
@@ -35,6 +37,8 @@ namespace datamodel {
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const override { return "track"; };
+			trackType_t Type() const { return type; }
+			void Type(trackType_t type) { this->type = type; }
 
 			bool reserve(const locoID_t locoID);
 			bool lock(const locoID_t locoID);
@@ -50,6 +54,7 @@ namespace datamodel {
 			bool isInUse() const;
 
 		private:
+			trackType_t type;
 			lockState_t lockState;
 			locoID_t locoID;
 			direction_t locoDirection;

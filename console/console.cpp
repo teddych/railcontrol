@@ -860,7 +860,7 @@ namespace console
 		layoutItemSize_t width = ReadNumber(s, i);
 		layoutRotation_t rotation = ReadRotation(s, i);
 		string result;
-		if (!manager.trackSave(TrackNone, name, posX, posY, posZ, width, rotation, result))
+		if (!manager.trackSave(TrackNone, name, posX, posY, posZ, width, rotation, TrackTypeStraight, result))
 		{
 			AddUpdate(result);
 			return;

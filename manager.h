@@ -75,7 +75,7 @@ class Manager {
 		datamodel::Track* getTrack(const trackID_t trackID);
 		const std::string& getTrackName(const trackID_t trackID);
 		inline const std::map<trackID_t,datamodel::Track*>& trackList() const { return tracks; }
-		bool trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, std::string& result);
+		bool trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, const trackType_t trackType, std::string& result);
 		bool trackDelete(const trackID_t trackID);
 
 		// switch
