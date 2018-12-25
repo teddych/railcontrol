@@ -1103,7 +1103,7 @@ namespace webserver
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
-		layoutItemSize_t width = GetIntegerMapEntry(arguments, "width", 1);
+		layoutItemSize_t height = GetIntegerMapEntry(arguments, "length", 1);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		trackType_t type = TrackTypeStraight;
 		if (trackID > TrackNone)
@@ -1113,7 +1113,7 @@ namespace webserver
 			posx = track->posX;
 			posy = track->posY;
 			// FIXME: layers not supported yet: posz = track->posZ;
-			width = track->width;
+			height = track->height;
 			rotation = track->rotation;
 			type = track->Type();
 		}
@@ -1124,10 +1124,10 @@ namespace webserver
 			positionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
 		}
 
-		std::map<string, string> widthOptions;
+		std::map<string, string> heightOptions;
 		for(int i = 0; i < 5; ++i)
 		{
-			widthOptions[toStringWithLeadingZeros(i, 1)] = to_string(i);
+			heightOptions[toStringWithLeadingZeros(i, 1)] = to_string(i);
 		}
 
 		std::map<string, string> rotationOptions;
@@ -1154,8 +1154,8 @@ namespace webserver
 			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
 			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
 			*/
-			.AddContent(HtmlTagLabel("Width:", "width"))
-			.AddContent(HtmlTagSelect("width", widthOptions, to_string(width)))
+			.AddContent(HtmlTagLabel("Length:", "length"))
+			.AddContent(HtmlTagSelect("length", heightOptions, to_string(height)))
 			.AddContent(HtmlTagLabel("Rotation:", "rotation"))
 			.AddContent(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
 			.AddContent(HtmlTagLabel("Type:", "type"))
@@ -1174,11 +1174,11 @@ namespace webserver
 		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
-		layoutItemSize_t width = GetIntegerMapEntry(arguments, "width", 1);
+		layoutItemSize_t height = GetIntegerMapEntry(arguments, "length", 1);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		trackType_t type = GetIntegerMapEntry(arguments, "type", TrackTypeStraight);
 		string result;
-		if (!manager.trackSave(trackID, name, posX, posY, posZ, width, rotation, type, result))
+		if (!manager.trackSave(trackID, name, posX, posY, posZ, height, rotation, type, result))
 		{
 			ss << result;
 		}

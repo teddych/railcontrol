@@ -977,11 +977,63 @@ const std::string& Manager::getTrackName(const trackID_t trackID)
 	return tracks.at(trackID)->name;
 }
 
-bool Manager::trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, const trackType_t type, string& result)
+bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, string& result)
+{
+	layoutPosition_t x1;
+	layoutPosition_t y1;
+	layoutPosition_t z1 = posZ;
+	layoutItemSize_t w1;
+	layoutItemSize_t h1;
+	bool ret = datamodel::LayoutItem::mapPosition(posX, posY, Width1, height, rotation, x1, y1, w1, h1);
+	if (ret == false)
+	{
+		result = "Unable to calculate position";
+		return false;
+	}
+
+	layoutPosition_t x2 = 0;
+	layoutPosition_t y2 = 0;
+	layoutPosition_t z2 = 0;
+	layoutItemSize_t w2 = 0;
+	layoutItemSize_t h2 = 0;
+
+	Track* track = getTrack(trackID);
+	if (track != nullptr)
+	{
+		z2 = track->posZ;
+		ret = datamodel::LayoutItem::mapPosition(track->posX, track->posY, Width1, track->height, track->rotation, x2, y2, w2, h2);
+		if (ret == false)
+		{
+			result = "Unable to calculate position";
+			return false;
+		}
+	}
+
+	for(layoutPosition_t ix = x1; ix < x1 + w1; ++ix)
+	{
+		for(layoutPosition_t iy = y1; iy < y1 + h1; ++iy)
+		{
+			ret = (ix >= x2 && ix < x2 + w2 && iy >= y2 && iy < y2 + h2 && z1 == z2);
+			if (ret == true)
+			{
+				continue;
+			}
+
+			ret = checkPositionFree(ix, iy, z1, result);
+			if (ret == false)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool Manager::trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, string& result)
 {
 	Track* track;
 	{
-		if (!checkPositionFree(posX, posY, posZ, width, Height1, rotation, result))
+		if (!checkTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
 		{
 			result.append(" Unable to ");
 			result.append(trackID == TrackNone ? "add" : "move");
@@ -999,7 +1051,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 				return false;
 			}
 			track->name = name;
-			track->width = width;
+			track->height = height;
 			track->rotation = rotation;
 			track->posX = posX;
 			track->posY = posY;
@@ -1019,7 +1071,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 				}
 			}
 			++newTrackID;
-			track = new Track(newTrackID, name, posX, posY, posZ, width, rotation, type);
+			track = new Track(newTrackID, name, posX, posY, posZ, height, rotation, type);
 			if (track == nullptr)
 			{
 				result.assign("Unable to allocate memory for track");
@@ -1634,6 +1686,28 @@ void Manager::loadDefaultValuesToDB()
 * Layout                   *
 ***************************/
 
+bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result)
+{
+	bool ret;
+	ret = checkLayoutPositionFree(posX, posY, posZ, result, accessories, accessoryMutex);
+	if (ret == false)
+	{
+		return false;
+	}
+	ret = checkLayoutPositionFree(posX, posY, posZ, result, tracks, trackMutex);
+	if (ret == false)
+	{
+		return false;
+	}
+	ret = checkLayoutPositionFree(posX, posY, posZ, result, feedbacks, feedbackMutex);
+	if (ret == false)
+	{
+		return false;
+	}
+	ret = checkLayoutPositionFree(posX, posY, posZ, result, switches, switchMutex);
+	return ret;
+}
+
 bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result)
 {
 	if (width == 0 || height == 0)
@@ -1655,22 +1729,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 	{
 		for(layoutPosition_t iy = y; iy < y + h; iy++)
 		{
-			bool ret = checkLayoutPositionFree(ix, iy, z, result, accessories, accessoryMutex);
-			if (ret == false)
-			{
-				return false;
-			}
-			ret = checkLayoutPositionFree(ix, iy, z, result, tracks, trackMutex);
-			if (ret == false)
-			{
-				return false;
-			}
-			ret = checkLayoutPositionFree(ix, iy, z, result, feedbacks, feedbackMutex);
-			if (ret == false)
-			{
-				return false;
-			}
-			ret = checkLayoutPositionFree(ix, iy, z, result, switches, switchMutex);
+			bool ret = checkPositionFree(ix, iy, z, result);
 			if (ret == false)
 			{
 				return false;

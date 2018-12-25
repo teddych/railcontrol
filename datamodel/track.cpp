@@ -9,8 +9,8 @@ using std::map;
 using std::stoi;
 using std::string;
 
-namespace datamodel {
-
+namespace datamodel
+{
 	std::string Track::serialize() const
 	{
 		std::stringstream ss;

@@ -17,11 +17,11 @@ namespace webserver
 				const layoutPosition_t posX,
 				const layoutPosition_t posY,
 				const layoutPosition_t posZ,
+				const layoutItemSize_t height,
 				const std::string rotation,
-// FIXME				const trackState_t state,
 				const trackType_t type)
 			{
-				Init(trackID, name, posX, posY, posZ, rotation, type);
+				Init(trackID, name, posX, posY, posZ, height, rotation, type);
 			}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
@@ -36,8 +36,8 @@ namespace webserver
 				const layoutPosition_t posX,
 				const layoutPosition_t posY,
 				const layoutPosition_t posZ,
+				const layoutItemSize_t height,
 				const std::string rotation,
-// FIXME				const trackState_t state,
 				const trackType_t type
 			);
 	};
