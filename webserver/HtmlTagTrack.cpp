@@ -34,7 +34,7 @@ namespace webserver
 
 		HtmlTag div1("div");
 		string trackIdString = to_string(trackID);
-		string id("sw_" + trackIdString);
+		string id("t_" + trackIdString);
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("track_item");
@@ -52,11 +52,11 @@ namespace webserver
 
 			case TrackTypeStraight:
 			default:
-				image = "Straight"; // FIXME
+				image = "<polygon points=\"13,0 22,0 22,35 13,35\" fill=\"gray\" class=\"straight\"/>";
 				break;
 		}
 
-		div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + rotation + "deg);\"></svg>"));
+		div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + rotation + "deg);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name));
 
 		std::stringstream javascript;
@@ -72,6 +72,7 @@ namespace webserver
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
 			);
 		AddChildTag(div2);
