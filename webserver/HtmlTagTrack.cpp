@@ -38,21 +38,29 @@ namespace webserver
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("track_item");
-		div1.AddClass(type == TrackTypeStraight ? "track_straight" : "track_turnout"); // FIXME
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
-		if (type == TrackTypeLeft)
+		std::string image;
+		switch (type)
 		{
-			div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + rotation + "deg);\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>")); // FIXME
+			case TrackTypeLeft:
+				image = "Left"; // FIXME
+				break;
+
+			case TrackTypeRight:
+				image = "Right"; // FIXME
+				break;
+
+			case TrackTypeStraight:
+			default:
+				image = "Straight"; // FIXME
+				break;
 		}
-		else
-		{
-			div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + rotation + "deg);\"><polygon points=\"22,26 22,35 13,35\" fill=\"black\" /><polygon points=\"22,26 35,13 35,22 22,35\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,26 13,35\" fill=\"gray\" class=\"straight\"/></svg>")); // FIXME
-		}
+
+		div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + rotation + "deg);\"></svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name));
 
 		std::stringstream javascript;
 		javascript << "$(function() {"
-			" $('#" << id << "').on('click', function() { onClickTrack(" << trackID << "); return false; });"
 			" $('#" << id << "').on('contextmenu', function(event) { if (event.shiftKey) return true; event.preventDefault(); onContextTrack(" << trackID << "); return false; });"
 			"});"
 			;
@@ -64,7 +72,6 @@ namespace webserver
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
 			);
 		AddChildTag(div2);

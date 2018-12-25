@@ -29,6 +29,7 @@
 #include "webserver/HtmlTagInputTextWithLabel.h"
 #include "webserver/HtmlTagSelect.h"
 #include "webserver/HtmlTagSwitch.h"
+#include "webserver/HtmlTagTrack.h"
 
 using std::map;
 using std::stoi;
@@ -684,6 +685,7 @@ namespace webserver
 			}
 			content.AddChildTag(HtmlTagAccessory(accessory.first, accessory.second->name, posX, posY, posZ, accessory.second->state, accessory.second->address));
 		}
+
 		const map<switchID_t,datamodel::Switch*>& switches = manager.switchList();
 		for (auto mySwitch : switches)
 		{
@@ -692,6 +694,16 @@ namespace webserver
 				continue;
 			}
 			content.AddChildTag(HtmlTagSwitch(mySwitch.second));
+		}
+
+		const map<switchID_t,datamodel::Track*>& tracks = manager.trackList();
+		for (auto track : tracks)
+		{
+			if (track.second->posZ != layer)
+			{
+				continue;
+			}
+			content.AddChildTag(HtmlTagTrack(track.second));
 		}
 		HtmlReplyWithHeader(content);
 	}

@@ -67,6 +67,16 @@ function onContextSwitch(switchID)
 	}
 }
 
+function onContextTrack(trackID)
+{
+	hideAllContextMenus();
+	var menu = document.getElementById('t_' + trackID + '_context');
+	if (menu)
+	{
+		menu.style.display = 'block';
+	}
+}
+
 function updateItem(elementName, data)
 {
 	var parentElement = document.getElementById('layout');
