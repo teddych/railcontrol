@@ -21,7 +21,7 @@ class CommandInterface {
 		virtual void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
 		virtual void track(const controlType_t managerID, const trackID_t trackID, const lockState_t state) = 0;
 		virtual void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on) = 0;
-		virtual void switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const std::string rotation) {};
+		virtual void switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const std::string& rotation) {};
 		virtual void switchDelete(const switchID_t switchID, const std::string& name) {};
 		virtual void locoIntoTrack(const locoID_t locoID, const trackID_t trackID) = 0;
 		virtual void locoRelease(const locoID_t) = 0;
