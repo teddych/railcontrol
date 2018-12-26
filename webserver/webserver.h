@@ -36,6 +36,7 @@ namespace webserver {
 			void locoIntoTrack(const locoID_t locoID, const trackID_t trackID) override;
 			void locoRelease(const locoID_t locoID) override;
 			void trackRelease(const trackID_t trackID) override;
+			void trackSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const std::string& rotation);
 			void streetRelease(const streetID_t streetID) override;
 			void locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
 			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;

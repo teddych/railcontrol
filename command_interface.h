@@ -25,6 +25,7 @@ class CommandInterface {
 		virtual void switchDelete(const switchID_t switchID, const std::string& name) {};
 		virtual void locoIntoTrack(const locoID_t locoID, const trackID_t trackID) = 0;
 		virtual void locoRelease(const locoID_t) = 0;
+		virtual void trackSettings(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const std::string& rotation) {};
 		virtual void trackRelease(const trackID_t) = 0;
 		virtual void streetRelease(const streetID_t) = 0;
 		virtual void locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) = 0;

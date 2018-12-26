@@ -249,6 +249,10 @@ namespace webserver
 			{
 				handleTrackSave(arguments);
 			}
+			else if (arguments["cmd"].compare("trackget") == 0)
+			{
+				handleTrackGet(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				handleUpdater(headers);
@@ -1188,6 +1192,13 @@ namespace webserver
 		}
 
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+	}
+
+	void WebClient::handleTrackGet(const map<string, string>& arguments)
+	{
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		const datamodel::Track* track = manager.getTrack(trackID);
+		HtmlReplyWithHeader(HtmlTagTrack(track));
 	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)

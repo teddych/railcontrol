@@ -1086,6 +1086,11 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 	{
 		storage->track(*track);
 	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->trackSettings(track->objectID, name, posX, posY, posZ, height, track->Rotation());
+	}
 	return true;
 }
 

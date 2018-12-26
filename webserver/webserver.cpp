@@ -194,6 +194,15 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::trackSettings(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const string& rotation)
+	{
+		stringstream command;
+		stringstream status;
+		command << "tracksettings;track=" << trackID;
+		status << name << " updated";
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	{
 		stringstream command;

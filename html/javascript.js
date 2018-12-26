@@ -234,6 +234,14 @@ function dataUpdate(event)
 		deleteLayoutElement(elementName);
 		deleteLayoutElement(elementName + '_context');
 	}
+	else if (command == 'tracksettings')
+	{
+		var switchID = argumentMap.get('track');
+		elementName = 't_' + switchID;
+		var url = '/?cmd=trackget';
+		url += '&track=' + switchID;
+		requestUpdateItem(elementName, url);
+	}
 }
 
 function loadDivFromForm(form, target)
