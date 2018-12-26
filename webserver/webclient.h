@@ -58,6 +58,8 @@ namespace webserver {
 			void handleSwitchGet(const std::map<std::string,std::string>& arguments);
 			void handleTrackEdit(const std::map<std::string,std::string>& arguments);
 			void handleTrackSave(const std::map<std::string,std::string>& arguments);
+			void handleTrackAskDelete(const std::map<std::string,std::string>& arguments);
+			void handleTrackDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackGet(const std::map<std::string, std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);

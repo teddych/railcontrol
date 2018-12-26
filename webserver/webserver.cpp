@@ -203,6 +203,15 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::trackDelete(const trackID_t trackID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "trackdelete;strack=" << trackID;
+		status << name << " deleted";
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	{
 		stringstream command;

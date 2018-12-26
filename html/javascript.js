@@ -242,6 +242,12 @@ function dataUpdate(event)
 		url += '&track=' + switchID;
 		requestUpdateItem(elementName, url);
 	}
+	else if (command == 'trackdelete')
+	{
+		elementName = 't_' + argumentMap.get('track');
+		deleteLayoutElement(elementName);
+		deleteLayoutElement(elementName + '_context');
+	}
 }
 
 function loadDivFromForm(form, target)

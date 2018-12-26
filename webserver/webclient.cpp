@@ -249,6 +249,14 @@ namespace webserver
 			{
 				handleTrackSave(arguments);
 			}
+			else if (arguments["cmd"].compare("trackaskdelete") == 0)
+			{
+				handleTrackAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("trackdelete") == 0)
+			{
+				handleTrackDelete(arguments);
+			}
 			else if (arguments["cmd"].compare("trackget") == 0)
 			{
 				handleTrackGet(arguments);
@@ -1194,6 +1202,60 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
 	}
 
+	void WebClient::handleTrackAskDelete(const map<string, string>& arguments)
+	{
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+
+		if (trackID == TrackNone)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown track"));
+			return;
+		}
+
+		const datamodel::Track* track = manager.getTrack(trackID);
+		if (track == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown track"));
+			return;
+		}
+
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Delete track &quot;" + track->name + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the track &quot;" + track->name + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "trackdelete"))
+			.AddContent(HtmlTagInputHidden("track", to_string(trackID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleTrackDelete(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		const datamodel::Track* track = manager.getTrack(trackID);
+		if (track == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete track"));
+			return;
+		}
+
+		string name = track->name;
+
+		if (!manager.trackDelete(trackID))
+		{
+			ss << "Unable to delete track";
+		}
+		else
+		{
+			ss << "track &quot;" << name << "&quot; deleted.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+	}
+
 	void WebClient::handleTrackGet(const map<string, string>& arguments)
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
@@ -1354,8 +1416,8 @@ namespace webserver
 		body.AddChildTag(HtmlTag("div").AddClass( "contextmenu").AddAttribute("id", "layout_context")
 			.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add track").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=0');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add switch").AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
 			));
 
 		std::stringstream javascript;
