@@ -44,6 +44,8 @@ namespace datamodel
 	bool Accessory::deserialize(const map<string,string>& arguments)
 	{
 		LayoutItem::deserialize(arguments);
+		width = Width1;
+		height = Height1;
 		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		address = GetIntegerMapEntry(arguments, "address");

@@ -23,6 +23,7 @@ namespace datamodel
 		map<string, string> arguments;
 		parseArguments(serialized, arguments);
 		LayoutItem::deserialize(arguments);
+		width = Width1;
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Track") == 0)
 		{
 			lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
