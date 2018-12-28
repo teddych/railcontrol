@@ -684,18 +684,11 @@ namespace webserver
 		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
 		for (auto accessory : accessories)
 		{
-			layoutPosition_t posX;
-			layoutPosition_t posY;
-			layoutPosition_t posZ;
-			layoutItemSize_t w;
-			layoutItemSize_t h;
-			layoutRotation_t r;
-			accessory.second->position(posX, posY, posZ, w, h, r);
-			if (posZ != layer)
+			if (accessory.second->posZ != layer)
 			{
 				continue;
 			}
-			content.AddChildTag(HtmlTagAccessory(accessory.first, accessory.second->name, posX, posY, posZ, accessory.second->state, accessory.second->address));
+			content.AddChildTag(HtmlTagAccessory(accessory.second));
 		}
 
 		const map<switchID_t,datamodel::Switch*>& switches = manager.switchList();
