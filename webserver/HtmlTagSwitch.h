@@ -12,19 +12,6 @@ namespace webserver
 	{
 		public:
 			HtmlTagSwitch(const datamodel::Switch* mySwitch);
-			HtmlTagSwitch(const switchID_t switchID,
-				const std::string& name,
-				const layoutPosition_t posX,
-				const layoutPosition_t posY,
-				const layoutPosition_t posZ,
-				const std::string rotation,
-				const switchState_t state,
-				const switchType_t type,
-				const address_t address)
-			{
-				Init(switchID, name, posX, posY, posZ, rotation, state, type, address);
-			}
-
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{
 				childTags[0].AddAttribute(name, value);
@@ -37,7 +24,7 @@ namespace webserver
 				const layoutPosition_t posX,
 				const layoutPosition_t posY,
 				const layoutPosition_t posZ,
-				const std::string rotation,
+				const layoutRotation_t rotation,
 				const switchState_t state,
 				const switchType_t type,
 				const address_t address
