@@ -14,7 +14,11 @@ namespace datamodel
 	std::string Track::serialize() const
 	{
 		std::stringstream ss;
-		ss << "objectType=Track;" << LayoutItem::serialize() << ";lockState=" << static_cast<int>(lockState) << ";locoID=" << (int) locoID << ";locoDirection=" << static_cast<int>(locoDirection);
+		ss << "objectType=Track;" << LayoutItem::serialize()
+			<< ";type=" << static_cast<int>(type)
+			<< ";lockState=" << static_cast<int>(lockState)
+			<< ";locoID=" << (int) locoID
+			<< ";locoDirection=" << static_cast<int>(locoDirection);
 		return ss.str();
 	}
 
@@ -26,6 +30,7 @@ namespace datamodel
 		width = Width1;
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Track") == 0)
 		{
+			type = static_cast<trackType_t>(GetIntegerMapEntry(arguments, "type", TrackTypeStraight));
 			lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 			locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
 			locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));
