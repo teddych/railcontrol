@@ -8,6 +8,7 @@
 #include "datatypes.h"
 #include "hardware/HardwareHandler.h"
 #include "hardware/cs2.h"
+#include "hardware/m6051.h"
 #include "hardware/virtual.h"
 #include "util.h"
 
