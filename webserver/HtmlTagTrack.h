@@ -12,18 +12,6 @@ namespace webserver
 	{
 		public:
 			HtmlTagTrack(const datamodel::Track* track);
-			HtmlTagTrack(const trackID_t trackID,
-				const std::string& name,
-				const layoutPosition_t posX,
-				const layoutPosition_t posY,
-				const layoutPosition_t posZ,
-				const layoutItemSize_t height,
-				const std::string rotation,
-				const trackType_t type)
-			{
-				Init(trackID, name, posX, posY, posZ, height, rotation, type);
-			}
-
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{
 				childTags[0].AddAttribute(name, value);
@@ -37,7 +25,7 @@ namespace webserver
 				const layoutPosition_t posY,
 				const layoutPosition_t posZ,
 				const layoutItemSize_t height,
-				const std::string rotation,
+				const layoutRotation_t rotation,
 				const trackType_t type
 			);
 	};

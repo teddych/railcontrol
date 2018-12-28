@@ -8,8 +8,8 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel {
-
+namespace datamodel
+{
 	bool LayoutItem::mapPosition(const layoutPosition_t posX,
 			const layoutPosition_t posY,
 			const layoutItemSize_t width,
@@ -18,17 +18,20 @@ namespace datamodel {
 			layoutPosition_t& x,
 			layoutPosition_t& y,
 			layoutItemSize_t& w,
-			layoutItemSize_t& h) {
-
-		switch (rotation) {
+			layoutItemSize_t& h)
+	{
+		switch (rotation)
+		{
 			case Rotation0:
 				x = posX;
 				y = posY;
 				w = width;
 				h = height;
 				return true;
+
 			case Rotation90:
-				if (posX < height) {
+				if (posX < height)
+				{
 					return false;
 				}
 				x = posX + 1 - height;
@@ -36,8 +39,10 @@ namespace datamodel {
 				w = height;
 				h = width;
 				return true;
+
 			case Rotation180:
-				if (posX < width || posY < height) {
+				if (posX < width || posY < height)
+				{
 					return false;
 				}
 				x = posX + 1 - width;
@@ -45,8 +50,10 @@ namespace datamodel {
 				w = width;
 				h = height;
 				return true;
+
 			case Rotation270:
-				if (posY < width) {
+				if (posY < width)
+				{
 					return false;
 				}
 				x = posX;
@@ -54,13 +61,16 @@ namespace datamodel {
 				w = height;
 				h = width;
 				return true;
+
 			default:
 				return false;
 		}
 	}
 
-	bool LayoutItem::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {
-		if (this->posZ != posZ) {
+	bool LayoutItem::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+	{
+		if (this->posZ != posZ)
+		{
 			return true;
 		}
 		layoutPosition_t x;
@@ -68,12 +78,16 @@ namespace datamodel {
 		layoutItemSize_t w;
 		layoutItemSize_t h;
 		bool ret = mapPosition(this->posX, this->posY, this->width, this->height, this->rotation, x, y, w, h);
-		if (ret == false) {
+		if (ret == false)
+		{
 			return false;
 		}
-		for(layoutPosition_t ix = x; ix < x + w; ix++) {
-			for(layoutPosition_t iy = y; iy < y + h; iy++) {
-				if (ix == posX && iy == posY) {
+		for(layoutPosition_t ix = x; ix < x + w; ix++)
+		{
+			for(layoutPosition_t iy = y; iy < y + h; iy++)
+			{
+				if (ix == posX && iy == posY)
+				{
 					return false;
 				}
 			}
@@ -81,30 +95,33 @@ namespace datamodel {
 		return true;
 	}
 
-	std::string LayoutItem::serialize() const {
+	std::string LayoutItem::serialize() const
+	{
 		stringstream ss;
 		ss << Object::serialize() << ";posX=" << (int)posX << ";posY=" << (int)posY << ";posZ=" << (int)posZ << ";width=" << (int)width << ";height=" << (int)height << ";rotation=" << (int)rotation;
 		return ss.str();
 	}
 
-	bool LayoutItem::deserialize(const std::string& serialized) {
+	bool LayoutItem::deserialize(const std::string& serialized)
+	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
 		return deserialize(arguments);
 	}
 
-	bool LayoutItem::deserialize(const map<string,string>& arguments) {
+	bool LayoutItem::deserialize(const map<string,string>& arguments)
+	{
 		Object::deserialize(arguments);
-		if (arguments.count("posX")) posX = stoi(arguments.at("posX"));
-		if (arguments.count("posY")) posY = stoi(arguments.at("posY"));
-		if (arguments.count("posZ")) posZ = stoi(arguments.at("posZ"));
-		if (arguments.count("width")) width = stoi(arguments.at("width"));
-		if (arguments.count("height")) height = stoi(arguments.at("height"));
-		if (arguments.count("rotation")) rotation = static_cast<layoutRotation_t>(stoi(arguments.at("rotation")));
+		posX = GetIntegerMapEntry(arguments, "posX", 0);
+		posY = GetIntegerMapEntry(arguments, "posY", 0);
+		posZ = GetIntegerMapEntry(arguments, "posZ", 0);
+		width = GetIntegerMapEntry(arguments, "width", Width1);
+		height = GetIntegerMapEntry(arguments, "height", Height1);
+		rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		return true;
 	}
 
-	std::string LayoutItem::Rotation() const
+	std::string LayoutItem::Rotation(layoutRotation_t rotation)
 	{
 		std::string rotationText;
 		switch (rotation)
@@ -122,7 +139,7 @@ namespace datamodel {
 				break;
 
 			case Rotation0:
-				default:
+			default:
 				rotationText = "0";
 				break;
 		}

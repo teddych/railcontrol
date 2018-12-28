@@ -33,7 +33,8 @@ namespace datamodel
 
 			static bool mapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
 
-			bool position(layoutPosition_t& x, layoutPosition_t& y, layoutPosition_t& z, layoutItemSize_t& w, layoutItemSize_t& h, layoutRotation_t& r) const {
+			bool position(layoutPosition_t& x, layoutPosition_t& y, layoutPosition_t& z, layoutItemSize_t& w, layoutItemSize_t& h, layoutRotation_t& r) const
+			{
 				z = posZ;
 				r = rotation;
 				return mapPosition(posX, posY, width, height, rotation, x, y, w, h);
@@ -44,7 +45,8 @@ namespace datamodel
 			virtual std::string serialize() const override;
 			virtual bool deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const { return "unknown type"; };
-			virtual std::string Rotation() const;
+			virtual std::string Rotation() const { return Rotation(rotation); }
+			static std::string Rotation(layoutRotation_t rotation);
 			
 			layoutPosition_t posX;
 			layoutPosition_t posY;

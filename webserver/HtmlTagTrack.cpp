@@ -18,7 +18,7 @@ namespace webserver
 		layoutRotation_t r;
 		track->position(posX, posY, posZ, w, h, r);
 		trackType_t type = track->Type();
-		Init(track->objectID, track->name, posX, posY, posZ, h, track->Rotation(), type);
+		Init(track->objectID, track->name, posX, posY, posZ, track->height, r, type);
 	}
 
 	void HtmlTagTrack::Init(const trackID_t trackID,
@@ -27,7 +27,7 @@ namespace webserver
 		const layoutPosition_t posY,
 		const layoutPosition_t posZ,
 		const layoutItemSize_t height,
-		const string rotation,
+		const layoutRotation_t rotation,
 		const trackType_t type)
 	{
 		unsigned int layoutPosX = posX * 35;
@@ -58,12 +58,24 @@ namespace webserver
 				break;
 		}
 
+		int translateX = 0;
+		int translateY = 0;
 		if (height > Height1)
 		{
 			image += "<polygon points=\"13,35 22,35 22," + layoutHeight + " 13," + layoutHeight + "\" fill=\"black\"/>";
+			if (rotation == Rotation90)
+			{
+				translateX = -((((height - 1) * 35) + 1) / 2);
+				translateY = -(((height - 1) * 35) / 2);
+			}
+			else if (rotation == Rotation270)
+			{
+				translateX = ((((height - 1) * 35) + 1) / 2);
+				translateY = (((height - 1) * 35) / 2);
+			}
 		}
 
-		div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + rotation + "deg);\">" + image + "</svg>"));
+		div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name));
 
 		std::stringstream javascript;
