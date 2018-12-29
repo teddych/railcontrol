@@ -1,23 +1,33 @@
 #pragma once
 
 #include <map>
-#include <thread>
 #include <string>
+#include <thread>
 #include <vector>
 
 #include "manager.h"
 #include "network/TcpConnection.h"
 #include "webserver/Response.h"
 
-namespace webserver {
-
+namespace webserver
+{
 	class WebServer;
 
-	class WebClient {
+	class WebClient
+	{
 		public:
-			WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer &webserver, Manager& manager);
+			WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer &webserver, Manager& m)
+			:	id(id),
+				connection(connection),
+				run(false),
+				server(webserver),
+				clientThread(std::thread([this] {Worker();})),
+				manager(m),
+				buttonID(0)
+			{}
+
 			~WebClient();
-			void worker();
+			void Worker();
 			int stop();
 
 		private:
@@ -69,7 +79,7 @@ namespace webserver {
 			unsigned int id;
 			Network::TcpConnection* connection;
 			volatile unsigned char run;
-			WebServer &server;
+			WebServer& server;
 			std::thread clientThread;
 			Manager& manager;
 			bool headOnly;

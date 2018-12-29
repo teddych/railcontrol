@@ -8,11 +8,12 @@
 #include "manager.h"
 #include "network/TcpServer.h"
 
-namespace webserver {
-
+namespace webserver
+{
 	class WebClient;
 
-	class WebServer : public CommandInterface, private Network::TcpServer {
+	class WebServer : public CommandInterface, private Network::TcpServer
+	{
 		public:
 			WebServer(Manager& manager, const unsigned short port);
 			~WebServer();
@@ -57,6 +58,5 @@ namespace webserver {
 			unsigned int updateID;
 			const unsigned int MaxUpdates = 10;
 	};
-
 }; // namespace webserver
 

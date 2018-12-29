@@ -5,7 +5,6 @@
 #include <sstream>
 #include <sys/socket.h>
 #include <sys/stat.h>
-#include <thread>
 #include <unistd.h>
 
 #include "datamodel/datamodel.h"
@@ -42,16 +41,6 @@ using datamodel::Loco;
 
 namespace webserver
 {
-	WebClient::WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer& webserver, Manager& m)
-	:	id(id),
-		connection(connection),
-		run(false),
-		server(webserver),
-		clientThread(thread([this] {worker();})),
-		manager(m),
-		buttonID(0)
-	{}
-
 	WebClient::~WebClient()
 	{
 		run = false;
@@ -60,7 +49,7 @@ namespace webserver
 	}
 
 	// worker is the thread that handles client requests
-	void WebClient::worker()
+	void WebClient::Worker()
 	{
 		xlog("HTTP connection %i: open", id);
 		WorkerImpl();
