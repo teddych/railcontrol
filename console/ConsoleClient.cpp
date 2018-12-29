@@ -4,15 +4,12 @@
 #include <signal.h>
 #include <sstream>
 #include <sys/socket.h>
-#include <thread>
 #include <unistd.h>
 
+#include "console/ConsoleClient.h"
 #include "datatypes.h"
-#include "network/Select.h"
 #include "railcontrol.h"
 #include "text/converters.h"
-#include "util.h"
-#include "console/console.h"
 
 using std::map;
 using std::thread;
@@ -23,110 +20,52 @@ using std::vector;
 
 namespace console
 {
-
-	Console::Console(Manager& manager, const unsigned short port)
-	:	CommandInterface(ControlTypeConsole),
-		port(port),
-		serverSocket(0),
-		clientSocket(-1),
-		run(false),
-		manager(manager)
+	void ConsoleClient::Worker()
 	{
-		struct sockaddr_in6 server_addr;
+		xlog("Console connection: open");
+		WorkerImpl();
+		xlog("Console connection: close");
+	}
 
-		xlog("Starting console on port %i", port);
-
-		// create server socket
-		serverSocket = socket(AF_INET6, SOCK_STREAM, 0);
-		if (serverSocket < 0)
-		{
-			xlog("Unable to create socket for console. Unable to serve clients.");
-			return;
-		}
-
-		// bind socket to an address (in6addr_any)
-		memset((char *) &server_addr, 0, sizeof(server_addr));
-		server_addr.sin6_family = AF_INET6;
-		server_addr.sin6_addr = in6addr_any;
-		server_addr.sin6_port = htons(port);
-
-		int on = 1;
-		if (setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (const void*)&on, sizeof(on)) < 0)
-		{
-			xlog("Unable to set console socket option SO_REUSEADDR.");
-		}
-
-		if (bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr)) < 0)
-		{
-			xlog("Unable to bind socket for console to port %i. Unable to serve clients.", port);
-			close(serverSocket);
-			return;
-		}
-
-		// listen on the socket
-		if (listen(serverSocket, 5) != 0)
-		{
-			xlog("Unable to listen on socket for console server on port %i. Unable to serve clients.", port);
-			close(serverSocket);
-			return;
-		}
-
-		// create seperate thread that handles the client requests
+	void ConsoleClient::WorkerImpl()
+	{
 		run = true;
-		serverThread = thread([this] { Worker(); });
-	}
-
-	Console::~Console()
-	{
-		if (!run)
-		{
-            return;
-		}
-
-        xlog("Stopping console");
-        run = false;
-
-        // join server thread
-        serverThread.join();
-	}
-
-	// worker is a seperate thread listening on the server socket
-	void Console::Worker()
-	{
-		fd_set set;
-		struct timeval tv;
-		struct sockaddr_in6 client_addr;
-		socklen_t client_addr_len = sizeof(client_addr);
+		SendAndPrompt("> Welcome to railcontrol! Press H for help.");
 		while (run)
 		{
-			// wait for connection and abort on shutdown
-			int ret;
-			do
+			char buffer_in[1024];
+			memset(buffer_in, 0, sizeof(buffer_in));
+
+			size_t pos = 0;
+			string s;
+			while (pos < sizeof(buffer_in) - 1 && s.find("\n") == string::npos && run)
 			{
-				FD_ZERO(&set);
-				FD_SET(serverSocket, &set);
-				tv.tv_sec = 1;
-				tv.tv_usec = 0;
-				ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
-			} while (ret == 0 && run);
-			if (ret > 0 && run)
-			{
-				// accept connection
-				clientSocket = accept(serverSocket, (struct sockaddr *) &client_addr, &client_addr_len);
-				if (clientSocket < 0)
+				size_t ret = connection->Receive(buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
+				if (ret == static_cast<size_t>(-1))
 				{
-					xlog("Unable to accept client connection for console: %i, %i", clientSocket, errno);
+					if (errno == ETIMEDOUT)
+					{
+						continue;
+					}
+					return;
 				}
-				else
-				{
-					// handle client and fill into vector
-					HandleClient();
-				}
+				pos += ret;
+				s = string(buffer_in);
+				str_replace(s, string("\r\n"), string("\n"));
+				str_replace(s, string("\r"), string("\n"));
 			}
+			HandleCommand(s);
 		}
 	}
 
-	void Console::ReadBlanks(string& s, size_t& i)
+	void ConsoleClient::SendAndPrompt(const string str)
+	{
+		string s(str);
+		s.append("\n> ");
+		connection->Send(s);
+	}
+
+	void ConsoleClient::ReadBlanks(string& s, size_t& i)
 	{
 		// read possible blanks
 		while (s.length() > i)
@@ -140,13 +79,13 @@ namespace console
 		}
 	}
 
-	char Console::ReadCharacterWithoutEating(string& s, size_t& i)
+	char ConsoleClient::ReadCharacterWithoutEating(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
 		return s[i];
 	}
 
-	char Console::ReadCommand(string& s, size_t& i)
+	char ConsoleClient::ReadCommand(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
 		char c = s[i];
@@ -154,7 +93,7 @@ namespace console
 		return c;
 	}
 
-	int Console::ReadNumber(string& s, size_t& i)
+	int ConsoleClient::ReadNumber(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
 		int number = 0;
@@ -172,7 +111,7 @@ namespace console
 		return number;
 	}
 
-	bool Console::ReadBool(string& s, size_t& i)
+	bool ConsoleClient::ReadBool(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
 		if (s.length() <= i)
@@ -199,7 +138,7 @@ namespace console
 		return ret;
 	}
 
-	string Console::ReadText(string& s, size_t& i)
+	string ConsoleClient::ReadText(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
 
@@ -241,7 +180,7 @@ namespace console
 		return text;
 	}
 
-	hardwareType_t Console::ReadHardwareType(string& s, size_t& i)
+	hardwareType_t ConsoleClient::ReadHardwareType(string& s, size_t& i)
 	{
 		string type = ReadText(s, i);
 
@@ -276,7 +215,7 @@ namespace console
 	}
 
 
-	switchType_t Console::ReadSwitchType(string& s, size_t& i)
+	switchType_t ConsoleClient::ReadSwitchType(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
 		if (s.length() <= i)
@@ -301,7 +240,7 @@ namespace console
 		}
 	}
 
-	layoutRotation_t Console::ReadRotation(string& s, size_t& i)
+	layoutRotation_t ConsoleClient::ReadRotation(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
 		if (s.length() <= i)
@@ -362,7 +301,7 @@ namespace console
 		}
 	}
 
-	direction_t Console::ReadDirection(string& s, size_t& i)
+	direction_t ConsoleClient::ReadDirection(string& s, size_t& i)
 	{
 		ReadBlanks(s, i);
 		if (s.length() <= i)
@@ -389,13 +328,14 @@ namespace console
 		}
 	}
 
-	accessoryState_t Console::ReadAccessoryState(string& s, size_t& i)
+	accessoryState_t ConsoleClient::ReadAccessoryState(string& s, size_t& i)
 	{
 		bool state = ReadBool(s, i);
 		return (state ? AccessoryStateOn : AccessoryStateOff);
 	}
 
-	void Console::HandleClient()
+	/*
+	void ConsoleClient::HandleClient()
 	{
 		AddUpdate("Welcome to railcontrol console!\nType h for help\n");
 		char buffer_in[1024];
@@ -427,8 +367,9 @@ namespace console
 			HandleCommand(s);
 		}
 	}
+	*/
 
-	void Console::HandleCommand(string& s)
+	void ConsoleClient::HandleCommand(string& s)
 	{
 		size_t i = 0;
 		switch (ReadCommand(s, i))
@@ -489,11 +430,11 @@ namespace console
 				break;
 
 			default:
-				AddUpdate("Unknown command");
+				SendAndPrompt("Unknown command");
 		}
 	}
 
-	void Console::HandleAccessoryCommand(string& s, size_t& i)
+	void ConsoleClient::HandleAccessoryCommand(string& s, size_t& i)
 	{
 		switch (ReadCommand(s, i))
 		{
@@ -518,11 +459,11 @@ namespace console
 				break;
 
 			default:
-				AddUpdate("Unknown accessory command");
+				SendAndPrompt("Unknown accessory command");
 		}
 	}
 
-	void Console::HandleTrackCommand(string& s, size_t& i)
+	void ConsoleClient::HandleTrackCommand(string& s, size_t& i)
 	{
 		switch (ReadCommand(s, i))
 		{
@@ -547,11 +488,11 @@ namespace console
 				break;
 
 			default:
-				AddUpdate("Unknown track command");
+				SendAndPrompt("Unknown track command");
 		}
 	}
 
-	void Console::HandleControlCommand(string& s, size_t& i)
+	void ConsoleClient::HandleControlCommand(string& s, size_t& i)
 	{
 		switch (ReadCommand(s, i))
 		{
@@ -571,11 +512,11 @@ namespace console
 				break;
 
 			default:
-				AddUpdate("Unknown control command");
+				SendAndPrompt("Unknown control command");
 		}
 	}
 
-	void Console::HandleFeedbackCommand(string& s, size_t& i)
+	void ConsoleClient::HandleFeedbackCommand(string& s, size_t& i)
 	{
 		switch (ReadCommand(s, i))
 		{
@@ -605,11 +546,11 @@ namespace console
 				break;
 
 			default:
-				AddUpdate("Unknown feedback command");
+				SendAndPrompt("Unknown feedback command");
 		}
 	}
 
-	void Console::HandleLocoCommand(string& s, size_t& i)
+	void ConsoleClient::HandleLocoCommand(string& s, size_t& i)
 	{
 		switch (ReadCommand(s, i))
 		{
@@ -654,11 +595,11 @@ namespace console
 				break;
 
 			default:
-				AddUpdate("Unknown loco command");
+				SendAndPrompt("Unknown loco command");
 		}
 	}
 
-	void Console::HandleStreetCommand(string& s, size_t& i)
+	void ConsoleClient::HandleStreetCommand(string& s, size_t& i)
 	{
 		switch (ReadCommand(s, i))
 		{
@@ -683,11 +624,11 @@ namespace console
 				break;
 
 			default:
-				AddUpdate("Unknown street command");
+				SendAndPrompt("Unknown street command");
 		}
 	}
 
-	void Console::HandleSwitchCommand(string& s, size_t& i)
+	void ConsoleClient::HandleSwitchCommand(string& s, size_t& i)
 	{
 		switch (ReadCommand(s, i))
 		{
@@ -714,22 +655,22 @@ namespace console
 
 			*/
 			default:
-				AddUpdate("Unknown switch command");
+				SendAndPrompt("Unknown switch command");
 		}
 	}
 
-	void Console::HandleAccessoryDelete(string& s, size_t& i)
+	void ConsoleClient::HandleAccessoryDelete(string& s, size_t& i)
 	{
 		accessoryID_t accessoryID = ReadNumber(s, i);
 		if (!manager.accessoryDelete(accessoryID))
 		{
-			AddUpdate("Accessory not found or accessory in use");
+			SendAndPrompt("Accessory not found or accessory in use");
 			return;
 		}
-		AddUpdate("Accessory deleted");
+		SendAndPrompt("Accessory deleted");
 	}
 
-	void Console::HandleAccessoryList(string& s, size_t& i)
+	void ConsoleClient::HandleAccessoryList(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
@@ -741,7 +682,7 @@ namespace console
 				status << accessory.first << " " << accessory.second->name << "\n";
 			}
 			status << "Total number of accessorys: " << accessories.size();
-			AddUpdate(status.str());
+			SendAndPrompt(status.str());
 			return;
 		}
 
@@ -749,16 +690,16 @@ namespace console
 		datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
-			AddUpdate("Unknown accessory");
+			SendAndPrompt("Unknown accessory");
 			return;
 		}
 
 		stringstream status;
 		status << accessoryID << " " << accessory->name << " (" << static_cast<int>(accessory->posX) << "/" << static_cast<int>(accessory->posY) << "/" << static_cast<int>(accessory->posZ) << ")";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleAccessoryNew(string& s, size_t& i)
+	void ConsoleClient::HandleAccessoryNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
@@ -772,21 +713,21 @@ namespace console
 		string result;
 		if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
 		{
-			AddUpdate(result);
+			SendAndPrompt(result);
 			return;
 		}
 		stringstream status;
 		status << "Accessory \"" << name << "\" added";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleAccessorySwitch(string& s, size_t& i)
+	void ConsoleClient::HandleAccessorySwitch(string& s, size_t& i)
 	{
 		accessoryID_t accessoryID = ReadNumber(s, i);
 		datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
-			AddUpdate("Unknown accessory");
+			SendAndPrompt("Unknown accessory");
 			return;
 		}
 
@@ -794,18 +735,18 @@ namespace console
 		manager.accessory(ControlTypeConsole, accessoryID, state);
 	}
 
-	void Console::HandleTrackDelete(string& s, size_t& i)
+	void ConsoleClient::HandleTrackDelete(string& s, size_t& i)
 	{
 		trackID_t trackID = ReadNumber(s, i);
 		if (!manager.trackDelete(trackID))
 		{
-			AddUpdate("Track not found or track in use");
+			SendAndPrompt("Track not found or track in use");
 			return;
 		}
-		AddUpdate("Track deleted");
+		SendAndPrompt("Track deleted");
 	}
 
-	void Console::HandleTrackList(string& s, size_t& i)
+	void ConsoleClient::HandleTrackList(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
@@ -817,7 +758,7 @@ namespace console
 				status << track.first << " " << track.second->name << "\n";
 			}
 			status << "Total number of tracks: " << tracks.size();
-			AddUpdate(status.str());
+			SendAndPrompt(status.str());
 			return;
 		}
 
@@ -826,7 +767,7 @@ namespace console
 		datamodel::Track* track = manager.getTrack(trackID);
 		if (track == nullptr)
 		{
-			AddUpdate("Unknown track");
+			SendAndPrompt("Unknown track");
 			return;
 		}
 		stringstream status;
@@ -848,10 +789,10 @@ namespace console
 		{
 			status << manager.getLocoName(track->getLoco()) << " (" << track->getLoco() << ")";
 		}
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleTrackNew(string& s, size_t& i)
+	void ConsoleClient::HandleTrackNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
@@ -862,37 +803,37 @@ namespace console
 		string result;
 		if (!manager.trackSave(TrackNone, name, posX, posY, posZ, width, rotation, TrackTypeStraight, result))
 		{
-			AddUpdate(result);
+			SendAndPrompt(result);
 			return;
 		}
 		stringstream status;
 		status << "Track \"" << name << "\" added";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleTrackRelease(string& s, size_t& i)
+	void ConsoleClient::HandleTrackRelease(string& s, size_t& i)
 	{
 		trackID_t trackID = ReadNumber(s, i);
 		if (!manager.trackRelease(trackID))
 		{
-			AddUpdate("Track not found or track in use");
+			SendAndPrompt("Track not found or track in use");
 			return;
 		}
-		AddUpdate("Track released");
+		SendAndPrompt("Track released");
 	}
 
-	void Console::HandleControlDelete(string& s, size_t& i)
+	void ConsoleClient::HandleControlDelete(string& s, size_t& i)
 	{
 		controlID_t controlID = ReadNumber(s, i);
 		if (!manager.controlDelete(controlID))
 		{
-			AddUpdate("Control not found or control in use");
+			SendAndPrompt("Control not found or control in use");
 			return;
 		}
-		AddUpdate("Control deleted");
+		SendAndPrompt("Control deleted");
 	}
 
-	void Console::HandleControlList(string& s, size_t& i)
+	void ConsoleClient::HandleControlList(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
@@ -904,7 +845,7 @@ namespace console
 				status << static_cast<int>(param.first) << " " << param.second->name << "\n";
 			}
 			status << "Total number of controls: " << params.size();
-			AddUpdate(status.str());
+			SendAndPrompt(status.str());
 			return;
 		}
 
@@ -912,22 +853,22 @@ namespace console
 		hardware::HardwareParams* param = manager.getHardware(controlID);
 		if (param == nullptr)
 		{
-			AddUpdate("Unknown Control");
+			SendAndPrompt("Unknown Control");
 			return;
 		}
 
 		stringstream status;
 		status << static_cast<int>(controlID) << " " << param->name;
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleControlNew(string& s, size_t& i)
+	void ConsoleClient::HandleControlNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
 		hardwareType_t hardwareType = ReadHardwareType(s, i);
 		if (hardwareType == HardwareTypeNone)
 		{
-			AddUpdate("Unknown hardwaretype");
+			SendAndPrompt("Unknown hardwaretype");
 			return;
 		}
 
@@ -936,27 +877,27 @@ namespace console
 		string result;
 		if (!manager.controlSave(ControlIdNone, hardwareType, name, arg1, result))
 		{
-			AddUpdate(result);
+			SendAndPrompt(result);
 			return;
 		}
 
 		stringstream status;
 		status << "Control \"" << name << "\" added";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleFeedbackDelete(string& s, size_t& i)
+	void ConsoleClient::HandleFeedbackDelete(string& s, size_t& i)
 	{
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		if (!manager.feedbackDelete(feedbackID))
 		{
-			AddUpdate("Feedback not found or feedback in use");
+			SendAndPrompt("Feedback not found or feedback in use");
 			return;
 		}
-		AddUpdate("Feedback deleted");
+		SendAndPrompt("Feedback deleted");
 	}
 
-	void Console::HandleFeedbackList(string& s, size_t& i)
+	void ConsoleClient::HandleFeedbackList(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
@@ -968,7 +909,7 @@ namespace console
 				status << feedback.first << " " << feedback.second->name << "\n";
 			}
 			status << "Total number of feedbacks: " << feedbacks.size();
-			AddUpdate(status.str());
+			SendAndPrompt(status.str());
 			return;
 		}
 
@@ -977,7 +918,7 @@ namespace console
 		datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
-			AddUpdate("Unknown feedback");
+			SendAndPrompt("Unknown feedback");
 			return;
 		}
 
@@ -1002,10 +943,10 @@ namespace console
 		{
 			status << manager.getLocoName(feedback->getLoco()) << " (" << feedback->getLoco() << ")";
 		}
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleFeedbackNew(string& s, size_t& i)
+	void ConsoleClient::HandleFeedbackNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
@@ -1017,15 +958,15 @@ namespace console
 		string result;
 		if(!manager.feedbackSave(FeedbackNone, name, posX, posY, posZ, control, pin, inverted, result))
 		{
-			AddUpdate(result);
+			SendAndPrompt(result);
 			return;
 		}
 		stringstream status;
 		status << "Feedback \"" << name << "\" added";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleFeedbackSet(string& s, size_t& i)
+	void ConsoleClient::HandleFeedbackSet(string& s, size_t& i)
 	{
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		unsigned char input = ReadCharacterWithoutEating(s, i);
@@ -1044,21 +985,21 @@ namespace console
 		manager.feedback(ControlTypeConsole, feedbackID, state);
 		stringstream status;
 		status << "Feedback \"" << manager.getFeedbackName(feedbackID) << "\" turned " << text;
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleFeedbackRelease(string& s, size_t& i)
+	void ConsoleClient::HandleFeedbackRelease(string& s, size_t& i)
 	{
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		if (!manager.feedbackRelease(feedbackID))
 		{
-			AddUpdate("Feedback not found");
+			SendAndPrompt("Feedback not found");
 			return;
 		}
-		AddUpdate("Feedback released");
+		SendAndPrompt("Feedback released");
 	}
 
-	void Console::HandleLocoAutomode(string& s, size_t& i)
+	void ConsoleClient::HandleLocoAutomode(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{ // set all locos to automode
@@ -1071,33 +1012,33 @@ namespace console
 		if (!manager.locoStart(locoID))
 		{
 			// FIXME: bether errormessage
-			AddUpdate("Unknown loco or loco is not in a track");
+			SendAndPrompt("Unknown loco or loco is not in a track");
 		}
 	}
 
-	void Console::HandleLocoTrack(string& s, size_t& i)
+	void ConsoleClient::HandleLocoTrack(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
 		trackID_t trackID = ReadNumber(s, i);
 		if (!manager.locoIntoTrack(locoID, trackID))
 		{
 			// FIXME: bether errormessage
-			AddUpdate("Unknown loco or unknown track");
+			SendAndPrompt("Unknown loco or unknown track");
 		}
 	}
 
-	void Console::HandleLocoDelete(string& s, size_t& i)
+	void ConsoleClient::HandleLocoDelete(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
 		if (!manager.locoDelete(locoID))
 		{
-			AddUpdate("Loco not found or loco in use");
+			SendAndPrompt("Loco not found or loco in use");
 			return;
 		}
-		AddUpdate("Loco deleted");
+		SendAndPrompt("Loco deleted");
 	}
 
-	void Console::HandleLocoList(string& s, size_t& i)
+	void ConsoleClient::HandleLocoList(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
@@ -1108,7 +1049,7 @@ namespace console
 				status << loco.first << " " << loco.second->name << "\n";
 			}
 			status << "Total number of locos: " << locos.size();
-			AddUpdate(status.str());
+			SendAndPrompt(status.str());
 			return;
 		}
 
@@ -1117,7 +1058,7 @@ namespace console
 		datamodel::Loco* loco = manager.getLoco(locoID);
 		if (loco == nullptr)
 		{
-			AddUpdate("Unknown loco");
+			SendAndPrompt("Unknown loco");
 			return;
 		}
 		stringstream status;
@@ -1148,10 +1089,10 @@ namespace console
 		{
 			status << manager.getStreetName(loco->street()) << " (" << loco->street() << ")";
 		}
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleLocoManualmode(string& s, size_t& i)
+	void ConsoleClient::HandleLocoManualmode(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
@@ -1164,11 +1105,11 @@ namespace console
 		if (!manager.locoStop(locoID))
 		{
 			// FIXME: bether errormessage
-			AddUpdate("Unknown loco");
+			SendAndPrompt("Unknown loco");
 		}
 	}
 
-	void Console::HandleLocoNew(string& s, size_t& i)
+	void ConsoleClient::HandleLocoNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
 		controlID_t control = ReadNumber(s, i);
@@ -1178,38 +1119,38 @@ namespace console
 		string result;
 		if (!manager.locoSave(LocoNone, name, control, protocol, address, functions, result))
 		{
-			AddUpdate(result);
+			SendAndPrompt(result);
 			return;
 		}
 		stringstream status;
 		status << "Loco \"" << name << "\" added";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleLocoSpeed(string& s, size_t& i)
+	void ConsoleClient::HandleLocoSpeed(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
 		LocoSpeed speed = ReadNumber(s, i);
 		if (!manager.locoSpeed(ControlTypeConsole, locoID, speed))
 		{
 			// FIXME: bether errormessage
-			AddUpdate("Unknown loco");
+			SendAndPrompt("Unknown loco");
 		}
 	}
 
-	void Console::HandleLocoRelease(string& s, size_t& i)
+	void ConsoleClient::HandleLocoRelease(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
 		if (!manager.locoRelease(locoID))
 		{
 			// FIXME: bether errormessage
-			AddUpdate("Loco not found or track in use");
+			SendAndPrompt("Loco not found or track in use");
 			return;
 		}
-		AddUpdate("Loco released");
+		SendAndPrompt("Loco released");
 	}
 
-	void Console::HandleHelp()
+	void ConsoleClient::HandleHelp()
 	{
 		string status("Available console commands:\n"
 				"\n"
@@ -1276,10 +1217,10 @@ namespace console
 				"P                                 Print layout\n"
 				"Q                                 Quit console\n"
 				"S                                 Shut down railcontrol\n");
-		AddUpdate(status);
+		SendAndPrompt(status);
 	}
 
-	void Console::HandlePrintLayout()
+	void ConsoleClient::HandlePrintLayout()
 	{
 		stringstream status;
 		status << "\033[2J";
@@ -1341,34 +1282,34 @@ namespace console
 		}
 		// print cursor at correct position
 		status << "\033[20;0H";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleQuit()
+	void ConsoleClient::HandleQuit()
 	{
-		AddUpdate("Quit railcontrol console");
-		close(clientSocket);
+		SendAndPrompt("Quit railcontrol console");
+		connection->Terminate();
 	}
 
-	void Console::HandleShutdown()
+	void ConsoleClient::HandleShutdown()
 	{
-		AddUpdate("Shutting down railcontrol");
+		SendAndPrompt("Shutting down railcontrol");
 		stopRailControlConsole();
-		close(clientSocket);
+		connection->Terminate();
 	}
 
-	void Console::HandleStreetDelete(string& s, size_t& i)
+	void ConsoleClient::HandleStreetDelete(string& s, size_t& i)
 	{
 		streetID_t streetID = ReadNumber(s, i);
 		if (!manager.streetDelete(streetID))
 		{
-			AddUpdate("Street not found or street in use");
+			SendAndPrompt("Street not found or street in use");
 			return;
 		}
-		AddUpdate("Street deleted");
+		SendAndPrompt("Street deleted");
 	}
 
-	void Console::HandleStreetList(string& s, size_t& i)
+	void ConsoleClient::HandleStreetList(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
@@ -1379,7 +1320,7 @@ namespace console
 				status << street.first << " " << street.second->name << "\n";
 			}
 			status << "Total number of streets: " << streets.size();
-			AddUpdate(status.str());
+			SendAndPrompt(status.str());
 			return;
 		}
 
@@ -1388,7 +1329,7 @@ namespace console
 		datamodel::Street* street = manager.getStreet(streetID);
 		if (street == nullptr)
 		{
-			AddUpdate("Unknown street");
+			SendAndPrompt("Unknown street");
 			return;
 		}
 		stringstream status;
@@ -1425,10 +1366,10 @@ namespace console
 		{
 			status << manager.getLocoName(street->getLoco()) << " (" << street->getLoco() << ")";
 		}
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleStreetNew(string& s, size_t& i)
+	void ConsoleClient::HandleStreetNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
 		trackID_t fromTrack = ReadNumber(s, i);
@@ -1439,37 +1380,37 @@ namespace console
 		string result;
 		if (!manager.streetSave(StreetNone, name, fromTrack, fromDirection, toTrack, toDirection, feedbackID, result))
 		{
-			AddUpdate(result);
+			SendAndPrompt(result);
 			return;
 		}
 		stringstream status;
 		status << "Street \"" << name << "\" added";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleStreetRelease(string& s, size_t& i)
+	void ConsoleClient::HandleStreetRelease(string& s, size_t& i)
 	{
 		streetID_t streetID = ReadNumber(s, i);
 		if (!manager.streetRelease(streetID))
 		{
-			AddUpdate("Street not found or track in use");
+			SendAndPrompt("Street not found or track in use");
 			return;
 		}
-		AddUpdate("Street released");
+		SendAndPrompt("Street released");
 	}
 
-	void Console::HandleSwitchDelete(string& s, size_t& i)
+	void ConsoleClient::HandleSwitchDelete(string& s, size_t& i)
 	{
 		switchID_t switchID = ReadNumber(s, i);
 		if (!manager.switchDelete(switchID))
 		{
-			AddUpdate("Switch not found or switch in use");
+			SendAndPrompt("Switch not found or switch in use");
 			return;
 		}
-		AddUpdate("Switch deleted");
+		SendAndPrompt("Switch deleted");
 	}
 
-	void Console::HandleSwitchList(string& s, size_t& i)
+	void ConsoleClient::HandleSwitchList(string& s, size_t& i)
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
@@ -1480,7 +1421,7 @@ namespace console
 				status << mySwitch.first << " " << mySwitch.second->name << "\n";
 			}
 			status << "Total number of switches: " << switches.size();
-			AddUpdate(status.str());
+			SendAndPrompt(status.str());
 			return;
 		}
 
@@ -1489,7 +1430,7 @@ namespace console
 		datamodel::Switch* mySwitch = manager.getSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
-			AddUpdate("Unknown switch");
+			SendAndPrompt("Unknown switch");
 			return;
 		}
 		stringstream status;
@@ -1499,27 +1440,7 @@ namespace console
 			<< "\nX:        " << static_cast<int>(mySwitch->posX)
 			<< "\nY:        " << static_cast<int>(mySwitch->posY)
 			<< "\nZ:        " << static_cast<int>(mySwitch->posZ)
-			<< "\nRotation: ";
-		switch (mySwitch->rotation) {
-			case Rotation0:
-				status << "0";
-				break;
-
-			case Rotation90:
-				status << "90";
-				break;
-
-			case Rotation180:
-				status << "180";
-				break;
-
-			case Rotation270:
-				status << "270";
-				break;
-
-			default:
-				status << "unknown";
-		}
+			<< "\nRotation: " << datamodel::LayoutItem::Rotation(mySwitch->rotation);
 		string state;
 		text::Converters::switchStatus(static_cast<switchState_t>(mySwitch->state), state);
 		status << "\nState:    " << state;
@@ -1534,10 +1455,10 @@ namespace console
 			status << manager.getLocoName(mySwitch->getLoco()) << " (" << mySwitch->getLoco() << ")";
 		}
 		*/
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
 
-	void Console::HandleSwitchNew(string& s, size_t& i)
+	void ConsoleClient::HandleSwitchNew(string& s, size_t& i)
 	{
 		string name = ReadText(s, i);
 		layoutPosition_t posX = ReadNumber(s, i);
@@ -1553,168 +1474,11 @@ namespace console
 		string result;
 		if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, timeout, inverted, result))
 		{
-			AddUpdate(result);
+			SendAndPrompt(result);
 			return;
 		}
 		stringstream status;
 		status << "Switch \"" << name << "\" added";
-		AddUpdate(status.str());
+		SendAndPrompt(status.str());
 	}
-
-	/*
-	void Console::HandleSwitchRelease(string& s, size_t& i)
-	{
-		switchID_t switchID = readNumber(s, i);
-		if (!manager.switchRelease(switchID))
-		{
-			addUpdate("Switch not found");
-			return;
-		}
-		addUpdate("Switch released");
-	}
-	*/
-
-	void Console::AddUpdate(const string& status)
-	{
-		if (clientSocket < 0)
-		{
-			return;
-		}
-		string s(status);
-		s.append("\n> ");
-		send_timeout(clientSocket, s.c_str(), s.length(), 0);
-	}
-
-	void Console::booster(const controlType_t managerID, const boosterStatus_t status)
-	{
-		if (status)
-		{
-			AddUpdate("Booster is on");
-		}
-		else
-		{
-			AddUpdate("Booster is off");
-		}
-	}
-
-	void Console::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed)
-	{
-		std::stringstream status;
-		status << manager.getLocoName(locoID) << " speed is " << speed;
-		AddUpdate(status.str());
-	}
-
-	void Console::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction)
-	{
-		std::stringstream status;
-		const char* directionText = (direction ? "forward" : "reverse");
-		status << manager.getLocoName(locoID) << " direction is " << directionText;
-		AddUpdate(status.str());
-	}
-
-	void Console::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state)
-	{
-		std::stringstream status;
-		status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
-		AddUpdate(status.str());
-	}
-
-	void Console::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
-	{
-		if (on == false)
-		{
-			return;
-		}
-		std::stringstream status;
-		string stateText;
-		text::Converters::accessoryStatus(state, stateText);
-		status << manager.getAccessoryName(accessoryID)  << " is " << stateText;
-		AddUpdate(status.str());
-	}
-
-	void Console::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state)
-	{
-		std::stringstream status;
-		status << "Feedback " << pin << " is " << (state ? "on" : "off");
-		AddUpdate(status.str());
-	}
-
-	void Console::track(const controlType_t managerID, const trackID_t trackID, const lockState_t lockState)
-	{
-		std::stringstream status;
-		string stateText;
-		text::Converters::lockStatus(lockState, stateText);
-		status << manager.getTrackName(trackID) << " is " << stateText;
-		AddUpdate(status.str());
-	}
-
-	void Console::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on)
-	{
-		if (on == false)
-		{
-			return;
-		}
-		std::stringstream status;
-		string stateText;
-		text::Converters::switchStatus(state, stateText);
-		status << manager.getSwitchName(switchID) << " is " << stateText;
-		AddUpdate(status.str());
-	}
-
-	void Console::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
-	{
-		std::stringstream status;
-		status << manager.getLocoName(locoID) << " is in track " << manager.getTrackName(trackID);
-		AddUpdate(status.str());
-	}
-
-	void Console::locoRelease(const locoID_t locoID)
-	{
-		stringstream status;
-		status << manager.getLocoName(locoID) << " is not in a track anymore";
-		AddUpdate(status.str());
-	};
-
-	void Console::trackRelease(const trackID_t trackID)
-	{
-		stringstream status;
-		status << manager.getTrackName(trackID) << " is released";
-		AddUpdate(status.str());
-	};
-
-	void Console::streetRelease(const streetID_t streetID)
-	{
-		stringstream status;
-		status << manager.getStreetName(streetID) << " is  released";
-		AddUpdate(status.str());
-	};
-
-	void Console::locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
-	{
-		std::stringstream status;
-		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.getTrackName(trackID);
-		AddUpdate(status.str());
-	}
-
-	void Console::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
-	{
-		std::stringstream status;
-		status << manager.getLocoName(locoID) << " has reached the destination track " << manager.getTrackName(trackID) << " on street " << manager.getStreetName(streetID);
-		AddUpdate(status.str());
-	}
-
-	void Console::locoStart(const locoID_t locoID)
-	{
-		std::stringstream status;
-		status << manager.getLocoName(locoID) << " is in auto mode";
-		AddUpdate(status.str());
-	}
-
-	void Console::locoStop(const locoID_t locoID)
-	{
-		std::stringstream status;
-		status << manager.getLocoName(locoID) << " is in manual mode";
-		AddUpdate(status.str());
-	}
-
 }; // namespace console

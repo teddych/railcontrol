@@ -2,7 +2,7 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "console/console.h"
+#include "console/ConsoleServer.h"
 #include "datamodel/layout_item.h"
 #include "DelayedCall.h"
 #include "hardware/HardwareHandler.h"
@@ -12,7 +12,7 @@
 #include "util.h"
 #include "webserver/webserver.h"
 
-using console::Console;
+using console::ConsoleServer;
 using datamodel::Accessory;
 using datamodel::Track;
 using datamodel::Feedback;
@@ -52,7 +52,7 @@ Manager::Manager(Config& config)
 
 	//loadDefaultValuesToDB();
 
-	controls[ControlIdConsole] = new Console(*this, config.getValue("consoleport", 2222));
+	controls[ControlIdConsole] = new ConsoleServer(*this, config.getValue("consoleport", 2222));
 	controls[ControlIdWebserver] = new WebServer(*this, config.getValue("webserverport", 80));
 
 	storage->allHardwareParams(hardwareParams);

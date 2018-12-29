@@ -9,8 +9,8 @@
 
 namespace Network
 {
-	TcpServer::TcpServer(const unsigned short port) :
-		port(port),
+	TcpServer::TcpServer(const unsigned short port)
+	:	port(port),
 	 	serverSocket(0),
 	 	run(false)
 	{
@@ -20,7 +20,8 @@ namespace Network
 
 		// create server serverSocket
 		serverSocket = socket(AF_INET6, SOCK_STREAM, 0);
-		if (serverSocket < 0) {
+		if (serverSocket < 0)
+		{
 			xlog("Unable to create socket for tcp server. Unable to serve clients.");
 			return;
 		}
@@ -59,7 +60,6 @@ namespace Network
 
 		// create seperate thread that handles the client requests
 		serverThread = std::thread([this] { Worker(); });
-
 	}
 
 	TcpServer::~TcpServer()
@@ -83,7 +83,8 @@ namespace Network
 		serverThread.join();
 	}
 
-	void TcpServer::Worker() {
+	void TcpServer::Worker()
+	{
 		fd_set set;
 		struct timeval tv;
 		struct sockaddr_in6 client_addr;

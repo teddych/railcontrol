@@ -11,7 +11,8 @@ LIBS=-lpthread -ldl
 
 OBJ= \
 	config.o \
-	console/console.o \
+	console/ConsoleClient.o \
+	console/ConsoleServer.o \
 	datamodel/accessory.o \
 	datamodel/feedback.o \
 	datamodel/layout_item.o \

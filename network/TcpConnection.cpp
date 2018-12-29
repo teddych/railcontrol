@@ -7,17 +7,6 @@
 
 namespace Network
 {
-	TcpConnection::TcpConnection(int socket) :
-		connectionSocket(socket),
-		connected(true)
-	{
-	}
-
-	TcpConnection::~TcpConnection()
-	{
-		Terminate();
-	}
-
 	void TcpConnection::Terminate()
 	{
 		if (connected)
@@ -53,16 +42,6 @@ namespace Network
 			return -1;
 		}
 		return ret;
-	}
-
-	int TcpConnection::Send(const std::string& string, const int flags)
-	{
-		return Send(string.c_str(), string.size(), flags);
-	}
-
-	int TcpConnection::Send(const std::string& string)
-	{
-		return Send(string, 0);
 	}
 
 	int TcpConnection::Receive(char* buf, const size_t buflen, const int flags)
