@@ -25,6 +25,8 @@ OBJ= \
 	datamodel/track.o \
 	DelayedCall.o \
 	hardware/HardwareHandler.o \
+	Logger/Logger.o \
+	Logger/LoggerServer.o \
 	manager.o \
 	network/TcpConnection.o \
 	network/TcpServer.o \
@@ -78,7 +80,7 @@ raspi:
 sqlite-shell:
 	make -C storage/sqlite
 
-%.o: %.cpp *.h datamodel/*.h console/*.h webserver/*.h storage/*.h hardware/*.h text/*.h
+%.o: %.cpp *.h datamodel/*.h console/*.h Logger/*.h webserver/*.h storage/*.h hardware/*.h text/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
