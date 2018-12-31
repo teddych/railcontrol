@@ -7,13 +7,6 @@ using std::string;
 
 namespace Logger
 {
-	LoggerServer::LoggerServer(const unsigned short port)
-	:	Network::TcpServer(port),
-	 	run(false)
-	{
-		run = true;
-	}
-
 	LoggerServer::~LoggerServer()
 	{
 		if (run == false)
@@ -38,18 +31,18 @@ namespace Logger
 		clients.push_back(new LoggerClient(connection));
 	}
 
-	Logger& LoggerServer::GetLogger(const std::string& component)
+	Logger* LoggerServer::GetLogger(const std::string& component)
 	{
 		for (auto logger : loggers)
 		{
 			if (logger->IsComponent(component))
 			{
-				return *logger;
+				return logger;
 			}
 		}
 		Logger* logger = new Logger(*this, component);
 		loggers.push_back(logger);
-		return *logger;
+		return logger;
 	}
 
 	void LoggerServer::Send(const std::string& text)

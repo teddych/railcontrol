@@ -16,13 +16,17 @@ namespace Logger
 			LoggerServer(LoggerServer const &) = delete;
 			void operator=(LoggerServer const &) = delete;
 
-			Logger& GetLogger(const std::string& component);
+			Logger* GetLogger(const std::string& component);
 			void Send(const std::string& text);
 
-			static LoggerServer& Instance() { static LoggerServer server(2223); return server; }
+			static LoggerServer& Instance(const unsigned short port = 2223) { static LoggerServer server(port); return server; }
 
 		private:
-			LoggerServer(const unsigned short port);
+			LoggerServer(const unsigned short port)
+			:	Network::TcpServer(port),
+			 	run(true)
+			{}
+
 			~LoggerServer();
 			void Work(Network::TcpConnection* connection) override;
 

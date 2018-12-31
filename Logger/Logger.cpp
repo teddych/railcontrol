@@ -1,23 +1,27 @@
+#include <sys/time.h> // gettimeofday
+
 #include "Logger/Logger.h"
 
 using std::string;
 
 namespace Logger
 {
-	Logger::Logger(LoggerServer& server, const string& component)
-	:	server(server),
-	 	component(component)
+	void Logger::Log(const string& type, const string& text)
 	{
+		char buffer[27];
 
-	}
+		// Get the current time
+		struct timeval timestamp;
+		gettimeofday(&timestamp, NULL);
 
-	Logger::~Logger()
-	{
-	}
+		// Convert it to local time representation
+		struct tm tm;
+		gmtime_r(&timestamp.tv_sec, &tm);
+		strftime(buffer, sizeof(buffer), "%F %T.", &tm);
+		snprintf(buffer + 20, sizeof(buffer) - 20, "%06li", timestamp.tv_usec);
 
-	void Logger::Info(const string& text)
-	{
-		string out("Info: " + text + "\n");
+		string out(string(buffer) + ": " + type + ": " + component + ": " + text + "\n");
 		server.Send(out);
 	}
 }
+
