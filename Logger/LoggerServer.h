@@ -19,7 +19,8 @@ namespace Logger
 			Logger* GetLogger(const std::string& component);
 			void Send(const std::string& text);
 
-			static LoggerServer& Instance(const unsigned short port = 2223) { static LoggerServer server(port); return server; }
+			static const unsigned short defaultPort = 2223;
+			static LoggerServer& Instance(const unsigned short port = defaultPort) { static LoggerServer server(port); return server; }
 
 		private:
 			LoggerServer(const unsigned short port)
