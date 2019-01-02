@@ -8,6 +8,7 @@
 
 #include "console/ConsoleServer.h"
 #include "command_interface.h"
+#include "Logger/Logger.h"
 #include "manager.h"
 #include "network/TcpServer.h"
 
@@ -21,7 +22,8 @@ namespace console
 				run(false),
 				server(consoleServer),
 				clientThread(std::thread([this] {Worker();})),
-				manager(manager)
+				manager(manager),
+				logger(Logger::LoggerServer::Instance().GetLogger("Console"))
 			{}
 
 			~ConsoleClient()
@@ -97,6 +99,7 @@ namespace console
 			ConsoleServer& server;
 			std::thread clientThread;
 			Manager& manager;
+			Logger::Logger* logger;
 	};
 }; // namespace console
 

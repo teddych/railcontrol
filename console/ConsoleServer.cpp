@@ -26,10 +26,10 @@ namespace console
 	ConsoleServer::ConsoleServer(Manager& manager, const unsigned short port)
 	:	CommandInterface(ControlTypeConsole),
 		Network::TcpServer(port),
-		run(false),
+		run(true),
 		manager(manager)
 	{
-		run = true;
+		logger->Info("Starting server");
 	}
 
 	ConsoleServer::~ConsoleServer()
@@ -38,7 +38,7 @@ namespace console
 		{
 			return;
 		}
-		xlog("Stopping console server");
+		logger->Info("Stopping server");
 
 		run = false;
 

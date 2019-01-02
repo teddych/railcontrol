@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "command_interface.h"
+#include "Logger/Logger.h"
 #include "manager.h"
 #include "network/TcpServer.h"
 
@@ -46,6 +47,7 @@ namespace console
 			volatile unsigned char run;
 			std::vector<ConsoleClient*> clients;
 			Manager& manager;
+			Logger::Logger* logger;
 	};
 }; // namespace console
 

@@ -32,22 +32,23 @@ namespace hardware
 	}
 
 	// start the thing
-	CS2::CS2(const HardwareParams* params) :
-		manager(params->manager)
+	CS2::CS2(const HardwareParams* params)
+	:	manager(params->manager),
+		logger(Logger::Logger::GetLogger("CS2 " + params->name + " " + params->arg1))
 	{
 		std::stringstream ss;
 		ss << "Maerklin Central Station 2 (CS2) / " << params->name << " at IP " << params->arg1;
 		name = ss.str();
-		xlog(name.c_str());
+		logger->Info(name);
 		run = true;
-		senderSocket = create_udp_connection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->arg1.c_str(), CS2_PORT_SEND);
+		senderSocket = CreateUdpConnection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->arg1.c_str(), CS2_PORT_SEND);
 		if (senderSocket < 0)
 		{
-			xlog("Unable to create UDP socket for sending data to CS2");
+			logger->Error("Unable to create UDP socket for sending data to CS2");
 		}
 		else
 		{
-			xlog("CS2 sender socket created");
+			logger->Info("CS2 sender socket created");
 		}
 		receiverThread = std::thread([this] {receiver();});
 	}
@@ -57,7 +58,7 @@ namespace hardware
 	{
 		run = false;
 		close (senderSocket);
-		xlog("CS2 sender socket closed");
+		logger->Info("CS2 sender socket closed");
 		receiverThread.join();
 	}
 
@@ -170,14 +171,7 @@ namespace hardware
 	// turn booster on or off
 	void CS2::Booster(const boosterStatus_t status)
 	{
-		if (status)
-		{
-			xlog("Turning CS2 booster on");
-		}
-		else
-		{
-			xlog("Turning CS2 booster off");
-		}
+		logger->Info("Turning CS2 booster {0}", status ? "on" : "off");
 		char buffer[CS2_CMD_BUF_LEN];
 		// fill up header & locid
 		createCommandHeader(buffer, 0, 0x00, 0, 5);
@@ -191,14 +185,14 @@ namespace hardware
 		// send data
 		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1)
 		{
-			xlog("Unable to send data to CS2");
+			logger->Error("Unable to send data to CS2");
 		}
 	}
 
 	// set the speed of a loco
 	void CS2::SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
 	{
-		xlog("Setting speed of cs2 loco %i/%i to speed %i", protocol, address, speed);
+		logger->Info("Setting speed of cs2 loco {0}/{1} to speed {2}", protocol, address, speed);
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x04, 0, 6);
@@ -212,15 +206,16 @@ namespace hardware
 		buffer[10] = (speed & 0xFF);
 
 		// send data
-		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1) {
-			xlog("Unable to send data to CS2");
+		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1)
+		{
+			logger->Error("Unable to send data to CS2");
 		}
 	}
 
 	// set the direction of a loco
 	void CS2::LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction)
 	{
-		xlog("Setting direction of cs2 loco %i/%i to %s", protocol, address, direction ? "forward" : "reverse");
+		logger->Info("Setting direction of cs2 loco {0}/{1} to {2}", protocol, address, direction == DirectionRight ? "forward" : "reverse");
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x05, 0, 5);
@@ -235,14 +230,14 @@ namespace hardware
 		// send data
 		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1)
 		{
-			xlog("Unable to send data to CS2");
+			logger->Error("Unable to send data to CS2");
 		}
 	}
 
 	// set loco function
 	void CS2::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
-		xlog("Setting f%i of cs2 loco %i/%i to \"%s\"", (int)function, (int)protocol, (int)address, on ? "on" : "off");
+		logger->Info("Setting f{0} of cs2 loco {1}/{2} to \"{3}\"", static_cast<int>(function), static_cast<int>(protocol), static_cast<int>(address), on ? "on" : "off");
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x06, 0, 6);
@@ -254,12 +249,10 @@ namespace hardware
 		buffer[9] = function;
 		buffer[10] = on;
 
-		hexlog(buffer, sizeof(buffer));
-
 		// send data
 		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1)
 		{
-			xlog("Unable to send data to CS2");
+			logger->Error("Unable to send data to CS2");
 		}
 	}
 
@@ -267,7 +260,7 @@ namespace hardware
 	{
 		std::string stateText;
 		text::Converters::accessoryStatus(state, stateText);
-		xlog("Setting state of cs2 accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, stateText.c_str(), on ? "on" : "off");
+		logger->Info("Setting state of cs2 accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
 		createCommandHeader(buffer, 0, 0x0B, 0, 6);
@@ -279,31 +272,31 @@ namespace hardware
 		buffer[9] = state & 0x03;
 		buffer[10] = static_cast<unsigned char>(on);
 
-		hexlog(buffer, sizeof(buffer));
-
 		// send data
 		if (sendto(senderSocket, buffer, sizeof(buffer), 0, (struct sockaddr*) &sockaddr_inSender, sizeof(struct sockaddr_in)) == -1)
 		{
-			xlog("Unable to send data to CS2");
+			logger->Error("Unable to send data to CS2");
 		}
 	}
 
 	// the receiver thread of the CS2
 	void CS2::receiver()
 	{
-		xlog("CS2 receiver started");
+		logger->Info("CS2 receiver started");
 		struct sockaddr_in sockaddr_in;
 		int sock;
-		sock = create_udp_connection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), "0.0.0.0", CS2_PORT_RECV);
+		sock = CreateUdpConnection((struct sockaddr*)&sockaddr_in, sizeof(struct sockaddr_in), "0.0.0.0", CS2_PORT_RECV);
 		if (sock < 0)
 		{
-			xlog("Unable to create UDP connection for receiving data from CS2");
+			logger->Error("Unable to create UDP connection for receiving data from CS2");
 			return;
 		}
 
 		if (bind(sock, (struct sockaddr*)&sockaddr_in, sizeof(sockaddr_in)) == -1)
 		{
-			xlog("Unable to bind the socket for CS2 receiver");
+			logger->Error("Unable to bind the socket for CS2 receiver, Closing socket.");
+			close(sock);
+			return;
 		}
 		char buffer[CS2_CMD_BUF_LEN];
 		while(run)
@@ -318,7 +311,7 @@ namespace hardware
 
 			if (datalen < 0 && errno != EAGAIN)
 			{
-				xlog("Unable to receive data from CS2. Closing socket.");
+				logger->Error("Unable to receive data from CS2. Closing socket.");
 				close(sock);
 				return;
 			}
@@ -348,7 +341,7 @@ namespace hardware
 						text = "off";
 						state = FeedbackStateFree;
 					}
-					xlog("CS2 S88 Pin %u set to %s", address, text);
+					logger->Info("CS2 S88 Pin {0} set to {1}", address, text);
 					manager->feedback(ControlTypeHardware, address, state);
 				}
 				else if (command == 0x04 && !response && length == 6)
@@ -375,11 +368,37 @@ namespace hardware
 			}
 			else if (run)
 			{
-				xlog("Unable to receive valid data from CS2. Continuing with next packet.");
+				logger->Error("Unable to receive valid data from CS2. Continuing with next packet.");
 			}
 		}
 		close(sock);
-		xlog("CS2 receiver ended");
+		logger->Error("CS2 receiver ended");
 	}
 
+	int CS2::CreateUdpConnection(const struct sockaddr* sockaddr, const unsigned int sockaddr_len, const char* server, const unsigned short port) {
+		int sock;
+
+		// create socket
+		if ((sock = socket (AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == -1)
+		{
+			return -1;
+		}
+
+		// setting listening port
+		memset ((char*)sockaddr, 0, sockaddr_len);
+		struct sockaddr_in* sockaddr_in = (struct sockaddr_in*)sockaddr;
+		sockaddr_in->sin_family = AF_INET;
+		sockaddr_in->sin_port = htons(port);
+		if (inet_aton (server, &sockaddr_in->sin_addr) == 0)
+		{
+			return -2;
+		}
+
+		// setting receive timeout to 1s
+		struct timeval tv;
+		tv.tv_sec = 1;
+		tv.tv_usec = 0;
+		setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
+		return sock;
+	}
 } // namespace

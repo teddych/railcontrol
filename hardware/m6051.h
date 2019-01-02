@@ -4,6 +4,7 @@
 
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
+#include "Logger/Logger.h"
 #include "manager.h"
 
 namespace hardware
@@ -26,6 +27,7 @@ namespace hardware
 			std::string name;
 			Manager* manager;
 			int ttyFileDescriptor;
+			Logger::Logger* logger;
 	};
 
 	extern "C" M6051* create_m6051(const HardwareParams* params);

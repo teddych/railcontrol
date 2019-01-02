@@ -3,7 +3,7 @@
 #include <thread>
 #include <vector>
 
-#include "TcpConnection.h"
+#include "network/TcpConnection.h"
 
 namespace Network
 {
@@ -23,5 +23,6 @@ namespace Network
 			volatile bool run;
 			std::thread serverThread;
 			std::vector<TcpConnection*> connections;
+			std::string error;
 	};
 }

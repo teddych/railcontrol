@@ -25,17 +25,18 @@ namespace hardware
 
 	// start the thing
 	M6051::M6051(const HardwareParams* params) :
-		manager(params->manager)
+		manager(params->manager),
+		logger(Logger::Logger::GetLogger("M6051 " + params->name + " " + params->arg1))
 	{
 		std::stringstream ss;
 		ss << "Maerklin Interface (6050/6051) / " << params->name << " at serial port " << params->arg1;
 		name = ss.str();
-		xlog(name.c_str());
+		logger->Info(name);
 
 		ttyFileDescriptor = open(params->arg1.c_str(), O_RDWR | O_NOCTTY);
 		if (ttyFileDescriptor == -1)
 		{
-			xlog("Maerklin Interface: unable to open %s", params->arg1.c_str());
+			logger->Error("unable to open {0}", params->arg1);
 			return;
 		}
 
@@ -88,12 +89,12 @@ namespace hardware
 
 		if (status)
 		{
-			xlog("Turning Märklin Interface booster on");
+			logger->Info("Turning booster on");
 			c = 96;
 		}
 		else
 		{
-			xlog("Turning Märklin Interface booster off");
+			logger->Info("Turning booster off");
 			c = 97;
 		}
 		__attribute__((unused)) int ret = write(ttyFileDescriptor, &c, 1);
@@ -108,7 +109,7 @@ namespace hardware
 		}
 		unsigned char speedMM = speed / 69;
 		unsigned char addressMM = static_cast<unsigned char>(address);
-		xlog("Setting speed of Märklin Interface loco %i to speed %i", address, speedMM);
+		logger->Info("Setting speed of loco {0} to speed {1}", address, speedMM);
 		__attribute__((unused)) int ret = write(ttyFileDescriptor, &speedMM, 1);
 		ret = write(ttyFileDescriptor, &addressMM, 1);
 	}
@@ -120,7 +121,7 @@ namespace hardware
 		{
 			return;
 		}
-		xlog("Changing direction of Märklin Interface loco %i", address);
+		logger->Info("Changing direction of loco {0}", address);
 		unsigned char speedMM = 15;
 		unsigned char addressMM = static_cast<unsigned char>(address);
 		__attribute__((unused)) int ret = write(ttyFileDescriptor, &speedMM, 1);
@@ -134,7 +135,7 @@ namespace hardware
 		{
 			return;
 		}
-		xlog("Setting f%i of Märklin Interface loco %i to \"%s\"", (int)function, (int)address, on ? "on" : "off");
+		logger->Info("Setting f%i of loco {0} to \"{1}\"", static_cast<int>(function), static_cast<int>(address), on ? "on" : "off");
 	}
 
 	void M6051::Accessory(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
@@ -146,7 +147,7 @@ namespace hardware
 
 		std::string stateText;
 		text::Converters::accessoryStatus(state, stateText);
-		xlog("Setting state of Märklin Interface accessory %i/%s to \"%s\"", (int)address, stateText.c_str(), on ? "on" : "off");
+		logger->Info("Setting state of accessory {0}/{1} to \"{2}\"", static_cast<int>(address), stateText, on ? "on" : "off");
 		unsigned char stateMM = (state == AccessoryStateOn ? 33 : 34);
 		unsigned char addressMM = static_cast<unsigned char>(address);
 		__attribute__((unused)) int ret = write(ttyFileDescriptor, &stateMM, 1);

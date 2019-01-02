@@ -9,6 +9,7 @@
 #include "config.h"
 #include "datamodel/datamodel.h"
 #include "hardware/HardwareParams.h"
+#include "Logger/Logger.h"
 #include "storage/StorageHandler.h"
 
 class DelayedCall;
@@ -173,4 +174,6 @@ class Manager {
 		const std::string unknownTrack;
 		const std::string unknownSwitch;
 		const std::string unknownStreet;
+
+		Logger::Logger* logger;
 };

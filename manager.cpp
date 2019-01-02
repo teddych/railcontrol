@@ -38,7 +38,8 @@ Manager::Manager(Config& config)
 	unknownFeedback("Unknown Feedback"),
 	unknownTrack("Unknown Track"),
 	unknownSwitch("Unknown Switch"),
-	unknownStreet("Unknown Street")
+	unknownStreet("Unknown Street"),
+	logger(Logger::Logger::GetLogger("Manager"))
 {
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
@@ -46,7 +47,7 @@ Manager::Manager(Config& config)
 	storage = new StorageHandler(this, storageParams);
 	if (storage == nullptr)
 	{
-		xlog("Unable to create storage handler");
+		logger->Info("Unable to create storage handler");
 		return;
 	}
 
@@ -60,43 +61,43 @@ Manager::Manager(Config& config)
 	{
 		hardwareParam.second->manager = this;
 		controls[hardwareParam.second->controlID] = new HardwareHandler(*this, hardwareParam.second);
-		xlog("Loaded control %i: %s", hardwareParam.first, hardwareParam.second->name.c_str());
+		logger->Info("Loaded control {0}: {1}", hardwareParam.first, hardwareParam.second->name);
 	}
 
 	storage->allLocos(locos);
 	for (auto loco : locos)
 	{
-		xlog("Loaded loco %i: %s", loco.second->objectID, loco.second->name.c_str());
+		logger->Info("Loaded loco {0}: {1}", loco.second->objectID, loco.second->name);
 	}
 
 	storage->allAccessories(accessories);
 	for (auto accessory : accessories)
 	{
-		xlog("Loaded accessory %i: %s", accessory.second->objectID, accessory.second->name.c_str());
+		logger->Info("Loaded accessory {0}: {1}", accessory.second->objectID, accessory.second->name);
 	}
 
 	storage->allFeedbacks(feedbacks);
 	for (auto feedback : feedbacks)
 	{
-		xlog("Loaded feedback %i: %s", feedback.second->objectID, feedback.second->name.c_str());
+		logger->Info("Loaded feedback {0}: {1}", feedback.second->objectID, feedback.second->name);
 	}
 
 	storage->allTracks(tracks);
 	for (auto track : tracks)
 	{
-		xlog("Loaded track %i: %s", track.second->objectID, track.second->name.c_str());
+		logger->Info("Loaded track {0}: {1}", track.second->objectID, track.second->name);
 	}
 
 	storage->allSwitches(switches);
 	for (auto mySwitch : switches)
 	{
-		xlog("Loaded switch %i: %s", mySwitch.second->objectID, mySwitch.second->name.c_str());
+		logger->Info("Loaded switch {0}: {1}", mySwitch.second->objectID, mySwitch.second->name);
 	}
 
 	storage->allStreets(streets);
 	for (auto street : streets)
 	{
-		xlog("Loaded street %i: %s", street.second->objectID, street.second->name.c_str());
+		logger->Info("Loaded street {0}: {1}", street.second->objectID, street.second->name);
 	}
 	// FIXME: load locos into tracks
 }
@@ -115,37 +116,37 @@ Manager::~Manager()
 
 	for (auto street : streets)
 	{
-		xlog("Saving street %i: %s", street.second->objectID, street.second->name.c_str());
+		logger->Info("Saving street {0}: {1}", street.second->objectID, street.second->name);
 		storage->street(*(street.second));
 		delete street.second;
 	}
 	for (auto mySwitch : switches)
 	{
-		xlog("Saving switch %i: %s", mySwitch.second->objectID, mySwitch.second->name.c_str());
+		logger->Info("Saving switch {0}: {1}", mySwitch.second->objectID, mySwitch.second->name);
 		storage->saveSwitch(*(mySwitch.second));
 		delete mySwitch.second;
 	}
 	for (auto accessory : accessories)
 	{
-		xlog("Saving accessory %i: %s", accessory.second->objectID, accessory.second->name.c_str());
+		logger->Info("Saving accessory {0}: {1}", accessory.second->objectID, accessory.second->name);
 		storage->accessory(*(accessory.second));
 		delete accessory.second;
 	}
 	for (auto  feedback : feedbacks)
 	{
-		xlog("Saving feedback %i: %s", feedback.second->objectID, feedback.second->name.c_str());
+		logger->Info("Saving feedback {0}: {1}", feedback.second->objectID, feedback.second->name);
 		storage->feedback(*(feedback.second));
 		delete feedback.second;
 	}
 	for (auto track : tracks)
 	{
-		xlog("Saving track %i: %s", track.second->objectID, track.second->name.c_str());
+		logger->Info("Saving track {0}: {1}", track.second->objectID, track.second->name);
 		storage->track(*(track.second));
 		delete track.second;
 	}
 	for (auto loco : locos)
 	{
-		xlog("Saving loco %i: %s", loco.second->objectID, loco.second->name.c_str());
+		logger->Info("Saving loco {0}: {1}", loco.second->objectID, loco.second->name);
 		storage->loco(*(loco.second));
 		delete loco.second;
 	}
@@ -166,7 +167,7 @@ Manager::~Manager()
 		{
 			continue;
 		}
-		xlog("Unloading control %i: %s", controlID, params->name.c_str());
+		logger->Info("Unloading control {0}: {1}", controlID, params->name);
 		delete control.second;
 		hardwareParams.erase(controlID);
 		delete params;
@@ -566,7 +567,7 @@ bool Manager::locoSpeed(const controlType_t managerID, const locoID_t locoID, co
 	{
 		s = MaxSpeed;
 	}
-	xlog("%s (%i) speed is now %i", loco->name.c_str(), locoID, s);
+	logger->Info("{0} ({1}) speed is now {2}", loco->name, locoID, s);
 	loco->Speed(s);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -602,7 +603,7 @@ void Manager::locoDirection(const controlType_t managerID, const locoID_t locoID
 {
 	Loco* loco = getLoco(locoID);
 	loco->SetDirection(direction);
-	xlog("%s (%i) direction is now %i", loco->name.c_str(), locoID, direction);
+	logger->Info("{0} ({1}) direction is now {2}", loco->name, locoID, direction);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -614,7 +615,7 @@ void Manager::locoFunction(const controlType_t managerID, const locoID_t locoID,
 {
 	Loco* loco = getLoco(locoID);
 	loco->SetFunction(function, on);
-	xlog("%s (%i) function %i is now %s", loco->name.c_str(), locoID, function, (on ? "on" : "off"));
+	logger->Info("{0} ({1}) function {2} is now {3}", loco->name, locoID, function, (on ? "on" : "off"));
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -831,7 +832,7 @@ void Manager::feedback(const controlType_t managerID, const feedbackPin_t pin, c
 	{
 		return;
 	}
-	xlog("Feedback %i is now %s", pin, (state ? "on" : "off"));
+	logger->Info("Feedback {0} is now {1}", pin, (state ? "on" : "off"));
 	feedback->setState(state);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1436,7 +1437,7 @@ bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 		return false;
 	}
 
-	xlog("%s (%i) is now on track %s (%i)", loco->name.c_str(), loco->objectID, track->name.c_str(), track->objectID);
+	logger->Info("{0} ({1}) is now on track {2} ({3})", loco->name, loco->objectID, track->name, track->objectID);
 
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)

@@ -15,7 +15,6 @@ namespace Logger
 		{
 			return;
 		}
-		xlog("Stopping logging server");
 
 		run = false;
 

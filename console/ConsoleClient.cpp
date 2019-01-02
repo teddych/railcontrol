@@ -22,9 +22,9 @@ namespace console
 {
 	void ConsoleClient::Worker()
 	{
-		xlog("Console connection: open");
+		logger->Info("Open connection");
 		WorkerImpl();
-		xlog("Console connection: close");
+		logger->Info("Close connection");
 	}
 
 	void ConsoleClient::WorkerImpl()

@@ -26,6 +26,7 @@ namespace hardware
 
 
 	Virtual::Virtual(const HardwareParams* params)
+	:	logger(Logger::Logger::GetLogger("Virtual " + params->name))
 	{
 		std::stringstream ss;
 		ss << "Virtual Command Station / " << params->name;
@@ -35,14 +36,7 @@ namespace hardware
 	// turn booster on or off
 	void Virtual::Booster(const boosterStatus_t status)
 	{
-		if (status)
-		{
-			xlog("Turning virtual booster on");
-		}
-		else
-		{
-			xlog("Turning virtual booster off");
-		}
+		logger->Info("Turning booster {0}", status ? "on" : "off");
 	}
 
 	void Virtual::GetProtocols(std::vector<protocol_t>& protocols) const
@@ -58,19 +52,19 @@ namespace hardware
 	// set loco speed
 	void Virtual::SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
 	{
-		xlog("Setting speed of virtual loco %i/%i to speed %i", protocol, address, speed);
+		logger->Info("Setting speed of loco {0}/{1} to speed {2}", protocol, address, speed);
 	}
 
 	// set the direction of a loco
 	void Virtual::LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction)
 	{
-		xlog("Setting direction of virtual loco %i/%i to %s", protocol, address, direction ? "forward" : "reverse");
+		logger->Info("Setting direction of loco {0}/{1} to {2}", protocol, address, direction == DirectionRight ? "forward" : "reverse");
 	}
 
 	// set loco function
 	void Virtual::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
-		xlog("Setting f%i of virtual loco %i/%i to \"%s\"", (int)function, (int)protocol, (int)address, on ? "on" : "off");
+		logger->Info("Setting f%i of loco {0}/{1} to \"{2}\"", static_cast<int>(function), static_cast<int>(protocol), static_cast<int>(address), on ? "on" : "off");
 	}
 
 	// accessory command
@@ -78,7 +72,7 @@ namespace hardware
 	{
 		std::string stateText;
 		text::Converters::accessoryStatus(state, stateText);
-		xlog("Setting state of virtual accessory %i/%i/%s to \"%s\"", (int)protocol, (int)address, stateText.c_str(), on ? "on" : "off");
+		logger->Info("Setting state of virtual accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
 	}
 
 } // namespace

@@ -4,6 +4,7 @@
 
 #include "hardware/HardwareInterface.h"
 #include "hardware/HardwareParams.h"
+#include "Logger/Logger.h"
 
 namespace hardware
 {
@@ -40,6 +41,7 @@ namespace hardware
 
 		private:
 			std::string name;
+			Logger::Logger* logger;
 	};
 
 	extern "C" Virtual* create_virtual(const HardwareParams* params);

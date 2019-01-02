@@ -51,9 +51,9 @@ namespace webserver
 	// worker is the thread that handles client requests
 	void WebClient::Worker()
 	{
-		xlog("HTTP connection %i: open", id);
+		logger->Info("HTTP connection {0}: open", id);
 		WorkerImpl();
-		xlog("HTTP connection %i: close", id);
+		logger->Info("HTTP connection {0}: close", id);
 	}
 
 	void WebClient::WorkerImpl()
@@ -90,7 +90,7 @@ namespace webserver
 
 			if (lines.size() <= 1)
 			{
-				xlog("HTTP connection %i: Ignoring invalid request", id);
+				logger->Info("HTTP connection {0}: Ignoring invalid request", id);
 				return;
 			}
 
@@ -101,12 +101,12 @@ namespace webserver
 			map<string, string> headers;
 			interpretClientRequest(lines, method, uri, protocol, arguments, headers);
 			keepalive = (GetStringMapEntry(headers, "Connection", "close").compare("keep-alive") == 0);
-			xlog("HTTP connection %i: Request %s %s", id, method.c_str(), uri.c_str());
+			logger->Info("HTTP connection {0}: Request {1} {2}", id, method, uri);
 
 			// if method is not implemented
 			if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0))
 			{
-				xlog("HTTP connection %i: HTTP method %s not implemented", id, method.c_str());
+				logger->Info("HTTP connection {0}: HTTP method {1} not implemented", id, method);
 				HtmlResponseNotImplemented response(method);
 				connection->Send(response);
 				return;

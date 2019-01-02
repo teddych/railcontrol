@@ -7,6 +7,7 @@
 
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
+#include "Logger/Logger.h"
 #include "manager.h"
 
 // CAN protocol specification at http://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
@@ -41,6 +42,8 @@ namespace hardware
 			typedef unsigned char cs2Length_t;
 			typedef uint32_t cs2Address_t;
 
+			Logger::Logger* logger;
+
 			void intToData(const uint32_t i, char* buffer);
 			uint32_t dataToInt(const char* buffer);
 			uint16_t dataToShort(const char* buffer);
@@ -49,6 +52,7 @@ namespace hardware
 			void createLocID(char* buffer, const protocol_t& protocol, const address_t& address);
 			void createAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address);
 			void receiver();
+			int CreateUdpConnection(const struct sockaddr* sockaddr, const unsigned int sockaddr_len, const char* server, const unsigned short port);
 	};
 
 	extern "C" CS2* create_cs2(const HardwareParams* params);

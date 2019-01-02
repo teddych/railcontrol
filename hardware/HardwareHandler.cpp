@@ -6,6 +6,7 @@
 #include <sstream>
 
 #include "datatypes.h"
+#include "Logger/Logger.h"
 #include "hardware/HardwareHandler.h"
 #include "hardware/cs2.h"
 #include "hardware/m6051.h"
@@ -69,6 +70,7 @@ namespace hardware
 		std::stringstream ss;
 		ss << "hardware/" << symbol << ".so";
 
+		Logger::Logger* logger = Logger::Logger::GetLogger("HardwareHandler");
 		void* dlhandle = manager.hardwareLibraryGet(type);
 		if (dlhandle == nullptr)
 		{
@@ -76,13 +78,13 @@ namespace hardware
 			dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
 			if (!dlhandle)
 			{
-				xlog("Can not open library: %s", dlerror());
+				logger->Error("Can not open library: {0}", dlerror());
 				return;
 			}
-			xlog("Hardware library %s loaded", symbol.c_str());
+			logger->Info("Hardware library {0} loaded", symbol);
 			if (!manager.hardwareLibraryAdd(type, dlhandle))
 			{
-				xlog("Unable to store library address");
+				logger->Error("Unable to store library address");
 				return;
 			}
 		}
@@ -90,24 +92,24 @@ namespace hardware
 		// look for symbol create_*
 		ss.str(std::string());
 		ss << "create_" << symbol;
-		const char* s = ss.str().c_str();
-		createHardware_t* new_create_hardware = (createHardware_t*)dlsym(dlhandle, s);
+		string s = ss.str();
+		createHardware_t* new_create_hardware = (createHardware_t*)dlsym(dlhandle, s.c_str());
 		error = dlerror();
 		if (error)
 		{
-			xlog("Unable to find symbol %s: %s", s, error);
+			logger->Error("Unable to find symbol {0}: {1}", s, error);
 			return;
 		}
 
 		// look for symbol destroy_*
 		ss.str(std::string());
 		ss << "destroy_" << symbol;
-		s = ss.str().c_str();
-		destroyHardware_t* new_destroy_hardware = (destroyHardware_t*)dlsym(dlhandle, ss.str().c_str());
+		s = ss.str();
+		destroyHardware_t* new_destroy_hardware = (destroyHardware_t*)dlsym(dlhandle, s.c_str());
 		error = dlerror();
 		if (error)
 		{
-			xlog("Unable to find symbol %s: %s", s, error);
+			logger->Error("Unable to find symbol {0}: {1}", s, error);
 			return;
 		}
 
@@ -149,19 +151,23 @@ namespace hardware
 			return;
 		}
 		dlclose(dlhandle);
-		xlog("Hardware library %s unloaded", hardwareSymbols[type].c_str());
+		Logger::Logger::GetLogger("HardwareHandler")->Info("Hardware library {0} unloaded", hardwareSymbols[type]);
 #endif
 	}
 
-	const std::string HardwareHandler::getName() const {
-		if (instance == nullptr) {
+	const std::string HardwareHandler::getName() const
+	{
+		if (instance == nullptr)
+		{
 			return "Unknown, not running";
 		}
 		return instance->GetName();
 	}
 
-	void HardwareHandler::getProtocols(std::vector<protocol_t>& protocols) const {
-		if (instance == nullptr) {
+	void HardwareHandler::getProtocols(std::vector<protocol_t>& protocols) const
+	{
+		if (instance == nullptr)
+		{
 			protocols.push_back(ProtocolNone);
 			return;
 		}
@@ -169,57 +175,70 @@ namespace hardware
 		instance->GetProtocols(protocols);
 	}
 
-	bool HardwareHandler::protocolSupported(protocol_t protocol) const {
-		if (instance == nullptr) {
+	bool HardwareHandler::protocolSupported(protocol_t protocol) const
+	{
+		if (instance == nullptr)
+		{
 			return false;
 		}
 		return instance->ProtocolSupported(protocol);
 	}
 
-	void HardwareHandler::booster(const controlType_t managerID, const boosterStatus_t status) {
-		if (managerID == ControlTypeHardware || instance == nullptr) {
+	void HardwareHandler::booster(const controlType_t managerID, const boosterStatus_t status)
+	{
+		if (managerID == ControlTypeHardware || instance == nullptr)
+		{
 			return;
 		}
 		instance->Booster(status);
 	}
 
-	void HardwareHandler::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed) {
-		if (managerID == ControlTypeHardware || instance == nullptr) {
+	void HardwareHandler::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed)
+	{
+		if (managerID == ControlTypeHardware || instance == nullptr)
+		{
 			return;
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != getControlID()) {
+		if (controlID != getControlID())
+		{
 			return;
 		}
 		instance->SetLocoSpeed(protocol, address, speed);
 	}
 
-	void HardwareHandler::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) {
-		if (managerID == ControlTypeHardware || instance == nullptr) {
+	void HardwareHandler::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction)
+	{
+		if (managerID == ControlTypeHardware || instance == nullptr)
+		{
 			return;
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != getControlID()) {
+		if (controlID != getControlID())
+		{
 			return;
 		}
 		instance->LocoDirection(protocol, address, direction);
 	}
 
-	void HardwareHandler::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on) {
-		if (managerID == ControlTypeHardware || instance == nullptr) {
+	void HardwareHandler::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on)
+	{
+		if (managerID == ControlTypeHardware || instance == nullptr)
+		{
 			return;
 		}
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != getControlID()) {
+		if (controlID != getControlID())
+		{
 			return;
 		}
 		instance->LocoFunction(protocol, address, function, on);

@@ -8,9 +8,9 @@
 #include <unistd.h>
 
 #include "datatypes.h"
+#include "Logger/Logger.h"
 #include "railcontrol.h"
 #include "text/converters.h"
-#include "util.h"
 #include "webserver/webclient.h"
 #include "webserver/webserver.h"
 
@@ -41,7 +41,7 @@ namespace webserver {
 		{
 			return;
 		}
-		xlog("Stopping webserver");
+		Logger::Logger::GetLogger("Webserver")->Info("Stopping webserver");
 		{
 			std::lock_guard<std::mutex> lock(updateMutex);
 			updates[++updateID] = "data: status=Stopping Railcontrol";

@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "Logger/Logger.h"
 #include "storage/StorageHandler.h"
 #include "util.h"
 
@@ -35,35 +36,36 @@ namespace storage {
 		char* error;
 		std::stringstream ss;
 		ss << "storage/" << params.module << ".so";
+
+		Logger::Logger* logger = Logger::Logger::GetLogger("StorageHandler");
 		dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
 		if (!dlhandle)
 		{
-			xlog("Can not open storage library: %s", dlerror());
+			logger->Error("Can not open storage library: %s", dlerror());
 			return;
 		}
 
 		// look for symbol create_*
 		ss.str(std::string());
 		ss << "create_" << params.module;
-		const char* s = ss.str().c_str();
-		createStorage_t* newCreateStorage = (createStorage_t*) dlsym(dlhandle, s);
+		string s = ss.str();
+		createStorage_t* newCreateStorage = (createStorage_t*) dlsym(dlhandle, s.c_str());
 		error = dlerror();
 		if (error)
 		{
-			xlog("Unable to find symbol %s", s);
+			logger->Error("Unable to find symbol {0}", s);
 			return;
 		}
 
 		// look for symbol destroy_*
 		ss.str(std::string());
 		ss << "destroy_" << params.module;
-		s = ss.str().c_str();
-		destroyStorage_t* newDestroyStorage = (destroyStorage_t*) dlsym(dlhandle,
-		    ss.str().c_str());
+		s = ss.str();
+		destroyStorage_t* newDestroyStorage = (destroyStorage_t*) dlsym(dlhandle, s.c_str());
 		error = dlerror();
 		if (error)
 		{
-			xlog("Unable to find symbol %s", s);
+			logger->Error("Unable to find symbol {0}", s);
 			return;
 		}
 
@@ -98,37 +100,47 @@ namespace storage {
 #endif
 	}
 
-	void StorageHandler::hardwareParams(const hardware::HardwareParams& hardwareParams) {
-		if (!instance) {
+	void StorageHandler::hardwareParams(const hardware::HardwareParams& hardwareParams)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->hardwareParams(hardwareParams);
 	}
 
-	void StorageHandler::allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) {
-		if (!instance) {
+	void StorageHandler::allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->allHardwareParams(hardwareParams);
 	}
 
-	void StorageHandler::deleteHardwareParams(const controlID_t controlID) {
-		if (!instance) {
+	void StorageHandler::deleteHardwareParams(const controlID_t controlID)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->deleteHardwareParams(controlID);
 	}
 
-	void StorageHandler::loco(const Loco& loco) {
-		if (!instance) {
+	void StorageHandler::loco(const Loco& loco)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		string serialized = loco.serialize();
 		instance->saveObject(ObjectTypeLoco, loco.objectID, loco.name, serialized);
 	}
 
-	void StorageHandler::allLocos(map<locoID_t,datamodel::Loco*>& locos) {
-		if (!instance) {
+	void StorageHandler::allLocos(map<locoID_t,datamodel::Loco*>& locos)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		vector<string> objects;
@@ -139,131 +151,165 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::deleteLoco(const locoID_t locoID) {
-		if (!instance) {
+	void StorageHandler::deleteLoco(const locoID_t locoID)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->deleteObject(ObjectTypeLoco, locoID);
 	}
 
-	void StorageHandler::accessory(const Accessory& accessory) {
-		if (!instance) {
+	void StorageHandler::accessory(const Accessory& accessory)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		string serialized = accessory.serialize();
 		instance->saveObject(ObjectTypeAccessory, accessory.objectID, accessory.name, serialized);
 	}
 
-	void StorageHandler::allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories) {
-		if (!instance) {
+	void StorageHandler::allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		vector<string> objects;
 		instance->objectsOfType(ObjectTypeAccessory, objects);
-		for(auto object : objects) {
+		for(auto object : objects)
+		{
 			Accessory* accessory = new Accessory(object);
 			accessories[accessory->objectID] = accessory;
 		}
 	}
 
-	void StorageHandler::deleteAccessory(const accessoryID_t accessoryID) {
-		if (!instance) {
+	void StorageHandler::deleteAccessory(const accessoryID_t accessoryID)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->deleteObject(ObjectTypeAccessory, accessoryID);
 	}
 
-	void StorageHandler::feedback(const Feedback& feedback) {
-		if (!instance) {
+	void StorageHandler::feedback(const Feedback& feedback)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		string serialized = feedback.serialize();
 		instance->saveObject(ObjectTypeFeedback, feedback.objectID, feedback.name, serialized);
 	}
 
-	void StorageHandler::allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks) {
-		if (!instance) {
+	void StorageHandler::allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		vector<string> objects;
 		instance->objectsOfType(ObjectTypeFeedback, objects);
-		for(auto object : objects) {
+		for(auto object : objects)
+		{
 			Feedback* feedback = new Feedback(manager, object);
 			feedbacks[feedback->objectID] = feedback;
 		}
 	}
 
-	void StorageHandler::deleteFeedback(const feedbackID_t feedbackID) {
-		if (!instance) {
+	void StorageHandler::deleteFeedback(const feedbackID_t feedbackID)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->deleteObject(ObjectTypeFeedback, feedbackID);
 	}
 
-	void StorageHandler::track(const Track& track) {
-		if (!instance) {
+	void StorageHandler::track(const Track& track)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		string serialized = track.serialize();
 		instance->saveObject(ObjectTypeTrack, track.objectID, track.name, serialized);
 	}
 
-	void StorageHandler::allTracks(std::map<trackID_t,datamodel::Track*>& tracks) {
-		if (!instance) {
+	void StorageHandler::allTracks(std::map<trackID_t,datamodel::Track*>& tracks)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		vector<string> objects;
 		instance->objectsOfType(ObjectTypeTrack, objects);
-		for(auto object : objects) {
+		for(auto object : objects)
+		{
 			Track* track = new Track(object);
 			tracks[track->objectID] = track;
 		}
 	}
 
-	void StorageHandler::deleteTrack(const trackID_t trackID) {
-		if (!instance) {
+	void StorageHandler::deleteTrack(const trackID_t trackID)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->deleteObject(ObjectTypeTrack, trackID);
 	}
 
-	void StorageHandler::saveSwitch(const Switch& mySwitch) {
-		if (!instance) {
+	void StorageHandler::saveSwitch(const Switch& mySwitch)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		string serialized = mySwitch.serialize();
 		instance->saveObject(ObjectTypeSwitch, mySwitch.objectID, mySwitch.name, serialized);
 	}
 
-	void StorageHandler::allSwitches(std::map<switchID_t,datamodel::Switch*>& switches) {
-		if (!instance) {
+	void StorageHandler::allSwitches(std::map<switchID_t,datamodel::Switch*>& switches)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		vector<string> objects;
 		instance->objectsOfType(ObjectTypeSwitch, objects);
-		for(auto object : objects) {
+		for(auto object : objects)
+		{
 			Switch* mySwitch = new Switch(object);
 			switches[mySwitch->objectID] = mySwitch;
 		}
 	}
 
-	void StorageHandler::deleteSwitch(const switchID_t switchID) {
-		if (!instance) {
+	void StorageHandler::deleteSwitch(const switchID_t switchID)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->deleteObject(ObjectTypeSwitch, switchID);
 	}
 
-	void StorageHandler::street(const datamodel::Street& street) {
-		if (!instance) {
+	void StorageHandler::street(const datamodel::Street& street)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		string serialized = street.serialize();
 		instance->saveObject(ObjectTypeStreet, street.objectID, street.name, serialized);
 	}
 
-	void StorageHandler::allStreets(std::map<streetID_t,datamodel::Street*>& streets) {
-		if (!instance) {
+	void StorageHandler::allStreets(std::map<streetID_t,datamodel::Street*>& streets)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		vector<string> objects;
@@ -274,8 +320,10 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::deleteStreet(const streetID_t streetID) {
-		if (!instance) {
+	void StorageHandler::deleteStreet(const streetID_t streetID)
+	{
+		if (instance == nullptr)
+		{
 			return;
 		}
 		instance->deleteObject(ObjectTypeStreet, streetID);

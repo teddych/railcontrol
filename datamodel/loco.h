@@ -5,7 +5,8 @@
 #include <thread>
 
 #include "datatypes.h"
-#include "object.h"
+#include "Logger/Logger.h"
+#include "datamodel/object.h"
 
 class Manager;
 
@@ -100,7 +101,7 @@ namespace datamodel
 				const address_t address,
 				const function_t nr)
 			:	Object(locoID, name),
-				controlID(controlID),
+			 	controlID(controlID),
 				protocol(protocol),
 				address(address),
 				manager(manager),
@@ -110,6 +111,7 @@ namespace datamodel
 				streetID(StreetNone),
 				direction(DirectionLeft)
 			{
+				logger = Logger::Logger::GetLogger("Loco " + name);
 			}
 
 			Loco(Manager* manager, const std::string& serialized)
@@ -119,6 +121,7 @@ namespace datamodel
 				streetID(StreetNone)
 			{
 				deserialize(serialized);
+				logger = Logger::Logger::GetLogger("Loco " + name);
 			}
 
 			~Loco();
@@ -175,6 +178,8 @@ namespace datamodel
 
 			LocoFunctions functions;
 			direction_t direction;
+
+			Logger::Logger* logger;
 
 			void autoMode(Loco* loco);
 	};

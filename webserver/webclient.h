@@ -23,7 +23,8 @@ namespace webserver
 				server(webserver),
 				clientThread(std::thread([this] {Worker();})),
 				manager(m),
-				buttonID(0)
+				buttonID(0),
+				logger(Logger::Logger::GetLogger("Webserver"))
 			{}
 
 			~WebClient();
@@ -84,6 +85,7 @@ namespace webserver
 			Manager& manager;
 			bool headOnly;
 			unsigned int buttonID;
+			Logger::Logger* logger;
 	};
 
 }; // namespace webserver

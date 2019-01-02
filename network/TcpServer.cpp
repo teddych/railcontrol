@@ -12,17 +12,16 @@ namespace Network
 	TcpServer::TcpServer(const unsigned short port)
 	:	port(port),
 	 	serverSocket(0),
-	 	run(false)
+	 	run(false),
+	 	error("")
 	{
 		struct sockaddr_in6 server_addr;
-
-		xlog("Starting tcp server on port %i", port);
 
 		// create server serverSocket
 		serverSocket = socket(AF_INET6, SOCK_STREAM, 0);
 		if (serverSocket < 0)
 		{
-			xlog("Unable to create socket for tcp server. Unable to serve clients.");
+			error = "Unable to create socket for tcp server. Unable to serve clients.";
 			return;
 		}
 
@@ -36,13 +35,13 @@ namespace Network
 		int intResult = setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (const void*)&on, sizeof(on));
 		if (intResult < 0)
 		{
-			xlog("Unable to set tcp server socket option SO_REUSEADDR.");
+			error = "Unable to set tcp server socket option SO_REUSEADDR.";
 		}
 
 		intResult = bind(serverSocket, (struct sockaddr *) &server_addr, sizeof(server_addr));
 		if (intResult < 0)
 		{
-			xlog("Unable to bind socket for tcp server to port %i. Unable to serve clients.", port);
+			error = "Unable to bind socket for tcp server to port. Unable to serve clients.";
 			close(serverSocket);
 			return;
 		}
@@ -51,7 +50,7 @@ namespace Network
 		intResult = listen(serverSocket, 5);
 		if (intResult != 0)
 		{
-			xlog("Unable to listen on socket for tcp server on port %i. Unable to serve clients.", port);
+			error = "Unable to listen on socket for tcp server. Unable to serve clients.";
 			close(serverSocket);
 			return;
 		}
@@ -68,8 +67,6 @@ namespace Network
 		{
 			return;
 		}
-
-		xlog("Stopping tcp server");
 
 		run = false;
 
@@ -116,15 +113,13 @@ namespace Network
 			int socketClient = accept(serverSocket, (struct sockaddr *) &client_addr, &client_addr_len);
 			if (socketClient < 0)
 			{
-				xlog("Unable to accept tcp connection: %i, %i", socketClient, errno);
+				continue;
 			}
-			else
-			{
-				// create client and fill into vector
-				auto con = new TcpConnection(socketClient);
-				connections.push_back(con);
-				Work(con);
-			}
+
+			// create client and fill into vector
+			auto con = new TcpConnection(socketClient);
+			connections.push_back(con);
+			Work(con);
 		}
 	}
 }

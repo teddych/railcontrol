@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "hardware/HardwareHandler.h"
+#include "Logger/Logger.h"
 #include "manager.h"
 #include "network/Select.h"
 #include "railcontrol.h"
@@ -22,19 +23,19 @@ static volatile unsigned int runRailcontrol;
 
 void stopRailControlSignal(int signo)
 {
-	xlog("Stopping railcontrol requested by signal %i", signo);
+	Logger::Logger::GetLogger("Main")->Info("Stopping railcontrol requested by signal {0}", signo);
 	runRailcontrol = false;
 }
 
 void stopRailControlWebserver()
 {
-	xlog("Stopping railcontrol requested by a webclient");
+	Logger::Logger::GetLogger("Main")->Info("Stopping railcontrol requested by webclient");
 	runRailcontrol = false;
 }
 
 void stopRailControlConsole()
 {
-	xlog("Stopping railcontrol requested by a console client");
+	Logger::Logger::GetLogger("Main")->Info("Stopping railcontrol requested by console client");
 	runRailcontrol = false;
 }
 
@@ -44,7 +45,8 @@ int main (int argc, char* argv[])
 	signal(SIGTERM, stopRailControlSignal);
 
 	runRailcontrol = true;
-	xlog("Starting railcontrol");
+	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
+	logger->Info(string("Starting railcontrol"));
 
 	Config config(argc == 2 ? argv[1] : "railcontrol.conf");
 
@@ -80,7 +82,7 @@ int main (int argc, char* argv[])
 		}
 	} while (input != 'q' && runRailcontrol);
 
-	xlog("Stopping railcontrol");
+	logger->Info("Stopping railcontrol");
 
 	// manager is cleaned up implicitly while leaving scope
 

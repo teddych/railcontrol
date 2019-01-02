@@ -3,58 +3,68 @@
 #include <sstream>
 
 #include "config.h"
-#include "util.h"
+#include "Logger/Logger.h"
 
 using std::map;
 using std::string;
 
-Config::Config(std::string fileName) {
+Config::Config(std::string fileName)
+{
+	Logger::Logger* logger = Logger::LoggerServer::Instance().GetLogger("Main");
 	// read config values
-	xlog("Reading config file %s", fileName.c_str());
+	logger->Info("Reading config file {0}", fileName);
 
 	std::ifstream configFile;
 	configFile.open(fileName);
-	if (!configFile.is_open()) {
-		xlog("Unable to open configfile");
+	if (!configFile.is_open())
+	{
+		logger->Warning("Unable to open configfile");
 		return;
 	}
 
-	for (string line; std::getline(configFile, line); ) {
+	for (string line; std::getline(configFile, line); )
+	{
 		std::istringstream iss(line);
 		string configKey;
 		string eq;
 		string configValue;
-		bool error = false;
 
-		if (!(iss >> configKey >> eq >> configValue >> std::ws) || eq != "=" || iss.get() != EOF) {
-			error = true;
-		}
-		if (configKey[0] == '#') {
+		if (configKey[0] == '#')
+		{
 			continue;
 		}
 
-		if (!error) {
-			config[configKey] = configValue;
+		bool error = (!(iss >> configKey >> eq >> configValue >> std::ws) || eq != "=" || iss.get() != EOF);
+		if (error == true)
+		{
+			continue;
 		}
+
+		config[configKey] = configValue;
 	}
 	configFile.close();
 
-	for(auto option : config) {
-		xlog("Parameter found in config file: %s = %s", option.first.c_str(), option.second.c_str());
+	for(auto option : config)
+	{
+		logger->Info("Parameter found in config file: {0} = {1}", option.first, option.second);
 	}
 }
 
-const string& Config::getValue(const string& key, const string& value) {
-	if (config.count(key) == 1) {
-		return config[key];
+const string& Config::getValue(const string& key, const string& defaultValue)
+{
+	if (config.count(key) != 1)
+	{
+		return defaultValue;
 	}
-	return value;
+	return config[key];
 }
 
-int Config::getValue(const string& key, const int& value) {
-	if (config.count(key) == 1) {
-		return std::stoi(config[key]);
+int Config::getValue(const string& key, const int& defaultValue)
+{
+	if (config.count(key) != 1)
+	{
+		return defaultValue;
 	}
-	return value;
+	return std::stoi(config[key]);
 }
 
