@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Logger/Logger.h"
 #include "Logger/LoggerServer.h"
 #include "Logger/LoggerClient.h"
@@ -47,6 +49,7 @@ namespace Logger
 
 	void LoggerServer::Send(const std::string& text)
 	{
+		std::cout << text << std::flush;
 		for(auto client : clients)
 		{
 			client->Send(text);
