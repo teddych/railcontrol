@@ -17,6 +17,8 @@ namespace Logger
 
 			~Logger() {};
 
+			static Logger* GetLogger(const std::string& component) { return LoggerServer::Instance().GetLogger(component); }
+
 			bool IsComponent(const std::string& component) { return component.compare(this->component) == 0; }
 
 			static std::string Format(const std::string& input) { return input; }
