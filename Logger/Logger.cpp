@@ -17,5 +17,18 @@ namespace Logger
 		snprintf(buffer + 20, sizeof(buffer) - 20, "%06li", timestamp.tv_usec);
 		return string(buffer);
 	}
+
+	void Logger::Replace(std::string& workString,
+		const unsigned char argument,
+		const std::string& value)
+	{
+		std::string needle = "{" + std::to_string(argument) + "}";
+		size_t pos = workString.find(needle);
+		if (pos == std::string::npos)
+		{
+			return;
+		}
+		workString.replace(pos, needle.size(), value);
+	}
 }
 
