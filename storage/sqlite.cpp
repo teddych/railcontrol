@@ -4,7 +4,6 @@
 #include <string>
 
 #include "storage/sqlite.h"
-#include "util.h"
 
 using datamodel::Accessory;
 using datamodel::Track;
@@ -33,16 +32,17 @@ namespace storage
 	}
 
 	SQLite::SQLite(const StorageParams& params)
-	:	filename(params.filename)
+	:	filename(params.filename),
+	 	logger(Logger::Logger::GetLogger("SQLite"))
 	{
 		int rc;
 		char* dbError = NULL;
 
-		xlog("Loading SQLite database with filename %s", filename.c_str());
+		logger->Info("Loading SQLite database with filename {0}", filename);
 		rc = sqlite3_open(filename.c_str(), &db);
 		if (rc)
 		{
-			xlog("Unable to load SQLite database: %s", sqlite3_errmsg(db));
+			logger->Error("Unable to load SQLite database: {0}", sqlite3_errmsg(db));
 			sqlite3_close(db);
 			db = NULL;
 			return;
@@ -53,7 +53,7 @@ namespace storage
 		rc = sqlite3_exec(db, "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", callbackListTables, &tablenames, &dbError);
 		if (rc != SQLITE_OK)
 		{
-			xlog("SQLite error: %s", dbError);
+			logger->Error("SQLite error: {0}", dbError);
 			sqlite3_free(dbError);
 			sqlite3_close(db);
 			db = NULL;
@@ -63,11 +63,11 @@ namespace storage
 		// create hardware table if needed
 		if (tablenames["hardware"] != true)
 		{
-			xlog("Creating table hardware");
+			logger->Info("Creating table hardware");
 			rc = sqlite3_exec(db, "CREATE TABLE hardware (controlid UNSIGNED TINYINT PRIMARY KEY, hardwaretype UNSIGNED TINYINT, name VARCHAR(50), arg1 VARCHAR(255));", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK)
 			{
-				xlog("SQLite error: %s", dbError);
+				logger->Error("SQLite error: {0}", dbError);
 				sqlite3_free(dbError);
 				sqlite3_close(db);
 				db = NULL;
@@ -78,7 +78,7 @@ namespace storage
 		// create objects table if needed
 		if (tablenames["objects"] != true)
 		{
-			xlog("Creating table objects");
+			logger->Info("Creating table objects");
 			rc = sqlite3_exec(db, "CREATE TABLE objects ("
 				"objecttype UNSIGNED TINYINT, "
 				"objectid UNSIGNED SHORTINT, "
@@ -88,7 +88,7 @@ namespace storage
 			NULL, NULL, &dbError);
 			if (rc != SQLITE_OK)
 			{
-				xlog("SQLite error: %s", dbError);
+				logger->Error("SQLite error: {0}", dbError);
 				sqlite3_free(dbError);
 				sqlite3_close(db);
 				db = NULL;
@@ -99,7 +99,7 @@ namespace storage
 		// create relations table if needed
 		if (tablenames["relations"] != true)
 		{
-			xlog("Creating table relations");
+			logger->Info("Creating table relations");
 			rc = sqlite3_exec(db, "CREATE TABLE relations ("
 				"objecttype1 UNSIGNED TINYINT, "
 				"objectid1 UNSIGNED SHORTINT, "
@@ -111,7 +111,7 @@ namespace storage
 			NULL, NULL, &dbError);
 			if (rc != SQLITE_OK)
 			{
-				xlog("SQLite error: %s", dbError);
+				logger->Error("SQLite error: {0}", dbError);
 				sqlite3_free(dbError);
 				sqlite3_close(db);
 				db = nullptr;
@@ -127,13 +127,13 @@ namespace storage
 			return;
 		}
 
-		xlog("Closing SQLite database");
+		logger->Info("Closing SQLite database");
 		sqlite3_close(db);
 		db = nullptr;
 
 		string sourceFilename(filename);
 		string destinationFilename(filename + "." + std::to_string(time(0)));
-		xlog("Copying from %s to %s", sourceFilename.c_str(), destinationFilename.c_str());
+		logger->Info("Copying from {0} to {0}", sourceFilename, destinationFilename);
 		std::ifstream source(sourceFilename, std::ios::binary);
 		std::ofstream destination(destinationFilename, std::ios::binary);
 		destination << source.rdbuf();
@@ -165,7 +165,7 @@ namespace storage
 			return;
 		}
 
-		xlog("SQLite error: %s", dbError);
+		logger->Error("SQLite error: {0}", dbError);
 		sqlite3_free(dbError);
 	}
 
@@ -183,7 +183,7 @@ namespace storage
 			return;
 		}
 
-		xlog("SQLite error: %s", dbError);
+		logger->Error("SQLite error: {0}", dbError);
 		sqlite3_free(dbError);
 	}
 
@@ -196,10 +196,7 @@ namespace storage
 			return 0;
 		}
 		controlID_t controlID = atoi(argv[0]);
-		if (hardwareParams->count(controlID))
-		{
-			xlog("Control with ID %i already exists", controlID);
-		}
+
 		HardwareParams* params = new HardwareParams(controlID, static_cast<hardwareType_t>(atoi(argv[1])), argv[2], argv[3]);
 		(*hardwareParams)[controlID] = params;
 		return 0;
@@ -221,7 +218,8 @@ namespace storage
 		{
 			return;
 		}
-		xlog("SQLite error: %s Query: %s", dbError, s.c_str());
+
+		logger->Error("SQLite error: {0} Query: {1}", dbError, s);
 		sqlite3_free(dbError);
 	}
 
@@ -243,7 +241,7 @@ namespace storage
 			return;
 		}
 
-		xlog("SQLite error: %s Query: %s", dbError, s.c_str());
+		logger->Error("SQLite error: {0} Query: {1}", dbError, s);
 		sqlite3_free(dbError);
 	}
 
@@ -265,7 +263,7 @@ namespace storage
 			return;
 		}
 
-		xlog("SQLite error: %s Query: %s", dbError, s.c_str());
+		logger->Error("SQLite error: {0} Query: {1}", dbError, s);
 		sqlite3_free(dbError);
 	}
 
@@ -287,7 +285,7 @@ namespace storage
 			return;
 		}
 
-		xlog("SQLite error: %s", dbError);
+		logger->Error("SQLite error: {0} Query: {1}", dbError, s);
 		sqlite3_free(dbError);
 	}
 
@@ -311,7 +309,7 @@ namespace storage
 			return;
 		}
 
-		xlog("SQLite error: %s", dbError);
+		logger->Error("SQLite error: {0} Query: {1}", dbError, s);
 		sqlite3_free(dbError);
 	}
 
@@ -333,7 +331,7 @@ namespace storage
 			return;
 		}
 
-		xlog("SQLite error: %s", dbError);
+		logger->Error("SQLite error: {0} Query: {1}", dbError, s);
 		sqlite3_free(dbError);
 	}
 
@@ -355,7 +353,7 @@ namespace storage
 			return;
 		}
 
-		xlog("SQLite error: %s", dbError);
+		logger->Error("SQLite error: {0} Query: {1}", dbError, s);
 		sqlite3_free(dbError);
 	}
 

@@ -3,6 +3,7 @@
 #include <map>
 
 #include "datamodel/datamodel.h"
+#include "Logger/Logger.h"
 #include "storage/sqlite/sqlite3.h"
 #include "storage/StorageInterface.h"
 #include "storage/StorageParams.h"
@@ -44,6 +45,7 @@ namespace storage {
 		private:
 			sqlite3 *db;
 			const std::string filename;
+			Logger::Logger* logger;
 
 			static int callbackListTables(void *v, int argc, char **argv, char **colName);
 			static int callbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
