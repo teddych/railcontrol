@@ -22,6 +22,15 @@ namespace Logger
 			bool IsComponent(const std::string& component) { return component.compare(this->component) == 0; }
 
 			static std::string Format(const std::string& input) { return input; }
+			static std::string Format(char* input) { const char* constInput = input; return Format(constInput); }
+			static std::string Format(const char* input)
+			{
+				if (input == nullptr)
+				{
+					return std::string("");
+				}
+				return std::string(input);
+			}
 
 			template<typename... Args>
 			static std::string Format(const std::string& input, Args... args)
@@ -29,6 +38,23 @@ namespace Logger
 				std::string output = input;
 				FormatInternal(output, 0, args...);
 				return output;
+			}
+
+			template<typename... Args>
+			static std::string Format(char* input, Args... args)
+			{
+				const char* constInput = input;
+				return Format(constInput, args...);
+			}
+
+			template<typename... Args>
+			static std::string Format(const char* input, Args... args)
+			{
+				if (input == nullptr)
+				{
+					return std::string("");
+				}
+				return Format(std::string(input), args...);
 			}
 
 			template<typename... Args> void Error(Args... args)
