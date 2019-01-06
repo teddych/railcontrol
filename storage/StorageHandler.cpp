@@ -41,7 +41,7 @@ namespace storage {
 		dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
 		if (!dlhandle)
 		{
-			logger->Error("Can not open storage library: %s", dlerror());
+			logger->Error("Can not open storage library: {0}", dlerror());
 			return;
 		}
 
