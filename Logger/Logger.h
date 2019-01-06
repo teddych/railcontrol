@@ -58,8 +58,17 @@ namespace Logger
 			static std::string DateTime();
 
 			static void Replace(std::string& workString, const unsigned char argument, const std::string& value);
-
-			static void Replace(std::string& workString, const unsigned char argument, const int value)
+			static void Replace(std::string& workString, const unsigned char argument, char* value)
+			{
+				const char* constValue = value;
+				Replace(workString, argument, std::string(constValue));
+			}
+			static void Replace(std::string& workString, const unsigned char argument, const char* value)
+			{
+				Replace(workString, argument, std::string(value == nullptr ? "" : value));
+			}
+			template<typename T>
+			static void Replace(std::string& workString, const unsigned char argument, T value)
 			{
 				Replace(workString, argument, std::to_string(value));
 			}
