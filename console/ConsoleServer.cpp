@@ -27,7 +27,8 @@ namespace console
 	:	CommandInterface(ControlTypeConsole),
 		Network::TcpServer(port),
 		run(true),
-		manager(manager)
+		manager(manager),
+		logger(Logger::Logger::GetLogger("Console"))
 	{
 		logger->Info("Starting server");
 	}

@@ -23,7 +23,7 @@ namespace console
 				server(consoleServer),
 				clientThread(std::thread([this] {Worker();})),
 				manager(manager),
-				logger(Logger::LoggerServer::Instance().GetLogger("Console"))
+				logger(Logger::Logger::GetLogger("Console"))
 			{}
 
 			~ConsoleClient()
