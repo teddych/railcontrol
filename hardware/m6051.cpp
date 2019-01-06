@@ -2,7 +2,6 @@
 #include <fcntl.h>
 #include <sstream>
 #include <termios.h>
-#include <unistd.h>   //close;
 
 #include "text/converters.h"
 #include "hardware/m6051.h"
@@ -23,7 +22,6 @@ namespace hardware
 		delete(m6051);
 	}
 
-	// start the thing
 	M6051::M6051(const HardwareParams* params) :
 		manager(params->manager),
 		logger(Logger::Logger::GetLogger("M6051 " + params->name + " " + params->arg1))
@@ -57,7 +55,6 @@ namespace hardware
 		tcflush(ttyFileDescriptor, TCIFLUSH); // clear RX buffer
 	}
 
-	// stop the thing
 	M6051::~M6051()
 	{
 		if (ttyFileDescriptor < 0)
@@ -77,7 +74,6 @@ namespace hardware
 		return (protocol == ProtocolMM2);
 	}
 
-	// turn booster on or off
 	void M6051::Booster(const boosterStatus_t status)
 	{
 		if (ttyFileDescriptor < 0)
@@ -97,24 +93,22 @@ namespace hardware
 			logger->Info("Turning booster off");
 			c = 97;
 		}
-		__attribute__((unused)) int ret = write(ttyFileDescriptor, &c, 1);
+		SendOneByte(c);
 	}
 
-	// set the speed of a loco
 	void M6051::SetLocoSpeed(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
 	{
 		if (ttyFileDescriptor < 0)
 		{
 			return;
 		}
-		unsigned char speedMM = speed / 69;
+		unsigned char speedMM = (speed / 69) + (GetSpeedMapEntry(address) & 16);
+		speedMap[address] = speedMM;
 		unsigned char addressMM = static_cast<unsigned char>(address);
 		logger->Info("Setting speed of loco {0} to speed {1}", address, speedMM);
-		__attribute__((unused)) int ret = write(ttyFileDescriptor, &speedMM, 1);
-		ret = write(ttyFileDescriptor, &addressMM, 1);
+		SendTwoBytes(speedMM, addressMM);
 	}
 
-	// set the direction of a loco
 	void M6051::LocoDirection(__attribute__((unused)) const protocol_t& protocol, const address_t& address, __attribute__((unused)) const direction_t& direction)
 	{
 		if (ttyFileDescriptor < 0)
@@ -122,20 +116,40 @@ namespace hardware
 			return;
 		}
 		logger->Info("Changing direction of loco {0}", address);
-		unsigned char speedMM = 15;
+		unsigned char speedMM = 15 + (GetSpeedMapEntry(address) & 16);
 		unsigned char addressMM = static_cast<unsigned char>(address);
-		__attribute__((unused)) int ret = write(ttyFileDescriptor, &speedMM, 1);
-		ret = write(ttyFileDescriptor, &addressMM, 1);
+		SendTwoBytes(speedMM, addressMM);
 	}
 
-	// set loco function
 	void M6051::LocoFunction(__attribute__((unused)) const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
+		if (function > 4)
+		{
+			return;
+		}
+
 		if (ttyFileDescriptor < 0)
 		{
 			return;
 		}
-		logger->Info("Setting f%i of loco {0} to \"{1}\"", static_cast<int>(function), static_cast<int>(address), on ? "on" : "off");
+
+		logger->Info("Setting f{0} of loco {1} to \"{2}\"", function, address, on ? "on" : "off");
+		unsigned char addressMM = static_cast<unsigned char>(address);
+		if (function == 0)
+		{
+			unsigned char speedMM = (GetSpeedMapEntry(address) & 15) + (static_cast<unsigned char>(on) << 4);
+			speedMap[address] = speedMM;
+			SendTwoBytes(speedMM, addressMM);
+			return;
+		}
+
+		unsigned char functionMM = GetFunctionMapEntry(address);
+		unsigned char position = function - 1;
+		functionMM &= (~(1 << position)); // mast out related function
+		functionMM |= (static_cast<unsigned char>(on) << position); // add related function
+		functionMap[address] = functionMM;
+		functionMM += 64;
+		SendTwoBytes(functionMM, addressMM);
 	}
 
 	void M6051::Accessory(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
@@ -147,10 +161,9 @@ namespace hardware
 
 		std::string stateText;
 		text::Converters::accessoryStatus(state, stateText);
-		logger->Info("Setting state of accessory {0}/{1} to \"{2}\"", static_cast<int>(address), stateText, on ? "on" : "off");
+		logger->Info("Setting state of accessory {0}/{1} to \"{2}\"", address, stateText, on ? "on" : "off");
 		unsigned char stateMM = (state == AccessoryStateOn ? 33 : 34);
 		unsigned char addressMM = static_cast<unsigned char>(address);
-		__attribute__((unused)) int ret = write(ttyFileDescriptor, &stateMM, 1);
-		ret = write(ttyFileDescriptor, &addressMM, 1);
+		SendTwoBytes(stateMM, addressMM);
 	}
 } // namespace

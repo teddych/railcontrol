@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unistd.h>   //close & write;
 
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
@@ -28,6 +29,31 @@ namespace hardware
 			Manager* manager;
 			int ttyFileDescriptor;
 			Logger::Logger* logger;
+			std::map<address_t, unsigned char> speedMap;
+			std::map<address_t, unsigned char> functionMap;
+
+			unsigned char GetSpeedMapEntry(address_t address)
+			{
+				return speedMap.count(address) == 0 ? 0 : speedMap[address];
+			}
+
+			unsigned char GetFunctionMapEntry(address_t address)
+			{
+				return functionMap.count(address) == 0 ? 0 : functionMap[address];
+			}
+
+			void SendOneByte(unsigned char byte)
+			{
+				logger->Debug("Sending byte {0}", byte);
+				__attribute__((unused)) int ret = write(ttyFileDescriptor, &byte, 1);
+			}
+
+			void SendTwoBytes(unsigned char byte1, unsigned char byte2)
+			{
+				logger->Debug("Sending bytes {0} {1}", byte1, byte2);
+				__attribute__((unused)) int ret = write(ttyFileDescriptor, &byte1, 1);
+				ret = write(ttyFileDescriptor, &byte2, 1);
+			}
 	};
 
 	extern "C" M6051* create_m6051(const HardwareParams* params);
