@@ -206,7 +206,15 @@ const std::map<hardwareType_t,string> Manager::hardwareListNames()
 	return hardwareList;
 }
 
-bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& arg1, string& result)
+bool Manager::controlSave(const controlID_t& controlID,
+	const hardwareType_t& hardwareType,
+	const std::string& name,
+	const std::string& arg1,
+	const std::string& arg2,
+	const std::string& arg3,
+	const std::string& arg4,
+	const std::string& arg5,
+	string& result)
 {
 	if (controlID != ControlIdNone && controlID < ControlIdFirstHardware)
 	{
@@ -227,6 +235,10 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 			params->name = name;
 			params->hardwareType = hardwareType;
 			params->arg1 = arg1;
+			params->arg2 = arg2;
+			params->arg3 = arg3;
+			params->arg4 = arg4;
+			params->arg5 = arg5;
 			// FIXME: reload hardware
 		}
 		else
@@ -243,7 +255,7 @@ bool Manager::controlSave(const controlID_t& controlID, const hardwareType_t& ha
 			}
 			++newControlID;
 			// create new control
-			params = new HardwareParams(newControlID, hardwareType, name, arg1);
+			params = new HardwareParams(newControlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5);
 			if (params == nullptr)
 			{
 				result.assign("Unable to allocate memory for control");
@@ -1615,10 +1627,10 @@ bool Manager::locoStopAll()
 
 void Manager::loadDefaultValuesToDB()
 {
-	HardwareParams newHardwareParams1(1, HardwareTypeVirtual, "Virtuelle Zentrale", "");
+	HardwareParams newHardwareParams1(1, HardwareTypeVirtual, "Virtuelle Zentrale", "", "", "", "", "");
 	storage->hardwareParams(newHardwareParams1);
 
-	HardwareParams newHardwareParams2(2, HardwareTypeCS2, "CS2 Zentrale", "192.168.0.190");
+	HardwareParams newHardwareParams2(2, HardwareTypeCS2, "CS2 Zentrale", "192.168.0.190", "", "", "", "");
 	storage->hardwareParams(newHardwareParams2);
 
 	Loco newloco1(this, 1, "Re 460 Teddy", 1, ProtocolDCC, 1119, 4);

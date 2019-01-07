@@ -64,7 +64,7 @@ namespace storage
 		if (tablenames["hardware"] != true)
 		{
 			logger->Info("Creating table hardware");
-			rc = sqlite3_exec(db, "CREATE TABLE hardware (controlid UNSIGNED TINYINT PRIMARY KEY, hardwaretype UNSIGNED TINYINT, name VARCHAR(50), arg1 VARCHAR(255));", NULL, NULL, &dbError);
+			rc = sqlite3_exec(db, "CREATE TABLE hardware (controlid UNSIGNED TINYINT PRIMARY KEY, hardwaretype UNSIGNED TINYINT, name VARCHAR(50), arg1 VARCHAR(255), arg2 VARCHAR(255), arg3 VARCHAR(255), arg4 VARCHAR(255), arg5 VARCHAR(255));", NULL, NULL, &dbError);
 			if (rc != SQLITE_OK)
 			{
 				logger->Error("SQLite error: {0}", dbError);
@@ -157,8 +157,16 @@ namespace storage
 
 		stringstream ss;
 		char* dbError = NULL;
-		ss << "INSERT OR REPLACE INTO hardware VALUES (" << (int) hardwareParams.controlID << ", " << (int) hardwareParams.hardwareType << ", '" << hardwareParams.name << "', '" << hardwareParams.arg1
-		<< "');";
+		ss << "INSERT OR REPLACE INTO hardware VALUES ("
+			<< (int) hardwareParams.controlID << ", "
+			<< (int) hardwareParams.hardwareType << ", '"
+			<< hardwareParams.name << "', '"
+			<< hardwareParams.arg1 << "', '"
+			<< hardwareParams.arg2 << "', '"
+			<< hardwareParams.arg3 << "', '"
+			<< hardwareParams.arg4 << "', '"
+			<< hardwareParams.arg5
+			<< "');";
 		int rc = sqlite3_exec(db, ss.str().c_str(), NULL, NULL, &dbError);
 		if (rc == SQLITE_OK)
 		{
@@ -177,7 +185,7 @@ namespace storage
 		}
 
 		char* dbError = 0;
-		int rc = sqlite3_exec(db, "SELECT controlid, hardwaretype, name, arg1 FROM hardware ORDER BY controlid;", callbackAllHardwareParams, &hardwareParams, &dbError);
+		int rc = sqlite3_exec(db, "SELECT controlid, hardwaretype, name, arg1, arg2, arg3, arg4, arg5 FROM hardware ORDER BY controlid;", callbackAllHardwareParams, &hardwareParams, &dbError);
 		if (rc == SQLITE_OK)
 		{
 			return;
@@ -191,13 +199,13 @@ namespace storage
 	int SQLite::callbackAllHardwareParams(void* v, int argc, char **argv, char **colName)
 	{
 		map<controlID_t,HardwareParams*>* hardwareParams = static_cast<map<controlID_t,HardwareParams*>*>(v);
-		if (argc != 4)
+		if (argc != 8)
 		{
 			return 0;
 		}
 		controlID_t controlID = atoi(argv[0]);
 
-		HardwareParams* params = new HardwareParams(controlID, static_cast<hardwareType_t>(atoi(argv[1])), argv[2], argv[3]);
+		HardwareParams* params = new HardwareParams(controlID, static_cast<hardwareType_t>(atoi(argv[1])), argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
 		(*hardwareParams)[controlID] = params;
 		return 0;
 	}

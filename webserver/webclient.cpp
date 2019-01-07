@@ -457,6 +457,10 @@ namespace webserver
 		hardwareType_t hardwareType = HardwareTypeNone;
 		string name("New Control");
 		string arg1;
+		string arg2;
+		string arg3;
+		string arg4;
+		string arg5;
 
 		if (controlID != ControlIdNone)
 		{
@@ -466,6 +470,10 @@ namespace webserver
 				hardwareType = params->hardwareType;
 				name = params->name;
 				arg1 = params->arg1;
+				arg2 = params->arg2;
+				arg3 = params->arg3;
+				arg4 = params->arg4;
+				arg5 = params->arg5;
 			}
 		}
 
@@ -484,6 +492,10 @@ namespace webserver
 			.AddContent(HtmlTagLabel("Hardware type:", "hardwaretype"))
 			.AddContent(HtmlTagSelect("hardwaretype", hardwareOptions, to_string(hardwareType)))
 			.AddContent(HtmlTagInputTextWithLabel("arg1", "Argument 1:", arg1))
+			.AddContent(HtmlTagInputTextWithLabel("arg2", "Argument 2:", arg1))
+			.AddContent(HtmlTagInputTextWithLabel("arg3", "Argument 3:", arg1))
+			.AddContent(HtmlTagInputTextWithLabel("arg4", "Argument 4:", arg1))
+			.AddContent(HtmlTagInputTextWithLabel("arg5", "Argument 5:", arg1))
 			);
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
@@ -497,9 +509,13 @@ namespace webserver
 		string name = GetStringMapEntry(arguments, "name");
 		hardwareType_t hardwareType = static_cast<hardwareType_t>(GetIntegerMapEntry(arguments, "hardwaretype", HardwareTypeNone));
 		string arg1 = GetStringMapEntry(arguments, "arg1");
+		string arg2 = GetStringMapEntry(arguments, "arg2");
+		string arg3 = GetStringMapEntry(arguments, "arg3");
+		string arg4 = GetStringMapEntry(arguments, "arg4");
+		string arg5 = GetStringMapEntry(arguments, "arg5");
 		string result;
 
-		if (!manager.controlSave(controlID, hardwareType, name, arg1, result))
+		if (!manager.controlSave(controlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
 		{
 			ss << result;
 		}

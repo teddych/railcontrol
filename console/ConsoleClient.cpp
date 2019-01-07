@@ -873,9 +873,13 @@ namespace console
 		}
 
 		string arg1 = ReadText(s, i);
+		string arg2 = ReadText(s, i);
+		string arg3 = ReadText(s, i);
+		string arg4 = ReadText(s, i);
+		string arg5 = ReadText(s, i);
 
 		string result;
-		if (!manager.controlSave(ControlIdNone, hardwareType, name, arg1, result))
+		if (!manager.controlSave(ControlIdNone, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
 		{
 			SendAndPrompt(result);
 			return;

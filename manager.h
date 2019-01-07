@@ -24,7 +24,15 @@ class Manager {
 
 		// hardware (virt, CS2, ...)
 		static const std::map<hardwareType_t,std::string> hardwareListNames();
-		bool controlSave(const controlID_t& controlID, const hardwareType_t& hardwareType, const std::string& name, const std::string& ip, std::string& result);
+		bool controlSave(const controlID_t& controlID,
+			const hardwareType_t& hardwareType,
+			const std::string& name,
+			const std::string& arg1,
+			const std::string& arg2,
+			const std::string& arg3,
+			const std::string& arg4,
+			const std::string& arg5,
+			std::string& result);
 		bool controlDelete(controlID_t controlID);
 		hardware::HardwareParams* getHardware(controlID_t controlID);
 		unsigned int controlsOfHardwareType(const hardwareType_t hardwareType);
