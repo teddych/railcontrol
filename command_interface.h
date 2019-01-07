@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -35,6 +36,7 @@ class CommandInterface {
 		virtual void locoStop(const locoID_t locoID) = 0;
 		virtual void getProtocols(std::vector<protocol_t>& protocols) const {};
 		virtual bool protocolSupported(protocol_t protocol) const { return false; };
+		virtual void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const {}
 
 	private:
 		controlType_t managerID;

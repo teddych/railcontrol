@@ -18,12 +18,6 @@ namespace hardware
 			// name() must be implemented
 			const std::string GetName() const override { return name; };
 
-			// get available protocols of this control
-			void GetProtocols(std::vector<protocol_t>& protocols) const override;
-
-			// is given protocol supported
-			bool ProtocolSupported(protocol_t protocol) const override;
-
 			// turn booster on or off
 			void Booster(const boosterStatus_t status) override;
 

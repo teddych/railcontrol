@@ -16,8 +16,17 @@ namespace hardware
 			M6051(const HardwareParams* params);
 			~M6051();
 			const std::string GetName() const override { return name; };
-			void GetProtocols(std::vector<protocol_t>& protocols) const override;
-			virtual bool ProtocolSupported(protocol_t protocol) const override;
+
+			void GetProtocols(std::vector<protocol_t>& protocols) const override { protocols.push_back(ProtocolMM2); }
+
+			bool ProtocolSupported(protocol_t protocol) const override { return (protocol == ProtocolMM2); }
+
+			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override
+			{
+				argumentTypes[1] = SerialPort;
+				argumentTypes[2] = S88Modules;
+			}
+
 			void Booster(const boosterStatus_t status) override;
 			void SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed) override;
 			void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;

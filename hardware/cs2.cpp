@@ -62,18 +62,6 @@ namespace hardware
 		receiverThread.join();
 	}
 
-	void CS2::GetProtocols(std::vector<protocol_t>& protocols) const
-	{
-		protocols.push_back(ProtocolMM2);
-		protocols.push_back(ProtocolMFX);
-		protocols.push_back(ProtocolDCC);
-	}
-
-	bool CS2::ProtocolSupported(protocol_t protocol) const
-	{
-		return (protocol == ProtocolMM2 || protocol == ProtocolMFX || protocol == ProtocolDCC);
-	}
-
 	void CS2::createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length)
 	{
 		buffer[0] = (prio << 1) | (command >> 7);

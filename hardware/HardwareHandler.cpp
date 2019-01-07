@@ -184,6 +184,15 @@ namespace hardware
 		return instance->ProtocolSupported(protocol);
 	}
 
+	void HardwareHandler::GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->GetArgumentTypes(argumentTypes);
+	}
+
 	void HardwareHandler::booster(const controlType_t managerID, const boosterStatus_t status)
 	{
 		if (managerID == ControlTypeHardware || instance == nullptr)

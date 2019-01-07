@@ -39,16 +39,6 @@ namespace hardware
 		logger->Info("Turning booster {0}", status ? "on" : "off");
 	}
 
-	void Virtual::GetProtocols(std::vector<protocol_t>& protocols) const
-	{
-		protocols.push_back(ProtocolServer);
-	}
-
-	bool Virtual::ProtocolSupported(protocol_t protocol) const
-	{
-		return (protocol == ProtocolServer);
-	}
-
 	// set loco speed
 	void Virtual::SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
 	{

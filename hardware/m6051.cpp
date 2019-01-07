@@ -64,16 +64,6 @@ namespace hardware
 		close(ttyFileDescriptor);
 	}
 
-	void M6051::GetProtocols(std::vector<protocol_t>& protocols) const
-	{
-		protocols.push_back(ProtocolMM2);
-	}
-
-	bool M6051::ProtocolSupported(protocol_t protocol) const
-	{
-		return (protocol == ProtocolMM2);
-	}
-
 	void M6051::Booster(const boosterStatus_t status)
 	{
 		if (ttyFileDescriptor < 0)

@@ -46,6 +46,7 @@ namespace webserver
 			void HtmlReplyWithHeader(const HtmlTag& tag);
 			void deliverFile(const std::string& file);
 			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
+			HtmlTag ControlArgumentTag(unsigned char argNr, argumentType_t type, std::string& value);
 			void handleControlEdit(const std::map<std::string, std::string>& arguments);
 			void handleControlSave(const std::map<std::string, std::string>& arguments);
 			void handleLocoSpeed(const std::map<std::string,std::string>& arguments);

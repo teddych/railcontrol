@@ -397,6 +397,7 @@ const std::map<protocol_t,std::string> Manager::protocolsOfControl(const control
 	if (hardwareParams.count(controlID) != 1)
 	{
 		ret[ProtocolNone] = protocolSymbols[ProtocolNone];
+		return ret;
 	}
 
 	std::lock_guard<std::mutex> Guard2(controlMutex);
@@ -421,6 +422,20 @@ const std::map<protocol_t,std::string> Manager::protocolsOfControl(const control
 			ret[protocol] = protocolSymbols[protocol];
 		}
 	}
+	return ret;
+}
+
+const std::map<unsigned char,argumentType_t> Manager::ArgumentTypesOfControl(const controlID_t controlID) const
+{
+	std::map<unsigned char,argumentType_t> ret;
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	if (controls.count(controlID) != 1)
+	{
+		return ret;
+	}
+
+	const CommandInterface* control = controls.at(controlID);
+	control->GetArgumentTypes(ret);
 	return ret;
 }
 

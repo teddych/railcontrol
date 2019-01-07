@@ -114,6 +114,13 @@ enum addressType_t : unsigned char
 	AddressTypeAccessory
 };
 
+enum argumentType_t : unsigned char
+{
+	IpAddress = 1,
+	SerialPort = 2,
+	S88Modules = 3
+};
+
 enum hardwareType_t : unsigned char
 {
 	HardwareTypeNone = 0,

@@ -450,6 +450,26 @@ namespace webserver
 		free(buffer);
 	}
 
+	HtmlTag WebClient::ControlArgumentTag(unsigned char argNr, argumentType_t type, string& value)
+	{
+		string argumentName;
+		switch (type)
+		{
+			case IpAddress:
+				argumentName = "IP Address:";
+				break;
+
+			case SerialPort:
+				argumentName = "Serial Port:";
+				break;
+
+			case S88Modules:
+				argumentName = "# of S88 Modules (8 port):";
+				break;
+		}
+		return HtmlTagInputTextWithLabel("arg" + to_string(argNr), argumentName, value);
+	}
+
 	void WebClient::handleControlEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
@@ -485,18 +505,35 @@ namespace webserver
 		}
 
 		content.AddContent(HtmlTag("h1").AddContent("Edit control &quot;" + name + "&quot;"));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
-			.AddContent(HtmlTagInputHidden("cmd", "controlsave"))
-			.AddContent(HtmlTagInputHidden("control", to_string(controlID)))
-			.AddContent(HtmlTagInputTextWithLabel("name", "Control Name:", name))
-			.AddContent(HtmlTagLabel("Hardware type:", "hardwaretype"))
-			.AddContent(HtmlTagSelect("hardwaretype", hardwareOptions, to_string(hardwareType)))
-			.AddContent(HtmlTagInputTextWithLabel("arg1", "Argument 1:", arg1))
-			.AddContent(HtmlTagInputTextWithLabel("arg2", "Argument 2:", arg1))
-			.AddContent(HtmlTagInputTextWithLabel("arg3", "Argument 3:", arg1))
-			.AddContent(HtmlTagInputTextWithLabel("arg4", "Argument 4:", arg1))
-			.AddContent(HtmlTagInputTextWithLabel("arg5", "Argument 5:", arg1))
-			);
+		HtmlTag form("form");
+		form.AddAttribute("id", "editform");
+		form.AddContent(HtmlTagInputHidden("cmd", "controlsave"));
+		form.AddContent(HtmlTagInputHidden("control", to_string(controlID)));
+		form.AddContent(HtmlTagInputTextWithLabel("name", "Control Name:", name));
+		form.AddContent(HtmlTagLabel("Hardware type:", "hardwaretype"));
+		form.AddContent(HtmlTagSelect("hardwaretype", hardwareOptions, to_string(hardwareType)));
+		std::map<unsigned char,argumentType_t> argumentTypes = manager.ArgumentTypesOfControl(controlID);
+		if (argumentTypes.count(1) == 1)
+		{
+			form.AddContent(ControlArgumentTag(1, argumentTypes.at(1), arg1));
+		}
+		if (argumentTypes.count(2) == 1)
+		{
+			form.AddContent(ControlArgumentTag(2, argumentTypes.at(2), arg2));
+		}
+		if (argumentTypes.count(3) == 1)
+		{
+			form.AddContent(ControlArgumentTag(3, argumentTypes.at(3), arg3));
+		}
+		if (argumentTypes.count(4) == 1)
+		{
+			form.AddContent(ControlArgumentTag(4, argumentTypes.at(4), arg4));
+		}
+		if (argumentTypes.count(5) == 1)
+		{
+			form.AddContent(ControlArgumentTag(5, argumentTypes.at(5), arg5));
+		}
+		content.AddContent(form);
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
