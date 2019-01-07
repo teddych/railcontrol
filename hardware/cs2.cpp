@@ -372,7 +372,7 @@ namespace hardware
 			}
 		}
 		close(sock);
-		logger->Error("CS2 receiver ended");
+		logger->Info("CS2 receiver ended");
 	}
 
 	int CS2::CreateUdpConnection(const struct sockaddr* sockaddr, const unsigned int sockaddr_len, const char* server, const unsigned short port) {
