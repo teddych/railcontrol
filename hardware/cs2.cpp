@@ -303,60 +303,64 @@ namespace hardware
 				close(sock);
 				return;
 			}
-			else if (datalen == 13)
+
+			if (datalen != 13)
 			{
-				//xlog("Receiver %i bytes received", datalen);
-				//hexlog(buffer, datalen);
-				cs2Prio_t prio;
-				cs2Command_t command;
-				cs2Response_t response;
-				cs2Length_t length;
-				cs2Address_t address;
-				protocol_t protocol;
-				readCommandHeader(buffer, prio, command, response, length, address, protocol);
-				if (command == 0x11 && response)
+				if (run)
 				{
-					// s88 event
-					const char* text;
-					feedbackState_t state;
-					if (buffer[10])
-					{
-						text = "on";
-						state = FeedbackStateOccupied;
-					}
-					else
-					{
-						text = "off";
-						state = FeedbackStateFree;
-					}
-					logger->Info("CS2 S88 Pin {0} set to {1}", address, text);
-					manager->feedback(ControlTypeHardware, address, state);
+					logger->Error("Unable to receive valid data from CS2. Continuing with next packet.");
+					break;
 				}
-				else if (command == 0x04 && !response && length == 6)
-				{
-					// speed event
-					LocoSpeed speed = dataToShort(buffer + 9);
-					manager->locoSpeed(ControlTypeHardware, protocol, static_cast<address_t>(address), speed);
-				}
-				else if (command == 0x05 && !response && length == 5)
-				{
-					// direction event (implies speed=0)
-					direction_t direction = (buffer[9] == 1 ? DirectionRight : DirectionLeft);
-					manager->locoSpeed(ControlTypeHardware, protocol, static_cast<address_t>(address), 0);
-					manager->locoDirection(ControlTypeHardware, protocol, static_cast<address_t>(address), direction);
-				}
-				else if (command == 0x0B && !response && length == 6 && buffer[10] == 1)
-				{
-					// accessory event
-					accessoryState_t state = buffer[9];
-					// GUI-address is 1-based, protocol-address is 0-based
-					++address;
-					manager->accessory(ControlTypeHardware, protocol, address, state);
-				}
+				continue;
 			}
-			else if (run)
+
+			//xlog("Receiver %i bytes received", datalen);
+			//hexlog(buffer, datalen);
+			cs2Prio_t prio;
+			cs2Command_t command;
+			cs2Response_t response;
+			cs2Length_t length;
+			cs2Address_t address;
+			protocol_t protocol;
+			readCommandHeader(buffer, prio, command, response, length, address, protocol);
+			if (command == 0x11 && response)
 			{
-				logger->Error("Unable to receive valid data from CS2. Continuing with next packet.");
+				// s88 event
+				std::string text;
+				feedbackState_t state;
+				if (buffer[10])
+				{
+					text = "on";
+					state = FeedbackStateOccupied;
+				}
+				else
+				{
+					text = "off";
+					state = FeedbackStateFree;
+				}
+				logger->Info("S88 Pin {0} set to {1}", address, text);
+				manager->feedback(ControlTypeHardware, address, state);
+			}
+			else if (command == 0x04 && !response && length == 6)
+			{
+				// speed event
+				LocoSpeed speed = dataToShort(buffer + 9);
+				manager->locoSpeed(ControlTypeHardware, protocol, static_cast<address_t>(address), speed);
+			}
+			else if (command == 0x05 && !response && length == 5)
+			{
+				// direction event (implies speed=0)
+				direction_t direction = (buffer[9] == 1 ? DirectionRight : DirectionLeft);
+				manager->locoSpeed(ControlTypeHardware, protocol, static_cast<address_t>(address), 0);
+				manager->locoDirection(ControlTypeHardware, protocol, static_cast<address_t>(address), direction);
+			}
+			else if (command == 0x0B && !response && length == 6 && buffer[10] == 1)
+			{
+				// accessory event
+				accessoryState_t state = buffer[9];
+				// GUI-address is 1-based, protocol-address is 0-based
+				++address;
+				manager->accessory(ControlTypeHardware, protocol, address, state);
 			}
 		}
 		close(sock);
