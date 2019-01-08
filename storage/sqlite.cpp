@@ -133,7 +133,7 @@ namespace storage
 
 		string sourceFilename(filename);
 		string destinationFilename(filename + "." + std::to_string(time(0)));
-		logger->Info("Copying from {0} to {0}", sourceFilename, destinationFilename);
+		logger->Info("Copying from {0} to {1}", sourceFilename, destinationFilename);
 		std::ifstream source(sourceFilename, std::ios::binary);
 		std::ofstream destination(destinationFilename, std::ios::binary);
 		destination << source.rdbuf();
