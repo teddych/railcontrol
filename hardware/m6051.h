@@ -1,5 +1,6 @@
 #pragma once
 
+#include <mutex>
 #include <string>
 #include <unistd.h>   //close & write;
 
@@ -34,12 +35,18 @@ namespace hardware
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
 		private:
+			static const unsigned char MaxS88Modules = 62;
 			std::string name;
 			Manager* manager;
 			int ttyFileDescriptor;
-			Logger::Logger* logger;
+			mutable std::mutex ttyMutex;
+			volatile bool run;
+			unsigned char s88Modules;
+			std::thread s88Thread;
+			unsigned char s88Memory[MaxS88Modules];
 			std::map<address_t, unsigned char> speedMap;
 			std::map<address_t, unsigned char> functionMap;
+			Logger::Logger* logger;
 
 			unsigned char GetSpeedMapEntry(address_t address)
 			{
@@ -53,16 +60,18 @@ namespace hardware
 
 			void SendOneByte(unsigned char byte)
 			{
-				logger->Debug("Sending byte {0}", byte);
+				std::lock_guard<std::mutex> Guard(ttyMutex);
 				__attribute__((unused)) int ret = write(ttyFileDescriptor, &byte, 1);
 			}
 
 			void SendTwoBytes(unsigned char byte1, unsigned char byte2)
 			{
-				logger->Debug("Sending bytes {0} {1}", byte1, byte2);
+				std::lock_guard<std::mutex> Guard(ttyMutex);
 				__attribute__((unused)) int ret = write(ttyFileDescriptor, &byte1, 1);
 				ret = write(ttyFileDescriptor, &byte2, 1);
 			}
+
+			void S88Worker();
 	};
 
 	extern "C" M6051* create_m6051(const HardwareParams* params);
