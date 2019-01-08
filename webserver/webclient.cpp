@@ -1418,21 +1418,10 @@ namespace webserver
 
 		HtmlTag menu("div");
 		menu.AddClass("menu");
-		menu.AddContent(HtmlTagButtonCommand(HtmlTag("span").AddClass("symbola").AddContent("&#x274C;"), "quit"));
-		menu.AddContent(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9211;"), "booster", false, buttonArguments).AddClass("button_booster"));
-		menu.AddContent(HtmlTagButtonPopup("NewControl", "controledit_0"));
-
-		std::map<controlID_t,hardware::HardwareParams*> controls = manager.controlList();
-		for (auto control : controls)
-		{
-			string controlID = to_string(control.first);
-			string id = "controledit_" + controlID;
-			std::map<std::string,std::string> arguments;
-			arguments["control"] = controlID;
-			menu.AddContent(HtmlTagButtonPopup(control.second->name, id, arguments));
-		}
-
-		menu.AddContent(HtmlTagButtonPopup("NewLoco", "locoedit_0"));
+		menu.AddContent(HtmlTagButtonCommand("<svg width=\"35\" height=\"35\"><polygon points=\"15,0.5 30,0.5 30,24.5 15,24.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"20,10.5 30,0.5 30,24.5 20,34.5\" fill=\"black\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"0,10 7.5,10 7.5,5 15,12.5 7.5,20 7.5,15 0,15\"/></svg>", "quit"));
+		menu.AddContent(HtmlTagButtonCommandToggle("<svg width=\"35\" height=\"35\"><polyline points=\"12.5,8.8 11.1,9.8 9.8,11.1 8.8,12.5 8.1,14.1 7.7,15.8 7.5,17.5 7.7,19.2 8.1,20.9 8.8,22.5 9.8,23.9 11.1,25.2 12.5,26.2 14.1,26.9 15.8,27.3 17.5,27.5 19.2,27.3 20.9,26.9 22.5,26.2 23.9,25.2 25.2,23.9 26.2,22.5 26.9,20.9 27.3,19.2 27.5,17.5 27.3,15.8 26.9,14.1 26.2,12.5 25.2,11.1 23.9,9.8 22.5,8.8\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/><polyline points=\"17.5,2.5 17.5,15\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/></svg>", "booster", false, buttonArguments).AddClass("button_booster"));
+		menu.AddContent(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"10,0.5 25,0.5 25,34.5 10,34.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"13,3.5 22,3.5 22,7.5 13,7.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><circle cx=\"14.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"27.5\" r=\"5\" fill=\"black\"/></svg>", "controllist"));
+		menu.AddContent(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"0,10 5,10 5,0 10,0 10,10 25,10 25,0 35,0 35,5 30,5 30,10 35,10 35,25 0,25\" fill=\"black\"/><circle cx=\"5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"17.5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"30\" cy=\"30\" r=\"5\" fill=\"black\"/</svg>", "locolist"));
 		body.AddChildTag(menu);
 
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddChildTag(selectLoco()));
