@@ -78,7 +78,7 @@ int main (int argc, char* argv[])
 		// only read STDIN if there really is something to read
 		if (ret > 0 && FD_ISSET(STDIN_FILENO, &set))
 		{
-			read(STDIN_FILENO, &input, sizeof(input));
+			__attribute__((unused)) size_t unused = read(STDIN_FILENO, &input, sizeof(input));
 		}
 	} while (input != 'q' && runRailcontrol);
 

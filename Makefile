@@ -5,6 +5,7 @@ CCRASPI=aarch64-linux-gcc
 CPPRASPI=aarch64-linux-g++
 
 CPPFLAGS=-I. -g -O0 -Wall -std=c++11
+CPPFLAGSAMALGAMATION=-I. -g -O2 -Wall -std=c++11
 CPPFLAGSRASPI=-I. -g -O0 -Wall -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-uclibc/sysroot
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
@@ -63,7 +64,7 @@ all: $(OBJ)
 
 amalgamation:
 	./amalgamation.bash
-	$(CPP) $(CPPFLAGS) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
+	$(CPP) $(CPPFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C storage amalgamation
 	$(CPP) -g amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
 	rm -f amalgamation.o
