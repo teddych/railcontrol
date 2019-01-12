@@ -174,6 +174,18 @@ namespace webserver
 			{
 				handleLocoSave(arguments);
 			}
+			else if (arguments["cmd"].compare("locolist") == 0)
+			{
+				handleLocoList(arguments);
+			}
+			else if (arguments["cmd"].compare("locoaskdelete") == 0)
+			{
+				handleLocoAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("locodelete") == 0)
+			{
+				handleLocoDelete(arguments);
+			}
 			else if (arguments["cmd"].compare("protocol") == 0)
 			{
 				handleProtocol(arguments);
@@ -249,10 +261,6 @@ namespace webserver
 			else if (arguments["cmd"].compare("trackget") == 0)
 			{
 				handleTrackGet(arguments);
-			}
-			else if (arguments["cmd"].compare("locolist") == 0)
-			{
-				handleLocoList(arguments);
 			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
@@ -685,6 +693,89 @@ namespace webserver
 		else
 		{
 			ss << "Loco &quot;" << name << "&quot; saved.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+	}
+
+	void WebClient::handleLocoList(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Locos"));
+		HtmlTag table("table");
+		const map<string,datamodel::Loco*> locoList = manager.locoListByName();
+		map<string,string> locoArgument;
+		for (auto loco : locoList)
+		{
+			HtmlTag row("tr");
+			row.AddContent(HtmlTag("td").AddContent(loco.first));
+			row.AddContent(HtmlTag("td").AddContent(to_string(loco.second->address)));
+			string locoIdString = to_string(loco.second->objectID);
+			locoArgument["loco"] = locoIdString;
+			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
+			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "locoaskdelete_" + locoIdString, locoArgument)));
+			table.AddContent(row);
+		}
+		HtmlTag row("tr");
+		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
+		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
+		row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("New", "locoedit_0")));
+		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
+		table.AddContent(row);
+		content.AddContent(table);
+		content.AddContent(HtmlTagButtonCancel());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleLocoAskDelete(const map<string, string>& arguments)
+	{
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", SwitchNone);
+
+		if (locoID == LocoNone)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown loco"));
+			return;
+		}
+
+		const datamodel::Loco* loco = manager.getLoco(locoID);
+		if (loco == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown loco"));
+			return;
+		}
+
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Delete loco &quot;" + loco->name + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the loco &quot;" + loco->name + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "locodelete"))
+			.AddContent(HtmlTagInputHidden("loco", to_string(locoID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleLocoDelete(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		const datamodel::Loco* loco = manager.getLoco(locoID);
+		if (loco == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete loco"));
+			return;
+		}
+
+		string name = loco->name;
+
+		if (!manager.locoDelete(locoID))
+		{
+			ss << "Unable to delete loco";
+		}
+		else
+		{
+			ss << "Loco &quot;" << name << "&quot; deleted.";
 		}
 
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
@@ -1300,34 +1391,6 @@ namespace webserver
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
 		const datamodel::Track* track = manager.getTrack(trackID);
 		HtmlReplyWithHeader(HtmlTagTrack(track));
-	}
-
-	void WebClient::handleLocoList(const map<string, string>& arguments)
-	{
-		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Locos"));
-		HtmlTag table("table");
-		const map<string,datamodel::Loco*> locoList = manager.locoListByName();
-		map<string,string> locoArgument;
-		for (auto loco : locoList)
-		{
-			HtmlTag row("tr");
-			row.AddContent(HtmlTag("td").AddContent(loco.first));
-			row.AddContent(HtmlTag("td").AddContent(to_string(loco.second->address)));
-			string locoIdString = to_string(loco.second->objectID);
-			locoArgument["loco"] = locoIdString;
-			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
-			table.AddContent(row);
-		}
-		HtmlTag row("tr");
-		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
-		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
-		row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("New", "locoedit_0")));
-		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
-		table.AddContent(row);
-		content.AddContent(table);
-		content.AddContent(HtmlTagButtonCancel());
-		HtmlReplyWithHeader(content);
 	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
