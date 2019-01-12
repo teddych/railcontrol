@@ -49,6 +49,9 @@ namespace webserver
 			HtmlTag ControlArgumentTag(unsigned char argNr, argumentType_t type, std::string& value);
 			void handleControlEdit(const std::map<std::string, std::string>& arguments);
 			void handleControlSave(const std::map<std::string, std::string>& arguments);
+			void handleControlList(const std::map<std::string, std::string>& arguments);
+			void handleControlAskDelete(const std::map<std::string, std::string>& arguments);
+			void handleControlDelete(const std::map<std::string, std::string>& arguments);
 			void handleLocoSpeed(const std::map<std::string,std::string>& arguments);
 			void handleLocoDirection(const std::map<std::string,std::string>& arguments);
 			void handleLocoFunction(const std::map<std::string, std::string>& arguments);

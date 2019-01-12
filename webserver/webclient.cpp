@@ -150,6 +150,18 @@ namespace webserver
 			{
 				handleControlSave(arguments);
 			}
+			else if (arguments["cmd"].compare("controllist") == 0)
+			{
+				handleControlList(arguments);
+			}
+			else if (arguments["cmd"].compare("controlaskdelete") == 0)
+			{
+				handleControlAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("controldelete") == 0)
+			{
+				handleControlDelete(arguments);
+			}
 			else if (arguments["cmd"].compare("loco") == 0)
 			{
 				printLoco(arguments);
@@ -574,6 +586,85 @@ namespace webserver
 		}
 
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+	}
+
+	void WebClient::handleControlAskDelete(const map<string, string>& arguments)
+	{
+		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlNone);
+
+		if (controlID == ControlNone)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown control"));
+			return;
+		}
+
+		const hardware::HardwareParams* control = manager.getHardware(controlID);
+		if (control == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown control"));
+			return;
+		}
+
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Delete control &quot;" + control->name + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the control &quot;" + control->name + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "controldelete"))
+			.AddContent(HtmlTagInputHidden("control", to_string(controlID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleControlDelete(const map<string, string>& arguments)
+	{
+		stringstream ss;
+		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlNone);
+		const hardware::HardwareParams* control = manager.getHardware(controlID);
+		if (control == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete control"));
+			return;
+		}
+
+		if (!manager.controlDelete(controlID))
+		{
+			ss << "Unable to delete control";
+		}
+		else
+		{
+			ss << "Control &quot;" << control->name << "&quot; deleted.";
+		}
+
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+	}
+
+	void WebClient::handleControlList(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Controls"));
+		HtmlTag table("table");
+		const map<string,hardware::HardwareParams*> hardwareList = manager.controlListByName();
+		map<string,string> hardwareArgument;
+		for (auto hardware : hardwareList)
+		{
+			HtmlTag row("tr");
+			row.AddContent(HtmlTag("td").AddContent(hardware.first));
+			string controlIdString = to_string(hardware.second->controlID);
+			hardwareArgument["control"] = controlIdString;
+			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "controledit_list_" + controlIdString, hardwareArgument)));
+			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "controlaskdelete_" + controlIdString, hardwareArgument)));
+			table.AddContent(row);
+		}
+		HtmlTag row("tr");
+		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
+		row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("New", "controledit_0")));
+		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
+		table.AddContent(row);
+		content.AddContent(table);
+		content.AddContent(HtmlTagButtonCancel());
+		HtmlReplyWithHeader(content);
 	}
 
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments)

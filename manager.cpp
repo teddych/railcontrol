@@ -390,6 +390,17 @@ const std::map<controlID_t,std::string> Manager::controlListNames() const
 	return ret;
 }
 
+const map<string,hardware::HardwareParams*> Manager::controlListByName() const
+{
+	map<string,hardware::HardwareParams*> out;
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	for(auto hardware : hardwareParams)
+	{
+		out[hardware.second->name] = hardware.second;
+	}
+	return out;
+}
+
 const std::map<protocol_t,std::string> Manager::protocolsOfControl(const controlID_t controlID) const
 {
 	std::map<protocol_t,std::string> ret;
