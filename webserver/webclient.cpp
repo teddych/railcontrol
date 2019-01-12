@@ -1374,12 +1374,12 @@ namespace webserver
 			ss << HtmlTagInputSliderLocoSpeed("speed", "locospeed", MinSpeed, MaxSpeed, speed, locoID);
 			buttonArguments["speed"] = "0";
 			ss << HtmlTagButtonCommand("0%", id + "_0", buttonArguments);
-			buttonArguments["speed"] = "255";
-			ss << HtmlTagButtonCommand("25%", id + "_1", buttonArguments);
-			buttonArguments["speed"] = "511";
-			ss << HtmlTagButtonCommand("50%", id + "_2", buttonArguments);
-			buttonArguments["speed"] = "767";
-			ss << HtmlTagButtonCommand("75%", id + "_3", buttonArguments);
+			buttonArguments["speed"] = "102";
+			ss << HtmlTagButtonCommand("10%", id + "_1", buttonArguments);
+			buttonArguments["speed"] = "408";
+			ss << HtmlTagButtonCommand("40%", id + "_2", buttonArguments);
+			buttonArguments["speed"] = "714";
+			ss << HtmlTagButtonCommand("70%", id + "_3", buttonArguments);
 			buttonArguments["speed"] = "1023";
 			ss << HtmlTagButtonCommand("100%", id + "_4", buttonArguments);
 			buttonArguments.erase("speed");
