@@ -565,7 +565,6 @@ namespace webserver
 
 	void WebClient::handleControlSave(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		string name = GetStringMapEntry(arguments, "name");
 		hardwareType_t hardwareType = static_cast<hardwareType_t>(GetIntegerMapEntry(arguments, "hardwaretype", HardwareTypeNone));
@@ -578,14 +577,11 @@ namespace webserver
 
 		if (!manager.controlSave(controlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
 		{
-			ss << result;
-		}
-		else
-		{
-			ss << "Control &quot;" << name << "&quot; saved.";
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Control &quot;" + name + "&quot; saved.");
 	}
 
 	void WebClient::handleControlAskDelete(const map<string, string>& arguments)
@@ -594,14 +590,14 @@ namespace webserver
 
 		if (controlID == ControlNone)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown control"));
+			HtmlReplyWithHeaderAndParagraph("Unknown control");
 			return;
 		}
 
 		const hardware::HardwareParams* control = manager.getHardware(controlID);
 		if (control == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown control"));
+			HtmlReplyWithHeaderAndParagraph("Unknown control");
 			return;
 		}
 
@@ -619,25 +615,21 @@ namespace webserver
 
 	void WebClient::handleControlDelete(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlNone);
 		const hardware::HardwareParams* control = manager.getHardware(controlID);
 		if (control == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete control"));
+			HtmlReplyWithHeaderAndParagraph("Unable to delete control");
 			return;
 		}
 
 		if (!manager.controlDelete(controlID))
 		{
-			ss << "Unable to delete control";
-		}
-		else
-		{
-			ss << "Control &quot;" << control->name << "&quot; deleted.";
+			HtmlReplyWithHeaderAndParagraph("Unable to delete control");
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Control &quot;" + control->name + "&quot; deleted.");
 	}
 
 	void WebClient::handleControlList(const map<string, string>& arguments)
@@ -768,7 +760,6 @@ namespace webserver
 
 	void WebClient::handleLocoSave(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		string name = GetStringMapEntry(arguments, "name");
 		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -779,14 +770,11 @@ namespace webserver
 
 		if (!manager.locoSave(locoID, name, controlId, protocol, address, nrOfFunctions, result))
 		{
-			ss << result;
-		}
-		else
-		{
-			ss << "Loco &quot;" << name << "&quot; saved.";
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Loco &quot;" + name + "&quot; saved.");
 	}
 
 	void WebClient::handleLocoList(const map<string, string>& arguments)
@@ -820,18 +808,18 @@ namespace webserver
 
 	void WebClient::handleLocoAskDelete(const map<string, string>& arguments)
 	{
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", SwitchNone);
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 
 		if (locoID == LocoNone)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown loco"));
+			HtmlReplyWithHeaderAndParagraph("Unknown loco");
 			return;
 		}
 
 		const datamodel::Loco* loco = manager.getLoco(locoID);
 		if (loco == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown loco"));
+			HtmlReplyWithHeaderAndParagraph("Unknown loco");
 			return;
 		}
 
@@ -849,31 +837,26 @@ namespace webserver
 
 	void WebClient::handleLocoDelete(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		const datamodel::Loco* loco = manager.getLoco(locoID);
 		if (loco == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete loco"));
+			HtmlReplyWithHeaderAndParagraph("Unable to delete loco");
 			return;
 		}
 
-		string name = loco->name;
-
 		if (!manager.locoDelete(locoID))
 		{
-			ss << "Unable to delete loco";
-		}
-		else
-		{
-			ss << "Loco &quot;" << name << "&quot; deleted.";
+			HtmlReplyWithHeaderAndParagraph("Unable to delete loco");
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Loco &quot;" + loco->name + "&quot; deleted.");
 	}
 
 	void WebClient::handleProtocol(const map<string, string>& arguments)
 	{
+		/*
 		stringstream ss;
 		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId > ControlIdNone)
@@ -893,6 +876,7 @@ namespace webserver
 			ss << "Unknown control";
 		}
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+		*/
 	}
 
 	HtmlTag WebClient::selectLayout()
@@ -1034,7 +1018,6 @@ namespace webserver
 
 	void WebClient::handleAccessorySave(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		string name = GetStringMapEntry(arguments, "name");
 		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -1048,14 +1031,11 @@ namespace webserver
 		string result;
 		if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
 		{
-			ss << result;
-		}
-		else
-		{
-			ss << "Accessory &quot;" << name << "&quot; saved.";
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + name + "&quot; saved.");
 	}
 
 	void WebClient::handleAccessoryState(const map<string, string>& arguments)
@@ -1076,14 +1056,14 @@ namespace webserver
 
 		if (accessoryID == AccessoryNone)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown accessory"));
+			HtmlReplyWithHeaderAndParagraph("Unknown accessory");
 			return;
 		}
 
 		const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown accessory"));
+			HtmlReplyWithHeaderAndParagraph("Unknown accessory");
 			return;
 		}
 
@@ -1101,27 +1081,21 @@ namespace webserver
 
 	void WebClient::handleAccessoryDelete(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete accessory"));
+			HtmlReplyWithHeaderAndParagraph("Unable to delete accessory");
 			return;
 		}
 
-		string name = accessory->name;
-
 		if (!manager.accessoryDelete(accessoryID))
 		{
-			ss << "Unable to delete accessory";
-		}
-		else
-		{
-			ss << "Accessory &quot;" << name << "&quot; deleted.";
+			HtmlReplyWithHeaderAndParagraph("Unable to delete accessory");
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + accessory->name + "&quot; deleted.");
 	}
 
 	void WebClient::handleSwitchEdit(const map<string, string>& arguments)
@@ -1229,7 +1203,6 @@ namespace webserver
 
 	void WebClient::handleSwitchSave(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		string name = GetStringMapEntry(arguments, "name");
 		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -1245,14 +1218,10 @@ namespace webserver
 		string result;
 		if (!manager.switchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, timeout, inverted, result))
 		{
-			ss << result;
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
 		}
-		else
-		{
-			ss << "Switch &quot;" << name << "&quot; saved.";
-		}
-
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Switch &quot;" + name + "&quot; saved.");
 	}
 
 	void WebClient::handleSwitchState(const map<string, string>& arguments)
@@ -1273,14 +1242,14 @@ namespace webserver
 
 		if (switchID == SwitchNone)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown switch"));
+			HtmlReplyWithHeaderAndParagraph("Unknown switch");
 			return;
 		}
 
 		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown switch"));
+			HtmlReplyWithHeaderAndParagraph("Unknown switch");
 			return;
 		}
 
@@ -1298,27 +1267,21 @@ namespace webserver
 
 	void WebClient::handleSwitchDelete(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete switch"));
+			HtmlReplyWithHeaderAndParagraph("Unable to delete switch");
 			return;
 		}
 
-		string name = mySwitch->name;
-
 		if (!manager.switchDelete(switchID))
 		{
-			ss << "Unable to delete switch";
-		}
-		else
-		{
-			ss << "switch &quot;" << name << "&quot; deleted.";
+			HtmlReplyWithHeaderAndParagraph("Unable to delete switch");
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Switch &quot;" + mySwitch->name + "&quot; deleted.");
 	}
 
 	void WebClient::handleSwitchGet(const map<string, string>& arguments)
@@ -1401,7 +1364,6 @@ namespace webserver
 
 	void WebClient::handleTrackSave(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
 		string name = GetStringMapEntry(arguments, "name");
 		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
@@ -1413,14 +1375,11 @@ namespace webserver
 		string result;
 		if (!manager.trackSave(trackID, name, posX, posY, posZ, height, rotation, type, result))
 		{
-			ss << result;
-		}
-		else
-		{
-			ss << "Track &quot;" << name << "&quot; saved.";
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Track &quot;" + name + "&quot; saved.");
 	}
 
 	void WebClient::handleTrackAskDelete(const map<string, string>& arguments)
@@ -1429,14 +1388,14 @@ namespace webserver
 
 		if (trackID == TrackNone)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown track"));
+			HtmlReplyWithHeaderAndParagraph("Unknown track");
 			return;
 		}
 
 		const datamodel::Track* track = manager.getTrack(trackID);
 		if (track == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unknown track"));
+			HtmlReplyWithHeaderAndParagraph("Unknown track");
 			return;
 		}
 
@@ -1454,27 +1413,21 @@ namespace webserver
 
 	void WebClient::handleTrackDelete(const map<string, string>& arguments)
 	{
-		stringstream ss;
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
 		const datamodel::Track* track = manager.getTrack(trackID);
 		if (track == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Unable to delete track"));
+			HtmlReplyWithHeaderAndParagraph("Unable to delete track");
 			return;
 		}
 
-		string name = track->name;
-
 		if (!manager.trackDelete(trackID))
 		{
-			ss << "Unable to delete track";
-		}
-		else
-		{
-			ss << "track &quot;" << name << "&quot; deleted.";
+			HtmlReplyWithHeaderAndParagraph("Unable to delete track");
+			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ss.str()));
+		HtmlReplyWithHeaderAndParagraph("Track &quot;" + track->name + "&quot; deleted.");
 	}
 
 	void WebClient::handleTrackGet(const map<string, string>& arguments)

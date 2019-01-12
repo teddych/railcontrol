@@ -44,6 +44,8 @@ namespace webserver
 			void printLoco(const std::map<std::string, std::string>& arguments);
 			void printMainHTML();
 			void HtmlReplyWithHeader(const HtmlTag& tag);
+			void HtmlReplyWithHeaderAndParagraph(const std::string& content) { HtmlReplyWithHeader(HtmlTag("p").AddContent(content)); }
+			void HtmlReplyWithHeaderAndParagraph(const char* content) { HtmlReplyWithHeaderAndParagraph(std::string(content)); }
 			void deliverFile(const std::string& file);
 			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			HtmlTag ControlArgumentTag(unsigned char argNr, argumentType_t type, std::string& value);
