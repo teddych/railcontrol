@@ -73,6 +73,7 @@ namespace webserver
 			void handleTrackAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackGet(const std::map<std::string, std::string>& arguments);
+			void handleLocoList(const std::map<std::string, std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

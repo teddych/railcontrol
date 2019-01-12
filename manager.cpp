@@ -463,6 +463,17 @@ const std::string& Manager::getLocoName(const locoID_t locoID)
 	return locos.at(locoID)->name;
 }
 
+const map<string,datamodel::Loco*> Manager::locoListByName() const
+{
+	map<string,datamodel::Loco*> out;
+	std::lock_guard<std::mutex> Guard(locoMutex);
+	for(auto loco : locos)
+	{
+		out[loco.second->name] = loco.second;
+	}
+	return out;
+}
+
 bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, string& result)
 {
 	Loco* loco;

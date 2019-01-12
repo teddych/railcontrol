@@ -250,6 +250,10 @@ namespace webserver
 			{
 				handleTrackGet(arguments);
 			}
+			else if (arguments["cmd"].compare("locolist") == 0)
+			{
+				handleLocoList(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				handleUpdater(headers);
@@ -1296,6 +1300,34 @@ namespace webserver
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
 		const datamodel::Track* track = manager.getTrack(trackID);
 		HtmlReplyWithHeader(HtmlTagTrack(track));
+	}
+
+	void WebClient::handleLocoList(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Locos"));
+		HtmlTag table("table");
+		const map<string,datamodel::Loco*> locoList = manager.locoListByName();
+		map<string,string> locoArgument;
+		for (auto loco : locoList)
+		{
+			HtmlTag row("tr");
+			row.AddContent(HtmlTag("td").AddContent(loco.first));
+			row.AddContent(HtmlTag("td").AddContent(to_string(loco.second->address)));
+			string locoIdString = to_string(loco.second->objectID);
+			locoArgument["loco"] = locoIdString;
+			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
+			table.AddContent(row);
+		}
+		HtmlTag row("tr");
+		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
+		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
+		row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("New", "locoedit_0")));
+		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
+		table.AddContent(row);
+		content.AddContent(table);
+		content.AddContent(HtmlTagButtonCancel());
+		HtmlReplyWithHeader(content);
 	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)

@@ -51,6 +51,7 @@ class Manager {
 		datamodel::Loco* getLoco(const locoID_t locoID) const;
 		const std::string& getLocoName(const locoID_t locoID);
 		inline const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
+		const std::map<std::string,datamodel::Loco*> locoListByName() const;
 		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
