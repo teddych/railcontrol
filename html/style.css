@@ -138,6 +138,10 @@ label {
 	display: inline-block;
 }
 
+.integer {
+	width: 40px;
+}
+
 input,
 select {
 	width: 400px;

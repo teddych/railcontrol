@@ -1,3 +1,55 @@
+function checkIntegerValue(name, min, max)
+{
+	if (min > max)
+	{
+		return;
+	}
+	var input = document.getElementById(name);
+	if (!input)
+	{
+		return;
+	}
+	if (input.value < min)
+	{
+		input.value = min;
+		return;
+	}
+	if (input.value > max)
+	{
+		input.value = max;
+	}
+}
+
+function incrementIntegerValue(name, max)
+{
+	var input = document.getElementById(name);
+	if (!input)
+	{
+		return;
+	}
+	var value = parseInt(input.value) + 1;
+	if (value > max)
+	{
+		return;
+	}
+	input.value = value;
+}
+
+function decrementIntegerValue(name, min)
+{
+	var input = document.getElementById(name);
+	if (!input)
+	{
+		return;
+	}
+	var value = parseInt(input.value) - 1;
+	if (value < min)
+	{
+		return;
+	}
+	input.value = value;
+}
+
 function setToggleButton(elementName, on)
 {
 	var element = document.getElementById(elementName);

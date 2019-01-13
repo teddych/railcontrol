@@ -24,6 +24,7 @@
 #include "webserver/HtmlTagButtonPopup.h"
 #include "webserver/HtmlTagInputCheckbox.h"
 #include "webserver/HtmlTagInputHidden.h"
+#include "webserver/HtmlTagInputIntegerWithLabel.h"
 #include "webserver/HtmlTagInputSliderLocoSpeed.h"
 #include "webserver/HtmlTagInputTextWithLabel.h"
 #include "webserver/HtmlTagSelect.h"
@@ -749,7 +750,7 @@ namespace webserver
 			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
 			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
 			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
-			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)))
+			.AddContent(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999))
 			.AddContent(HtmlTagLabel("# of functions:", "function"))
 			.AddContent(HtmlTagSelect("function", functionOptions, toStringWithLeadingZeros(nrOfFunctions, 2)))
 			);

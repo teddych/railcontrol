@@ -50,6 +50,7 @@ OBJ= \
 	webserver/HtmlTagButtonOK.o \
 	webserver/HtmlTagButtonPopup.o \
 	webserver/HtmlTagInput.o \
+	webserver/HtmlTagInputInteger.o \
 	webserver/HtmlTagInputSlider.o \
 	webserver/HtmlTagInputSliderLocoSpeed.o \
 	webserver/HtmlTagSelect.o \
