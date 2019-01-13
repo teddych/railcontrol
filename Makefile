@@ -5,7 +5,8 @@ CCRASPI=aarch64-linux-gcc
 CPPRASPI=aarch64-linux-g++
 
 CPPFLAGS=-I. -g -O0 -Wall -std=c++11
-CPPFLAGSAMALGAMATION=-I. -g -O2 -Wall -std=c++11
+# -O2 does not work
+CPPFLAGSAMALGAMATION=-I. -g -O0 -Wall -std=c++11
 CPPFLAGSRASPI=-I. -g -O0 -Wall -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-uclibc/sysroot
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
