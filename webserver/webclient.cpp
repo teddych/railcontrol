@@ -490,7 +490,8 @@ namespace webserver
 
 			case S88Modules:
 				argumentName = "# of S88 Modules (8 port):";
-				break;
+				const int valueInteger = Util::StringToInteger(value, 0, 62);
+				return HtmlTagInputIntegerWithLabel("arg" + to_string(argNr), argumentName, valueInteger, 0, 62);
 		}
 		return HtmlTagInputTextWithLabel("arg" + to_string(argNr), argumentName, value);
 	}
@@ -735,12 +736,6 @@ namespace webserver
 			protocolOptions[to_string(protocol.first)] = protocol.second;
 		}
 
-		std::map<string, string> functionOptions;
-		for(function_t i = 0; i <= datamodel::LocoFunctions::maxFunctions; ++i)
-		{
-			functionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
-		}
-
 		content.AddContent(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "locosave"))
@@ -751,8 +746,7 @@ namespace webserver
 			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
 			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
 			.AddContent(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999))
-			.AddContent(HtmlTagLabel("# of functions:", "function"))
-			.AddContent(HtmlTagSelect("function", functionOptions, toStringWithLeadingZeros(nrOfFunctions, 2)))
+			.AddContent(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions))
 			);
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
@@ -970,12 +964,6 @@ namespace webserver
 			protocolOptions[to_string(protocol.first)] = protocol.second;
 		}
 
-		std::map<string, string> positionOptions;
-		for(int i = 0; i < 50; ++i)
-		{
-			positionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
-		}
-
 		std::map<string, string> timeoutOptions;
 		timeoutOptions["0000"] = "0";
 		timeoutOptions["0100"] = "100";
@@ -991,14 +979,11 @@ namespace webserver
 			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
 			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
 			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
-			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)))
-			.AddContent(HtmlTagLabel("Pos X:", "posx"))
-			.AddContent(HtmlTagSelect("posx", positionOptions, toStringWithLeadingZeros(posx, 2)))
-			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
-			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
+			.AddContent(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
+			.AddContent(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
+			.AddContent(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
 			/* FIXME: layers not supported
-			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
-			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			.AddContent(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
 			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
 			.AddContent(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
@@ -1148,12 +1133,6 @@ namespace webserver
 			protocolOptions[to_string(protocol.first)] = protocol.second;
 		}
 
-		std::map<string, string> positionOptions;
-		for(int i = 0; i < 50; ++i)
-		{
-			positionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
-		}
-
 		std::map<string, string> rotationOptions;
 		rotationOptions[to_string(Rotation0)] = "none";
 		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
@@ -1179,14 +1158,11 @@ namespace webserver
 			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
 			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
 			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
-			.AddContent(HtmlTagInputTextWithLabel("address", "Address:", to_string(address)))
-			.AddContent(HtmlTagLabel("Pos X:", "posx"))
-			.AddContent(HtmlTagSelect("posx", positionOptions, toStringWithLeadingZeros(posx, 2)))
-			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
-			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
+			.AddContent(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
+			.AddContent(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
+			.AddContent(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
 			/* FIXME: layers not supported
-			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
-			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			.AddContent(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
 			.AddContent(HtmlTagLabel("Rotation:", "rotation"))
 			.AddContent(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
@@ -1315,18 +1291,6 @@ namespace webserver
 			type = track->Type();
 		}
 
-		std::map<string, string> positionOptions;
-		for(int i = 0; i < 50; ++i)
-		{
-			positionOptions[toStringWithLeadingZeros(i, 2)] = to_string(i);
-		}
-
-		std::map<string, string> heightOptions;
-		for(int i = 0; i < 5; ++i)
-		{
-			heightOptions[toStringWithLeadingZeros(i, 1)] = to_string(i);
-		}
-
 		std::map<string, string> rotationOptions;
 		rotationOptions[to_string(Rotation0)] = "none";
 		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
@@ -1343,16 +1307,12 @@ namespace webserver
 			.AddContent(HtmlTagInputHidden("cmd", "tracksave"))
 			.AddContent(HtmlTagInputHidden("track", to_string(trackID)))
 			.AddContent(HtmlTagInputTextWithLabel("name", "Track Name:", name))
-			.AddContent(HtmlTagLabel("Pos X:", "posx"))
-			.AddContent(HtmlTagSelect("posx", positionOptions, toStringWithLeadingZeros(posx, 2)))
-			.AddContent(HtmlTagLabel("Pos Y:", "posy"))
-			.AddContent(HtmlTagSelect("posy", positionOptions, toStringWithLeadingZeros(posy, 2)))
+			.AddContent(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
+			.AddContent(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
 			/* FIXME: layers not supported
-			.AddContent(HtmlTagLabel("Pos Z:", "posz"))
-			.AddContent(HtmlTagSelect("posz", positionOptions, toStringWithLeadingZeros(posz, 2)))
+			.AddContent(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
-			.AddContent(HtmlTagLabel("Length:", "length"))
-			.AddContent(HtmlTagSelect("length", heightOptions, to_string(height)))
+			.AddContent(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
 			.AddContent(HtmlTagLabel("Rotation:", "rotation"))
 			.AddContent(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
 			.AddContent(HtmlTagLabel("Type:", "type"))
