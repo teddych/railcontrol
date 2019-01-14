@@ -36,7 +36,6 @@ namespace hardware
 			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override
 			{
 				argumentTypes[1] = IpAddress;
-				argumentTypes[2] = S88Modules;
 			}
 
 			void Booster(const boosterStatus_t status) override;
