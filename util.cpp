@@ -19,23 +19,28 @@ using std::stringstream;
 using std::to_string;
 using std::vector;
 
-void str_replace(std::string& str, const std::string& from, const std::string& to) {
+void str_replace(std::string& str, const std::string& from, const std::string& to)
+{
 	while (true) {
 		size_t start_pos = str.find(from);
-		if (start_pos == string::npos) {
+		if (start_pos == string::npos)
+		{
 			return;
 		}
 		str.replace(start_pos, from.length(), to);
 	}
 }
 
-void str_split(const std::string& str_in, const std::string &delimiter, std::vector<string> &list) {
+void str_split(const std::string& str_in, const std::string &delimiter, std::vector<string> &list)
+{
 	size_t length_delim = delimiter.length();
 	string str(str_in);
-	while (true) {
+	while (true)
+	{
 		size_t pos = str.find(delimiter);
 		list.push_back(str.substr(0, pos));
-		if (pos == string::npos) {
+		if (pos == string::npos)
+		{
 			return;
 		}
 		str = string(str.substr(pos + length_delim, string::npos));

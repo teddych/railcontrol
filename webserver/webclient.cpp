@@ -32,7 +32,6 @@
 #include "webserver/HtmlTagTrack.h"
 
 using std::map;
-using std::stoi;
 using std::string;
 using std::stringstream;
 using std::thread;
