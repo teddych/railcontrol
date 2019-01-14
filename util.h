@@ -1,8 +1,9 @@
 #pragma once
 
+#include <climits>
+#include <map>
 #include <string>
 #include <vector>
-#include <map>
 
 // replace string from with to in str
 void str_replace(std::string& str, const std::string& from, const std::string& to);
@@ -15,3 +16,9 @@ int GetIntegerMapEntry(const std::map<std::string,std::string>& map, const std::
 bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const bool defaultValue = false);
 
 std::string toStringWithLeadingZeros(const unsigned int number, const unsigned char chars);
+
+class Util
+{
+	public:
+		static int StringToInteger(const std::string&  value, const int min = 0, const int max = INT_MAX);
+};

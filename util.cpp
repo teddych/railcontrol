@@ -90,3 +90,28 @@ string toStringWithLeadingZeros(const unsigned int number, const unsigned char c
 	}
 	return out;
 }
+
+int Util::StringToInteger(const std::string&  value, const int min, const int max)
+{
+	int intValue;
+	try
+	{
+		intValue = std::stoi(value);
+	}
+	catch (...)
+	{
+		return min;
+	}
+
+	if (intValue < min)
+	{
+		return min;
+	}
+
+	if (intValue > max)
+	{
+		return max;
+	}
+
+	return intValue;
+}
