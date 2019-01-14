@@ -6,7 +6,6 @@
 #include <datamodel/track.h>
 
 using std::map;
-using std::stoi;
 using std::string;
 
 namespace datamodel

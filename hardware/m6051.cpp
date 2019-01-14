@@ -56,14 +56,7 @@ namespace hardware
 		tcsetattr(ttyFileDescriptor, TCSANOW, &options); // store options
 		tcflush(ttyFileDescriptor, TCIFLUSH); // clear RX buffer
 
-		try
-		{
-			s88Modules = stoi(params->arg2);
-		}
-		catch (...)
-		{
-			s88Modules = 0;
-		}
+		s88Modules = Util::StringToInteger(params->arg2, 0, 62);
 		if (s88Modules == 0)
 		{
 			logger->Info("No S88 modules configured.");

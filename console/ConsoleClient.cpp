@@ -200,7 +200,7 @@ namespace console
 		{
 			try
 			{
-				int in = std::stoi(s);
+				int in = Util::StringToInteger(s);
 				if (in <= HardwareTypeNone || in >= HardwareTypeNumbers)
 				{
 					return HardwareTypeNone;

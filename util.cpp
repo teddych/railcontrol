@@ -57,18 +57,7 @@ int GetIntegerMapEntry(const std::map<std::string,std::string>& map, const std::
 	{
 		return defaultValue;
 	}
-	string value = map.at(key);
-	int intValue;
-	try
-	{
-		intValue = stoi(value);
-	}
-	catch (...)
-	{
-		return defaultValue;
-	}
-
-	return intValue;
+	return Util::StringToInteger(map.at(key), defaultValue);
 }
 
 bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const bool defaultValue)
