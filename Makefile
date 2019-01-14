@@ -12,6 +12,9 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
+	DelayedCall.o \
+	Logger/Logger.o \
+	Logger/LoggerServer.o \
 	config.o \
 	console/ConsoleClient.o \
 	console/ConsoleServer.o \
@@ -25,10 +28,7 @@ OBJ= \
 	datamodel/street.o \
 	datamodel/switch.o \
 	datamodel/track.o \
-	DelayedCall.o \
 	hardware/HardwareHandler.o \
-	Logger/Logger.o \
-	Logger/LoggerServer.o \
 	manager.o \
 	network/TcpConnection.o \
 	network/TcpServer.o \
@@ -36,7 +36,6 @@ OBJ= \
 	storage/StorageHandler.o \
 	text/converters.o \
 	util.o \
-	webserver/Response.o \
 	webserver/HtmlFullResponse.o \
 	webserver/HtmlResponse.o \
 	webserver/HtmlResponseNotFound.o \
@@ -56,8 +55,9 @@ OBJ= \
 	webserver/HtmlTagSelect.o \
 	webserver/HtmlTagSwitch.o \
 	webserver/HtmlTagTrack.o \
-	webserver/webserver.o \
-	webserver/webclient.o
+	webserver/Response.o \
+	webserver/webclient.o \
+	webserver/webserver.o
 
 all: $(OBJ)
 	make -C hardware
