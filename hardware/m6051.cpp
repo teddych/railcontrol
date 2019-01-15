@@ -23,10 +23,10 @@ namespace hardware
 		delete(m6051);
 	}
 
-	M6051::M6051(const HardwareParams* params) :
+	M6051::M6051(const HardwareParams* params)
+	:	logger(Logger::Logger::GetLogger("M6051 " + params->name + " " + params->arg1)),
 		manager(params->manager),
-		run(true),
-		logger(Logger::Logger::GetLogger("M6051 " + params->name + " " + params->arg1))
+		run(true)
 	{
 		std::stringstream ss;
 		ss << "Maerklin Interface (6050/6051) / " << params->name << " at serial port " << params->arg1;

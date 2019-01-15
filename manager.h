@@ -136,6 +136,8 @@ class Manager {
 		bool checkAddressAccessory(const protocol_t protocol, const address_t address, std::string& result);
 		bool checkControlProtocolAddress(const addressType_t type, const controlID_t controlID, const protocol_t protocol, const address_t address, std::string& result);
 
+		Logger::Logger* logger;
+
 		// FIXME: check usage of all mutexes
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;
 
@@ -185,6 +187,4 @@ class Manager {
 		const std::string unknownTrack;
 		const std::string unknownSwitch;
 		const std::string unknownStreet;
-
-		Logger::Logger* logger;
 };

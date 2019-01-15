@@ -45,6 +45,7 @@ namespace hardware
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
 		private:
+			Logger::Logger* logger;
 			volatile unsigned char run;
 			std::string name;
 			Manager* manager;
@@ -57,8 +58,6 @@ namespace hardware
 			typedef unsigned char cs2Response_t;
 			typedef unsigned char cs2Length_t;
 			typedef uint32_t cs2Address_t;
-
-			Logger::Logger* logger;
 
 			void intToData(const uint32_t i, char* buffer);
 			uint32_t dataToInt(const char* buffer);

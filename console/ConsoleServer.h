@@ -44,10 +44,10 @@ namespace console
 		private:
 			void AddUpdate(const std::string& status);
 
+			Logger::Logger* logger;
 			volatile unsigned char run;
 			std::vector<ConsoleClient*> clients;
 			Manager& manager;
-			Logger::Logger* logger;
 	};
 }; // namespace console
 

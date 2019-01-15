@@ -18,12 +18,12 @@ namespace console
 	{
 		public:
 			ConsoleClient(Network::TcpConnection* connection, ConsoleServer &consoleServer, Manager& manager)
-			:	connection(connection),
+			:	logger(Logger::Logger::GetLogger("Console")),
+				connection(connection),
 				run(false),
 				server(consoleServer),
 				clientThread(std::thread([this] {Worker();})),
-				manager(manager),
-				logger(Logger::Logger::GetLogger("Console"))
+				manager(manager)
 			{}
 
 			~ConsoleClient()
@@ -94,12 +94,12 @@ namespace console
 			void HandleSwitchList(std::string& s, size_t& i);
 			void HandleSwitchNew(std::string& s, size_t& i);
 
+			Logger::Logger* logger;
 			Network::TcpConnection* connection;
 			volatile unsigned char run;
 			ConsoleServer& server;
 			std::thread clientThread;
 			Manager& manager;
-			Logger::Logger* logger;
 	};
 }; // namespace console
 

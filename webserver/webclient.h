@@ -17,14 +17,14 @@ namespace webserver
 	{
 		public:
 			WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer &webserver, Manager& m)
-			:	id(id),
+			:	logger(Logger::Logger::GetLogger("Webserver")),
+				id(id),
 				connection(connection),
 				run(false),
 				server(webserver),
 				clientThread(std::thread([this] {Worker();})),
 				manager(m),
-				buttonID(0),
-				logger(Logger::Logger::GetLogger("Webserver"))
+				buttonID(0)
 			{}
 
 			~WebClient();
@@ -86,6 +86,7 @@ namespace webserver
 			char ConvertHexToInt(char c);
 			void WorkerImpl();
 
+			Logger::Logger* logger;
 			unsigned int id;
 			Network::TcpConnection* connection;
 			volatile unsigned char run;
@@ -94,7 +95,6 @@ namespace webserver
 			Manager& manager;
 			bool headOnly;
 			unsigned int buttonID;
-			Logger::Logger* logger;
 	};
 
 }; // namespace webserver

@@ -33,8 +33,8 @@ namespace hardware
 
 	// start the thing
 	CS2::CS2(const HardwareParams* params)
-	:	manager(params->manager),
-		logger(Logger::Logger::GetLogger("CS2 " + params->name + " " + params->arg1))
+	:	logger(Logger::Logger::GetLogger("CS2 " + params->name + " " + params->arg1)),
+		manager(params->manager)
 	{
 		std::stringstream ss;
 		ss << "Maerklin Central Station 2 (CS2) / " << params->name << " at IP " << params->arg1;

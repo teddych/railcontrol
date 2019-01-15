@@ -35,6 +35,7 @@ namespace hardware
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
 		private:
+			Logger::Logger* logger;
 			static const unsigned char MaxS88Modules = 62;
 			std::string name;
 			Manager* manager;
@@ -46,7 +47,6 @@ namespace hardware
 			unsigned char s88Memory[MaxS88Modules];
 			std::map<address_t, unsigned char> speedMap;
 			std::map<address_t, unsigned char> functionMap;
-			Logger::Logger* logger;
 
 			unsigned char GetSpeedMapEntry(address_t address)
 			{

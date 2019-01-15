@@ -34,8 +34,8 @@ namespace hardware
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
 		private:
-			std::string name;
 			Logger::Logger* logger;
+			std::string name;
 	};
 
 	extern "C" Virtual* create_virtual(const HardwareParams* params);

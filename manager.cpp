@@ -30,7 +30,8 @@ using storage::StorageParams;
 using webserver::WebServer;
 
 Manager::Manager(Config& config)
-:	storage(nullptr),
+:	logger(Logger::Logger::GetLogger("Manager")),
+	storage(nullptr),
  	delayedCall(new DelayedCall(*this)),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
@@ -38,8 +39,7 @@ Manager::Manager(Config& config)
 	unknownFeedback("Unknown Feedback"),
 	unknownTrack("Unknown Track"),
 	unknownSwitch("Unknown Switch"),
-	unknownStreet("Unknown Street"),
-	logger(Logger::Logger::GetLogger("Manager"))
+	unknownStreet("Unknown Street")
 {
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
