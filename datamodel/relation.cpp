@@ -30,14 +30,14 @@ namespace datamodel
 	}
 
 	bool Relation::deserialize(const map<string,string>& arguments) {
-		if (arguments.count("relationID")) relationID = stoi(arguments.at("relationID"));
-		if (arguments.count("name")) name = arguments.at("name");
-		if (arguments.count("objectType1")) objectType1 = static_cast<objectType_t>(stoi(arguments.at("objectType1")));
-		if (arguments.count("objectID1")) objectID1 = stoi(arguments.at("objectID1"));
-		if (arguments.count("objectType2")) objectType2 = static_cast<objectType_t>(stoi(arguments.at("objectType2")));
-		if (arguments.count("objectID2")) objectID2 = stoi(arguments.at("objectID2"));
-		if (arguments.count("switchState")) switchState = static_cast<switchState_t>(stoi(arguments.at("switchState")));
-		if (arguments.count("lockState")) lockState = static_cast<lockState_t>(stoi(arguments.at("lockState")));
+		relationID = GetIntegerMapEntry(arguments, "relationID", RelationNone);
+		name = GetStringMapEntry(arguments, "name");
+		objectType1 = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "objectType1"));
+		objectID1 = GetIntegerMapEntry(arguments, "objectID1");
+		objectType2 = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "objectType2"));
+		objectID2 = GetIntegerMapEntry(arguments, "objectID2");
+		switchState = GetIntegerMapEntry(arguments, "switchState");
+		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 		return true;
 	}
 

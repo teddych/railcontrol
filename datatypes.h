@@ -52,6 +52,7 @@ static const feedbackID_t FeedbackNone = 0;
 static const trackID_t TrackNone = 0;
 static const switchID_t SwitchNone = 0;
 static const streetID_t StreetNone = 0;
+static const relationID_t RelationNone = 0;
 static const controlID_t ControlNone = 0;
 
 static const LocoSpeed MaxSpeed = 1023;
