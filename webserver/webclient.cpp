@@ -27,7 +27,7 @@
 #include "webserver/HtmlTagInputIntegerWithLabel.h"
 #include "webserver/HtmlTagInputSliderLocoSpeed.h"
 #include "webserver/HtmlTagInputTextWithLabel.h"
-#include "webserver/HtmlTagSelect.h"
+#include "webserver/HtmlTagSelectWithLabel.h"
 #include "webserver/HtmlTagSwitch.h"
 #include "webserver/HtmlTagTrack.h"
 
@@ -961,7 +961,8 @@ namespace webserver
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
 			.AddChildTag(HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
-			.AddChildTag(HtmlTagInputCheckbox("inverted", "Inverted", true, inverted))
+			.AddChildTag(HtmlTagLabel("Inverted:", "inverted"))
+			.AddChildTag(HtmlTagInputCheckbox("inverted", "true", inverted))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());

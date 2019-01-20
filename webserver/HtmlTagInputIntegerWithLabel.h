@@ -22,13 +22,13 @@ namespace webserver
 				AddChildTag(HtmlTagInputInteger(name, value, min, max));
 			}
 
-			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value)
+			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{
 				childTags[1].AddAttribute(name, value);
 				return *this;
 			}
 
-			virtual HtmlTag AddClass(const std::string& _class)
+			virtual HtmlTag AddClass(const std::string& _class) override
 			{
 				childTags[1].AddClass(_class);
 				return *this;
