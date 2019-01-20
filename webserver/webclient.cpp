@@ -22,7 +22,7 @@
 #include "webserver/HtmlTagButtonCommandToggle.h"
 #include "webserver/HtmlTagButtonOK.h"
 #include "webserver/HtmlTagButtonPopup.h"
-#include "webserver/HtmlTagInputCheckbox.h"
+#include "webserver/HtmlTagInputCheckboxWithLabel.h"
 #include "webserver/HtmlTagInputHidden.h"
 #include "webserver/HtmlTagInputIntegerWithLabel.h"
 #include "webserver/HtmlTagInputSliderLocoSpeed.h"
@@ -961,8 +961,7 @@ namespace webserver
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
 			.AddChildTag(HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
-			.AddChildTag(HtmlTagLabel("Inverted:", "inverted"))
-			.AddChildTag(HtmlTagInputCheckbox("inverted", "true", inverted))
+			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
@@ -1139,8 +1138,7 @@ namespace webserver
 			.AddChildTag(HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation)))
 			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
 			.AddChildTag(HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
-			.AddChildTag(HtmlTagLabel("Inverted:", "inverted"))
-			.AddChildTag(HtmlTagInputCheckbox("inverted", "true", inverted))
+			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
