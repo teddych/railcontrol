@@ -1446,10 +1446,10 @@ namespace webserver
 	HtmlTag WebClient::selectLoco()
 	{
 		const map<locoID_t, Loco*>& locos = manager.locoList();
-		map<string,string> options;
+		map<string,int> options;
 		for (auto locoTMP : locos) {
 			Loco* loco = locoTMP.second;
-			options[to_string(loco->objectID)] = loco->name;
+			options[loco->name] = loco->objectID;
 		}
 		return HtmlTag("form").AddAttribute("method", "get").AddAttribute("action", "/").AddAttribute("id", "selectLoco_form")
 		.AddContent(HtmlTagSelect("loco", options).AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')"))
