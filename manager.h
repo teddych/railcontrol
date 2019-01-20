@@ -45,7 +45,7 @@ class Manager {
 		inline const std::map<controlID_t,hardware::HardwareParams*> controlList() const { return hardwareParams; }
 		const std::map<std::string,hardware::HardwareParams*> controlListByName() const;
 		const std::map<controlID_t,std::string> controlListNames() const;
-		const std::map<protocol_t,std::string> protocolsOfControl(const controlID_t) const;
+		const std::map<std::string,protocol_t> protocolsOfControl(const controlID_t) const;
 		const std::map<unsigned char,argumentType_t> ArgumentTypesOfControl(const controlID_t controlID) const;
 
 		// loco

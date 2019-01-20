@@ -188,9 +188,9 @@ namespace webserver
 			{
 				handleLocoDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("protocol") == 0)
+			else if (arguments["cmd"].compare("protocolloco") == 0)
 			{
-				handleProtocol(arguments);
+				handleProtocolLoco(arguments);
 			}
 			else if (arguments["cmd"].compare("layout") == 0)
 			{
@@ -464,7 +464,7 @@ namespace webserver
 		free(buffer);
 	}
 
-	HtmlTag WebClient::ControlArgumentTag(unsigned char argNr, argumentType_t type, string& value)
+	HtmlTag WebClient::ControlArgumentTag(const unsigned char argNr, const argumentType_t type, const string& value)
 	{
 		string argumentName;
 		switch (type)
@@ -683,6 +683,33 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
+	HtmlTag WebClient::HtmlTagProtocol(const controlID_t controlID, const protocol_t selectedProtocol)
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTagLabel("Protocol:", "protocol"));
+		map<string,protocol_t> protocolMap = manager.protocolsOfControl(controlID);
+		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
+		return content;
+	}
+
+	void WebClient::handleProtocolLoco(const map<string, string>& arguments)
+	{
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		if (controlId == ControlIdNone)
+		{
+			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
+			return;
+		}
+		locoID_t locoId = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		Loco* loco = manager.getLoco(locoId);
+		if (loco == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown loco"));
+			return;
+		}
+		HtmlReplyWithHeader(HtmlTagProtocol(controlId, loco->protocol));
+	}
+
 	void WebClient::handleLocoEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
@@ -713,20 +740,15 @@ namespace webserver
 			}
 		}
 
-		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
-		std::map<string, string> protocolOptions;
-		for(auto protocol : protocols)
-		{
-			protocolOptions[to_string(protocol.first)] = protocol.second;
-		}
-
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
 			.AddChildTag(HtmlTagInputHidden("cmd", "locosave"))
 			.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
-			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)))
-			.AddChildTag(HtmlTagSelectWithLabel("protocol", "Protocol:" ,protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID))
+				.AddAttribute("onchange", "loadProtocolLoco(" + to_string(locoID) + ", " + to_string(protocol) + ")")
+				)
+			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocol(controlID, protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions))
 			));
@@ -826,31 +848,6 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Loco &quot;" + loco->name + "&quot; deleted.");
 	}
 
-	void WebClient::handleProtocol(const map<string, string>& arguments)
-	{
-		/*
-		stringstream ss;
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		if (controlId > ControlIdNone)
-		{
-			ss << "<label>Protocol:</label>";
-			protocol_t selectedProtocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-			std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlId);
-			std::map<string,string> protocolsTextMap;
-			for(auto protocol : protocols)
-			{
-				protocolsTextMap[to_string(protocol.first)] = protocol.second;
-			}
-			ss << HtmlTagSelect("protocol", protocolsTextMap, to_string(selectedProtocol));
-		}
-		else
-		{
-			ss << "Unknown control";
-		}
-		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
-		*/
-	}
-
 	HtmlTag WebClient::selectLayout()
 	{
 		map<string,string> options;
@@ -934,13 +931,6 @@ namespace webserver
 			}
 		}
 
-		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
-		std::map<string, string> protocolOptions;
-		for(auto protocol : protocols)
-		{
-			protocolOptions[to_string(protocol.first)] = protocol.second;
-		}
-
 		std::map<string, string> timeoutOptions;
 		timeoutOptions["0000"] = "0";
 		timeoutOptions["0100"] = "100";
@@ -953,7 +943,7 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Accessory Name:", name))
 			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)))
-			.AddChildTag(HtmlTagSelectWithLabel("protocol", "Protocol:", protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagProtocol(controlID, protocol))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
@@ -1099,13 +1089,6 @@ namespace webserver
 			}
 		}
 
-		std::map<protocol_t,string> protocols = manager.protocolsOfControl(controlID);
-		std::map<string, string> protocolOptions;
-		for(auto protocol : protocols)
-		{
-			protocolOptions[to_string(protocol.first)] = protocol.second;
-		}
-
 		std::map<string, string> rotationOptions;
 		rotationOptions[to_string(Rotation0)] = "none";
 		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
@@ -1128,7 +1111,7 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("switch", to_string(switchID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Switch Name:", name))
 			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)))
-			.AddChildTag(HtmlTagSelectWithLabel("protocol", "Protocol:", protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagProtocol(controlID, protocol))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
@@ -1412,7 +1395,7 @@ namespace webserver
 	HtmlTag WebClient::selectLoco()
 	{
 		const map<locoID_t, Loco*>& locos = manager.locoList();
-		map<string,int> options;
+		map<string,locoID_t> options;
 		for (auto locoTMP : locos) {
 			Loco* loco = locoTMP.second;
 			options[loco->name] = loco->objectID;

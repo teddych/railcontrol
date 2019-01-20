@@ -18,7 +18,7 @@ namespace webserver
 				AddChildTag(HtmlTagSelect(name, options, defaultValue));
 			}
 
-			HtmlTagSelectWithLabel(const std::string& name, const std::string& label, const std::map<std::string,int>& options, const int defaultValue = 0)
+			template<typename T> HtmlTagSelectWithLabel(const std::string& name, const std::string& label, const std::map<std::string,T>& options, const int defaultValue = 0)
 			:	HtmlTag()
 			{
 				AddChildTag(HtmlTagLabel(label, name));

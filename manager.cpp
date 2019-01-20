@@ -402,17 +402,19 @@ const map<string,hardware::HardwareParams*> Manager::controlListByName() const
 	return out;
 }
 
-const std::map<protocol_t,std::string> Manager::protocolsOfControl(const controlID_t controlID) const
+const std::map<std::string,protocol_t> Manager::protocolsOfControl(const controlID_t controlID) const
 {
-	std::map<protocol_t,std::string> ret;
-	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	if (hardwareParams.count(controlID) != 1)
+	std::map<std::string,protocol_t> ret;
 	{
-		ret[ProtocolNone] = protocolSymbols[ProtocolNone];
-		return ret;
+		std::lock_guard<std::mutex> Guard(hardwareMutex);
+		if (hardwareParams.count(controlID) != 1)
+		{
+			ret[protocolSymbols[ProtocolNone]] = ProtocolNone;
+			return ret;
+		}
 	}
 
-	std::lock_guard<std::mutex> Guard2(controlMutex);
+	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
 		if (control.second->getManagerID() != ControlTypeHardware)
@@ -426,12 +428,11 @@ const std::map<protocol_t,std::string> Manager::protocolsOfControl(const control
 			continue;
 		}
 
-		// FIXME: is this a memory leak, when I twice add the same protocol?
 		std::vector<protocol_t> protocols;
 		hardware->getProtocols(protocols);
 		for (auto protocol : protocols)
 		{
-			ret[protocol] = protocolSymbols[protocol];
+			ret[protocolSymbols[protocol]] = protocol;
 		}
 	}
 	return ret;

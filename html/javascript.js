@@ -129,7 +129,7 @@ function onContextTrack(trackID)
 	}
 }
 
-function updateItem(elementName, data)
+function updateLayoutItem(elementName, data)
 {
 	var parentElement = document.getElementById('layout');
 	if (parentElement)
@@ -152,6 +152,29 @@ function updateItem(elementName, data)
 			eval(scriptTags[i].innerHTML);
 		}
 	}
+}
+
+function requestUpdateLayoutItem(elementName, url)
+{
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+		{
+			updateLayoutItem(elementName, xmlHttp.responseText);
+		}
+	}
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
+}
+
+function updateItem(elementName, data)
+{
+	var element = document.getElementById(elementName);
+	if (!element)
+	{
+		return;
+	}
+	element.innerHTML = data;
 }
 
 function requestUpdateItem(elementName, url)
@@ -242,7 +265,7 @@ function dataUpdate(event)
 		elementName = 'a_' + accessoryID;
 		var url = '/?cmd=accessoryget';
 		url += '&accessory=' + accessoryID;
-		requestUpdateItem(elementName, url);
+		requestUpdateLayoutItem(elementName, url);
 	}
 	else if (command == 'accessorydelete')
 	{
@@ -278,7 +301,7 @@ function dataUpdate(event)
 		elementName = 'sw_' + switchID;
 		var url = '/?cmd=switchget';
 		url += '&switch=' + switchID;
-		requestUpdateItem(elementName, url);
+		requestUpdateLayoutItem(elementName, url);
 	}
 	else if (command == 'switchdelete')
 	{
@@ -292,7 +315,7 @@ function dataUpdate(event)
 		elementName = 't_' + switchID;
 		var url = '/?cmd=trackget';
 		url += '&track=' + switchID;
-		requestUpdateItem(elementName, url);
+		requestUpdateLayoutItem(elementName, url);
 	}
 	else if (command == 'trackdelete')
 	{
@@ -325,6 +348,26 @@ function loadPopup(url)
 	$('#popup').show(300);
 	url += '&posx=' + window.layoutPosX + '&posy=' + window.layoutPosY;
 	$('#popup').load(url);
+}
+
+function loadProtocolLoco(locoID)
+{
+	var selectControl = document.getElementById('s_control');
+	if (!selectControl)
+	{
+		return;
+	}
+	var controlID = selectControl.value;
+	var selectProtocol = document.getElementById('select_protocol');
+	if (!selectProtocol)
+	{
+		return;
+	}
+	elementName = 'select_protocol';
+	var url = '/?cmd=protocolloco';
+	url += '&control=' + controlID;
+	url += '&loco=' + locoID;
+	requestUpdateItem(elementName, url);
 }
 
 function isInLayout(position)

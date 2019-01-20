@@ -48,7 +48,8 @@ namespace webserver
 			void HtmlReplyWithHeaderAndParagraph(const char* content) { HtmlReplyWithHeaderAndParagraph(std::string(content)); }
 			void deliverFile(const std::string& file);
 			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
-			HtmlTag ControlArgumentTag(unsigned char argNr, argumentType_t type, std::string& value);
+			HtmlTag ControlArgumentTag(const unsigned char argNr, const argumentType_t type, const std::string& value);
+			HtmlTag HtmlTagProtocol(const controlID_t controlID, const protocol_t selectedProtocol);
 			void handleControlEdit(const std::map<std::string, std::string>& arguments);
 			void handleControlSave(const std::map<std::string, std::string>& arguments);
 			void handleControlList(const std::map<std::string, std::string>& arguments);
@@ -62,7 +63,7 @@ namespace webserver
 			void handleLocoList(const std::map<std::string, std::string>& arguments);
 			void handleLocoAskDelete(const std::map<std::string, std::string>& arguments);
 			void handleLocoDelete(const std::map<std::string, std::string>& arguments);
-			void handleProtocol(const std::map<std::string, std::string>& arguments);
+			void handleProtocolLoco(const std::map<std::string, std::string>& arguments);
 			void handleLayout(const std::map<std::string,std::string>& arguments);
 			void handleAccessoryEdit(const std::map<std::string,std::string>& arguments);
 			void handleAccessorySave(const std::map<std::string,std::string>& arguments);
