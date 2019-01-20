@@ -22,28 +22,28 @@ namespace hardware
 			virtual const std::string GetName() const = 0;
 
 			// get available protocols of this control
-			virtual void GetProtocols(std::vector<protocol_t>& protocols) const { protocols.push_back(ProtocolServer); }
+			virtual void GetProtocols(std::vector<protocol_t>& protocols) const { return; }
 
 			// is given protocol supported
-			virtual bool ProtocolSupported(protocol_t protocol) const { return (protocol == ProtocolServer); }
+			virtual bool ProtocolSupported(protocol_t protocol) const { return false; }
 
 			// get types of needed arguments of this control
 			virtual void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const {}
 
 			// turn booster on or off
-			virtual void Booster(const boosterStatus_t status) = 0;
+			virtual void Booster(const boosterStatus_t status) {};
 
 			// set loco speed
-			virtual void SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed) = 0;
+			virtual void SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed) {};
 
 			// set loco direction
-			virtual void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) = 0;
+			virtual void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) {};
 
 			// set loco function
-			virtual void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) = 0;
+			virtual void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) {};
 
 			// accessory command
-			virtual void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) = 0;
+			virtual void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) {};
 	};
 
 } // namespace

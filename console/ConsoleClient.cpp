@@ -196,6 +196,10 @@ namespace console
 		{
 			return HardwareTypeM6051;
 		}
+		else if (type.compare("rm485") == 0)
+		{
+			return HardwareTypeRM485;
+		}
 		else
 		{
 			try

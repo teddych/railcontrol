@@ -129,6 +129,7 @@ enum hardwareType_t : unsigned char
 	HardwareTypeVirtual = 1,
 	HardwareTypeCS2 = 2,
 	HardwareTypeM6051 = 3,
+	HardwareTypeRM485 = 4,
 	HardwareTypeNumbers
 };
 

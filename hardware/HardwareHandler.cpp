@@ -10,6 +10,7 @@
 #include "hardware/HardwareHandler.h"
 #include "hardware/cs2.h"
 #include "hardware/m6051.h"
+#include "hardware/rm485.h"
 #include "hardware/virtual.h"
 #include "util.h"
 
@@ -22,7 +23,8 @@ namespace hardware
 		"none",
 		"virtual",
 		"cs2",
-		"m6051"
+		"m6051",
+		"rm485"
 	};
 
 	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params)
@@ -52,6 +54,11 @@ namespace hardware
 			case HardwareTypeM6051:
 				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_m6051);
 				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_m6051);
+				break;
+
+			case HardwareTypeRM485:
+				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_rm485);
+				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_rm485);
 				break;
 
 			default:

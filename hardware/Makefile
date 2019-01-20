@@ -9,6 +9,7 @@ LDFLAGS=-g -shared -Wl,-soname,
 LIBS= \
 	cs2.so \
 	m6051.so \
+	rm485.so \
 	virtual.so
 
 %.so: %.cpp *.h ../*.h ../datamodel/*.h
