@@ -23,6 +23,12 @@ namespace webserver
 				childTags[1].AddAttribute(name, value);
 				return *this;
 			}
+
+			virtual HtmlTag AddClass(const std::string& _class)
+			{
+				childTags[1].AddClass(_class);
+				return *this;
+			}
 	};
 };
 

@@ -525,8 +525,7 @@ namespace webserver
 		form.AddChildTag(HtmlTagInputHidden("cmd", "controlsave"));
 		form.AddChildTag(HtmlTagInputHidden("control", to_string(controlID)));
 		form.AddChildTag(HtmlTagInputTextWithLabel("name", "Control Name:", name));
-		form.AddChildTag(HtmlTagLabel("Hardware type:", "hardwaretype"));
-		form.AddChildTag(HtmlTagSelect("hardwaretype", hardwareOptions, to_string(hardwareType)));
+		form.AddChildTag(HtmlTagSelectWithLabel("hardwaretype", "Hardware type:", hardwareOptions, to_string(hardwareType)));
 		std::map<unsigned char,argumentType_t> argumentTypes = manager.ArgumentTypesOfControl(controlID);
 		if (argumentTypes.count(1) == 1)
 		{
@@ -726,10 +725,8 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("cmd", "locosave"))
 			.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
-			.AddChildTag(HtmlTagLabel("Control:", "control"))
-			.AddChildTag(HtmlTagSelect("control", controlOptions, to_string(controlID)))
-			.AddChildTag(HtmlTagLabel("Protocol:", "protocol"))
-			.AddChildTag(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)))
+			.AddChildTag(HtmlTagSelectWithLabel("protocol", "Protocol:" ,protocolOptions, to_string(protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions))
 			));
@@ -955,20 +952,16 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("cmd", "accessorysave"))
 			.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Accessory Name:", name))
-			.AddChildTag(HtmlTagLabel("Control:", "control"))
-			.AddChildTag(HtmlTagSelect("control", controlOptions, to_string(controlID)))
-			.AddChildTag(HtmlTagLabel("Protocol:", "protocol"))
-			.AddChildTag(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)))
+			.AddChildTag(HtmlTagSelectWithLabel("protocol", "Protocol:", protocolOptions, to_string(protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
 			/* FIXME: layers not supported
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
-			.AddChildTag(HtmlTagLabel("Timeout:", "timeout"))
-			.AddChildTag(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
-			.AddChildTag(HtmlTagLabel("Inverted:", "inverted"))
-			.AddChildTag(HtmlTagInputCheckbox("inverted", "true", inverted))
+			.AddChildTag(HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
+			.AddChildTag(HtmlTagInputCheckbox("inverted", "Inverted", true, inverted))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
@@ -1134,22 +1127,17 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("cmd", "switchsave"))
 			.AddChildTag(HtmlTagInputHidden("switch", to_string(switchID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Switch Name:", name))
-			.AddChildTag(HtmlTagLabel("Control:", "control"))
-			.AddChildTag(HtmlTagSelect("control", controlOptions, to_string(controlID)))
-			.AddChildTag(HtmlTagLabel("Protocol:", "protocol"))
-			.AddChildTag(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)))
+			.AddChildTag(HtmlTagSelectWithLabel("protocol", "Protocol:", protocolOptions, to_string(protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
 			/* FIXME: layers not supported
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
-			.AddChildTag(HtmlTagLabel("Rotation:", "rotation"))
-			.AddChildTag(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
-			.AddChildTag(HtmlTagLabel("Type:", "type"))
-			.AddChildTag(HtmlTagSelect("type", typeOptions, to_string(type)))
-			.AddChildTag(HtmlTagLabel("Timeout:", "timeout"))
-			.AddChildTag(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
+			.AddChildTag(HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation)))
+			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
+			.AddChildTag(HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
 			.AddChildTag(HtmlTagLabel("Inverted:", "inverted"))
 			.AddChildTag(HtmlTagInputCheckbox("inverted", "true", inverted))
 		));
@@ -1293,10 +1281,8 @@ namespace webserver
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
 			.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
-			.AddChildTag(HtmlTagLabel("Rotation:", "rotation"))
-			.AddChildTag(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
-			.AddChildTag(HtmlTagLabel("Type:", "type"))
-			.AddChildTag(HtmlTagSelect("type", typeOptions, to_string(type)))
+			.AddChildTag(HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation)))
+			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
