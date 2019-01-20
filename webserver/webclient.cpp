@@ -90,7 +90,6 @@ namespace webserver
 
 			if (lines.size() <= 1)
 			{
-				logger->Info("HTTP connection {0}: Ignoring invalid request", id);
 				return;
 			}
 
@@ -111,15 +110,6 @@ namespace webserver
 				connection->Send(response);
 				return;
 			}
-
-			/*
-			 for (auto argument : arguments) {
-			 xlog("Argument: %s=%s", argument.first.c_str(), argument.second.c_str());
-			 }
-			 for (auto header : headers) {
-			 xlog("Header: %s=%s", header.first.c_str(), header.second.c_str());
-			 }
-			 */
 
 			// handle requests
 			if (arguments["cmd"].compare("quit") == 0)
