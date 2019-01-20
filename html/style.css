@@ -132,6 +132,13 @@ body {
 	padding: 10px;
 }
 
+.popup_content {
+	width: 100%;
+	height: 350px;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
 label {
 	width: 150px;
 	height: 30px;

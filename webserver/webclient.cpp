@@ -519,38 +519,38 @@ namespace webserver
 			hardwareOptions[to_string(hardware.first)] = hardware.second;
 		}
 
-		content.AddContent(HtmlTag("h1").AddContent("Edit control &quot;" + name + "&quot;"));
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit control &quot;" + name + "&quot;"));
 		HtmlTag form("form");
 		form.AddAttribute("id", "editform");
-		form.AddContent(HtmlTagInputHidden("cmd", "controlsave"));
-		form.AddContent(HtmlTagInputHidden("control", to_string(controlID)));
-		form.AddContent(HtmlTagInputTextWithLabel("name", "Control Name:", name));
-		form.AddContent(HtmlTagLabel("Hardware type:", "hardwaretype"));
-		form.AddContent(HtmlTagSelect("hardwaretype", hardwareOptions, to_string(hardwareType)));
+		form.AddChildTag(HtmlTagInputHidden("cmd", "controlsave"));
+		form.AddChildTag(HtmlTagInputHidden("control", to_string(controlID)));
+		form.AddChildTag(HtmlTagInputTextWithLabel("name", "Control Name:", name));
+		form.AddChildTag(HtmlTagLabel("Hardware type:", "hardwaretype"));
+		form.AddChildTag(HtmlTagSelect("hardwaretype", hardwareOptions, to_string(hardwareType)));
 		std::map<unsigned char,argumentType_t> argumentTypes = manager.ArgumentTypesOfControl(controlID);
 		if (argumentTypes.count(1) == 1)
 		{
-			form.AddContent(ControlArgumentTag(1, argumentTypes.at(1), arg1));
+			form.AddChildTag(ControlArgumentTag(1, argumentTypes.at(1), arg1));
 		}
 		if (argumentTypes.count(2) == 1)
 		{
-			form.AddContent(ControlArgumentTag(2, argumentTypes.at(2), arg2));
+			form.AddChildTag(ControlArgumentTag(2, argumentTypes.at(2), arg2));
 		}
 		if (argumentTypes.count(3) == 1)
 		{
-			form.AddContent(ControlArgumentTag(3, argumentTypes.at(3), arg3));
+			form.AddChildTag(ControlArgumentTag(3, argumentTypes.at(3), arg3));
 		}
 		if (argumentTypes.count(4) == 1)
 		{
-			form.AddContent(ControlArgumentTag(4, argumentTypes.at(4), arg4));
+			form.AddChildTag(ControlArgumentTag(4, argumentTypes.at(4), arg4));
 		}
 		if (argumentTypes.count(5) == 1)
 		{
-			form.AddContent(ControlArgumentTag(5, argumentTypes.at(5), arg5));
+			form.AddChildTag(ControlArgumentTag(5, argumentTypes.at(5), arg5));
 		}
-		content.AddContent(form);
-		content.AddContent(HtmlTagButtonCancel());
-		content.AddContent(HtmlTagButtonOK());
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
 	}
 
@@ -626,27 +626,23 @@ namespace webserver
 	void WebClient::handleControlList(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Controls"));
+		content.AddChildTag(HtmlTag("h1").AddContent("Controls"));
 		HtmlTag table("table");
 		const map<string,hardware::HardwareParams*> hardwareList = manager.controlListByName();
 		map<string,string> hardwareArgument;
 		for (auto hardware : hardwareList)
 		{
 			HtmlTag row("tr");
-			row.AddContent(HtmlTag("td").AddContent(hardware.first));
+			row.AddChildTag(HtmlTag("td").AddContent(hardware.first));
 			string controlIdString = to_string(hardware.second->controlID);
 			hardwareArgument["control"] = controlIdString;
-			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "controledit_list_" + controlIdString, hardwareArgument)));
-			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "controlaskdelete_" + controlIdString, hardwareArgument)));
-			table.AddContent(row);
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "controledit_list_" + controlIdString, hardwareArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "controlaskdelete_" + controlIdString, hardwareArgument)));
+			table.AddChildTag(row);
 		}
-		HtmlTag row("tr");
-		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
-		row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("New", "controledit_0")));
-		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
-		table.AddContent(row);
-		content.AddContent(table);
-		content.AddContent(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
+		content.AddChildTag(HtmlTagButtonPopup("New", "controledit_0"));
+		content.AddChildTag(HtmlTagButtonCancel());
 		HtmlReplyWithHeader(content);
 	}
 
@@ -694,7 +690,7 @@ namespace webserver
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
-		address_t address = AddressNone;
+		address_t address = 1;
 		string name("New Loco");
 		function_t nrOfFunctions = 0;
 		if (locoID > LocoNone)
@@ -725,20 +721,20 @@ namespace webserver
 			protocolOptions[to_string(protocol.first)] = protocol.second;
 		}
 
-		content.AddContent(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
-			.AddContent(HtmlTagInputHidden("cmd", "locosave"))
-			.AddContent(HtmlTagInputHidden("loco", to_string(locoID)))
-			.AddContent(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
-			.AddContent(HtmlTagLabel("Control:", "control"))
-			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
-			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
-			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
-			.AddContent(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999))
-			.AddContent(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions))
-			);
-		content.AddContent(HtmlTagButtonCancel());
-		content.AddContent(HtmlTagButtonOK());
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
+			.AddChildTag(HtmlTagInputHidden("cmd", "locosave"))
+			.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)))
+			.AddChildTag(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
+			.AddChildTag(HtmlTagLabel("Control:", "control"))
+			.AddChildTag(HtmlTagSelect("control", controlOptions, to_string(controlID)))
+			.AddChildTag(HtmlTagLabel("Protocol:", "protocol"))
+			.AddChildTag(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions))
+			));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
 	}
 
@@ -764,29 +760,24 @@ namespace webserver
 	void WebClient::handleLocoList(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Locos"));
+		content.AddChildTag(HtmlTag("h1").AddContent("Locos"));
 		HtmlTag table("table");
 		const map<string,datamodel::Loco*> locoList = manager.locoListByName();
 		map<string,string> locoArgument;
 		for (auto loco : locoList)
 		{
 			HtmlTag row("tr");
-			row.AddContent(HtmlTag("td").AddContent(loco.first));
-			row.AddContent(HtmlTag("td").AddContent(to_string(loco.second->address)));
+			row.AddChildTag(HtmlTag("td").AddContent(loco.first));
+			row.AddChildTag(HtmlTag("td").AddContent(to_string(loco.second->address)));
 			string locoIdString = to_string(loco.second->objectID);
 			locoArgument["loco"] = locoIdString;
-			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
-			row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "locoaskdelete_" + locoIdString, locoArgument)));
-			table.AddContent(row);
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "locoaskdelete_" + locoIdString, locoArgument)));
+			table.AddChildTag(row);
 		}
-		HtmlTag row("tr");
-		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
-		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
-		row.AddContent(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("New", "locoedit_0")));
-		row.AddContent(HtmlTag("td").AddContent("&nbsp;"));
-		table.AddContent(row);
-		content.AddContent(table);
-		content.AddContent(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
+		content.AddChildTag(HtmlTagButtonPopup("New", "locoedit_0"));
+		content.AddChildTag(HtmlTagButtonCancel());
 		HtmlReplyWithHeader(content);
 	}
 
@@ -959,28 +950,28 @@ namespace webserver
 		timeoutOptions["0250"] = "250";
 		timeoutOptions["1000"] = "1000";
 
-		content.AddContent(HtmlTag("h1").AddContent("Edit accessory &quot;" + name + "&quot;"));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
-			.AddContent(HtmlTagInputHidden("cmd", "accessorysave"))
-			.AddContent(HtmlTagInputHidden("accessory", to_string(accessoryID)))
-			.AddContent(HtmlTagInputTextWithLabel("name", "Accessory Name:", name))
-			.AddContent(HtmlTagLabel("Control:", "control"))
-			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
-			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
-			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
-			.AddContent(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
-			.AddContent(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
-			.AddContent(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit accessory &quot;" + name + "&quot;"));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
+			.AddChildTag(HtmlTagInputHidden("cmd", "accessorysave"))
+			.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)))
+			.AddChildTag(HtmlTagInputTextWithLabel("name", "Accessory Name:", name))
+			.AddChildTag(HtmlTagLabel("Control:", "control"))
+			.AddChildTag(HtmlTagSelect("control", controlOptions, to_string(controlID)))
+			.AddChildTag(HtmlTagLabel("Protocol:", "protocol"))
+			.AddChildTag(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
 			/* FIXME: layers not supported
-			.AddContent(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
-			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
-			.AddContent(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
-			.AddContent(HtmlTagLabel("Inverted:", "inverted"))
-			.AddContent(HtmlTagInputCheckbox("inverted", "true", inverted))
-		);
-		content.AddContent(HtmlTagButtonCancel());
-		content.AddContent(HtmlTagButtonOK());
+			.AddChildTag(HtmlTagLabel("Timeout:", "timeout"))
+			.AddChildTag(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
+			.AddChildTag(HtmlTagLabel("Inverted:", "inverted"))
+			.AddChildTag(HtmlTagInputCheckbox("inverted", "true", inverted))
+		));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
 	}
 
@@ -1138,32 +1129,32 @@ namespace webserver
 		timeoutOptions["0250"] = "250";
 		timeoutOptions["1000"] = "1000";
 
-		content.AddContent(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
-			.AddContent(HtmlTagInputHidden("cmd", "switchsave"))
-			.AddContent(HtmlTagInputHidden("switch", to_string(switchID)))
-			.AddContent(HtmlTagInputTextWithLabel("name", "Switch Name:", name))
-			.AddContent(HtmlTagLabel("Control:", "control"))
-			.AddContent(HtmlTagSelect("control", controlOptions, to_string(controlID)))
-			.AddContent(HtmlTagLabel("Protocol:", "protocol"))
-			.AddContent(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
-			.AddContent(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
-			.AddContent(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
-			.AddContent(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
+			.AddChildTag(HtmlTagInputHidden("cmd", "switchsave"))
+			.AddChildTag(HtmlTagInputHidden("switch", to_string(switchID)))
+			.AddChildTag(HtmlTagInputTextWithLabel("name", "Switch Name:", name))
+			.AddChildTag(HtmlTagLabel("Control:", "control"))
+			.AddChildTag(HtmlTagSelect("control", controlOptions, to_string(controlID)))
+			.AddChildTag(HtmlTagLabel("Protocol:", "protocol"))
+			.AddChildTag(HtmlTagSelect("protocol", protocolOptions, to_string(protocol)))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
 			/* FIXME: layers not supported
-			.AddContent(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
-			.AddContent(HtmlTagLabel("Rotation:", "rotation"))
-			.AddContent(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
-			.AddContent(HtmlTagLabel("Type:", "type"))
-			.AddContent(HtmlTagSelect("type", typeOptions, to_string(type)))
-			.AddContent(HtmlTagLabel("Timeout:", "timeout"))
-			.AddContent(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
-			.AddContent(HtmlTagLabel("Inverted:", "inverted"))
-			.AddContent(HtmlTagInputCheckbox("inverted", "true", inverted))
-		);
-		content.AddContent(HtmlTagButtonCancel());
-		content.AddContent(HtmlTagButtonOK());
+			.AddChildTag(HtmlTagLabel("Rotation:", "rotation"))
+			.AddChildTag(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
+			.AddChildTag(HtmlTagLabel("Type:", "type"))
+			.AddChildTag(HtmlTagSelect("type", typeOptions, to_string(type)))
+			.AddChildTag(HtmlTagLabel("Timeout:", "timeout"))
+			.AddChildTag(HtmlTagSelect("timeout", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
+			.AddChildTag(HtmlTagLabel("Inverted:", "inverted"))
+			.AddChildTag(HtmlTagInputCheckbox("inverted", "true", inverted))
+		));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
 	}
 
@@ -1291,24 +1282,24 @@ namespace webserver
 		typeOptions[to_string(TrackTypeLeft)] = "Left";
 		typeOptions[to_string(TrackTypeRight)] = "Right";
 
-		content.AddContent(HtmlTag("h1").AddContent("Edit track &quot;" + name + "&quot;"));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
-			.AddContent(HtmlTagInputHidden("cmd", "tracksave"))
-			.AddContent(HtmlTagInputHidden("track", to_string(trackID)))
-			.AddContent(HtmlTagInputTextWithLabel("name", "Track Name:", name))
-			.AddContent(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
-			.AddContent(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit track &quot;" + name + "&quot;"));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
+			.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"))
+			.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)))
+			.AddChildTag(HtmlTagInputTextWithLabel("name", "Track Name:", name))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
 			/* FIXME: layers not supported
-			.AddContent(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
-			.AddContent(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
-			.AddContent(HtmlTagLabel("Rotation:", "rotation"))
-			.AddContent(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
-			.AddContent(HtmlTagLabel("Type:", "type"))
-			.AddContent(HtmlTagSelect("type", typeOptions, to_string(type)))
-		);
-		content.AddContent(HtmlTagButtonCancel());
-		content.AddContent(HtmlTagButtonOK());
+			.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
+			.AddChildTag(HtmlTagLabel("Rotation:", "rotation"))
+			.AddChildTag(HtmlTagSelect("rotation", rotationOptions, to_string(rotation)))
+			.AddChildTag(HtmlTagLabel("Type:", "type"))
+			.AddChildTag(HtmlTagSelect("type", typeOptions, to_string(type)))
+		));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
 	}
 
