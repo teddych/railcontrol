@@ -437,26 +437,25 @@ const std::map<std::string, protocol_t> Manager::ProtocolsOfControl(const addres
 {
 	std::map<std::string,protocol_t> ret;
 	{
-		std::lock_guard<std::mutex> Guard(hardwareMutex);
-		if (hardwareParams.count(controlID) != 1)
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		if (controls.count(controlID) != 1)
 		{
 			ret[protocolSymbols[ProtocolNone]] = ProtocolNone;
 			return ret;
 		}
-	}
 
-	std::lock_guard<std::mutex> Guard(controlMutex);
-	for (auto control : controls)
-	{
-		if (control.second->getManagerID() != ControlTypeHardware)
+		CommandInterface* control = controls.at(controlID);
+		if (control->getManagerID() != ControlTypeHardware)
 		{
-			continue;
+			ret[protocolSymbols[ProtocolNone]] = ProtocolNone;
+			return ret;
 		}
 
-		const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control.second);
+		const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control);
 		if (hardware->getControlID() != controlID)
 		{
-			continue;
+			ret[protocolSymbols[ProtocolNone]] = ProtocolNone;
+			return ret;
 		}
 
 		std::vector<protocol_t> protocols;
