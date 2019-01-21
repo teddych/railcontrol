@@ -45,7 +45,8 @@ class Manager {
 		inline const std::map<controlID_t,hardware::HardwareParams*> controlList() const { return hardwareParams; }
 		const std::map<std::string,hardware::HardwareParams*> controlListByName() const;
 		const std::map<controlID_t,std::string> controlListNames() const;
-		const std::map<std::string,protocol_t> protocolsOfControl(const controlID_t) const;
+		const std::map<std::string,protocol_t> LocoProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeLoco, controlID); }
+		const std::map<std::string,protocol_t> AccessoryProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeAccessory, controlID); }
 		const std::map<unsigned char,argumentType_t> ArgumentTypesOfControl(const controlID_t controlID) const;
 
 		// loco
@@ -134,7 +135,16 @@ class Manager {
 
 		bool checkAddressLoco(const protocol_t protocol, const address_t address, std::string& result);
 		bool checkAddressAccessory(const protocol_t protocol, const address_t address, std::string& result);
+		bool checkControlLocoProtocolAddress(const controlID_t controlID, const protocol_t protocol, const address_t address, std::string& result)
+		{
+			return checkControlProtocolAddress(AddressTypeLoco, controlID, protocol, address, result);
+		}
+		bool checkControlAccessoryProtocolAddress(const controlID_t controlID, const protocol_t protocol, const address_t address, std::string& result)
+		{
+			return checkControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result);
+		}
 		bool checkControlProtocolAddress(const addressType_t type, const controlID_t controlID, const protocol_t protocol, const address_t address, std::string& result);
+		const std::map<std::string,protocol_t> ProtocolsOfControl(const addressType_t type, const controlID_t) const;
 
 		Logger::Logger* logger;
 

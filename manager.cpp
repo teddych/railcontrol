@@ -402,7 +402,7 @@ const map<string,hardware::HardwareParams*> Manager::controlListByName() const
 	return out;
 }
 
-const std::map<std::string,protocol_t> Manager::protocolsOfControl(const controlID_t controlID) const
+const std::map<std::string, protocol_t> Manager::ProtocolsOfControl(const addressType_t type, const controlID_t controlID) const
 {
 	std::map<std::string,protocol_t> ret;
 	{
@@ -429,7 +429,14 @@ const std::map<std::string,protocol_t> Manager::protocolsOfControl(const control
 		}
 
 		std::vector<protocol_t> protocols;
-		hardware->getProtocols(protocols);
+		if (type == AddressTypeLoco)
+		{
+			hardware->GetLocoProtocols(protocols);
+		}
+		else
+		{
+			hardware->GetAccessoryProtocols(protocols);
+		}
 		for (auto protocol : protocols)
 		{
 			ret[protocolSymbols[protocol]] = protocol;
@@ -490,7 +497,7 @@ const map<string,datamodel::Loco*> Manager::locoListByName() const
 bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, string& result)
 {
 	Loco* loco;
-	if (!checkControlProtocolAddress(AddressTypeLoco, controlID, protocol, address, result))
+	if (!checkControlLocoProtocolAddress(controlID, protocol, address, result))
 	{
 		return false;
 	}
@@ -755,7 +762,7 @@ bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layo
 bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, string& result)
 {
 	Accessory* accessory;
-	if (!checkControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result))
+	if (!checkControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
 		result.append("Invalid control-protocol-address combination.");
 		return false;
@@ -1234,7 +1241,7 @@ bool Manager::checkSwitchPosition(const switchID_t switchID, const layoutPositio
 bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, string& result)
 {
 	Switch* mySwitch;
-	if (!checkControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result))
+	if (!checkControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
 		return false;
 	}
@@ -1875,7 +1882,16 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 			return false;
 		}
 		CommandInterface* control = controls.at(controlID);
-		if (!control->protocolSupported(protocol))
+		bool ret;
+		if (type == AddressTypeLoco)
+		{
+			ret = control->LocoProtocolSupported(protocol);
+		}
+		else
+		{
+			ret = control->AccessoryProtocolSupported(protocol);
+		}
+		if (!ret)
 		{
 			stringstream status;
 			status << "Protocol " << static_cast<int>(protocol);
@@ -1885,7 +1901,14 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 			}
 			status << " is not supported by control. Please use one of: ";
 			std::vector<protocol_t> protocols;
-			control->getProtocols(protocols);
+			if (type == AddressTypeLoco)
+			{
+				control->GetLocoProtocols(protocols);
+			}
+			else
+			{
+				control->GetAccessoryProtocols(protocols);
+			}
 			for (auto p : protocols)
 			{
 				status << static_cast<int>(p) << "/" << protocolSymbols[p] << " ";

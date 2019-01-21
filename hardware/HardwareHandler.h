@@ -38,8 +38,10 @@ namespace hardware {
 			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override {};
 			void locoStart(const locoID_t locoID) override {};
 			void locoStop(const locoID_t locoID) override {};
-			void getProtocols(std::vector<protocol_t>& protocols) const override;
-			bool protocolSupported(protocol_t protocol) const override;
+			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override;
+			bool LocoProtocolSupported(protocol_t protocol) const override;
+			void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const override;
+			bool AccessoryProtocolSupported(protocol_t protocol) const override;
 			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override;
 
 		private:

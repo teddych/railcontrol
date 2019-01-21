@@ -21,11 +21,17 @@ namespace hardware
 			// get the name of the hardware
 			virtual const std::string GetName() const = 0;
 
-			// get available protocols of this control
-			virtual void GetProtocols(std::vector<protocol_t>& protocols) const { return; }
+			// get available loco protocols of this control
+			virtual void GetLocoProtocols(std::vector<protocol_t>& protocols) const { protocols.push_back(ProtocolNone); }
 
-			// is given protocol supported
-			virtual bool ProtocolSupported(protocol_t protocol) const { return false; }
+			// is given loco protocol supported
+			virtual bool LocoProtocolSupported(protocol_t protocol) const { return false; }
+
+			// get available accessory protocols of this control
+			virtual void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const { protocols.push_back(ProtocolNone); }
+
+			// is given accessory protocol supported
+			virtual bool AccessoryProtocolSupported(protocol_t protocol) const { return false; }
 
 			// get types of needed arguments of this control
 			virtual void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const {}

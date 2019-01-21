@@ -18,9 +18,13 @@ namespace hardware
 			~M6051();
 			const std::string GetName() const override { return name; };
 
-			void GetProtocols(std::vector<protocol_t>& protocols) const override { protocols.push_back(ProtocolMM2); }
+			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override { protocols.push_back(ProtocolMM2); }
 
-			bool ProtocolSupported(protocol_t protocol) const override { return (protocol == ProtocolMM2); }
+			bool LocoProtocolSupported(protocol_t protocol) const override { return (protocol == ProtocolMM2); }
+
+			void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const override { protocols.push_back(ProtocolMM2); }
+
+			bool AccessoryProtocolSupported(protocol_t protocol) const override { return (protocol == ProtocolMM2); }
 
 			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override
 			{

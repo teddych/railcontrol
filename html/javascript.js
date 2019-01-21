@@ -350,7 +350,7 @@ function loadPopup(url)
 	$('#popup').load(url);
 }
 
-function loadProtocolLoco(locoID)
+function loadProtocol(type, ID)
 {
 	var selectControl = document.getElementById('s_control');
 	if (!selectControl)
@@ -364,9 +364,9 @@ function loadProtocolLoco(locoID)
 		return;
 	}
 	elementName = 'select_protocol';
-	var url = '/?cmd=protocolloco';
+	var url = '/?cmd=protocol' + type;
 	url += '&control=' + controlID;
-	url += '&loco=' + locoID;
+	url += '&' + type + '=' + ID;
 	requestUpdateItem(elementName, url);
 }
 

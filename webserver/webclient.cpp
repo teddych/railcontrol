@@ -31,13 +31,15 @@
 #include "webserver/HtmlTagSwitch.h"
 #include "webserver/HtmlTagTrack.h"
 
+using datamodel::Accessory;
+using datamodel::Loco;
+using datamodel::Switch;
 using std::map;
 using std::string;
 using std::stringstream;
 using std::thread;
 using std::to_string;
 using std::vector;
-using datamodel::Loco;
 
 namespace webserver
 {
@@ -191,6 +193,14 @@ namespace webserver
 			else if (arguments["cmd"].compare("protocolloco") == 0)
 			{
 				handleProtocolLoco(arguments);
+			}
+			else if (arguments["cmd"].compare("protocolaccessory") == 0)
+			{
+				handleProtocolAccessory(arguments);
+			}
+			else if (arguments["cmd"].compare("protocolswitch") == 0)
+			{
+				handleProtocolSwitch(arguments);
 			}
 			else if (arguments["cmd"].compare("layout") == 0)
 			{
@@ -683,11 +693,11 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	HtmlTag WebClient::HtmlTagProtocol(const controlID_t controlID, const protocol_t selectedProtocol)
+	HtmlTag WebClient::HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol)
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTagLabel("Protocol:", "protocol"));
-		map<string,protocol_t> protocolMap = manager.protocolsOfControl(controlID);
+		map<string,protocol_t> protocolMap = manager.LocoProtocolsOfControl(controlID);
 		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
 		return content;
 	}
@@ -707,7 +717,52 @@ namespace webserver
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown loco"));
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagProtocol(controlId, loco->protocol));
+		HtmlReplyWithHeader(HtmlTagProtocolLoco(controlId, loco->protocol));
+	}
+
+	HtmlTag WebClient::HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol)
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTagLabel("Protocol:", "protocol"));
+		map<string,protocol_t> protocolMap = manager.AccessoryProtocolsOfControl(controlID);
+		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
+		return content;
+	}
+
+	void WebClient::handleProtocolAccessory(const map<string, string>& arguments)
+	{
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		if (controlId == ControlIdNone)
+		{
+			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
+			return;
+		}
+		accessoryID_t accessoryId = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		Accessory* accessory = manager.getAccessory(accessoryId);
+		if (accessory == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown accessory"));
+			return;
+		}
+		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, accessory->protocol));
+	}
+
+	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
+	{
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		if (controlId == ControlIdNone)
+		{
+			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
+			return;
+		}
+		switchID_t switchId = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		Switch* mySwitch = manager.getSwitch(switchId);
+		if (mySwitch == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown switch"));
+			return;
+		}
+		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch->protocol));
 	}
 
 	void WebClient::handleLocoEdit(const map<string, string>& arguments)
@@ -746,9 +801,9 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Loco Name:", name))
 			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID))
-				.AddAttribute("onchange", "loadProtocolLoco(" + to_string(locoID) + ", " + to_string(protocol) + ")")
+				.AddAttribute("onchange", "loadProtocol('loco', " + to_string(locoID) + ")")
 				)
-			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocol(controlID, protocol)))
+			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions))
 			));
@@ -942,8 +997,10 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("cmd", "accessorysave"))
 			.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Accessory Name:", name))
-			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)))
-			.AddChildTag(HtmlTagProtocol(controlID, protocol))
+			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID))
+				.AddAttribute("onchange", "loadProtocol('accessory', " + to_string(accessoryID) + ")")
+				)
+			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
@@ -1110,8 +1167,10 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("cmd", "switchsave"))
 			.AddChildTag(HtmlTagInputHidden("switch", to_string(switchID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Switch Name:", name))
-			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)))
-			.AddChildTag(HtmlTagProtocol(controlID, protocol))
+			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID))
+				.AddAttribute("onchange", "loadProtocol('switch', " + to_string(switchID) + ")")
+				)
+			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))

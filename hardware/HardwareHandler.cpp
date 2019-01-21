@@ -171,7 +171,7 @@ namespace hardware
 		return instance->GetName();
 	}
 
-	void HardwareHandler::getProtocols(std::vector<protocol_t>& protocols) const
+	void HardwareHandler::GetLocoProtocols(std::vector<protocol_t>& protocols) const
 	{
 		if (instance == nullptr)
 		{
@@ -179,16 +179,36 @@ namespace hardware
 			return;
 		}
 
-		instance->GetProtocols(protocols);
+		instance->GetLocoProtocols(protocols);
 	}
 
-	bool HardwareHandler::protocolSupported(protocol_t protocol) const
+	bool HardwareHandler::LocoProtocolSupported(protocol_t protocol) const
 	{
 		if (instance == nullptr)
 		{
 			return false;
 		}
-		return instance->ProtocolSupported(protocol);
+		return instance->LocoProtocolSupported(protocol);
+	}
+
+	void HardwareHandler::GetAccessoryProtocols(std::vector<protocol_t>& protocols) const
+	{
+		if (instance == nullptr)
+		{
+			protocols.push_back(ProtocolNone);
+			return;
+		}
+
+		instance->GetAccessoryProtocols(protocols);
+	}
+
+	bool HardwareHandler::AccessoryProtocolSupported(protocol_t protocol) const
+	{
+		if (instance == nullptr)
+		{
+			return false;
+		}
+		return instance->AccessoryProtocolSupported(protocol);
 	}
 
 	void HardwareHandler::GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const
