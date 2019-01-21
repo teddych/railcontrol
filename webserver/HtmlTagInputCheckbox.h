@@ -16,6 +16,7 @@ namespace webserver
 				{
 					AddAttribute("checked");
 				}
+				AddClass("checkbox");
 			};
 	};
 };
