@@ -733,6 +733,27 @@ namespace webserver
 		return content;
 	}
 
+	HtmlTag WebClient::HtmlTagTimeout(const accessoryTimeout_t timeout) const
+	{
+		std::map<string,string> timeoutOptions;
+		timeoutOptions["0000"] = "0";
+		timeoutOptions["0100"] = "100";
+		timeoutOptions["0250"] = "250";
+		timeoutOptions["1000"] = "1000";
+		return HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4));
+	}
+
+	HtmlTag WebClient::HtmlTagRotation(const layoutRotation_t rotation) const
+	{
+		std::map<string, string> rotationOptions;
+		rotationOptions[to_string(Rotation0)] = "none";
+		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
+		rotationOptions[to_string(Rotation180)] = "180 deg";
+		rotationOptions[to_string(Rotation270)] = "90 deg anti-clockwise";
+		return HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation));
+	}
+
+
 	void WebClient::handleProtocolAccessory(const map<string, string>& arguments)
 	{
 		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -996,12 +1017,6 @@ namespace webserver
 			}
 		}
 
-		std::map<string, string> timeoutOptions;
-		timeoutOptions["0000"] = "0";
-		timeoutOptions["0100"] = "100";
-		timeoutOptions["0250"] = "250";
-		timeoutOptions["1000"] = "1000";
-
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit accessory &quot;" + name + "&quot;"));
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
 			.AddChildTag(HtmlTagInputHidden("cmd", "accessorysave"))
@@ -1017,7 +1032,7 @@ namespace webserver
 			/* FIXME: layers not supported
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
-			.AddChildTag(HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
+			.AddChildTag(HtmlTagTimeout(timeout))
 			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -1156,21 +1171,9 @@ namespace webserver
 			}
 		}
 
-		std::map<string, string> rotationOptions;
-		rotationOptions[to_string(Rotation0)] = "none";
-		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
-		rotationOptions[to_string(Rotation180)] = "180 deg";
-		rotationOptions[to_string(Rotation270)] = "90 deg anti-clockwise";
-
 		std::map<string, string> typeOptions;
 		typeOptions[to_string(SwitchTypeLeft)] = "Left";
 		typeOptions[to_string(SwitchTypeRight)] = "Right";
-
-		std::map<string, string> timeoutOptions;
-		timeoutOptions["0000"] = "0";
-		timeoutOptions["0100"] = "100";
-		timeoutOptions["0250"] = "250";
-		timeoutOptions["1000"] = "1000";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
@@ -1187,9 +1190,9 @@ namespace webserver
 			/* FIXME: layers not supported
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
-			.AddChildTag(HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation)))
+			.AddChildTag(HtmlTagRotation(rotation))
 			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
-			.AddChildTag(HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4)))
+			.AddChildTag(HtmlTagTimeout(timeout))
 			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -1310,12 +1313,6 @@ namespace webserver
 			type = track->Type();
 		}
 
-		std::map<string, string> rotationOptions;
-		rotationOptions[to_string(Rotation0)] = "none";
-		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
-		rotationOptions[to_string(Rotation180)] = "180 deg";
-		rotationOptions[to_string(Rotation270)] = "90 deg anti-clockwise";
-
 		std::map<string, string> typeOptions;
 		typeOptions[to_string(TrackTypeStraight)] = "Straight";
 		typeOptions[to_string(TrackTypeLeft)] = "Left";
@@ -1332,7 +1329,7 @@ namespace webserver
 			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
 			*/
 			.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
-			.AddChildTag(HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation)))
+			.AddChildTag(HtmlTagRotation(rotation))
 			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
