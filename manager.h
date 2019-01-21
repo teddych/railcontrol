@@ -122,6 +122,7 @@ class Manager {
 		bool locoStop(const locoID_t locoID);
 		bool locoStartAll();
 		bool locoStopAll();
+		void StopAllLocosImmediately(const controlType_t controlType);
 
 	private:
 		void loadDefaultValuesToDB();

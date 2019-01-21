@@ -1698,6 +1698,15 @@ bool Manager::locoStopAll()
 	return ret1;
 }
 
+void Manager::StopAllLocosImmediately(const controlType_t controlType)
+{
+	for (auto loco : locos)
+	{
+		locoID_t locoId = loco.second->objectID;
+		locoSpeed(controlType, locoId, MinSpeed);
+	}
+}
+
 /***************************
 * Default Values           *
 ***************************/
