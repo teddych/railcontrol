@@ -171,6 +171,36 @@ namespace hardware
 		return instance->GetName();
 	}
 
+	bool HardwareHandler::CanHandleLocos() const
+	{
+		if (instance == nullptr)
+		{
+			return false;
+		}
+
+		return instance->CanHandleLocos();
+	}
+
+	bool HardwareHandler::CanHandleAccessories() const
+	{
+		if (instance == nullptr)
+		{
+			return false;
+		}
+
+		return instance->CanHandleAccessories();
+	}
+
+	bool HardwareHandler::CanHandleFeedback() const
+	{
+		if (instance == nullptr)
+		{
+			return false;
+		}
+
+		return instance->CanHandleFeedback();
+	}
+
 	void HardwareHandler::GetLocoProtocols(std::vector<protocol_t>& protocols) const
 	{
 		if (instance == nullptr)

@@ -34,6 +34,9 @@ class CommandInterface {
 		virtual void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) = 0;
 		virtual void locoStart(const locoID_t locoID) = 0;
 		virtual void locoStop(const locoID_t locoID) = 0;
+		virtual bool CanHandleLocos() const { return true; }
+		virtual bool CanHandleAccessories() const { return true; }
+		virtual bool CanHandleFeedback() const { return true; }
 		virtual void GetLocoProtocols(std::vector<protocol_t>& protocols) const {};
 		virtual bool LocoProtocolSupported(protocol_t protocol) const { return false; };
 		virtual void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const {};

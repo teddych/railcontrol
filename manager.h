@@ -44,7 +44,8 @@ class Manager {
 		const std::string getControlName(const controlID_t controlID); // FIXME: => string& (reference)
 		inline const std::map<controlID_t,hardware::HardwareParams*> controlList() const { return hardwareParams; }
 		const std::map<std::string,hardware::HardwareParams*> controlListByName() const;
-		const std::map<controlID_t,std::string> controlListNames() const;
+		const std::map<controlID_t,std::string> LocoControlListNames() const;
+		const std::map<controlID_t,std::string> AccessoryControlListNames() const;
 		const std::map<std::string,protocol_t> LocoProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeLoco, controlID); }
 		const std::map<std::string,protocol_t> AccessoryProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeAccessory, controlID); }
 		const std::map<unsigned char,argumentType_t> ArgumentTypesOfControl(const controlID_t controlID) const;

@@ -80,6 +80,8 @@ namespace hardware
 			~RM485();
 			const std::string GetName() const override { return name; };
 
+			bool CanHandleFeedback() const { return true; }
+
 			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override
 			{
 				argumentTypes[1] = SerialPort;

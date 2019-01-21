@@ -784,7 +784,7 @@ namespace webserver
 			nrOfFunctions = loco->GetNrOfFunctions();
 		}
 
-		std::map<controlID_t,string> controls = manager.controlListNames();
+		std::map<controlID_t,string> controls = manager.LocoControlListNames();
 		std::map<string, string> controlOptions;
 		for(auto control : controls)
 		{
@@ -975,7 +975,7 @@ namespace webserver
 			inverted = accessory->IsInverted();
 		}
 
-		std::map<controlID_t,string> controls = manager.controlListNames();
+		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
 		std::map<string, string> controlOptions;
 		for(auto control : controls)
 		{
@@ -1135,7 +1135,7 @@ namespace webserver
 			inverted = mySwitch->IsInverted();
 		}
 
-		std::map<controlID_t,string> controls = manager.controlListNames();
+		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
 		std::map<string, string> controlOptions;
 		for(auto control : controls)
 		{

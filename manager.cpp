@@ -380,12 +380,43 @@ const std::string Manager::getControlName(const controlID_t controlID)
 	return c->getName();
 }
 
-const std::map<controlID_t,std::string> Manager::controlListNames() const
+const std::map<controlID_t,std::string> Manager::LocoControlListNames() const
 {
 	std::map<controlID_t,std::string> ret;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	for (auto hardware : hardwareParams)
 	{
+		std::lock_guard<std::mutex> Guard2(controlMutex);
+		if (controls.count(hardware.second->controlID) != 1)
+		{
+			continue;
+		}
+		CommandInterface* c = controls.at(hardware.second->controlID);
+		if (c->CanHandleLocos() == false)
+		{
+			continue;
+		}
+		ret[hardware.first] = hardware.second->name;
+	}
+	return ret;
+}
+
+const std::map<controlID_t,std::string> Manager::AccessoryControlListNames() const
+{
+	std::map<controlID_t,std::string> ret;
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	for (auto hardware : hardwareParams)
+	{
+		std::lock_guard<std::mutex> Guard2(controlMutex);
+		if (controls.count(hardware.second->controlID) != 1)
+		{
+			continue;
+		}
+		CommandInterface* c = controls.at(hardware.second->controlID);
+		if (c->CanHandleAccessories() == false)
+		{
+			continue;
+		}
 		ret[hardware.first] = hardware.second->name;
 	}
 	return ret;

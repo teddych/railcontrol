@@ -18,6 +18,10 @@ namespace hardware
 			~M6051();
 			const std::string GetName() const override { return name; };
 
+			bool CanHandleLocos() const { return true; }
+			bool CanHandleAccessories() const { return true; }
+			bool CanHandleFeedback() const { return true; }
+
 			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override { protocols.push_back(ProtocolMM2); }
 
 			bool LocoProtocolSupported(protocol_t protocol) const override { return (protocol == ProtocolMM2); }
