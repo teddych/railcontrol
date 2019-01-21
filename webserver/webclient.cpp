@@ -190,22 +190,6 @@ namespace webserver
 			{
 				handleLocoDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("protocolloco") == 0)
-			{
-				handleProtocolLoco(arguments);
-			}
-			else if (arguments["cmd"].compare("protocolaccessory") == 0)
-			{
-				handleProtocolAccessory(arguments);
-			}
-			else if (arguments["cmd"].compare("protocolswitch") == 0)
-			{
-				handleProtocolSwitch(arguments);
-			}
-			else if (arguments["cmd"].compare("layout") == 0)
-			{
-				handleLayout(arguments);
-			}
 			else if (arguments["cmd"].compare("accessoryedit") == 0)
 			{
 				handleAccessoryEdit(arguments);
@@ -273,6 +257,26 @@ namespace webserver
 			else if (arguments["cmd"].compare("trackget") == 0)
 			{
 				handleTrackGet(arguments);
+			}
+			else if (arguments["cmd"].compare("protocolloco") == 0)
+			{
+				handleProtocolLoco(arguments);
+			}
+			else if (arguments["cmd"].compare("protocolaccessory") == 0)
+			{
+				handleProtocolAccessory(arguments);
+			}
+			else if (arguments["cmd"].compare("protocolswitch") == 0)
+			{
+				handleProtocolSwitch(arguments);
+			}
+			else if (arguments["cmd"].compare("layout") == 0)
+			{
+				handleLayout(arguments);
+			}
+			else if (arguments["cmd"].compare("locoselector") == 0)
+			{
+				handleLocoSelector(arguments);
 			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
@@ -474,7 +478,7 @@ namespace webserver
 		free(buffer);
 	}
 
-	HtmlTag WebClient::ControlArgumentTag(const unsigned char argNr, const argumentType_t type, const string& value)
+	HtmlTag WebClient::HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const string& value)
 	{
 		string argumentName;
 		switch (type)
@@ -539,23 +543,23 @@ namespace webserver
 		std::map<unsigned char,argumentType_t> argumentTypes = manager.ArgumentTypesOfControl(controlID);
 		if (argumentTypes.count(1) == 1)
 		{
-			form.AddChildTag(ControlArgumentTag(1, argumentTypes.at(1), arg1));
+			form.AddChildTag(HtmlTagControlArgument(1, argumentTypes.at(1), arg1));
 		}
 		if (argumentTypes.count(2) == 1)
 		{
-			form.AddChildTag(ControlArgumentTag(2, argumentTypes.at(2), arg2));
+			form.AddChildTag(HtmlTagControlArgument(2, argumentTypes.at(2), arg2));
 		}
 		if (argumentTypes.count(3) == 1)
 		{
-			form.AddChildTag(ControlArgumentTag(3, argumentTypes.at(3), arg3));
+			form.AddChildTag(HtmlTagControlArgument(3, argumentTypes.at(3), arg3));
 		}
 		if (argumentTypes.count(4) == 1)
 		{
-			form.AddChildTag(ControlArgumentTag(4, argumentTypes.at(4), arg4));
+			form.AddChildTag(HtmlTagControlArgument(4, argumentTypes.at(4), arg4));
 		}
 		if (argumentTypes.count(5) == 1)
 		{
-			form.AddChildTag(ControlArgumentTag(5, argumentTypes.at(5), arg5));
+			form.AddChildTag(HtmlTagControlArgument(5, argumentTypes.at(5), arg5));
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -828,7 +832,10 @@ namespace webserver
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Loco &quot;" + name + "&quot; saved.");
+		HtmlTag p("p");
+		p.AddContent("Loco &quot;" + name + "&quot; saved.");
+		HtmlTagJavascript script("loadLocoSelector();");
+		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
 	}
 
 	void WebClient::handleLocoList(const map<string, string>& arguments)
@@ -900,10 +907,13 @@ namespace webserver
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Loco &quot;" + loco->name + "&quot; deleted.");
+		HtmlTag p("p");
+		p.AddContent("Loco &quot;" + loco->name + "&quot; deleted.");
+		HtmlTagJavascript script("loadLocoSelector();");
+		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
 	}
 
-	HtmlTag WebClient::selectLayout()
+	HtmlTag WebClient::HtmlTagSelectLayout() const
 	{
 		map<string,string> options;
 		// FIXME: select layers with content
@@ -1405,6 +1415,11 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagTrack(track));
 	}
 
+	void WebClient::handleLocoSelector(const map<string, string>& arguments)
+	{
+		HtmlReplyWithHeader(HtmlTagLocoSelector());
+	}
+
 	void WebClient::handleUpdater(const map<string, string>& headers)
 	{
 		Response response(Response::OK);
@@ -1451,7 +1466,7 @@ namespace webserver
 		connection->Send(HtmlResponse(tag));
 	}
 
-	HtmlTag WebClient::selectLoco()
+	HtmlTag WebClient::HtmlTagLocoSelector() const
 	{
 		const map<locoID_t, Loco*>& locos = manager.locoList();
 		map<string,locoID_t> options;
@@ -1531,8 +1546,8 @@ namespace webserver
 		menu.AddContent(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"0,10 5,10 5,0 10,0 10,10 25,10 25,0 35,0 35,5 30,5 30,10 35,10 35,25 0,25\" fill=\"black\"/><circle cx=\"5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"17.5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"30\" cy=\"30\" r=\"5\" fill=\"black\"/</svg>", "locolist"));
 		body.AddChildTag(menu);
 
-		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddChildTag(selectLoco()));
-		body.AddChildTag(HtmlTag("div").AddClass("layout_selector").AddChildTag(selectLayout()));
+		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddAttribute("id", "loco_selector").AddChildTag(HtmlTagLocoSelector()));
+		body.AddChildTag(HtmlTag("div").AddClass("layout_selector").AddChildTag(HtmlTagSelectLayout()));
 		body.AddChildTag(HtmlTag("div").AddClass("loco").AddAttribute("id", "loco"));
 		body.AddChildTag(HtmlTag("div").AddClass("layout").AddAttribute("id", "layout"));
 		body.AddChildTag(HtmlTag("div").AddClass("popup").AddAttribute("id", "popup"));

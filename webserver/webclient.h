@@ -33,8 +33,6 @@ namespace webserver
 
 		private:
 			void interpretClientRequest(const std::vector<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
-			HtmlTag selectLoco();
-			HtmlTag selectLayout();
 			std::string select(const std::string& name, const std::map<std::string,std::string>& options, const std::string& defaultValue);
 			std::string slider(const std::string& name, const std::string& cmd, const unsigned int min, const unsigned int max, const unsigned int value, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
 			std::string button(const std::string& value, const std::string& cmd, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
@@ -48,9 +46,12 @@ namespace webserver
 			void HtmlReplyWithHeaderAndParagraph(const char* content) { HtmlReplyWithHeaderAndParagraph(std::string(content)); }
 			void deliverFile(const std::string& file);
 			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
-			HtmlTag ControlArgumentTag(const unsigned char argNr, const argumentType_t type, const std::string& value);
+			HtmlTag HtmlTagLocoSelector() const;
+			HtmlTag HtmlTagSelectLayout() const;
+			HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
+			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleControlEdit(const std::map<std::string, std::string>& arguments);
 			void handleControlSave(const std::map<std::string, std::string>& arguments);
 			void handleControlList(const std::map<std::string, std::string>& arguments);
@@ -85,6 +86,7 @@ namespace webserver
 			void handleTrackAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackGet(const std::map<std::string, std::string>& arguments);
+			void handleLocoSelector(const std::map<std::string,std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

@@ -350,6 +350,13 @@ function loadPopup(url)
 	$('#popup').load(url);
 }
 
+function loadLocoSelector()
+{
+	var elementName = 'loco_selector';
+	var url = '/?cmd=locoselector';
+	requestUpdateItem(elementName, url);
+}
+
 function loadProtocol(type, ID)
 {
 	var selectControl = document.getElementById('s_control');
@@ -363,7 +370,7 @@ function loadProtocol(type, ID)
 	{
 		return;
 	}
-	elementName = 'select_protocol';
+	var elementName = 'select_protocol';
 	var url = '/?cmd=protocol' + type;
 	url += '&control=' + controlID;
 	url += '&' + type + '=' + ID;
