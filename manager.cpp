@@ -1384,6 +1384,17 @@ bool Manager::switchDelete(const switchID_t switchID)
 	return true;
 }
 
+const map<string,datamodel::Switch*> Manager::switchListByName() const
+{
+	map<string,datamodel::Switch*> out;
+	std::lock_guard<std::mutex> Guard(switchMutex);
+	for(auto mySwitch : switches)
+	{
+		out[mySwitch.second->name] = mySwitch.second;
+	}
+	return out;
+}
+
 bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
 {
 	if (switches.count(switchID) < 1)

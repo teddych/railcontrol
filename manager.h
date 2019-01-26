@@ -99,6 +99,7 @@ class Manager {
 		datamodel::Switch* getSwitch(const switchID_t switchID);
 		const std::string& getSwitchName(const switchID_t switchID);
 		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
+		const std::map<std::string,datamodel::Switch*> switchListByName() const;
 		bool switchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, std::string& result);
 		bool switchDelete(const switchID_t switchID);
 		bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
@@ -183,7 +184,7 @@ class Manager {
 
 		// switch
 		std::map<switchID_t,datamodel::Switch*> switches;
-		std::mutex switchMutex;
+		mutable std::mutex switchMutex;
 
 		// street
 		std::map<streetID_t,datamodel::Street*> streets;

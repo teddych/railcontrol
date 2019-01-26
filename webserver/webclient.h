@@ -74,6 +74,7 @@ namespace webserver
 			void handleSwitchEdit(const std::map<std::string,std::string>& arguments);
 			void handleSwitchSave(const std::map<std::string,std::string>& arguments);
 			void handleSwitchState(const std::map<std::string,std::string>& arguments);
+			void handleSwitchList(const std::map<std::string,std::string>& arguments);
 			void handleSwitchAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchGet(const std::map<std::string,std::string>& arguments);
