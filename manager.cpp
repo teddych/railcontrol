@@ -1066,6 +1066,17 @@ const std::string& Manager::getTrackName(const trackID_t trackID)
 	return tracks.at(trackID)->name;
 }
 
+const map<string,datamodel::Track*> Manager::trackListByName() const
+{
+	map<string,datamodel::Track*> out;
+	std::lock_guard<std::mutex> Guard(trackMutex);
+	for(auto track : tracks)
+	{
+		out[track.second->name] = track.second;
+	}
+	return out;
+}
+
 bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, string& result)
 {
 	layoutPosition_t x1;

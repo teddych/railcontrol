@@ -246,6 +246,10 @@ namespace webserver
 			{
 				handleTrackSave(arguments);
 			}
+			else if (arguments["cmd"].compare("tracklist") == 0)
+			{
+				handleTrackList(arguments);
+			}
 			else if (arguments["cmd"].compare("trackaskdelete") == 0)
 			{
 				handleTrackAskDelete(arguments);
@@ -1390,6 +1394,29 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
+	void WebClient::handleTrackList(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTag("h1").AddContent("Tracks"));
+		HtmlTag table("table");
+		const map<string,datamodel::Track*> trackList = manager.trackListByName();
+		map<string,string> locoArgument;
+		for (auto track : trackList)
+		{
+			HtmlTag row("tr");
+			row.AddChildTag(HtmlTag("td").AddContent(track.first));
+			string locoIdString = to_string(track.second->objectID);
+			locoArgument["track"] = locoIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "trackedit_list_" + locoIdString, locoArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "trackaskdelete_" + locoIdString, locoArgument)));
+			table.AddChildTag(row);
+		}
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonPopup("New", "trackedit_0"));
+		HtmlReplyWithHeader(content);
+	}
+
 	void WebClient::handleTrackDelete(const map<string, string>& arguments)
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
@@ -1546,6 +1573,7 @@ namespace webserver
 		menu.AddChildTag(HtmlTagButtonCommand("<svg width=\"35\" height=\"35\"><polyline points=\"1,11 1,10 10,1 25,1 34,10 34,25 25,34 10,34 1,25 1,11\" stroke=\"black\" stroke-width=\"1\" fill=\"red\"/><text x=\"3\" y=\"21\" fill=\"white\" font-size=\"11\">STOP</text></svg>", "stopall"));
 		menu.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"10,0.5 25,0.5 25,34.5 10,34.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"13,3.5 22,3.5 22,7.5 13,7.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><circle cx=\"14.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"27.5\" r=\"5\" fill=\"black\"/></svg>", "controllist"));
 		menu.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"0,10 5,10 5,0 10,0 10,10 25,10 25,0 35,0 35,5 30,5 30,10 35,10 35,25 0,25\" fill=\"black\"/><circle cx=\"5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"17.5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"30\" cy=\"30\" r=\"5\" fill=\"black\"/</svg>", "locolist"));
+		menu.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polyline points=\"1,12 34,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,23 34,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,10 3,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,10 6,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,10 9,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,10 12,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,10 15,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,10 18,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,10 21,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,10 24,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,10 27,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,10 30,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,10 33,25\" stroke=\"black\" stroke-width=\"1\"/></svg>", "tracklist"));
 		body.AddChildTag(menu);
 
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddAttribute("id", "loco_selector").AddChildTag(HtmlTagLocoSelector()));
