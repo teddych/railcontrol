@@ -658,8 +658,8 @@ namespace webserver
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
-		content.AddChildTag(HtmlTagButtonPopup("New", "controledit_0"));
 		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonPopup("New", "controledit_0"));
 		HtmlReplyWithHeader(content);
 	}
 
@@ -882,8 +882,8 @@ namespace webserver
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
-		content.AddChildTag(HtmlTagButtonPopup("New", "locoedit_0"));
 		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonPopup("New", "locoedit_0"));
 		HtmlReplyWithHeader(content);
 	}
 
