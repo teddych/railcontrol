@@ -68,6 +68,7 @@ namespace webserver
 			void handleAccessoryEdit(const std::map<std::string,std::string>& arguments);
 			void handleAccessorySave(const std::map<std::string,std::string>& arguments);
 			void handleAccessoryState(const std::map<std::string,std::string>& arguments);
+			void handleAccessoryList(const std::map<std::string,std::string>& arguments);
 			void handleAccessoryAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleAccessoryDelete(const std::map<std::string,std::string>& arguments);
 			void handleAccessoryGet(const std::map<std::string,std::string>& arguments);

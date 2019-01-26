@@ -864,6 +864,17 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 	return true;
 }
 
+const map<string,datamodel::Accessory*> Manager::accessoryListByName() const
+{
+	map<string,datamodel::Accessory*> out;
+	std::lock_guard<std::mutex> Guard(accessoryMutex);
+	for(auto accessory : accessories)
+	{
+		out[accessory.second->name] = accessory.second;
+	}
+	return out;
+}
+
 bool Manager::accessoryDelete(const accessoryID_t accessoryID)
 {
 	Accessory* accessory = nullptr;
