@@ -8,20 +8,20 @@
 
 class CommandInterface {
 	public:
-		CommandInterface(controlType_t managerID);
+		CommandInterface(controlType_t controlType);
 		virtual ~CommandInterface() {};
-		const controlType_t getManagerID() const { return managerID; }
+		const controlType_t getcontrolType() const { return controlType; }
 		virtual const std::string getName() const = 0;
-		virtual void booster(const controlType_t managerID, const boosterStatus_t status) = 0;
-		virtual void locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed) = 0;
-		virtual void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction) = 0;
-		virtual void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on) = 0;
-		virtual void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) = 0;
+		virtual void booster(const controlType_t controlType, const boosterStatus_t status) = 0;
+		virtual void locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed) = 0;
+		virtual void locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) = 0;
+		virtual void locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on) = 0;
+		virtual void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) = 0;
 		virtual void accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {}
 		virtual void accessoryDelete(const accessoryID_t accessoryID, const std::string& name) {}
-		virtual void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state) = 0;
-		virtual void track(const controlType_t managerID, const trackID_t trackID, const lockState_t state) = 0;
-		virtual void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on) = 0;
+		virtual void feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state) = 0;
+		virtual void track(const controlType_t controlType, const trackID_t trackID, const lockState_t state) = 0;
+		virtual void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) = 0;
 		virtual void switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const std::string& rotation) {};
 		virtual void switchDelete(const switchID_t switchID, const std::string& name) {};
 		virtual void locoIntoTrack(const locoID_t locoID, const trackID_t trackID) = 0;
@@ -44,10 +44,10 @@ class CommandInterface {
 		virtual void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const {}
 
 	private:
-		controlType_t managerID;
+		controlType_t controlType;
 };
 
-inline CommandInterface::CommandInterface(controlType_t managerID) :
-	managerID(managerID) {
+inline CommandInterface::CommandInterface(controlType_t controlType) :
+	controlType(controlType) {
 }
 

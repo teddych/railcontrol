@@ -69,7 +69,7 @@ namespace webserver {
 		clients.push_back(new WebClient(++lastClientID, connection, *this, manager));
 	}
 
-	void WebServer::booster(const controlType_t managerID, const boosterStatus_t status)
+	void WebServer::booster(const controlType_t controlType, const boosterStatus_t status)
 	{
 		if (status)
 		{
@@ -81,7 +81,7 @@ namespace webserver {
 		}
 	}
 
-	void WebServer::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed)
+	void WebServer::locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed)
 	{
 		stringstream command;
 		stringstream status;
@@ -90,7 +90,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction)
+	void WebServer::locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 	{
 		stringstream command;
 		stringstream status;
@@ -99,7 +99,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool state)
+	void WebServer::locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
 	{
 		stringstream command;
 		stringstream status;
@@ -108,7 +108,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void WebServer::accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
 		if (on == false)
 		{
@@ -141,7 +141,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state)
+	void WebServer::feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state)
 	{
 		stringstream command;
 		stringstream status;
@@ -150,7 +150,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::track(const controlType_t managerID, const trackID_t trackID, const lockState_t state)
+	void WebServer::track(const controlType_t controlType, const trackID_t trackID, const lockState_t state)
 	{
 		stringstream command;
 		stringstream status;
@@ -161,7 +161,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on)
+	void WebServer::handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
 		if (on == false)
 		{

@@ -20,7 +20,7 @@ class Manager {
 		~Manager();
 
 		// booster
-		void booster(const controlType_t managerID, const boosterStatus_t status);
+		void booster(const controlType_t controlType, const boosterStatus_t status);
 
 		// hardware (virt, CS2, ...)
 		static const std::map<hardwareType_t,std::string> hardwareListNames();
@@ -58,17 +58,17 @@ class Manager {
 		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		void locoSpeed(const controlType_t managerID, const protocol_t protocol, const address_t address, const LocoSpeed speed);
-		bool locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed);
+		void locoSpeed(const controlType_t controlType, const protocol_t protocol, const address_t address, const LocoSpeed speed);
+		bool locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed);
 		const LocoSpeed locoSpeed(const locoID_t locoID) const;
-		void locoDirection(const controlType_t managerID, const protocol_t protocol, const address_t address, const direction_t direction);
-		void locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction);
-		void locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on);
+		void locoDirection(const controlType_t controlType, const protocol_t protocol, const address_t address, const direction_t direction);
+		void locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction);
+		void locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on);
 
 		// accessory
-		void accessory(const controlType_t managerID, const protocol_t protocol, const address_t address, const accessoryState_t state);
-		void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state);
-		void accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
+		void accessory(const controlType_t controlType, const protocol_t protocol, const address_t address, const accessoryState_t state);
+		void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state);
+		void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
 		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID);
 		const std::string& getAccessoryName(const accessoryID_t accessoryID);
 		inline const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
@@ -77,7 +77,7 @@ class Manager {
 		bool accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
-		void feedback(const controlType_t managerID, const feedbackPin_t pin, const feedbackState_t state);
+		void feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state);
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
 		const std::string& getFeedbackName(const feedbackID_t feedbackID);
 		inline const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
@@ -85,7 +85,7 @@ class Manager {
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
 		// track
-		void track(const controlType_t managerID, const feedbackID_t feedbackID, const lockState_t);
+		void track(const controlType_t controlType, const feedbackID_t feedbackID, const lockState_t);
 		datamodel::Track* getTrack(const trackID_t trackID);
 		const std::string& getTrackName(const trackID_t trackID);
 		inline const std::map<trackID_t,datamodel::Track*>& trackList() const { return tracks; }
@@ -93,8 +93,8 @@ class Manager {
 		bool trackDelete(const trackID_t trackID);
 
 		// switch
-		void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state);
-		void handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
+		void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state);
+		void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
 		datamodel::Switch* getSwitch(const switchID_t switchID);
 		const std::string& getSwitchName(const switchID_t switchID);
 		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }

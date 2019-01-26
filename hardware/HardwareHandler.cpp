@@ -250,18 +250,18 @@ namespace hardware
 		instance->GetArgumentTypes(argumentTypes);
 	}
 
-	void HardwareHandler::booster(const controlType_t managerID, const boosterStatus_t status)
+	void HardwareHandler::booster(const controlType_t controlType, const boosterStatus_t status)
 	{
-		if (managerID == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
 			return;
 		}
 		instance->Booster(status);
 	}
 
-	void HardwareHandler::locoSpeed(const controlType_t managerID, const locoID_t locoID, const LocoSpeed speed)
+	void HardwareHandler::locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed)
 	{
-		if (managerID == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
 			return;
 		}
@@ -276,9 +276,9 @@ namespace hardware
 		instance->SetLocoSpeed(protocol, address, speed);
 	}
 
-	void HardwareHandler::locoDirection(const controlType_t managerID, const locoID_t locoID, const direction_t direction)
+	void HardwareHandler::locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 	{
-		if (managerID == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
 			return;
 		}
@@ -293,9 +293,9 @@ namespace hardware
 		instance->LocoDirection(protocol, address, direction);
 	}
 
-	void HardwareHandler::locoFunction(const controlType_t managerID, const locoID_t locoID, const function_t function, const bool on)
+	void HardwareHandler::locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
 	{
-		if (managerID == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
 			return;
 		}
@@ -310,9 +310,9 @@ namespace hardware
 		instance->LocoFunction(protocol, address, function, on);
 	}
 
-	void HardwareHandler::accessory(const controlType_t managerID, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void HardwareHandler::accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
-		if (managerID == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
 			return;
 		}
@@ -327,9 +327,9 @@ namespace hardware
 		instance->Accessory(protocol, address, state, on);
 	}
 
-	void HardwareHandler::handleSwitch(const controlType_t managerID, const switchID_t switchID, const switchState_t state, const bool on)
+	void HardwareHandler::handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
-		if (managerID == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
 			return;
 		}
