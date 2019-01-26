@@ -30,7 +30,7 @@ namespace datamodel
 				return true;
 
 			case Rotation90:
-				if (posX < height)
+				if (posX + 1 < height)
 				{
 					return false;
 				}
@@ -41,7 +41,7 @@ namespace datamodel
 				return true;
 
 			case Rotation180:
-				if (posX < width || posY < height)
+				if (posX + 1 < width || posY + 1 < height)
 				{
 					return false;
 				}
@@ -52,7 +52,7 @@ namespace datamodel
 				return true;
 
 			case Rotation270:
-				if (posY < width)
+				if (posY + 1 < width)
 				{
 					return false;
 				}
