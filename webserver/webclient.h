@@ -79,6 +79,7 @@ namespace webserver
 			void handleSwitchAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchGet(const std::map<std::string,std::string>& arguments);
+			void handleStreetList(const std::map<std::string,std::string>& arguments);
 			void handleTrackEdit(const std::map<std::string,std::string>& arguments);
 			void handleTrackSave(const std::map<std::string,std::string>& arguments);
 			void handleTrackList(const std::map<std::string, std::string>& arguments);

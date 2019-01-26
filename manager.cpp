@@ -1497,6 +1497,17 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 	return true;
 }
 
+const map<string,datamodel::Street*> Manager::streetListByName() const
+{
+	map<string,datamodel::Street*> out;
+	std::lock_guard<std::mutex> Guard(streetMutex);
+	for(auto street : streets)
+	{
+		out[street.second->name] = street.second;
+	}
+	return out;
+}
+
 bool Manager::streetDelete(const streetID_t streetID)
 {
 	Street* street = nullptr;

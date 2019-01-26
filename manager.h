@@ -109,6 +109,7 @@ class Manager {
 		datamodel::Street* getStreet(const streetID_t streetID);
 		const std::string& getStreetName(const streetID_t streetID);
 		inline const std::map<streetID_t,datamodel::Street*>& streetList() const { return streets; }
+		const std::map<std::string,datamodel::Street*> streetListByName() const;
 		bool streetSave(const streetID_t streetID, const std::string& name, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, std::string& result);
 		bool streetDelete(const streetID_t streetID);
 
@@ -189,7 +190,7 @@ class Manager {
 
 		// street
 		std::map<streetID_t,datamodel::Street*> streets;
-		std::mutex streetMutex;
+		mutable std::mutex streetMutex;
 
 		// storage
 		storage::StorageHandler* storage;
