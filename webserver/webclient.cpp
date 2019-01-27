@@ -259,6 +259,14 @@ namespace webserver
 			{
 				handleStreetList(arguments);
 			}
+			else if (arguments["cmd"].compare("streetaskdelete") == 0)
+			{
+				handleStreetAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("streetdelete") == 0)
+			{
+				handleStreetDelete(arguments);
+			}
 			else if (arguments["cmd"].compare("trackedit") == 0)
 			{
 				handleTrackEdit(arguments);
@@ -1466,6 +1474,54 @@ namespace webserver
 			return;
 		}
 		HtmlReplyWithHeaderAndParagraph("Street &quot;" + name + "&quot; saved.");
+	}
+
+	void WebClient::handleStreetAskDelete(const map<string, string>& arguments)
+	{
+		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+
+		if (streetID == StreetNone)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown street");
+			return;
+		}
+
+		const datamodel::Street* street = manager.getStreet(streetID);
+		if (street == nullptr)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown street");
+			return;
+		}
+
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Delete street &quot;" + street->name + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the street &quot;" + street->name + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "streetdelete"))
+			.AddContent(HtmlTagInputHidden("street", to_string(streetID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleStreetDelete(const map<string, string>& arguments)
+	{
+		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+		const datamodel::Street* street = manager.getStreet(streetID);
+		if (street == nullptr)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unable to delete street");
+			return;
+		}
+
+		if (!manager.streetDelete(streetID))
+		{
+			HtmlReplyWithHeaderAndParagraph("Unable to delete street");
+			return;
+		}
+
+		HtmlReplyWithHeaderAndParagraph("Street &quot;" + street->name + "&quot; deleted.");
 	}
 
 	void WebClient::handleStreetList(const map<string, string>& arguments)
