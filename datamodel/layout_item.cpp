@@ -69,10 +69,16 @@ namespace datamodel
 
 	bool LayoutItem::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
 	{
+		if (this->visible == false)
+		{
+			return true;
+		}
+
 		if (this->posZ != posZ)
 		{
 			return true;
 		}
+
 		layoutPosition_t x;
 		layoutPosition_t y;
 		layoutItemSize_t w;
@@ -82,6 +88,7 @@ namespace datamodel
 		{
 			return false;
 		}
+
 		for(layoutPosition_t ix = x; ix < x + w; ix++)
 		{
 			for(layoutPosition_t iy = y; iy < y + h; iy++)
