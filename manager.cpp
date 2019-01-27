@@ -1154,14 +1154,14 @@ bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t
 bool Manager::trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, string& result)
 {
 	Track* track;
+	if (!checkTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
 	{
-		if (!checkTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
-		{
-			result.append(" Unable to ");
-			result.append(trackID == TrackNone ? "add" : "move");
-			result.append(" track.");
-			return false;
-		}
+		result.append(" Unable to ");
+		result.append(trackID == TrackNone ? "add" : "move");
+		result.append(" track.");
+		return false;
+	}
+	{
 		std::lock_guard<std::mutex> Guard(trackMutex);
 		if (trackID != TrackNone && tracks.count(trackID))
 		{
