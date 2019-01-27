@@ -1104,7 +1104,7 @@ namespace webserver
 	void WebClient::handleAccessoryList(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Switches"));
+		content.AddChildTag(HtmlTag("h1").AddContent("Accessories"));
 		HtmlTag table("table");
 		const map<string,datamodel::Accessory*> accessoryList = manager.accessoryListByName();
 		map<string,string> locoArgument;

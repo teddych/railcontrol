@@ -15,15 +15,15 @@ namespace webserver
 		input.AddAttribute("onchange", "checkIntegerValue('" + name + "', " + minString + ", " + maxString + ");");
 		data.AddChildTag(input);
 
-		HtmlTag plus("a");
-		plus.AddAttribute("onclick", "incrementIntegerValue('" + name + "', " + maxString + ");");
-		plus.AddContent(" + ");
-		data.AddChildTag(plus);
-
 		HtmlTag minus("a");
 		minus.AddAttribute("onclick", "decrementIntegerValue('" + name + "', " + minString + ");");
 		minus.AddContent(" - ");
 		data.AddChildTag(minus);
+
+		HtmlTag plus("a");
+		plus.AddAttribute("onclick", "incrementIntegerValue('" + name + "', " + maxString + ");");
+		plus.AddContent(" + ");
+		data.AddChildTag(plus);
 
 		data.AddChildTag(HtmlTag("br"));
 		AddChildTag(data);

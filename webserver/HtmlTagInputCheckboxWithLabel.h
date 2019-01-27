@@ -16,6 +16,7 @@ namespace webserver
 			{
 				AddChildTag(HtmlTagLabel(label, name));
 				AddChildTag(HtmlTagInputCheckbox(name, value, checked));
+				AddChildTag(HtmlTag("br"));
 			}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
