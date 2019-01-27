@@ -1088,6 +1088,17 @@ const map<string,datamodel::Track*> Manager::trackListByName() const
 	return out;
 }
 
+const map<string,trackID_t> Manager::trackListIdByName() const
+{
+	map<string,trackID_t> out;
+	std::lock_guard<std::mutex> Guard(trackMutex);
+	for(auto track : tracks)
+	{
+		out[track.second->name] = track.second->objectID;
+	}
+	return out;
+}
+
 bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, string& result)
 {
 	layoutPosition_t x1;
@@ -1445,7 +1456,7 @@ const string& Manager::getStreetName(const streetID_t streetID)
 	return streets.at(streetID)->name;
 }
 
-bool Manager::streetSave(const streetID_t streetID, const std::string& name, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, string& result)
+bool Manager::streetSave(const streetID_t streetID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, string& result)
 {
 	Street* street;
 	{
@@ -1460,6 +1471,11 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 				return false;
 			}
 			street->name = name;
+			street->visible = visible;
+			street->posX = posX;
+			street->posY = posY;
+			street->posZ = posZ;
+			street->automode = automode;
 			street->fromTrack = fromTrack;
 			street->fromDirection = fromDirection;
 			street->toTrack = toTrack;
@@ -1479,7 +1495,7 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 				}
 			}
 			++newStreetID;
-			street = new Street(this, newStreetID, name, fromTrack, fromDirection, toTrack, toDirection, feedbackID);
+			street = new Street(this, newStreetID, name, visible, posX, posY, posZ, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackID);
 			if (street == nullptr)
 			{
 				result.assign("Unable to allocate memory for street");

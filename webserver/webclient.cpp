@@ -34,6 +34,7 @@
 using datamodel::Accessory;
 using datamodel::Loco;
 using datamodel::Switch;
+using datamodel::Track;
 using std::map;
 using std::string;
 using std::stringstream;
@@ -245,6 +246,14 @@ namespace webserver
 			else if (arguments["cmd"].compare("switchget") == 0)
 			{
 				handleSwitchGet(arguments);
+			}
+			else if (arguments["cmd"].compare("streetedit") == 0)
+			{
+				handleStreetEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("streetsave") == 0)
+			{
+				handleStreetSave(arguments);
 			}
 			else if (arguments["cmd"].compare("streetlist") == 0)
 			{
@@ -773,6 +782,17 @@ namespace webserver
 		return HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation));
 	}
 
+	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const
+	{
+		HtmlTag tag;
+		map<string,trackID_t> tracks = manager.trackListIdByName();
+		tag.AddChildTag(HtmlTagSelectWithLabel(name + "track", label, tracks, trackId).AddClass("select_track"));
+		map<string,direction_t> directions;
+		directions["Left"] = DirectionLeft;
+		directions["Right"] = DirectionRight;
+		tag.AddChildTag(HtmlTagSelect(name + "direction", directions, direction).AddClass("select_direction"));
+		return tag;
+	}
 
 	void WebClient::handleProtocolAccessory(const map<string, string>& arguments)
 	{
@@ -1354,6 +1374,98 @@ namespace webserver
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
 		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
 		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
+	}
+
+	void WebClient::handleStreetEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+		string name("New Street");
+		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleYes));
+		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
+		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		automode_t automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
+		trackID_t fromTrack = GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
+		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
+		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
+		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		if (streetID > StreetNone)
+		{
+			const datamodel::Street* street = manager.getStreet(streetID);
+			name = street->name;
+			visible = street->visible;
+			posx = street->posX;
+			posy = street->posY;
+			// FIXME: layers not supported yet: posz = mySwitch->posZ;
+			automode = street->automode;
+			fromTrack = street->fromTrack;
+			fromDirection = street->fromDirection;
+			fromTrack = street->fromTrack;
+			fromDirection = street->fromDirection;
+		}
+
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit street &quot;" + name + "&quot;"));
+		HtmlTag form("form");
+		form.AddAttribute("id", "editform");
+		form.AddChildTag(HtmlTagInputHidden("cmd", "streetsave"));
+		form.AddChildTag(HtmlTagInputHidden("street", to_string(streetID)));
+		form.AddChildTag(HtmlTagInputTextWithLabel("name", "Street Name:", name));
+		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", "Visible:", "visible", static_cast<bool>(visible));
+		checkboxVisible.AddAttribute("id", "visible");
+		checkboxVisible.AddAttribute("onchange", "onChangeCheckboxShowHide('visible', 'position');");
+		form.AddChildTag(checkboxVisible);
+		HtmlTag posDiv("div");
+		posDiv.AddAttribute("id", "position");
+		if (visible == VisibleNo)
+		{
+			posDiv.AddAttribute("hidden");
+		}
+		posDiv.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255));
+		posDiv.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255));
+		/* FIXME: layers not supported
+		posDiv.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20)):
+		*/
+		form.AddChildTag(posDiv);
+		HtmlTagInputCheckboxWithLabel checkboxAutomode("automode", "Auto-mode:", "automode", static_cast<bool>(automode));
+		checkboxAutomode.AddAttribute("id", "automode");
+		checkboxAutomode.AddAttribute("onchange", "onChangeCheckboxShowHide('automode', 'tracks');");
+		form.AddChildTag(checkboxAutomode);
+		HtmlTag tracksDiv("div");
+		tracksDiv.AddAttribute("id", "tracks");
+		if (automode == AutomodeNo)
+		{
+			tracksDiv.AddAttribute("hidden");
+		}
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", "From track:", fromTrack, fromDirection));
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", "To track:", toTrack, toDirection));
+		form.AddChildTag(tracksDiv);
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleStreetSave(const map<string, string>& arguments)
+	{
+		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+		string name = GetStringMapEntry(arguments, "name");
+		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible"));
+		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		automode_t automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode"));
+		trackID_t fromTrack = GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
+		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
+		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
+		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		string result;
+		if (!manager.streetSave(streetID, name, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, FeedbackNone, result))
+		{
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
+		}
+		HtmlReplyWithHeaderAndParagraph("Street &quot;" + name + "&quot; saved.");
 	}
 
 	void WebClient::handleStreetList(const map<string, string>& arguments)

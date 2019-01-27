@@ -153,6 +153,14 @@ label {
 	width: 15px;
 }
 
+.select_track {
+	width: 300px;
+}
+
+.select_direction {
+	width: 100px;
+}
+
 input,
 select {
 	width: 400px;

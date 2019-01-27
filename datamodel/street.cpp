@@ -14,12 +14,18 @@ namespace datamodel {
 	Street::Street(Manager* manager,
 		const streetID_t streetID,
 		const std::string& name,
+		const visible_t visible,
+		const layoutPosition_t posX,
+		const layoutPosition_t posY,
+		const layoutPosition_t posZ,
+		const automode_t automode,
 		const trackID_t fromTrack,
 		const direction_t fromDirection,
 		const trackID_t toTrack,
 		const direction_t toDirection,
 		const feedbackID_t feedbackIDStop)
-	:	Object(streetID, name),
+	:	LayoutItem(streetID, name, visible, posX, posY, posZ, Width1, Height1, Rotation0),
+	 	automode(automode),
 		fromTrack(fromTrack),
 		fromDirection(fromDirection),
 		toTrack(toTrack),
@@ -53,7 +59,15 @@ namespace datamodel {
 	std::string Street::serialize() const
 	{
 		stringstream ss;
-		ss << "objectType=Street;" << Object::serialize() << ";lockState=" << static_cast<int>(lockState) << ";fromTrack=" << static_cast<int>(fromTrack) << ";fromDirection=" << static_cast<int>(fromDirection) << ";toTrack=" << (int)toTrack << ";toDirection=" << (int)toDirection << ";feedbackIDStop=" << (int)feedbackIDStop;
+		ss << "objectType=Street;"
+			<< LayoutItem::serialize()
+			<< ";lockState=" << static_cast<int>(lockState)
+			<< ";automode=" << static_cast<int>(automode)
+			<< ";fromTrack=" << static_cast<int>(fromTrack)
+			<< ";fromDirection=" << static_cast<int>(fromDirection)
+			<< ";toTrack=" << (int)toTrack
+			<< ";toDirection=" << (int)toDirection
+			<< ";feedbackIDStop=" << (int)feedbackIDStop;
 		return ss.str();
 	}
 
@@ -63,8 +77,9 @@ namespace datamodel {
 		parseArguments(serialized, arguments);
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Street") == 0)
 		{
-			Object::deserialize(arguments);
+			LayoutItem::deserialize(arguments);
 			lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
+			automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
 			fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
 			fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionLeft));
 			toTrack = GetIntegerMapEntry(arguments, "lockState", TrackNone);

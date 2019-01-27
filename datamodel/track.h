@@ -22,7 +22,7 @@ namespace datamodel
 				const layoutItemSize_t height,
 				const layoutRotation_t rotation,
 				const trackType_t type)
-			:	LayoutItem(trackID, name, x, y, z, Width1, height, rotation),
+			:	LayoutItem(trackID, name, VisibleYes, x, y, z, Width1, height, rotation),
 				type(type),
 				lockState(LockStateFree) /* FIXME */,
 			 	locoID(0) /* FIXME */,

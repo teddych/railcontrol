@@ -72,7 +72,7 @@ bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::st
 		return defaultValue;
 	}
 	string value = map.at(key);
-	return (value.compare("true") == 0 || value.compare("on") == 0 || value.compare("1") == 0);
+	return (value.compare("true") == 0 || value.compare("on") == 0 || value.compare("1") == 0 || key.compare(value) == 0);
 }
 
 string toStringWithLeadingZeros(const unsigned int number, const unsigned char chars)

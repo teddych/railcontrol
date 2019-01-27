@@ -141,6 +141,18 @@ enum layoutRotation_t : unsigned char
 	Rotation270
 };
 
+enum visible_t : bool
+{
+	VisibleNo = false,
+	VisibleYes = true
+};
+
+enum automode_t : bool
+{
+	AutomodeNo = false,
+	AutomodeYes = true
+};
+
 enum objectType_t : unsigned char
 {
 	ObjectTypeLoco = 1,

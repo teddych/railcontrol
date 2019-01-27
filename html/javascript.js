@@ -129,6 +129,21 @@ function onContextTrack(trackID)
 	}
 }
 
+function onChangeCheckboxShowHide(checkboxId, divId)
+{
+	var checkbox = document.getElementById(checkboxId);
+	if (!checkbox)
+	{
+		return;
+	}
+	var div = document.getElementById(divId);
+	if (!div)
+	{
+		return;
+	}
+	div.hidden = !checkbox.checked;
+}
+
 function updateLayoutItem(elementName, data)
 {
 	var parentElement = document.getElementById('layout');

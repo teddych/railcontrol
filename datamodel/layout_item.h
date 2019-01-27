@@ -13,6 +13,7 @@ namespace datamodel
 		public:
 			LayoutItem(const objectID_t objectID,
 				const std::string& name,
+				const visible_t visible,
 				const layoutPosition_t posX,
 				const layoutPosition_t posY,
 				const layoutPosition_t posZ,
@@ -20,6 +21,7 @@ namespace datamodel
 				const layoutItemSize_t height,
 				const layoutRotation_t rotation)
 			:	Object(objectID, name),
+				visible(visible),
 				posX(posX),
 				posY(posY),
 				posZ(posZ),
@@ -48,6 +50,7 @@ namespace datamodel
 			virtual std::string Rotation() const { return Rotation(rotation); }
 			static std::string Rotation(layoutRotation_t rotation);
 			
+			visible_t visible;
 			layoutPosition_t posX;
 			layoutPosition_t posY;
 			layoutPosition_t posZ;

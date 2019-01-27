@@ -98,7 +98,14 @@ namespace datamodel
 	std::string LayoutItem::serialize() const
 	{
 		stringstream ss;
-		ss << Object::serialize() << ";posX=" << (int)posX << ";posY=" << (int)posY << ";posZ=" << (int)posZ << ";width=" << (int)width << ";height=" << (int)height << ";rotation=" << (int)rotation;
+		ss << Object::serialize()
+			<< ";visible=" << static_cast<int>(visible)
+			<< ";posX=" << static_cast<int>(posX)
+			<< ";posY=" << static_cast<int>(posY)
+			<< ";posZ=" << static_cast<int>(posZ)
+			<< ";width=" << static_cast<int>(width)
+			<< ";height=" << static_cast<int>(height)
+			<< ";rotation=" << static_cast<int>(rotation);
 		return ss.str();
 	}
 
@@ -112,6 +119,7 @@ namespace datamodel
 	bool LayoutItem::deserialize(const map<string,string>& arguments)
 	{
 		Object::deserialize(arguments);
+		visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible"));
 		posX = GetIntegerMapEntry(arguments, "posX", 0);
 		posY = GetIntegerMapEntry(arguments, "posY", 0);
 		posZ = GetIntegerMapEntry(arguments, "posZ", 0);

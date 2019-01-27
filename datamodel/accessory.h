@@ -23,7 +23,7 @@ namespace datamodel
 				const accessoryType_t type,
 				const accessoryTimeout_t timeout,
 				const bool inverted)
-			:	LayoutItem(accessoryID, name, x, y, z, Width1, Height1, rotation),
+			:	LayoutItem(accessoryID, name, VisibleYes, x, y, z, Width1, Height1, rotation),
 				controlID(controlID),
 				protocol(protocol),
 				address(address),

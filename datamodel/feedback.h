@@ -22,7 +22,7 @@ namespace datamodel
 				const controlID_t controlID,
 				const feedbackPin_t pin,
 				bool inverted)
-			:	LayoutItem(feedbackID, name, x, y, z, Width1, Height1, Rotation0),
+			:	LayoutItem(feedbackID, name, VisibleNo, x, y, z, Width1, Height1, Rotation0),
 				controlID(controlID),
 				pin(pin),
 				manager(manager),

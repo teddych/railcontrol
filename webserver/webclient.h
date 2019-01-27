@@ -47,6 +47,7 @@ namespace webserver
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagTimeout(const accessoryTimeout_t timeout) const;
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;
+			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const;
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleControlEdit(const std::map<std::string, std::string>& arguments);
 			void handleControlSave(const std::map<std::string, std::string>& arguments);
@@ -79,6 +80,8 @@ namespace webserver
 			void handleSwitchAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchGet(const std::map<std::string,std::string>& arguments);
+			void handleStreetEdit(const std::map<std::string,std::string>& arguments);
+			void handleStreetSave(const std::map<std::string,std::string>& arguments);
 			void handleStreetList(const std::map<std::string,std::string>& arguments);
 			void handleTrackEdit(const std::map<std::string,std::string>& arguments);
 			void handleTrackSave(const std::map<std::string,std::string>& arguments);

@@ -1386,7 +1386,7 @@ namespace console
 		direction_t toDirection = ReadDirection(s, i);
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		string result;
-		if (!manager.streetSave(StreetNone, name, fromTrack, fromDirection, toTrack, toDirection, feedbackID, result))
+		if (!manager.streetSave(StreetNone, name, VisibleNo, 0, 0, 0, AutomodeNo, fromTrack, fromDirection, toTrack, toDirection, feedbackID, result))
 		{
 			SendAndPrompt(result);
 			return;
