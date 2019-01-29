@@ -28,11 +28,13 @@
 #include "webserver/HtmlTagInputSliderLocoSpeed.h"
 #include "webserver/HtmlTagInputTextWithLabel.h"
 #include "webserver/HtmlTagSelectWithLabel.h"
+#include "webserver/HtmlTagStreet.h"
 #include "webserver/HtmlTagSwitch.h"
 #include "webserver/HtmlTagTrack.h"
 
 using datamodel::Accessory;
 using datamodel::Loco;
+using datamodel::Street;
 using datamodel::Switch;
 using datamodel::Track;
 using std::map;
@@ -1024,6 +1026,16 @@ namespace webserver
 				continue;
 			}
 			content.AddChildTag(HtmlTagTrack(track.second));
+		}
+
+		const map<streetID_t,datamodel::Street*>& streets = manager.streetList();
+		for (auto street : streets)
+		{
+			if (street.second->posZ != layer || street.second->visible == VisibleNo)
+			{
+				continue;
+			}
+			content.AddChildTag(HtmlTagStreet(street.second));
 		}
 		HtmlReplyWithHeader(content);
 	}

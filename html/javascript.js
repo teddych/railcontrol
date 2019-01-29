@@ -98,6 +98,26 @@ function onContextAccessory(accessoryID)
 	}
 }
 
+function onClickStreet(streetID)
+{
+	var element = document.getElementById('st_' + streetID);
+	var url = '/?cmd=streetexecute';
+	url += '&street=' + streetID;
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
+}
+
+function onContextStreet(streetID)
+{
+	hideAllContextMenus();
+	var menu = document.getElementById('st_' + streetID + '_context');
+	if (menu)
+	{
+		menu.style.display = 'block';
+	}
+}
+
 function onClickSwitch(switchID)
 {
 	var element = document.getElementById('sw_' + switchID);
