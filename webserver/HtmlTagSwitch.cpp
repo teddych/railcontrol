@@ -43,14 +43,16 @@ namespace webserver
 		div1.AddClass("switch_item");
 		div1.AddClass(state == SwitchStateStraight ? "switch_straight" : "switch_turnout");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
+		string image;
 		if (type == SwitchTypeLeft)
 		{
-			div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(rotation) + "deg);\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>"));
+			image = "<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(rotation) + "deg);\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>";
 		}
 		else
 		{
-			div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(rotation) + "deg);\"><polygon points=\"22,26 22,35 13,35\" fill=\"black\" /><polygon points=\"22,26 35,13 35,22 22,35\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,26 13,35\" fill=\"gray\" class=\"straight\"/></svg>"));
+			image = "<svg width=\"35\" height=\"35\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(rotation) + "deg);\"><polygon points=\"22,26 22,35 13,35\" fill=\"black\" /><polygon points=\"22,26 35,13 35,22 22,35\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,26 13,35\" fill=\"gray\" class=\"straight\"/></svg>";
 		}
+		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name + " (addr=" + to_string(address) + ")"));
 
 		std::stringstream javascript;

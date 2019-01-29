@@ -75,7 +75,7 @@ namespace webserver
 			}
 		}
 
-		div1.AddChildTag(HtmlTag("span").AddContent("<svg width=\"35\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
+		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"35\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name));
 
 		std::stringstream javascript;
