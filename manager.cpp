@@ -760,7 +760,7 @@ void Manager::accessory(const controlType_t controlType, const accessoryID_t acc
 	}
 }
 
-Accessory* Manager::getAccessory(const accessoryID_t accessoryID)
+Accessory* Manager::getAccessory(const accessoryID_t accessoryID) const
 {
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
 	if (accessories.count(accessoryID) != 1)
@@ -770,7 +770,7 @@ Accessory* Manager::getAccessory(const accessoryID_t accessoryID)
 	return accessories.at(accessoryID);
 }
 
-const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID)
+const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) const
 {
 	if (accessories.count(accessoryID) != 1)
 	{
@@ -779,7 +779,7 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID)
 	return accessories.at(accessoryID)->name;
 }
 
-bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
 	Accessory* accessory = getAccessory(accessoryID);
 	if (accessory == nullptr)
@@ -789,6 +789,7 @@ bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layo
 
 	return (accessory->posX == posX && accessory->posY == posY && accessory->posZ == posZ);
 }
+
 bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, string& result)
 {
 	Accessory* accessory;
@@ -940,7 +941,7 @@ void Manager::feedback(const controlType_t controlType, const feedbackPin_t pin,
 	}
 }
 
-datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID)
+datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID) const
 {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	if (feedbacks.count(feedbackID) != 1)
@@ -950,7 +951,7 @@ datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID)
 	return feedbacks.at(feedbackID);
 }
 
-const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID)
+const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) const
 {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	if (feedbacks.count(feedbackID) != 1)
@@ -1058,7 +1059,7 @@ void Manager::track(const controlType_t controlType, const trackID_t trackID, co
 	}
 }
 
-Track* Manager::getTrack(const trackID_t trackID)
+Track* Manager::getTrack(const trackID_t trackID) const
 {
 	std::lock_guard<std::mutex> Guard(trackMutex);
 	if (tracks.count(trackID) != 1)
@@ -1068,7 +1069,7 @@ Track* Manager::getTrack(const trackID_t trackID)
 	return tracks.at(trackID);
 }
 
-const std::string& Manager::getTrackName(const trackID_t trackID)
+const std::string& Manager::getTrackName(const trackID_t trackID) const
 {
 	if (tracks.count(trackID) != 1)
 	{
@@ -1099,7 +1100,7 @@ const map<string,trackID_t> Manager::trackListIdByName() const
 	return out;
 }
 
-bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, string& result)
+bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
 {
 	layoutPosition_t x1;
 	layoutPosition_t y1;
@@ -1271,7 +1272,7 @@ void Manager::handleSwitch(const controlType_t controlType, const switchID_t swi
 	}
 }
 
-Switch* Manager::getSwitch(const switchID_t switchID)
+Switch* Manager::getSwitch(const switchID_t switchID) const
 {
 	std::lock_guard<std::mutex> Guard(switchMutex);
 	if (switches.count(switchID) != 1)
@@ -1281,7 +1282,7 @@ Switch* Manager::getSwitch(const switchID_t switchID)
 	return switches.at(switchID);
 }
 
-const std::string& Manager::getSwitchName(const switchID_t switchID)
+const std::string& Manager::getSwitchName(const switchID_t switchID) const
 {
 	if (switches.count(switchID) != 1)
 	{
@@ -1290,7 +1291,7 @@ const std::string& Manager::getSwitchName(const switchID_t switchID)
 	return switches.at(switchID)->name;
 }
 
-bool Manager::checkSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+bool Manager::checkSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
 	Switch* mySwitch = getSwitch(switchID);
 	if (mySwitch == nullptr)
@@ -1437,7 +1438,7 @@ bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& cont
 * Street                   *
 ***************************/
 
-Street* Manager::getStreet(const streetID_t streetID)
+Street* Manager::getStreet(const streetID_t streetID) const
 {
 	std::lock_guard<std::mutex> Guard(streetMutex);
 	if (streets.count(streetID) != 1)
@@ -1447,7 +1448,7 @@ Street* Manager::getStreet(const streetID_t streetID)
 	return streets.at(streetID);
 }
 
-const string& Manager::getStreetName(const streetID_t streetID)
+const string& Manager::getStreetName(const streetID_t streetID) const
 {
 	if (streets.count(streetID) != 1)
 	{
@@ -1770,7 +1771,7 @@ void Manager::StopAllLocosImmediately(const controlType_t controlType)
 * Layout                   *
 ***************************/
 
-bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result)
+bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
 {
 	bool ret;
 	ret = checkLayoutPositionFree(posX, posY, posZ, result, accessories, accessoryMutex);
@@ -1792,7 +1793,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 	return ret;
 }
 
-bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result)
+bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
 {
 	if (width == 0 || height == 0)
 	{
@@ -1824,7 +1825,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 }
 
 template<class Type>
-bool Manager::checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result, map<objectID_t, Type*>& layoutVector, std::mutex& mutex)
+bool Manager::checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result, const map<objectID_t, Type*>& layoutVector, std::mutex& mutex) const
 {
 	std::lock_guard<std::mutex> Guard(mutex);
 	for (auto layout : layoutVector)

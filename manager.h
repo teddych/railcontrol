@@ -69,8 +69,8 @@ class Manager {
 		void accessory(const controlType_t controlType, const protocol_t protocol, const address_t address, const accessoryState_t state);
 		void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state);
 		void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
-		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID);
-		const std::string& getAccessoryName(const accessoryID_t accessoryID);
+		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID) const;
+		const std::string& getAccessoryName(const accessoryID_t accessoryID) const;
 		inline const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
 		const std::map<std::string,datamodel::Accessory*> accessoryListByName() const;
 		bool accessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, std::string& result);
@@ -79,16 +79,16 @@ class Manager {
 
 		// feedback
 		void feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state);
-		datamodel::Feedback* getFeedback(feedbackID_t feedbackID);
-		const std::string& getFeedbackName(const feedbackID_t feedbackID);
+		datamodel::Feedback* getFeedback(feedbackID_t feedbackID) const;
+		const std::string& getFeedbackName(const feedbackID_t feedbackID) const;
 		inline const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
 		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted,  std::string& result);
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
 		// track
 		void track(const controlType_t controlType, const feedbackID_t feedbackID, const lockState_t);
-		datamodel::Track* getTrack(const trackID_t trackID);
-		const std::string& getTrackName(const trackID_t trackID);
+		datamodel::Track* getTrack(const trackID_t trackID) const;
+		const std::string& getTrackName(const trackID_t trackID) const;
 		inline const std::map<trackID_t,datamodel::Track*>& trackList() const { return tracks; }
 		const std::map<std::string,datamodel::Track*> trackListByName() const;
 		const std::map<std::string,trackID_t> trackListIdByName() const;
@@ -98,8 +98,8 @@ class Manager {
 		// switch
 		void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state);
 		void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
-		datamodel::Switch* getSwitch(const switchID_t switchID);
-		const std::string& getSwitchName(const switchID_t switchID);
+		datamodel::Switch* getSwitch(const switchID_t switchID) const;
+		const std::string& getSwitchName(const switchID_t switchID) const;
 		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
 		const std::map<std::string,datamodel::Switch*> switchListByName() const;
 		bool switchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, std::string& result);
@@ -107,8 +107,8 @@ class Manager {
 		bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// street
-		datamodel::Street* getStreet(const streetID_t streetID);
-		const std::string& getStreetName(const streetID_t streetID);
+		datamodel::Street* getStreet(const streetID_t streetID) const;
+		const std::string& getStreetName(const streetID_t streetID) const;
 		inline const std::map<streetID_t,datamodel::Street*>& streetList() const { return streets; }
 		const std::map<std::string,datamodel::Street*> streetListByName() const;
 		bool streetSave(const streetID_t streetID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, std::string& result);
@@ -131,12 +131,12 @@ class Manager {
 
 	private:
 		// layout
-		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result);
-		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result);
-		template<class Type> bool checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result, std::map<objectID_t, Type*>& layoutVector, std::mutex& mutex);
-		bool checkAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
-		bool checkSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
-		bool checkTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result);
+		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result) const;
+		bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result) const;
+		template<class Type> bool checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result, const std::map<objectID_t, Type*>& layoutVector, std::mutex& mutex) const;
+		bool checkAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
+		bool checkSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
+		bool checkTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result) const;
 
 		bool checkAddressLoco(const protocol_t protocol, const address_t address, std::string& result);
 		bool checkAddressAccessory(const protocol_t protocol, const address_t address, std::string& result);
@@ -177,7 +177,7 @@ class Manager {
 
 		// feedback
 		std::map<feedbackID_t,datamodel::Feedback*> feedbacks;
-		std::mutex feedbackMutex;
+		mutable std::mutex feedbackMutex;
 
 		// track
 		std::map<trackID_t,datamodel::Track*> tracks;
