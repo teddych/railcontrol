@@ -1872,6 +1872,7 @@ namespace webserver
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add track").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add switch").AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add street").AddAttribute("onClick", "loadPopup('/?cmd=streetedit&street=0');"))
 			));
 
 		std::stringstream javascript;
