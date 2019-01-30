@@ -18,30 +18,18 @@ namespace webserver
 		layoutRotation_t r;
 		track->position(posX, posY, posZ, w, h, r);
 		trackType_t type = track->Type();
-		Init(track->objectID, track->name, posX, posY, posZ, track->height, r, type);
-	}
-
-	void HtmlTagTrack::Init(const trackID_t trackID,
-		const std::string& name,
-		const layoutPosition_t posX,
-		const layoutPosition_t posY,
-		const layoutPosition_t posZ,
-		const layoutItemSize_t height,
-		const layoutRotation_t rotation,
-		const trackType_t type)
-	{
 		unsigned int layoutPosX = posX * 35;
 		unsigned int layoutPosY = posY * 35;
 
 		HtmlTag div1("div");
-		string trackIdString = to_string(trackID);
+		string trackIdString = to_string(track->objectID);
 		string id("t_" + trackIdString);
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("track_item");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
-		string layoutHeight = to_string(35 * height);
+		string layoutHeight = to_string(35 * track->height);
 		switch (type)
 		{
 			case TrackTypeLeft:
@@ -60,27 +48,27 @@ namespace webserver
 
 		int translateX = 0;
 		int translateY = 0;
-		if (height > Height1)
+		if (track->height > Height1)
 		{
 			image += "<polygon points=\"13,35 22,35 22," + layoutHeight + " 13," + layoutHeight + "\" fill=\"black\"/>";
-			if (rotation == Rotation90)
+			if (track->rotation == Rotation90)
 			{
-				translateX = -((((height - 1) * 35) + 1) / 2);
-				translateY = -(((height - 1) * 35) / 2);
+				translateX = -((((track->height - 1) * 35) + 1) / 2);
+				translateY = -(((track->height - 1) * 35) / 2);
 			}
-			else if (rotation == Rotation270)
+			else if (track->rotation == Rotation270)
 			{
-				translateX = ((((height - 1) * 35) + 1) / 2);
-				translateY = (((height - 1) * 35) / 2);
+				translateX = ((((track->height - 1) * 35) + 1) / 2);
+				translateY = (((track->height - 1) * 35) / 2);
 			}
 		}
 
-		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"35\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
-		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name));
+		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"35\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
+		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(track->name));
 
 		std::stringstream javascript;
 		javascript << "$(function() {"
-			" $('#" << id << "').on('contextmenu', function(event) { if (event.shiftKey) return true; event.preventDefault(); onContextTrack(" << trackID << "); return false; });"
+			" $('#" << id << "').on('contextmenu', function(event) { if (event.shiftKey) return true; event.preventDefault(); onContextTrack(" << trackIdString << "); return false; });"
 			"});"
 			;
 		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));
@@ -91,7 +79,7 @@ namespace webserver
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(name))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(track->name))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
 			);
