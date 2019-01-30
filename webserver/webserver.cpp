@@ -161,6 +161,24 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::streetSettings(const streetID_t streetID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "streetsettings;street=" << streetID;
+		status << name << " updated";
+		addUpdate(command.str(), status.str());
+	}
+
+	void WebServer::streetDelete(const streetID_t streetID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "streetdelete;street=" << streetID;
+		status << name << " deleted";
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
 		if (on == false)

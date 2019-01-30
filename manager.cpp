@@ -1536,6 +1536,11 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 	{
 		storage->street(*street);
 	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->streetSettings(street->objectID, name);
+	}
 	return true;
 }
 
@@ -1564,10 +1569,18 @@ bool Manager::streetDelete(const streetID_t streetID)
 		streets.erase(streetID);
 	}
 
+	string name = street->name;
+
 	delete street;
 	if (storage)
 	{
 		storage->deleteStreet(streetID);
+	}
+
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->streetDelete(streetID, name);
 	}
 	return true;
 }

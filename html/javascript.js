@@ -330,6 +330,20 @@ function dataUpdate(event)
 			}
 		}
 	}
+	else if (command == 'streetsettings')
+	{
+		var streetID = argumentMap.get('street');
+		elementName = 'st_' + streetID;
+		var url = '/?cmd=streetget';
+		url += '&street=' + streetID;
+		requestUpdateLayoutItem(elementName, url);
+	}
+	else if (command == 'streetdelete')
+	{
+		elementName = 'st_' + argumentMap.get('street');
+		deleteLayoutElement(elementName);
+		deleteLayoutElement(elementName + '_context');
+	}
 	else if (command == 'switchsettings')
 	{
 		var switchID = argumentMap.get('switch');

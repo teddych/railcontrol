@@ -269,6 +269,10 @@ namespace webserver
 			{
 				handleStreetDelete(arguments);
 			}
+			else if (arguments["cmd"].compare("streetget") == 0)
+			{
+				handleStreetGet(arguments);
+			}
 			else if (arguments["cmd"].compare("trackedit") == 0)
 			{
 				handleTrackEdit(arguments);
@@ -1394,6 +1398,13 @@ namespace webserver
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
 		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
 		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
+	}
+
+	void WebClient::handleStreetGet(const map<string, string>& arguments)
+	{
+		streetID_t streetID = GetIntegerMapEntry(arguments, "street");
+		const datamodel::Street* street = manager.getStreet(streetID);
+		HtmlReplyWithHeader(HtmlTagStreet(street));
 	}
 
 	void WebClient::handleStreetEdit(const map<string, string>& arguments)
