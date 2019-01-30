@@ -46,6 +46,7 @@ namespace datamodel
 		LayoutItem::deserialize(arguments);
 		width = Width1;
 		height = Height1;
+		visible = VisibleYes;
 		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		address = GetIntegerMapEntry(arguments, "address");

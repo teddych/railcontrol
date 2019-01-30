@@ -27,15 +27,16 @@ namespace datamodel
 		parseArguments(serialized, arguments);
 		LayoutItem::deserialize(arguments);
 		width = Width1;
-		if (arguments.count("objectType") && arguments.at("objectType").compare("Track") == 0)
+		visible = VisibleYes;
+		if (!arguments.count("objectType") || arguments.at("objectType").compare("Track") != 0)
 		{
-			type = static_cast<trackType_t>(GetIntegerMapEntry(arguments, "type", TrackTypeStraight));
-			lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
-			locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
-			locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));
-			return true;
+			return false;
 		}
-		return false;
+		type = static_cast<trackType_t>(GetIntegerMapEntry(arguments, "type", TrackTypeStraight));
+		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
+		locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
+		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));
+		return true;
 	}
 
 	bool Track::reserve(const locoID_t locoID)
