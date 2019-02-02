@@ -309,6 +309,10 @@ namespace webserver
 			{
 				handleProtocolSwitch(arguments);
 			}
+			else if (arguments["cmd"].compare("relationadd") == 0)
+			{
+				handleRelationAdd(arguments);
+			}
 			else if (arguments["cmd"].compare("layout") == 0)
 			{
 				handleLayout(arguments);
@@ -786,6 +790,24 @@ namespace webserver
 		return HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4));
 	}
 
+	HtmlTag WebClient::HtmlTagRelation(const string& priority, const switchID_t switchId, const switchState_t state)
+	{
+		HtmlTag content;
+		std::map<string,Switch*> switches = manager.switchListByName();
+		map<string,switchID_t> switchOptions;
+		for (auto mySwitch : switches)
+		{
+			switchOptions[mySwitch.first] = mySwitch.second->objectID;
+		}
+		content.AddChildTag(HtmlTagSelect("relation_" + priority, switchOptions, switchId));
+
+		map<string,switchState_t> stateOptions;
+		stateOptions["Straight"] = SwitchStateStraight;
+		stateOptions["Turnout"] = SwitchStateTurnout;
+		content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state));
+		return content;
+	}
+
 	HtmlTag WebClient::HtmlTagRotation(const layoutRotation_t rotation) const
 	{
 		std::map<string, string> rotationOptions;
@@ -824,6 +846,12 @@ namespace webserver
 			return;
 		}
 		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, accessory->protocol));
+	}
+
+	void WebClient::handleRelationAdd(const map<string, string>& arguments)
+	{
+		string priority = GetStringMapEntry(arguments, "priority", "1");
+		HtmlReplyWithHeader(HtmlTagRelation(priority));
 	}
 
 	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
@@ -1442,10 +1470,12 @@ namespace webserver
 		form.AddChildTag(HtmlTagInputHidden("cmd", "streetsave"));
 		form.AddChildTag(HtmlTagInputHidden("street", to_string(streetID)));
 		form.AddChildTag(HtmlTagInputTextWithLabel("name", "Street Name:", name));
+
 		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", "Visible:", "visible", static_cast<bool>(visible));
 		checkboxVisible.AddAttribute("id", "visible");
 		checkboxVisible.AddAttribute("onchange", "onChangeCheckboxShowHide('visible', 'position');");
 		form.AddChildTag(checkboxVisible);
+
 		HtmlTag posDiv("div");
 		posDiv.AddAttribute("id", "position");
 		if (visible == VisibleNo)
@@ -1458,10 +1488,20 @@ namespace webserver
 		posDiv.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20)):
 		*/
 		form.AddChildTag(posDiv);
+
+		HtmlTag relationDiv("div");
+		relationDiv.AddChildTag(HtmlTagInputHidden("relationcounter", "0"));
+		relationDiv.AddAttribute("id", "relation");
+		HtmlTagButton newButton("New", "newrelation");
+		newButton.AddAttribute("onclick", "addRelation();return false;");
+		relationDiv.AddChildTag(newButton);
+		form.AddChildTag(relationDiv);
+
 		HtmlTagInputCheckboxWithLabel checkboxAutomode("automode", "Auto-mode:", "automode", static_cast<bool>(automode));
 		checkboxAutomode.AddAttribute("id", "automode");
 		checkboxAutomode.AddAttribute("onchange", "onChangeCheckboxShowHide('automode', 'tracks');");
 		form.AddChildTag(checkboxAutomode);
+
 		HtmlTag tracksDiv("div");
 		tracksDiv.AddAttribute("id", "tracks");
 		if (automode == AutomodeNo)
@@ -1471,6 +1511,7 @@ namespace webserver
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", "From track:", fromTrack, fromDirection));
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", "To track:", toTrack, toDirection));
 		form.AddChildTag(tracksDiv);
+
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());

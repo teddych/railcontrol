@@ -1,3 +1,21 @@
+function addRelation()
+{
+	var relationCounter = document.getElementById('relationcounter');
+	if (!relationCounter)
+	{
+		return;
+	}
+	relationCounter.value++;
+	var relationDiv = document.getElementById('relation');
+	if (!relationDiv)
+	{
+		return;
+	}
+
+	var url = '/?cmd=relationadd&priority=' + relationCounter.value;
+	requestAddItem('relation', url);
+}
+
 function checkIntegerValue(name, min, max)
 {
 	if (min > max)
@@ -196,6 +214,29 @@ function requestUpdateLayoutItem(elementName, url)
 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
 		{
 			updateLayoutItem(elementName, xmlHttp.responseText);
+		}
+	}
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
+}
+
+function addItem(elementName, data)
+{
+	var element = document.getElementById(elementName);
+	if (!element)
+	{
+		return;
+	}
+	element.innerHTML += data;
+}
+
+function requestAddItem(elementName, url)
+{
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+		{
+			addItem(elementName, xmlHttp.responseText);
 		}
 	}
 	xmlHttp.open('GET', url, true);

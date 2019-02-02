@@ -48,6 +48,7 @@ namespace webserver
 			HtmlTag HtmlTagTimeout(const accessoryTimeout_t timeout) const;
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;
 			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const;
+			HtmlTag HtmlTagRelation(const std::string& priority, const switchID_t switchId = SwitchNone, const switchState_t state = SwitchStateStraight);
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleControlEdit(const std::map<std::string, std::string>& arguments);
 			void handleControlSave(const std::map<std::string, std::string>& arguments);
@@ -93,6 +94,7 @@ namespace webserver
 			void handleTrackDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackGet(const std::map<std::string, std::string>& arguments);
 			void handleLocoSelector(const std::map<std::string,std::string>& arguments);
+			void handleRelationAdd(const std::map<std::string,std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);
