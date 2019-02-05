@@ -16,7 +16,7 @@ LIBS= \
 
 all: $(LIBS)
 
-sqlite.so: sqlite.o sqlite/sqlite3.o *.h ../*.h ../datamodel/*.h
+sqlite.so: sqlite.o sqlite/sqlite3.o *.h ../Logger/*.h ../hardware/HardwareParams.h ../datamodel/*.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<  sqlite/sqlite3.o
 
 sqlite/sqlite3.o: sqlite/sqlite3.c sqlite/sqlite3.h
