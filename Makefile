@@ -84,7 +84,7 @@ raspi:
 sqlite-shell:
 	make -C storage/sqlite
 
-%.o: %.cpp *.h console/*.h datamodel/*.h hardware/*.h Logger/*.h storage/*.h text/*.h webserver/*.h
+%.o: %.cpp *.h console/*.h datamodel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h text/*.h webserver/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
