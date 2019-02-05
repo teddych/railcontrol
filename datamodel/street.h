@@ -5,11 +5,11 @@
 
 #include "datatypes.h"
 #include "datamodel/layout_item.h"
-//#include "util/relation_vector.h"
 
 class Manager;
 
-namespace datamodel {
+namespace datamodel
+{
 
 	class Street : public LayoutItem
 	{

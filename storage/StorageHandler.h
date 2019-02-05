@@ -8,13 +8,15 @@
 #include "storage/StorageInterface.h"
 #include "storage/StorageParams.h"
 
-namespace storage {
+namespace storage
+{
 
 	// the types of the class factories
 	typedef storage::StorageInterface* createStorage_t(struct StorageParams params);
 	typedef void destroyStorage_t(storage::StorageInterface*);
 
-	class StorageHandler {
+	class StorageHandler
+	{
 		public:
 			StorageHandler(Manager* manager, const StorageParams& params);
 			~StorageHandler();
@@ -39,6 +41,7 @@ namespace storage {
 			void street(const datamodel::Street& street);
 			void allStreets(std::map<streetID_t,datamodel::Street*>& streets);
 			void deleteStreet(streetID_t streetID);
+
 		private:
 			Manager* manager;
 			createStorage_t* createStorage;

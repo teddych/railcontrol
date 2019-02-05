@@ -3,7 +3,6 @@
 #include <map>
 #include <string>
 
-#include "datamodel/datamodel.h"
 #include "datatypes.h"
 #include "hardware/HardwareParams.h"
 
