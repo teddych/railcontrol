@@ -36,6 +36,12 @@ namespace storage {
 			// save datamodelrelation
 			void saveRelation(const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation) override;
 
+			// delete datamodelrelation
+			void deleteRelationFrom(const objectType_t objectType, const objectID_t objectID) override;
+
+			// delete datamodelrelation
+			void deleteRelationTo(const objectType_t objectType, const objectID_t objectID) override;
+
 			// read datamodelrelation
 			void relationsFrom(const objectType_t objectType, const objectID_t objectID, std::vector<std::string>& relations) override;
 

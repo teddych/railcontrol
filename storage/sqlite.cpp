@@ -267,12 +267,24 @@ namespace storage
 		Execute(ss.str());
 	}
 
+	// delete datamodelrelaton
+	void SQLite::deleteRelationFrom(const objectType_t objectType, const objectID_t objectID)
+	{
 		stringstream ss;
+		ss << "DELETE FROM relations WHERE objecttype1 = " << (int) objectType << " AND objectid1 = " << (int) objectID << ";";
+		Execute(ss.str());
+	}
 
+	// delete datamodelrelaton
+	void SQLite::deleteRelationTo(const objectType_t objectType, const objectID_t objectID)
+	{
+		stringstream ss;
+		ss << "DELETE FROM relations WHERE objecttype2 = " << (int) objectType << " AND objectid2 = " << (int) objectID << ";";
+		Execute(ss.str());
 	}
 
 	// read datamodelrelations
-	void SQLite::relationsFromObject(const relationType_t relationType, const objectID_t objectID, vector<string>& relations)
+	void SQLite::relationsFrom(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
 	{
 		if (db == nullptr)
 		{
@@ -281,7 +293,8 @@ namespace storage
 
 		char* dbError = 0;
 		stringstream ss;
-		ss << "SELECT relation FROM relations WHERE relationtype = " << (int) relationType << " AND objectid1 = " << (int) objectID << ";";
+		ss << "SELECT relation FROM relations WHERE objecttype1 = " << static_cast<int>(objectType)
+			<< " AND objectid1 = " << static_cast<int>(objectID) << " ORDER BY priority ASC;";
 		string s(ss.str());
 		int rc = sqlite3_exec(db, s.c_str(), callbackStringVector, &relations, &dbError);
 		if (rc == SQLITE_OK)
@@ -294,7 +307,7 @@ namespace storage
 	}
 
 	// read datamodelrelations
-	void SQLite::relationsToObject(const relationType_t relationType, const objectID_t objectID, vector<string>& relations)
+	void SQLite::relationsTo(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
 	{
 		if (db == nullptr)
 		{
@@ -303,7 +316,8 @@ namespace storage
 
 		char* dbError = 0;
 		stringstream ss;
-		ss << "SELECT relation FROM relations WHERE relationtype = " << (int) relationType << " AND objectid2 = " << (int) objectID << ";";
+		ss << "SELECT relation FROM relations WHERE objecttype2 = " << static_cast<int>(objectType)
+			<< " AND objectid2 = " << static_cast<int>(objectID) << ";";
 		string s(ss.str());
 		int rc = sqlite3_exec(db, s.c_str(), callbackStringVector, &relations, &dbError);
 		if (rc == SQLITE_OK)
@@ -315,7 +329,7 @@ namespace storage
 		sqlite3_free(dbError);
 	}
 
-	// callback read all datamodelobjects
+	// callback read all datamodelobjects/relations
 	int SQLite::callbackStringVector(void* v, int argc, char **argv, char **colName)
 	{
 		vector<string>* objects = static_cast<vector<string>*>(v);

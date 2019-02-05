@@ -13,6 +13,7 @@ using datamodel::Accessory;
 using datamodel::Track;
 using datamodel::Feedback;
 using datamodel::Loco;
+using datamodel::Relation;
 using datamodel::Street;
 using datamodel::Switch;
 using std::map;
@@ -304,6 +305,13 @@ namespace storage {
 		}
 		string serialized = street.serialize();
 		instance->saveObject(ObjectTypeStreet, street.objectID, street.name, serialized);
+		instance->deleteRelationFrom(ObjectTypeStreet, street.objectID);
+		const vector<datamodel::Relation*> relations = street.GetRelations();
+		for (auto relation : relations)
+		{
+			string serializedRelation = relation->serialize();
+			instance->saveRelation(ObjectTypeStreet, street.objectID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
+		}
 	}
 
 	void StorageHandler::allStreets(std::map<streetID_t,datamodel::Street*>& streets)
@@ -316,6 +324,14 @@ namespace storage {
 		instance->objectsOfType(ObjectTypeStreet, objects);
 		for(auto object : objects) {
 			Street* street = new Street(manager, object);
+			vector<string> relationsString;
+			instance->relationsFrom(ObjectTypeStreet, street->objectID, relationsString);
+			vector<Relation*> relations;
+			for (auto relationString : relationsString)
+			{
+				relations.push_back(new Relation(relationString));
+			}
+			street->AssignRelations(relations);
 			streets[street->objectID] = street;
 		}
 	}
