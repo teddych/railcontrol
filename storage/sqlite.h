@@ -34,15 +34,17 @@ namespace storage {
 			void objectsOfType(const objectType_t objectType, std::vector<std::string>& objects) override;
 
 			// save datamodelrelation
-			void saveRelation(const relationType_t relationType, const objectID_t objectID1, const objectID_t objectID2, const std::string& name, const std::string& relation) override;
+			void saveRelation(const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation) override;
 
 			// read datamodelrelation
-			void relationsFromObject(const relationType_t relationType, const objectID_t objectID, std::vector<std::string>& relations) override;
+			void relationsFrom(const objectType_t objectType, const objectID_t objectID, std::vector<std::string>& relations) override;
 
 			// read datamodelrelation
-			void relationsToObject(const relationType_t relationType, const objectID_t objectID, std::vector<std::string>& relations) override;
+			void relationsTo(const objectType_t objectType, const objectID_t objectID, std::vector<std::string>& relations) override;
 
 		private:
+			void Execute(const std::string& query);
+
 			sqlite3 *db;
 			const std::string filename;
 			Logger::Logger* logger;
