@@ -14,6 +14,7 @@ namespace datamodel {
 	Street::Street(Manager* manager,
 		const streetID_t streetID,
 		const std::string& name,
+		const std::vector<datamodel::Relation*>& relations,
 		const visible_t visible,
 		const layoutPosition_t posX,
 		const layoutPosition_t posY,
@@ -32,6 +33,7 @@ namespace datamodel {
 		toDirection(toDirection),
 		feedbackIDStop(feedbackIDStop),
 		manager(manager),
+		relations(relations),
 		lockState(LockStateFree),
 		locoID(LocoNone)
 	{
@@ -88,6 +90,27 @@ namespace datamodel {
 			return true;
 		}
 		return false;
+	}
+
+	void Street::DeleteRelations()
+	{
+		while (!relations.empty())
+		{
+			delete relations.back();
+			relations.pop_back();
+		}
+	}
+
+	bool Street::AssignRelations(const std::vector<datamodel::Relation*>& newRelations)
+	{
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		if (lockState != LockStateFree)
+		{
+			return false;
+		}
+		DeleteRelations();
+		relations = newRelations;
+		return true;
 	}
 
 	bool Street::reserve(const locoID_t locoID)

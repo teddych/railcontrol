@@ -161,6 +161,14 @@ label {
 	width: 100px;
 }
 
+.select_relation_id {
+	width: 300px;
+}
+
+.select_relation_state {
+	width: 100px;
+}
+
 input,
 select {
 	width: 400px;

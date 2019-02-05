@@ -5,6 +5,7 @@
 
 #include "datatypes.h"
 #include "datamodel/layout_item.h"
+#include "datamodel/relation.h"
 
 class Manager;
 
@@ -17,6 +18,7 @@ namespace datamodel
 			Street(Manager* manager,
 				const streetID_t streetID,
 				const std::string& name,
+				const std::vector<datamodel::Relation*>& relations,
 				const visible_t visible,
 				const layoutPosition_t posX,
 				const layoutPosition_t posY,
@@ -27,10 +29,17 @@ namespace datamodel
 				const trackID_t toTrack,
 				const direction_t toDirection,
 				const feedbackID_t feedbackIDStop);
+
 			Street(Manager* manager, const std::string& serialized);
+
+			~Street() { DeleteRelations(); }
 
 			std::string serialize() const override;
 			bool deserialize(const std::string& serialized) override;
+
+			void DeleteRelations();
+			bool AssignRelations(const std::vector<datamodel::Relation*>& newRelations);
+			const std::vector<datamodel::Relation*>& GetRelations() const { return relations; };
 
 			bool fromTrackDirection(trackID_t trackID, direction_t direction) { return (fromTrack == trackID && fromDirection == direction); }
 
@@ -52,6 +61,7 @@ namespace datamodel
 
 		private:
 			Manager* manager;
+			std::vector<datamodel::Relation*> relations;
 			lockState_t lockState;
 			locoID_t locoID;
 			std::mutex updateMutex;

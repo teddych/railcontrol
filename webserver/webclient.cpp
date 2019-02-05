@@ -34,6 +34,7 @@
 
 using datamodel::Accessory;
 using datamodel::Loco;
+using datamodel::Relation;
 using datamodel::Street;
 using datamodel::Switch;
 using datamodel::Track;
@@ -793,18 +794,19 @@ namespace webserver
 	HtmlTag WebClient::HtmlTagRelation(const string& priority, const switchID_t switchId, const switchState_t state)
 	{
 		HtmlTag content;
+		content.AddChildTag(HtmlTagInputHidden("relation_type_" + priority, to_string(ObjectTypeSwitch)));
 		std::map<string,Switch*> switches = manager.switchListByName();
 		map<string,switchID_t> switchOptions;
 		for (auto mySwitch : switches)
 		{
 			switchOptions[mySwitch.first] = mySwitch.second->objectID;
 		}
-		content.AddChildTag(HtmlTagSelect("relation_" + priority, switchOptions, switchId));
+		content.AddChildTag(HtmlTagSelect("relation_id_" + priority, switchOptions, switchId).AddClass("select_relation_id"));
 
 		map<string,switchState_t> stateOptions;
 		stateOptions["Straight"] = SwitchStateStraight;
 		stateOptions["Turnout"] = SwitchStateTurnout;
-		content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state));
+		content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 		return content;
 	}
 
@@ -1440,6 +1442,7 @@ namespace webserver
 		HtmlTag content;
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name("New Street");
+		vector<Relation*> relations;
 		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleYes));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
@@ -1453,6 +1456,7 @@ namespace webserver
 		{
 			const datamodel::Street* street = manager.getStreet(streetID);
 			name = street->name;
+			relations = street->GetRelations();
 			visible = street->visible;
 			posx = street->posX;
 			posy = street->posY;
@@ -1471,6 +1475,19 @@ namespace webserver
 		form.AddChildTag(HtmlTagInputHidden("street", to_string(streetID)));
 		form.AddChildTag(HtmlTagInputTextWithLabel("name", "Street Name:", name));
 
+		HtmlTag relationDiv("div");
+		relationDiv.AddChildTag(HtmlTagInputHidden("relationcounter", to_string(relations.size())));
+		relationDiv.AddAttribute("id", "relation");
+		HtmlTagButton newButton("New", "newrelation");
+		newButton.AddAttribute("onclick", "addRelation();return false;");
+		relationDiv.AddChildTag(newButton);
+		relationDiv.AddChildTag(HtmlTag("br"));
+		for (auto relation : relations)
+		{
+			relationDiv.AddChildTag(HtmlTagRelation(to_string(relation->Priority()), relation->ObjectID2(), relation->AccessoryState()));
+		}
+		form.AddChildTag(relationDiv);
+
 		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", "Visible:", "visible", static_cast<bool>(visible));
 		checkboxVisible.AddAttribute("id", "visible");
 		checkboxVisible.AddAttribute("onchange", "onChangeCheckboxShowHide('visible', 'position');");
@@ -1488,14 +1505,6 @@ namespace webserver
 		posDiv.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20)):
 		*/
 		form.AddChildTag(posDiv);
-
-		HtmlTag relationDiv("div");
-		relationDiv.AddChildTag(HtmlTagInputHidden("relationcounter", "0"));
-		relationDiv.AddAttribute("id", "relation");
-		HtmlTagButton newButton("New", "newrelation");
-		newButton.AddAttribute("onclick", "addRelation();return false;");
-		relationDiv.AddChildTag(newButton);
-		form.AddChildTag(relationDiv);
 
 		HtmlTagInputCheckboxWithLabel checkboxAutomode("automode", "Auto-mode:", "automode", static_cast<bool>(automode));
 		checkboxAutomode.AddAttribute("id", "automode");
@@ -1531,8 +1540,21 @@ namespace webserver
 		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
 		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
 		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+
+		vector<Relation*> relations;
+		priority_t relationCount = GetIntegerMapEntry(arguments, "relationcounter", 0);
+		for (priority_t priority = 1; priority <= relationCount; ++priority)
+		{
+			string priorityString = to_string(priority);
+			objectType_t objectType = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "relation_type_" + priorityString));
+			switchID_t switchId = GetIntegerMapEntry(arguments, "relation_id_" + priorityString);
+			switchState_t state = GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
+			Relation* relation = new Relation(ObjectTypeStreet, streetID, objectType, switchId, priority, state, LockStateFree);
+			relations.push_back(relation);
+		}
+
 		string result;
-		if (!manager.streetSave(streetID, name, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, FeedbackNone, result))
+		if (!manager.streetSave(streetID, name, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, FeedbackNone, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
