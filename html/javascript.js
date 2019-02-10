@@ -3,17 +3,18 @@ function addRelation()
 	var relationCounter = document.getElementById('relationcounter');
 	if (!relationCounter)
 	{
-		return;
+		return false;
 	}
 	relationCounter.value++;
 	var relationDiv = document.getElementById('relation');
 	if (!relationDiv)
 	{
-		return;
+		return false;
 	}
 
 	var url = '/?cmd=relationadd&priority=' + relationCounter.value;
 	requestAddItem('relation', url);
+	return false;
 }
 
 function checkIntegerValue(name, min, max)
@@ -86,7 +87,7 @@ function setToggleButton(elementName, on)
 	}
 }
 
-function deleteLayoutElement(elementName)
+function deleteElement(elementName)
 {
 	var element = document.getElementById(elementName);
 	if (element)
@@ -188,8 +189,8 @@ function updateLayoutItem(elementName, data)
 	if (parentElement)
 	{
 		var elementContextName = elementName + '_context';
-		deleteLayoutElement(elementName);
-		deleteLayoutElement(elementContextName);
+		deleteElement(elementName);
+		deleteElement(elementContextName);
 		parentElement.innerHTML += data;
 		var i;
 		var tags = document.getElementsByClassName('layout_item');
@@ -382,8 +383,8 @@ function dataUpdate(event)
 	else if (command == 'streetdelete')
 	{
 		elementName = 'st_' + argumentMap.get('street');
-		deleteLayoutElement(elementName);
-		deleteLayoutElement(elementName + '_context');
+		deleteElement(elementName);
+		deleteElement(elementName + '_context');
 	}
 	else if (command == 'switchsettings')
 	{
@@ -396,8 +397,8 @@ function dataUpdate(event)
 	else if (command == 'switchdelete')
 	{
 		elementName = 'sw_' + argumentMap.get('switch');
-		deleteLayoutElement(elementName);
-		deleteLayoutElement(elementName + '_context');
+		deleteElement(elementName);
+		deleteElement(elementName + '_context');
 	}
 	else if (command == 'tracksettings')
 	{
@@ -410,8 +411,8 @@ function dataUpdate(event)
 	else if (command == 'trackdelete')
 	{
 		elementName = 't_' + argumentMap.get('track');
-		deleteLayoutElement(elementName);
-		deleteLayoutElement(elementName + '_context');
+		deleteElement(elementName);
+		deleteElement(elementName + '_context');
 	}
 }
 

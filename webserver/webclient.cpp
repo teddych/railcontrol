@@ -793,7 +793,12 @@ namespace webserver
 
 	HtmlTag WebClient::HtmlTagRelation(const string& priority, const switchID_t switchId, const switchState_t state)
 	{
-		HtmlTag content;
+		HtmlTag content("div");
+		content.AddAttribute("id", "priority_" + priority);
+		HtmlTagButton deleteButton("Del", "delete_relation_" + priority);
+		deleteButton.AddAttribute("onclick", "deleteElement('priority_" + priority + "');return false;");
+		content.AddChildTag(deleteButton);
+
 		content.AddChildTag(HtmlTagInputHidden("relation_type_" + priority, to_string(ObjectTypeSwitch)));
 		std::map<string,Switch*> switches = manager.switchListByName();
 		map<string,switchID_t> switchOptions;
@@ -1478,15 +1483,17 @@ namespace webserver
 		HtmlTag relationDiv("div");
 		relationDiv.AddChildTag(HtmlTagInputHidden("relationcounter", to_string(relations.size())));
 		relationDiv.AddAttribute("id", "relation");
-		HtmlTagButton newButton("New", "newrelation");
-		newButton.AddAttribute("onclick", "addRelation();return false;");
-		relationDiv.AddChildTag(newButton);
-		relationDiv.AddChildTag(HtmlTag("br"));
 		for (auto relation : relations)
 		{
 			relationDiv.AddChildTag(HtmlTagRelation(to_string(relation->Priority()), relation->ObjectID2(), relation->AccessoryState()));
 		}
-		form.AddChildTag(relationDiv);
+		HtmlTag relationDivOuter("div");
+		relationDivOuter.AddChildTag(relationDiv);
+		HtmlTagButton newButton("New", "newrelation");
+		newButton.AddAttribute("onclick", "addRelation();return false;");
+		relationDivOuter.AddChildTag(newButton);
+		relationDivOuter.AddChildTag(HtmlTag("br"));
+		form.AddChildTag(relationDivOuter);
 
 		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", "Visible:", "visible", static_cast<bool>(visible));
 		checkboxVisible.AddAttribute("id", "visible");
@@ -1543,14 +1550,20 @@ namespace webserver
 
 		vector<Relation*> relations;
 		priority_t relationCount = GetIntegerMapEntry(arguments, "relationcounter", 0);
-		for (priority_t priority = 1; priority <= relationCount; ++priority)
+		priority_t priority = 1;
+		for (priority_t relationId = 1; relationId <= relationCount; ++relationId)
 		{
-			string priorityString = to_string(priority);
+			string priorityString = to_string(relationId);
 			objectType_t objectType = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "relation_type_" + priorityString));
-			switchID_t switchId = GetIntegerMapEntry(arguments, "relation_id_" + priorityString);
+			switchID_t switchId = GetIntegerMapEntry(arguments, "relation_id_" + priorityString, SwitchNone);
 			switchState_t state = GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
+			if (switchId == SwitchNone)
+			{
+				continue;
+			}
 			Relation* relation = new Relation(ObjectTypeStreet, streetID, objectType, switchId, priority, state, LockStateFree);
 			relations.push_back(relation);
+			++priority;
 		}
 
 		string result;
