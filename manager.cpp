@@ -1438,6 +1438,16 @@ bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& cont
 * Street                   *
 ***************************/
 
+void Manager::executeStreet(const streetID_t streetID)
+{
+	Street* street = getStreet(streetID);
+	if (street == nullptr)
+	{
+		return;
+	}
+	street->Execute();
+}
+
 Street* Manager::getStreet(const streetID_t streetID) const
 {
 	std::lock_guard<std::mutex> Guard(streetMutex);

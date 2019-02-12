@@ -274,6 +274,10 @@ namespace webserver
 			{
 				handleStreetGet(arguments);
 			}
+			else if (arguments["cmd"].compare("streetexecute") == 0)
+			{
+				handleStreetExecute(arguments);
+			}
 			else if (arguments["cmd"].compare("trackedit") == 0)
 			{
 				handleTrackEdit(arguments);
@@ -1651,6 +1655,12 @@ namespace webserver
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "streetedit_0"));
 		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleStreetExecute(const map<string, string>& arguments)
+	{
+		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+		manager.executeStreet(streetID);
 	}
 
 	void WebClient::handleTrackEdit(const map<string, string>& arguments)

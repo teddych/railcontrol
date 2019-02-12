@@ -113,6 +113,29 @@ namespace datamodel {
 		return true;
 	}
 
+	bool Street::Execute()
+	{
+		// FIXME: execute in parallel
+		bool ret = true;
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		for (auto relation : relations)
+		{
+			switch (relation->ObjectType2())
+			{
+				case ObjectTypeSwitch:
+					manager->handleSwitch(ControlTypeInternal, relation->ObjectID2(), relation->AccessoryState());
+					break;
+
+				default:
+					ret = false;
+					break;
+			}
+			// FIXME: make configurable
+			std::this_thread::sleep_for(std::chrono::milliseconds(250));
+		}
+		return ret;
+	}
+
 	bool Street::reserve(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);

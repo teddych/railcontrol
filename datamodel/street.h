@@ -43,6 +43,7 @@ namespace datamodel
 
 			bool fromTrackDirection(trackID_t trackID, direction_t direction) { return (fromTrack == trackID && fromDirection == direction); }
 
+			bool Execute();
 			bool reserve(const locoID_t locoID);
 			bool lock(const locoID_t locoID);
 			bool release(const locoID_t locoID);

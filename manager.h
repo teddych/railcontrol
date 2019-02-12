@@ -107,6 +107,7 @@ class Manager {
 		bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// street
+		void executeStreet(const streetID_t streetID);
 		datamodel::Street* getStreet(const streetID_t streetID) const;
 		const std::string& getStreetName(const streetID_t streetID) const;
 		inline const std::map<streetID_t,datamodel::Street*>& streetList() const { return streets; }
