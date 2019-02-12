@@ -1,7 +1,7 @@
 
 #include <map>
 #include <sstream>
-#include <unistd.h>
+// #include <unistd.h>
 
 #include "datamodel/loco.h"
 #include "datamodel/track.h"
@@ -26,7 +26,7 @@ namespace datamodel
 				}
 			}
 			logger->Info("Waiting until loco {0} has stopped", name);
-			sleep(1);
+			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	}
 
