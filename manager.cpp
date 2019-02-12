@@ -1637,7 +1637,7 @@ bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 
 bool Manager::locoRelease(const locoID_t locoID)
 {
-	locoSpeed(ControlTypeAutomode, locoID, MinSpeed);
+	locoSpeed(ControlTypeInternal, locoID, MinSpeed);
 
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr)

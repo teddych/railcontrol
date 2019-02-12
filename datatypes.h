@@ -63,7 +63,7 @@ static const layoutItemSize_t Height1 = 1;
 enum controlType_t : unsigned char
 {
 	ControlTypeHardware = 0,
-	ControlTypeAutomode,
+	ControlTypeInternal,
 	ControlTypeConsole,
 	ControlTypeWebserver
 };
