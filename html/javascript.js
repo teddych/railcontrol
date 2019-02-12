@@ -5,15 +5,15 @@ function addRelation()
 	{
 		return false;
 	}
-	relationCounter.value++;
 	var relationDiv = document.getElementById('relation');
 	if (!relationDiv)
 	{
 		return false;
 	}
 
+	relationCounter.value++;
 	var url = '/?cmd=relationadd&priority=' + relationCounter.value;
-	requestAddItem('relation', url);
+	requestAddItem('new_priority_' + relationCounter.value, url);
 	return false;
 }
 

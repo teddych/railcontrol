@@ -857,8 +857,12 @@ namespace webserver
 
 	void WebClient::handleRelationAdd(const map<string, string>& arguments)
 	{
-		string priority = GetStringMapEntry(arguments, "priority", "1");
-		HtmlReplyWithHeader(HtmlTagRelation(priority));
+		string priorityString = GetStringMapEntry(arguments, "priority", "1");
+		priority_t priority = Util::StringToInteger(priorityString, 1);
+		HtmlTag container;
+		container.AddChildTag(HtmlTagRelation(priorityString));
+		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority + 1)));
+		HtmlReplyWithHeader(container);
 	}
 
 	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
@@ -1483,10 +1487,13 @@ namespace webserver
 		HtmlTag relationDiv("div");
 		relationDiv.AddChildTag(HtmlTagInputHidden("relationcounter", to_string(relations.size())));
 		relationDiv.AddAttribute("id", "relation");
+		priority_t priority = 1;
 		for (auto relation : relations)
 		{
 			relationDiv.AddChildTag(HtmlTagRelation(to_string(relation->Priority()), relation->ObjectID2(), relation->AccessoryState()));
+			priority = relation->Priority() + 1;
 		}
+		relationDiv.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority)));
 		HtmlTag relationDivOuter("div");
 		relationDivOuter.AddChildTag(relationDiv);
 		HtmlTagButton newButton("New", "newrelation");
