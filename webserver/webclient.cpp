@@ -1661,7 +1661,7 @@ namespace webserver
 	void WebClient::handleStreetExecute(const map<string, string>& arguments)
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
-		manager.executeStreet(streetID);
+		manager.executeStreetInParallel(streetID);
 	}
 
 	void WebClient::handleTrackEdit(const map<string, string>& arguments)

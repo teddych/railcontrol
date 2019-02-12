@@ -1,3 +1,4 @@
+#include <future>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -1446,6 +1447,16 @@ void Manager::executeStreet(const streetID_t streetID)
 		return;
 	}
 	street->Execute();
+}
+
+void Manager::executeStreetInParallel(const streetID_t streetID)
+{
+	Street* street = getStreet(streetID);
+	if (street == nullptr)
+	{
+		return;
+	}
+	std::async(std::launch::async, Street::ExecuteStatic, street);
 }
 
 Street* Manager::getStreet(const streetID_t streetID) const

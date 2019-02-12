@@ -115,7 +115,6 @@ namespace datamodel {
 
 	bool Street::Execute()
 	{
-		// FIXME: execute in parallel
 		bool ret = true;
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto relation : relations)
