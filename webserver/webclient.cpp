@@ -463,6 +463,7 @@ namespace webserver
 		{
 			HtmlResponseNotFound response(virtualFile);
 			connection->Send(response);
+			logger->Info("HTTP connection {0}: 404 Not found: {1}", id, virtualFile);
 			return;
 		}
 
