@@ -468,6 +468,27 @@ function loadProtocol(type, ID)
 	requestUpdateItem(elementName, url);
 }
 
+function loadLayoutContext(event)
+{
+	if (event.shiftKey)
+	{
+		return true;
+	}
+	event.preventDefault();
+	hideAllContextMenus();
+	menu = document.getElementById('layout_context');
+	if (!menu)
+	{
+		return true;
+	}
+	menu.style.display = 'block';
+	menu.style.left = event.pageX + 'px';
+	menu.style.top = event.pageY + 'px';
+	window.layoutPosX = Math.floor((event.pageX - 254) / 35);
+	window.layoutPosY = Math.floor((event.pageY - 92) / 35);
+	return true;
+}
+
 function isInLayout(position)
 {
 	layoutPosition = document.querySelector('.layout').getBoundingClientRect();

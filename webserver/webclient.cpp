@@ -2095,8 +2095,8 @@ namespace webserver
 
 		body.AddChildTag(HtmlTagJavascript(
 			"var updater = new EventSource('/?cmd=updater');"
-			"updater.onmessage = function(e) {"
-			" dataUpdate(e);"
+			"updater.onmessage = function(event) {"
+			" dataUpdate(event);"
 			"};"));
 
 		body.AddChildTag(HtmlTag("div").AddClass( "contextmenu").AddAttribute("id", "layout_context")
@@ -2107,27 +2107,12 @@ namespace webserver
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add street").AddAttribute("onClick", "loadPopup('/?cmd=streetedit&street=0');"))
 			));
 
-		std::stringstream javascript;
-		javascript << "$(function() {"
+		body.AddChildTag(HtmlTagJavascript("$(function() {"
 			" $('#layout').on('contextmenu', function(event) {"
-			"  if (event.shiftKey) {"
-			"   return true;"
-			"  }"
-			"  event.preventDefault();"
-			"  hideAllContextMenus();"
-			"  menu = document.querySelector('#layout_context');"
-			"  if (menu) {"
-			"  	menu.style.display = 'block';"
-			"   menu.style.left = event.pageX + 'px';"
-			"   menu.style.top = event.pageY + 'px';"
-			"   window.layoutPosX = Math.floor((event.pageX - 254) / 35);"
-			"   window.layoutPosY = Math.floor((event.pageY - 92) / 35);"
-			"  }"
-			"  return true;"
+			"  return loadLayoutContext(event);"
 			" });"
 			"});"
-			;
-		body.AddChildTag(HtmlTagJavascript(javascript.str()));
+			));
 
 		connection->Send(HtmlFullResponse("Railcontrol", body));
 	}
