@@ -1636,20 +1636,30 @@ bool Manager::streetDelete(const streetID_t streetID)
 	return true;
 }
 
-const map<string,string> Manager::LayerList() const
+Layer* Manager::GetLayer(const layerID_t layerID) const
 {
-	map<string,string> list;
+	std::lock_guard<std::mutex> Guard(layerMutex);
+	if (layers.count(layerID) != 1)
+	{
+		return NULL;
+	}
+	return layers.at(layerID);
+}
+
+const map<string,layerID_t> Manager::LayerListByName() const
+{
+	map<string,layerID_t> list;
 	std::lock_guard<std::mutex> Guard(layerMutex);
 	for (auto layer : layers)
 	{
-		list[std::to_string(layer.first)] = layer.second->Name();
+		list[layer.second->Name()] = layer.first;
 	}
 	return list;
 }
 
-const map<string,string> Manager::LayerListWithFeedback() const
+const map<string,layerID_t> Manager::LayerListByNameWithFeedback() const
 {
-	map<string,string> list = LayerList();
+	map<string,layerID_t> list = LayerListByName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -1657,7 +1667,7 @@ const map<string,string> Manager::LayerListWithFeedback() const
 		{
 			continue;
 		}
-		list[std::to_string(-control.first)] = "Feedback at " + control.second->getName();
+		list["Feedback at " + control.second->getName()] = -control.first;
 	}
 	return list;
 }
@@ -1714,6 +1724,35 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 	return true;
 }
 
+bool Manager::LayerDelete(const layerID_t layerID)
+{
+	Layer* layer = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(layerMutex);
+		if (layerID == LayerNone || layers.count(layerID) == 0)
+		{
+			return false;
+		}
+
+		layer = layers.at(layerID);
+		layers.erase(layerID);
+	}
+
+	string name = layer->Name();
+
+	delete layer;
+	if (storage)
+	{
+		storage->deleteLayer(layerID);
+	}
+
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->layerDelete(layerID, name);
+	}
+	return true;
+}
 
 /***************************
 * Automode                 *

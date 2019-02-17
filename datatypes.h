@@ -57,6 +57,7 @@ static const trackID_t TrackNone = 0;
 static const switchID_t SwitchNone = 0;
 static const streetID_t StreetNone = 0;
 static const controlID_t ControlNone = 0;
+static const layerID_t LayerNone = 0;
 
 static const LocoSpeed MaxSpeed = 1023;
 static const LocoSpeed MinSpeed = 0;

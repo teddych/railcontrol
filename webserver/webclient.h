@@ -50,6 +50,11 @@ namespace webserver
 			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const;
 			HtmlTag HtmlTagRelation(const std::string& priority, const switchID_t switchId = SwitchNone, const switchState_t state = SwitchStateStraight);
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
+			void handleLayerEdit(const std::map<std::string, std::string>& arguments);
+			void handleLayerSave(const std::map<std::string, std::string>& arguments);
+			void handleLayerList(const std::map<std::string, std::string>& arguments);
+			void handleLayerAskDelete(const std::map<std::string, std::string>& arguments);
+			void handleLayerDelete(const std::map<std::string, std::string>& arguments);
 			void handleControlEdit(const std::map<std::string, std::string>& arguments);
 			void handleControlSave(const std::map<std::string, std::string>& arguments);
 			void handleControlList(const std::map<std::string, std::string>& arguments);

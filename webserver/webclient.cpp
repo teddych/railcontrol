@@ -33,6 +33,7 @@
 #include "webserver/HtmlTagTrack.h"
 
 using datamodel::Accessory;
+using datamodel::Layer;
 using datamodel::Loco;
 using datamodel::Relation;
 using datamodel::Street;
@@ -137,6 +138,26 @@ namespace webserver
 					HtmlReplyWithHeader(string("Turning booster off"));
 					manager.booster(ControlTypeWebserver, BoosterStop);
 				}
+			}
+			else if (arguments["cmd"].compare("layeredit") == 0)
+			{
+				handleLayerEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("layersave") == 0)
+			{
+				handleLayerSave(arguments);
+			}
+			else if (arguments["cmd"].compare("layerlist") == 0)
+			{
+				handleLayerList(arguments);
+			}
+			else if (arguments["cmd"].compare("layeraskdelete") == 0)
+			{
+				handleLayerAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("layerdelete") == 0)
+			{
+				handleLayerDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("controledit") == 0)
 			{
@@ -550,6 +571,122 @@ namespace webserver
 				return HtmlTagInputIntegerWithLabel("arg" + to_string(argNr), argumentName, valueInteger, 0, 62);
 		}
 		return HtmlTagInputTextWithLabel("arg" + to_string(argNr), argumentName, value);
+	}
+
+	void WebClient::handleLayerEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
+		string name("New Layer");
+
+		if (layerID != LayerNone)
+		{
+			Layer* layer = manager.GetLayer(layerID);
+			if (layer != nullptr)
+			{
+				name = layer->name;
+			}
+		}
+
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit layer &quot;" + name + "&quot;"));
+		HtmlTag form("form");
+		form.AddAttribute("id", "editform");
+		form.AddChildTag(HtmlTagInputHidden("cmd", "layersave"));
+		form.AddChildTag(HtmlTagInputHidden("layer", to_string(layerID)));
+		form.AddChildTag(HtmlTagInputTextWithLabel("name", "Layer Name:", name));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleLayerSave(const map<string, string>& arguments)
+	{
+		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
+		string name = GetStringMapEntry(arguments, "name");
+		string result;
+
+		if (!manager.LayerSave(layerID, name, result))
+		{
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
+		}
+
+		HtmlReplyWithHeaderAndParagraph("Layer &quot;" + name + "&quot; saved.");
+	}
+
+	void WebClient::handleLayerAskDelete(const map<string, string>& arguments)
+	{
+		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
+
+		if (layerID == ControlNone)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			return;
+		}
+
+		const Layer* layer = manager.GetLayer(layerID);
+		if (layer == nullptr)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			return;
+		}
+
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Delete layer &quot;" + layer->Name() + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the layer &quot;" + layer->Name() + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "layerdelete"))
+			.AddContent(HtmlTagInputHidden("layer", to_string(layerID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleLayerDelete(const map<string, string>& arguments)
+	{
+		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
+		const Layer* layer = manager.GetLayer(layerID);
+		if (layer == nullptr)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			return;
+		}
+
+		if (!manager.LayerDelete(layerID))
+		{
+			HtmlReplyWithHeaderAndParagraph("Unable to delete layer");
+			return;
+		}
+
+		HtmlReplyWithHeaderAndParagraph("Layer &quot;" + layer->Name() + "&quot; deleted.");
+	}
+
+	void WebClient::handleLayerList(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTag("h1").AddContent("Layers"));
+		HtmlTag table("table");
+		const map<string,layerID_t> layerList = manager.LayerListByName();
+		map<string,string> layerArgument;
+		for (auto layer : layerList)
+		{
+			HtmlTag row("tr");
+			row.AddChildTag(HtmlTag("td").AddContent(layer.first));
+			string layerIdString = to_string(layer.second);
+			layerArgument["layer"] = layerIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "layeredit_list_" + layerIdString, layerArgument)));
+			if (layer.second != 1)
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "layeraskdelete_" + layerIdString, layerArgument)));
+			}
+			table.AddChildTag(row);
+		}
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonPopup("New", "layeredit_0"));
+		HtmlReplyWithHeader(content);
 	}
 
 	void WebClient::handleControlEdit(const map<string, string>& arguments)
@@ -1034,9 +1171,8 @@ namespace webserver
 
 	HtmlTag WebClient::HtmlTagSelectLayout() const
 	{
-		map<string,string> options;
+		map<string,layerID_t> options = manager.LayerListByNameWithFeedback();
 		// FIXME: select layers with content
-		options["0"] = "Layer 0";
 		return HtmlTag("form").AddAttribute("method", "get").AddAttribute("action", "/").AddAttribute("id", "selectLayout_form")
 		.AddContent(HtmlTagSelect("layout", options).AddAttribute("onchange", "loadDivFromForm('selectLayout_form', 'layout')"))
 		.AddContent(HtmlTagInputHidden("cmd", "layout"));
@@ -1939,6 +2075,8 @@ namespace webserver
 		menu.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"35\" height=\"35\"><polyline points=\"12.5,8.8 11.1,9.8 9.8,11.1 8.8,12.5 8.1,14.1 7.7,15.8 7.5,17.5 7.7,19.2 8.1,20.9 8.8,22.5 9.8,23.9 11.1,25.2 12.5,26.2 14.1,26.9 15.8,27.3 17.5,27.5 19.2,27.3 20.9,26.9 22.5,26.2 23.9,25.2 25.2,23.9 26.2,22.5 26.9,20.9 27.3,19.2 27.5,17.5 27.3,15.8 26.9,14.1 26.2,12.5 25.2,11.1 23.9,9.8 22.5,8.8\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/><polyline points=\"17.5,2.5 17.5,15\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/></svg>", "booster", false, buttonArguments).AddClass("button_booster"));
 		menu.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 		menu.AddChildTag(HtmlTagButtonCommand("<svg width=\"35\" height=\"35\"><polyline points=\"1,11 1,10 10,1 25,1 34,10 34,25 25,34 10,34 1,25 1,11\" stroke=\"black\" stroke-width=\"1\" fill=\"red\"/><text x=\"3\" y=\"21\" fill=\"white\" font-size=\"11\">STOP</text></svg>", "stopall"));
+		menu.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
+		menu.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\" id=\"_img\"><polygon points=\"1,30 25,30 34,20 10,20\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,25 25,25 34,15 10,15\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,20 25,20 34,10 10,10\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,15 25,15 34,5 10,5\" fill=\"white\" stroke=\"black\"/></svg>", "layerlist"));
 		menu.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 		menu.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"10,0.5 25,0.5 25,34.5 10,34.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"13,3.5 22,3.5 22,7.5 13,7.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><circle cx=\"14.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"27.5\" r=\"5\" fill=\"black\"/></svg>", "controllist"));
 		menu.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"0,10 5,10 5,0 10,0 10,10 25,10 25,0 35,0 35,5 30,5 30,10 35,10 35,25 0,25\" fill=\"black\"/><circle cx=\"5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"17.5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"30\" cy=\"30\" r=\"5\" fill=\"black\"/</svg>", "locolist"));

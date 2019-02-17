@@ -20,7 +20,7 @@ namespace datamodel {
 			virtual std::string serialize() const override;
 			virtual bool deserialize(const std::string& serialized) override;
 
-			std::string& Name() { return name; }
+			const std::string& Name() const { return name; }
 
 		protected:
 			virtual bool deserialize(const std::map<std::string,std::string>& arguments);

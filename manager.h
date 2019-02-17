@@ -117,8 +117,9 @@ class Manager {
 		bool streetDelete(const streetID_t streetID);
 
 		// layer
-		const std::map<std::string,std::string> LayerList() const;
-		const std::map<std::string,std::string> LayerListWithFeedback() const;
+		datamodel::Layer* GetLayer(const layerID_t layerID) const;
+		const std::map<std::string,layerID_t> LayerListByName() const;
+		const std::map<std::string,layerID_t> LayerListByNameWithFeedback() const;
 		bool LayerSave(const layerID_t layerID, const std::string&name, std::string& result);
 		bool LayerDelete(const layerID_t layerID);
 
