@@ -32,13 +32,15 @@ class CommandInterface {
 		virtual void streetSettings(const streetID_t streetID, const std::string& name) {};
 		virtual void streetDelete(const streetID_t streetID, const std::string& name) {};
 		virtual void streetRelease(const streetID_t) = 0;
+		virtual void layerSettings(const layerID_t layerID, const std::string& name) {};
+		virtual void layerDelete(const layerID_t layerID, const std::string& name) {};
 		virtual void locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) = 0;
 		virtual void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) = 0;
 		virtual void locoStart(const locoID_t locoID) = 0;
 		virtual void locoStop(const locoID_t locoID) = 0;
 		virtual bool CanHandleLocos() const { return true; }
 		virtual bool CanHandleAccessories() const { return true; }
-		virtual bool CanHandleFeedback() const { return true; }
+		virtual bool CanHandleFeedback() const { return false; }
 		virtual void GetLocoProtocols(std::vector<protocol_t>& protocols) const {};
 		virtual bool LocoProtocolSupported(protocol_t protocol) const { return false; };
 		virtual void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const {};

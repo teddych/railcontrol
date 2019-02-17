@@ -12,6 +12,7 @@
 using datamodel::Accessory;
 using datamodel::Track;
 using datamodel::Feedback;
+using datamodel::Layer;
 using datamodel::Loco;
 using datamodel::Relation;
 using datamodel::Street;
@@ -345,5 +346,37 @@ namespace storage {
 		instance->deleteObject(ObjectTypeStreet, streetID);
 	}
 
+	void StorageHandler::layer(const datamodel::Layer& layer)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		string serialized = layer.serialize();
+		instance->saveObject(ObjectTypeLayer, layer.objectID, layer.name, serialized);
+	}
+
+	void StorageHandler::allLayers(std::map<layerID_t,datamodel::Layer*>& layers)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		vector<string> objects;
+		instance->objectsOfType(ObjectTypeLayer, objects);
+		for(auto object : objects) {
+			Layer* layer = new Layer(object);
+			layers[layer->objectID] = layer;
+		}
+	}
+
+	void StorageHandler::deleteLayer(const layerID_t layerID)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->deleteObject(ObjectTypeLayer, layerID);
+	}
 } // namespace storage
 

@@ -116,6 +116,12 @@ class Manager {
 		bool streetSave(const streetID_t streetID, const std::string& name, const std::vector<datamodel::Relation*>& relations, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, std::string& result);
 		bool streetDelete(const streetID_t streetID);
 
+		// layer
+		const std::map<std::string,std::string> LayerList() const;
+		const std::map<std::string,std::string> LayerListWithFeedback() const;
+		bool LayerSave(const layerID_t layerID, const std::string&name, std::string& result);
+		bool LayerDelete(const layerID_t layerID);
+
 		// automode
 		bool locoIntoTrack(const locoID_t locoID, const trackID_t trackID);
 		bool locoRelease(const locoID_t locoID);
@@ -193,6 +199,10 @@ class Manager {
 		// street
 		std::map<streetID_t,datamodel::Street*> streets;
 		mutable std::mutex streetMutex;
+
+		// layer
+		std::map<layerID_t,datamodel::Layer*> layers;
+		mutable std::mutex layerMutex;
 
 		// storage
 		storage::StorageHandler* storage;

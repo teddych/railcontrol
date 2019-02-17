@@ -41,6 +41,10 @@ typedef accessoryType_t switchType_t;
 // street
 typedef objectID_t streetID_t;
 
+// layer
+typedef signed short layerID_t;
+typedef unsigned char layer_t;
+
 // relations
 typedef unsigned short priority_t;
 
@@ -159,7 +163,8 @@ enum objectType_t : unsigned char
 	ObjectTypeFeedback,
 	ObjectTypeAccessory,
 	ObjectTypeSwitch,
-	ObjectTypeStreet
+	ObjectTypeStreet,
+	ObjectTypeLayer
 };
 
 enum accessoryType : accessoryType_t

@@ -17,6 +17,7 @@ using console::ConsoleServer;
 using datamodel::Accessory;
 using datamodel::Track;
 using datamodel::Feedback;
+using datamodel::Layer;
 using datamodel::LayoutItem;
 using datamodel::Loco;
 using datamodel::Street;
@@ -63,6 +64,21 @@ Manager::Manager(Config& config)
 		hardwareParam.second->manager = this;
 		controls[hardwareParam.second->controlID] = new HardwareHandler(*this, hardwareParam.second);
 		logger->Info("Loaded control {0}: {1}", hardwareParam.first, hardwareParam.second->name);
+	}
+
+	storage->allLayers(layers);
+	for (auto layer : layers)
+	{
+		logger->Info("Loaded layer {0}: {1}", layer.second->objectID, layer.second->Name());
+	}
+	if (layers.count(1) == 0)
+	{
+		string result;
+		bool initLayer0 = LayerSave(0, "Layer 0", result);
+		if (initLayer0 == false)
+		{
+			logger->Error("Unable to add initial layer 0");
+		}
 	}
 
 	storage->allLocos(locos);
@@ -121,36 +137,49 @@ Manager::~Manager()
 		storage->street(*(street.second));
 		delete street.second;
 	}
+
 	for (auto mySwitch : switches)
 	{
 		logger->Info("Saving switch {0}: {1}", mySwitch.second->objectID, mySwitch.second->name);
 		storage->saveSwitch(*(mySwitch.second));
 		delete mySwitch.second;
 	}
+
 	for (auto accessory : accessories)
 	{
 		logger->Info("Saving accessory {0}: {1}", accessory.second->objectID, accessory.second->name);
 		storage->accessory(*(accessory.second));
 		delete accessory.second;
 	}
+
 	for (auto  feedback : feedbacks)
 	{
 		logger->Info("Saving feedback {0}: {1}", feedback.second->objectID, feedback.second->name);
 		storage->feedback(*(feedback.second));
 		delete feedback.second;
 	}
+
 	for (auto track : tracks)
 	{
 		logger->Info("Saving track {0}: {1}", track.second->objectID, track.second->name);
 		storage->track(*(track.second));
 		delete track.second;
 	}
+
 	for (auto loco : locos)
 	{
 		logger->Info("Saving loco {0}: {1}", loco.second->objectID, loco.second->name);
 		storage->loco(*(loco.second));
 		delete loco.second;
 	}
+
+	for (auto layer : layers)
+	{
+		logger->Info("Saving layer {0}: {1}", layer.second->objectID, layer.second->Name());
+		storage->layer(*(layer.second));
+		delete layer.second;
+	}
+
 	for (auto control : controls)
 	{
 		controlID_t controlID = control.first;
@@ -1606,6 +1635,85 @@ bool Manager::streetDelete(const streetID_t streetID)
 	}
 	return true;
 }
+
+const map<string,string> Manager::LayerList() const
+{
+	map<string,string> list;
+	std::lock_guard<std::mutex> Guard(layerMutex);
+	for (auto layer : layers)
+	{
+		list[std::to_string(layer.first)] = layer.second->Name();
+	}
+	return list;
+}
+
+const map<string,string> Manager::LayerListWithFeedback() const
+{
+	map<string,string> list = LayerList();
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		if (!control.second->CanHandleFeedback())
+		{
+			continue;
+		}
+		list[std::to_string(-control.first)] = "Feedback at " + control.second->getName();
+	}
+	return list;
+}
+
+bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::string& result)
+{
+	Layer* layer;
+	{
+		std::lock_guard<std::mutex> Guard(layerMutex);
+		if (layers.count(layerID))
+		{
+			// update existing layer
+			layer = layers.at(layerID);
+			if (layer == nullptr)
+			{
+				result.assign("Layer does not exist");
+				return false;
+			}
+			layer->name = name;
+		}
+		else
+		{
+			// create new street
+			layerID_t newLayerID = 0;
+			// get next streetID
+			for (auto layer : layers)
+			{
+				if (layer.first > newLayerID)
+				{
+					newLayerID = layer.first;
+				}
+			}
+			++newLayerID;
+			layer = new Layer(newLayerID, name);
+			if (layer == nullptr)
+			{
+				result.assign("Unable to allocate memory for layer");
+				return false;
+			}
+			// save in map
+			layers[newLayerID] = layer;
+		}
+	}
+	// save in db
+	if (storage)
+	{
+		storage->layer(*layer);
+	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->layerSettings(layer->objectID, name);
+	}
+	return true;
+}
+
 
 /***************************
 * Automode                 *

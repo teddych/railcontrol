@@ -41,6 +41,9 @@ namespace storage
 			void street(const datamodel::Street& street);
 			void allStreets(std::map<streetID_t,datamodel::Street*>& streets);
 			void deleteStreet(streetID_t streetID);
+			void layer(const datamodel::Layer& layer);
+			void allLayers(std::map<layerID_t,datamodel::Layer*>& layers);
+			void deleteLayer(layerID_t layerID);
 
 		private:
 			Manager* manager;
