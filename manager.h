@@ -42,7 +42,7 @@ class Manager {
 
 		// control (console, web, ...)
 		const std::string getControlName(const controlID_t controlID); // FIXME: => string& (reference)
-		inline const std::map<controlID_t,hardware::HardwareParams*> controlList() const { return hardwareParams; }
+		const std::map<controlID_t,hardware::HardwareParams*> controlList() const { return hardwareParams; }
 		const std::map<std::string,hardware::HardwareParams*> controlListByName() const;
 		const std::map<controlID_t,std::string> LocoControlListNames() const;
 		const std::map<controlID_t,std::string> AccessoryControlListNames() const;
@@ -53,7 +53,7 @@ class Manager {
 		// loco
 		datamodel::Loco* getLoco(const locoID_t locoID) const;
 		const std::string& getLocoName(const locoID_t locoID);
-		inline const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
+		const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
 		const std::map<std::string,datamodel::Loco*> locoListByName() const;
 		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
 		bool locoDelete(const locoID_t locoID);
@@ -71,7 +71,7 @@ class Manager {
 		void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
 		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID) const;
 		const std::string& getAccessoryName(const accessoryID_t accessoryID) const;
-		inline const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
+		const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
 		const std::map<std::string,datamodel::Accessory*> accessoryListByName() const;
 		bool accessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, std::string& result);
 		bool accessoryDelete(const accessoryID_t accessoryID);
@@ -81,7 +81,7 @@ class Manager {
 		void feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state);
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID) const;
 		const std::string& getFeedbackName(const feedbackID_t feedbackID) const;
-		inline const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
+		const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
 		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted,  std::string& result);
 		bool feedbackDelete(const feedbackID_t feedbackID);
 
@@ -89,7 +89,7 @@ class Manager {
 		void track(const controlType_t controlType, const feedbackID_t feedbackID, const lockState_t);
 		datamodel::Track* getTrack(const trackID_t trackID) const;
 		const std::string& getTrackName(const trackID_t trackID) const;
-		inline const std::map<trackID_t,datamodel::Track*>& trackList() const { return tracks; }
+		const std::map<trackID_t,datamodel::Track*>& trackList() const { return tracks; }
 		const std::map<std::string,datamodel::Track*> trackListByName() const;
 		const std::map<std::string,trackID_t> trackListIdByName() const;
 		bool trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, const trackType_t trackType, std::string& result);
@@ -100,7 +100,7 @@ class Manager {
 		void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
 		datamodel::Switch* getSwitch(const switchID_t switchID) const;
 		const std::string& getSwitchName(const switchID_t switchID) const;
-		inline const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
+		const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
 		const std::map<std::string,datamodel::Switch*> switchListByName() const;
 		bool switchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, std::string& result);
 		bool switchDelete(const switchID_t switchID);
@@ -111,7 +111,7 @@ class Manager {
 		void executeStreetInParallel(const streetID_t streetID);
 		datamodel::Street* getStreet(const streetID_t streetID) const;
 		const std::string& getStreetName(const streetID_t streetID) const;
-		inline const std::map<streetID_t,datamodel::Street*>& streetList() const { return streets; }
+		const std::map<streetID_t,datamodel::Street*>& streetList() const { return streets; }
 		const std::map<std::string,datamodel::Street*> streetListByName() const;
 		bool streetSave(const streetID_t streetID, const std::string& name, const std::vector<datamodel::Relation*>& relations, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, std::string& result);
 		bool streetDelete(const streetID_t streetID);

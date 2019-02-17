@@ -8,7 +8,7 @@
 
 class CommandInterface {
 	public:
-		CommandInterface(controlType_t controlType);
+		CommandInterface(controlType_t controlType) : controlType(controlType) {}
 		virtual ~CommandInterface() {};
 		const controlType_t getcontrolType() const { return controlType; }
 		virtual const std::string getName() const = 0;
@@ -29,8 +29,8 @@ class CommandInterface {
 		virtual void trackSettings(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const std::string& rotation) {};
 		virtual void trackDelete(const trackID_t trackID, const std::string& name) {};
 		virtual void trackRelease(const trackID_t) = 0;
-		virtual void streetSettings(const streetID_t streetID, const std::string& nam) {};
-		virtual void streetDelete(const streetID_t streetID, const std::string& nam) {};
+		virtual void streetSettings(const streetID_t streetID, const std::string& name) {};
+		virtual void streetDelete(const streetID_t streetID, const std::string& name) {};
 		virtual void streetRelease(const streetID_t) = 0;
 		virtual void locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) = 0;
 		virtual void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) = 0;
@@ -48,8 +48,3 @@ class CommandInterface {
 	private:
 		controlType_t controlType;
 };
-
-inline CommandInterface::CommandInterface(controlType_t controlType) :
-	controlType(controlType) {
-}
-
