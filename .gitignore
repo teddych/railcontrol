@@ -11,3 +11,4 @@ test/testloco
 gmon.out
 amalgamation.cpp
 .*.swp
+svg/*
