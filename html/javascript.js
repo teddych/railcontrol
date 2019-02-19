@@ -593,3 +593,27 @@ function ShowTab(tabName)
 	}
 	tabButton.classList.add('tab_button_selected');
 }
+
+function submitEditForm()
+{
+	$.ajax({
+		data: $('#editform').serialize(),
+		type: $('#editform').attr('get'),
+		url: $('#editform').attr('/'),
+		success: function(response) {
+			$('#popup').html(response);
+		}
+	});
+	setTimeout(function() {
+		$('#popup').hide(300);
+	}, 1500);
+	return false;
+}
+
+function fireRequestAndForget(url)
+{
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
+}
+

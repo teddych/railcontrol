@@ -13,20 +13,14 @@ namespace webserver
 		str_split(command, "_", parts);
 		std::stringstream ss;
 		ss <<
-			"$(function() {"
-			" $('#" << commandID << "').on('click', function() {"
-			"  var theUrl = '/?cmd=" << parts[0];
+			"var theUrl = '/?cmd=" << parts[0];
 		for (auto argument : arguments) {
 
 			ss << "&" << argument.first << "=" << argument.second;
 		}
 		ss <<"';"
-			"  var xmlHttp = new XMLHttpRequest();"
-			"  xmlHttp.open('GET', theUrl, true);"
-			"  xmlHttp.send(null);"
-			"  return false;"
-			" })"
-			"})";
-		AddJavaScript(ss.str());
+			"fireRequestAndForget(theUrl);"
+			"return false;";
+		AddAttribute("onclick", ss.str());
 	}
 };

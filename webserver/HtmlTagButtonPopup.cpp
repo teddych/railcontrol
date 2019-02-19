@@ -13,19 +13,14 @@ namespace webserver
 		std::vector<std::string> parts;
 		str_split(command, "_", parts);
 		std::stringstream ss;
-		ss <<
-			"$(function() {"
-			" $('#" << commandID << "').on('click', function() {"
-			"  var myUrl = '/?cmd=" << parts[0];
+		ss << "var myUrl = '/?cmd=" << parts[0];
 		for (auto argument : arguments) {
 
 			ss << "&" << argument.first << "=" << argument.second;
 		}
 		ss <<"';"
-			"  loadPopup(myUrl);"
-			"  return false;"
-			" })"
-			"})";
-		AddJavaScript(ss.str());
+			"loadPopup(myUrl);"
+			"return false;";
+		AddAttribute("onclick", ss.str());
 	}
 };
