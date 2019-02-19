@@ -23,7 +23,7 @@ body {
 	width: 250px;
 }
 
-.layout_selector {
+.layer_selector {
 	position: fixed;
 	right: 0px;
 	top: 55px;
@@ -35,7 +35,7 @@ body {
 	width: 250px;
 }
 
-.layout_selector select {
+.layer_selector select {
 	width: 100%;
 }
 
@@ -62,7 +62,7 @@ body {
 }
 
 @media (max-width: 667px) {
-	.layout_selector,
+	.layer_selector,
 	.layout {
 		display: none;
 	}

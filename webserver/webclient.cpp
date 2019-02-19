@@ -619,9 +619,15 @@ namespace webserver
 	{
 		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
 
-		if (layerID == ControlNone)
+		if (layerID == LayerNone)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			return;
+		}
+
+		if (layerID == LayerUndeletable)
+		{
+			HtmlReplyWithHeaderAndParagraph("Not allowed to delete this layer");
 			return;
 		}
 
@@ -647,6 +653,19 @@ namespace webserver
 	void WebClient::handleLayerDelete(const map<string, string>& arguments)
 	{
 		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
+
+		if (layerID == LayerNone)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			return;
+		}
+
+		if (layerID == LayerUndeletable)
+		{
+			HtmlReplyWithHeaderAndParagraph("Not allowed to delete this layer");
+			return;
+		}
+
 		const Layer* layer = manager.GetLayer(layerID);
 		if (layer == nullptr)
 		{
@@ -677,7 +696,7 @@ namespace webserver
 			string layerIdString = to_string(layer.second);
 			layerArgument["layer"] = layerIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "layeredit_list_" + layerIdString, layerArgument)));
-			if (layer.second != 1)
+			if (layer.second != LayerUndeletable)
 			{
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "layeraskdelete_" + layerIdString, layerArgument)));
 			}
@@ -933,6 +952,33 @@ namespace webserver
 		return HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4));
 	}
 
+	HtmlTag WebClient::HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz)
+	{
+		HtmlTag content("div");
+		content.AddAttribute("id", "position");;
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255));
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255));
+		map<string,layerID_t> layerList = manager.LayerListByName();
+		content.AddChildTag(HtmlTagSelectWithLabel("posz", "Pos Z:", layerList, posz));
+		return content;
+	}
+
+	HtmlTag WebClient::HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible)
+	{
+		HtmlTag content;
+		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", "Visible:", "visible", static_cast<bool>(visible));
+		checkboxVisible.AddAttribute("id", "visible");
+		checkboxVisible.AddAttribute("onchange", "onChangeCheckboxShowHide('visible', 'position');");
+		content.AddChildTag(checkboxVisible);
+		HtmlTag posDiv = HtmlTagPosition(posx, posy, posz);
+		if (visible == VisibleNo)
+		{
+			posDiv.AddAttribute("hidden");
+		}
+		content.AddChildTag(posDiv);
+		return content;
+	}
+
 	HtmlTag WebClient::HtmlTagRelation(const string& priority, const switchID_t switchId, const switchState_t state)
 	{
 		HtmlTag content("div");
@@ -1169,18 +1215,18 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
 	}
 
-	HtmlTag WebClient::HtmlTagSelectLayout() const
+	HtmlTag WebClient::HtmlTagSelectLayer() const
 	{
 		map<string,layerID_t> options = manager.LayerListByNameWithFeedback();
 		// FIXME: select layers with content
 		return HtmlTag("form").AddAttribute("method", "get").AddAttribute("action", "/").AddAttribute("id", "selectLayout_form")
-		.AddContent(HtmlTagSelect("layout", options).AddAttribute("onchange", "loadDivFromForm('selectLayout_form', 'layout')"))
+		.AddContent(HtmlTagSelect("layer", options).AddAttribute("onchange", "loadDivFromForm('selectLayout_form', 'layout')"))
 		.AddContent(HtmlTagInputHidden("cmd", "layout"));
 	}
 
 	void WebClient::handleLayout(const map<string, string>& arguments)
 	{
-		layoutPosition_t layer = static_cast<layoutPosition_t>(GetIntegerMapEntry(arguments, "layer", 0));
+		layoutPosition_t layer = static_cast<layoutPosition_t>(GetIntegerMapEntry(arguments, "layer", LayerUndeletable));
 		HtmlTag content;
 		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
 		for (auto accessory : accessories)
@@ -1234,7 +1280,7 @@ namespace webserver
 		string name("New Accessory");
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		accessoryTimeout_t timeout = 100;
 		bool inverted = false;
 		if (accessoryID > AccessoryNone)
@@ -1246,7 +1292,7 @@ namespace webserver
 			name = accessory->name;
 			posx = accessory->posX;
 			posy = accessory->posY;
-			// FIXME: layers not supported yet: posz = accessory->posZ;
+			posz = accessory->posZ;
 			inverted = accessory->IsInverted();
 		}
 
@@ -1271,11 +1317,7 @@ namespace webserver
 				)
 			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
-			/* FIXME: layers not supported
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
-			*/
+			.AddChildTag(HtmlTagPosition(posx, posy, posz))
 			.AddChildTag(HtmlTagTimeout(timeout))
 			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
 		));
@@ -1406,7 +1448,7 @@ namespace webserver
 		string name("New Switch");
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		switchType_t type = SwitchTypeLeft;
 		accessoryTimeout_t timeout = 100;
@@ -1420,7 +1462,7 @@ namespace webserver
 			name = mySwitch->name;
 			posx = mySwitch->posX;
 			posy = mySwitch->posY;
-			// FIXME: layers not supported yet: posz = mySwitch->posZ;
+			posz = mySwitch->posZ;
 			rotation = mySwitch->rotation;
 			type = mySwitch->GetType();
 			timeout = mySwitch->timeout;
@@ -1452,11 +1494,7 @@ namespace webserver
 				)
 			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
-			/* FIXME: layers not supported
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
-			*/
+			.AddChildTag(HtmlTagPosition(posx, posy, posz))
 			.AddChildTag(HtmlTagRotation(rotation))
 			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
 			.AddChildTag(HtmlTagTimeout(timeout))
@@ -1596,7 +1634,7 @@ namespace webserver
 		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleYes));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		automode_t automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		trackID_t fromTrack = GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
 		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
@@ -1610,7 +1648,7 @@ namespace webserver
 			visible = street->visible;
 			posx = street->posX;
 			posy = street->posY;
-			// FIXME: layers not supported yet: posz = mySwitch->posZ;
+			posz = street->posZ;
 			automode = street->automode;
 			fromTrack = street->fromTrack;
 			fromDirection = street->fromDirection;
@@ -1643,23 +1681,7 @@ namespace webserver
 		relationDivOuter.AddChildTag(HtmlTag("br"));
 		form.AddChildTag(relationDivOuter);
 
-		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", "Visible:", "visible", static_cast<bool>(visible));
-		checkboxVisible.AddAttribute("id", "visible");
-		checkboxVisible.AddAttribute("onchange", "onChangeCheckboxShowHide('visible', 'position');");
-		form.AddChildTag(checkboxVisible);
-
-		HtmlTag posDiv("div");
-		posDiv.AddAttribute("id", "position");
-		if (visible == VisibleNo)
-		{
-			posDiv.AddAttribute("hidden");
-		}
-		posDiv.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255));
-		posDiv.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255));
-		/* FIXME: layers not supported
-		posDiv.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20)):
-		*/
-		form.AddChildTag(posDiv);
+		form.AddChildTag(HtmlTagPosition(posx, posy, posz, visible));
 
 		HtmlTagInputCheckboxWithLabel checkboxAutomode("automode", "Auto-mode:", "automode", static_cast<bool>(automode));
 		checkboxAutomode.AddAttribute("id", "automode");
@@ -1807,7 +1829,7 @@ namespace webserver
 		string name("New Track");
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		// FIXME: layers not supported yet: layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
 		layoutItemSize_t height = GetIntegerMapEntry(arguments, "length", 1);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		trackType_t type = TrackTypeStraight;
@@ -1817,7 +1839,7 @@ namespace webserver
 			name = track->name;
 			posx = track->posX;
 			posy = track->posY;
-			// FIXME: layers not supported yet: posz = track->posZ;
+			posz = track->posZ;
 			height = track->height;
 			rotation = track->rotation;
 			type = track->Type();
@@ -1833,11 +1855,7 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"))
 			.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Track Name:", name))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255))
-			/* FIXME: layers not supported
-			.AddChildTag(HtmlTagInputIntegerWithLabel("posz", "Pos Z:", posz, 0, 20))
-			*/
+			.AddChildTag(HtmlTagPosition(posx, posy, posz))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
 			.AddChildTag(HtmlTagRotation(rotation))
 			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
@@ -2087,7 +2105,7 @@ namespace webserver
 		body.AddChildTag(menu);
 
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddAttribute("id", "loco_selector").AddChildTag(HtmlTagLocoSelector()));
-		body.AddChildTag(HtmlTag("div").AddClass("layout_selector").AddChildTag(HtmlTagSelectLayout()));
+		body.AddChildTag(HtmlTag("div").AddClass("layer_selector").AddChildTag(HtmlTagSelectLayer()));
 		body.AddChildTag(HtmlTag("div").AddClass("loco").AddAttribute("id", "loco"));
 		body.AddChildTag(HtmlTag("div").AddClass("layout").AddAttribute("id", "layout"));
 		body.AddChildTag(HtmlTag("div").AddClass("popup").AddAttribute("id", "popup"));

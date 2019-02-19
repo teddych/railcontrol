@@ -1726,10 +1726,15 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 
 bool Manager::LayerDelete(const layerID_t layerID)
 {
+	if (layerID == LayerUndeletable || layerID == LayerNone)
+	{
+		return false;
+	}
+
 	Layer* layer = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(layerMutex);
-		if (layerID == LayerNone || layers.count(layerID) == 0)
+		if (layers.count(layerID) == 0)
 		{
 			return false;
 		}

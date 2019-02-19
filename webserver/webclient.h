@@ -41,11 +41,13 @@ namespace webserver
 			void deliverFile(const std::string& file);
 			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			HtmlTag HtmlTagLocoSelector() const;
-			HtmlTag HtmlTagSelectLayout() const;
+			HtmlTag HtmlTagSelectLayer() const;
 			HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagTimeout(const accessoryTimeout_t timeout) const;
+			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz);
+			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible);
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;
 			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const;
 			HtmlTag HtmlTagRelation(const std::string& priority, const switchID_t switchId = SwitchNone, const switchState_t state = SwitchStateStraight);
