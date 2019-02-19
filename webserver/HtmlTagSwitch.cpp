@@ -35,11 +35,11 @@ namespace webserver
 		}
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(mySwitch->name + " (addr=" + to_string(mySwitch->address) + ")"));
+		div1.AddAttribute("onclick", "return onClickSwitch(" + switchIdString + ");");
 
 		std::stringstream javascript;
 		javascript << "$(function() {"
-			" $('#" << id << "').on('click', function() { onClickSwitch(" << switchIdString << "); return false; });"
-			" $('#" << id << "').on('contextmenu', function(event) { if (event.shiftKey) return true; event.preventDefault(); onContextSwitch(" << switchIdString << "); return false; });"
+			" $('#" << id << "').on('contextmenu', function(event) { return onContextSwitch(event, " << switchIdString << "); });"
 			"});"
 			;
 		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));

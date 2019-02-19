@@ -105,16 +105,23 @@ function onClickAccessory(accessoryID)
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
+	return false;
 }
 
-function onContextAccessory(accessoryID)
+function onContextAccessory(event, accessoryID)
 {
+	if (event.shiftKey)
+	{
+		return true;
+	}
+	event.preventDefault();
 	hideAllContextMenus();
 	var menu = document.getElementById('a_' + accessoryID + '_context');
 	if (menu)
 	{
 		menu.style.display = 'block';
 	}
+	return false;
 }
 
 function onClickStreet(streetID)
@@ -125,16 +132,23 @@ function onClickStreet(streetID)
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
+	return false;
 }
 
-function onContextStreet(streetID)
+function onContextStreet(event, streetID)
 {
+	if (event.shiftKey)
+	{
+		return true;
+	}
+	event.preventDefault();
 	hideAllContextMenus();
 	var menu = document.getElementById('st_' + streetID + '_context');
 	if (menu)
 	{
 		menu.style.display = 'block';
 	}
+	return false;
 }
 
 function onClickSwitch(switchID)
@@ -146,16 +160,23 @@ function onClickSwitch(switchID)
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
+	return false;
 }
 
-function onContextSwitch(switchID)
+function onContextSwitch(event, switchID)
 {
+	if (event.shiftKey)
+	{
+		return true;
+	}
+	event.preventDefault();
 	hideAllContextMenus();
 	var menu = document.getElementById('sw_' + switchID + '_context');
 	if (menu)
 	{
 		menu.style.display = 'block';
 	}
+	return false;
 }
 
 function onContextTrack(trackID)

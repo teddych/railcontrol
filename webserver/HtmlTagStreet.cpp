@@ -23,11 +23,11 @@ namespace webserver
 		string image = "<svg width=\"35\" height=\"35\" id=\"_img\"><polygon points=\"1,20 7,20 7,28 1,28\" fill=\"none\" stroke=\"black\"/><polygon points=\"34,7 28,7 28,15 34,15\" fill=\"none\" stroke=\"black\"/><polyline points=\"7,24 15,24 20,11 28,11\" stroke=\"black\" fill=\"none\"/></svg>";
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(street->name));
+		div1.AddAttribute("onclick", "return onClickStreet(" + streetIdString + ");");
 
 		std::stringstream javascript;
 		javascript << "$(function() {"
-			" $('#" << id << "').on('click', function() { onClickStreet(" << street->objectID << "); return false; });"
-			" $('#" << id << "').on('contextmenu', function(event) { if (event.shiftKey) return true; event.preventDefault(); onContextStreet(" << street->objectID << "); return false; });"
+			" $('#" << id << "').on('contextmenu', function(event) { return onContextStreet(event, " << street->objectID << "); });"
 			"});"
 			;
 		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));

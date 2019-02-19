@@ -25,11 +25,11 @@ namespace webserver
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		div1.AddChildTag(HtmlTag("span").AddClass("symbola").AddContent("&#9209;"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(accessory->name + " (addr=" + to_string(accessory->address) + ")"));
+		div1.AddAttribute("onclick", "return onClickAccessory(" + accessoryIdString + ");");
 
 		std::stringstream javascript;
 		javascript << "$(function() {"
-			" $('#" << id << "').on('click', function() { onClickAccessory(" << accessoryIdString << "); return false; });"
-			" $('#" << id << "').on('contextmenu', function(event) { if (event.shiftKey) return true; event.preventDefault(); onContextAccessory(" << accessoryIdString << "); return false; });"
+			" $('#" << id << "').on('contextmenu', function(event) { return onContextAccessory(event, " << accessoryIdString << "); });"
 			"});"
 			;
 		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));

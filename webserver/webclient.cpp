@@ -2163,15 +2163,9 @@ namespace webserver
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddAttribute("id", "loco_selector").AddChildTag(HtmlTagLocoSelector()));
 		body.AddChildTag(HtmlTag("div").AddClass("layer_selector").AddChildTag(HtmlTagSelectLayer()));
 		body.AddChildTag(HtmlTag("div").AddClass("loco").AddAttribute("id", "loco"));
-		body.AddChildTag(HtmlTag("div").AddClass("layout").AddAttribute("id", "layout"));
+		body.AddChildTag(HtmlTag("div").AddClass("layout").AddAttribute("id", "layout").AddAttribute("oncontextmenu", "return loadLayoutContext(event);"));
 		body.AddChildTag(HtmlTag("div").AddClass("popup").AddAttribute("id", "popup"));
 		body.AddChildTag(HtmlTag("div").AddClass("status").AddAttribute("id", "status"));
-
-		body.AddChildTag(HtmlTagJavascript(
-			"var updater = new EventSource('/?cmd=updater');"
-			"updater.onmessage = function(event) {"
-			" dataUpdate(event);"
-			"};"));
 
 		body.AddChildTag(HtmlTag("div").AddClass( "contextmenu").AddAttribute("id", "layout_context")
 			.AddChildTag(HtmlTag("ul").AddClass("contextentries")
@@ -2181,14 +2175,8 @@ namespace webserver
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add street").AddAttribute("onClick", "loadPopup('/?cmd=streetedit&street=0');"))
 			));
 
-		body.AddChildTag(HtmlTagJavascript("$(function() {"
-			" $('#layout').on('contextmenu', function(event) {"
-			"  return loadLayoutContext(event);"
-			" });"
-			"});"
-			));
+		body.AddChildTag(HtmlTagJavascript("var updater = new EventSource('/?cmd=updater'); updater.onmessage = function(event) { dataUpdate(event); };"));
 
 		connection->Send(HtmlFullResponse("Railcontrol", body));
 	}
-
-} ; // namespace webserver
+}; // namespace webserver
