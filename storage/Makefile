@@ -10,6 +10,7 @@ CFLAGSRASPI=-g -O2 -Wall --sysroot=/home/teddy/buildroot-2018.11/output/host/aar
 CPPFLAGS=-g -fpic -O2 -Wall -std=c++11 -I..
 CPPFLAGSRASPI=-g -fpic -O2 -Wall -std=c++11 -I.. --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-uclibc/sysroot/
 LDFLAGS=-g -shared -Wl,-soname,
+CFLAGSSQLITE=-DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
 
 LIBS= \
 	sqlite.so
@@ -20,28 +21,13 @@ sqlite.so: sqlite.o sqlite/sqlite3.o *.h ../Logger/*.h ../hardware/HardwareParam
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<  sqlite/sqlite3.o
 
 sqlite/sqlite3.o: sqlite/sqlite3.c sqlite/sqlite3.h
-	$(CC) $(CFLAGS) \
-	-DSQLITE_ENABLE_FTS4 \
-	-DSQLITE_ENABLE_JSON1 \
-	-DSQLITE_ENABLE_RTREE \
-	-DHAVE_USLEEP \
-	-c -o $@ $<
+	$(CC) $(CFLAGS) $(CFLAGSSQLITE) -c -o $@ $<
 
 amalgamation: sqlite/sqlite3.c sqlite/sqlite3.h
-	$(CC) $(CFLAGSAMALGAMATION) \
-	-DSQLITE_ENABLE_FTS4 \
-	-DSQLITE_ENABLE_JSON1 \
-	-DSQLITE_ENABLE_RTREE \
-	-DHAVE_USLEEP \
-	-c -o sqlite/sqlite3.o sqlite/sqlite3.c
+	$(CC) $(CFLAGSAMALGAMATION) $(CFLAGSSQLITE) -c -o sqlite/sqlite3.o sqlite/sqlite3.c
 
 raspi: sqlite/sqlite3.c sqlite/sqlite3.h
-	$(CCRASPI) $(CFLAGSRASPI) \
-	-DSQLITE_ENABLE_FTS4 \
-	-DSQLITE_ENABLE_JSON1 \
-	-DSQLITE_ENABLE_RTREE \
-	-DHAVE_USLEEP \
-	-c -o sqlite/sqlite3.o sqlite/sqlite3.c
+	$(CCRASPI) $(CFLAGSRASPI) $(CFLAGSSQLITE) -c -o sqlite/sqlite3.o sqlite/sqlite3.c
 
 %.so: %.cpp *.h ../*.h ../datamodel/*.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
@@ -50,5 +36,5 @@ raspi: sqlite/sqlite3.c sqlite/sqlite3.h
 	$(CPP) -o $@ $< $(LDFLAGS)$@
 
 clean:
-	rm -f *.o *.so
+	rm -f *.o *.so sqlite/*.o
 
