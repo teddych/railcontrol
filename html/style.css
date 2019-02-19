@@ -262,3 +262,27 @@ select {
 .contextentry:hover {
 	background: darkgrey;
 }
+
+.tab_button {
+	padding: 5px;
+	border: 1px solid black;
+	border-bottom-style: none;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	background-color: lightgrey;
+}
+
+.tab_button_selected,
+.tab_button:hover {
+	background-color: #e9e9e9;
+}
+
+.tab_content {
+	border: 1px solid black;
+	padding: 3px;
+}
+
+.hidden {
+	display: none;
+}

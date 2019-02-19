@@ -517,3 +517,44 @@ function startUp()
 	loadDivFromForm('selectLoco_form', 'loco');
 	loadDivFromForm('selectLayout_form', 'layout');
 }
+
+function ShowTab(tabName)
+{
+	var tabs = document.getElementsByClassName('tab_content');
+	if (!tabs)
+	{
+		return;
+	}
+
+	for (var i = 0; i < tabs.length; ++i)
+	{
+		var tab = tabs[i];
+		tab.classList.add('hidden');
+	}
+
+	var tab = document.getElementById('tab_' + tabName);
+	if (!tab)
+	{
+		return;
+	}
+	tab.classList.remove('hidden');
+
+	var tabButtons = document.getElementsByClassName('tab_button');
+	if (!tabButtons)
+	{
+		return;
+	}
+
+	for (var i = 0; i < tabButtons.length; ++i)
+	{
+		var tabButton = tabButtons[i];
+		tabButton.classList.remove('tab_button_selected');
+	}
+
+	var tabButton = document.getElementById('tab_button_' + tabName);
+	if (!tabButton)
+	{
+		return;
+	}
+	tabButton.classList.add('tab_button_selected');
+}

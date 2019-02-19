@@ -1025,6 +1025,21 @@ namespace webserver
 		return tag;
 	}
 
+	HtmlTag WebClient::HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected) const
+	{
+		HtmlTag button("button");
+		button.AddClass("tab_button");
+		button.AddAttribute("id", "tab_button_" + tabName);
+		button.AddAttribute("onclick", "return ShowTab('" + tabName + "');");
+		button.AddContent(buttonValue);
+		if (selected)
+		{
+			button.AddClass("tab_button_selected");
+		}
+		return button;
+	}
+
+
 	void WebClient::handleProtocolAccessory(const map<string, string>& arguments)
 	{
 		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -1485,21 +1500,36 @@ namespace webserver
 		typeOptions[to_string(SwitchTypeRight)] = "Right";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
-			.AddChildTag(HtmlTagInputHidden("cmd", "switchsave"))
-			.AddChildTag(HtmlTagInputHidden("switch", to_string(switchID)))
-			.AddChildTag(HtmlTagInputTextWithLabel("name", "Switch Name:", name))
-			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID))
-				.AddAttribute("onchange", "loadProtocol('switch', " + to_string(switchID) + ")")
-				)
-			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
-			.AddChildTag(HtmlTagPosition(posx, posy, posz))
-			.AddChildTag(HtmlTagRotation(rotation))
-			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
-			.AddChildTag(HtmlTagTimeout(timeout))
-			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
-		));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag formContent;
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "switchsave"));
+		formContent.AddChildTag(HtmlTagInputHidden("switch", to_string(switchID)));
+
+		HtmlTag mainContent("div");
+		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddClass("tab_content");
+		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Switch Name:", name));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('switch', " + to_string(switchID) + ")"));
+		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044));
+		mainContent.AddChildTag(HtmlTagTimeout(timeout));
+		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted));
+		formContent.AddChildTag(mainContent);
+
+		HtmlTag positionContent("div");
+		positionContent.AddAttribute("id", "tab_position");
+		positionContent.AddClass("tab_content");
+		positionContent.AddClass("hidden");
+		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
+		positionContent.AddChildTag(HtmlTagRotation(rotation));
+		formContent.AddChildTag(positionContent);
+
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);

@@ -51,6 +51,7 @@ namespace webserver
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;
 			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const;
 			HtmlTag HtmlTagRelation(const std::string& priority, const switchID_t switchId = SwitchNone, const switchState_t state = SwitchStateStraight);
+			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected = false) const;
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void handleLayerSave(const std::map<std::string, std::string>& arguments);
