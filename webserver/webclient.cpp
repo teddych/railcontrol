@@ -1248,8 +1248,15 @@ namespace webserver
 
 	void WebClient::handleLayout(const map<string, string>& arguments)
 	{
-		layoutPosition_t layer = static_cast<layoutPosition_t>(GetIntegerMapEntry(arguments, "layer", LayerUndeletable));
+		layer_t layer = static_cast<layoutPosition_t>(GetIntegerMapEntry(arguments, "layer", CHAR_MIN));
 		HtmlTag content;
+
+		if (layer < LayerUndeletable)
+		{
+			HtmlReplyWithHeader(content);
+			return;
+		}
+
 		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
 		for (auto accessory : accessories)
 		{
