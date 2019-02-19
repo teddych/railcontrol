@@ -437,21 +437,6 @@ function dataUpdate(event)
 	}
 }
 
-function loadDivFromForm(form, target)
-{
-	var formName = '#' + form;
-	$.ajax({
-		data: $(formName).serialize(),
-		type: $(formName).attr('get'),
-		url: $(formName).attr('/'),
-		success: function(response) {
-			var targetName = '#' + target;
-			$(targetName).html(response);
-		}
-	})
-	return false;
-}
-
 window.layoutPosX = 0;
 window.layoutPosY = 0;
 
@@ -466,6 +451,13 @@ function loadLocoSelector()
 {
 	var elementName = 'loco_selector';
 	var url = '/?cmd=locoselector';
+	requestUpdateItem(elementName, url);
+}
+
+function loadLayerSelector()
+{
+	var elementName = 'layer_selector';
+	var url = '/?cmd=layerselector';
 	requestUpdateItem(elementName, url);
 }
 
@@ -525,18 +517,40 @@ function hideAllContextMenus()
 	}
 }
 
+function loadLoco()
+{
+	var loco = document.getElementById('s_loco');
+	if (loco)
+	{
+		requestUpdateItem('loco', '/?cmd=loco&loco=' + loco.value);
+	}
+}
+
+function loadLayout()
+{
+	var layer = document.getElementById('s_layer');
+	if (layer)
+	{
+		requestUpdateItem('layout', '/?cmd=layout&layer=' + layer.value);
+	}
+}
+
 function startUp()
 {
-	$('#body').on('click', function(event) {
-		if (event.button == 2)
-		{
-			return false;
-		}
-		hideAllContextMenus();
-		return true;
-	});
-	loadDivFromForm('selectLoco_form', 'loco');
-	loadDivFromForm('selectLayout_form', 'layout');
+	var body = document.getElementById('body');
+	if (body)
+	{
+		body.onclick = function(event) {
+			if (event.button == 2)
+			{
+				return false;
+			}
+			hideAllContextMenus();
+			return true;
+		};
+	}
+	loadLoco();
+	loadLayout();
 }
 
 function ShowTab(tabName)

@@ -347,6 +347,10 @@ namespace webserver
 			{
 				handleLocoSelector(arguments);
 			}
+			else if (arguments["cmd"].compare("layerselector") == 0)
+			{
+				handleLayerSelector(arguments);
+			}
 			else if (arguments["cmd"].compare("stopall") == 0)
 			{
 				manager.StopAllLocosImmediately(ControlTypeWebserver);
@@ -612,7 +616,10 @@ namespace webserver
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Layer &quot;" + name + "&quot; saved.");
+		HtmlTag p("p");
+		p.AddContent("Layer &quot;" + name + "&quot; saved.");
+		HtmlTagJavascript script("loadLayerSelector();");
+		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
 	}
 
 	void WebClient::handleLayerAskDelete(const map<string, string>& arguments)
@@ -679,7 +686,10 @@ namespace webserver
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Layer &quot;" + layer->Name() + "&quot; deleted.");
+		HtmlTag p("p");
+		p.AddContent("Layer &quot;" + layer->Name() + "&quot; deleted.");
+		HtmlTagJavascript script("loadLayerSelector();");
+		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
 	}
 
 	void WebClient::handleLayerList(const map<string, string>& arguments)
@@ -1230,13 +1240,10 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
 	}
 
-	HtmlTag WebClient::HtmlTagSelectLayer() const
+	HtmlTag WebClient::HtmlTagLayerSelector() const
 	{
 		map<string,layerID_t> options = manager.LayerListByNameWithFeedback();
-		// FIXME: select layers with content
-		return HtmlTag("form").AddAttribute("method", "get").AddAttribute("action", "/").AddAttribute("id", "selectLayout_form")
-		.AddContent(HtmlTagSelect("layer", options).AddAttribute("onchange", "loadDivFromForm('selectLayout_form', 'layout')"))
-		.AddContent(HtmlTagInputHidden("cmd", "layout"));
+		return HtmlTagSelect("layer", options).AddAttribute("onchange", "loadLayout();");
 	}
 
 	void WebClient::handleLayout(const map<string, string>& arguments)
@@ -2024,6 +2031,11 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagLocoSelector());
 	}
 
+	void WebClient::handleLayerSelector(const map<string, string>& arguments)
+	{
+		HtmlReplyWithHeader(HtmlTagLayerSelector());
+	}
+
 	void WebClient::handleUpdater(const map<string, string>& headers)
 	{
 		Response response(Response::OK);
@@ -2074,13 +2086,12 @@ namespace webserver
 	{
 		const map<locoID_t, Loco*>& locos = manager.locoList();
 		map<string,locoID_t> options;
-		for (auto locoTMP : locos) {
+		for (auto locoTMP : locos)
+		{
 			Loco* loco = locoTMP.second;
 			options[loco->name] = loco->objectID;
 		}
-		return HtmlTag("form").AddAttribute("method", "get").AddAttribute("action", "/").AddAttribute("id", "selectLoco_form")
-		.AddContent(HtmlTagSelect("loco", options).AddAttribute("onchange", "loadDivFromForm('selectLoco_form', 'loco')"))
-		.AddContent(HtmlTagInputHidden("cmd", "loco"));
+		return HtmlTagSelect("loco", options).AddAttribute("onchange", "loadLoco();");
 	}
 
 	void WebClient::printLoco(const map<string, string>& arguments)
@@ -2161,13 +2172,13 @@ namespace webserver
 		body.AddChildTag(menu);
 
 		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddAttribute("id", "loco_selector").AddChildTag(HtmlTagLocoSelector()));
-		body.AddChildTag(HtmlTag("div").AddClass("layer_selector").AddChildTag(HtmlTagSelectLayer()));
+		body.AddChildTag(HtmlTag("div").AddClass("layer_selector").AddAttribute("id", "layer_selector").AddChildTag(HtmlTagLayerSelector()));
 		body.AddChildTag(HtmlTag("div").AddClass("loco").AddAttribute("id", "loco"));
 		body.AddChildTag(HtmlTag("div").AddClass("layout").AddAttribute("id", "layout").AddAttribute("oncontextmenu", "return loadLayoutContext(event);"));
 		body.AddChildTag(HtmlTag("div").AddClass("popup").AddAttribute("id", "popup"));
 		body.AddChildTag(HtmlTag("div").AddClass("status").AddAttribute("id", "status"));
 
-		body.AddChildTag(HtmlTag("div").AddClass( "contextmenu").AddAttribute("id", "layout_context")
+		body.AddChildTag(HtmlTag("div").AddClass("contextmenu").AddAttribute("id", "layout_context")
 			.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add track").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add switch").AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))

@@ -41,7 +41,7 @@ namespace webserver
 			void deliverFile(const std::string& file);
 			void deliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			HtmlTag HtmlTagLocoSelector() const;
-			HtmlTag HtmlTagSelectLayer() const;
+			HtmlTag HtmlTagLayerSelector() const;
 			HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
@@ -103,6 +103,7 @@ namespace webserver
 			void handleTrackDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackGet(const std::map<std::string, std::string>& arguments);
 			void handleLocoSelector(const std::map<std::string,std::string>& arguments);
+			void handleLayerSelector(const std::map<std::string,std::string>& arguments);
 			void handleRelationAdd(const std::map<std::string,std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
