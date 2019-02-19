@@ -1030,7 +1030,7 @@ namespace webserver
 		HtmlTag button("button");
 		button.AddClass("tab_button");
 		button.AddAttribute("id", "tab_button_" + tabName);
-		button.AddAttribute("onclick", "return ShowTab('" + tabName + "');");
+		button.AddAttribute("onclick", "ShowTab('" + tabName + "');");
 		button.AddContent(buttonValue);
 		if (selected)
 		{
@@ -1332,9 +1332,9 @@ namespace webserver
 				)
 			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
-			.AddChildTag(HtmlTagPosition(posx, posy, posz))
 			.AddChildTag(HtmlTagTimeout(timeout))
 			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
+			.AddChildTag(HtmlTagPosition(posx, posy, posz))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
@@ -1687,11 +1687,23 @@ namespace webserver
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit street &quot;" + name + "&quot;"));
-		HtmlTag form("form");
-		form.AddAttribute("id", "editform");
-		form.AddChildTag(HtmlTagInputHidden("cmd", "streetsave"));
-		form.AddChildTag(HtmlTagInputHidden("street", to_string(streetID)));
-		form.AddChildTag(HtmlTagInputTextWithLabel("name", "Street Name:", name));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("relation", "Relations"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", "Auto-mode"));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag formContent("form");
+		formContent.AddAttribute("id", "editform");
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "streetsave"));
+		formContent.AddChildTag(HtmlTagInputHidden("street", to_string(streetID)));
+
+		HtmlTag mainContent("div");
+		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddClass("tab_content");
+		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Street Name:", name));
+		formContent.AddChildTag(mainContent);
 
 		HtmlTag relationDiv("div");
 		relationDiv.AddChildTag(HtmlTagInputHidden("relationcounter", to_string(relations.size())));
@@ -1703,20 +1715,33 @@ namespace webserver
 			priority = relation->Priority() + 1;
 		}
 		relationDiv.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority)));
-		HtmlTag relationDivOuter("div");
-		relationDivOuter.AddChildTag(relationDiv);
+		HtmlTag relationContent("div");
+		relationContent.AddAttribute("id", "tab_relation");
+		relationContent.AddClass("tab_content");
+		relationContent.AddClass("hidden");
+		relationContent.AddChildTag(relationDiv);
 		HtmlTagButton newButton("New", "newrelation");
 		newButton.AddAttribute("onclick", "addRelation();return false;");
-		relationDivOuter.AddChildTag(newButton);
-		relationDivOuter.AddChildTag(HtmlTag("br"));
-		form.AddChildTag(relationDivOuter);
+		relationContent.AddChildTag(newButton);
+		relationContent.AddChildTag(HtmlTag("br"));
+		formContent.AddChildTag(relationContent);
 
-		form.AddChildTag(HtmlTagPosition(posx, posy, posz, visible));
+		HtmlTag positionContent("div");
+		positionContent.AddAttribute("id", "tab_position");
+		positionContent.AddClass("tab_content");
+		positionContent.AddClass("hidden");
+		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz, visible));
+		formContent.AddChildTag(positionContent);
+
+		HtmlTag automodeContent("div");
+		automodeContent.AddAttribute("id", "tab_automode");
+		automodeContent.AddClass("tab_content");
+		automodeContent.AddClass("hidden");
 
 		HtmlTagInputCheckboxWithLabel checkboxAutomode("automode", "Auto-mode:", "automode", static_cast<bool>(automode));
 		checkboxAutomode.AddAttribute("id", "automode");
 		checkboxAutomode.AddAttribute("onchange", "onChangeCheckboxShowHide('automode', 'tracks');");
-		form.AddChildTag(checkboxAutomode);
+		automodeContent.AddChildTag(checkboxAutomode);
 
 		HtmlTag tracksDiv("div");
 		tracksDiv.AddAttribute("id", "tracks");
@@ -1726,9 +1751,10 @@ namespace webserver
 		}
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", "From track:", fromTrack, fromDirection));
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", "To track:", toTrack, toDirection));
-		form.AddChildTag(tracksDiv);
+		automodeContent.AddChildTag(tracksDiv);
+		formContent.AddChildTag(automodeContent);
 
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
@@ -1885,10 +1911,10 @@ namespace webserver
 			.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"))
 			.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)))
 			.AddChildTag(HtmlTagInputTextWithLabel("name", "Track Name:", name))
-			.AddChildTag(HtmlTagPosition(posx, posy, posz))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
-			.AddChildTag(HtmlTagRotation(rotation))
 			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
+			.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
+			.AddChildTag(HtmlTagPosition(posx, posy, posz))
+			.AddChildTag(HtmlTagRotation(rotation))
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
