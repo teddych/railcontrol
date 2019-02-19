@@ -30,8 +30,8 @@ namespace webserver {
 		manager(manager),
 		updateID(1)
 	{
+		Logger::Logger::GetLogger("Webserver")->Info("Starting server");
 		updates[updateID] = "data: status=Railcontrol started";
-
 		run = true;
 	}
 
@@ -41,7 +41,7 @@ namespace webserver {
 		{
 			return;
 		}
-		Logger::Logger::GetLogger("Webserver")->Info("Stopping webserver");
+		Logger::Logger::GetLogger("Webserver")->Info("Stopping server");
 		{
 			std::lock_guard<std::mutex> lock(updateMutex);
 			updates[++updateID] = "data: status=Stopping Railcontrol";
