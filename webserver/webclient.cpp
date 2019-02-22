@@ -2193,8 +2193,6 @@ namespace webserver
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add street").AddAttribute("onClick", "loadPopup('/?cmd=streetedit&street=0');"))
 			));
 
-		body.AddChildTag(HtmlTagJavascript("var updater = new EventSource('/?cmd=updater'); updater.onmessage = function(event) { dataUpdate(event); };"));
-
 		connection->Send(HtmlFullResponse("Railcontrol", body));
 	}
 }; // namespace webserver

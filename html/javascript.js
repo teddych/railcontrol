@@ -438,6 +438,11 @@ function dataUpdate(event)
 	}
 }
 
+var updater = new EventSource('/?cmd=updater');
+updater.onmessage = function(event) {
+	dataUpdate(event);
+};
+
 window.layoutPosX = 0;
 window.layoutPosY = 0;
 
@@ -617,4 +622,3 @@ function fireRequestAndForget(url)
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
 }
-

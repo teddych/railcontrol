@@ -1,7 +1,6 @@
 #include <sstream>
 
 #include "webserver/HtmlTagSwitch.h"
-#include "webserver/HtmlTagJavascript.h"
 
 using std::string;
 using std::to_string;
