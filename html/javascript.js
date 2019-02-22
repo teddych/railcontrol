@@ -114,7 +114,7 @@ function onContextAccessory(event, accessoryID)
 	{
 		return true;
 	}
-	event.preventDefault();
+	event.stopPropagation();
 	hideAllContextMenus();
 	var menu = document.getElementById('a_' + accessoryID + '_context');
 	if (menu)
@@ -141,7 +141,7 @@ function onContextStreet(event, streetID)
 	{
 		return true;
 	}
-	event.preventDefault();
+	event.stopPropagation();
 	hideAllContextMenus();
 	var menu = document.getElementById('st_' + streetID + '_context');
 	if (menu)
@@ -169,7 +169,7 @@ function onContextSwitch(event, switchID)
 	{
 		return true;
 	}
-	event.preventDefault();
+	event.stopPropagation();
 	hideAllContextMenus();
 	var menu = document.getElementById('sw_' + switchID + '_context');
 	if (menu)
@@ -179,14 +179,20 @@ function onContextSwitch(event, switchID)
 	return false;
 }
 
-function onContextTrack(trackID)
+function onContextTrack(event, trackID)
 {
+	if (event.shiftKey)
+	{
+		return true;
+	}
+	event.stopPropagation();
 	hideAllContextMenus();
 	var menu = document.getElementById('t_' + trackID + '_context');
 	if (menu)
 	{
 		menu.style.display = 'block';
 	}
+	return false;
 }
 
 function onChangeCheckboxShowHide(checkboxId, divId)
@@ -220,11 +226,6 @@ function updateLayoutItem(elementName, data)
 			var tag = tags[i];
 			var clone = tag.cloneNode(true);
 			tag.parentNode.replaceChild(clone, tag);
-		}
-		var scriptTags = document.getElementsByClassName('layout_item_script');
-		for (i = 0; i < scriptTags.length; i++)
-		{
-			eval(scriptTags[i].innerHTML);
 		}
 	}
 }

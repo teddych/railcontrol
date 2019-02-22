@@ -26,13 +26,7 @@ namespace webserver
 		div1.AddChildTag(HtmlTag("span").AddClass("symbola").AddContent("&#9209;"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(accessory->name + " (addr=" + to_string(accessory->address) + ")"));
 		div1.AddAttribute("onclick", "return onClickAccessory(" + accessoryIdString + ");");
-
-		std::stringstream javascript;
-		javascript << "$(function() {"
-			" $('#" << id << "').on('contextmenu', function(event) { return onContextAccessory(event, " << accessoryIdString << "); });"
-			"});"
-			;
-		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));
+		div1.AddAttribute("oncontextmenu", "return onContextAccessory(event, " + accessoryIdString + ");");
 		AddChildTag(div1);
 
 		HtmlTag div2("div");

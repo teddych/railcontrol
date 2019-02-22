@@ -24,13 +24,7 @@ namespace webserver
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(street->name));
 		div1.AddAttribute("onclick", "return onClickStreet(" + streetIdString + ");");
-
-		std::stringstream javascript;
-		javascript << "$(function() {"
-			" $('#" << id << "').on('contextmenu', function(event) { return onContextStreet(event, " << street->objectID << "); });"
-			"});"
-			;
-		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));
+		div1.AddAttribute("oncontextmenu", "return onContextStreet(event, " + streetIdString + ");");
 		AddChildTag(div1);
 
 		HtmlTag div2("div");

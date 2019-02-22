@@ -36,13 +36,7 @@ namespace webserver
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(mySwitch->name + " (addr=" + to_string(mySwitch->address) + ")"));
 		div1.AddAttribute("onclick", "return onClickSwitch(" + switchIdString + ");");
-
-		std::stringstream javascript;
-		javascript << "$(function() {"
-			" $('#" << id << "').on('contextmenu', function(event) { return onContextSwitch(event, " << switchIdString << "); });"
-			"});"
-			;
-		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));
+		div1.AddAttribute("oncontextmenu", "return onContextSwitch(event, " + switchIdString + ");");
 		AddChildTag(div1);
 
 		HtmlTag div2("div");

@@ -65,13 +65,7 @@ namespace webserver
 
 		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"35\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(track->name));
-
-		std::stringstream javascript;
-		javascript << "$(function() {"
-			" $('#" << id << "').on('contextmenu', function(event) { if (event.shiftKey) return true; event.preventDefault(); onContextTrack(" << trackIdString << "); return false; });"
-			"});"
-			;
-		div1.AddChildTag(HtmlTagJavascript(javascript.str()).AddClass("layout_item_script"));
+		div1.AddAttribute("oncontextmenu", "return onContextTrack(event, " + trackIdString + ");");
 		AddChildTag(div1);
 
 		HtmlTag div2("div");
