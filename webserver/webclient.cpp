@@ -616,10 +616,7 @@ namespace webserver
 			return;
 		}
 
-		HtmlTag p("p");
-		p.AddContent("Layer &quot;" + name + "&quot; saved.");
-		HtmlTagJavascript script("loadLayerSelector();");
-		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + name + "&quot; saved."));
 	}
 
 	void WebClient::handleLayerAskDelete(const map<string, string>& arguments)
@@ -686,10 +683,7 @@ namespace webserver
 			return;
 		}
 
-		HtmlTag p("p");
-		p.AddContent("Layer &quot;" + layer->Name() + "&quot; deleted.");
-		HtmlTagJavascript script("loadLayerSelector();");
-		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + layer->Name() + "&quot; deleted."));
 	}
 
 	void WebClient::handleLayerList(const map<string, string>& arguments)
@@ -1159,10 +1153,7 @@ namespace webserver
 			return;
 		}
 
-		HtmlTag p("p");
-		p.AddContent("Loco &quot;" + name + "&quot; saved.");
-		HtmlTagJavascript script("loadLocoSelector();");
-		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Loco &quot;" + name + "&quot; saved."));
 	}
 
 	void WebClient::handleLocoList(const map<string, string>& arguments)
@@ -1234,10 +1225,7 @@ namespace webserver
 			return;
 		}
 
-		HtmlTag p("p");
-		p.AddContent("Loco &quot;" + loco->name + "&quot; deleted.");
-		HtmlTagJavascript script("loadLocoSelector();");
-		HtmlReplyWithHeader(HtmlTag().AddChildTag(p).AddChildTag(script));
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Loco &quot;" + loco->name + "&quot; deleted."));
 	}
 
 	HtmlTag WebClient::HtmlTagLayerSelector() const

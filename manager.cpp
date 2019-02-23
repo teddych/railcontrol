@@ -606,6 +606,11 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 	{
 		storage->loco(*loco);
 	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->locoSettings(loco->objectID, name);
+	}
 	return true;
 }
 
@@ -628,10 +633,16 @@ bool Manager::locoDelete(const locoID_t locoID)
 		locos.erase(locoID);
 	}
 
+	string name = loco->name;
 	delete loco;
 	if (storage)
 	{
 		storage->deleteLoco(locoID);
+	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->locoDelete(loco->objectID, name);
 	}
 	return true;
 }

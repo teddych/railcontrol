@@ -340,21 +340,18 @@ function dataUpdate(event)
 	{
 		elementName = 'a_' + argumentMap.get('accessory');
 		var element = document.getElementById(elementName);
-		if (element)
+		if (element && argumentMap.has('state'))
 		{
-			if (argumentMap.has('state'))
+			var state = argumentMap.get('state');
+			if (state == 'green')
 			{
-				var state = argumentMap.get('state');
-				if (state == 'green')
-				{
-					element.classList.remove('accessory_off');
-					element.classList.add('accessory_on');
-				}
-				else
-				{
-					element.classList.remove('accessory_on');
-					element.classList.add('accessory_off');
-				}
+				element.classList.remove('accessory_off');
+				element.classList.add('accessory_on');
+			}
+			else
+			{
+				element.classList.remove('accessory_on');
+				element.classList.add('accessory_off');
 			}
 		}
 	}
@@ -379,7 +376,7 @@ function dataUpdate(event)
 	{
 		elementName = 'sw_' + argumentMap.get('switch');
 		var element = document.getElementById(elementName);
-		if (element)
+		if (element && argumentMap.has('state'))
 		{
 			var state = argumentMap.get('state');
 			if (state == 'straight')
@@ -436,10 +433,14 @@ function dataUpdate(event)
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}
-	// FIXME: locosettings / locodelete is missing
-	// FIXME: don't forget loadLocoSelector()
-	// FIXME: layersettings / layerdelete is missing
-	// FIXME: don't forget loadLayerSelector()
+	else if (command == 'locosettings' || command == 'locodelete')
+	{
+		loadLocoSelector();
+	}
+	else if (command == 'layersettings' || command == 'layerdelete')
+	{
+		loadLayerSelector();
+	}
 }
 
 var updater = new EventSource('/?cmd=updater');
@@ -459,16 +460,42 @@ function loadPopup(url)
 
 function loadLocoSelector()
 {
-	var elementName = 'loco_selector';
+	var loco = document.getElementById('s_loco').value;
 	var url = '/?cmd=locoselector';
-	requestUpdateItem(elementName, url);
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState != 4 || xmlHttp.status != 200)
+		{
+			return;
+		}
+		var element = document.getElementById('loco_selector');
+		element.innerHTML = xmlHttp.responseText;
+		var selector = document.getElementById('s_loco');
+		selector.value = loco;
+		loadLoco();
+	}
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
 }
 
 function loadLayerSelector()
 {
-	var elementName = 'layer_selector';
+	var layer = document.getElementById('s_layer').value;
 	var url = '/?cmd=layerselector';
-	requestUpdateItem(elementName, url);
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState != 4 || xmlHttp.status != 200)
+		{
+			return;
+		}
+		var element = document.getElementById('layer_selector');
+		element.innerHTML = xmlHttp.responseText;
+		var selector = document.getElementById('s_layer');
+		selector.value = layer;
+		loadLayer();
+	}
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
 }
 
 function loadProtocol(type, ID)

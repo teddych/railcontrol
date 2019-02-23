@@ -305,6 +305,42 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::locoSettings(const locoID_t locoID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "locosettings;loco=" << locoID;
+		status << name << " updated";
+		addUpdate(command.str(), status.str());
+	}
+
+	void WebServer::locoDelete(const locoID_t locoID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "locodelete;loco=" << locoID;
+		status << name << " updated";
+		addUpdate(command.str(), status.str());
+	}
+
+	void WebServer::layerSettings(const layerID_t layerID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "layersettings;layer=" << layerID;
+		status << name << " updated";
+		addUpdate(command.str(), status.str());
+	}
+
+	void WebServer::layerDelete(const layerID_t layerID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "layerdelete;layer=" << layerID;
+		status << name << " updated";
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::addUpdate(const string& command, const string& status)
 	{
 		stringstream ss;

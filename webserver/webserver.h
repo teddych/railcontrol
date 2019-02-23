@@ -46,6 +46,10 @@ namespace webserver
 			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
 			void locoStart(const locoID_t locoID) override;
 			void locoStop(const locoID_t locoID) override;
+			void locoSettings(const locoID_t locoID, const std::string& name);
+			void locoDelete(const locoID_t locoID, const std::string& name);
+			void layerSettings(const layerID_t layerID, const std::string& name);
+			void layerDelete(const layerID_t layerID, const std::string& name);
 
 		private:
 			void addUpdate(const std::string& command, const std::string& status);
