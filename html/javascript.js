@@ -436,6 +436,10 @@ function dataUpdate(event)
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}
+	// FIXME: locosettings / locodelete is missing
+	// FIXME: don't forget loadLocoSelector()
+	// FIXME: layersettings / layerdelete is missing
+	// FIXME: don't forget loadLayerSelector()
 }
 
 var updater = new EventSource('/?cmd=updater');
