@@ -464,15 +464,28 @@ function loadLocoSelector()
 	var url = '/?cmd=locoselector';
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() {
-		if (xmlHttp.readyState != 4 || xmlHttp.status != 200)
+		if (xmlHttp.readyState !== 4 || xmlHttp.status !== 200)
 		{
 			return;
 		}
 		var element = document.getElementById('loco_selector');
 		element.innerHTML = xmlHttp.responseText;
 		var selector = document.getElementById('s_loco');
-		selector.value = loco;
-		loadLoco();
+		if (selectHasValue('s_loco', loco))
+		{
+			selector.value = loco;
+			loadLoco();
+			return;
+		}
+		for (var i = 1; i < 255; ++i)
+		{
+			if (selectHasValue('s_loco', i))
+			{
+				selector.value = i;
+				loadLoco();
+				return;
+			}
+		}
 	}
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
@@ -484,15 +497,28 @@ function loadLayerSelector()
 	var url = '/?cmd=layerselector';
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() {
-		if (xmlHttp.readyState != 4 || xmlHttp.status != 200)
+		if (xmlHttp.readyState !== 4 || xmlHttp.status !== 200)
 		{
 			return;
 		}
 		var element = document.getElementById('layer_selector');
 		element.innerHTML = xmlHttp.responseText;
 		var selector = document.getElementById('s_layer');
-		selector.value = layer;
-		loadLayer();
+		if (selectHasValue('s_layer', layer))
+		{
+			selector.value = layer;
+			loadLayout();
+			return;
+		}
+		for (var i = 1; i < 255; ++i)
+		{
+			if (selectHasValue('s_layer', i))
+			{
+				selector.value = i;
+				loadLayout();
+				return;
+			}
+		}
 	}
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
@@ -652,4 +678,13 @@ function fireRequestAndForget(url)
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
+}
+
+function selectHasValue(selectId, value) {
+	obj = document.getElementById(selectId);
+	if (obj == null)
+	{
+		return false;
+	}
+	return (obj.innerHTML.indexOf('value="' + value + '"') >= 0);
 }
