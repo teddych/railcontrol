@@ -974,7 +974,7 @@ void Manager::feedback(const controlType_t controlType, const feedbackPin_t pin,
 		return;
 	}
 	logger->Info("Feedback {0} is now {1}", pin, (state ? "on" : "off"));
-	feedback->setState(state);
+	feedback->SetState(state);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -1850,7 +1850,7 @@ bool Manager::feedbackRelease(const feedbackID_t feedbackID)
 	{
 		return false;
 	}
-	locoID_t locoID = feedback->getLoco();
+	locoID_t locoID = feedback->GetLoco();
 	return feedback->release(locoID);
 }
 

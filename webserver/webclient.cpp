@@ -22,6 +22,7 @@
 #include "webserver/HtmlTagButtonCommandToggle.h"
 #include "webserver/HtmlTagButtonOK.h"
 #include "webserver/HtmlTagButtonPopup.h"
+#include "webserver/HtmlTagFeedback.h"
 #include "webserver/HtmlTagInputCheckboxWithLabel.h"
 #include "webserver/HtmlTagInputHidden.h"
 #include "webserver/HtmlTagInputIntegerWithLabel.h"
@@ -33,6 +34,7 @@
 #include "webserver/HtmlTagTrack.h"
 
 using datamodel::Accessory;
+using datamodel::Feedback;
 using datamodel::Layer;
 using datamodel::Loco;
 using datamodel::Relation;
@@ -1241,6 +1243,15 @@ namespace webserver
 
 		if (layer < LayerUndeletable)
 		{
+			const map<feedbackID_t,Feedback*>& feedbacks = manager.feedbackList();
+			for (auto feedback : feedbacks)
+			{
+				if (feedback.second->posZ != layer)
+				{
+					continue;
+				}
+				content.AddChildTag(HtmlTagFeedback(feedback.second));
+			}
 			HtmlReplyWithHeader(content);
 			return;
 		}
@@ -1283,6 +1294,16 @@ namespace webserver
 				continue;
 			}
 			content.AddChildTag(HtmlTagStreet(street.second));
+		}
+
+		const map<feedbackID_t,Feedback*>& feedbacks = manager.feedbackList();
+		for (auto feedback : feedbacks)
+		{
+			if (feedback.second->posZ != layer || feedback.second->visible == VisibleNo)
+			{
+				continue;
+			}
+			content.AddChildTag(HtmlTagFeedback(feedback.second));
 		}
 		HtmlReplyWithHeader(content);
 	}

@@ -43,7 +43,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Feedback::setLoco(const locoID_t locoID)
+	bool Feedback::SetLoco(const locoID_t locoID)
 	{
 		// FIXME: should check if already a loco is set / basically is done by street
 		/*
@@ -55,7 +55,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Feedback::setState(const feedbackState_t state)
+	bool Feedback::SetState(const feedbackState_t state)
 	{
 		this->state = static_cast<feedbackState_t>((state ^ inverted) & 0x01);
 		if (state == FeedbackStateFree)

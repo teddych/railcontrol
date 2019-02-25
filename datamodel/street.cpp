@@ -182,7 +182,7 @@ namespace datamodel {
 		}
 		lockState = LockStateHardLocked;
 		Feedback* feedback = manager->getFeedback(feedbackIDStop);
-		feedback->setLoco(locoID);
+		feedback->SetLoco(locoID);
 		return true;
 	}
 
@@ -202,7 +202,7 @@ namespace datamodel {
 		this->locoID = LocoNone;
 		lockState = LockStateFree;
 		Feedback* feedback = manager->getFeedback(feedbackIDStop);
-		feedback->setLoco(LocoNone);
+		feedback->SetLoco(LocoNone);
 		return true;
 	}
 

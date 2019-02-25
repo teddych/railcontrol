@@ -940,16 +940,16 @@ namespace console
 			<< "\nY:        " << static_cast<int>(feedback->posY)
 			<< "\nZ:        " << static_cast<int>(feedback->posZ);
 		string stateText;
-		text::Converters::feedbackStatus(feedback->getState(), stateText);
+		text::Converters::feedbackStatus(feedback->GetState(), stateText);
 		status << "\nStatus:   " << stateText;
 		status << "\nLoco:     ";
-		if (feedback->getLoco() == LocoNone)
+		if (feedback->GetLoco() == LocoNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.getLocoName(feedback->getLoco()) << " (" << feedback->getLoco() << ")";
+			status << manager.getLocoName(feedback->GetLoco()) << " (" << feedback->GetLoco() << ")";
 		}
 		SendAndPrompt(status.str());
 	}

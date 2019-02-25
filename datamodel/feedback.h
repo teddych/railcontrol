@@ -44,10 +44,10 @@ namespace datamodel
 			virtual std::string layoutType() const { return "feedback"; };
 
 			bool release(const locoID_t locoID);
-			bool setLoco(const locoID_t locoID);
-			locoID_t getLoco() const { return locoID; }
-			bool setState(const feedbackState_t state);
-			feedbackState_t getState() const { return state; }
+			bool SetLoco(const locoID_t locoID);
+			locoID_t GetLoco() const { return locoID; }
+			bool SetState(const feedbackState_t state);
+			feedbackState_t GetState() const { return state; }
 
 			// make privete
 			controlID_t controlID;

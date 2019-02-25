@@ -118,6 +118,14 @@ body {
 	fill: black;
 }
 
+.feedback_free .feedback {
+	fill: lightgreen;
+}
+
+.feedback_occupied .feedback {
+	fill: red;
+}
+
 .popup {
 	position: fixed;
 	display: none;
