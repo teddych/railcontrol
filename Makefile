@@ -48,6 +48,7 @@ OBJ= \
 	webserver/HtmlTagButtonCommandToggle.o \
 	webserver/HtmlTagButtonOK.o \
 	webserver/HtmlTagButtonPopup.o \
+	webserver/HtmlTagFeedback.o \
 	webserver/HtmlTagInput.o \
 	webserver/HtmlTagInputInteger.o \
 	webserver/HtmlTagInputSlider.o \
