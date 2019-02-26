@@ -453,9 +453,19 @@ window.layoutPosY = 0;
 
 function loadPopup(url)
 {
-	$('#popup').show(300);
 	url += '&posx=' + window.layoutPosX + '&posy=' + window.layoutPosY;
-	$('#popup').load(url);
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState !== 4 || xmlHttp.status !== 200)
+		{
+			return;
+		}
+		var popup = document.getElementById('popup');
+		popup.innerHTML = xmlHttp.responseText;
+		popup.style.display = 'block';
+	}
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
 }
 
 function loadLocoSelector()
@@ -659,17 +669,31 @@ function ShowTab(tabName)
 
 function submitEditForm()
 {
-	$.ajax({
-		data: $('#editform').serialize(),
-		type: $('#editform').attr('get'),
-		url: $('#editform').attr('/'),
-		success: function(response) {
-			$('#popup').html(response);
+	var url = '/?';
+	var form = document.getElementById('editform');
+	for (var i = 0; i < form.length; ++i)
+	{
+		var j = form[i];
+		if (i > 0)
+		{
+			url += '&';
 		}
-	});
-	setTimeout(function() {
-		$('#popup').hide(300);
-	}, 1500);
+		url += j.name;
+		url += '=';
+		url += j.value;
+	}
+	var xmlHttp = new XMLHttpRequest();
+	xmlHttp.onreadystatechange = function() {
+		if (xmlHttp.readyState !== 4 || xmlHttp.status !== 200)
+		{
+			return;
+		}
+		var popup = document.getElementById('popup');
+		popup.innerHTML = xmlHttp.responseText;
+		setTimeout(function() { popup.style.display = 'none'; }, 1500);
+	}
+	xmlHttp.open('GET', url, true);
+	xmlHttp.send(null);
 	return false;
 }
 
