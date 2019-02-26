@@ -697,6 +697,21 @@ function submitEditForm()
 	return false;
 }
 
+function locoSpeedSliderChange(locoId)
+{
+	var slider = document.getElementById('locospeed_' + locoId);
+	if (!slider)
+	{
+		return false;
+	}
+	var url = '/?cmd=locospeed&loco=';
+	url += locoId;
+	url += '&speed=';
+	url += slider.value;
+	fireRequestAndForget(url);
+	return false;
+}
+
 function fireRequestAndForget(url)
 {
 	var xmlHttp = new XMLHttpRequest();
