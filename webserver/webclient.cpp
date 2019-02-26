@@ -468,6 +468,10 @@ namespace webserver
 			str_split(uri_parts[1], "&", argumentStrings);
 			for (auto argument : argumentStrings)
 			{
+				if (argument.length() == 0)
+				{
+					continue;
+				}
 				vector<string> argumentParts;
 				str_split(argument, "=", argumentParts);
 				arguments[argumentParts[0]] = argumentParts[1];
