@@ -43,7 +43,6 @@ typedef objectID_t streetID_t;
 
 // layer
 typedef signed short layerID_t;
-typedef unsigned char layer_t;
 
 // relations
 typedef unsigned short priority_t;

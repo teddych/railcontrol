@@ -1242,7 +1242,7 @@ namespace webserver
 
 	void WebClient::handleLayout(const map<string, string>& arguments)
 	{
-		layer_t layer = static_cast<layoutPosition_t>(GetIntegerMapEntry(arguments, "layer", CHAR_MIN));
+		layerID_t layer = static_cast<layerID_t>(GetIntegerMapEntry(arguments, "layer", CHAR_MIN));
 		HtmlTag content;
 
 		if (layer < LayerUndeletable)
@@ -1250,11 +1250,18 @@ namespace webserver
 			const map<feedbackID_t,Feedback*>& feedbacks = manager.feedbackList();
 			for (auto feedback : feedbacks)
 			{
-				if (feedback.second->posZ != layer)
+				if (feedback.second->controlID != -layer)
 				{
 					continue;
 				}
-				content.AddChildTag(HtmlTagFeedback(feedback.second));
+				feedbackPin_t pin = feedback.second->pin - 1;
+				layoutPosition_t x = pin % 16;
+				layoutPosition_t y = pin / 16;
+				if (x >= 8)
+				{
+					++x;
+				}
+				content.AddChildTag(HtmlTagFeedback(feedback.second, x, y));
 			}
 			HtmlReplyWithHeader(content);
 			return;

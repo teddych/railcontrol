@@ -7,12 +7,12 @@ using std::to_string;
 
 namespace webserver
 {
-	HtmlTagFeedback::HtmlTagFeedback(const datamodel::Feedback* feedback)
+	HtmlTagFeedback::HtmlTagFeedback(const datamodel::Feedback* feedback, layoutPosition_t posX, layoutPosition_t posY)
 	{
 		feedbackState_t state = feedback->GetState();
 
-		unsigned int layoutPosX = feedback->posX * EdgeLength;
-		unsigned int layoutPosY = feedback->posY * EdgeLength;
+		unsigned int layoutPosX = posX * EdgeLength;
+		unsigned int layoutPosY = posY * EdgeLength;
 
 		HtmlTag div1("div");
 		string feedbackIdString = to_string(feedback->objectID);
