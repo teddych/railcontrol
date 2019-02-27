@@ -633,8 +633,6 @@ bool Manager::locoDelete(const locoID_t locoID)
 		locos.erase(locoID);
 	}
 
-	string name = loco->name;
-	delete loco;
 	if (storage)
 	{
 		storage->deleteLoco(locoID);
@@ -642,8 +640,9 @@ bool Manager::locoDelete(const locoID_t locoID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoDelete(loco->objectID, name);
+		control.second->locoDelete(loco->objectID, loco->Name());
 	}
+	delete loco;
 	return true;
 }
 
@@ -931,9 +930,6 @@ bool Manager::accessoryDelete(const accessoryID_t accessoryID)
 		accessories.erase(accessoryID);
 	}
 
-	string name = accessory->name;
-
-	delete accessory;
 	if (storage)
 	{
 		storage->deleteAccessory(accessoryID);
@@ -941,8 +937,9 @@ bool Manager::accessoryDelete(const accessoryID_t accessoryID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->accessoryDelete(accessoryID, name);
+		control.second->accessoryDelete(accessoryID, accessory->Name());
 	}
+	delete accessory;
 	return true;
 }
 
@@ -1057,6 +1054,11 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 	{
 		storage->feedback(*feedback);
 	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->feedbackSettings(feedback->objectID, name);
+	}
 	return feedback;
 }
 
@@ -1079,11 +1081,16 @@ bool Manager::feedbackDelete(const feedbackID_t feedbackID)
 		feedbacks.erase(feedbackID);
 	}
 
-	delete feedback;
 	if (storage)
 	{
 		storage->deleteFeedback(feedbackID);
 	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->feedbackDelete(feedback->objectID, feedback->Name());
+	}
+	delete feedback;
 	return true;
 }
 
@@ -1277,11 +1284,16 @@ bool Manager::trackDelete(const trackID_t trackID)
 		tracks.erase(trackID);
 	}
 
-	delete track;
 	if (storage)
 	{
 		storage->deleteTrack(trackID);
 	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->trackDelete(track->objectID, track->Name());
+	}
+	delete track;
 	return true;
 }
 
@@ -1432,9 +1444,6 @@ bool Manager::switchDelete(const switchID_t switchID)
 		switches.erase(switchID);
 	}
 
-	string name = mySwitch->name;
-
-	delete mySwitch;
 	if (storage)
 	{
 		storage->deleteSwitch(switchID);
@@ -1443,8 +1452,9 @@ bool Manager::switchDelete(const switchID_t switchID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->switchDelete(switchID, name);
+		control.second->switchDelete(switchID, mySwitch->Name());
 	}
+	delete mySwitch;
 	return true;
 }
 
@@ -1631,9 +1641,6 @@ bool Manager::streetDelete(const streetID_t streetID)
 		streets.erase(streetID);
 	}
 
-	string name = street->name;
-
-	delete street;
 	if (storage)
 	{
 		storage->deleteStreet(streetID);
@@ -1642,8 +1649,9 @@ bool Manager::streetDelete(const streetID_t streetID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->streetDelete(streetID, name);
+		control.second->streetDelete(streetID, street->Name());
 	}
+	delete street;
 	return true;
 }
 
@@ -1754,9 +1762,6 @@ bool Manager::LayerDelete(const layerID_t layerID)
 		layers.erase(layerID);
 	}
 
-	string name = layer->Name();
-
-	delete layer;
 	if (storage)
 	{
 		storage->deleteLayer(layerID);
@@ -1765,8 +1770,9 @@ bool Manager::LayerDelete(const layerID_t layerID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->layerDelete(layerID, name);
+		control.second->layerDelete(layerID, layer->Name());
 	}
+	delete layer;
 	return true;
 }
 
