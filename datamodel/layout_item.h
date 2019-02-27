@@ -35,7 +35,7 @@ namespace datamodel
 
 			static bool MapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
 
-			virtual bool Position(layoutPosition_t& x, layoutPosition_t& y, layoutPosition_t& z, layoutItemSize_t& w, layoutItemSize_t& h, layoutRotation_t& r, const layer_t layer = LayerNone) const
+			virtual bool Position(layoutPosition_t& x, layoutPosition_t& y, layoutPosition_t& z, layoutItemSize_t& w, layoutItemSize_t& h, layoutRotation_t& r) const
 			{
 				z = posZ;
 				r = rotation;
