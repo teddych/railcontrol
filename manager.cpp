@@ -1017,15 +1017,15 @@ bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutP
 
 bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result)
 {
+	if (!CheckFeedbackPosition(feedbackID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
+	{
+		result.append(" Unable to ");
+		result.append(feedbackID == FeedbackNone ? "add" : "move");
+		result.append(" feedback.");
+		return false;
+	}
 	Feedback* feedback;
 	{
-		if (!CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
-		{
-			result.append(" Unable to ");
-			result.append(feedbackID == FeedbackNone ? "add" : "move");
-			result.append(" feedback.");
-			return false;
-		}
 		std::lock_guard<std::mutex> Guard(feedbackMutex);
 		if (feedbackID != FeedbackNone && feedbacks.count(feedbackID))
 		{
