@@ -820,7 +820,7 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) co
 	return accessories.at(accessoryID)->name;
 }
 
-bool Manager::checkAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
 	Accessory* accessory = getAccessory(accessoryID);
 	if (accessory == nullptr)
@@ -840,7 +840,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 		return false;
 	}
 
-	if (!checkAccessoryPosition(accessoryID, posX, posY, posZ) && !checkPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
+	if (!CheckAccessoryPosition(accessoryID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
 	{
 		result.append("Unable to ");
 		result.append(accessoryID == AccessoryNone ? "add" : "move");
@@ -1006,7 +1006,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 {
 	Feedback* feedback;
 	{
-		if (!checkPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
+		if (!CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
 		{
 			result.append(" Unable to ");
 			result.append(feedbackID == FeedbackNone ? "add" : "move");
@@ -1141,7 +1141,7 @@ const map<string,trackID_t> Manager::trackListIdByName() const
 	return out;
 }
 
-bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
+bool Manager::CheckTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
 {
 	layoutPosition_t x1;
 	layoutPosition_t y1;
@@ -1183,7 +1183,7 @@ bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t
 				continue;
 			}
 
-			ret = checkPositionFree(ix, iy, z1, result);
+			ret = CheckPositionFree(ix, iy, z1, result);
 			if (ret == false)
 			{
 				return false;
@@ -1196,7 +1196,7 @@ bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t
 bool Manager::trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, string& result)
 {
 	Track* track;
-	if (!checkTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
+	if (!CheckTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
 	{
 		result.append(" Unable to ");
 		result.append(trackID == TrackNone ? "add" : "move");
@@ -1332,7 +1332,7 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) const
 	return switches.at(switchID)->name;
 }
 
-bool Manager::checkSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
 	Switch* mySwitch = getSwitch(switchID);
 	if (mySwitch == nullptr)
@@ -1351,7 +1351,7 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 		return false;
 	}
 
-	if (!checkSwitchPosition(switchID, posX, posY, posZ) && !checkPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
+	if (!CheckSwitchPosition(switchID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
 	{
 		result.append("Unable to ");
 		result.append(switchID == SwitchNone ? "add" : "move");
@@ -1518,7 +1518,7 @@ const string& Manager::getStreetName(const streetID_t streetID) const
 	return streets.at(streetID)->name;
 }
 
-bool Manager::checkStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
 	Street* street = getStreet(streetID);
 	if (street == nullptr)
@@ -1537,7 +1537,7 @@ bool Manager::checkStreetPosition(const streetID_t streetID, const layoutPositio
 bool Manager::streetSave(const streetID_t streetID, const std::string& name, const std::vector<datamodel::Relation*>& relations, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, string& result)
 {
 
-	if (!checkStreetPosition(streetID, posX, posY, posZ) && !checkPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
+	if (!checkStreetPosition(streetID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
 	{
 		result.append("Unable to ");
 		result.append(streetID == StreetNone ? "add" : "move");
@@ -1994,7 +1994,7 @@ void Manager::StopAllLocosImmediately(const controlType_t controlType)
 * Layout                   *
 ***************************/
 
-bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
+bool Manager::CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
 {
 	bool ret;
 	ret = checkLayoutPositionFree(posX, posY, posZ, result, accessories, accessoryMutex);
@@ -2021,7 +2021,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 	return ret;
 }
 
-bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
+bool Manager::CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
 {
 	if (width == 0 || height == 0)
 	{
@@ -2042,7 +2042,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 	{
 		for(layoutPosition_t iy = y; iy < y + h; iy++)
 		{
-			bool ret = checkPositionFree(ix, iy, z, result);
+			bool ret = CheckPositionFree(ix, iy, z, result);
 			if (ret == false)
 			{
 				return false;
@@ -2053,7 +2053,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 }
 
 template<class Type>
-bool Manager::checkLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result, const map<objectID_t, Type*>& layoutVector, std::mutex& mutex) const
+bool Manager::CheckLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result, const map<objectID_t, Type*>& layoutVector, std::mutex& mutex) const
 {
 	std::lock_guard<std::mutex> Guard(mutex);
 	for (auto layout : layoutVector)
