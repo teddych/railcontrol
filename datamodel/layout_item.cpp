@@ -10,7 +10,7 @@ using std::string;
 
 namespace datamodel
 {
-	bool LayoutItem::mapPosition(const layoutPosition_t posX,
+	bool LayoutItem::MapPosition(const layoutPosition_t posX,
 			const layoutPosition_t posY,
 			const layoutItemSize_t width,
 			const layoutItemSize_t height,
@@ -67,7 +67,7 @@ namespace datamodel
 		}
 	}
 
-	bool LayoutItem::checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+	bool LayoutItem::CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
 	{
 		if (this->visible == false)
 		{
@@ -83,7 +83,7 @@ namespace datamodel
 		layoutPosition_t y;
 		layoutItemSize_t w;
 		layoutItemSize_t h;
-		bool ret = mapPosition(this->posX, this->posY, this->width, this->height, this->rotation, x, y, w, h);
+		bool ret = MapPosition(this->posX, this->posY, this->width, this->height, this->rotation, x, y, w, h);
 		if (ret == false)
 		{
 			return false;
@@ -102,10 +102,10 @@ namespace datamodel
 		return true;
 	}
 
-	std::string LayoutItem::serialize() const
+	std::string LayoutItem::Serialize() const
 	{
 		stringstream ss;
-		ss << Object::serialize()
+		ss << Object::Serialize()
 			<< ";visible=" << static_cast<int>(visible)
 			<< ";posX=" << static_cast<int>(posX)
 			<< ";posY=" << static_cast<int>(posY)
@@ -116,16 +116,16 @@ namespace datamodel
 		return ss.str();
 	}
 
-	bool LayoutItem::deserialize(const std::string& serialized)
+	bool LayoutItem::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
-		return deserialize(arguments);
+		return Deserialize(arguments);
 	}
 
-	bool LayoutItem::deserialize(const map<string,string>& arguments)
+	bool LayoutItem::Deserialize(const map<string,string>& arguments)
 	{
-		Object::deserialize(arguments);
+		Object::Deserialize(arguments);
 		visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible"));
 		posX = GetIntegerMapEntry(arguments, "posX", 0);
 		posY = GetIntegerMapEntry(arguments, "posY", 0);

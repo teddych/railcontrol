@@ -120,14 +120,14 @@ namespace datamodel
 				state(LocoStateManual),
 				streetID(StreetNone)
 			{
-				deserialize(serialized);
+				Deserialize(serialized);
 				logger = Logger::Logger::GetLogger("Loco " + name);
 			}
 
 			~Loco();
 
-			std::string serialize() const override;
-			bool deserialize(const std::string& serialized) override;
+			std::string Serialize() const override;
+			bool Deserialize(const std::string& serialized) override;
 
 			bool start();
 			bool stop();

@@ -36,11 +36,11 @@ namespace datamodel
 			:	manager(manager),
 				locoID(LocoNone)
 			{
-				deserialize(serialized);
+				Deserialize(serialized);
 			}
 
-			std::string serialize() const override;
-			bool deserialize(const std::string& serialized) override;
+			std::string Serialize() const override;
+			bool Deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const { return "feedback"; };
 
 			bool release(const locoID_t locoID);

@@ -15,7 +15,7 @@ namespace webserver
 		layoutItemSize_t w;
 		layoutItemSize_t h;
 		layoutRotation_t r;
-		track->position(posX, posY, posZ, w, h, r);
+		track->Position(posX, posY, posZ, w, h, r);
 		trackType_t type = track->Type();
 		unsigned int layoutPosX = posX * 35;
 		unsigned int layoutPosY = posY * 35;

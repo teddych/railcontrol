@@ -1148,7 +1148,7 @@ bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t
 	layoutPosition_t z1 = posZ;
 	layoutItemSize_t w1;
 	layoutItemSize_t h1;
-	bool ret = datamodel::LayoutItem::mapPosition(posX, posY, Width1, height, rotation, x1, y1, w1, h1);
+	bool ret = datamodel::LayoutItem::MapPosition(posX, posY, Width1, height, rotation, x1, y1, w1, h1);
 	if (ret == false)
 	{
 		result = "Unable to calculate position";
@@ -1165,7 +1165,7 @@ bool Manager::checkTrackPosition(const trackID_t trackID, const layoutPosition_t
 	if (track != nullptr)
 	{
 		z2 = track->posZ;
-		ret = datamodel::LayoutItem::mapPosition(track->posX, track->posY, Width1, track->height, track->rotation, x2, y2, w2, h2);
+		ret = datamodel::LayoutItem::MapPosition(track->posX, track->posY, Width1, track->height, track->rotation, x2, y2, w2, h2);
 		if (ret == false)
 		{
 			result = "Unable to calculate position";
@@ -2033,7 +2033,7 @@ bool Manager::checkPositionFree(const layoutPosition_t posX, const layoutPositio
 	layoutPosition_t z = posZ;
 	layoutItemSize_t w;
 	layoutItemSize_t h;
-	bool ret = datamodel::LayoutItem::mapPosition(posX, posY, width, height, rotation, x, y, w, h);
+	bool ret = datamodel::LayoutItem::MapPosition(posX, posY, width, height, rotation, x, y, w, h);
 	if (ret == false)
 	{
 		return false;
@@ -2058,7 +2058,7 @@ bool Manager::checkLayoutPositionFree(const layoutPosition_t posX, const layoutP
 	std::lock_guard<std::mutex> Guard(mutex);
 	for (auto layout : layoutVector)
 	{
-		if (layout.second->checkPositionFree(posX, posY, posZ))
+		if (layout.second->CheckPositionFree(posX, posY, posZ))
 		{
 			continue;
 		}

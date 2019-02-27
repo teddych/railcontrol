@@ -10,10 +10,10 @@ using std::string;
 
 namespace datamodel
 {
-	std::string Track::serialize() const
+	std::string Track::Serialize() const
 	{
 		std::stringstream ss;
-		ss << "objectType=Track;" << LayoutItem::serialize()
+		ss << "objectType=Track;" << LayoutItem::Serialize()
 			<< ";type=" << static_cast<int>(type)
 			<< ";lockState=" << static_cast<int>(lockState)
 			<< ";locoID=" << (int) locoID
@@ -21,11 +21,11 @@ namespace datamodel
 		return ss.str();
 	}
 
-	bool Track::deserialize(const std::string& serialized)
+	bool Track::Deserialize(const std::string& serialized)
 	{
 		map<string, string> arguments;
 		parseArguments(serialized, arguments);
-		LayoutItem::deserialize(arguments);
+		LayoutItem::Deserialize(arguments);
 		width = Width1;
 		visible = VisibleYes;
 		if (!arguments.count("objectType") || arguments.at("objectType").compare("Track") != 0)

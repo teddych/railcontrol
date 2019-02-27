@@ -9,7 +9,7 @@ using std::string;
 
 namespace datamodel
 {
-	std::string Switch::serialize() const
+	std::string Switch::Serialize() const
 	{
 		stringstream ss;
 		ss << "objectType=Switch;"
@@ -19,7 +19,7 @@ namespace datamodel
 		return ss.str();
 	}
 
-	bool Switch::deserialize(const std::string& serialized)
+	bool Switch::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
@@ -32,7 +32,7 @@ namespace datamodel
 		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 		locoIDHardLock = GetIntegerMapEntry(arguments, "locoIDHardLock", LocoNone);
 		// FIXME: locoIDSoftLock
-		Accessory::deserialize(arguments);
+		Accessory::Deserialize(arguments);
 		return true;
 	}
 

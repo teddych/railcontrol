@@ -32,11 +32,11 @@ namespace datamodel
 			:	accessoryState(AccessoryStateOff),
 				lockState(LockStateFree)
 			{
-				deserialize(serialized);
+				Deserialize(serialized);
 			}
 
-			virtual std::string serialize() const override;
-			virtual bool deserialize(const std::string& serialized) override;
+			virtual std::string Serialize() const override;
+			virtual bool Deserialize(const std::string& serialized) override;
 
 			objectType_t ObjectType2() { return objectType2; }
 			objectID_t ObjectID2() { return objectID2; }

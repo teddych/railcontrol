@@ -33,19 +33,19 @@ namespace datamodel
 
 			LayoutItem() {};
 
-			static bool mapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
+			static bool MapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
 
-			bool position(layoutPosition_t& x, layoutPosition_t& y, layoutPosition_t& z, layoutItemSize_t& w, layoutItemSize_t& h, layoutRotation_t& r) const
+			virtual bool Position(layoutPosition_t& x, layoutPosition_t& y, layoutPosition_t& z, layoutItemSize_t& w, layoutItemSize_t& h, layoutRotation_t& r, const layer_t layer = LayerNone) const
 			{
 				z = posZ;
 				r = rotation;
-				return mapPosition(posX, posY, width, height, rotation, x, y, w, h);
+				return MapPosition(posX, posY, width, height, rotation, x, y, w, h);
 			}
 
 
-			virtual bool checkPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
-			virtual std::string serialize() const override;
-			virtual bool deserialize(const std::string& serialized) override;
+			virtual bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
+			virtual std::string Serialize() const override;
+			virtual bool Deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const { return "unknown type"; };
 			virtual std::string Rotation() const { return Rotation(rotation); }
 			static std::string Rotation(layoutRotation_t rotation);
@@ -59,7 +59,7 @@ namespace datamodel
 			layoutRotation_t rotation;
 
 		protected:
-			virtual bool deserialize(const std::map<std::string,std::string>& arguments);
+			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 	};
 } // namespace datamodel
 

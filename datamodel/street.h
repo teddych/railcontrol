@@ -34,8 +34,8 @@ namespace datamodel
 
 			~Street() { DeleteRelations(); }
 
-			std::string serialize() const override;
-			bool deserialize(const std::string& serialized) override;
+			std::string Serialize() const override;
+			bool Deserialize(const std::string& serialized) override;
 
 			void DeleteRelations();
 			bool AssignRelations(const std::vector<datamodel::Relation*>& newRelations);

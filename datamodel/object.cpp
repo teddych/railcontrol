@@ -10,21 +10,21 @@ using std::string;
 
 namespace datamodel
 {
-	std::string Object::serialize() const
+	std::string Object::Serialize() const
 	{
 		stringstream ss;
 		ss << "objectID=" << (int) objectID << ";name=" << name;
 		return ss.str();
 	}
 
-	bool Object::deserialize(const std::string& serialized)
+	bool Object::Deserialize(const std::string& serialized)
 	{
 		map<string, string> arguments;
 		parseArguments(serialized, arguments);
-		return deserialize(arguments);
+		return Deserialize(arguments);
 	}
 
-	bool Object::deserialize(const map<string, string>& arguments)
+	bool Object::Deserialize(const map<string, string>& arguments)
 	{
 		objectID = GetIntegerMapEntry(arguments, "objectID", ObjectNone);
 		name = GetStringMapEntry(arguments, "name");

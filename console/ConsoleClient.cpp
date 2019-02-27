@@ -1244,7 +1244,7 @@ namespace console
 			layoutItemSize_t w;
 			layoutItemSize_t h;
 			layoutRotation_t r;
-			track.second->position(posX, posY, posZ, w, h, r);
+			track.second->Position(posX, posY, posZ, w, h, r);
 			if (posZ != 0)
 			{
 				continue;
@@ -1262,7 +1262,7 @@ namespace console
 			layoutItemSize_t w;
 			layoutItemSize_t h;
 			layoutRotation_t r;
-			mySwitch.second->position(posX, posY, posZ, w, h, r);
+			mySwitch.second->Position(posX, posY, posZ, w, h, r);
 			if (posZ != 0)
 			{
 				continue;
@@ -1280,7 +1280,7 @@ namespace console
 			layoutItemSize_t w;
 			layoutItemSize_t h;
 			layoutRotation_t r;
-			accessory.second->position(posX, posY, posZ, w, h, r);
+			accessory.second->Position(posX, posY, posZ, w, h, r);
 			if (posZ != 0)
 			{
 				continue;

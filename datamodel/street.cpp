@@ -49,7 +49,7 @@ namespace datamodel {
 	:	manager(manager),
 		locoID(LocoNone)
 	{
-		deserialize(serialized);
+		Deserialize(serialized);
 		Track* track = manager->getTrack(fromTrack);
 		if (track == nullptr)
 		{
@@ -58,11 +58,11 @@ namespace datamodel {
 		track->addStreet(this);
 	}
 
-	std::string Street::serialize() const
+	std::string Street::Serialize() const
 	{
 		stringstream ss;
 		ss << "objectType=Street;"
-			<< LayoutItem::serialize()
+			<< LayoutItem::Serialize()
 			<< ";lockState=" << static_cast<int>(lockState)
 			<< ";automode=" << static_cast<int>(automode)
 			<< ";fromTrack=" << static_cast<int>(fromTrack)
@@ -73,13 +73,13 @@ namespace datamodel {
 		return ss.str();
 	}
 
-	bool Street::deserialize(const std::string& serialized)
+	bool Street::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Street") == 0)
 		{
-			LayoutItem::deserialize(arguments);
+			LayoutItem::Deserialize(arguments);
 			lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 			automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
 			fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);

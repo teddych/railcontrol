@@ -36,13 +36,13 @@ namespace datamodel
 
 			Accessory(const std::string& serialized)
 			{
-				deserialize(serialized);
+				Deserialize(serialized);
 			}
 
 			Accessory() {}
 
-			virtual std::string serialize() const override;
-			virtual bool deserialize(const std::string& serialized) override;
+			virtual std::string Serialize() const override;
+			virtual bool Deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const override { return "accessory"; };
 
 			virtual void Inverted(const bool inverted) { this->inverted = inverted; }
@@ -60,7 +60,7 @@ namespace datamodel
 
 		protected:
 			std::string serializeWithoutType() const;
-			virtual bool deserialize(const std::map<std::string,std::string>& arguments);
+			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 
 			bool inverted;
 	};

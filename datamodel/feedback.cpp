@@ -10,20 +10,20 @@ using std::string;
 
 namespace datamodel
 {
-	std::string Feedback::serialize() const
+	std::string Feedback::Serialize() const
 	{
 		stringstream ss;
-		ss << "objectType=Feedback;" << LayoutItem::serialize() << ";controlID=" << (int) controlID << ";pin=" << (int) pin << ";inverted=" << (int) inverted << ";state=" << (int) state;
+		ss << "objectType=Feedback;" << LayoutItem::Serialize() << ";controlID=" << (int) controlID << ";pin=" << (int) pin << ";inverted=" << (int) inverted << ";state=" << (int) state;
 		return ss.str();
 	}
 
-	bool Feedback::deserialize(const std::string& serialized)
+	bool Feedback::Deserialize(const std::string& serialized)
 	{
 		map<string, string> arguments;
 		parseArguments(serialized, arguments);
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Feedback") == 0)
 		{
-			LayoutItem::deserialize(arguments);
+			LayoutItem::Deserialize(arguments);
 			controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 			pin = GetIntegerMapEntry(arguments, "pin");
 			inverted = GetBoolMapEntry(arguments, "inverted", false);

@@ -10,7 +10,7 @@ using std::string;
 
 namespace datamodel
 {
-	std::string Relation::serialize() const
+	std::string Relation::Serialize() const
 	{
 		stringstream ss;
 		ss << "objectType1=" << static_cast<int>(objectType1)
@@ -23,7 +23,7 @@ namespace datamodel
 		return ss.str();
 	}
 
-	bool Relation::deserialize(const std::string& serialized)
+	bool Relation::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);

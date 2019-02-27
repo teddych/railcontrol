@@ -135,7 +135,7 @@ namespace storage {
 		{
 			return;
 		}
-		string serialized = loco.serialize();
+		string serialized = loco.Serialize();
 		instance->saveObject(ObjectTypeLoco, loco.objectID, loco.name, serialized);
 	}
 
@@ -168,7 +168,7 @@ namespace storage {
 		{
 			return;
 		}
-		string serialized = accessory.serialize();
+		string serialized = accessory.Serialize();
 		instance->saveObject(ObjectTypeAccessory, accessory.objectID, accessory.name, serialized);
 	}
 
@@ -202,7 +202,7 @@ namespace storage {
 		{
 			return;
 		}
-		string serialized = feedback.serialize();
+		string serialized = feedback.Serialize();
 		instance->saveObject(ObjectTypeFeedback, feedback.objectID, feedback.name, serialized);
 	}
 
@@ -236,7 +236,7 @@ namespace storage {
 		{
 			return;
 		}
-		string serialized = track.serialize();
+		string serialized = track.Serialize();
 		instance->saveObject(ObjectTypeTrack, track.objectID, track.name, serialized);
 	}
 
@@ -270,7 +270,7 @@ namespace storage {
 		{
 			return;
 		}
-		string serialized = mySwitch.serialize();
+		string serialized = mySwitch.Serialize();
 		instance->saveObject(ObjectTypeSwitch, mySwitch.objectID, mySwitch.name, serialized);
 	}
 
@@ -304,13 +304,13 @@ namespace storage {
 		{
 			return;
 		}
-		string serialized = street.serialize();
+		string serialized = street.Serialize();
 		instance->saveObject(ObjectTypeStreet, street.objectID, street.name, serialized);
 		instance->deleteRelationFrom(ObjectTypeStreet, street.objectID);
 		const vector<datamodel::Relation*> relations = street.GetRelations();
 		for (auto relation : relations)
 		{
-			string serializedRelation = relation->serialize();
+			string serializedRelation = relation->Serialize();
 			instance->saveRelation(ObjectTypeStreet, street.objectID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
 		}
 	}
@@ -352,7 +352,7 @@ namespace storage {
 		{
 			return;
 		}
-		string serialized = layer.serialize();
+		string serialized = layer.Serialize();
 		instance->saveObject(ObjectTypeLayer, layer.objectID, layer.name, serialized);
 	}
 

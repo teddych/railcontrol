@@ -33,11 +33,11 @@ namespace datamodel {
 
 			Switch(const std::string& serialized)
 			{
-				deserialize(serialized);
+				Deserialize(serialized);
 			}
 
-			std::string serialize() const override;
-			bool deserialize(const std::string& serialized) override;
+			std::string Serialize() const override;
+			bool Deserialize(const std::string& serialized) override;
 			virtual std::string layoutType() const { return "switch"; };
 
 			switchState_t GetState() const { return static_cast<switchState_t>(state); }

@@ -29,10 +29,10 @@ namespace datamodel
 		}
 	}
 
-	std::string Loco::serialize() const
+	std::string Loco::Serialize() const
 	{
 		stringstream ss;
-		ss << "objectType=Loco;" << Object::serialize()
+		ss << "objectType=Loco;" << Object::Serialize()
 			<< ";controlID=" << static_cast<int>(controlID)
 			<< ";protocol=" << static_cast<int>(protocol)
 			<< ";address=" << static_cast<int>(address)
@@ -42,11 +42,11 @@ namespace datamodel
 		return ss.str();
 	}
 
-	bool Loco::deserialize(const std::string& serialized)
+	bool Loco::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
 		parseArguments(serialized, arguments);
-		Object::deserialize(arguments);
+		Object::Deserialize(arguments);
 		if (!arguments.count("objectType") || arguments.at("objectType").compare("Loco") != 0)
 		{
 			return false;

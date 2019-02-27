@@ -11,7 +11,7 @@ namespace datamodel
 	class Layer : public Object
 	{
 		public:
-			Layer(const std::string& serialized) { deserialize(serialized); }
+			Layer(const std::string& serialized) { Deserialize(serialized); }
 			Layer(const layerID_t layerID, const std::string& name)
 			:	Object(layerID, name)
 			{
