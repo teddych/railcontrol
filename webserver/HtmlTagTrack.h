@@ -4,11 +4,11 @@
 
 #include "datamodel/track.h"
 #include "datatypes.h"
-#include "webserver/HtmlTag.h"
+#include "webserver/HtmlTagLayoutItem.h"
 
 namespace webserver
 {
-	class HtmlTagTrack : public HtmlTag
+	class HtmlTagTrack : public HtmlTagLayoutItem
 	{
 		public:
 			HtmlTagTrack(const datamodel::Track* track);

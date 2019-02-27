@@ -17,8 +17,8 @@ namespace webserver
 		layoutRotation_t r;
 		track->Position(posX, posY, posZ, w, h, r);
 		trackType_t type = track->Type();
-		unsigned int layoutPosX = posX * 35;
-		unsigned int layoutPosY = posY * 35;
+		unsigned int layoutPosX = posX * EdgeLength;
+		unsigned int layoutPosY = posY * EdgeLength;
 
 		HtmlTag div1("div");
 		string trackIdString = to_string(track->objectID);
@@ -28,7 +28,7 @@ namespace webserver
 		div1.AddClass("track_item");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
-		string layoutHeight = to_string(35 * track->height);
+		string layoutHeight = to_string(EdgeLength * track->height);
 		switch (type)
 		{
 			case TrackTypeLeft:
@@ -52,17 +52,17 @@ namespace webserver
 			image += "<polygon points=\"13,35 22,35 22," + layoutHeight + " 13," + layoutHeight + "\" fill=\"black\"/>";
 			if (track->rotation == Rotation90)
 			{
-				translateX = -((((track->height - 1) * 35) + 1) / 2);
-				translateY = -(((track->height - 1) * 35) / 2);
+				translateX = -((((track->height - 1) * EdgeLength) + 1) / 2);
+				translateY = -(((track->height - 1) * EdgeLength) / 2);
 			}
 			else if (track->rotation == Rotation270)
 			{
-				translateX = ((((track->height - 1) * 35) + 1) / 2);
-				translateY = (((track->height - 1) * 35) / 2);
+				translateX = ((((track->height - 1) * EdgeLength) + 1) / 2);
+				translateY = (((track->height - 1) * EdgeLength) / 2);
 			}
 		}
 
-		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"35\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
+		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(track->name));
 		div1.AddAttribute("oncontextmenu", "return onContextTrack(event, " + trackIdString + ");");
 		AddChildTag(div1);

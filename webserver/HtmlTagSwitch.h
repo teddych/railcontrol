@@ -4,11 +4,11 @@
 
 #include "datamodel/switch.h"
 #include "datatypes.h"
-#include "webserver/HtmlTag.h"
+#include "webserver/HtmlTagLayoutItem.h"
 
 namespace webserver
 {
-	class HtmlTagSwitch : public HtmlTag
+	class HtmlTagSwitch : public HtmlTagLayoutItem
 	{
 		public:
 			HtmlTagSwitch(const datamodel::Switch* mySwitch);

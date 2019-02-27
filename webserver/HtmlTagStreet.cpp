@@ -9,8 +9,8 @@ namespace webserver
 {
 	HtmlTagStreet::HtmlTagStreet(const datamodel::Street* street)
 	{
-		unsigned int layoutPosX = street->posX * 35;
-		unsigned int layoutPosY = street->posY * 35;
+		unsigned int layoutPosX = street->posX * EdgeLength;
+		unsigned int layoutPosY = street->posY * EdgeLength;
 
 		HtmlTag div1("div");
 		string streetIdString = to_string(street->objectID);
@@ -19,7 +19,7 @@ namespace webserver
 		div1.AddClass("layout_item");
 		div1.AddClass("street_item");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
-		string image = "<svg width=\"35\" height=\"35\" id=\"_img\"><polygon points=\"1,20 7,20 7,28 1,28\" fill=\"none\" stroke=\"black\"/><polygon points=\"34,7 28,7 28,15 34,15\" fill=\"none\" stroke=\"black\"/><polyline points=\"7,24 15,24 20,11 28,11\" stroke=\"black\" fill=\"none\"/></svg>";
+		string image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"_img\"><polygon points=\"1,20 7,20 7,28 1,28\" fill=\"none\" stroke=\"black\"/><polygon points=\"34,7 28,7 28,15 34,15\" fill=\"none\" stroke=\"black\"/><polyline points=\"7,24 15,24 20,11 28,11\" stroke=\"black\" fill=\"none\"/></svg>";
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(street->name));
 		div1.AddAttribute("onclick", "return onClickStreet(" + streetIdString + ");");

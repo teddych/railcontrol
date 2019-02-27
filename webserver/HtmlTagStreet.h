@@ -4,11 +4,11 @@
 
 #include "datamodel/street.h"
 #include "datatypes.h"
-#include "webserver/HtmlTag.h"
+#include "webserver/HtmlTagLayoutItem.h"
 
 namespace webserver
 {
-	class HtmlTagStreet : public HtmlTag
+	class HtmlTagStreet : public HtmlTagLayoutItem
 	{
 		public:
 			HtmlTagStreet(const datamodel::Street* street);

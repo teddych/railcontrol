@@ -4,11 +4,11 @@
 
 #include "datamodel/accessory.h"
 #include "datatypes.h"
-#include "webserver/HtmlTag.h"
+#include "webserver/HtmlTagLayoutItem.h"
 
 namespace webserver
 {
-	class HtmlTagAccessory : public HtmlTag
+	class HtmlTagAccessory : public HtmlTagLayoutItem
 	{
 		public:
 			HtmlTagAccessory(const datamodel::Accessory* accessory);

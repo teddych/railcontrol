@@ -4,11 +4,11 @@
 
 #include "datamodel/feedback.h"
 #include "datatypes.h"
-#include "webserver/HtmlTag.h"
+#include "webserver/HtmlTagLayoutItem.h"
 
 namespace webserver
 {
-	class HtmlTagFeedback : public HtmlTag
+	class HtmlTagFeedback : public HtmlTagLayoutItem
 	{
 		public:
 			HtmlTagFeedback(const datamodel::Feedback* feedback);

@@ -11,8 +11,8 @@ namespace webserver
 	{
 		feedbackState_t state = feedback->GetState();
 
-		unsigned int layoutPosX = feedback->posX * 35;
-		unsigned int layoutPosY = feedback->posY * 35;
+		unsigned int layoutPosX = feedback->posX * EdgeLength;
+		unsigned int layoutPosY = feedback->posY * EdgeLength;
 
 		HtmlTag div1("div");
 		string feedbackIdString = to_string(feedback->objectID);
@@ -23,7 +23,7 @@ namespace webserver
 		div1.AddClass(state == FeedbackStateOccupied ? "feedback_occupied" : "feedback_free");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		string image;
-		image = "<svg width=\"35\" height=\"35\" id=\"" + id + "_img\"><circle r=\"14\" cx=\"18\" cy=\"18\" stroke=\"black\" class=\"feedback\"/></svg>";
+		image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\"><circle r=\"12\" cx=\"18\" cy=\"18\" stroke=\"black\" stroke-width=\"2\" class=\"feedback\"/></svg>";
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(feedback->Name() + " (pin=" + to_string(feedback->pin) + ")"));
 		div1.AddAttribute("onclick", "return onClickFeedback(" + feedbackIdString + ");");
