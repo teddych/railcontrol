@@ -23,7 +23,7 @@ namespace webserver
 			{}
 
 			HtmlResponse(const responseCode_t responseCode, const std::string& title, const HtmlTag body);
-			~HtmlResponse() {};
+			virtual ~HtmlResponse() {};
 			void AddAttribute(const std::string name, const std::string value);
 			void AddChildTag(HtmlTag content);
 			operator std::string();

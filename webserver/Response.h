@@ -20,7 +20,7 @@ namespace webserver
 			Response(const responseCode_t responseCode) : responseCode(responseCode) {}
 			Response(const responseCode_t responseCode, const HtmlTag& content) : responseCode(responseCode), content(content) {}
 			Response(const responseCode_t responseCode, const std::string& content) : responseCode(responseCode) { this->content.AddContent(content); }
-			~Response() {};
+			virtual ~Response() {};
 			void AddHeader(const std::string& key, const std::string& value);
 			operator std::string();
 
