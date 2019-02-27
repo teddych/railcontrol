@@ -999,6 +999,22 @@ const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) const
 	return feedbacks.at(feedbackID)->name;
 }
 
+bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+{
+	Feedback* feedback = getFeedback(feedbackID);
+	if (feedback == nullptr)
+	{
+		return false;
+	}
+
+	if (feedback->visible == VisibleNo)
+	{
+		return false;
+	}
+
+	return (feedback->posX == posX && feedback->posY == posY && feedback->posZ == posZ);
+}
+
 bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result)
 {
 	Feedback* feedback;
@@ -1547,7 +1563,7 @@ bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPositio
 bool Manager::streetSave(const streetID_t streetID, const std::string& name, const std::vector<datamodel::Relation*>& relations, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, string& result)
 {
 
-	if (!checkStreetPosition(streetID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
+	if (!CheckStreetPosition(streetID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
 	{
 		result.append("Unable to ");
 		result.append(streetID == StreetNone ? "add" : "move");
@@ -2002,29 +2018,12 @@ void Manager::StopAllLocosImmediately(const controlType_t controlType)
 
 bool Manager::CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
 {
-	bool ret;
-	ret = checkLayoutPositionFree(posX, posY, posZ, result, accessories, accessoryMutex);
-	if (ret == false)
-	{
-		return false;
-	}
-	ret = checkLayoutPositionFree(posX, posY, posZ, result, tracks, trackMutex);
-	if (ret == false)
-	{
-		return false;
-	}
-	ret = checkLayoutPositionFree(posX, posY, posZ, result, feedbacks, feedbackMutex);
-	if (ret == false)
-	{
-		return false;
-	}
-	ret = checkLayoutPositionFree(posX, posY, posZ, result, switches, switchMutex);
-	if (ret == false)
-	{
-		return false;
-	}
-	ret = checkLayoutPositionFree(posX, posY, posZ, result, streets, streetMutex);
-	return ret;
+	return CheckLayoutPositionFree(posX, posY, posZ, result, accessories, accessoryMutex)
+		&& CheckLayoutPositionFree(posX, posY, posZ, result, tracks, trackMutex)
+		&& CheckLayoutPositionFree(posX, posY, posZ, result, feedbacks, feedbackMutex)
+		&& CheckLayoutPositionFree(posX, posY, posZ, result, switches, switchMutex)
+		&& CheckLayoutPositionFree(posX, posY, posZ, result, streets, streetMutex)
+		&& CheckLayoutPositionFree(posX, posY, posZ, result, feedbacks, feedbackMutex);
 }
 
 bool Manager::CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const

@@ -147,6 +147,7 @@ class Manager {
 		bool CheckSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 		bool CheckStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 		bool CheckTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result) const;
+		bool CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 
 		bool checkAddressLoco(const protocol_t protocol, const address_t address, std::string& result);
 		bool checkAddressAccessory(const protocol_t protocol, const address_t address, std::string& result);
