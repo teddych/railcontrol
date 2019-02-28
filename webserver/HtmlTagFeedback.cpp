@@ -19,7 +19,7 @@ namespace webserver
 		string id("f_" + feedbackIdString);
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
-		div1.AddClass("switch_item");
+		div1.AddClass("feedback_item");
 		div1.AddClass(state == FeedbackStateOccupied ? "feedback_occupied" : "feedback_free");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		string image;
@@ -27,7 +27,7 @@ namespace webserver
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(feedback->Name() + " (pin=" + to_string(feedback->pin) + ")"));
 		div1.AddAttribute("onclick", "return onClickFeedback(" + feedbackIdString + ");");
-		div1.AddAttribute("oncontextmenu", "return onContextFeedback(event, " + feedbackIdString + ");");
+		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);
 
 		HtmlTag div2("div");

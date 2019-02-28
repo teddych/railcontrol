@@ -35,7 +35,7 @@ namespace webserver
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(mySwitch->name + " (addr=" + to_string(mySwitch->address) + ")"));
 		div1.AddAttribute("onclick", "return onClickSwitch(" + switchIdString + ");");
-		div1.AddAttribute("oncontextmenu", "return onContextSwitch(event, " + switchIdString + ");");
+		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);
 
 		HtmlTag div2("div");

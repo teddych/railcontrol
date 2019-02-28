@@ -102,25 +102,7 @@ function onClickAccessory(accessoryID)
 	var url = '/?cmd=accessorystate';
 	url += '&state=' + (element.classList.contains('accessory_off') ? 'on' : 'off');
 	url += '&accessory=' + accessoryID;
-	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.open('GET', url, true);
-	xmlHttp.send(null);
-	return false;
-}
-
-function onContextAccessory(event, accessoryID)
-{
-	if (event.shiftKey)
-	{
-		return true;
-	}
-	event.stopPropagation();
-	hideAllContextMenus();
-	var menu = document.getElementById('a_' + accessoryID + '_context');
-	if (menu)
-	{
-		menu.style.display = 'block';
-	}
+	fireRequestAndForget(url);
 	return false;
 }
 
@@ -129,25 +111,7 @@ function onClickStreet(streetID)
 	var element = document.getElementById('st_' + streetID);
 	var url = '/?cmd=streetexecute';
 	url += '&street=' + streetID;
-	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.open('GET', url, true);
-	xmlHttp.send(null);
-	return false;
-}
-
-function onContextStreet(event, streetID)
-{
-	if (event.shiftKey)
-	{
-		return true;
-	}
-	event.stopPropagation();
-	hideAllContextMenus();
-	var menu = document.getElementById('st_' + streetID + '_context');
-	if (menu)
-	{
-		menu.style.display = 'block';
-	}
+	fireRequestAndForget(url);
 	return false;
 }
 
@@ -157,13 +121,21 @@ function onClickSwitch(switchID)
 	var url = '/?cmd=switchstate';
 	url += '&state=' + (element.classList.contains('switch_straight') ? 'turnout' : 'straight');
 	url += '&switch=' + switchID;
-	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.open('GET', url, true);
-	xmlHttp.send(null);
+	fireRequestAndForget(url);
 	return false;
 }
 
-function onContextSwitch(event, switchID)
+function onClickFeedback(feedbackID)
+{
+	var element = document.getElementById('f_' + feedbackID);
+	var url = '/?cmd=feedbackstate';
+	url += '&state=' + (element.classList.contains('feedback_free') ? 'occupied' : 'free');
+	url += '&feedback=' + feedbackID;
+	fireRequestAndForget(url);
+	return false;
+}
+
+function onContextLayoutItem(event, ID)
 {
 	if (event.shiftKey)
 	{
@@ -171,23 +143,7 @@ function onContextSwitch(event, switchID)
 	}
 	event.stopPropagation();
 	hideAllContextMenus();
-	var menu = document.getElementById('sw_' + switchID + '_context');
-	if (menu)
-	{
-		menu.style.display = 'block';
-	}
-	return false;
-}
-
-function onContextTrack(event, trackID)
-{
-	if (event.shiftKey)
-	{
-		return true;
-	}
-	event.stopPropagation();
-	hideAllContextMenus();
-	var menu = document.getElementById('t_' + trackID + '_context');
+	var menu = document.getElementById(ID + '_context');
 	if (menu)
 	{
 		menu.style.display = 'block';

@@ -25,7 +25,7 @@ namespace webserver
 		div1.AddChildTag(HtmlTag("span").AddClass("symbola").AddContent("&#9209;"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(accessory->name + " (addr=" + to_string(accessory->address) + ")"));
 		div1.AddAttribute("onclick", "return onClickAccessory(" + accessoryIdString + ");");
-		div1.AddAttribute("oncontextmenu", "return onContextAccessory(event, " + accessoryIdString + ");");
+		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);
 
 		HtmlTag div2("div");
