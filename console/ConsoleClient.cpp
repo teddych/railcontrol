@@ -990,7 +990,7 @@ namespace console
 			state = FeedbackStateFree;
 			text = (char*)"OFF";
 		}
-		manager.feedback(ControlTypeConsole, feedbackID, state);
+		manager.FeedbackStatus(ControlTypeConsole, feedbackID, state);
 		stringstream status;
 		status << "Feedback \"" << manager.getFeedbackName(feedbackID) << "\" turned " << text;
 		SendAndPrompt(status.str());

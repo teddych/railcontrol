@@ -141,12 +141,12 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state)
+	void WebServer::FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		stringstream command;
 		stringstream status;
-		command << "feedback;pin=" << pin << ";state=" << (state ? "on" : "off");
-		status << "Feedback " << pin << " is " << (state ? "on" : "off");
+		command << "feedback;feedback=" << feedbackID << ";state=" << (state ? "on" : "off");
+		status << "Feedback " << feedbackID << " is " << (state ? "on" : "off");
 		addUpdate(command.str(), status.str());
 	}
 

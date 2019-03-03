@@ -336,7 +336,7 @@ namespace hardware
 					state = FeedbackStateFree;
 				}
 				logger->Info("S88 Pin {0} set to {1}", address, text);
-				manager->feedback(ControlTypeHardware, address, state);
+				manager->FeedbackStatus(ControlTypeHardware, address, state);
 			}
 			else if (command == 0x04 && !response && length == 6)
 			{

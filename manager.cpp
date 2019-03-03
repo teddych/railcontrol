@@ -963,19 +963,40 @@ bool Manager::accessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 * Feedback                 *
 ***************************/
 
-void Manager::feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state)
+void Manager::FeedbackStatus(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state)
 {
-	Feedback* feedback = getFeedback(pin);
+	feedbackID_t feedbackID = FeedbackNone;
+	{
+		std::lock_guard<std::mutex> Guard(feedbackMutex);
+		for (auto feedback : feedbacks)
+		{
+			if (feedback.second->controlID == controlID && feedback.second->pin == pin)
+			{
+				feedbackID = feedback.first;
+				break;
+			}
+		}
+	}
+	if (feedbackID == AccessoryNone)
+	{
+		return;
+	}
+	return FeedbackStatus(controlType, feedbackID, state);
+}
+
+void Manager::FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
+{
+	Feedback* feedback = getFeedback(feedbackID);
 	if (feedback == nullptr)
 	{
 		return;
 	}
-	logger->Info("Feedback {0} is now {1}", pin, (state ? "on" : "off"));
+	logger->Info("Feedback {0} is now {1}", feedback->Name(), (state ? "on" : "off"));
 	feedback->SetState(state);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->feedback(controlType, pin, state);
+		control.second->FeedbackStatus(controlType, feedbackID, state);
 	}
 }
 
@@ -984,7 +1005,7 @@ datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID) const
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	if (feedbacks.count(feedbackID) != 1)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return feedbacks.at(feedbackID);
 }
@@ -996,7 +1017,7 @@ const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) const
 	{
 		return unknownFeedback;
 	}
-	return feedbacks.at(feedbackID)->name;
+	return feedbacks.at(feedbackID)->Name();
 }
 
 bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const

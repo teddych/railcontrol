@@ -78,7 +78,8 @@ class Manager {
 		bool accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
-		void feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state);
+		void FeedbackStatus(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state);
+		void FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state);
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID) const;
 		const std::string& getFeedbackName(const feedbackID_t feedbackID) const;
 		const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }

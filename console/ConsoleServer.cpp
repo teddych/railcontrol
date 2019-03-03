@@ -112,10 +112,10 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::feedback(const controlType_t controlType, const feedbackPin_t pin, const feedbackState_t state)
+	void ConsoleServer::FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		std::stringstream status;
-		status << "Feedback " << pin << " is " << (state ? "on" : "off");
+		status << "Feedback " << feedbackID << " is " << (state ? "on" : "off");
 		AddUpdate(status.str());
 	}
 

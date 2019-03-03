@@ -232,7 +232,7 @@ namespace hardware
 						}
 						address_t address = (module * 8) + pin;
 						logger->Info("S88 Pin {0} set to {1}", address, text);
-						manager->feedback(ControlTypeHardware, address, state);
+						manager->FeedbackStatus(ControlTypeHardware, controlID, address, state);
 					}
 					s88Memory[module] = byte;
 				}
