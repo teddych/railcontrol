@@ -33,12 +33,9 @@ namespace hardware
 
 	// start the thing
 	CS2::CS2(const HardwareParams* params)
-	:	logger(Logger::Logger::GetLogger("CS2 " + params->name + " " + params->arg1)),
-		manager(params->manager)
+	:	HardwareInterface(params->manager, params->controlID, "Maerklin Central Station 2 (CS2) / " + params->name + " at IP " + params->arg1),
+	 	logger(Logger::Logger::GetLogger("CS2 " + params->name + " " + params->arg1))
 	{
-		std::stringstream ss;
-		ss << "Maerklin Central Station 2 (CS2) / " << params->name << " at IP " << params->arg1;
-		name = ss.str();
 		logger->Info(name);
 		run = true;
 		senderSocket = CreateUdpConnection((struct sockaddr*)&sockaddr_inSender, sizeof(struct sockaddr_in), params->arg1.c_str(), CS2_PORT_SEND);

@@ -24,13 +24,10 @@ namespace hardware
 	}
 
 	M6051::M6051(const HardwareParams* params)
-	:	logger(Logger::Logger::GetLogger("M6051 " + params->name + " " + params->arg1)),
-		manager(params->manager),
+	:	HardwareInterface(params->manager, params->controlID, "Maerklin Interface (6050/6051) / " + params->name + " at serial port " + params->arg1),
+	 	logger(Logger::Logger::GetLogger("M6051 " + params->name + " " + params->arg1)),
 		run(true)
 	{
-		std::stringstream ss;
-		ss << "Maerklin Interface (6050/6051) / " << params->name << " at serial port " << params->arg1;
-		name = ss.str();
 		logger->Info(name);
 
 		ttyFileDescriptor = open(params->arg1.c_str(), O_RDWR | O_NOCTTY);

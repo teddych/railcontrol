@@ -19,7 +19,6 @@ namespace hardware
 		public:
 			CS2(const HardwareParams* params);
 			~CS2();
-			const std::string GetName() const override { return name; };
 
 			bool CanHandleLocos() const { return true; }
 			bool CanHandleAccessories() const { return true; }
@@ -63,11 +62,11 @@ namespace hardware
 			Logger::Logger* logger;
 			volatile unsigned char run;
 			std::string name;
-			Manager* manager;
 			struct sockaddr_in sockaddr_inSender;
 			int senderSocket;
 			std::thread receiverThread;
 			static const unsigned short hash = 0x7337;
+
 			typedef unsigned char cs2Prio_t;
 			typedef unsigned char cs2Command_t;
 			typedef unsigned char cs2Response_t;

@@ -16,7 +16,6 @@ namespace hardware
 		public:
 			M6051(const HardwareParams* params);
 			~M6051();
-			const std::string GetName() const override { return name; };
 
 			bool CanHandleLocos() const { return true; }
 			bool CanHandleAccessories() const { return true; }

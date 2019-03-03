@@ -78,7 +78,6 @@ namespace hardware
 		public:
 			RM485(const HardwareParams* params);
 			~RM485();
-			const std::string GetName() const override { return name; };
 
 			bool CanHandleFeedback() const { return true; }
 

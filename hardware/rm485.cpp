@@ -24,7 +24,8 @@ namespace hardware
 	}
 
 	RM485::RM485(const HardwareParams* params)
-	:	logger(Logger::Logger::GetLogger("RM485 " + params->name + " " + params->arg1)),
+	:	HardwareInterface(params->manager, params->controlID, "RM485 / " + params->name + " at serial port " + params->arg1),
+		logger(Logger::Logger::GetLogger("RM485 " + params->name + " " + params->arg1)),
 		manager(params->manager),
 		communication(params->arg1),
 		run(true),
@@ -32,9 +33,6 @@ namespace hardware
 		rescanCount(RescanCountStart)
 	{
 		memset(data, 0, sizeof(data));
-		std::stringstream ss;
-		ss << "RM485 / " << params->name << " at serial port " << params->arg1;
-		name = ss.str();
 		logger->Info(name);
 
 		ttyFileDescriptor = open(params->arg1.c_str(), O_RDWR | O_NOCTTY);

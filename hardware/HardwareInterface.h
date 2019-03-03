@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "datatypes.h"
+#include "manager.h"
 
 namespace hardware
 {
@@ -13,13 +14,17 @@ namespace hardware
 	{
 		public:
 			// non virtual default constructor is needed to prevent polymorphism
-			HardwareInterface() {};
+			HardwareInterface(Manager* manager, const controlID_t controlID, const std::string& name)
+			:	manager(manager),
+			 	controlID(controlID),
+			 	name(name)
+			{};
 
 			// pure virtual destructor prevents polymorphism in derived class
 			virtual ~HardwareInterface() {};
 
 			// get the name of the hardware
-			virtual const std::string GetName() const = 0;
+			const std::string GetName() const { return name; }
 
 			// can this control handle locos
 			virtual bool CanHandleLocos() const { return false; }
@@ -59,6 +64,11 @@ namespace hardware
 
 			// accessory command
 			virtual void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) {};
+
+		protected:
+			Manager* manager;
+			const controlID_t controlID;
+			const std::string name;
 	};
 
 } // namespace
