@@ -338,6 +338,22 @@ namespace hardware
 				logger->Info("S88 Pin {0} set to {1}", address, text);
 				manager->FeedbackState(ControlTypeHardware, address, state);
 			}
+			else if (command == 0x00 && !response && length == 5)
+			{
+				unsigned char subcmd = buffer[9];
+				switch (subcmd)
+				{
+					case 0x00:
+						// system stopp
+						manager->booster(ControlTypeHardware, BoosterStop);
+						break;
+
+					case 0x01:
+						// system go
+						manager->booster(ControlTypeHardware, BoosterGo);
+						break;
+				}
+			}
 			else if (command == 0x04 && !response && length == 6)
 			{
 				// speed event
