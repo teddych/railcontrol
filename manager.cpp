@@ -452,6 +452,27 @@ const std::map<controlID_t,std::string> Manager::AccessoryControlListNames() con
 	return ret;
 }
 
+const std::map<controlID_t,std::string> Manager::FeedbackControlListNames() const
+{
+	std::map<controlID_t,std::string> ret;
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	for (auto hardware : hardwareParams)
+	{
+		std::lock_guard<std::mutex> Guard2(controlMutex);
+		if (controls.count(hardware.second->controlID) != 1)
+		{
+			continue;
+		}
+		CommandInterface* c = controls.at(hardware.second->controlID);
+		if (c->CanHandleFeedback() == false)
+		{
+			continue;
+		}
+		ret[hardware.first] = hardware.second->name;
+	}
+	return ret;
+}
+
 const map<string,hardware::HardwareParams*> Manager::controlListByName() const
 {
 	map<string,hardware::HardwareParams*> out;
@@ -1097,6 +1118,17 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 		control.second->feedbackSettings(feedback->objectID, name);
 	}
 	return feedback;
+}
+
+const map<string,datamodel::Feedback*> Manager::FeedbackListByName() const
+{
+	map<string,datamodel::Feedback*> out;
+	std::lock_guard<std::mutex> Guard(feedbackMutex);
+	for(auto feedback : feedbacks)
+	{
+		out[feedback.second->name] = feedback.second;
+	}
+	return out;
 }
 
 bool Manager::feedbackDelete(const feedbackID_t feedbackID)

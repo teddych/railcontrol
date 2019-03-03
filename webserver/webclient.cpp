@@ -325,6 +325,34 @@ namespace webserver
 			{
 				handleTrackGet(arguments);
 			}
+			else if (arguments["cmd"].compare("feedbackedit") == 0)
+			{
+				handleFeedbackEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("feedbacksave") == 0)
+			{
+				handleFeedbackSave(arguments);
+			}
+			else if (arguments["cmd"].compare("feedbackstate") == 0)
+			{
+				handleFeedbackState(arguments);
+			}
+			else if (arguments["cmd"].compare("feedbacklist") == 0)
+			{
+				handleFeedbackList(arguments);
+			}
+			else if (arguments["cmd"].compare("feedbackaskdelete") == 0)
+			{
+				handleFeedbackAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("feedbackdelete") == 0)
+			{
+				handleFeedbackDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("feedbackget") == 0)
+			{
+				handleFeedbackGet(arguments);
+			}
 			else if (arguments["cmd"].compare("protocolloco") == 0)
 			{
 				handleProtocolLoco(arguments);
@@ -1610,15 +1638,15 @@ namespace webserver
 		content.AddChildTag(HtmlTag("h1").AddContent("Switches"));
 		HtmlTag table("table");
 		const map<string,datamodel::Switch*> switchList = manager.switchListByName();
-		map<string,string> locoArgument;
+		map<string,string> switchArgument;
 		for (auto mySwitch : switchList)
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(mySwitch.first));
 			string switchIdString = to_string(mySwitch.second->objectID);
-			locoArgument["switch"] = switchIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "switchedit_list_" + switchIdString, locoArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "switchaskdelete_" + switchIdString, locoArgument)));
+			switchArgument["switch"] = switchIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "switchedit_list_" + switchIdString, switchArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "switchaskdelete_" + switchIdString, switchArgument)));
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
@@ -2010,15 +2038,15 @@ namespace webserver
 		content.AddChildTag(HtmlTag("h1").AddContent("Tracks"));
 		HtmlTag table("table");
 		const map<string,datamodel::Track*> trackList = manager.trackListByName();
-		map<string,string> locoArgument;
+		map<string,string> trackArgument;
 		for (auto track : trackList)
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(track.first));
 			string locoIdString = to_string(track.second->objectID);
-			locoArgument["track"] = locoIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "trackedit_list_" + locoIdString, locoArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "trackaskdelete_" + locoIdString, locoArgument)));
+			trackArgument["track"] = locoIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "trackedit_list_" + locoIdString, trackArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "trackaskdelete_" + locoIdString, trackArgument)));
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
@@ -2051,6 +2079,181 @@ namespace webserver
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
 		const datamodel::Track* track = manager.getTrack(trackID);
 		HtmlReplyWithHeader(HtmlTagTrack(track));
+	}
+
+	void WebClient::handleFeedbackEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		string name("New feedback");
+		controlID_t controlId = ControlNone;
+		feedbackPin_t pin = FeedbackPinNone;
+		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		bool inverted = false;
+		if (feedbackID > FeedbackNone)
+		{
+			const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+			name = feedback->name;
+			controlId = feedback->controlID;
+			pin = feedback->pin;
+			inverted = feedback->IsInverted();
+			posx = feedback->posX;
+			posy = feedback->posY;
+			posz = feedback->posZ;
+		}
+
+		std::map<controlID_t,string> controls = manager.FeedbackControlListNames();
+		std::map<string, string> controlOptions;
+		for(auto control : controls)
+		{
+			controlOptions[to_string(control.first)] = control.second;
+			if (controlId == ControlIdNone)
+			{
+				controlId = control.first;
+			}
+		}
+
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit feedback &quot;" + name + "&quot;"));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag formContent;
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "feedbacksave"));
+		formContent.AddChildTag(HtmlTagInputHidden("switch", to_string(feedbackID)));
+
+		HtmlTag mainContent("div");
+		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddClass("tab_content");
+		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Switch Name:", name));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlId)).AddAttribute("onchange", "loadProtocol('switch', " + to_string(feedbackID) + ")"));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", "Pin:", pin, 1, 4096));
+		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted));
+		formContent.AddChildTag(mainContent);
+
+		HtmlTag positionContent("div");
+		positionContent.AddAttribute("id", "tab_position");
+		positionContent.AddClass("tab_content");
+		positionContent.AddClass("hidden");
+		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
+		formContent.AddChildTag(positionContent);
+
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleFeedbackSave(const map<string, string>& arguments)
+	{
+		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		string name = GetStringMapEntry(arguments, "name");
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		feedbackPin_t pin = static_cast<feedbackPin_t>(GetIntegerMapEntry(arguments, "pin", FeedbackPinNone));
+		bool inverted = GetBoolMapEntry(arguments, "inverted");
+		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		string result;
+		if (!manager.feedbackSave(feedbackID, name, posX, posY, posZ, controlId, pin, inverted, result))
+		{
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
+		}
+		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + name + "&quot; saved.");
+	}
+
+	void WebClient::handleFeedbackState(const map<string, string>& arguments)
+	{
+		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		feedbackState_t state = (GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? FeedbackStateOccupied : FeedbackStateFree);
+
+		manager.FeedbackStatus(ControlTypeWebserver, feedbackID, state);
+
+		stringstream ss;
+		ss << "Feedback &quot;" << manager.getFeedbackName(feedbackID) << "&quot; is now set to " << state;
+		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+	}
+
+	void WebClient::handleFeedbackList(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTag("h1").AddContent("Feedback"));
+		HtmlTag table("table");
+		const map<string,datamodel::Feedback*> feedbackList = manager.FeedbackListByName();
+		map<string,string> feedbackArgument;
+		for (auto feedback : feedbackList)
+		{
+			HtmlTag row("tr");
+			row.AddChildTag(HtmlTag("td").AddContent(feedback.first));
+			string feedbackIdString = to_string(feedback.second->objectID);
+			feedbackArgument["feedback"] = feedbackIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "feedbackedit_list_" + feedbackIdString, feedbackArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "feedbackaskdelete_" + feedbackIdString, feedbackArgument)));
+			table.AddChildTag(row);
+		}
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonPopup("New", "feedbackedit_0"));
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleFeedbackAskDelete(const map<string, string>& arguments)
+	{
+		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+
+		if (feedbackID == FeedbackNone)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown feedback");
+			return;
+		}
+
+		const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		if (feedback == nullptr)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown feedback");
+			return;
+		}
+
+		HtmlTag content;
+		content.AddContent(HtmlTag("h1").AddContent("Delete feedback &quot;" + feedback->name + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the feedback &quot;" + feedback->name + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "feedbackdelete"))
+			.AddContent(HtmlTagInputHidden("feedback", to_string(feedbackID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleFeedbackDelete(const map<string, string>& arguments)
+	{
+		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		if (feedback == nullptr)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unable to delete feedback");
+			return;
+		}
+
+		if (!manager.feedbackDelete(feedbackID))
+		{
+			HtmlReplyWithHeaderAndParagraph("Unable to delete feedback");
+			return;
+		}
+
+		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + feedback->Name() + "&quot; deleted.");
+	}
+
+	void WebClient::handleFeedbackGet(const map<string, string>& arguments)
+	{
+		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		HtmlReplyWithHeader(HtmlTagFeedback(feedback));
 	}
 
 	void WebClient::handleLocoSelector(const map<string, string>& arguments)

@@ -46,6 +46,7 @@ class Manager {
 		const std::map<std::string,hardware::HardwareParams*> controlListByName() const;
 		const std::map<controlID_t,std::string> LocoControlListNames() const;
 		const std::map<controlID_t,std::string> AccessoryControlListNames() const;
+		const std::map<controlID_t,std::string> FeedbackControlListNames() const;
 		const std::map<std::string,protocol_t> LocoProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeLoco, controlID); }
 		const std::map<std::string,protocol_t> AccessoryProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeAccessory, controlID); }
 		const std::map<unsigned char,argumentType_t> ArgumentTypesOfControl(const controlID_t controlID) const;
@@ -83,6 +84,7 @@ class Manager {
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID) const;
 		const std::string& getFeedbackName(const feedbackID_t feedbackID) const;
 		const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
+		const std::map<std::string,datamodel::Feedback*> FeedbackListByName() const;
 		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted,  std::string& result);
 		bool feedbackDelete(const feedbackID_t feedbackID);
 

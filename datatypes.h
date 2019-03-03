@@ -52,6 +52,7 @@ static const locoID_t LocoNone = 0;
 static const objectID_t ObjectNone = 0;
 static const accessoryID_t AccessoryNone = 0;
 static const feedbackID_t FeedbackNone = 0;
+static const feedbackPin_t FeedbackPinNone = 0;
 static const trackID_t TrackNone = 0;
 static const switchID_t SwitchNone = 0;
 static const streetID_t StreetNone = 0;

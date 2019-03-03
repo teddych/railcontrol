@@ -102,6 +102,13 @@ namespace webserver
 			void handleTrackAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackGet(const std::map<std::string, std::string>& arguments);
+			void handleFeedbackEdit(const std::map<std::string,std::string>& arguments);
+			void handleFeedbackSave(const std::map<std::string,std::string>& arguments);
+			void handleFeedbackState(const std::map<std::string,std::string>& arguments);
+			void handleFeedbackList(const std::map<std::string,std::string>& arguments);
+			void handleFeedbackAskDelete(const std::map<std::string,std::string>& arguments);
+			void handleFeedbackDelete(const std::map<std::string,std::string>& arguments);
+			void handleFeedbackGet(const std::map<std::string,std::string>& arguments);
 			void handleLocoSelector(const std::map<std::string,std::string>& arguments);
 			void handleLayerSelector(const std::map<std::string,std::string>& arguments);
 			void handleRelationAdd(const std::map<std::string,std::string>& arguments);
