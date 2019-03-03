@@ -909,9 +909,9 @@ namespace webserver
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments)
 	{
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		LocoSpeed speed = GetIntegerMapEntry(arguments, "speed", MinSpeed);
+		locoSpeed_t speed = GetIntegerMapEntry(arguments, "speed", MinSpeed);
 
-		manager.locoSpeed(ControlTypeWebserver, locoID, speed);
+		manager.LocoSpeed(ControlTypeWebserver, locoID, speed);
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to speed " << speed;
@@ -923,7 +923,7 @@ namespace webserver
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		direction_t direction = (GetBoolMapEntry(arguments, "on") ? DirectionRight : DirectionLeft);
 
-		manager.locoDirection(ControlTypeWebserver, locoID, direction);
+		manager.LocoDirection(ControlTypeWebserver, locoID, direction);
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to " << direction;
@@ -936,7 +936,7 @@ namespace webserver
 		function_t function = GetIntegerMapEntry(arguments, "function", 0);
 		bool on = GetBoolMapEntry(arguments, "on");
 
-		manager.locoFunction(ControlTypeWebserver, locoID, function, on);
+		manager.LocoFunction(ControlTypeWebserver, locoID, function, on);
 
 		stringstream ss;
 		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now f";

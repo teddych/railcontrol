@@ -11,7 +11,7 @@ typedef unsigned short objectID_t;
 // loco
 typedef objectID_t locoID_t;
 typedef unsigned short address_t;
-typedef unsigned short LocoSpeed;
+typedef unsigned short locoSpeed_t;
 typedef unsigned char function_t;
 
 // layoutItem
@@ -60,8 +60,8 @@ static const controlID_t ControlNone = 0;
 static const layerID_t LayerNone = 0;
 static const layerID_t LayerUndeletable = 1;
 
-static const LocoSpeed MaxSpeed = 1023;
-static const LocoSpeed MinSpeed = 0;
+static const locoSpeed_t MaxSpeed = 1023;
+static const locoSpeed_t MinSpeed = 0;
 
 static const layoutItemSize_t Width1 = 1;
 static const layoutItemSize_t Height1 = 1;

@@ -684,13 +684,15 @@ bool Manager::locoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 	return true;
 }
 
-void Manager::locoSpeed(const controlType_t controlType, const protocol_t protocol, const address_t address, const LocoSpeed speed)
+void Manager::LocoSpeed(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 {
 	locoID_t locoID = LocoNone;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
 		for (auto loco : locos) {
-			if (loco.second->protocol == protocol && loco.second->address == address)
+			if (loco.second->controlID == controlID
+				&& loco.second->protocol == protocol
+				&& loco.second->address == address)
 			{
 				locoID = loco.first;
 				break;
@@ -701,17 +703,17 @@ void Manager::locoSpeed(const controlType_t controlType, const protocol_t protoc
 	{
 		return;
 	}
-	locoSpeed(controlType, locoID, speed);
+	LocoSpeed(controlType, locoID, speed);
 }
 
-bool Manager::locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed)
+bool Manager::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;
 	}
-	LocoSpeed s = speed;
+	locoSpeed_t s = speed;
 	if (speed > MaxSpeed)
 	{
 		s = MaxSpeed;
@@ -721,12 +723,12 @@ bool Manager::locoSpeed(const controlType_t controlType, const locoID_t locoID, 
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoSpeed(controlType, locoID, s);
+		control.second->LocoSpeed(controlType, locoID, s);
 	}
 	return true;
 }
 
-const LocoSpeed Manager::locoSpeed(const locoID_t locoID) const
+const locoSpeed_t Manager::LocoSpeed(const locoID_t locoID) const
 {
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr)
@@ -736,19 +738,21 @@ const LocoSpeed Manager::locoSpeed(const locoID_t locoID) const
 	return loco->Speed();
 }
 
-void Manager::locoDirection(const controlType_t controlType, const protocol_t protocol, const address_t address, const direction_t direction)
+void Manager::LocoDirection(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const direction_t direction)
 {
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	for (auto loco : locos)
 	{
-		if (loco.second->protocol == protocol && loco.second->address == address)
+		if (loco.second->controlID == controlID
+			&& loco.second->protocol == protocol
+			&& loco.second->address == address)
 		{
-			locoDirection(controlType, loco.first, direction);
+			LocoDirection(controlType, loco.first, direction);
 			return;
 		}
 	}
 }
-void Manager::locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
+void Manager::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 {
 	Loco* loco = getLoco(locoID);
 	loco->SetDirection(direction);
@@ -756,11 +760,11 @@ void Manager::locoDirection(const controlType_t controlType, const locoID_t loco
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoDirection(controlType, locoID, direction);
+		control.second->LocoDirection(controlType, locoID, direction);
 	}
 }
 
-void Manager::locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
+void Manager::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
 {
 	Loco* loco = getLoco(locoID);
 	loco->SetFunction(function, on);
@@ -768,7 +772,7 @@ void Manager::locoFunction(const controlType_t controlType, const locoID_t locoI
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoFunction(controlType, locoID, function, on);
+		control.second->LocoFunction(controlType, locoID, function, on);
 	}
 }
 
@@ -1920,7 +1924,7 @@ bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 
 bool Manager::locoRelease(const locoID_t locoID)
 {
-	locoSpeed(ControlTypeInternal, locoID, MinSpeed);
+	LocoSpeed(ControlTypeInternal, locoID, MinSpeed);
 
 	Loco* loco = getLoco(locoID);
 	if (loco == nullptr)
@@ -2085,7 +2089,7 @@ void Manager::StopAllLocosImmediately(const controlType_t controlType)
 	for (auto loco : locos)
 	{
 		locoID_t locoId = loco.second->objectID;
-		locoSpeed(controlType, locoId, MinSpeed);
+		LocoSpeed(controlType, locoId, MinSpeed);
 	}
 }
 

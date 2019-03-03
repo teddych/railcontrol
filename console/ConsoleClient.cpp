@@ -1073,7 +1073,7 @@ namespace console
 		status
 			<< "Loco ID:  " << locoID
 			<< "\nName:     " << loco->name
-			<< "\nSpeed:    " << manager.locoSpeed(locoID)
+			<< "\nSpeed:    " << manager.LocoSpeed(locoID)
 			<< "\nControl:  " << manager.getControlName(loco->controlID)
 			<< "\nProtocol: " << protocolSymbols[loco->protocol]
 			<< "\nAddress:  " << loco->address;
@@ -1138,8 +1138,8 @@ namespace console
 	void ConsoleClient::HandleLocoSpeed(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
-		LocoSpeed speed = ReadNumber(s, i);
-		if (!manager.locoSpeed(ControlTypeConsole, locoID, speed))
+		locoSpeed_t speed = ReadNumber(s, i);
+		if (!manager.LocoSpeed(ControlTypeConsole, locoID, speed))
 		{
 			// FIXME: bether errormessage
 			SendAndPrompt("Unknown loco");

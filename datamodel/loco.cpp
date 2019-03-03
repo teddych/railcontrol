@@ -133,7 +133,7 @@ namespace datamodel
 			switch (state)
 			{
 				case LocoStateManual:
-					manager->locoSpeed(ControlTypeInternal, objectID, 0);
+					manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 					return true;
 
 				case LocoStateOff:
@@ -151,7 +151,7 @@ namespace datamodel
 				default:
 					logger->Error("Loco {0} is in unknown state. Setting to error state and setting speed to 0.", name);
 					state = LocoStateError;
-					manager->locoSpeed(ControlTypeInternal, objectID, 0);
+					manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 					return false;
 			}
 		}
@@ -215,7 +215,7 @@ namespace datamodel
 						// start loco
 						manager->locoStreet(objectID, streetID, toTrackID);
 						// FIXME: make maxspeed configurable
-						manager->locoSpeed(ControlTypeInternal, objectID, MaxSpeed >> 1);
+						manager->LocoSpeed(ControlTypeInternal, objectID, MaxSpeed >> 1);
 						loco->state = LocoStateRunning;
 						break;
 					}
@@ -234,7 +234,7 @@ namespace datamodel
 
 					case LocoStateError:
 						logger->Error("Loco {0} is in error state.", name);
-						manager->locoSpeed(ControlTypeInternal, objectID, 0);
+						manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 						break;
 				}
 			}
@@ -273,7 +273,7 @@ namespace datamodel
 	void Loco::destinationReached()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		manager->locoSpeed(ControlTypeInternal, objectID, 0);
+		manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 		// set loco to new track
 		Street* street = manager->getStreet(streetID);
 		if (street == nullptr)

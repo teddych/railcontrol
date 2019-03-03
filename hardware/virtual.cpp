@@ -37,7 +37,7 @@ namespace hardware
 	}
 
 	// set loco speed
-	void Virtual::SetLocoSpeed(const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
+	void Virtual::LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
 	{
 		logger->Info("Setting speed of loco {0}/{1} to speed {2}", protocol, address, speed);
 	}

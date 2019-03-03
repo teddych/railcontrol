@@ -99,7 +99,7 @@ namespace hardware
 		SendOneByte(c);
 	}
 
-	void M6051::SetLocoSpeed(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const LocoSpeed& speed)
+	void M6051::LocoSpeed(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
 	{
 		if (ttyFileDescriptor < 0)
 		{

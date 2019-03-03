@@ -77,14 +77,14 @@ namespace console
 		}
 	}
 
-	void ConsoleServer::locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed)
+	void ConsoleServer::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " speed is " << speed;
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
+	void ConsoleServer::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 	{
 		std::stringstream status;
 		const char* directionText = (direction ? "forward" : "reverse");
@@ -92,7 +92,7 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
+	void ConsoleServer::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
 	{
 		std::stringstream status;
 		status << manager.getLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");

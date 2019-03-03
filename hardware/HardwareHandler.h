@@ -23,9 +23,9 @@ namespace hardware {
 			const std::string getName() const override;
 
 			void booster(const controlType_t controlType, boosterStatus_t status) override;
-			void locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed) override;
-			void locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) override;
-			void locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on) override;
+			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;
+			void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) override;
+			void LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on) override;
 			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
 			void FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state) override {};
 			void track(const controlType_t controlType, const trackID_t trackID, const lockState_t state) override {};

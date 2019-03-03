@@ -59,12 +59,12 @@ class Manager {
 		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
-		void locoSpeed(const controlType_t controlType, const protocol_t protocol, const address_t address, const LocoSpeed speed);
-		bool locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed);
-		const LocoSpeed locoSpeed(const locoID_t locoID) const;
-		void locoDirection(const controlType_t controlType, const protocol_t protocol, const address_t address, const direction_t direction);
-		void locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction);
-		void locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on);
+		void LocoSpeed(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const locoSpeed_t speed);
+		bool LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed);
+		const locoSpeed_t LocoSpeed(const locoID_t locoID) const;
+		void LocoDirection(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const direction_t direction);
+		void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction);
+		void LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on);
 
 		// accessory
 		void AccessoryState(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryState_t state);

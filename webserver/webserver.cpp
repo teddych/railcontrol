@@ -81,7 +81,7 @@ namespace webserver {
 		}
 	}
 
-	void WebServer::locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed)
+	void WebServer::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 	{
 		stringstream command;
 		stringstream status;
@@ -90,7 +90,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
+	void WebServer::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 	{
 		stringstream command;
 		stringstream status;
@@ -99,7 +99,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
+	void WebServer::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
 	{
 		stringstream command;
 		stringstream status;

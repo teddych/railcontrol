@@ -259,7 +259,7 @@ namespace hardware
 		instance->Booster(status);
 	}
 
-	void HardwareHandler::locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed)
+	void HardwareHandler::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
@@ -273,10 +273,10 @@ namespace hardware
 		{
 			return;
 		}
-		instance->SetLocoSpeed(protocol, address, speed);
+		instance->LocoSpeed(protocol, address, speed);
 	}
 
-	void HardwareHandler::locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
+	void HardwareHandler::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
@@ -293,7 +293,7 @@ namespace hardware
 		instance->LocoDirection(protocol, address, direction);
 	}
 
-	void HardwareHandler::locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
+	void HardwareHandler::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
