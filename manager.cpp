@@ -764,6 +764,21 @@ void Manager::LocoDirection(const controlType_t controlType, const locoID_t loco
 	}
 }
 
+void Manager::LocoFunction(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t function, const bool on)
+{
+	std::lock_guard<std::mutex> Guard(locoMutex);
+	for (auto loco : locos)
+	{
+		if (loco.second->controlID == controlID
+			&& loco.second->protocol == protocol
+			&& loco.second->address == address)
+		{
+			LocoFunction(controlType, loco.first, function, on);
+			return;
+		}
+	}
+}
+
 void Manager::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
 {
 	Loco* loco = getLoco(locoID);

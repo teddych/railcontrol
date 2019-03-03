@@ -64,6 +64,7 @@ class Manager {
 		const locoSpeed_t LocoSpeed(const locoID_t locoID) const;
 		void LocoDirection(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction);
+		void LocoFunction(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t function, const bool on);
 		void LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on);
 
 		// accessory

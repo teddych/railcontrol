@@ -367,6 +367,13 @@ namespace hardware
 				manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), 0);
 				manager->LocoDirection(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), direction);
 			}
+			else if (command == 0x06 && !response && length == 6)
+			{
+				// function event
+				function_t function = buffer[9];
+				bool on = buffer[10] != 0;
+				manager->LocoFunction(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), function, on);
+			}
 			else if (command == 0x0B && !response && length == 6 && buffer[10] == 1)
 			{
 				// accessory event
