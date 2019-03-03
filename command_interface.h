@@ -19,14 +19,14 @@ class CommandInterface
 		virtual void locoSpeed(const controlType_t controlType, const locoID_t locoID, const LocoSpeed speed) = 0;
 		virtual void locoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) = 0;
 		virtual void locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on) = 0;
-		virtual void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) = 0;
+		virtual void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) = 0;
 		virtual void accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {}
 		virtual void accessoryDelete(const accessoryID_t accessoryID, const std::string& name) {}
 		virtual void FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state) = 0;
 		virtual void feedbackSettings(const feedbackID_t feedbackID, const std::string& name) {}
 		virtual void feedbackDelete(const feedbackID_t feedbackID, const std::string& name) {}
 		virtual void track(const controlType_t controlType, const trackID_t trackID, const lockState_t state) = 0;
-		virtual void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) = 0;
+		virtual void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) = 0;
 		virtual void switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const std::string& rotation) {};
 		virtual void switchDelete(const switchID_t switchID, const std::string& name) {};
 		virtual void locoIntoTrack(const locoID_t locoID, const trackID_t trackID) = 0;

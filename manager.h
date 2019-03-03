@@ -67,9 +67,9 @@ class Manager {
 		void locoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on);
 
 		// accessory
-		void accessory(const controlType_t controlType, const protocol_t protocol, const address_t address, const accessoryState_t state);
-		void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state);
-		void accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
+		void AccessoryState(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryState_t state);
+		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state);
+		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
 		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID) const;
 		const std::string& getAccessoryName(const accessoryID_t accessoryID) const;
 		const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
@@ -79,8 +79,8 @@ class Manager {
 		bool accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
-		void FeedbackStatus(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state);
-		void FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state);
+		void FeedbackState(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state);
+		void FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state);
 		datamodel::Feedback* getFeedback(feedbackID_t feedbackID) const;
 		const std::string& getFeedbackName(const feedbackID_t feedbackID) const;
 		const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
@@ -99,8 +99,8 @@ class Manager {
 		bool trackDelete(const trackID_t trackID);
 
 		// switch
-		void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state);
-		void handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
+		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state);
+		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
 		datamodel::Switch* getSwitch(const switchID_t switchID) const;
 		const std::string& getSwitchName(const switchID_t switchID) const;
 		const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }

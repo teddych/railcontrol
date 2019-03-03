@@ -1437,7 +1437,7 @@ namespace webserver
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		accessoryState_t accessoryState = (GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? AccessoryStateOff : AccessoryStateOn);
 
-		manager.accessory(ControlTypeWebserver, accessoryID, accessoryState);
+		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState);
 
 		stringstream ss;
 		ss << "Accessory &quot;" << manager.getAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
@@ -1625,7 +1625,7 @@ namespace webserver
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		switchState_t switchState = (GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SwitchStateTurnout : SwitchStateStraight);
 
-		manager.handleSwitch(ControlTypeWebserver, switchID, switchState);
+		manager.SwitchState(ControlTypeWebserver, switchID, switchState);
 
 		stringstream ss;
 		ss << "Switch &quot;" << manager.getSwitchName(switchID) << "&quot; is now set to " << switchState;
@@ -2171,7 +2171,7 @@ namespace webserver
 		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		feedbackState_t state = (GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? FeedbackStateOccupied : FeedbackStateFree);
 
-		manager.FeedbackStatus(ControlTypeWebserver, feedbackID, state);
+		manager.FeedbackState(ControlTypeWebserver, feedbackID, state);
 
 		stringstream ss;
 		ss << "Feedback &quot;" << manager.getFeedbackName(feedbackID) << "&quot; is now set to " << state;

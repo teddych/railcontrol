@@ -108,7 +108,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void WebServer::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
 		if (on == false)
 		{
@@ -179,7 +179,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
+	void WebServer::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
 		if (on == false)
 		{

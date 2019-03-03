@@ -99,7 +99,7 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void ConsoleServer::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
 		if (on == false)
 		{
@@ -128,7 +128,7 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
+	void ConsoleServer::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
 		if (on == false)
 		{

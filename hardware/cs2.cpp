@@ -336,7 +336,7 @@ namespace hardware
 					state = FeedbackStateFree;
 				}
 				logger->Info("S88 Pin {0} set to {1}", address, text);
-				manager->FeedbackStatus(ControlTypeHardware, address, state);
+				manager->FeedbackState(ControlTypeHardware, address, state);
 			}
 			else if (command == 0x04 && !response && length == 6)
 			{
@@ -357,7 +357,7 @@ namespace hardware
 				accessoryState_t state = buffer[9];
 				// GUI-address is 1-based, protocol-address is 0-based
 				++address;
-				manager->accessory(ControlTypeHardware, protocol, address, state);
+				manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 			}
 		}
 		close(sock);

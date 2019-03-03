@@ -776,28 +776,52 @@ void Manager::locoFunction(const controlType_t controlType, const locoID_t locoI
 * Accessory                *
 ***************************/
 
-void Manager::accessory(const controlType_t controlType, const protocol_t protocol, const address_t address, const accessoryState_t state)
+void Manager::AccessoryState(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryState_t state)
 {
 	accessoryID_t accessoryID = AccessoryNone;
 	{
 		std::lock_guard<std::mutex> Guard(accessoryMutex);
 		for (auto accessory : accessories)
 		{
-			if (accessory.second->protocol == protocol && accessory.second->address == address)
+			if (accessory.second->controlID == controlID
+				&& accessory.second->protocol == protocol
+				&& accessory.second->address == address)
 			{
 				accessoryID = accessory.first;
 				break;
 			}
 		}
 	}
-	if (accessoryID == AccessoryNone)
+	if (accessoryID != AccessoryNone)
 	{
+		AccessoryState(controlType, accessoryID, state);
 		return;
 	}
-	accessory(controlType, accessoryID, state);
+
+	switchID_t switchID = SwitchNone;
+	{
+		std::lock_guard<std::mutex> Guard(switchMutex);
+		for (auto mySwitch : switches)
+		{
+			if (mySwitch.second->controlID == controlID
+				&& mySwitch.second->protocol == protocol
+				&& mySwitch.second->address == address)
+			{
+				switchID = mySwitch.first;
+				break;
+			}
+		}
+	}
+	if (switchID != SwitchNone)
+	{
+		SwitchState(controlType, switchID, state);
+		return;
+	}
+
+	// FIXME: add code for signals
 }
 
-void Manager::accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state)
+void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state)
 {
 	Accessory* accessory = getAccessory(accessoryID);
 	if (accessory == nullptr)
@@ -806,18 +830,18 @@ void Manager::accessory(const controlType_t controlType, const accessoryID_t acc
 	}
 	accessory->state = state;
 
-	this->accessory(controlType, accessoryID, state, accessory->IsInverted(), true);
+	this->AccessoryState(controlType, accessoryID, state, accessory->IsInverted(), true);
 
 	delayedCall->Accessory(controlType, accessoryID, state, accessory->IsInverted(), accessory->timeout);
 }
 
-void Manager::accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
+void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
 		accessoryState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
-		control.second->accessory(controlType, accessoryID, tempState, on);
+		control.second->AccessoryState(controlType, accessoryID, tempState, on);
 	}
 }
 
@@ -984,7 +1008,7 @@ bool Manager::accessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 * Feedback                 *
 ***************************/
 
-void Manager::FeedbackStatus(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state)
+void Manager::FeedbackState(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state)
 {
 	feedbackID_t feedbackID = FeedbackNone;
 	{
@@ -1002,10 +1026,10 @@ void Manager::FeedbackStatus(const controlType_t controlType, const controlID_t 
 	{
 		return;
 	}
-	return FeedbackStatus(controlType, feedbackID, state);
+	return FeedbackState(controlType, feedbackID, state);
 }
 
-void Manager::FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
+void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
 {
 	Feedback* feedback = getFeedback(feedbackID);
 	if (feedback == nullptr)
@@ -1370,7 +1394,7 @@ bool Manager::trackDelete(const trackID_t trackID)
 * Switch                   *
 ***************************/
 
-void Manager::handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state)
+void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state)
 {
 	Switch* mySwitch = getSwitch(switchID);
 	if (mySwitch == nullptr)
@@ -1379,18 +1403,18 @@ void Manager::handleSwitch(const controlType_t controlType, const switchID_t swi
 	}
 	mySwitch->state = state;
 
-	this->handleSwitch(controlType, switchID, state, mySwitch->IsInverted(), true);
+	this->SwitchState(controlType, switchID, state, mySwitch->IsInverted(), true);
 
 	delayedCall->Switch(controlType, switchID, state, mySwitch->IsInverted(), mySwitch->timeout);
 }
 
-void Manager::handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)
+void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
 		switchState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
-		control.second->handleSwitch(controlType, switchID, tempState, on);
+		control.second->SwitchState(controlType, switchID, tempState, on);
 	}
 }
 

@@ -310,7 +310,7 @@ namespace hardware
 		instance->LocoFunction(protocol, address, function, on);
 	}
 
-	void HardwareHandler::accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void HardwareHandler::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr)
 		{
@@ -327,7 +327,7 @@ namespace hardware
 		instance->Accessory(protocol, address, state, on);
 	}
 
-	void HardwareHandler::handleSwitch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
+	void HardwareHandler::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr)
 		{

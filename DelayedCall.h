@@ -33,7 +33,7 @@ class DelayedCallEntryAccessory : public DelayedCallEntry
 		 	inverted(inverted)
 		{}
 
-		void Execute() override { manager.accessory(controlType, accessoryID, state, inverted, false); }
+		void Execute() override { manager.AccessoryState(controlType, accessoryID, state, inverted, false); }
 
 	private:
 		accessoryID_t accessoryID;
@@ -51,7 +51,7 @@ class DelayedCallEntrySwitch : public DelayedCallEntry
 		 	inverted(inverted)
 		{}
 
-		void Execute() override { manager.handleSwitch(controlType, switchID, state, inverted, false); }
+		void Execute() override { manager.SwitchState(controlType, switchID, state, inverted, false); }
 
 	private:
 		switchID_t switchID;

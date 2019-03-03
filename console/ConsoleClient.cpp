@@ -736,7 +736,7 @@ namespace console
 		}
 
 		accessoryState_t state = ReadAccessoryState(s, i);
-		manager.accessory(ControlTypeConsole, accessoryID, state);
+		manager.AccessoryState(ControlTypeConsole, accessoryID, state);
 	}
 
 	void ConsoleClient::HandleTrackDelete(string& s, size_t& i)
@@ -990,7 +990,7 @@ namespace console
 			state = FeedbackStateFree;
 			text = (char*)"OFF";
 		}
-		manager.FeedbackStatus(ControlTypeConsole, feedbackID, state);
+		manager.FeedbackState(ControlTypeConsole, feedbackID, state);
 		stringstream status;
 		status << "Feedback \"" << manager.getFeedbackName(feedbackID) << "\" turned " << text;
 		SendAndPrompt(status.str());
