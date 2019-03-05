@@ -9,11 +9,12 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel {
-
+namespace datamodel
+{
 	Street::Street(Manager* manager,
 		const streetID_t streetID,
 		const std::string& name,
+		const delay_t delay,
 		const std::vector<datamodel::Relation*>& relations,
 		const visible_t visible,
 		const layoutPosition_t posX,
@@ -63,13 +64,14 @@ namespace datamodel {
 		stringstream ss;
 		ss << "objectType=Street;"
 			<< LayoutItem::Serialize()
+			<< ";delay=" << static_cast<int>(delay)
 			<< ";lockState=" << static_cast<int>(lockState)
 			<< ";automode=" << static_cast<int>(automode)
 			<< ";fromTrack=" << static_cast<int>(fromTrack)
 			<< ";fromDirection=" << static_cast<int>(fromDirection)
-			<< ";toTrack=" << (int)toTrack
-			<< ";toDirection=" << (int)toDirection
-			<< ";feedbackIDStop=" << (int)feedbackIDStop;
+			<< ";toTrack=" << static_cast<int>(toTrack)
+			<< ";toDirection=" << static_cast<int>(toDirection)
+			<< ";feedbackIDStop=" << static_cast<int>(feedbackIDStop);
 		return ss.str();
 	}
 
@@ -80,6 +82,7 @@ namespace datamodel {
 		if (arguments.count("objectType") && arguments.at("objectType").compare("Street") == 0)
 		{
 			LayoutItem::Deserialize(arguments);
+			delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay", 250));
 			lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 			automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
 			fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
@@ -129,8 +132,7 @@ namespace datamodel {
 					ret = false;
 					break;
 			}
-			// FIXME: make configurable
-			std::this_thread::sleep_for(std::chrono::milliseconds(250));
+			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		}
 		return ret;
 	}

@@ -40,6 +40,7 @@ typedef accessoryType_t switchType_t;
 
 // street
 typedef objectID_t streetID_t;
+typedef unsigned short delay_t;
 
 // layer
 typedef signed short layerID_t;

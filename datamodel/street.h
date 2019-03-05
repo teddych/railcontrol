@@ -18,6 +18,7 @@ namespace datamodel
 			Street(Manager* manager,
 				const streetID_t streetID,
 				const std::string& name,
+				const delay_t delay,
 				const std::vector<datamodel::Relation*>& relations,
 				const visible_t visible,
 				const layoutPosition_t posX,
@@ -49,6 +50,9 @@ namespace datamodel
 			bool reserve(const locoID_t locoID);
 			bool lock(const locoID_t locoID);
 			bool release(const locoID_t locoID);
+
+			delay_t Delay() const { return delay; }
+			void Delay(delay_t delay) { this->delay = delay; }
 			locoID_t getLoco() const { return locoID; }
 			lockState_t getState() const { return lockState; }
 
@@ -68,6 +72,8 @@ namespace datamodel
 			lockState_t lockState;
 			locoID_t locoID;
 			std::mutex updateMutex;
+
+			delay_t delay;
 	};
 
 } // namespace datamodel

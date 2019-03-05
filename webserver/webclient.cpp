@@ -1722,6 +1722,7 @@ namespace webserver
 		HtmlTag content;
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name("New Street");
+		delay_t delay = 250;
 		vector<Relation*> relations;
 		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleYes));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
@@ -1736,6 +1737,7 @@ namespace webserver
 		{
 			const datamodel::Street* street = manager.getStreet(streetID);
 			name = street->name;
+			delay = street->Delay();
 			relations = street->GetRelations();
 			visible = street->visible;
 			posx = street->posX;
@@ -1765,6 +1767,7 @@ namespace webserver
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Street Name:", name));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("delay", "Delay in ms:", delay, 1, USHRT_MAX));
 		formContent.AddChildTag(mainContent);
 
 		HtmlTag relationDiv("div");
@@ -1826,6 +1829,7 @@ namespace webserver
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name = GetStringMapEntry(arguments, "name");
+		delay_t delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay"));
 		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible"));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
@@ -1855,7 +1859,7 @@ namespace webserver
 		}
 
 		string result;
-		if (!manager.streetSave(streetID, name, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, FeedbackNone, result))
+		if (!manager.streetSave(streetID, name, delay, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, FeedbackNone, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
