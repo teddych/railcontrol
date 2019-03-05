@@ -126,27 +126,30 @@ Manager::~Manager()
 		sleep(1);
 	}
 
-	for (auto control : controls)
 	{
-		controlID_t controlID = control.first;
-		if (controlID < ControlIdFirstHardware)
+		std::lock_guard<std::mutex> Guard2(controlMutex);
+		for (auto control : controls)
 		{
+			controlID_t controlID = control.first;
+			if (controlID < ControlIdFirstHardware)
+			{
+				delete control.second;
+				continue;
+			}
+			if (hardwareParams.count(controlID) != 1)
+			{
+				continue;
+			}
+			HardwareParams* params = hardwareParams.at(controlID);
+			if (params == nullptr)
+			{
+				continue;
+			}
+			logger->Info("Unloading control {0}: {1}", controlID, params->name);
 			delete control.second;
-			continue;
+			hardwareParams.erase(controlID);
+			delete params;
 		}
-		if (hardwareParams.count(controlID) != 1)
-		{
-			continue;
-		}
-		HardwareParams* params = hardwareParams.at(controlID);
-		if (params == nullptr)
-		{
-			continue;
-		}
-		logger->Info("Unloading control {0}: {1}", controlID, params->name);
-		delete control.second;
-		hardwareParams.erase(controlID);
-		delete params;
 	}
 
 	if (storage == nullptr)
