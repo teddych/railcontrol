@@ -641,23 +641,29 @@ function submitEditForm()
 {
 	var url = '/?';
 	var form = document.getElementById('editform');
-	for (var i = 0; i < form.length; ++i)
+	var i = 0;
+	while (true)
 	{
-		var j = form[i];
+		var formElement = form[i];
+		if (formElement == undefined)
+		{
+			break;
+		}
 		if (i > 0)
 		{
 			url += '&';
 		}
-		url += j.name;
+		url += formElement.name;
 		url += '=';
-		if (j.type == 'checkbox')
+		if (formElement.type == 'checkbox')
 		{
-			url += j.checked;
+			url += formElement.checked;
 		}
 		else
 		{
-			url += j.value;
+			url += formElement.value;
 		}
+		++i;
 	}
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() {
