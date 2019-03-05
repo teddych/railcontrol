@@ -43,7 +43,7 @@ namespace datamodel
 
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
-			virtual std::string layoutType() const override { return "accessory"; };
+			virtual std::string LayoutType() const override { return "accessory"; };
 
 			virtual void Inverted(const bool inverted) { this->inverted = inverted; }
 			virtual bool IsInverted() const { return inverted; }

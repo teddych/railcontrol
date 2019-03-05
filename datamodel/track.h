@@ -37,7 +37,7 @@ namespace datamodel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			virtual std::string layoutType() const override { return "track"; };
+			std::string LayoutType() const override { return "track"; };
 			trackType_t Type() const { return type; }
 			void Type(trackType_t type) { this->type = type; }
 

@@ -46,7 +46,8 @@ namespace datamodel
 			virtual bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ);
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
-			virtual std::string layoutType() const { return "unknown type"; };
+			virtual std::string LayoutType() const = 0;
+
 			virtual std::string Rotation() const { return Rotation(rotation); }
 			static std::string Rotation(layoutRotation_t rotation);
 			
