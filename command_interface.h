@@ -22,7 +22,7 @@ class CommandInterface
 		virtual void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) = 0;
 		virtual void accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) {}
 		virtual void accessoryDelete(const accessoryID_t accessoryID, const std::string& name) {}
-		virtual void FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state) = 0;
+		virtual void FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state) = 0;
 		virtual void feedbackSettings(const feedbackID_t feedbackID, const std::string& name) {}
 		virtual void feedbackDelete(const feedbackID_t feedbackID, const std::string& name) {}
 		virtual void track(const controlType_t controlType, const trackID_t trackID, const lockState_t state) = 0;

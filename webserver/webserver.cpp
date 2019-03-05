@@ -141,7 +141,7 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
-	void WebServer::FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
+	void WebServer::FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		stringstream command;
 		stringstream status;

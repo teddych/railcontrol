@@ -1060,7 +1060,7 @@ void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t 
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->FeedbackStatus(controlType, feedbackID, state);
+		control.second->FeedbackState(controlType, feedbackID, state);
 	}
 }
 

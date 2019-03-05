@@ -29,7 +29,7 @@ namespace webserver
 			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
 			void accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) override;
 			void accessoryDelete(const accessoryID_t accessoryID, const std::string& name) override;
-			void FeedbackStatus(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state) override;
+			void FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state) override;
 			void track(const controlType_t controlType, const trackID_t trackID, const lockState_t state) override;
 			void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) override;
 			void switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const std::string& rotation);
