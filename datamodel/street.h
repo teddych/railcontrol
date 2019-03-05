@@ -59,6 +59,10 @@ namespace datamodel
 
 			trackID_t destinationTrack() const { return toTrack; };
 
+		private:
+			delay_t delay;
+
+		public:
 			// FIXME: make private
 			automode_t automode;
 			trackID_t fromTrack;
@@ -73,8 +77,6 @@ namespace datamodel
 			lockState_t lockState;
 			locoID_t locoID;
 			std::mutex updateMutex;
-
-			delay_t delay;
 	};
 
 } // namespace datamodel
