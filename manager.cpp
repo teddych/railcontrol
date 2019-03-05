@@ -126,6 +126,29 @@ Manager::~Manager()
 		sleep(1);
 	}
 
+	for (auto control : controls)
+	{
+		controlID_t controlID = control.first;
+		if (controlID < ControlIdFirstHardware)
+		{
+			delete control.second;
+			continue;
+		}
+		if (hardwareParams.count(controlID) != 1)
+		{
+			continue;
+		}
+		HardwareParams* params = hardwareParams.at(controlID);
+		if (params == nullptr)
+		{
+			continue;
+		}
+		logger->Info("Unloading control {0}: {1}", controlID, params->name);
+		delete control.second;
+		hardwareParams.erase(controlID);
+		delete params;
+	}
+
 	if (storage == nullptr)
 	{
 		return;
@@ -178,29 +201,6 @@ Manager::~Manager()
 		logger->Info("Saving layer {0}: {1}", layer.second->objectID, layer.second->Name());
 		storage->layer(*(layer.second));
 		delete layer.second;
-	}
-
-	for (auto control : controls)
-	{
-		controlID_t controlID = control.first;
-		if (controlID < ControlIdFirstHardware)
-		{
-			delete control.second;
-			continue;
-		}
-		if (hardwareParams.count(controlID) != 1)
-		{
-			continue;
-		}
-		HardwareParams* params = hardwareParams.at(controlID);
-		if (params == nullptr)
-		{
-			continue;
-		}
-		logger->Info("Unloading control {0}: {1}", controlID, params->name);
-		delete control.second;
-		hardwareParams.erase(controlID);
-		delete params;
 	}
 
 	delete delayedCall;
