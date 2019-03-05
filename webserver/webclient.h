@@ -50,7 +50,8 @@ namespace webserver
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible);
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;
 			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const;
-			HtmlTag HtmlTagRelation(const std::string& priority, const switchID_t switchId = SwitchNone, const switchState_t state = SwitchStateStraight);
+			HtmlTag HtmlTagRelation(const std::string& priority, const objectType_t objectType = ObjectTypeSwitch, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
+			HtmlTag HtmlTagRelationObject(const std::string& priority, const objectType_t objectType, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected = false) const;
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleLayerEdit(const std::map<std::string, std::string>& arguments);
@@ -112,6 +113,7 @@ namespace webserver
 			void handleLocoSelector(const std::map<std::string,std::string>& arguments);
 			void handleLayerSelector(const std::map<std::string,std::string>& arguments);
 			void handleRelationAdd(const std::map<std::string,std::string>& arguments);
+			void handleRelationObject(const std::map<std::string, std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

@@ -369,6 +369,10 @@ namespace webserver
 			{
 				handleRelationAdd(arguments);
 			}
+			else if (arguments["cmd"].compare("relationobject") == 0)
+			{
+				handleRelationObject(arguments);
+			}
 			else if (arguments["cmd"].compare("layout") == 0)
 			{
 				handleLayout(arguments);
@@ -1017,7 +1021,54 @@ namespace webserver
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagRelation(const string& priority, const switchID_t switchId, const switchState_t state)
+	HtmlTag WebClient::HtmlTagRelationObject(const string& priority, const objectType_t objectType, const objectID_t objectId, const accessoryState_t state)
+	{
+		HtmlTag content;
+		switch (objectType)
+		{
+			case ObjectTypeSwitch:
+			{
+				std::map<string, Switch*> switches = manager.switchListByName();
+				map<string, switchID_t> switchOptions;
+				for (auto mySwitch : switches)
+				{
+					switchOptions[mySwitch.first] = mySwitch.second->objectID;
+				}
+				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, switchOptions, objectId).AddClass("select_relation_id"));
+
+				map<string, switchState_t> stateOptions;
+				stateOptions["Straight"] = SwitchStateStraight;
+				stateOptions["Turnout"] = SwitchStateTurnout;
+				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
+				return content;
+			}
+
+			case ObjectTypeAccessory:
+			{
+				std::map<string, Accessory*> accessories = manager.accessoryListByName();
+				map<string, accessoryID_t> accessoryOptions;
+				for (auto accessory : accessories)
+				{
+					accessoryOptions[accessory.first] = accessory.second->objectID;
+				}
+				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, accessoryOptions, objectId).AddClass("select_relation_id"));
+
+				map<string, accessoryState_t> stateOptions;
+				stateOptions["on"] = AccessoryStateOn;
+				stateOptions["off"] = AccessoryStateOff;
+				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
+				return content;
+			}
+
+			default:
+			{
+				content.AddContent("Unknown objecttype");
+				return content;
+			}
+		}
+	}
+
+	HtmlTag WebClient::HtmlTagRelation(const string& priority, const objectType_t objectType, const objectID_t objectId, const accessoryState_t state)
 	{
 		HtmlTag content("div");
 		content.AddAttribute("id", "priority_" + priority);
@@ -1025,19 +1076,18 @@ namespace webserver
 		deleteButton.AddAttribute("onclick", "deleteElement('priority_" + priority + "');return false;");
 		content.AddChildTag(deleteButton);
 
-		content.AddChildTag(HtmlTagInputHidden("relation_type_" + priority, to_string(ObjectTypeSwitch)));
-		std::map<string,Switch*> switches = manager.switchListByName();
-		map<string,switchID_t> switchOptions;
-		for (auto mySwitch : switches)
-		{
-			switchOptions[mySwitch.first] = mySwitch.second->objectID;
-		}
-		content.AddChildTag(HtmlTagSelect("relation_id_" + priority, switchOptions, switchId).AddClass("select_relation_id"));
-
-		map<string,switchState_t> stateOptions;
-		stateOptions["Straight"] = SwitchStateStraight;
-		stateOptions["Turnout"] = SwitchStateTurnout;
-		content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
+		map<string,objectType_t> objectTypeOptions;
+		objectTypeOptions["Accessory"] = ObjectTypeAccessory;
+		objectTypeOptions["Switch"] = ObjectTypeSwitch;
+		HtmlTagSelect select("relation_type_" + priority, objectTypeOptions, objectType);
+		select.AddClass("select_relation_objecttype");
+		select.AddAttribute("onchange", "loadRelationObject(" + priority + ");return false;");
+		content.AddChildTag(select);
+		HtmlTag contentObject("div");
+		contentObject.AddAttribute("id", "relation_object_" + priority);
+		contentObject.AddClass("inline-block");
+		contentObject.AddChildTag(HtmlTagRelationObject(priority, objectType, objectId, state));
+		content.AddChildTag(contentObject);
 		return content;
 	}
 
@@ -1122,6 +1172,13 @@ namespace webserver
 			return;
 		}
 		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch->protocol));
+	}
+
+	void WebClient::handleRelationObject(const map<string, string>& arguments)
+	{
+		const string priority = GetStringMapEntry(arguments, "priority");
+		const objectType_t objectType = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "objecttype"));
+		HtmlReplyWithHeader(HtmlTagRelationObject(priority, objectType));
 	}
 
 	void WebClient::handleLocoEdit(const map<string, string>& arguments)
@@ -1781,7 +1838,7 @@ namespace webserver
 		priority_t priority = 1;
 		for (auto relation : relations)
 		{
-			relationDiv.AddChildTag(HtmlTagRelation(to_string(relation->Priority()), relation->ObjectID2(), relation->AccessoryState()));
+			relationDiv.AddChildTag(HtmlTagRelation(to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->AccessoryState()));
 			priority = relation->Priority() + 1;
 		}
 		relationDiv.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority)));

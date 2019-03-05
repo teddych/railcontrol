@@ -71,7 +71,8 @@ body {
 }
 
 .menu_main,
-.menu_add {
+.menu_add,
+.inline-block {
 	display: inline-block;
 }
 
@@ -191,6 +192,7 @@ label {
 	width: 300px;
 }
 
+.select_relation_objecttype,
 .select_relation_state {
 	width: 100px;
 }

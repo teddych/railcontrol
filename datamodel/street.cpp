@@ -124,6 +124,10 @@ namespace datamodel
 		{
 			switch (relation->ObjectType2())
 			{
+				case ObjectTypeAccessory:
+					manager->AccessoryState(ControlTypeInternal, relation->ObjectID2(), relation->AccessoryState());
+					break;
+
 				case ObjectTypeSwitch:
 					manager->SwitchState(ControlTypeInternal, relation->ObjectID2(), relation->AccessoryState());
 					break;

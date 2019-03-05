@@ -524,6 +524,25 @@ function loadProtocol(type, ID)
 	requestUpdateItem(elementName, url);
 }
 
+function loadRelationObject(priority)
+{
+	var elementName = 'relation_object_' + priority;
+	var object = document.getElementById(elementName);
+	if (!object)
+	{
+		return;
+	}
+	var typeSelector = document.getElementById('s_relation_type_' + priority);
+	if (!typeSelector)
+	{
+		return;
+	}
+	var url = '/?cmd=relationobject';
+	url += '&objecttype=' + typeSelector.value;
+	url += '&priority=' + priority;
+	requestUpdateItem(elementName, url);
+}
+
 function loadLayoutContext(event)
 {
 	if (event.shiftKey)
