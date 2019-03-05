@@ -964,7 +964,7 @@ namespace console
 		feedbackPin_t pin = ReadNumber(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
-		if(!manager.feedbackSave(FeedbackNone, name, posX, posY, posZ, control, pin, inverted, result))
+		if(!manager.feedbackSave(FeedbackNone, name, VisibleYes, posX, posY, posZ, control, pin, inverted, result))
 		{
 			SendAndPrompt(result);
 			return;
