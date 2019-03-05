@@ -1714,6 +1714,11 @@ namespace webserver
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street");
 		const datamodel::Street* street = manager.getStreet(streetID);
+		if (street->visible == VisibleNo)
+		{
+			HtmlReplyWithHeader(HtmlTag());
+			return;
+		}
 		HtmlReplyWithHeader(HtmlTagStreet(street));
 	}
 
@@ -2260,6 +2265,11 @@ namespace webserver
 	{
 		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		if (feedback->visible == VisibleNo)
+		{
+			HtmlReplyWithHeader(HtmlTag());
+			return;
+		}
 		HtmlReplyWithHeader(HtmlTagFeedback(feedback));
 	}
 
