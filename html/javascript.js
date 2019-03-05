@@ -377,15 +377,29 @@ function dataUpdate(event)
 	}
 	else if (command == 'tracksettings')
 	{
-		var switchID = argumentMap.get('track');
-		elementName = 't_' + switchID;
+		var trackID = argumentMap.get('track');
+		elementName = 't_' + trackID;
 		var url = '/?cmd=trackget';
-		url += '&track=' + switchID;
+		url += '&track=' + trackID;
 		requestUpdateLayoutItem(elementName, url);
 	}
 	else if (command == 'trackdelete')
 	{
 		elementName = 't_' + argumentMap.get('track');
+		deleteElement(elementName);
+		deleteElement(elementName + '_context');
+	}
+	else if (command == 'feedbacksettings')
+	{
+		var feedbackID = argumentMap.get('feedback');
+		elementName = 'f_' + feedbackID;
+		var url = '/?cmd=feedbackget';
+		url += '&feedback=' + feedbackID;
+		requestUpdateLayoutItem(elementName, url);
+	}
+	else if (command == 'feedbackdelete')
+	{
+		elementName = 'f_' + argumentMap.get('feedback');
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}
@@ -636,7 +650,14 @@ function submitEditForm()
 		}
 		url += j.name;
 		url += '=';
-		url += j.value;
+		if (j.type == 'checkbox')
+		{
+			url += j.checked;
+		}
+		else
+		{
+			url += j.value;
+		}
 	}
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() {

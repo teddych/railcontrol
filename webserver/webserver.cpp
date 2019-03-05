@@ -150,6 +150,24 @@ namespace webserver {
 		addUpdate(command.str(), status.str());
 	}
 
+	void WebServer::FeedbackSettings(const feedbackID_t feedbackID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "feedbacksettings;feedback=" << feedbackID;
+		status << name << " updated";
+		addUpdate(command.str(), status.str());
+	}
+
+	void WebServer::FeedbackDelete(const feedbackID_t feedbackID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "feedbackdelete;feedback=" << feedbackID;
+		status << name << " deleted";
+		addUpdate(command.str(), status.str());
+	}
+
 	void WebServer::track(const controlType_t controlType, const trackID_t trackID, const lockState_t state)
 	{
 		stringstream command;

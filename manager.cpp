@@ -1122,6 +1122,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 				return false;
 			}
 			feedback->name = name;
+			feedback->visible = visible;
 			feedback->posX = posX;
 			feedback->posY = posY;
 			feedback->posZ = posZ;
@@ -1158,7 +1159,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->feedbackSettings(feedback->objectID, name);
+		control.second->FeedbackSettings(feedback->objectID, name);
 	}
 	return feedback;
 }
@@ -1200,7 +1201,7 @@ bool Manager::feedbackDelete(const feedbackID_t feedbackID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->feedbackDelete(feedback->objectID, feedback->Name());
+		control.second->FeedbackDelete(feedback->objectID, feedback->Name());
 	}
 	delete feedback;
 	return true;
