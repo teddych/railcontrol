@@ -27,6 +27,7 @@ namespace datamodel
 		const direction_t toDirection,
 		const feedbackID_t feedbackIDStop)
 	:	LayoutItem(streetID, name, visible, posX, posY, posZ, Width1, Height1, Rotation0),
+	 	delay(delay),
 	 	automode(automode),
 		fromTrack(fromTrack),
 		fromDirection(fromDirection),
