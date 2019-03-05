@@ -61,11 +61,29 @@ body {
 	background-repeat: repeat, repeat;
 }
 
+.menu {
+	height: 50px;
+	width: 100%;
+	top: 0px;
+	left: 0px;
+	border: 1px;
+	position: fixed;
+}
+
+.menu_main,
+.menu_add {
+	display: inline-block;
+}
+
 @media (max-width: 667px) {
 	.layer_selector,
 	.layout {
 		display: none;
 	}
+	.menu_add {
+		display: none;
+	}
+
 }
 
 .layout_item {
@@ -180,15 +198,6 @@ label {
 input,
 select {
 	width: 400px;
-}
-
-.menu {
-	height: 50px;
-	width: 100%;
-	top: 0px;
-	left: 0px;
-	border: 1px;
-	position: fixed;
 }
 
 .status {
