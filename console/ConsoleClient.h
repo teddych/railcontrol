@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "console/ConsoleServer.h"
-#include "command_interface.h"
+#include "ControlInterface.h"
 #include "Logger/Logger.h"
 #include "manager.h"
 #include "network/TcpServer.h"

@@ -334,7 +334,7 @@ bool Manager::controlDelete(controlID_t controlID)
 		{
 			return false;
 		}
-		CommandInterface* control = controls.at(controlID);
+		ControlInterface* control = controls.at(controlID);
 		controls.erase(controlID);
 		delete control;
 	}
@@ -411,8 +411,8 @@ const std::string Manager::getControlName(const controlID_t controlID)
 	{
 		return unknownControl;
 	}
-	CommandInterface* c = controls.at(controlID);
-	return c->getName();
+	ControlInterface* control = controls.at(controlID);
+	return control->Name();
 }
 
 const std::map<controlID_t,std::string> Manager::LocoControlListNames() const
@@ -426,7 +426,7 @@ const std::map<controlID_t,std::string> Manager::LocoControlListNames() const
 		{
 			continue;
 		}
-		CommandInterface* c = controls.at(hardware.second->controlID);
+		ControlInterface* c = controls.at(hardware.second->controlID);
 		if (c->CanHandleLocos() == false)
 		{
 			continue;
@@ -447,7 +447,7 @@ const std::map<controlID_t,std::string> Manager::AccessoryControlListNames() con
 		{
 			continue;
 		}
-		CommandInterface* c = controls.at(hardware.second->controlID);
+		ControlInterface* c = controls.at(hardware.second->controlID);
 		if (c->CanHandleAccessories() == false)
 		{
 			continue;
@@ -468,7 +468,7 @@ const std::map<controlID_t,std::string> Manager::FeedbackControlListNames() cons
 		{
 			continue;
 		}
-		CommandInterface* c = controls.at(hardware.second->controlID);
+		ControlInterface* c = controls.at(hardware.second->controlID);
 		if (c->CanHandleFeedback() == false)
 		{
 			continue;
@@ -500,15 +500,15 @@ const std::map<std::string, protocol_t> Manager::ProtocolsOfControl(const addres
 			return ret;
 		}
 
-		CommandInterface* control = controls.at(controlID);
-		if (control->getcontrolType() != ControlTypeHardware)
+		ControlInterface* control = controls.at(controlID);
+		if (control->ControlType() != ControlTypeHardware)
 		{
 			ret[protocolSymbols[ProtocolNone]] = ProtocolNone;
 			return ret;
 		}
 
 		const HardwareHandler* hardware = static_cast<const HardwareHandler*>(control);
-		if (hardware->getControlID() != controlID)
+		if (hardware->ControlID() != controlID)
 		{
 			ret[protocolSymbols[ProtocolNone]] = ProtocolNone;
 			return ret;
@@ -517,11 +517,11 @@ const std::map<std::string, protocol_t> Manager::ProtocolsOfControl(const addres
 		std::vector<protocol_t> protocols;
 		if (type == AddressTypeLoco)
 		{
-			hardware->GetLocoProtocols(protocols);
+			hardware->LocoProtocols(protocols);
 		}
 		else
 		{
-			hardware->GetAccessoryProtocols(protocols);
+			hardware->AccessoryProtocols(protocols);
 		}
 		for (auto protocol : protocols)
 		{
@@ -540,8 +540,8 @@ const std::map<unsigned char,argumentType_t> Manager::ArgumentTypesOfControl(con
 		return ret;
 	}
 
-	const CommandInterface* control = controls.at(controlID);
-	control->GetArgumentTypes(ret);
+	const ControlInterface* control = controls.at(controlID);
+	control->ArgumentTypes(ret);
 	return ret;
 }
 
@@ -635,7 +635,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoSettings(loco->objectID, name);
+		control.second->LocoSettings(loco->objectID, name);
 	}
 	return true;
 }
@@ -666,7 +666,7 @@ bool Manager::locoDelete(const locoID_t locoID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoDelete(loco->objectID, loco->Name());
+		control.second->LocoDelete(loco->objectID, loco->Name());
 	}
 	delete loco;
 	return true;
@@ -969,7 +969,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->accessorySettings(accessory->objectID, name, posX, posY, posZ);
+		control.second->AccessorySettings(accessory->objectID, name);
 	}
 	return true;
 }
@@ -1006,7 +1006,7 @@ bool Manager::accessoryDelete(const accessoryID_t accessoryID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->accessoryDelete(accessoryID, accessory->Name());
+		control.second->AccessoryDelete(accessoryID, accessory->Name());
 	}
 	delete accessory;
 	return true;
@@ -1221,7 +1221,7 @@ void Manager::track(const controlType_t controlType, const trackID_t trackID, co
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->track(controlType, trackID, state);
+		control.second->TrackState(controlType, trackID, state);
 	}
 }
 
@@ -1378,7 +1378,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->trackSettings(track->objectID, name, posX, posY, posZ, height, track->Rotation());
+		control.second->TrackSettings(track->objectID, name);
 	}
 	return true;
 }
@@ -1409,7 +1409,7 @@ bool Manager::trackDelete(const trackID_t trackID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->trackDelete(track->objectID, track->Name());
+		control.second->TrackDelete(track->objectID, track->Name());
 	}
 	delete track;
 	return true;
@@ -1543,7 +1543,7 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->switchSettings(mySwitch->objectID, name, posX, posY, posZ, mySwitch->Rotation());
+		control.second->SwitchSettings(mySwitch->objectID, name);
 	}
 	return true;
 }
@@ -1570,7 +1570,7 @@ bool Manager::switchDelete(const switchID_t switchID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->switchDelete(switchID, mySwitch->Name());
+		control.second->SwitchDelete(switchID, mySwitch->Name());
 	}
 	delete mySwitch;
 	return true;
@@ -1730,7 +1730,7 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->streetSettings(street->objectID, name);
+		control.second->StreetSettings(street->objectID, name);
 	}
 	return true;
 }
@@ -1768,7 +1768,7 @@ bool Manager::streetDelete(const streetID_t streetID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->streetDelete(streetID, street->Name());
+		control.second->StreetDelete(streetID, street->Name());
 	}
 	delete street;
 	return true;
@@ -1805,7 +1805,7 @@ const map<string,layerID_t> Manager::LayerListByNameWithFeedback() const
 		{
 			continue;
 		}
-		list["Feedback at " + control.second->getName()] = -control.first;
+		list["Feedback at " + control.second->Name()] = -control.first;
 	}
 	return list;
 }
@@ -1857,7 +1857,7 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->layerSettings(layer->objectID, name);
+		control.second->LayerSettings(layer->objectID, name);
 	}
 	return true;
 }
@@ -1889,7 +1889,7 @@ bool Manager::LayerDelete(const layerID_t layerID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->layerDelete(layerID, layer->Name());
+		control.second->LayerDelete(layerID, layer->Name());
 	}
 	delete layer;
 	return true;
@@ -1939,7 +1939,7 @@ bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoIntoTrack(locoID, trackID);
+		control.second->LocoIntoTrack(locoID, trackID);
 	}
 	return true;
 }
@@ -2006,7 +2006,7 @@ bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoStreet(locoID, streetID, trackID);
+		control.second->LocoStreet(locoID, streetID, trackID);
 	}
 	return true;
 }
@@ -2015,7 +2015,7 @@ bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t str
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoDestinationReached(locoID, streetID, trackID);
+		control.second->LocoDestinationReached(locoID, streetID, trackID);
 	}
 	return true;
 }
@@ -2035,7 +2035,7 @@ bool Manager::locoStart(const locoID_t locoID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoStart(locoID);
+		control.second->LocoStart(locoID);
 	}
 	return true;
 }
@@ -2055,7 +2055,7 @@ bool Manager::locoStop(const locoID_t locoID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->locoStop(locoID);
+		control.second->LocoStop(locoID);
 	}
 	return true;
 }
@@ -2073,7 +2073,7 @@ bool Manager::locoStartAll()
 			std::lock_guard<std::mutex> Guard(controlMutex);
 			for (auto control : controls)
 			{
-				control.second->locoStart(loco.first);
+				control.second->LocoStart(loco.first);
 			}
 		}
 	}
@@ -2099,7 +2099,7 @@ bool Manager::locoStopAll()
 			std::lock_guard<std::mutex> Guard(controlMutex);
 			for (auto control : controls)
 			{
-				control.second->locoStop(loco.first);
+				control.second->LocoStop(loco.first);
 			}
 		}
 	}
@@ -2238,7 +2238,7 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 			result.assign("Control does not exist");
 			return false;
 		}
-		CommandInterface* control = controls.at(controlID);
+		ControlInterface* control = controls.at(controlID);
 		bool ret;
 		if (type == AddressTypeLoco)
 		{
@@ -2260,11 +2260,11 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 			std::vector<protocol_t> protocols;
 			if (type == AddressTypeLoco)
 			{
-				control->GetLocoProtocols(protocols);
+				control->LocoProtocols(protocols);
 			}
 			else
 			{
-				control->GetAccessoryProtocols(protocols);
+				control->AccessoryProtocols(protocols);
 			}
 			for (auto p : protocols)
 			{

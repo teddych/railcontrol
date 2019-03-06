@@ -28,7 +28,7 @@ namespace hardware
 	};
 
 	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params)
-	:	CommandInterface(ControlTypeHardware),
+	:	ControlInterface(ControlTypeHardware),
 		manager(manager),
 		createHardware(nullptr),
 		destroyHardware(nullptr),
@@ -162,7 +162,7 @@ namespace hardware
 #endif
 	}
 
-	const std::string HardwareHandler::getName() const
+	const std::string HardwareHandler::Name() const
 	{
 		if (instance == nullptr)
 		{
@@ -201,7 +201,7 @@ namespace hardware
 		return instance->CanHandleFeedback();
 	}
 
-	void HardwareHandler::GetLocoProtocols(std::vector<protocol_t>& protocols) const
+	void HardwareHandler::LocoProtocols(std::vector<protocol_t>& protocols) const
 	{
 		if (instance == nullptr)
 		{
@@ -221,7 +221,7 @@ namespace hardware
 		return instance->LocoProtocolSupported(protocol);
 	}
 
-	void HardwareHandler::GetAccessoryProtocols(std::vector<protocol_t>& protocols) const
+	void HardwareHandler::AccessoryProtocols(std::vector<protocol_t>& protocols) const
 	{
 		if (instance == nullptr)
 		{
@@ -241,7 +241,7 @@ namespace hardware
 		return instance->AccessoryProtocolSupported(protocol);
 	}
 
-	void HardwareHandler::GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const
+	void HardwareHandler::ArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const
 	{
 		if (instance == nullptr)
 		{
@@ -269,7 +269,7 @@ namespace hardware
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != getControlID())
+		if (controlID != ControlID())
 		{
 			return;
 		}
@@ -286,7 +286,7 @@ namespace hardware
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != getControlID())
+		if (controlID != ControlID())
 		{
 			return;
 		}
@@ -303,7 +303,7 @@ namespace hardware
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.locoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != getControlID())
+		if (controlID != ControlID())
 		{
 			return;
 		}
@@ -320,7 +320,7 @@ namespace hardware
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.accessoryProtocolAddress(accessoryID, controlID, protocol, address);
-		if (controlID != getControlID())
+		if (controlID != ControlID())
 		{
 			return;
 		}
@@ -337,7 +337,7 @@ namespace hardware
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		manager.switchProtocolAddress(switchID, controlID, protocol, address);
-		if (controlID != getControlID())
+		if (controlID != ControlID())
 		{
 			return;
 		}

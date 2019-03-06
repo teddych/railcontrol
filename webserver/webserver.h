@@ -4,7 +4,7 @@
 #include <mutex>
 #include <vector>
 
-#include "command_interface.h"
+#include "ControlInterface.h"
 #include "manager.h"
 #include "network/TcpServer.h"
 
@@ -12,7 +12,7 @@ namespace webserver
 {
 	class WebClient;
 
-	class WebServer : public CommandInterface, private Network::TcpServer
+	class WebServer : public ControlInterface, private Network::TcpServer
 	{
 		public:
 			WebServer(Manager& manager, const unsigned short port);
@@ -20,41 +20,42 @@ namespace webserver
 
 			void Work(Network::TcpConnection* connection) override;
 
-			const std::string getName() const override { return "Webserver"; }
-			bool nextUpdate(unsigned int& updateIDClient, std::string& s);
+			bool NextUpdate(unsigned int& updateIDClient, std::string& s);
+
+			const std::string Name() const override { return "Webserver"; }
+			void AccessoryDelete(const accessoryID_t accessoryID, const std::string& name) override;
+			void AccessorySettings(const accessoryID_t accessoryID, const std::string& name) override;
+			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
 			void Booster(const controlType_t controlType, const boosterState_t status) override;
-			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;
+			void FeedbackDelete(const feedbackID_t feedbackID, const std::string& name) override;
+			void FeedbackSettings(const feedbackID_t feedbackID, const std::string& name) override;
+			void FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state) override;
+			void LayerDelete(const layerID_t layerID, const std::string& name) override;
+			void LayerSettings(const layerID_t layerID, const std::string& name) override;
+			void LocoDelete(const locoID_t locoID, const std::string& name) override;
+			void LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
 			void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) override;
 			void LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on) override;
-			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
-			void accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z) override;
-			void accessoryDelete(const accessoryID_t accessoryID, const std::string& name) override;
-			void FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state) override;
-			void FeedbackSettings(const feedbackID_t feedbackID, const std::string& name) override;
-			void FeedbackDelete(const feedbackID_t feedbackID, const std::string& name) override;
-			void track(const controlType_t controlType, const trackID_t trackID, const lockState_t state) override;
+			void LocoIntoTrack(const locoID_t locoID, const trackID_t trackID) override;
+			void LocoRelease(const locoID_t locoID) override;
+			void LocoSettings(const locoID_t locoID, const std::string& name) override;
+			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;
+			void LocoStart(const locoID_t locoID) override;
+			void LocoStop(const locoID_t locoID) override;
+			void LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
+			void StreetDelete(const streetID_t streetID, const std::string& nam) override;
+			void StreetRelease(const streetID_t streetID) override;
+			void StreetSettings(const streetID_t streetID, const std::string& name) override;
+			void SwitchDelete(const switchID_t switchID, const std::string& name) override;
+			void SwitchSettings(const switchID_t switchID, const std::string& name) override;
 			void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) override;
-			void switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const std::string& rotation);
-			void switchDelete(const switchID_t switchID, const std::string& name) override;
-			void locoIntoTrack(const locoID_t locoID, const trackID_t trackID) override;
-			void locoRelease(const locoID_t locoID) override;
-			void trackRelease(const trackID_t trackID) override;
-			void trackSettings(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const std::string& rotation);
-			void trackDelete(const trackID_t trackID, const std::string& name) override;
-			void streetSettings(const streetID_t streetID, const std::string& name) override;
-			void streetDelete(const streetID_t streetID, const std::string& nam) override;
-			void streetRelease(const streetID_t streetID) override;
-			void locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
-			void locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
-			void locoStart(const locoID_t locoID) override;
-			void locoStop(const locoID_t locoID) override;
-			void locoSettings(const locoID_t locoID, const std::string& name);
-			void locoDelete(const locoID_t locoID, const std::string& name);
-			void layerSettings(const layerID_t layerID, const std::string& name);
-			void layerDelete(const layerID_t layerID, const std::string& name);
+			void TrackDelete(const trackID_t trackID, const std::string& name) override;
+			void TrackRelease(const trackID_t trackID) override;
+			void TrackSettings(const trackID_t trackID, const std::string& name) override;
+			void TrackState(const controlType_t controlType, const trackID_t trackID, const lockState_t state) override;
 
 		private:
-			void addUpdate(const std::string& command, const std::string& status);
+			void AddUpdate(const std::string& command, const std::string& status);
 
 			volatile bool run;
 			unsigned int lastClientID;

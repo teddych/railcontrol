@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include "command_interface.h"
 #include "config.h"
+#include "ControlInterface.h"
 #include "datamodel/datamodel.h"
 #include "hardware/HardwareParams.h"
 #include "Logger/Logger.h"
@@ -174,7 +174,7 @@ class Manager {
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;
 
 		// controls (Webserver, console & hardwareHandler. So each hardware is also added here).
-		std::map<controlID_t,CommandInterface*> controls;
+		std::map<controlID_t,ControlInterface*> controls;
 		mutable std::mutex controlMutex;
 
 		// hardware (virt, CS2, ...)

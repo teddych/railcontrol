@@ -23,7 +23,7 @@ using std::vector;
 namespace webserver {
 
 	WebServer::WebServer(Manager& manager, const unsigned short port)
-	:	CommandInterface(ControlTypeWebserver),
+	:	ControlInterface(ControlTypeWebserver),
 		Network::TcpServer(port),
 		run(false),
 		lastClientID(0),
@@ -73,11 +73,11 @@ namespace webserver {
 	{
 		if (status)
 		{
-			addUpdate("booster;on=true", "Booster is on");
+			AddUpdate("booster;on=true", "Booster is on");
 		}
 		else
 		{
-			addUpdate("booster;on=false", "Booster is off");
+			AddUpdate("booster;on=false", "Booster is off");
 		}
 	}
 
@@ -87,7 +87,7 @@ namespace webserver {
 		stringstream status;
 		command << "locospeed;loco=" << locoID << ";speed=" << speed;
 		status << manager.getLocoName(locoID) << " speed is " << speed;
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
 	void WebServer::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
@@ -96,7 +96,7 @@ namespace webserver {
 		stringstream status;
 		command << "locodirection;loco=" << locoID << ";direction=" << (direction ? "true" : "false");
 		status << manager.getLocoName(locoID) << " direction is " << (direction ? "right" : "left");
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
 	void WebServer::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
@@ -105,7 +105,7 @@ namespace webserver {
 		stringstream status;
 		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int) function << ";on=" << (state ? "true" : "false");
 		status << manager.getLocoName(locoID) << " f" << (unsigned int) function << " is " << (state ? "on" : "off");
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
 	void WebServer::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
@@ -120,25 +120,25 @@ namespace webserver {
 		text::Converters::accessoryStatus(state, stateText);
 		command << "accessory;accessory=" << accessoryID << ";state=" << stateText;
 		status << manager.getAccessoryName(accessoryID) << " is " << stateText;
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::accessorySettings(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+	void WebServer::AccessorySettings(const accessoryID_t accessoryID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "accessorysettings;accessory=" << accessoryID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::accessoryDelete(const accessoryID_t accessoryID, const std::string& name)
+	void WebServer::AccessoryDelete(const accessoryID_t accessoryID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "accessorydelete;accessory=" << accessoryID;
 		status << name << " deleted";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
 	void WebServer::FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
@@ -147,7 +147,7 @@ namespace webserver {
 		stringstream status;
 		command << "feedback;feedback=" << feedbackID << ";state=" << (state ? "on" : "off");
 		status << "Feedback " << feedbackID << " is " << (state ? "on" : "off");
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
 	void WebServer::FeedbackSettings(const feedbackID_t feedbackID, const std::string& name)
@@ -156,7 +156,7 @@ namespace webserver {
 		stringstream status;
 		command << "feedbacksettings;feedback=" << feedbackID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
 	void WebServer::FeedbackDelete(const feedbackID_t feedbackID, const std::string& name)
@@ -165,10 +165,10 @@ namespace webserver {
 		stringstream status;
 		command << "feedbackdelete;feedback=" << feedbackID;
 		status << name << " deleted";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::track(const controlType_t controlType, const trackID_t trackID, const lockState_t state)
+	void WebServer::TrackState(const controlType_t controlType, const trackID_t trackID, const lockState_t state)
 	{
 		stringstream command;
 		stringstream status;
@@ -176,25 +176,25 @@ namespace webserver {
 		text::Converters::lockStatus(state, stateText);
 		command << "track;track=" << trackID << ";state=" << stateText;
 		status << manager.getTrackName(trackID) << " is " << stateText;
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::streetSettings(const streetID_t streetID, const std::string& name)
+	void WebServer::StreetSettings(const streetID_t streetID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "streetsettings;street=" << streetID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::streetDelete(const streetID_t streetID, const std::string& name)
+	void WebServer::StreetDelete(const streetID_t streetID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "streetdelete;street=" << streetID;
 		status << name << " deleted";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
 	void WebServer::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
@@ -209,157 +209,157 @@ namespace webserver {
 		text::Converters::switchStatus(state, stateText);
 		command << "switch;switch=" << switchID << ";state=" << stateText;
 		status << manager.getSwitchName(switchID) << " is " << stateText;
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::switchSettings(const switchID_t switchID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const string& rotation)
+	void WebServer::SwitchSettings(const switchID_t switchID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "switchsettings;switch=" << switchID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::switchDelete(const switchID_t switchID, const std::string& name)
+	void WebServer::SwitchDelete(const switchID_t switchID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "switchdelete;switch=" << switchID;
 		status << name << " deleted";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::trackSettings(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const string& rotation)
+	void WebServer::TrackSettings(const trackID_t trackID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "tracksettings;track=" << trackID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::trackDelete(const trackID_t trackID, const std::string& name)
+	void WebServer::TrackDelete(const trackID_t trackID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "trackdelete;strack=" << trackID;
 		status << name << " deleted";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
+	void WebServer::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	{
 		stringstream command;
 		stringstream status;
 		command << "locoIntoTrack;loco=" << locoID << ";track=" << trackID;
 		status << manager.getLocoName(locoID) << " is on track " << manager.getTrackName(trackID);
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoRelease(const locoID_t locoID)
+	void WebServer::LocoRelease(const locoID_t locoID)
 	{
 		stringstream command;
 		stringstream status;
 		command << "locoRelease;loco=" << locoID;
 		status << manager.getLocoName(locoID) << " is not on a track anymore";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 	;
 
-	void WebServer::trackRelease(const trackID_t trackID)
+	void WebServer::TrackRelease(const trackID_t trackID)
 	{
 		stringstream command;
 		stringstream status;
 		command << "trackRelease;track=" << trackID;
 		status << manager.getTrackName(trackID) << " is released";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 	;
 
-	void WebServer::streetRelease(const streetID_t streetID)
+	void WebServer::StreetRelease(const streetID_t streetID)
 	{
 		stringstream command;
 		stringstream status;
 		command << "streetRelease;street=" << streetID;
 		status << manager.getStreetName(streetID) << " is  released";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 	;
 
-	void WebServer::locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
+	void WebServer::LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		stringstream command;
 		stringstream status;
 		command << "locoStreet;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
 		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.getTrackName(trackID);
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
+	void WebServer::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		stringstream command;
 		stringstream status;
 		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
 		status << manager.getLocoName(locoID) << " has reached the destination track " << manager.getTrackName(trackID) << " on street " << manager.getStreetName(streetID);
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoStart(const locoID_t locoID)
+	void WebServer::LocoStart(const locoID_t locoID)
 	{
 		stringstream command;
 		stringstream status;
 		command << "locoStart;loco=" << locoID;
 		status << manager.getLocoName(locoID) << " is in auto mode";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoStop(const locoID_t locoID)
+	void WebServer::LocoStop(const locoID_t locoID)
 	{
 		stringstream command;
 		stringstream status;
 		command << "locoStop;loco=" << locoID;
 		status << manager.getLocoName(locoID) << " is in manual mode";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoSettings(const locoID_t locoID, const std::string& name)
+	void WebServer::LocoSettings(const locoID_t locoID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "locosettings;loco=" << locoID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::locoDelete(const locoID_t locoID, const std::string& name)
+	void WebServer::LocoDelete(const locoID_t locoID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "locodelete;loco=" << locoID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::layerSettings(const layerID_t layerID, const std::string& name)
+	void WebServer::LayerSettings(const layerID_t layerID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "layersettings;layer=" << layerID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::layerDelete(const layerID_t layerID, const std::string& name)
+	void WebServer::LayerDelete(const layerID_t layerID, const std::string& name)
 	{
 		stringstream command;
 		stringstream status;
 		command << "layerdelete;layer=" << layerID;
 		status << name << " updated";
-		addUpdate(command.str(), status.str());
+		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::addUpdate(const string& command, const string& status)
+	void WebServer::AddUpdate(const string& command, const string& status)
 	{
 		stringstream ss;
 		ss << "data: command=" << command << ";status=" << status << "\r\n\r\n";
@@ -368,7 +368,7 @@ namespace webserver {
 		updates.erase(updateID - MaxUpdates);
 	}
 
-	bool WebServer::nextUpdate(unsigned int& updateIDClient, string& s)
+	bool WebServer::NextUpdate(unsigned int& updateIDClient, string& s)
 	{
 		std::lock_guard<std::mutex> lock(updateMutex);
 

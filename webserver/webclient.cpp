@@ -2357,7 +2357,7 @@ namespace webserver
 		while(run)
 		{
 			string s;
-			bool ok = server.nextUpdate(updateID, s);
+			bool ok = server.NextUpdate(updateID, s);
 			if (ok == false)
 			{
 				// FIXME: use signaling instead of sleep
