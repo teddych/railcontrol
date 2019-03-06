@@ -389,6 +389,25 @@ function dataUpdate(event)
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}
+	else if (command == 'feedback')
+	{
+		elementName = 'f_' + argumentMap.get('feedback');
+		var element = document.getElementById(elementName);
+		if (element && argumentMap.has('state'))
+		{
+			var state = argumentMap.get('state');
+			if (state == 'on')
+			{
+				element.classList.remove('feedback_free');
+				element.classList.add('feedback_occupied');
+			}
+			else
+			{
+				element.classList.remove('feedback_occupied');
+				element.classList.add('feedback_free');
+			}
+		}
+	}
 	else if (command == 'feedbacksettings')
 	{
 		var feedbackID = argumentMap.get('feedback');
