@@ -31,7 +31,7 @@ namespace hardware
 	{}
 
 	// turn booster on or off
-	void Virtual::Booster(const boosterStatus_t status)
+	void Virtual::Booster(const boosterState_t status)
 	{
 		logger->Info("Turning booster {0}", status ? "on" : "off");
 	}

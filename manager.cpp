@@ -33,6 +33,7 @@ using webserver::WebServer;
 
 Manager::Manager(Config& config)
 :	logger(Logger::Logger::GetLogger("Manager")),
+ 	boosterState(BoosterStop),
 	storage(nullptr),
  	delayedCall(new DelayedCall(*this)),
 	unknownControl("Unknown Control"),
@@ -217,12 +218,13 @@ Manager::~Manager()
 * Booster                  *
 ***************************/
 
-void Manager::booster(const controlType_t controlType, const boosterStatus_t status)
+void Manager::Booster(const controlType_t controlType, const boosterState_t state)
 {
+	boosterState = state;
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->booster(controlType, status);
+		control.second->Booster(controlType, state);
 	}
 }
 

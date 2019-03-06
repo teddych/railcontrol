@@ -13,7 +13,7 @@ class CommandInterface
 		virtual ~CommandInterface() {};
 		const controlType_t getcontrolType() const { return controlType; }
 		virtual const std::string getName() const = 0;
-		virtual void booster(const controlType_t controlType, const boosterStatus_t status) = 0;
+		virtual void Booster(const controlType_t controlType, const boosterState_t state) = 0;
 		virtual void locoSettings(const locoID_t locoID, const std::string& name) {};
 		virtual void locoDelete(const locoID_t locoID, const std::string& name) {};
 		virtual void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) = 0;

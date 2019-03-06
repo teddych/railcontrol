@@ -154,7 +154,7 @@ namespace hardware
 	}
 
 	// turn booster on or off
-	void CS2::Booster(const boosterStatus_t status)
+	void CS2::Booster(const boosterState_t status)
 	{
 		logger->Info("Turning CS2 booster {0}", status ? "on" : "off");
 		char buffer[CS2_CMD_BUF_LEN];
@@ -345,12 +345,12 @@ namespace hardware
 				{
 					case 0x00:
 						// system stopp
-						manager->booster(ControlTypeHardware, BoosterStop);
+						manager->Booster(ControlTypeHardware, BoosterStop);
 						break;
 
 					case 0x01:
 						// system go
-						manager->booster(ControlTypeHardware, BoosterGo);
+						manager->Booster(ControlTypeHardware, BoosterGo);
 						break;
 				}
 			}

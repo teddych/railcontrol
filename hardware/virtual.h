@@ -18,7 +18,7 @@ namespace hardware
 			bool CanHandleAccessories() const { return true; }
 			bool CanHandleFeedback() const { return true; }
 
-			void Booster(const boosterStatus_t status) override;
+			void Booster(const boosterState_t status) override;
 
 			void LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed) override;
 

@@ -69,7 +69,7 @@ namespace webserver {
 		clients.push_back(new WebClient(++lastClientID, connection, *this, manager));
 	}
 
-	void WebServer::booster(const controlType_t controlType, const boosterStatus_t status)
+	void WebServer::Booster(const controlType_t controlType, const boosterState_t status)
 	{
 		if (status)
 		{

@@ -51,7 +51,7 @@ namespace hardware
 			virtual void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const {}
 
 			// turn booster on or off
-			virtual void Booster(const boosterStatus_t status) {};
+			virtual void Booster(const boosterState_t status) {};
 
 			// set loco speed
 			virtual void LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed) {};

@@ -65,7 +65,7 @@ namespace console
 		}
 	}
 
-	void ConsoleServer::booster(const controlType_t controlType, const boosterStatus_t status)
+	void ConsoleServer::Booster(const controlType_t controlType, const boosterState_t status)
 	{
 		if (status)
 		{

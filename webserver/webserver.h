@@ -22,7 +22,7 @@ namespace webserver
 
 			const std::string getName() const override { return "Webserver"; }
 			bool nextUpdate(unsigned int& updateIDClient, std::string& s);
-			void booster(const controlType_t controlType, const boosterStatus_t status) override;
+			void Booster(const controlType_t controlType, const boosterState_t status) override;
 			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;
 			void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) override;
 			void LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on) override;

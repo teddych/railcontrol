@@ -124,7 +124,7 @@ namespace webserver
 			if (arguments["cmd"].compare("quit") == 0)
 			{
 				HtmlReplyWithHeader(string("Stopping Railcontrol"));
-				manager.booster(ControlTypeWebserver, BoosterStop);
+				manager.Booster(ControlTypeWebserver, BoosterStop);
 				stopRailControlWebserver();
 			}
 			else if (arguments["cmd"].compare("booster") == 0)
@@ -133,12 +133,12 @@ namespace webserver
 				if (on)
 				{
 					HtmlReplyWithHeader(string("Turning booster on"));
-					manager.booster(ControlTypeWebserver, BoosterGo);
+					manager.Booster(ControlTypeWebserver, BoosterGo);
 				}
 				else
 				{
 					HtmlReplyWithHeader(string("Turning booster off"));
-					manager.booster(ControlTypeWebserver, BoosterStop);
+					manager.Booster(ControlTypeWebserver, BoosterStop);
 				}
 			}
 			else if (arguments["cmd"].compare("layeredit") == 0)
@@ -2463,7 +2463,7 @@ namespace webserver
 		menuMain.AddClass("menu_main");
 		menuMain.AddChildTag(HtmlTagButtonCommand("<svg width=\"35\" height=\"35\"><polygon points=\"15,0.5 30,0.5 30,24.5 15,24.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"20,10.5 30,0.5 30,24.5 20,34.5\" fill=\"black\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"0,10 7.5,10 7.5,5 15,12.5 7.5,20 7.5,15 0,15\"/></svg>", "quit"));
 		menuMain.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
-		menuMain.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"35\" height=\"35\"><polyline points=\"12.5,8.8 11.1,9.8 9.8,11.1 8.8,12.5 8.1,14.1 7.7,15.8 7.5,17.5 7.7,19.2 8.1,20.9 8.8,22.5 9.8,23.9 11.1,25.2 12.5,26.2 14.1,26.9 15.8,27.3 17.5,27.5 19.2,27.3 20.9,26.9 22.5,26.2 23.9,25.2 25.2,23.9 26.2,22.5 26.9,20.9 27.3,19.2 27.5,17.5 27.3,15.8 26.9,14.1 26.2,12.5 25.2,11.1 23.9,9.8 22.5,8.8\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/><polyline points=\"17.5,2.5 17.5,15\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/></svg>", "booster", false, buttonArguments).AddClass("button_booster"));
+		menuMain.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"35\" height=\"35\"><polyline points=\"12.5,8.8 11.1,9.8 9.8,11.1 8.8,12.5 8.1,14.1 7.7,15.8 7.5,17.5 7.7,19.2 8.1,20.9 8.8,22.5 9.8,23.9 11.1,25.2 12.5,26.2 14.1,26.9 15.8,27.3 17.5,27.5 19.2,27.3 20.9,26.9 22.5,26.2 23.9,25.2 25.2,23.9 26.2,22.5 26.9,20.9 27.3,19.2 27.5,17.5 27.3,15.8 26.9,14.1 26.2,12.5 25.2,11.1 23.9,9.8 22.5,8.8\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/><polyline points=\"17.5,2.5 17.5,15\" stroke=\"black\" stroke-width=\"3\" fill=\"none\"/></svg>", "booster", manager.Booster(), buttonArguments).AddClass("button_booster"));
 		menuMain.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 		menuMain.AddChildTag(HtmlTagButtonCommand("<svg width=\"35\" height=\"35\"><polyline points=\"1,11 1,10 10,1 25,1 34,10 34,25 25,34 10,34 1,25 1,11\" stroke=\"black\" stroke-width=\"1\" fill=\"red\"/><text x=\"3\" y=\"21\" fill=\"white\" font-size=\"11\">STOP</text></svg>", "stopall"));
 		menu.AddChildTag(menuMain);

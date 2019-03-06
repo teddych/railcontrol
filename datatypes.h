@@ -83,7 +83,7 @@ enum controlIDs : controlID_t
 	ControlIdFirstHardware = 10
 };
 
-enum boosterStatus_t : bool
+enum boosterState_t : bool
 {
 	BoosterStop = false,
 	BoosterGo = true

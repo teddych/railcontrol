@@ -250,7 +250,7 @@ namespace hardware
 		instance->GetArgumentTypes(argumentTypes);
 	}
 
-	void HardwareHandler::booster(const controlType_t controlType, const boosterStatus_t status)
+	void HardwareHandler::Booster(const controlType_t controlType, const boosterState_t status)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr)
 		{

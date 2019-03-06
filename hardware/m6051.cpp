@@ -77,7 +77,7 @@ namespace hardware
 		close(ttyFileDescriptor);
 	}
 
-	void M6051::Booster(const boosterStatus_t status)
+	void M6051::Booster(const boosterState_t status)
 	{
 		if (ttyFileDescriptor < 0)
 		{

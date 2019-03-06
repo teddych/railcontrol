@@ -20,7 +20,8 @@ class Manager {
 		~Manager();
 
 		// booster
-		void booster(const controlType_t controlType, const boosterStatus_t status);
+		boosterState_t Booster() const { return boosterState; }
+		void Booster(const controlType_t controlType, const boosterState_t status);
 
 		// hardware (virt, CS2, ...)
 		static const std::map<hardwareType_t,std::string> hardwareListNames();
@@ -167,6 +168,7 @@ class Manager {
 		const std::map<std::string,protocol_t> ProtocolsOfControl(const addressType_t type, const controlID_t) const;
 
 		Logger::Logger* logger;
+		boosterState_t boosterState;
 
 		// FIXME: check usage of all mutexes
 		// const hardwareType_t hardwareOfControl(controlID_t controlID) const;
