@@ -29,36 +29,30 @@ namespace webserver
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
 		string layoutHeight = to_string(EdgeLength * track->height);
-		switch (type)
+
+		if (type == TrackTypeTurn)
 		{
-			case TrackTypeLeft:
-				image = "<polygon points=\"0,22 0,13 22,35 13,35\" fill=\"black\"/>";
-				break;
-
-			case TrackTypeRight:
-				image = "<polygon points=\"35,13 35,22 22,35 13,35\" fill=\"black\"/>";
-				break;
-
-			case TrackTypeStraight:
-			default:
-				image = "<polygon points=\"13,0 22,0 22,35 13,35\" fill=\"black\"/>";
-				break;
+			image = "<polygon class=\"track\" points=\"0,22 0,13 22,35 13,35\"/>";
+		}
+		else
+		{
+			const string& name = (locoID == LocoNone ? track->Name() : manager.LocoName(locoID));
+			image = "<polygon class=\"track\" points=\"13,0 22,0 22," + layoutHeight + " 13," + layoutHeight + "\"/><text class=\"track\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + name + "</text>";
 		}
 
 		int translateX = 0;
 		int translateY = 0;
 		if (track->height > Height1)
 		{
-			image += "<polygon points=\"13,35 22,35 22," + layoutHeight + " 13," + layoutHeight + "\" fill=\"black\"/>";
-			if (track->rotation == Rotation90)
-			{
-				translateX = -((((track->height - 1) * EdgeLength) + 1) / 2);
-				translateY = -(((track->height - 1) * EdgeLength) / 2);
-			}
-			else if (track->rotation == Rotation270)
+			if (track->rotation == Rotation90 || track->rotation == Rotation270)
 			{
 				translateX = ((((track->height - 1) * EdgeLength) + 1) / 2);
 				translateY = (((track->height - 1) * EdgeLength) / 2);
+			}
+			if (track->rotation == Rotation90)
+			{
+				translateX = -translateX;
+				translateY = -translateY;
 			}
 		}
 

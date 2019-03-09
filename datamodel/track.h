@@ -24,8 +24,8 @@ namespace datamodel
 				const trackType_t type)
 			:	LayoutItem(trackID, name, VisibleYes, x, y, z, Width1, height, rotation),
 				type(type),
-				lockState(LockStateFree) /* FIXME */,
-			 	locoID(0) /* FIXME */,
+				lockState(LockStateFree),
+			 	locoID(LocoNone),
 			 	locoDirection(DirectionLeft)
 			{
 			}
@@ -52,7 +52,10 @@ namespace datamodel
 
 			bool getValidStreets(std::vector<Street*>& validStreets);
 
-			bool isInUse() const;
+			bool IsInUse() const
+			{
+				return this->lockState != LockStateFree || this->locoID != LocoNone || this->streets.size() > 0;
+			}
 
 		private:
 			trackType_t type;
@@ -62,10 +65,5 @@ namespace datamodel
 			std::mutex updateMutex;
 			std::vector<Street*> streets;
 	};
-
-	inline bool Track::isInUse() const
-	{
-		return this->lockState != LockStateFree || this->locoID != LocoNone || this->streets.size() > 0;
-	}
 } // namespace datamodel
 

@@ -2028,22 +2028,52 @@ namespace webserver
 			rotation = track->rotation;
 			type = track->Type();
 		}
+		if (type == TrackTypeTurn)
+		{
+			height = 1;
+		}
 
 		std::map<string, string> typeOptions;
-		typeOptions[to_string(TrackTypeStraight)] = "Straight";
-		typeOptions[to_string(TrackTypeLeft)] = "Left";
-		typeOptions[to_string(TrackTypeRight)] = "Right";
+		typeOptions[to_string(static_cast<int>(TrackTypeStraight))] = "Straight";
+		typeOptions[to_string(static_cast<int>(TrackTypeTurn))] = "Turn";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit track &quot;" + name + "&quot;"));
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
-			.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"))
-			.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)))
-			.AddChildTag(HtmlTagInputTextWithLabel("name", "Track Name:", name))
-			.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100))
-			.AddChildTag(HtmlTagPosition(posx, posy, posz))
-			.AddChildTag(HtmlTagRotation(rotation))
-		));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag formContent("form");
+		formContent.AddAttribute("id", "editform");
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"));
+		formContent.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
+
+		HtmlTag mainContent("div");
+		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddClass("tab_content");
+		mainContent.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"));
+		mainContent.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
+		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Track Name:", name));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)).AddAttribute("onchange", "onChangeTrackType();return false;"));
+		HtmlTag i_length("div");
+		i_length.AddAttribute("id", "i_length");
+		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100));
+		if (type == TrackTypeTurn)
+		{
+			i_length.AddAttribute("hidden");
+		}
+		mainContent.AddChildTag(i_length);
+		formContent.AddChildTag(mainContent);
+
+		HtmlTag positionContent("div");
+		positionContent.AddAttribute("id", "tab_position");
+		positionContent.AddClass("tab_content");
+		positionContent.AddClass("hidden");
+		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
+		positionContent.AddChildTag(HtmlTagRotation(rotation));
+		formContent.AddChildTag(positionContent);
+
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
@@ -2056,9 +2086,13 @@ namespace webserver
 		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
-		layoutItemSize_t height = GetIntegerMapEntry(arguments, "length", 1);
+		layoutItemSize_t height = 1;
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		trackType_t type = GetIntegerMapEntry(arguments, "type", TrackTypeStraight);
+		trackType_t type = static_cast<trackType_t>(GetBoolMapEntry(arguments, "type", TrackTypeStraight));
+		if (type == TrackTypeStraight)
+		{
+			height = GetIntegerMapEntry(arguments, "length", 1);
+		}
 		string result;
 		if (!manager.trackSave(trackID, name, posX, posY, posZ, height, rotation, type, result))
 		{

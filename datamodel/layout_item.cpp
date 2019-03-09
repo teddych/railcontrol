@@ -23,6 +23,7 @@ namespace datamodel
 		switch (rotation)
 		{
 			case Rotation0:
+			case Rotation180:
 				x = posX;
 				y = posY;
 				w = width;
@@ -30,34 +31,9 @@ namespace datamodel
 				return true;
 
 			case Rotation90:
-				if (posX + 1 < height)
-				{
-					return false;
-				}
-				x = posX + 1 - height;
-				y = posY;
-				w = height;
-				h = width;
-				return true;
-
-			case Rotation180:
-				if (posX + 1 < width || posY + 1 < height)
-				{
-					return false;
-				}
-				x = posX + 1 - width;
-				y = posY + 1 - height;
-				w = width;
-				h = height;
-				return true;
-
 			case Rotation270:
-				if (posY + 1 < width)
-				{
-					return false;
-				}
 				x = posX;
-				y = posY + 1 - width;
+				y = posY;
 				w = height;
 				h = width;
 				return true;

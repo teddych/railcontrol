@@ -166,6 +166,22 @@ function onChangeCheckboxShowHide(checkboxId, divId)
 	div.hidden = !checkbox.checked;
 }
 
+function onChangeTrackType()
+{
+	var typeSelect = document.getElementById('s_type');
+	if (!typeSelect)
+	{
+		return;
+	}
+	var length = document.getElementById('i_length');
+	if (!length)
+	{
+		return;
+	}
+	var typeValue = typeSelect.value;
+	length.hidden =  (typeValue == 1)
+}
+
 function updateLayoutItem(elementName, data)
 {
 	var parentElement = document.getElementById('layout');
