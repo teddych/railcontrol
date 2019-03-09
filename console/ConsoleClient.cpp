@@ -782,16 +782,16 @@ namespace console
 			<< "\nY:        " << static_cast<int>(track->posY)
 			<< "\nZ:        " << static_cast<int>(track->posZ);
 		string stateText;
-		text::Converters::lockStatus(track->getState(), stateText);
+		text::Converters::lockStatus(track->GetState(), stateText);
 		status << "\nStatus:   " << stateText;
 		status << "\nLoco:     ";
-		if (track->getLoco() == LocoNone)
+		if (track->GetLoco() == LocoNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.getLocoName(track->getLoco()) << " (" << track->getLoco() << ")";
+			status << manager.LocoName(track->GetLoco()) << " (" << track->GetLoco() << ")";
 		}
 		SendAndPrompt(status.str());
 	}
@@ -818,7 +818,7 @@ namespace console
 	void ConsoleClient::HandleTrackRelease(string& s, size_t& i)
 	{
 		trackID_t trackID = ReadNumber(s, i);
-		if (!manager.trackRelease(trackID))
+		if (!manager.TrackRelease(trackID))
 		{
 			SendAndPrompt("Track not found or track in use");
 			return;
@@ -949,7 +949,7 @@ namespace console
 		}
 		else
 		{
-			status << manager.getLocoName(feedback->GetLoco()) << " (" << feedback->GetLoco() << ")";
+			status << manager.LocoName(feedback->GetLoco()) << " (" << feedback->GetLoco() << ")";
 		}
 		SendAndPrompt(status.str());
 	}
@@ -1028,7 +1028,7 @@ namespace console
 	{
 		locoID_t locoID = ReadNumber(s, i);
 		trackID_t trackID = ReadNumber(s, i);
-		if (!manager.locoIntoTrack(locoID, trackID))
+		if (!manager.LocoIntoTrack(locoID, trackID))
 		{
 			// FIXME: bether errormessage
 			SendAndPrompt("Unknown loco or unknown track");
@@ -1063,7 +1063,7 @@ namespace console
 
 		// list one loco
 		locoID_t locoID = ReadNumber(s, i);
-		datamodel::Loco* loco = manager.getLoco(locoID);
+		datamodel::Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
 			SendAndPrompt("Unknown loco");
@@ -1080,22 +1080,22 @@ namespace console
 		const char* const locoStateText = loco->getStateText();
 		status << "\nStatus:   " << locoStateText;
 		status << "\nTrack:    ";
-		if (loco->track() == TrackNone)
+		if (loco->GetTrack() == TrackNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.getTrackName(loco->track()) << " (" << loco->track() << ")";
+			status << manager.getTrackName(loco->GetTrack()) << " (" << loco->GetTrack() << ")";
 		}
 		status << "\nStreet:   ";
-		if (loco->street() == StreetNone)
+		if (loco->GetStreet() == StreetNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.getStreetName(loco->street()) << " (" << loco->street() << ")";
+			status << manager.getStreetName(loco->GetStreet()) << " (" << loco->GetStreet() << ")";
 		}
 		SendAndPrompt(status.str());
 	}
@@ -1149,7 +1149,7 @@ namespace console
 	void ConsoleClient::HandleLocoRelease(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
-		if (!manager.locoRelease(locoID))
+		if (!manager.LocoRelease(locoID))
 		{
 			// FIXME: bether errormessage
 			SendAndPrompt("Loco not found or track in use");
@@ -1372,7 +1372,7 @@ namespace console
 		}
 		else
 		{
-			status << manager.getLocoName(street->getLoco()) << " (" << street->getLoco() << ")";
+			status << manager.LocoName(street->getLoco()) << " (" << street->getLoco() << ")";
 		}
 		SendAndPrompt(status.str());
 	}

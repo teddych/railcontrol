@@ -44,7 +44,7 @@ namespace datamodel
 		{
 			return;
 		}
-		track->addStreet(this);
+		track->AddStreet(this);
 	}
 
 	Street::Street(Manager* manager, const std::string& serialized)
@@ -57,7 +57,7 @@ namespace datamodel
 		{
 			return;
 		}
-		track->addStreet(this);
+		track->AddStreet(this);
 	}
 
 	std::string Street::Serialize() const
@@ -158,7 +158,7 @@ namespace datamodel
 		{
 			return false;
 		}
-		if (!track->reserve(locoID))
+		if (!track->Reserve(locoID))
 		{
 			return false;
 		}
@@ -183,7 +183,7 @@ namespace datamodel
 		{
 			return false;
 		}
-		if (!track->lock(locoID))
+		if (!track->Lock(locoID))
 		{
 			return false;
 		}
@@ -205,7 +205,7 @@ namespace datamodel
 			return false;
 		}
 		Track* track = manager->getTrack(fromTrack);
-		track->release(locoID);
+		track->Release(locoID);
 		this->locoID = LocoNone;
 		lockState = LockStateFree;
 		Feedback* feedback = manager->getFeedback(feedbackIDStop);

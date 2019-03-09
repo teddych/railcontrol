@@ -86,7 +86,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locospeed;loco=" << locoID << ";speed=" << speed;
-		status << manager.getLocoName(locoID) << " speed is " << speed;
+		status << manager.LocoName(locoID) << " speed is " << speed;
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -95,7 +95,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locodirection;loco=" << locoID << ";direction=" << (direction ? "true" : "false");
-		status << manager.getLocoName(locoID) << " direction is " << (direction ? "right" : "left");
+		status << manager.LocoName(locoID) << " direction is " << (direction ? "right" : "left");
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -104,7 +104,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int) function << ";on=" << (state ? "true" : "false");
-		status << manager.getLocoName(locoID) << " f" << (unsigned int) function << " is " << (state ? "on" : "off");
+		status << manager.LocoName(locoID) << " f" << (unsigned int) function << " is " << (state ? "on" : "off");
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -252,8 +252,8 @@ namespace webserver {
 	{
 		stringstream command;
 		stringstream status;
-		command << "locoIntoTrack;loco=" << locoID << ";track=" << trackID;
-		status << manager.getLocoName(locoID) << " is on track " << manager.getTrackName(trackID);
+		command << "locointotrack;loco=" << locoID << ";track=" << trackID;
+		status << manager.LocoName(locoID) << " is on track " << manager.getTrackName(trackID);
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -261,8 +261,8 @@ namespace webserver {
 	{
 		stringstream command;
 		stringstream status;
-		command << "locoRelease;loco=" << locoID;
-		status << manager.getLocoName(locoID) << " is not on a track anymore";
+		command << "locorelease;loco=" << locoID;
+		status << manager.LocoName(locoID) << " is not on a track anymore";
 		AddUpdate(command.str(), status.str());
 	}
 	;
@@ -271,7 +271,7 @@ namespace webserver {
 	{
 		stringstream command;
 		stringstream status;
-		command << "trackRelease;track=" << trackID;
+		command << "trackrelease;track=" << trackID;
 		status << manager.getTrackName(trackID) << " is released";
 		AddUpdate(command.str(), status.str());
 	}
@@ -292,7 +292,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoStreet;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		status << manager.getLocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.getTrackName(trackID);
+		status << manager.LocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.getTrackName(trackID);
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -301,7 +301,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		status << manager.getLocoName(locoID) << " has reached the destination track " << manager.getTrackName(trackID) << " on street " << manager.getStreetName(streetID);
+		status << manager.LocoName(locoID) << " has reached the destination track " << manager.getTrackName(trackID) << " on street " << manager.getStreetName(streetID);
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -310,7 +310,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoStart;loco=" << locoID;
-		status << manager.getLocoName(locoID) << " is in auto mode";
+		status << manager.LocoName(locoID) << " is in auto mode";
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -319,7 +319,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoStop;loco=" << locoID;
-		status << manager.getLocoName(locoID) << " is in manual mode";
+		status << manager.LocoName(locoID) << " is in manual mode";
 		AddUpdate(command.str(), status.str());
 	}
 

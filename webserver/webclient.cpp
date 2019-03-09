@@ -325,6 +325,14 @@ namespace webserver
 			{
 				handleTrackGet(arguments);
 			}
+			else if (arguments["cmd"].compare("tracksetloco") == 0)
+			{
+				handleTrackSetLoco(arguments);
+			}
+			else if (arguments["cmd"].compare("trackrelease") == 0)
+			{
+				handleTrackRelease(arguments);
+			}
 			else if (arguments["cmd"].compare("feedbackedit") == 0)
 			{
 				handleFeedbackEdit(arguments);
@@ -918,7 +926,7 @@ namespace webserver
 		manager.LocoSpeed(ControlTypeWebserver, locoID, speed);
 
 		stringstream ss;
-		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to speed " << speed;
+		ss << "Loco &quot;" << manager.LocoName(locoID) << "&quot; is now set to speed " << speed;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
@@ -930,7 +938,7 @@ namespace webserver
 		manager.LocoDirection(ControlTypeWebserver, locoID, direction);
 
 		stringstream ss;
-		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; is now set to " << direction;
+		ss << "Loco &quot;" << manager.LocoName(locoID) << "&quot; is now set to " << direction;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
@@ -943,7 +951,7 @@ namespace webserver
 		manager.LocoFunction(ControlTypeWebserver, locoID, function, on);
 
 		stringstream ss;
-		ss << "Loco &quot;" << manager.getLocoName(locoID) << "&quot; has now f";
+		ss << "Loco &quot;" << manager.LocoName(locoID) << "&quot; has now f";
 		ss << function << " set to " << (on ? "on" : "off");
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
@@ -966,7 +974,7 @@ namespace webserver
 			return;
 		}
 		locoID_t locoId = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		Loco* loco = manager.getLoco(locoId);
+		Loco* loco = manager.GetLoco(locoId);
 		if (loco == nullptr)
 		{
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown loco"));
@@ -1192,7 +1200,7 @@ namespace webserver
 		function_t nrOfFunctions = 0;
 		if (locoID > LocoNone)
 		{
-			const datamodel::Loco* loco = manager.getLoco(locoID);
+			const datamodel::Loco* loco = manager.GetLoco(locoID);
 			controlID = loco->controlID;
 			protocol = loco->protocol;
 			address = loco->address;
@@ -1252,7 +1260,7 @@ namespace webserver
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Locos"));
 		HtmlTag table("table");
-		const map<string,datamodel::Loco*> locoList = manager.locoListByName();
+		const map<string,datamodel::Loco*> locoList = manager.LocoListByName();
 		map<string,string> locoArgument;
 		for (auto loco : locoList)
 		{
@@ -1281,7 +1289,7 @@ namespace webserver
 			return;
 		}
 
-		const datamodel::Loco* loco = manager.getLoco(locoID);
+		const datamodel::Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown loco");
@@ -1303,7 +1311,7 @@ namespace webserver
 	void WebClient::handleLocoDelete(const map<string, string>& arguments)
 	{
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		const datamodel::Loco* loco = manager.getLoco(locoID);
+		const datamodel::Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete loco");
@@ -1379,7 +1387,7 @@ namespace webserver
 			{
 				continue;
 			}
-			content.AddChildTag(HtmlTagTrack(track.second));
+			content.AddChildTag(HtmlTagTrack(manager, track.second));
 		}
 
 		const map<streetID_t,datamodel::Street*>& streets = manager.streetList();
@@ -2026,7 +2034,7 @@ namespace webserver
 			posz = track->posZ;
 			height = track->height;
 			rotation = track->rotation;
-			type = track->Type();
+			type = track->GetType();
 		}
 		if (type == TrackTypeTurn)
 		{
@@ -2178,7 +2186,41 @@ namespace webserver
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
 		const datamodel::Track* track = manager.getTrack(trackID);
-		HtmlReplyWithHeader(HtmlTagTrack(track));
+		HtmlReplyWithHeader(HtmlTagTrack(manager, track));
+	}
+
+	void WebClient::handleTrackSetLoco(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		if (locoID != LocoNone)
+		{
+			manager.LocoIntoTrack(locoID, trackID);
+			HtmlReplyWithHeaderAndParagraph("Loco added to track.");
+		}
+		const datamodel::Track* track = manager.getTrack(trackID);
+		if (track->IsInUse())
+		{
+			HtmlReplyErrorWithHeader("Track " + track->Name() + " is in use.");
+			return;
+		}
+		map<string,locoID_t> locos = manager.LocoListFree();
+		content.AddChildTag(HtmlTag("h1").AddContent("Select loco for track " + track->Name()));
+		content.AddChildTag(HtmlTagInputHidden("cmd", "tracksetloco"));
+		content.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
+		content.AddChildTag(HtmlTagSelectWithLabel("loco", "Loco:", locos));
+		content.AddChildTag(HtmlTag("br"));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
+		HtmlReplyWithHeader(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(content));
+	}
+
+	void WebClient::handleTrackRelease(const map<string, string>& arguments)
+	{
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		bool ret = manager.TrackRelease(trackID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Track released" : "Track not released"));
 	}
 
 	void WebClient::handleFeedbackEdit(const map<string, string>& arguments)
@@ -2415,6 +2457,15 @@ namespace webserver
 		}
 	}
 
+	void WebClient::HtmlReplyErrorWithHeader(const string& errorText)
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTag("h1").AddContent("Error"));
+		content.AddChildTag(HtmlTag("p").AddContent(errorText));
+		content.AddChildTag(HtmlTagButtonCancel());
+		HtmlReplyWithHeader(content);
+	}
+
 	void WebClient::HtmlReplyWithHeader(const HtmlTag& tag)
 	{
 		connection->Send(HtmlResponse(tag));
@@ -2439,7 +2490,7 @@ namespace webserver
 		if (locoID > LocoNone)
 		{
 			stringstream ss;
-			Loco* loco = manager.getLoco(locoID);
+			Loco* loco = manager.GetLoco(locoID);
 			ss << HtmlTag("p").AddContent(loco->name);
 			unsigned int speed = loco->Speed();
 			map<string,string> buttonArguments;

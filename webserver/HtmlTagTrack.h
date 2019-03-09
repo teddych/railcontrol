@@ -4,6 +4,7 @@
 
 #include "datamodel/track.h"
 #include "datatypes.h"
+#include "manager.h"
 #include "webserver/HtmlTagLayoutItem.h"
 
 namespace webserver
@@ -11,7 +12,7 @@ namespace webserver
 	class HtmlTagTrack : public HtmlTagLayoutItem
 	{
 		public:
-			HtmlTagTrack(const datamodel::Track* track);
+			HtmlTagTrack(const Manager& manager, const datamodel::Track* track);
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

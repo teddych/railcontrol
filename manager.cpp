@@ -549,33 +549,47 @@ const std::map<unsigned char,argumentType_t> Manager::ArgumentTypesOfControl(con
 * Loco                     *
 ***************************/
 
-datamodel::Loco* Manager::getLoco(const locoID_t locoID) const
+datamodel::Loco* Manager::GetLoco(const locoID_t locoID) const
 {
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) != 1)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return locos.at(locoID);
 }
 
-const std::string& Manager::getLocoName(const locoID_t locoID)
+const std::string& Manager::LocoName(const locoID_t locoID) const
 {
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) != 1)
 	{
 		return unknownLoco;
 	}
-	return locos.at(locoID)->name;
+	return locos.at(locoID)->Name();
 }
 
-const map<string,datamodel::Loco*> Manager::locoListByName() const
+const map<string,locoID_t> Manager::LocoListFree() const
+{
+	map<string,locoID_t> out;
+	std::lock_guard<std::mutex> Guard(locoMutex);
+	for(auto loco : locos)
+	{
+		if (loco.second->GetTrack() == TrackNone)
+		{
+			out[loco.second->Name()] = loco.second->objectID;
+		}
+	}
+	return out;
+}
+
+const map<string,datamodel::Loco*> Manager::LocoListByName() const
 {
 	map<string,datamodel::Loco*> out;
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	for(auto loco : locos)
 	{
-		out[loco.second->name] = loco.second;
+		out[loco.second->Name()] = loco.second;
 	}
 	return out;
 }
@@ -713,7 +727,7 @@ void Manager::LocoSpeed(const controlType_t controlType, const controlID_t contr
 
 bool Manager::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 {
-	Loco* loco = getLoco(locoID);
+	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;
@@ -735,7 +749,7 @@ bool Manager::LocoSpeed(const controlType_t controlType, const locoID_t locoID, 
 
 const locoSpeed_t Manager::LocoSpeed(const locoID_t locoID) const
 {
-	Loco* loco = getLoco(locoID);
+	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
 		return MinSpeed;
@@ -759,7 +773,7 @@ void Manager::LocoDirection(const controlType_t controlType, const controlID_t c
 }
 void Manager::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 {
-	Loco* loco = getLoco(locoID);
+	Loco* loco = GetLoco(locoID);
 	loco->SetDirection(direction);
 	logger->Info("{0} ({1}) direction is now {2}", loco->name, locoID, direction);
 	std::lock_guard<std::mutex> Guard(controlMutex);
@@ -786,7 +800,7 @@ void Manager::LocoFunction(const controlType_t controlType, const controlID_t co
 
 void Manager::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
 {
-	Loco* loco = getLoco(locoID);
+	Loco* loco = GetLoco(locoID);
 	loco->SetFunction(function, on);
 	logger->Info("{0} ({1}) function {2} is now {3}", loco->name, locoID, function, (on ? "on" : "off"));
 	std::lock_guard<std::mutex> Guard(controlMutex);
@@ -1230,7 +1244,7 @@ Track* Manager::getTrack(const trackID_t trackID) const
 	std::lock_guard<std::mutex> Guard(trackMutex);
 	if (tracks.count(trackID) != 1)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return tracks.at(trackID);
 }
@@ -1394,7 +1408,7 @@ bool Manager::trackDelete(const trackID_t trackID)
 		}
 
 		track = tracks.at(trackID);
-		if (track == nullptr || track->isInUse())
+		if (track == nullptr || track->IsInUse())
 		{
 			return false;
 		}
@@ -1899,7 +1913,7 @@ bool Manager::LayerDelete(const layerID_t layerID)
 * Automode                 *
 ***************************/
 
-bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
+bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 {
 	Track* track = getTrack(trackID);
 	if (track == nullptr)
@@ -1907,13 +1921,13 @@ bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 		return false;
 	}
 
-	Loco* loco = getLoco(locoID);
+	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;
 	}
 
-	bool reserved = track->reserve(locoID);
+	bool reserved = track->Reserve(locoID);
 	if (reserved == false)
 	{
 		return false;
@@ -1922,15 +1936,15 @@ bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	reserved = loco->toTrack(trackID);
 	if (reserved == false)
 	{
-		track->release(locoID);
+		track->Release(locoID);
 		return false;
 	}
 
-	reserved = track->lock(locoID);
+	reserved = track->Lock(locoID);
 	if (reserved == false)
 	{
-		loco->release();
-		track->release(locoID);
+		loco->Release();
+		track->Release(locoID);
 		return false;
 	}
 
@@ -1944,29 +1958,73 @@ bool Manager::locoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	return true;
 }
 
-bool Manager::locoRelease(const locoID_t locoID)
+bool Manager::LocoRelease(const locoID_t locoID)
 {
-	LocoSpeed(ControlTypeInternal, locoID, MinSpeed);
-
-	Loco* loco = getLoco(locoID);
+	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;
 	}
-	streetRelease(loco->street());
-	trackRelease(loco->track());
-	return loco->release();
+	trackID_t trackID = loco->GetTrack();
+	// FIXME: streetID_t streetID = loco->GetStreet();
+	bool ret = LocoReleaseInternal(locoID);
+	ret &= TrackReleaseInternal(trackID);
+	return ret;
 }
 
-bool Manager::trackRelease(const trackID_t trackID)
+bool Manager::LocoReleaseInternal(const locoID_t locoID)
+{
+	LocoSpeed(ControlTypeInternal, locoID, MinSpeed);
+
+	Loco* loco = GetLoco(locoID);
+	if (loco == nullptr)
+	{
+		return false;
+	}
+	bool ret = loco->Release();
+	if (ret == false)
+	{
+		return false;
+	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->LocoRelease(locoID);
+	}
+	return true;
+}
+
+bool Manager::TrackRelease(const trackID_t trackID)
 {
 	Track* track = getTrack(trackID);
 	if (track == nullptr)
 	{
 		return false;
 	}
-	locoID_t locoID = track->getLoco();
-	return track->release(locoID);
+	locoID_t locoID = track->GetLoco();
+	bool ret = LocoReleaseInternal(locoID);
+	ret &= TrackReleaseInternal(trackID);
+	return ret;
+}
+
+bool Manager::TrackReleaseInternal(const trackID_t trackID)
+{
+	Track* track = getTrack(trackID);
+	if (track == nullptr)
+	{
+		return false;
+	}
+	bool ret = track->Release(LocoNone);
+	if (ret == false)
+	{
+		return false;
+	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->TrackRelease(trackID);
+	}
+	return true;
 }
 bool Manager::feedbackRelease(const feedbackID_t feedbackID)
 {
@@ -2022,7 +2080,7 @@ bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t str
 
 bool Manager::locoStart(const locoID_t locoID)
 {
-	Loco* loco = getLoco(locoID);
+	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;
@@ -2042,7 +2100,7 @@ bool Manager::locoStart(const locoID_t locoID)
 
 bool Manager::locoStop(const locoID_t locoID)
 {
-	Loco* loco = getLoco(locoID);
+	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;

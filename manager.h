@@ -53,10 +53,11 @@ class Manager {
 		const std::map<unsigned char,argumentType_t> ArgumentTypesOfControl(const controlID_t controlID) const;
 
 		// loco
-		datamodel::Loco* getLoco(const locoID_t locoID) const;
-		const std::string& getLocoName(const locoID_t locoID);
+		datamodel::Loco* GetLoco(const locoID_t locoID) const;
+		const std::string& LocoName(const locoID_t locoID) const;
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
-		const std::map<std::string,datamodel::Loco*> locoListByName() const;
+		const std::map<std::string,locoID_t> LocoListFree() const;
+		const std::map<std::string,datamodel::Loco*> LocoListByName() const;
 		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
@@ -129,9 +130,9 @@ class Manager {
 		bool LayerDelete(const layerID_t layerID);
 
 		// automode
-		bool locoIntoTrack(const locoID_t locoID, const trackID_t trackID);
-		bool locoRelease(const locoID_t locoID);
-		bool trackRelease(const trackID_t trackID);
+		bool LocoIntoTrack(const locoID_t locoID, const trackID_t trackID);
+		bool LocoRelease(const locoID_t locoID);
+		bool TrackRelease(const trackID_t trackID);
 		bool feedbackRelease(const feedbackID_t feedbackID);
 		bool streetRelease(const streetID_t streetID);
 		//bool switchRelease(const switchID_t switchID);
@@ -166,6 +167,9 @@ class Manager {
 		}
 		bool checkControlProtocolAddress(const addressType_t type, const controlID_t controlID, const protocol_t protocol, const address_t address, std::string& result);
 		const std::map<std::string,protocol_t> ProtocolsOfControl(const addressType_t type, const controlID_t) const;
+
+		bool LocoReleaseInternal(const locoID_t locoID);
+		bool TrackReleaseInternal(const trackID_t trackID);
 
 		Logger::Logger* logger;
 		boosterState_t boosterState;

@@ -32,14 +32,14 @@ namespace datamodel
 		{
 			return false;
 		}
-		type = static_cast<trackType_t>(GetIntegerMapEntry(arguments, "type", TrackTypeStraight));
+		type = static_cast<trackType_t>(GetBoolMapEntry(arguments, "type", TrackTypeStraight));
 		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 		locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));
 		return true;
 	}
 
-	bool Track::reserve(const locoID_t locoID)
+	bool Track::Reserve(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (locoID == this->locoID)
@@ -59,7 +59,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Track::lock(const locoID_t locoID)
+	bool Track::Lock(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (lockState != LockStateReserved)
@@ -74,14 +74,10 @@ namespace datamodel
 		return true;
 	}
 
-	bool Track::release(const locoID_t locoID)
+	bool Track::Release(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState == LockStateFree)
-		{
-			return true;
-		}
-		if (this->locoID != locoID)
+		if (this->locoID != locoID && locoID != LocoNone)
 		{
 			return false;
 		}
@@ -90,7 +86,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Track::addStreet(Street* street)
+	bool Track::AddStreet(Street* street)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto s : streets)
@@ -104,14 +100,14 @@ namespace datamodel
 		return true;
 	}
 
-	bool Track::removeStreet(Street* street)
+	bool Track::RemoveStreet(Street* street)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		/* FIXME */
 		return false;
 	}
 
-	bool Track::getValidStreets(std::vector<Street*>& validStreets)
+	bool Track::ValidStreets(std::vector<Street*>& validStreets)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto street : streets)

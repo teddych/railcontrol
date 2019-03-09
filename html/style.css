@@ -145,6 +145,22 @@ body {
 	fill: red;
 }
 
+.track_free .track {
+	fill: black;
+}
+
+.track_occupied .track {
+	fill: red;
+}
+
+.track_occupied .track_set {
+	display: none;
+}
+
+.track_free .track_release {
+	display: none;
+}
+
 .popup {
 	position: fixed;
 	display: none;

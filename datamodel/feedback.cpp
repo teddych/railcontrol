@@ -68,7 +68,7 @@ namespace datamodel
 			return true;
 		}
 
-		manager->getLoco(locoID)->destinationReached();
+		manager->GetLoco(locoID)->destinationReached();
 
 		return true;
 	}

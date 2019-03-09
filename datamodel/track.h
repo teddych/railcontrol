@@ -38,19 +38,19 @@ namespace datamodel
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 			std::string LayoutType() const override { return "track"; };
-			trackType_t Type() const { return type; }
+			trackType_t GetType() const { return type; }
 			void Type(trackType_t type) { this->type = type; }
 
-			bool reserve(const locoID_t locoID);
-			bool lock(const locoID_t locoID);
-			bool release(const locoID_t locoID);
-			locoID_t getLoco() const { return locoID; }
-			lockState_t getState() const { return lockState; }
+			bool Reserve(const locoID_t locoID);
+			bool Lock(const locoID_t locoID);
+			bool Release(const locoID_t locoID);
+			locoID_t GetLoco() const { return locoID; }
+			lockState_t GetState() const { return lockState; }
 
-			bool addStreet(Street* street);
-			bool removeStreet(Street* street);
+			bool AddStreet(Street* street);
+			bool RemoveStreet(Street* street);
 
-			bool getValidStreets(std::vector<Street*>& validStreets);
+			bool ValidStreets(std::vector<Street*>& validStreets);
 
 			bool IsInUse() const
 			{

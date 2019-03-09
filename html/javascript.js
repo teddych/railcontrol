@@ -261,6 +261,14 @@ function requestUpdateItem(elementName, url)
 	xmlHttp.send(null);
 }
 
+function updateTrack(trackID)
+{
+	elementName = 't_' + trackID;
+	var url = '/?cmd=trackget';
+	url += '&track=' + trackID;
+	requestUpdateLayoutItem(elementName, url);
+}
+
 function dataUpdate(event)
 {
 	var status = document.getElementById('status');
@@ -391,13 +399,13 @@ function dataUpdate(event)
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}
-	else if (command == 'tracksettings')
+	else if (command == 'locointotrack')
 	{
-		var trackID = argumentMap.get('track');
-		elementName = 't_' + trackID;
-		var url = '/?cmd=trackget';
-		url += '&track=' + trackID;
-		requestUpdateLayoutItem(elementName, url);
+		updateTrack(argumentMap.get('track'));
+	}
+	else if (command == 'tracksettings' || command == 'trackrelease')
+	{
+		updateTrack(argumentMap.get('track'));
 	}
 	else if (command == 'trackdelete')
 	{

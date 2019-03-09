@@ -7,7 +7,7 @@ using std::to_string;
 
 namespace webserver
 {
-	HtmlTagTrack::HtmlTagTrack(const datamodel::Track* track)
+	HtmlTagTrack::HtmlTagTrack(const Manager& manager, const datamodel::Track* track)
 	{
 		layoutPosition_t posX;
 		layoutPosition_t posY;
@@ -16,9 +16,10 @@ namespace webserver
 		layoutItemSize_t h;
 		layoutRotation_t r;
 		track->Position(posX, posY, posZ, w, h, r);
-		trackType_t type = track->Type();
+		trackType_t type = track->GetType();
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
+		locoID_t locoID = track->GetLoco();
 
 		HtmlTag div1("div");
 		string trackIdString = to_string(track->objectID);
@@ -26,6 +27,7 @@ namespace webserver
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("track_item");
+		div1.AddClass(locoID == LocoNone ? "track_free" : "track_occupied");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
 		string layoutHeight = to_string(EdgeLength * track->height);
@@ -63,10 +65,13 @@ namespace webserver
 
 		HtmlTag div2("div");
 		div2.AddClass("contextmenu");
+		div2.AddClass(locoID == LocoNone ? "track_free" : "track_occupied");
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(track->name))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_set").AddContent("Set loco").AddAttribute("onClick", "loadPopup('/?cmd=tracksetloco&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent("Release loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
 			);

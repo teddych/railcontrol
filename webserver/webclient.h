@@ -35,6 +35,7 @@ namespace webserver
 			void interpretClientRequest(const std::vector<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
 			void printLoco(const std::map<std::string, std::string>& arguments);
 			void printMainHTML();
+			void HtmlReplyErrorWithHeader(const std::string& erroText);
 			void HtmlReplyWithHeader(const HtmlTag& tag);
 			void HtmlReplyWithHeaderAndParagraph(const std::string& content) { HtmlReplyWithHeader(HtmlTag("p").AddContent(content)); }
 			void HtmlReplyWithHeaderAndParagraph(const char* content) { HtmlReplyWithHeaderAndParagraph(std::string(content)); }
@@ -103,6 +104,8 @@ namespace webserver
 			void handleTrackAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackDelete(const std::map<std::string,std::string>& arguments);
 			void handleTrackGet(const std::map<std::string, std::string>& arguments);
+			void handleTrackSetLoco(const std::map<std::string, std::string>& arguments);
+			void handleTrackRelease(const std::map<std::string, std::string>& arguments);
 			void handleFeedbackEdit(const std::map<std::string,std::string>& arguments);
 			void handleFeedbackSave(const std::map<std::string,std::string>& arguments);
 			void handleFeedbackState(const std::map<std::string,std::string>& arguments);

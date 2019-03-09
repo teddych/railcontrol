@@ -84,7 +84,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Loco::release()
+	bool Loco::Release()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		if (state != LocoStateManual)
@@ -174,6 +174,7 @@ namespace datamodel
 						// automode is turned off, terminate thread
 						logger->Info("Loco {0} is now in manual mode", name);
 						return;
+
 					case LocoStateSearching:
 					{
 						logger->Info("Looking for new track for loco {0}", name);
@@ -192,7 +193,7 @@ namespace datamodel
 						}
 						// get best fitting destination and reserve street
 						vector<Street*> streets;
-						fromTrack->getValidStreets(streets);
+						fromTrack->ValidStreets(streets);
 						trackID_t toTrackID = TrackNone;
 						for (auto street : streets)
 						{
