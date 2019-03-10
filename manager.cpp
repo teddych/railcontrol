@@ -153,62 +153,21 @@ Manager::~Manager()
 		}
 	}
 
+	DeleteAllMapEntries(streets, streetMutex);
+	DeleteAllMapEntries(switches, switchMutex, storage);
+	DeleteAllMapEntries(accessories, accessoryMutex, storage);
+	DeleteAllMapEntries(feedbacks, feedbackMutex, storage);
+	DeleteAllMapEntries(tracks, trackMutex, storage);
+	DeleteAllMapEntries(locos, locoMutex, storage);
+	DeleteAllMapEntries(layers, layerMutex);
+
+	delete delayedCall;
+	delayedCall = nullptr;
+
 	if (storage == nullptr)
 	{
 		return;
 	}
-
-	for (auto street : streets)
-	{
-		logger->Info("Saving street {0}: {1}", street.second->objectID, street.second->name);
-		storage->street(*(street.second));
-		delete street.second;
-	}
-
-	for (auto mySwitch : switches)
-	{
-		logger->Info("Saving switch {0}: {1}", mySwitch.second->objectID, mySwitch.second->name);
-		storage->saveSwitch(*(mySwitch.second));
-		delete mySwitch.second;
-	}
-
-	for (auto accessory : accessories)
-	{
-		logger->Info("Saving accessory {0}: {1}", accessory.second->objectID, accessory.second->name);
-		storage->accessory(*(accessory.second));
-		delete accessory.second;
-	}
-
-	for (auto  feedback : feedbacks)
-	{
-		logger->Info("Saving feedback {0}: {1}", feedback.second->objectID, feedback.second->name);
-		storage->feedback(*(feedback.second));
-		delete feedback.second;
-	}
-
-	for (auto track : tracks)
-	{
-		logger->Info("Saving track {0}: {1}", track.second->objectID, track.second->name);
-		storage->track(*(track.second));
-		delete track.second;
-	}
-
-	for (auto loco : locos)
-	{
-		logger->Info("Saving loco {0}: {1}", loco.second->objectID, loco.second->name);
-		storage->loco(*(loco.second));
-		delete loco.second;
-	}
-
-	for (auto layer : layers)
-	{
-		logger->Info("Saving layer {0}: {1}", layer.second->objectID, layer.second->Name());
-		storage->layer(*(layer.second));
-		delete layer.second;
-	}
-
-	delete delayedCall;
-	delayedCall = nullptr;
 
 	delete storage;
 	storage = nullptr;
@@ -303,7 +262,7 @@ bool Manager::controlSave(const controlID_t& controlID,
 	}
 	if (storage)
 	{
-		storage->hardwareParams(*params);
+		storage->Save(*params);
 	}
 	return true;
 }
@@ -644,7 +603,7 @@ bool Manager::locoSave(const locoID_t locoID, const string& name, const controlI
 	// save in db
 	if (storage)
 	{
-		storage->loco(*loco);
+		storage->Save(*loco);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -978,7 +937,7 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 	// save in db
 	if (storage)
 	{
-		storage->accessory(*accessory);
+		storage->Save(*accessory);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1173,7 +1132,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 	// save in db
 	if (storage)
 	{
-		storage->feedback(*feedback);
+		storage->Save(*feedback);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1387,7 +1346,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 	// save in db
 	if (storage)
 	{
-		storage->track(*track);
+		storage->Save(*track);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1552,7 +1511,7 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 	// save in db
 	if (storage)
 	{
-		storage->saveSwitch(*mySwitch);
+		storage->Save(*mySwitch);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1739,7 +1698,7 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 	// save in db
 	if (storage)
 	{
-		storage->street(*street);
+		storage->Save(*street);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1866,7 +1825,7 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 	// save in db
 	if (storage)
 	{
-		storage->layer(*layer);
+		storage->Save(*layer);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)

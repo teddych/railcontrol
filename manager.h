@@ -171,6 +171,24 @@ class Manager {
 		bool LocoReleaseInternal(const locoID_t locoID);
 		bool TrackReleaseInternal(const trackID_t trackID);
 
+		template<class Key, class Value>
+		void DeleteAllMapEntries(std::map<Key,Value*>& m, std::mutex& x, storage::StorageHandler* storage = nullptr)
+		{
+			std::lock_guard<std::mutex> Guard(x);
+			while (m.size())
+			{
+				auto it = m.begin();
+				Value* content = it->second;
+				m.erase(it);
+				if (storage != nullptr)
+				{
+					storage->Save(*content);
+				}
+				logger->Info("Saving {0}", content->Name());
+				delete content;
+			}
+		}
+
 		Logger::Logger* logger;
 		boosterState_t boosterState;
 

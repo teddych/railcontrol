@@ -102,7 +102,7 @@ namespace storage {
 #endif
 	}
 
-	void StorageHandler::hardwareParams(const hardware::HardwareParams& hardwareParams)
+	void StorageHandler::Save(const hardware::HardwareParams& hardwareParams)
 	{
 		if (instance == nullptr)
 		{
@@ -129,7 +129,7 @@ namespace storage {
 		instance->deleteHardwareParams(controlID);
 	}
 
-	void StorageHandler::loco(const Loco& loco)
+	void StorageHandler::Save(const Loco& loco)
 	{
 		if (instance == nullptr)
 		{
@@ -162,7 +162,7 @@ namespace storage {
 		instance->deleteObject(ObjectTypeLoco, locoID);
 	}
 
-	void StorageHandler::accessory(const Accessory& accessory)
+	void StorageHandler::Save(const Accessory& accessory)
 	{
 		if (instance == nullptr)
 		{
@@ -196,7 +196,7 @@ namespace storage {
 		instance->deleteObject(ObjectTypeAccessory, accessoryID);
 	}
 
-	void StorageHandler::feedback(const Feedback& feedback)
+	void StorageHandler::Save(const Feedback& feedback)
 	{
 		if (instance == nullptr)
 		{
@@ -230,7 +230,7 @@ namespace storage {
 		instance->deleteObject(ObjectTypeFeedback, feedbackID);
 	}
 
-	void StorageHandler::track(const Track& track)
+	void StorageHandler::Save(const Track& track)
 	{
 		if (instance == nullptr)
 		{
@@ -264,7 +264,7 @@ namespace storage {
 		instance->deleteObject(ObjectTypeTrack, trackID);
 	}
 
-	void StorageHandler::saveSwitch(const Switch& mySwitch)
+	void StorageHandler::Save(const Switch& mySwitch)
 	{
 		if (instance == nullptr)
 		{
@@ -298,7 +298,7 @@ namespace storage {
 		instance->deleteObject(ObjectTypeSwitch, switchID);
 	}
 
-	void StorageHandler::street(const datamodel::Street& street)
+	void StorageHandler::Save(const datamodel::Street& street)
 	{
 		if (instance == nullptr)
 		{
@@ -346,7 +346,7 @@ namespace storage {
 		instance->deleteObject(ObjectTypeStreet, streetID);
 	}
 
-	void StorageHandler::layer(const datamodel::Layer& layer)
+	void StorageHandler::Save(const datamodel::Layer& layer)
 	{
 		if (instance == nullptr)
 		{
