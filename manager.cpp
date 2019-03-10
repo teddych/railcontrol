@@ -1022,6 +1022,7 @@ void Manager::FeedbackState(const controlType_t controlType, const controlID_t c
 	if (feedbackID == FeedbackNone)
 	{
 		string name = "Feedback auto added " + std::to_string(controlID) + "/" + std::to_string(pin);
+		logger->Info("Adding feedback {0}", name);
 		string result;
 		feedbackID = FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
 	}
