@@ -2237,7 +2237,7 @@ namespace webserver
 		bool inverted = false;
 		if (feedbackID > FeedbackNone)
 		{
-			const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+			const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
 			name = feedback->name;
 			controlId = feedback->controlID;
 			pin = feedback->pin;
@@ -2303,7 +2303,7 @@ namespace webserver
 		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
 		string result;
-		if (!manager.feedbackSave(feedbackID, name, visible, posX, posY, posZ, controlId, pin, inverted, result))
+		if (manager.FeedbackSave(feedbackID, name, visible, posX, posY, posZ, controlId, pin, inverted, result) == FeedbackNone)
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -2319,7 +2319,7 @@ namespace webserver
 		manager.FeedbackState(ControlTypeWebserver, feedbackID, state);
 
 		stringstream ss;
-		ss << "Feedback &quot;" << manager.getFeedbackName(feedbackID) << "&quot; is now set to " << state;
+		ss << "Feedback &quot;" << manager.GetFeedbackName(feedbackID) << "&quot; is now set to " << state;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
@@ -2356,7 +2356,7 @@ namespace webserver
 			return;
 		}
 
-		const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown feedback");
@@ -2378,14 +2378,14 @@ namespace webserver
 	void WebClient::handleFeedbackDelete(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete feedback");
 			return;
 		}
 
-		if (!manager.feedbackDelete(feedbackID))
+		if (!manager.FeedbackDelete(feedbackID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete feedback");
 			return;
@@ -2397,7 +2397,7 @@ namespace webserver
 	void WebClient::handleFeedbackGet(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		const datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback->visible == VisibleNo)
 		{
 			HtmlReplyWithHeader(HtmlTag());

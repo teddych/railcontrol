@@ -1019,16 +1019,19 @@ void Manager::FeedbackState(const controlType_t controlType, const controlID_t c
 			}
 		}
 	}
-	if (feedbackID == AccessoryNone)
+	if (feedbackID == FeedbackNone)
 	{
-		return;
+		string name = "Feedback auto added " + std::to_string(controlID) + "/" + std::to_string(pin);
+		string result;
+		feedbackID = FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
 	}
+
 	return FeedbackState(controlType, feedbackID, state);
 }
 
 void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
 {
-	Feedback* feedback = getFeedback(feedbackID);
+	Feedback* feedback = GetFeedback(feedbackID);
 	if (feedback == nullptr)
 	{
 		return;
@@ -1042,7 +1045,7 @@ void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t 
 	}
 }
 
-datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID) const
+datamodel::Feedback* Manager::GetFeedback(feedbackID_t feedbackID) const
 {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	if (feedbacks.count(feedbackID) != 1)
@@ -1052,7 +1055,7 @@ datamodel::Feedback* Manager::getFeedback(feedbackID_t feedbackID) const
 	return feedbacks.at(feedbackID);
 }
 
-const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) const
+const std::string& Manager::GetFeedbackName(const feedbackID_t feedbackID) const
 {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	if (feedbacks.count(feedbackID) != 1)
@@ -1064,7 +1067,7 @@ const std::string& Manager::getFeedbackName(const feedbackID_t feedbackID) const
 
 bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
-	Feedback* feedback = getFeedback(feedbackID);
+	Feedback* feedback = GetFeedback(feedbackID);
 	if (feedback == nullptr)
 	{
 		return false;
@@ -1078,14 +1081,14 @@ bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutP
 	return (feedback->posX == posX && feedback->posY == posY && feedback->posZ == posZ);
 }
 
-bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result)
+feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result)
 {
 	if (visible && !CheckFeedbackPosition(feedbackID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
 	{
 		result.append(" Unable to ");
 		result.append(feedbackID == FeedbackNone ? "add" : "move");
 		result.append(" feedback.");
-		return false;
+		return FeedbackNone;
 	}
 	Feedback* feedback;
 	{
@@ -1097,7 +1100,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 			if (feedback == nullptr)
 			{
 				result.assign("Feedback does not exist");
-				return false;
+				return FeedbackNone;
 			}
 			feedback->name = name;
 			feedback->visible = visible;
@@ -1123,7 +1126,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 			if (feedback == nullptr)
 			{
 				result.assign("Unable to allocate memory for feedback");
-				return false;
+				return FeedbackNone;
 			}
 			// save in map
 			feedbacks[newFeedbackID] = feedback;
@@ -1139,7 +1142,7 @@ bool Manager::feedbackSave(const feedbackID_t feedbackID, const std::string& nam
 	{
 		control.second->FeedbackSettings(feedback->objectID, name);
 	}
-	return feedback;
+	return feedback->objectID;
 }
 
 const map<string,datamodel::Feedback*> Manager::FeedbackListByName() const
@@ -1153,7 +1156,7 @@ const map<string,datamodel::Feedback*> Manager::FeedbackListByName() const
 	return out;
 }
 
-bool Manager::feedbackDelete(const feedbackID_t feedbackID)
+bool Manager::FeedbackDelete(const feedbackID_t feedbackID)
 {
 	Feedback* feedback = nullptr;
 	{
@@ -1987,7 +1990,7 @@ bool Manager::TrackReleaseInternal(const trackID_t trackID)
 }
 bool Manager::feedbackRelease(const feedbackID_t feedbackID)
 {
-	Feedback* feedback = getFeedback(feedbackID);
+	Feedback* feedback = GetFeedback(feedbackID);
 	if (feedback == nullptr)
 	{
 		return false;

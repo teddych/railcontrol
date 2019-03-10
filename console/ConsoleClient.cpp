@@ -897,7 +897,7 @@ namespace console
 	void ConsoleClient::HandleFeedbackDelete(string& s, size_t& i)
 	{
 		feedbackID_t feedbackID = ReadNumber(s, i);
-		if (!manager.feedbackDelete(feedbackID))
+		if (!manager.FeedbackDelete(feedbackID))
 		{
 			SendAndPrompt("Feedback not found or feedback in use");
 			return;
@@ -923,7 +923,7 @@ namespace console
 
 		// list one feedback
 		feedbackID_t feedbackID = ReadNumber(s, i);
-		datamodel::Feedback* feedback = manager.getFeedback(feedbackID);
+		datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
 			SendAndPrompt("Unknown feedback");
@@ -964,7 +964,7 @@ namespace console
 		feedbackPin_t pin = ReadNumber(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
-		if(!manager.feedbackSave(FeedbackNone, name, VisibleYes, posX, posY, posZ, control, pin, inverted, result))
+		if(manager.FeedbackSave(FeedbackNone, name, VisibleYes, posX, posY, posZ, control, pin, inverted, result) == FeedbackNone)
 		{
 			SendAndPrompt(result);
 			return;
@@ -992,7 +992,7 @@ namespace console
 		}
 		manager.FeedbackState(ControlTypeConsole, feedbackID, state);
 		stringstream status;
-		status << "Feedback \"" << manager.getFeedbackName(feedbackID) << "\" turned " << text;
+		status << "Feedback \"" << manager.GetFeedbackName(feedbackID) << "\" turned " << text;
 		SendAndPrompt(status.str());
 	}
 

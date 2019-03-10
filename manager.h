@@ -84,12 +84,12 @@ class Manager {
 		// feedback
 		void FeedbackState(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state);
 		void FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state);
-		datamodel::Feedback* getFeedback(feedbackID_t feedbackID) const;
-		const std::string& getFeedbackName(const feedbackID_t feedbackID) const;
+		datamodel::Feedback* GetFeedback(feedbackID_t feedbackID) const;
+		const std::string& GetFeedbackName(const feedbackID_t feedbackID) const;
 		const std::map<feedbackID_t,datamodel::Feedback*>& feedbackList() const { return feedbacks; }
 		const std::map<std::string,datamodel::Feedback*> FeedbackListByName() const;
-		bool feedbackSave(const feedbackID_t feedbackID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted,  std::string& result);
-		bool feedbackDelete(const feedbackID_t feedbackID);
+		feedbackID_t FeedbackSave(const feedbackID_t feedbackID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted,  std::string& result);
+		bool FeedbackDelete(const feedbackID_t feedbackID);
 
 		// track
 		void track(const controlType_t controlType, const feedbackID_t feedbackID, const lockState_t);
