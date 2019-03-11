@@ -1123,7 +1123,7 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 				}
 			}
 			++newFeedbackID;
-			feedback = new Feedback(this, newFeedbackID, name, posX, posY, posZ, controlID, pin, inverted);
+			feedback = new Feedback(this, newFeedbackID, name, visible, posX, posY, posZ, controlID, pin, inverted);
 			if (feedback == nullptr)
 			{
 				result.assign("Unable to allocate memory for feedback");
