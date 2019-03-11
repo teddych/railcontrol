@@ -2230,10 +2230,10 @@ namespace webserver
 		string name("New feedback");
 		controlID_t controlId = ControlNone;
 		feedbackPin_t pin = FeedbackPinNone;
-		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleNo));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", feedbackID == FeedbackNone && (posx || posy) ? VisibleYes : VisibleNo));
 		bool inverted = false;
 		if (feedbackID > FeedbackNone)
 		{
