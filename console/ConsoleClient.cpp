@@ -802,10 +802,11 @@ namespace console
 		layoutPosition_t posX = ReadNumber(s, i);
 		layoutPosition_t posY = ReadNumber(s, i);
 		layoutPosition_t posZ = ReadNumber(s, i);
-		layoutItemSize_t width = ReadNumber(s, i);
+		layoutItemSize_t length = ReadNumber(s, i);
 		layoutRotation_t rotation = ReadRotation(s, i);
+		vector<feedbackID_t> feedbacks;
 		string result;
-		if (!manager.trackSave(TrackNone, name, posX, posY, posZ, width, rotation, TrackTypeStraight, result))
+		if (manager.TrackSave(TrackNone, name, posX, posY, posZ, length, rotation, TrackTypeStraight, feedbacks, result) > TrackNone)
 		{
 			SendAndPrompt(result);
 			return;

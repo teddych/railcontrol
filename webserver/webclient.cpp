@@ -373,6 +373,10 @@ namespace webserver
 			{
 				handleProtocolSwitch(arguments);
 			}
+			else if (arguments["cmd"].compare("feedbackadd") == 0)
+			{
+				handleFeedbackAdd(arguments);
+			}
 			else if (arguments["cmd"].compare("relationadd") == 0)
 			{
 				handleRelationAdd(arguments);
@@ -1099,6 +1103,24 @@ namespace webserver
 		return content;
 	}
 
+	HtmlTag WebClient::HtmlTagFeedbackSelect(const string& feedback, const feedbackID_t feedbackId)
+	{
+		HtmlTag content("div");
+		content.AddAttribute("id", "feedback_container_" + feedback);
+		HtmlTagButton deleteButton("Del", "delete_feedback_" + feedback);
+		deleteButton.AddAttribute("onclick", "deleteElement('feedback_container_" + feedback + "');return false;");
+		content.AddChildTag(deleteButton);
+
+		map<string, Feedback*> feedbacks = manager.FeedbackListByName();
+		map<string, feedbackID_t> feedbackOptions;
+		for (auto feedback : feedbacks)
+		{
+			feedbackOptions[feedback.first] = feedback.second->objectID;
+		}
+		content.AddChildTag(HtmlTagSelect("feedback_" + feedback, feedbackOptions));
+		return content;
+	}
+
 	HtmlTag WebClient::HtmlTagRotation(const layoutRotation_t rotation) const
 	{
 		std::map<string, string> rotationOptions;
@@ -1162,6 +1184,12 @@ namespace webserver
 		container.AddChildTag(HtmlTagRelation(priorityString));
 		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority + 1)));
 		HtmlReplyWithHeader(container);
+	}
+
+	void WebClient::handleFeedbackAdd(const map<string, string>& arguments)
+	{
+		string feedbackString = GetStringMapEntry(arguments, "feedback", "1");
+		HtmlReplyWithHeader(HtmlTagFeedbackSelect(feedbackString));
 	}
 
 	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
@@ -2049,6 +2077,7 @@ namespace webserver
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("feedback", "Feedbacks"));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
@@ -2059,8 +2088,6 @@ namespace webserver
 		HtmlTag mainContent("div");
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
-		mainContent.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"));
-		mainContent.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Track Name:", name));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)).AddAttribute("onchange", "onChangeTrackType();return false;"));
 		HtmlTag i_length("div");
@@ -2080,6 +2107,22 @@ namespace webserver
 		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
 		positionContent.AddChildTag(HtmlTagRotation(rotation));
 		formContent.AddChildTag(positionContent);
+
+		unsigned int feedbackCounter = 0;
+		HtmlTag existingFeedbacks("div");
+		existingFeedbacks.AddAttribute("id", "feedbackcontent");
+
+		HtmlTag feedbackContent("div");
+		feedbackContent.AddAttribute("id", "tab_feedback");
+		feedbackContent.AddClass("tab_content");
+		feedbackContent.AddClass("hidden");
+		feedbackContent.AddChildTag(HtmlTagInputHidden("feedbackcounter", to_string(feedbackCounter)));
+		feedbackContent.AddChildTag(existingFeedbacks);
+		HtmlTagButton newButton("New", "newfeedback");
+		newButton.AddAttribute("onclick", "addFeedback();return false;");
+		feedbackContent.AddChildTag(newButton);
+		feedbackContent.AddChildTag(HtmlTag("br"));
+		formContent.AddChildTag(feedbackContent);
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -2101,8 +2144,18 @@ namespace webserver
 		{
 			height = GetIntegerMapEntry(arguments, "length", 1);
 		}
+		vector<feedbackID_t> feedbacks;
+		unsigned int feedbackCounter = GetIntegerMapEntry(arguments, "feedbackcounter", 1);
+		for (unsigned int feedback = 1; feedback <= feedbackCounter; ++feedback)
+		{
+			feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback_" + to_string(feedback), FeedbackNone);
+			if (feedbackID != FeedbackNone)
+			{
+				feedbacks.push_back(feedbackID);
+			}
+		}
 		string result;
-		if (!manager.trackSave(trackID, name, posX, posY, posZ, height, rotation, type, result))
+		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, result) == TrackNone)
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;

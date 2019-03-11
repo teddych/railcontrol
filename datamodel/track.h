@@ -21,9 +21,11 @@ namespace datamodel
 				const layoutPosition_t z,
 				const layoutItemSize_t height,
 				const layoutRotation_t rotation,
-				const trackType_t type)
+				const trackType_t type,
+				const std::vector<feedbackID_t>& feedbacks)
 			:	LayoutItem(trackID, name, VisibleYes, x, y, z, Width1, height, rotation),
 				type(type),
+				feedbacks(feedbacks),
 				lockState(LockStateFree),
 			 	locoID(LocoNone),
 			 	locoDirection(DirectionLeft)
@@ -40,6 +42,8 @@ namespace datamodel
 			std::string LayoutType() const override { return "track"; };
 			trackType_t GetType() const { return type; }
 			void Type(trackType_t type) { this->type = type; }
+			std::vector<feedbackID_t> GetFeedbacks() const { return feedbacks; }
+			void Feedbacks(std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
 
 			bool Reserve(const locoID_t locoID);
 			bool Lock(const locoID_t locoID);
@@ -59,6 +63,7 @@ namespace datamodel
 
 		private:
 			trackType_t type;
+			std::vector<feedbackID_t> feedbacks;
 			lockState_t lockState;
 			locoID_t locoID;
 			direction_t locoDirection;

@@ -7,14 +7,25 @@
 
 using std::map;
 using std::string;
+using std::vector;
 
 namespace datamodel
 {
 	std::string Track::Serialize() const
 	{
+		std::string feedbackString;
+		for (auto feedback : feedbacks)
+		{
+			if (feedbackString.size() > 0)
+			{
+				feedbackString += ",";
+			}
+			feedbackString += std::to_string(feedback);
+		}
 		std::stringstream ss;
 		ss << "objectType=Track;" << LayoutItem::Serialize()
 			<< ";type=" << static_cast<int>(type)
+			<< ";feedbacks=" << feedbackString
 			<< ";lockState=" << static_cast<int>(lockState)
 			<< ";locoID=" << (int) locoID
 			<< ";locoDirection=" << static_cast<int>(locoDirection);
@@ -33,6 +44,13 @@ namespace datamodel
 			return false;
 		}
 		type = static_cast<trackType_t>(GetBoolMapEntry(arguments, "type", TrackTypeStraight));
+		string feedbackStrings = GetStringMapEntry(arguments, "feedbacks");
+		vector<string> feedbackStringVector;
+		str_split(feedbackStrings, ",", feedbackStringVector);
+		for (auto feedbackString : feedbackStringVector)
+		{
+			feedbacks.push_back(Util::StringToInteger(feedbackString));
+		}
 		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 		locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));

@@ -1295,7 +1295,7 @@ bool Manager::CheckTrackPosition(const trackID_t trackID, const layoutPosition_t
 	return true;
 }
 
-bool Manager::trackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, string& result)
+trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, std::vector<feedbackID_t> feedbacks, string& result)
 {
 	Track* track;
 	if (!CheckTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
@@ -1303,7 +1303,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 		result.append(" Unable to ");
 		result.append(trackID == TrackNone ? "add" : "move");
 		result.append(" track.");
-		return false;
+		return TrackNone;
 	}
 	{
 		std::lock_guard<std::mutex> Guard(trackMutex);
@@ -1314,7 +1314,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 			if (track == nullptr)
 			{
 				result.assign("Track does not exist");
-				return false;
+				return TrackNone;
 			}
 			track->name = name;
 			track->height = height;
@@ -1323,6 +1323,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 			track->posY = posY;
 			track->posZ = posZ;
 			track->Type(type);
+			track->Feedbacks(feedbacks);
 		}
 		else
 		{
@@ -1337,11 +1338,11 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 				}
 			}
 			++newTrackID;
-			track = new Track(newTrackID, name, posX, posY, posZ, height, rotation, type);
+			track = new Track(newTrackID, name, posX, posY, posZ, height, rotation, type, feedbacks);
 			if (track == nullptr)
 			{
 				result.assign("Unable to allocate memory for track");
-				return false;
+				return TrackNone;
 			}
 			// save in map
 			tracks[newTrackID] = track;
@@ -1357,7 +1358,7 @@ bool Manager::trackSave(const trackID_t trackID, const std::string& name, const 
 	{
 		control.second->TrackSettings(track->objectID, name);
 	}
-	return true;
+	return track->objectID;
 }
 
 bool Manager::trackDelete(const trackID_t trackID)

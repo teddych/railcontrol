@@ -17,6 +17,20 @@ function addRelation()
 	return false;
 }
 
+function addFeedback()
+{
+	var feedbackCounter = document.getElementById('feedbackcounter');
+	if (!feedbackCounter)
+	{
+		return false;
+	}
+
+	feedbackCounter.value++;
+	var url = '/?cmd=feedbackadd&feedback=' + feedbackCounter.value;
+	requestAddItem('feedbackcontent', url);
+	return false;
+}
+
 function checkIntegerValue(name, min, max)
 {
 	if (min > max)

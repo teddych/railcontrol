@@ -54,6 +54,7 @@ namespace webserver
 			HtmlTag HtmlTagRelation(const std::string& priority, const objectType_t objectType = ObjectTypeSwitch, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
 			HtmlTag HtmlTagRelationObject(const std::string& priority, const objectType_t objectType, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected = false) const;
+			HtmlTag HtmlTagFeedbackSelect(const std::string& track, const feedbackID_t feedbackId = FeedbackNone);
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void handleLayerSave(const std::map<std::string, std::string>& arguments);
@@ -116,6 +117,7 @@ namespace webserver
 			void handleLocoSelector(const std::map<std::string,std::string>& arguments);
 			void handleLayerSelector(const std::map<std::string,std::string>& arguments);
 			void handleRelationAdd(const std::map<std::string,std::string>& arguments);
+			void handleFeedbackAdd(const std::map<std::string,std::string>& arguments);
 			void handleRelationObject(const std::map<std::string, std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
