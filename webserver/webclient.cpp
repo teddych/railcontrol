@@ -2261,12 +2261,13 @@ namespace webserver
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit feedback &quot;" + name + "&quot;"));
 
-		HtmlTag formContent;
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
-		formContent.AddChildTag(tabMenu);
+		content.AddChildTag(tabMenu);
 
+		HtmlTag formContent("form");
+		formContent.AddAttribute("id", "editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "feedbacksave"));
 		formContent.AddChildTag(HtmlTagInputHidden("feedback", to_string(feedbackID)));
 
@@ -2286,7 +2287,7 @@ namespace webserver
 		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz, visible));
 		formContent.AddChildTag(positionContent);
 
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
