@@ -2260,12 +2260,13 @@ namespace webserver
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit feedback &quot;" + name + "&quot;"));
+
+		HtmlTag formContent;
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
-		content.AddChildTag(tabMenu);
+		formContent.AddChildTag(tabMenu);
 
-		HtmlTag formContent;
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "feedbacksave"));
 		formContent.AddChildTag(HtmlTagInputHidden("feedback", to_string(feedbackID)));
 
