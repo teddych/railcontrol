@@ -1103,7 +1103,7 @@ namespace webserver
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagFeedbackSelect(const string& counter, const feedbackID_t feedbackID)
+	HtmlTag WebClient::HtmlTagFeedbackSelect(const string& counter, const trackID_t trackID, const feedbackID_t feedbackID)
 	{
 		HtmlTag content("div");
 		content.AddAttribute("id", "feedback_container_" + counter);
@@ -1115,7 +1115,11 @@ namespace webserver
 		map<string, feedbackID_t> feedbackOptions;
 		for (auto feedback : feedbacks)
 		{
-			feedbackOptions[feedback.first] = feedback.second->objectID;
+			const trackID_t trackIDOfFeedback = feedback.second->GetTrack();
+			if (trackIDOfFeedback == TrackNone || trackIDOfFeedback == trackID)
+			{
+				feedbackOptions[feedback.first] = feedback.second->objectID;
+			}
 		}
 		content.AddChildTag(HtmlTagSelect("feedback_" + counter, feedbackOptions, feedbackID));
 		return content;
@@ -1188,8 +1192,9 @@ namespace webserver
 
 	void WebClient::handleFeedbackAdd(const map<string, string>& arguments)
 	{
-		string feedbackString = GetStringMapEntry(arguments, "feedback", "1");
-		HtmlReplyWithHeader(HtmlTagFeedbackSelect(feedbackString));
+		string counterString = GetStringMapEntry(arguments, "counter", "1");
+		trackID_t trackID = static_cast<trackID_t>(GetIntegerMapEntry(arguments, "track", TrackNone));
+		HtmlReplyWithHeader(HtmlTagFeedbackSelect(counterString, trackID));
 	}
 
 	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
@@ -2115,7 +2120,7 @@ namespace webserver
 		existingFeedbacks.AddAttribute("id", "feedbackcontent");
 		for (auto feedbackID : feedbacks)
 		{
-			existingFeedbacks.AddChildTag(HtmlTagFeedbackSelect(++feedbackCounter, feedbackID));
+			existingFeedbacks.AddChildTag(HtmlTagFeedbackSelect(++feedbackCounter, trackID, feedbackID));
 		}
 
 		HtmlTag feedbackContent("div");

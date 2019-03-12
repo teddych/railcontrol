@@ -25,8 +25,14 @@ function addFeedback()
 		return false;
 	}
 
+	var track = document.getElementById('track');
+	if (!track)
+	{
+		return false;
+	}
+
 	feedbackCounter.value++;
-	var url = '/?cmd=feedbackadd&feedback=' + feedbackCounter.value;
+	var url = '/?cmd=feedbackadd&counter=' + feedbackCounter.value + '&track=' + track.value;
 	requestAddItem('feedbackcontent', url);
 	return false;
 }
