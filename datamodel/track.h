@@ -41,9 +41,9 @@ namespace datamodel
 			bool Deserialize(const std::string& serialized) override;
 			std::string LayoutType() const override { return "track"; };
 			trackType_t GetType() const { return type; }
-			void Type(trackType_t type) { this->type = type; }
+			void Type(const trackType_t type) { this->type = type; }
 			std::vector<feedbackID_t> GetFeedbacks() const { return feedbacks; }
-			void Feedbacks(std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
+			void Feedbacks(const std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
 
 			bool Reserve(const locoID_t locoID);
 			bool Lock(const locoID_t locoID);

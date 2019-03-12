@@ -1295,7 +1295,38 @@ bool Manager::CheckTrackPosition(const trackID_t trackID, const layoutPosition_t
 	return true;
 }
 
-trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, std::vector<feedbackID_t> feedbacks, string& result)
+const std::vector<feedbackID_t> Manager::CleanupAndCheckFeedbacks(trackID_t trackID, std::vector<feedbackID_t>& newFeedbacks)
+{
+	{
+		std::lock_guard<std::mutex> feedbackGuard(feedbackMutex);
+		for (auto feedback : feedbacks)
+		{
+			if (feedback.second->GetTrack() == trackID)
+			{
+				feedback.second->SetTrack(TrackNone);
+			}
+		}
+	}
+
+	std::vector<feedbackID_t> checkedFeedbacks;
+	for (auto feedbackID : newFeedbacks)
+	{
+		Feedback* feedback = GetFeedback(feedbackID);
+		if (feedback == nullptr)
+		{
+			continue;
+		}
+		if (feedback->GetTrack() != TrackNone)
+		{
+			continue;
+		}
+		checkedFeedbacks.push_back(feedbackID);
+		feedback->SetTrack(trackID);
+	}
+	return checkedFeedbacks;
+}
+
+trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, std::vector<feedbackID_t> newFeedbacks, string& result)
 {
 	Track* track;
 	if (!CheckTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
@@ -1305,8 +1336,9 @@ trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, c
 		result.append(" track.");
 		return TrackNone;
 	}
+
 	{
-		std::lock_guard<std::mutex> Guard(trackMutex);
+		std::lock_guard<std::mutex> trackGuard(trackMutex);
 		if (trackID != TrackNone && tracks.count(trackID))
 		{
 			// update existing track
@@ -1323,7 +1355,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, c
 			track->posY = posY;
 			track->posZ = posZ;
 			track->Type(type);
-			track->Feedbacks(feedbacks);
+			track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
 		}
 		else
 		{
@@ -1338,7 +1370,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, c
 				}
 			}
 			++newTrackID;
-			track = new Track(newTrackID, name, posX, posY, posZ, height, rotation, type, feedbacks);
+			track = new Track(newTrackID, name, posX, posY, posZ, height, rotation, type, CleanupAndCheckFeedbacks(trackID, newFeedbacks));
 			if (track == nullptr)
 			{
 				result.assign("Unable to allocate memory for track");
@@ -1998,7 +2030,7 @@ bool Manager::feedbackRelease(const feedbackID_t feedbackID)
 		return false;
 	}
 	locoID_t locoID = feedback->GetLoco();
-	return feedback->release(locoID);
+	return feedback->Release(locoID);
 }
 
 bool Manager::streetRelease(const streetID_t streetID)

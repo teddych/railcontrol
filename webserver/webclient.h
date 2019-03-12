@@ -54,7 +54,8 @@ namespace webserver
 			HtmlTag HtmlTagRelation(const std::string& priority, const objectType_t objectType = ObjectTypeSwitch, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
 			HtmlTag HtmlTagRelationObject(const std::string& priority, const objectType_t objectType, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected = false) const;
-			HtmlTag HtmlTagFeedbackSelect(const std::string& track, const feedbackID_t feedbackId = FeedbackNone);
+			HtmlTag HtmlTagFeedbackSelect(const unsigned int counter, const feedbackID_t feedbackID = FeedbackNone) { return HtmlTagFeedbackSelect(std::to_string(counter), feedbackID); }
+			HtmlTag HtmlTagFeedbackSelect(const std::string& counter, const feedbackID_t feedbackID = FeedbackNone);
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void handleLayerSave(const std::map<std::string, std::string>& arguments);

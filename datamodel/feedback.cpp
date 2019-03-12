@@ -13,7 +13,12 @@ namespace datamodel
 	std::string Feedback::Serialize() const
 	{
 		stringstream ss;
-		ss << "objectType=Feedback;" << LayoutItem::Serialize() << ";controlID=" << (int) controlID << ";pin=" << (int) pin << ";inverted=" << (int) inverted << ";state=" << (int) state;
+		ss << "objectType=Feedback;" << LayoutItem::Serialize()
+			<< ";controlID=" << static_cast<int>(controlID)
+			<< ";pin=" << static_cast<int>(pin)
+			<< ";inverted=" << static_cast<int>(inverted)
+			<< ";state=" << static_cast<int>(state)
+			<< ";track=" << static_cast<int>(trackID);
 		return ss.str();
 	}
 
@@ -21,19 +26,20 @@ namespace datamodel
 	{
 		map<string, string> arguments;
 		parseArguments(serialized, arguments);
-		if (arguments.count("objectType") && arguments.at("objectType").compare("Feedback") == 0)
+		if (arguments.count("objectType") != 1 || arguments.at("objectType").compare("Feedback") != 0)
 		{
-			LayoutItem::Deserialize(arguments);
-			controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
-			pin = GetIntegerMapEntry(arguments, "pin");
-			inverted = GetBoolMapEntry(arguments, "inverted", false);
-			state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
-			return true;
+			return false;
 		}
-		return false;
+		LayoutItem::Deserialize(arguments);
+		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
+		pin = GetIntegerMapEntry(arguments, "pin");
+		inverted = GetBoolMapEntry(arguments, "inverted", false);
+		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
+		trackID = static_cast<trackID_t>(GetIntegerMapEntry(arguments, "track", TrackNone));
+		return true;
 	}
 
-	bool Feedback::release(const locoID_t locoID)
+	bool Feedback::Release(const locoID_t locoID)
 	{
 		if (locoID != this->locoID)
 		{

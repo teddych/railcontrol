@@ -22,14 +22,15 @@ namespace datamodel
 				const layoutPosition_t z,
 				const controlID_t controlID,
 				const feedbackPin_t pin,
-				bool inverted)
+				const bool inverted)
 			:	LayoutItem(feedbackID, name, visible, x, y, z, Width1, Height1, Rotation0),
 				controlID(controlID),
 				pin(pin),
 				manager(manager),
 				state(FeedbackStateFree),
 				locoID(LocoNone),
-				inverted(inverted)
+				inverted(inverted),
+				trackID(TrackNone)
 			{
 			}
 
@@ -47,11 +48,13 @@ namespace datamodel
 			void Inverted(const bool inverted) { this->inverted = inverted; }
 			bool IsInverted() const { return inverted; }
 
-			bool release(const locoID_t locoID);
-			bool SetLoco(const locoID_t locoID);
-			locoID_t GetLoco() const { return locoID; }
+			bool Release(const locoID_t locoID);
 			bool SetState(const feedbackState_t state);
 			feedbackState_t GetState() const { return state; }
+			bool SetLoco(const locoID_t locoID);
+			locoID_t GetLoco() const { return locoID; }
+			void SetTrack(const trackID_t trackID) { this->trackID = trackID; }
+			trackID_t GetTrack() const { return trackID; }
 
 			// make privete
 			controlID_t controlID;
@@ -62,6 +65,7 @@ namespace datamodel
 			feedbackState_t state;
 			locoID_t locoID;
 			bool inverted;
+			trackID_t trackID;
 	};
 
 } // namespace datamodel

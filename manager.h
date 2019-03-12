@@ -189,6 +189,8 @@ class Manager {
 			}
 		}
 
+		const std::vector<feedbackID_t> CleanupAndCheckFeedbacks(trackID_t trackID, std::vector<feedbackID_t>& newFeedbacks);
+
 		Logger::Logger* logger;
 		boosterState_t boosterState;
 

@@ -1103,12 +1103,12 @@ namespace webserver
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagFeedbackSelect(const string& feedback, const feedbackID_t feedbackId)
+	HtmlTag WebClient::HtmlTagFeedbackSelect(const string& counter, const feedbackID_t feedbackID)
 	{
 		HtmlTag content("div");
-		content.AddAttribute("id", "feedback_container_" + feedback);
-		HtmlTagButton deleteButton("Del", "delete_feedback_" + feedback);
-		deleteButton.AddAttribute("onclick", "deleteElement('feedback_container_" + feedback + "');return false;");
+		content.AddAttribute("id", "feedback_container_" + counter);
+		HtmlTagButton deleteButton("Del", "delete_feedback_" + counter);
+		deleteButton.AddAttribute("onclick", "deleteElement('feedback_container_" + counter + "');return false;");
 		content.AddChildTag(deleteButton);
 
 		map<string, Feedback*> feedbacks = manager.FeedbackListByName();
@@ -1117,7 +1117,7 @@ namespace webserver
 		{
 			feedbackOptions[feedback.first] = feedback.second->objectID;
 		}
-		content.AddChildTag(HtmlTagSelect("feedback_" + feedback, feedbackOptions));
+		content.AddChildTag(HtmlTagSelect("feedback_" + counter, feedbackOptions, feedbackID));
 		return content;
 	}
 
@@ -2053,6 +2053,7 @@ namespace webserver
 		layoutItemSize_t height = GetIntegerMapEntry(arguments, "length", 1);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		trackType_t type = TrackTypeStraight;
+		std::vector<feedbackID_t> feedbacks;
 		if (trackID > TrackNone)
 		{
 			const datamodel::Track* track = manager.getTrack(trackID);
@@ -2063,6 +2064,7 @@ namespace webserver
 			height = track->height;
 			rotation = track->rotation;
 			type = track->GetType();
+			feedbacks = track->GetFeedbacks();
 		}
 		if (type == TrackTypeTurn)
 		{
@@ -2111,6 +2113,10 @@ namespace webserver
 		unsigned int feedbackCounter = 0;
 		HtmlTag existingFeedbacks("div");
 		existingFeedbacks.AddAttribute("id", "feedbackcontent");
+		for (auto feedbackID : feedbacks)
+		{
+			existingFeedbacks.AddChildTag(HtmlTagFeedbackSelect(++feedbackCounter, feedbackID));
+		}
 
 		HtmlTag feedbackContent("div");
 		feedbackContent.AddAttribute("id", "tab_feedback");
