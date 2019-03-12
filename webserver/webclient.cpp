@@ -2124,7 +2124,7 @@ namespace webserver
 		{
 			existingFeedbacks.AddChildTag(HtmlTagFeedbackSelect(++feedbackCounter, trackID, feedbackID));
 		}
-		existingFeedbacks.AddChildTag(HtmlTag("div").AddAttribute("id", to_string(feedbackCounter + 1)));
+		existingFeedbacks.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(feedbackCounter + 1)));
 
 		HtmlTag feedbackContent("div");
 		feedbackContent.AddAttribute("id", "tab_feedback");
