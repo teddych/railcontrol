@@ -33,7 +33,7 @@ function addFeedback()
 
 	feedbackCounter.value++;
 	var url = '/?cmd=feedbackadd&counter=' + feedbackCounter.value + '&track=' + track.value;
-	requestAddItem('feedbackcontent', url);
+	requestUpdateItem('div_feedback_' + feedbackCounter.value, url);
 	return false;
 }
 

@@ -1103,12 +1103,13 @@ namespace webserver
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagFeedbackSelect(const string& counter, const trackID_t trackID, const feedbackID_t feedbackID)
+	HtmlTag WebClient::HtmlTagFeedbackSelect(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID)
 	{
+		string counterString = to_string(counter);
 		HtmlTag content("div");
-		content.AddAttribute("id", "feedback_container_" + counter);
-		HtmlTagButton deleteButton("Del", "delete_feedback_" + counter);
-		deleteButton.AddAttribute("onclick", "deleteElement('feedback_container_" + counter + "');return false;");
+		content.AddAttribute("id", "feedback_container_" + counterString);
+		HtmlTagButton deleteButton("Del", "delete_feedback_" + counterString);
+		deleteButton.AddAttribute("onclick", "deleteElement('feedback_container_" + counterString + "');return false;");
 		content.AddChildTag(deleteButton);
 
 		map<string, Feedback*> feedbacks = manager.FeedbackListByName();
@@ -1121,7 +1122,8 @@ namespace webserver
 				feedbackOptions[feedback.first] = feedback.second->objectID;
 			}
 		}
-		content.AddChildTag(HtmlTagSelect("feedback_" + counter, feedbackOptions, feedbackID));
+		content.AddChildTag(HtmlTagSelect("feedback_" + counterString, feedbackOptions, feedbackID));
+		content.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(counter + 1)));
 		return content;
 	}
 
@@ -1192,9 +1194,9 @@ namespace webserver
 
 	void WebClient::handleFeedbackAdd(const map<string, string>& arguments)
 	{
-		string counterString = GetStringMapEntry(arguments, "counter", "1");
+		unsigned int counter = GetIntegerMapEntry(arguments, "counter", 1);
 		trackID_t trackID = static_cast<trackID_t>(GetIntegerMapEntry(arguments, "track", TrackNone));
-		HtmlReplyWithHeader(HtmlTagFeedbackSelect(counterString, trackID));
+		HtmlReplyWithHeader(HtmlTagFeedbackSelect(counter, trackID));
 	}
 
 	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
@@ -2122,6 +2124,7 @@ namespace webserver
 		{
 			existingFeedbacks.AddChildTag(HtmlTagFeedbackSelect(++feedbackCounter, trackID, feedbackID));
 		}
+		existingFeedbacks.AddChildTag(HtmlTag("div").AddAttribute("id", to_string(feedbackCounter + 1)));
 
 		HtmlTag feedbackContent("div");
 		feedbackContent.AddAttribute("id", "tab_feedback");
