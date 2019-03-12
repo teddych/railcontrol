@@ -153,11 +153,13 @@ body {
 	fill: red;
 }
 
-.track_occupied .track_set {
+.track_occupied .track_set,
+.track_occupied .trackname {
 	display: none;
 }
 
-.track_free .track_release {
+.track_free .track_release,
+.track_free .loconame {
 	display: none;
 }
 

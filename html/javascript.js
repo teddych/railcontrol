@@ -423,6 +423,24 @@ function dataUpdate(event)
 	{
 		updateTrack(argumentMap.get('track'));
 	}
+	else if (command == 'trackstate')
+	{
+		elementName = 't_' + argumentMap.get('track');
+		if (element && argumentMap.has('state'))
+		{
+			var state = argumentMap.get('state');
+			if (state == 'on')
+			{
+				element.classList.remove('track_free');
+				element.classList.add('track_occupied');
+			}
+			else
+			{
+				element.classList.remove('track_occupied');
+				element.classList.add('track_free');
+			}
+		}
+	}
 	else if (command == 'tracksettings' || command == 'trackrelease')
 	{
 		updateTrack(argumentMap.get('track'));

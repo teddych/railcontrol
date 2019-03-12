@@ -119,11 +119,11 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::TrackState(const controlType_t controlType, const trackID_t trackID, const lockState_t lockState)
+	void ConsoleServer::TrackState(const controlType_t controlType, const trackID_t trackID, const feedbackState_t state)
 	{
 		std::stringstream status;
 		string stateText;
-		text::Converters::lockStatus(lockState, stateText);
+		text::Converters::feedbackStatus(state, stateText);
 		status << manager.getTrackName(trackID) << " is " << stateText;
 		AddUpdate(status.str());
 	}

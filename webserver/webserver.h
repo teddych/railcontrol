@@ -52,7 +52,7 @@ namespace webserver
 			void TrackDelete(const trackID_t trackID, const std::string& name) override;
 			void TrackRelease(const trackID_t trackID) override;
 			void TrackSettings(const trackID_t trackID, const std::string& name) override;
-			void TrackState(const controlType_t controlType, const trackID_t trackID, const lockState_t state) override;
+			void TrackState(const controlType_t controlType, const trackID_t trackID, const feedbackState_t state) override;
 
 		private:
 			void AddUpdate(const std::string& command, const std::string& status);

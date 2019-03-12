@@ -39,7 +39,7 @@ namespace datamodel
 		lockState(LockStateFree),
 		locoID(LocoNone)
 	{
-		Track* track = manager->getTrack(fromTrack);
+		Track* track = manager->GetTrack(fromTrack);
 		if (track == nullptr)
 		{
 			return;
@@ -52,7 +52,7 @@ namespace datamodel
 		locoID(LocoNone)
 	{
 		Deserialize(serialized);
-		Track* track = manager->getTrack(fromTrack);
+		Track* track = manager->GetTrack(fromTrack);
 		if (track == nullptr)
 		{
 			return;
@@ -153,7 +153,7 @@ namespace datamodel
 		{
 			return false;
 		}
-		Track* track = manager->getTrack(toTrack);
+		Track* track = manager->GetTrack(toTrack);
 		if (!track)
 		{
 			return false;
@@ -178,7 +178,7 @@ namespace datamodel
 		{
 			return false;
 		}
-		Track* track = manager->getTrack(toTrack);
+		Track* track = manager->GetTrack(toTrack);
 		if (!track)
 		{
 			return false;
@@ -204,7 +204,7 @@ namespace datamodel
 		{
 			return false;
 		}
-		Track* track = manager->getTrack(fromTrack);
+		Track* track = manager->GetTrack(fromTrack);
 		track->Release(locoID);
 		this->locoID = LocoNone;
 		lockState = LockStateFree;

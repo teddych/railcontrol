@@ -168,13 +168,13 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::TrackState(const controlType_t controlType, const trackID_t trackID, const lockState_t state)
+	void WebServer::TrackState(const controlType_t controlType, const trackID_t trackID, const feedbackState_t state)
 	{
 		stringstream command;
 		stringstream status;
 		string stateText;
-		text::Converters::lockStatus(state, stateText);
-		command << "track;track=" << trackID << ";state=" << stateText;
+		text::Converters::feedbackStatus(state, stateText);
+		command << "trackstate;track=" << trackID << ";state=" << stateText;
 		status << manager.getTrackName(trackID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());
 	}

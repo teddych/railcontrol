@@ -3,7 +3,9 @@
 #include <sstream>
 #include <string>
 
+#include <datamodel/feedback.h>
 #include <datamodel/track.h>
+#include <manager.h>
 
 using std::map;
 using std::string;
@@ -54,6 +56,30 @@ namespace datamodel
 		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 		locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));
+		return true;
+	}
+
+	bool Track::FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
+	{
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		if (state != FeedbackStateFree)
+		{
+			this->state = state;
+			return true;
+		}
+		for (auto f : feedbacks)
+		{
+			datamodel::Feedback* feedback = manager->GetFeedback(f);
+			if (feedback == nullptr)
+			{
+				continue;
+			}
+			if (feedback->GetState() != FeedbackStateFree)
+			{
+				return false;
+			}
+		}
+		this->state = FeedbackStateFree;
 		return true;
 	}
 

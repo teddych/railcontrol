@@ -1193,16 +1193,7 @@ bool Manager::FeedbackDelete(const feedbackID_t feedbackID)
 * Track                    *
 ***************************/
 
-void Manager::track(const controlType_t controlType, const trackID_t trackID, const lockState_t state)
-{
-	std::lock_guard<std::mutex> Guard(controlMutex);
-	for (auto control : controls)
-	{
-		control.second->TrackState(controlType, trackID, state);
-	}
-}
-
-Track* Manager::getTrack(const trackID_t trackID) const
+Track* Manager::GetTrack(const trackID_t trackID) const
 {
 	std::lock_guard<std::mutex> Guard(trackMutex);
 	if (tracks.count(trackID) != 1)
@@ -1263,7 +1254,7 @@ bool Manager::CheckTrackPosition(const trackID_t trackID, const layoutPosition_t
 	layoutItemSize_t w2 = 0;
 	layoutItemSize_t h2 = 0;
 
-	Track* track = getTrack(trackID);
+	Track* track = GetTrack(trackID);
 	if (track != nullptr)
 	{
 		z2 = track->posZ;
@@ -1370,7 +1361,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, c
 				}
 			}
 			++newTrackID;
-			track = new Track(newTrackID, name, posX, posY, posZ, height, rotation, type, CleanupAndCheckFeedbacks(trackID, newFeedbacks));
+			track = new Track(this, newTrackID, name, posX, posY, posZ, height, rotation, type, CleanupAndCheckFeedbacks(trackID, newFeedbacks));
 			if (track == nullptr)
 			{
 				result.assign("Unable to allocate memory for track");
@@ -1393,7 +1384,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, c
 	return track->objectID;
 }
 
-bool Manager::trackDelete(const trackID_t trackID)
+bool Manager::TrackDelete(const trackID_t trackID)
 {
 	Track* track = nullptr;
 	{
@@ -1423,6 +1414,31 @@ bool Manager::trackDelete(const trackID_t trackID)
 	}
 	delete track;
 	return true;
+}
+
+bool Manager::TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t feedbackID, const feedbackState_t state)
+{
+	if (trackID == TrackNone)
+	{
+		return false;
+	}
+	datamodel::Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return false;
+	}
+	bool ret = track->FeedbackState(feedbackID, state);
+	if (ret)
+	{
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		for (auto control : controls)
+		{
+			control.second->TrackState(ControlTypeInternal, trackID, state);
+		}
+
+	}
+
+	return ret;
 }
 
 /***************************
@@ -1911,7 +1927,7 @@ bool Manager::LayerDelete(const layerID_t layerID)
 
 bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 {
-	Track* track = getTrack(trackID);
+	Track* track = GetTrack(trackID);
 	if (track == nullptr)
 	{
 		return false;
@@ -1992,7 +2008,7 @@ bool Manager::LocoReleaseInternal(const locoID_t locoID)
 
 bool Manager::TrackRelease(const trackID_t trackID)
 {
-	Track* track = getTrack(trackID);
+	Track* track = GetTrack(trackID);
 	if (track == nullptr)
 	{
 		return false;
@@ -2005,7 +2021,7 @@ bool Manager::TrackRelease(const trackID_t trackID)
 
 bool Manager::TrackReleaseInternal(const trackID_t trackID)
 {
-	Track* track = getTrack(trackID);
+	Track* track = GetTrack(trackID);
 	if (track == nullptr)
 	{
 		return false;

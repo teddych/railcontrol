@@ -186,7 +186,7 @@ namespace datamodel
 							break;
 						}
 						// get possible destinations
-						Track* fromTrack = manager->getTrack(trackID);
+						Track* fromTrack = manager->GetTrack(trackID);
 						if (!fromTrack)
 						{
 							break;

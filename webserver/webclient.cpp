@@ -2063,7 +2063,7 @@ namespace webserver
 		std::vector<feedbackID_t> feedbacks;
 		if (trackID > TrackNone)
 		{
-			const datamodel::Track* track = manager.getTrack(trackID);
+			const datamodel::Track* track = manager.GetTrack(trackID);
 			name = track->name;
 			posx = track->posX;
 			posy = track->posY;
@@ -2188,7 +2188,7 @@ namespace webserver
 			return;
 		}
 
-		const datamodel::Track* track = manager.getTrack(trackID);
+		const datamodel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown track");
@@ -2233,14 +2233,14 @@ namespace webserver
 	void WebClient::handleTrackDelete(const map<string, string>& arguments)
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
-		const datamodel::Track* track = manager.getTrack(trackID);
+		const datamodel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete track");
 			return;
 		}
 
-		if (!manager.trackDelete(trackID))
+		if (!manager.TrackDelete(trackID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete track");
 			return;
@@ -2252,7 +2252,7 @@ namespace webserver
 	void WebClient::handleTrackGet(const map<string, string>& arguments)
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
-		const datamodel::Track* track = manager.getTrack(trackID);
+		const datamodel::Track* track = manager.GetTrack(trackID);
 		HtmlReplyWithHeader(HtmlTagTrack(manager, track));
 	}
 
@@ -2266,7 +2266,7 @@ namespace webserver
 			manager.LocoIntoTrack(locoID, trackID);
 			HtmlReplyWithHeaderAndParagraph("Loco added to track.");
 		}
-		const datamodel::Track* track = manager.getTrack(trackID);
+		const datamodel::Track* track = manager.GetTrack(trackID);
 		if (track->IsInUse())
 		{
 			HtmlReplyErrorWithHeader("Track " + track->Name() + " is in use.");

@@ -93,13 +93,14 @@ class Manager {
 
 		// track
 		void track(const controlType_t controlType, const feedbackID_t feedbackID, const lockState_t);
-		datamodel::Track* getTrack(const trackID_t trackID) const;
+		datamodel::Track* GetTrack(const trackID_t trackID) const;
 		const std::string& getTrackName(const trackID_t trackID) const;
 		const std::map<trackID_t,datamodel::Track*>& trackList() const { return tracks; }
 		const std::map<std::string,datamodel::Track*> trackListByName() const;
 		const std::map<std::string,trackID_t> trackListIdByName() const;
 		trackID_t TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, const trackType_t trackType, std::vector<feedbackID_t> feedbacks, std::string& result);
-		bool trackDelete(const trackID_t trackID);
+		bool TrackDelete(const trackID_t trackID);
+		bool TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t feedbackID, const feedbackState_t state);
 
 		// switch
 		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state);

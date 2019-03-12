@@ -50,7 +50,7 @@ class ControlInterface
 		virtual void TrackDelete(const trackID_t trackID, const std::string& name) {};
 		virtual void TrackRelease(const trackID_t trackID) {};
 		virtual void TrackSettings(const trackID_t trackID, const std::string& name) {};
-		virtual void TrackState(const controlType_t controlType, const trackID_t trackID, const lockState_t state) {};
+		virtual void TrackState(const controlType_t controlType, const trackID_t trackID, const feedbackState_t state) {};
 
 	private:
 		controlType_t controlType;

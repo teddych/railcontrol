@@ -742,7 +742,7 @@ namespace console
 	void ConsoleClient::HandleTrackDelete(string& s, size_t& i)
 	{
 		trackID_t trackID = ReadNumber(s, i);
-		if (!manager.trackDelete(trackID))
+		if (!manager.TrackDelete(trackID))
 		{
 			SendAndPrompt("Track not found or track in use");
 			return;
@@ -768,7 +768,7 @@ namespace console
 
 		// list one track
 		trackID_t trackID = ReadNumber(s, i);
-		datamodel::Track* track = manager.getTrack(trackID);
+		datamodel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
 			SendAndPrompt("Unknown track");
@@ -782,7 +782,7 @@ namespace console
 			<< "\nY:        " << static_cast<int>(track->posY)
 			<< "\nZ:        " << static_cast<int>(track->posZ);
 		string stateText;
-		text::Converters::lockStatus(track->GetState(), stateText);
+		text::Converters::lockStatus(track->GetLockState(), stateText);
 		status << "\nStatus:   " << stateText;
 		status << "\nLoco:     ";
 		if (track->GetLoco() == LocoNone)
