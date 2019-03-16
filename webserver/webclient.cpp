@@ -1859,8 +1859,8 @@ namespace webserver
 			automode = street->automode;
 			fromTrack = street->fromTrack;
 			fromDirection = street->fromDirection;
-			fromTrack = street->fromTrack;
-			fromDirection = street->fromDirection;
+			toTrack = street->toTrack;
+			toDirection = street->toDirection;
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit street &quot;" + name + "&quot;"));

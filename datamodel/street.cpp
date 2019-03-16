@@ -88,7 +88,7 @@ namespace datamodel
 			automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
 			fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
 			fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionLeft));
-			toTrack = GetIntegerMapEntry(arguments, "lockState", TrackNone);
+			toTrack = GetIntegerMapEntry(arguments, "toTrack", TrackNone);
 			toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
 			feedbackIDStop = GetIntegerMapEntry(arguments, "feedbackIDStop", FeedbackNone);
 			return true;
