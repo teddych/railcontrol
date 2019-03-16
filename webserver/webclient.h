@@ -50,11 +50,11 @@ namespace webserver
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz);
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible);
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;
-			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const;
-			HtmlTag HtmlTagRelation(const std::string& priority, const objectType_t objectType = ObjectTypeSwitch, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
+			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction, const std::string& onchange = "") const;
+			HtmlTag HtmlTagSelectFeedbacksOfTrack(const trackID_t trackId, const feedbackID_t feedbackId) const;			HtmlTag HtmlTagRelation(const std::string& priority, const objectType_t objectType = ObjectTypeSwitch, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
 			HtmlTag HtmlTagRelationObject(const std::string& priority, const objectType_t objectType, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected = false) const;
-			HtmlTag HtmlTagFeedbackSelect(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID = FeedbackNone);
+			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID = FeedbackNone);
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void handleLayerSave(const std::map<std::string, std::string>& arguments);
@@ -116,6 +116,7 @@ namespace webserver
 			void handleFeedbackAskDelete(const std::map<std::string,std::string>& arguments);
 			void handleFeedbackDelete(const std::map<std::string,std::string>& arguments);
 			void handleFeedbackGet(const std::map<std::string,std::string>& arguments);
+			void handleFeedbacksOfTrack(const std::map<std::string,std::string>& arguments);
 			void handleLocoSelector(const std::map<std::string,std::string>& arguments);
 			void handleLayerSelector(const std::map<std::string,std::string>& arguments);
 			void handleRelationAdd(const std::map<std::string,std::string>& arguments);

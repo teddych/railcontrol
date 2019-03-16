@@ -33,7 +33,7 @@ namespace datamodel
 		fromDirection(fromDirection),
 		toTrack(toTrack),
 		toDirection(toDirection),
-		feedbackIDStop(feedbackIDStop),
+		feedbackIdStop(feedbackIDStop),
 		manager(manager),
 		relations(relations),
 		lockState(LockStateFree),
@@ -72,7 +72,7 @@ namespace datamodel
 			<< ";fromDirection=" << static_cast<int>(fromDirection)
 			<< ";toTrack=" << static_cast<int>(toTrack)
 			<< ";toDirection=" << static_cast<int>(toDirection)
-			<< ";feedbackIDStop=" << static_cast<int>(feedbackIDStop);
+			<< ";feedbackIdStop=" << static_cast<int>(feedbackIdStop);
 		return ss.str();
 	}
 
@@ -90,7 +90,7 @@ namespace datamodel
 			fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionLeft));
 			toTrack = GetIntegerMapEntry(arguments, "toTrack", TrackNone);
 			toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
-			feedbackIDStop = GetIntegerMapEntry(arguments, "feedbackIDStop", FeedbackNone);
+			feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackIdStop", FeedbackNone);
 			return true;
 		}
 		return false;
@@ -188,7 +188,7 @@ namespace datamodel
 			return false;
 		}
 		lockState = LockStateHardLocked;
-		Feedback* feedback = manager->GetFeedback(feedbackIDStop);
+		Feedback* feedback = manager->GetFeedback(feedbackIdStop);
 		feedback->SetLoco(locoID);
 		return true;
 	}
@@ -208,7 +208,7 @@ namespace datamodel
 		track->Release(locoID);
 		this->locoID = LocoNone;
 		lockState = LockStateFree;
-		Feedback* feedback = manager->GetFeedback(feedbackIDStop);
+		Feedback* feedback = manager->GetFeedback(feedbackIdStop);
 		feedback->SetLoco(LocoNone);
 		return true;
 	}

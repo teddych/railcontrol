@@ -1,3 +1,15 @@
+function updateFeedbacksOfTrack()
+{
+	var track = document.getElementById('s_totrack');
+	if (!track)
+	{
+		return false;
+	}
+	var url = '?cmd=feedbacksoftrack&track=' + track.value;
+	requestUpdateItem('feedbackstop', url);
+	return false;
+}
+
 function addRelation()
 {
 	var relationCounter = document.getElementById('relationcounter');

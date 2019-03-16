@@ -27,6 +27,7 @@ using hardware::HardwareParams;
 using std::map;
 using std::string;
 using std::stringstream;
+using std::vector;
 using storage::StorageHandler;
 using storage::StorageParams;
 using webserver::WebServer;
@@ -1150,6 +1151,27 @@ const map<string,datamodel::Feedback*> Manager::FeedbackListByName() const
 	return out;
 }
 
+const map<string,feedbackID_t> Manager::FeedbacksOfTrack(const trackID_t trackID) const
+{
+	map<string,feedbackID_t> out;
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return out;
+	}
+	vector<feedbackID_t> feedbacksOfTrack = track->GetFeedbacks();
+	for (auto feedbackID : feedbacksOfTrack)
+	{
+		Feedback* feedback = GetFeedback(feedbackID);
+		if (feedback == nullptr)
+		{
+			continue;
+		}
+		out[feedback->Name()] = feedbackID;
+	}
+	return out;
+}
+
 bool Manager::FeedbackDelete(const feedbackID_t feedbackID)
 {
 	Feedback* feedback = nullptr;
@@ -1716,7 +1738,7 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 			street->fromDirection = fromDirection;
 			street->toTrack = toTrack;
 			street->toDirection = toDirection;
-			street->feedbackIDStop = feedbackID;
+			street->feedbackIdStop = feedbackID;
 		}
 		else
 		{

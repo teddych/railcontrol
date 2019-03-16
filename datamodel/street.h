@@ -29,7 +29,7 @@ namespace datamodel
 				const direction_t fromDirection,
 				const trackID_t toTrack,
 				const direction_t toDirection,
-				const feedbackID_t feedbackIDStop);
+				const feedbackID_t feedbackIdStop);
 
 			Street(Manager* manager, const std::string& serialized);
 
@@ -69,7 +69,7 @@ namespace datamodel
 			direction_t fromDirection;
 			trackID_t toTrack;
 			direction_t toDirection;
-			feedbackID_t feedbackIDStop;
+			feedbackID_t feedbackIdStop;
 
 		private:
 			Manager* manager;

@@ -369,6 +369,10 @@ namespace webserver
 			{
 				handleFeedbackGet(arguments);
 			}
+			else if (arguments["cmd"].compare("feedbacksoftrack") == 0)
+			{
+				handleFeedbacksOfTrack(arguments);
+			}
 			else if (arguments["cmd"].compare("protocolloco") == 0)
 			{
 				handleProtocolLoco(arguments);
@@ -1111,7 +1115,7 @@ namespace webserver
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagFeedbackSelect(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID)
+	HtmlTag WebClient::HtmlTagSelectFeedbackForTrack(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID)
 	{
 		string counterString = to_string(counter);
 		HtmlTag content("div");
@@ -1145,15 +1149,29 @@ namespace webserver
 		return HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation));
 	}
 
-	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction) const
+	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction, const string& onchange) const
 	{
 		HtmlTag tag;
 		map<string,trackID_t> tracks = manager.trackListIdByName();
-		tag.AddChildTag(HtmlTagSelectWithLabel(name + "track", label, tracks, trackId).AddClass("select_track"));
+		HtmlTagSelectWithLabel selectTrack(name + "track", label, tracks, trackId);
+		selectTrack.AddClass("select_track");
+		if (onchange.size() > 0)
+		{
+			selectTrack.AddAttribute("onchange", onchange);
+		}
+		tag.AddChildTag(selectTrack);
 		map<string,direction_t> directions;
 		directions["Left"] = DirectionLeft;
 		directions["Right"] = DirectionRight;
 		tag.AddChildTag(HtmlTagSelect(name + "direction", directions, direction).AddClass("select_direction"));
+		return tag;
+	}
+
+	HtmlTag WebClient::HtmlTagSelectFeedbacksOfTrack(const trackID_t trackId, const feedbackID_t feedbackId) const
+	{
+		HtmlTag tag;
+		map<string,feedbackID_t> feedbacks = manager.FeedbacksOfTrack(trackId);
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackstop", "Stop at feedback:", feedbacks, trackId).AddClass("select_feedback"));
 		return tag;
 	}
 
@@ -1204,7 +1222,7 @@ namespace webserver
 	{
 		unsigned int counter = GetIntegerMapEntry(arguments, "counter", 1);
 		trackID_t trackID = static_cast<trackID_t>(GetIntegerMapEntry(arguments, "track", TrackNone));
-		HtmlReplyWithHeader(HtmlTagFeedbackSelect(counter, trackID));
+		HtmlReplyWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID));
 	}
 
 	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
@@ -1846,6 +1864,7 @@ namespace webserver
 		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
 		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
 		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		feedbackID_t feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
 		if (streetID > StreetNone)
 		{
 			const datamodel::Street* street = manager.getStreet(streetID);
@@ -1861,6 +1880,7 @@ namespace webserver
 			fromDirection = street->fromDirection;
 			toTrack = street->toTrack;
 			toDirection = street->toDirection;
+			feedbackIdStop = street->feedbackIdStop;
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit street &quot;" + name + "&quot;"));
@@ -1928,7 +1948,11 @@ namespace webserver
 			tracksDiv.AddAttribute("hidden");
 		}
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", "From track:", fromTrack, fromDirection));
-		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", "To track:", toTrack, toDirection));
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", "To track:", toTrack, toDirection, "updateFeedbacksOfTrack(); return false;"));
+		HtmlTag feedbackStopDiv("div");
+		feedbackStopDiv.AddAttribute("id", "feedbackstop");
+		feedbackStopDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdStop));
+		tracksDiv.AddChildTag(feedbackStopDiv);
 		automodeContent.AddChildTag(tracksDiv);
 		formContent.AddChildTag(automodeContent);
 
@@ -1936,6 +1960,12 @@ namespace webserver
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleFeedbacksOfTrack(const map<string, string>& arguments)
+	{
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		HtmlReplyWithHeader(HtmlTagSelectFeedbacksOfTrack(trackID, FeedbackNone));
 	}
 
 	void WebClient::handleStreetSave(const map<string, string>& arguments)
@@ -1952,6 +1982,7 @@ namespace webserver
 		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
 		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
 		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		feedbackID_t feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
 
 		vector<Relation*> relations;
 		priority_t relationCount = GetIntegerMapEntry(arguments, "relationcounter", 0);
@@ -1972,7 +2003,7 @@ namespace webserver
 		}
 
 		string result;
-		if (!manager.streetSave(streetID, name, delay, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, FeedbackNone, result))
+		if (!manager.streetSave(streetID, name, delay, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdStop, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -2130,7 +2161,7 @@ namespace webserver
 		existingFeedbacks.AddAttribute("id", "feedbackcontent");
 		for (auto feedbackID : feedbacks)
 		{
-			existingFeedbacks.AddChildTag(HtmlTagFeedbackSelect(++feedbackCounter, trackID, feedbackID));
+			existingFeedbacks.AddChildTag(HtmlTagSelectFeedbackForTrack(++feedbackCounter, trackID, feedbackID));
 		}
 		existingFeedbacks.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(feedbackCounter + 1)));
 
