@@ -1018,7 +1018,7 @@ namespace console
 
 		// set specific loco to auto mode
 		locoID_t locoID = ReadNumber(s, i);
-		if (!manager.locoStart(locoID))
+		if (!manager.LocoStart(locoID))
 		{
 			// FIXME: bether errormessage
 			SendAndPrompt("Unknown loco or loco is not in a track");
@@ -1111,7 +1111,7 @@ namespace console
 		}
 		// set specific loco to manual mode
 		locoID_t locoID = ReadNumber(s, i);
-		if (!manager.locoStop(locoID))
+		if (!manager.LocoStop(locoID))
 		{
 			// FIXME: bether errormessage
 			SendAndPrompt("Unknown loco");

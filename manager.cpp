@@ -2012,6 +2012,26 @@ bool Manager::TrackRelease(const trackID_t trackID)
 	return ret;
 }
 
+bool Manager::TrackStartLoco(const trackID_t trackID)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return false;
+	}
+	return LocoStart(track->GetLoco());
+}
+
+bool Manager::TrackStopLoco(const trackID_t trackID)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return false;
+	}
+	return LocoStop(track->GetLoco());
+}
+
 bool Manager::TrackReleaseInternal(const trackID_t trackID)
 {
 	Track* track = GetTrack(trackID);
@@ -2083,7 +2103,7 @@ bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t str
 	return true;
 }
 
-bool Manager::locoStart(const locoID_t locoID)
+bool Manager::LocoStart(const locoID_t locoID)
 {
 	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
@@ -2103,7 +2123,7 @@ bool Manager::locoStart(const locoID_t locoID)
 	return true;
 }
 
-bool Manager::locoStop(const locoID_t locoID)
+bool Manager::LocoStop(const locoID_t locoID)
 {
 	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)

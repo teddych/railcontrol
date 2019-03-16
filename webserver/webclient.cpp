@@ -333,6 +333,14 @@ namespace webserver
 			{
 				handleTrackRelease(arguments);
 			}
+			else if (arguments["cmd"].compare("trackstartloco") == 0)
+			{
+				handleTrackStartLoco(arguments);
+			}
+			else if (arguments["cmd"].compare("trackstoploco") == 0)
+			{
+				handleTrackStopLoco(arguments);
+			}
 			else if (arguments["cmd"].compare("feedbackedit") == 0)
 			{
 				handleFeedbackEdit(arguments);
@@ -2288,6 +2296,20 @@ namespace webserver
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackRelease(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Track released" : "Track not released"));
+	}
+
+	void WebClient::handleTrackStartLoco(const map<string, string>& arguments)
+	{
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		bool ret = manager.TrackStartLoco(trackID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco started" : "Loco not started"));
+	}
+
+	void WebClient::handleTrackStopLoco(const map<string, string>& arguments)
+	{
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		bool ret = manager.TrackStopLoco(trackID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco stopped" : "Loco not stopped"));
 	}
 
 	void WebClient::handleFeedbackEdit(const map<string, string>& arguments)
