@@ -240,7 +240,7 @@ namespace storage {
 		instance->saveObject(ObjectTypeTrack, track.objectID, track.name, serialized);
 	}
 
-	void StorageHandler::allTracks(std::map<trackID_t,datamodel::Track*>& tracks)
+	void StorageHandler::AllTracks(std::map<trackID_t,datamodel::Track*>& tracks)
 	{
 		if (instance == nullptr)
 		{
@@ -250,7 +250,7 @@ namespace storage {
 		instance->objectsOfType(ObjectTypeTrack, objects);
 		for(auto object : objects)
 		{
-			Track* track = new Track(object);
+			Track* track = new Track(manager, object);
 			tracks[track->objectID] = track;
 		}
 	}

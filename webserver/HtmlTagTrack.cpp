@@ -28,6 +28,7 @@ namespace webserver
 		div1.AddClass("layout_item");
 		div1.AddClass("track_item");
 		div1.AddClass(track->FeedbackState() == FeedbackStateFree ? "track_free" : "track_occupied");
+		div1.AddClass(locoID == LocoNone ? "loco_unknown" : "loco_known");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
 		string layoutHeight = to_string(EdgeLength * track->height);
@@ -41,8 +42,8 @@ namespace webserver
 			const string& locoName = manager.LocoName(locoID);
 			const string& trackName = track->Name();
 			image = "<polygon class=\"track\" points=\"13,0 22,0 22," + layoutHeight + " 13," + layoutHeight + "\"/>";
-			image += "<text class=\"track loconame\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";
-			image += "<text class=\"track trackname\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + trackName + "</text>";
+			image += "<text class=\"loconame\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";
+			image += "<text class=\"trackname\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + trackName + "</text>";
 		}
 
 		int translateX = 0;
@@ -68,7 +69,7 @@ namespace webserver
 
 		HtmlTag div2("div");
 		div2.AddClass("contextmenu");
-		div2.AddClass(locoID == LocoNone ? "track_free" : "track_occupied");
+		div2.AddClass(locoID == LocoNone ? "loco_unknown" : "loco_known");
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")

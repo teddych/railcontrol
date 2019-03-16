@@ -72,13 +72,13 @@ Manager::Manager(Config& config)
 	{
 		logger->Info("Loaded layer {0}: {1}", layer.second->objectID, layer.second->Name());
 	}
-	if (layers.count(1) == 0)
+	if (layers.count(LayerUndeletable) == 0)
 	{
 		string result;
-		bool initLayer0 = LayerSave(0, "Layer 0", result);
+		bool initLayer0 = LayerSave(0, "Layer 1", result);
 		if (initLayer0 == false)
 		{
-			logger->Error("Unable to add initial layer 0");
+			logger->Error("Unable to add initial layer 1");
 		}
 	}
 
@@ -100,7 +100,7 @@ Manager::Manager(Config& config)
 		logger->Info("Loaded feedback {0}: {1}", feedback.second->objectID, feedback.second->name);
 	}
 
-	storage->allTracks(tracks);
+	storage->AllTracks(tracks);
 	for (auto track : tracks)
 	{
 		logger->Info("Loaded track {0}: {1}", track.second->objectID, track.second->name);
@@ -1037,12 +1037,12 @@ void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t 
 	{
 		return;
 	}
-	logger->Info("Feedback {0} is now {1}", feedback->Name(), (state ? "on" : "off"));
 	feedback->SetState(state);
+	logger->Info("Feedback {0} is now {1}", feedback->Name(), (state ? "on" : "off"));
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->FeedbackState(controlType, feedbackID, state);
+		control.second->FeedbackState(controlType, feedback->Name(), feedbackID, state);
 	}
 }
 
@@ -1091,48 +1091,41 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 		result.append(" feedback.");
 		return FeedbackNone;
 	}
-	Feedback* feedback;
+
+	Feedback* feedback = GetFeedback(feedbackID);
+	if (feedback != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(feedbackMutex);
-		if (feedbackID != FeedbackNone && feedbacks.count(feedbackID))
-		{
-			// update existing feedback
-			feedback = feedbacks.at(feedbackID);
-			if (feedback == nullptr)
-			{
-				result.assign("Feedback does not exist");
-				return FeedbackNone;
-			}
-			feedback->name = name;
-			feedback->visible = visible;
-			feedback->posX = posX;
-			feedback->posY = posY;
-			feedback->posZ = posZ;
-			feedback->controlID = controlID;
-			feedback->pin = pin;
-		}
-		else
-		{
-			// create new feedback
-			feedbackID_t newFeedbackID = 0;
-			// get next feedbackID
-			for (auto feedback : feedbacks) {
-				if (feedback.first > newFeedbackID)
-				{
-					newFeedbackID = feedback.first;
-				}
-			}
-			++newFeedbackID;
-			feedback = new Feedback(this, newFeedbackID, name, visible, posX, posY, posZ, controlID, pin, inverted);
-			if (feedback == nullptr)
-			{
-				result.assign("Unable to allocate memory for feedback");
-				return FeedbackNone;
-			}
-			// save in map
-			feedbacks[newFeedbackID] = feedback;
-		}
+		feedback->name = name;
+		feedback->visible = visible;
+		feedback->posX = posX;
+		feedback->posY = posY;
+		feedback->posZ = posZ;
+		feedback->controlID = controlID;
+		feedback->pin = pin;
 	}
+	else
+	{
+		// create new feedback
+		feedbackID_t newFeedbackID = 0;
+		// get next feedbackID
+		for (auto feedback : feedbacks)
+		{
+			if (feedback.first > newFeedbackID)
+			{
+				newFeedbackID = feedback.first;
+			}
+		}
+		++newFeedbackID;
+		feedback = new Feedback(this, newFeedbackID, name, visible, posX, posY, posZ, controlID, pin, inverted);
+		if (feedback == nullptr)
+		{
+			result.assign("Unable to allocate memory for feedback");
+			return FeedbackNone;
+		}
+		// save in map
+		feedbacks[newFeedbackID] = feedback;
+	}
+
 	// save in db
 	if (storage)
 	{
@@ -1433,7 +1426,7 @@ bool Manager::TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t 
 		std::lock_guard<std::mutex> Guard(controlMutex);
 		for (auto control : controls)
 		{
-			control.second->TrackState(ControlTypeInternal, trackID, state);
+			control.second->TrackState(ControlTypeInternal, track->Name(), trackID, state);
 		}
 
 	}

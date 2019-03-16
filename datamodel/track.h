@@ -35,7 +35,8 @@ namespace datamodel
 			{
 			}
 
-			Track(const std::string& serialized)
+			Track(Manager* manager, const std::string& serialized)
+			:	manager(manager)
 			{
 				Deserialize(serialized);
 			}
@@ -64,7 +65,7 @@ namespace datamodel
 
 			bool IsInUse() const
 			{
-				return this->lockState != LockStateFree || this->locoID != LocoNone || this->streets.size() > 0;
+				return this->lockState != LockStateFree || this->locoID != LocoNone;
 			}
 
 		private:

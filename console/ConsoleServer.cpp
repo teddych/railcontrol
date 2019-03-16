@@ -112,19 +112,19 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
+	void ConsoleServer::FeedbackState(const controlType_t controlType, const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		std::stringstream status;
-		status << "Feedback " << feedbackID << " is " << (state ? "on" : "off");
+		status << "Feedback " << name << " is " << (state ? "on" : "off");
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::TrackState(const controlType_t controlType, const trackID_t trackID, const feedbackState_t state)
+	void ConsoleServer::TrackState(const controlType_t controlType, const string& name, const trackID_t trackID, const feedbackState_t state)
 	{
 		std::stringstream status;
 		string stateText;
 		text::Converters::feedbackStatus(state, stateText);
-		status << manager.getTrackName(trackID) << " is " << stateText;
+		status << name << " is " << stateText;
 		AddUpdate(status.str());
 	}
 

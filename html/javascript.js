@@ -426,10 +426,11 @@ function dataUpdate(event)
 	else if (command == 'trackstate')
 	{
 		elementName = 't_' + argumentMap.get('track');
+		var element = document.getElementById(elementName);
 		if (element && argumentMap.has('state'))
 		{
 			var state = argumentMap.get('state');
-			if (state == 'on')
+			if (state == 'occupied')
 			{
 				element.classList.remove('track_free');
 				element.classList.add('track_occupied');

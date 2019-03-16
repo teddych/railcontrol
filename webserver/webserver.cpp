@@ -141,12 +141,12 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
+	void WebServer::FeedbackState(const controlType_t controlType, const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		stringstream command;
 		stringstream status;
 		command << "feedback;feedback=" << feedbackID << ";state=" << (state ? "on" : "off");
-		status << "Feedback " << feedbackID << " is " << (state ? "on" : "off");
+		status << name << " is " << (state ? "on" : "off");
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -168,14 +168,14 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::TrackState(const controlType_t controlType, const trackID_t trackID, const feedbackState_t state)
+	void WebServer::TrackState(const controlType_t controlType, const string& name, const trackID_t trackID, const feedbackState_t state)
 	{
 		stringstream command;
 		stringstream status;
 		string stateText;
 		text::Converters::feedbackStatus(state, stateText);
 		command << "trackstate;track=" << trackID << ";state=" << stateText;
-		status << manager.getTrackName(trackID) << " is " << stateText;
+		status << name << " is " << stateText;
 		AddUpdate(command.str(), status.str());
 	}
 

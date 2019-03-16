@@ -28,7 +28,7 @@ namespace storage
 			void deleteAccessory(accessoryID_t accessoryID);
 			void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks);
 			void deleteFeedback(feedbackID_t feedbackID);
-			void allTracks(std::map<trackID_t,datamodel::Track*>& tracks);
+			void AllTracks(std::map<trackID_t,datamodel::Track*>& tracks);
 			void deleteTrack(trackID_t trackID);
 			void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches);
 			void deleteSwitch(switchID_t switchID);
