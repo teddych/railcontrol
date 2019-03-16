@@ -28,8 +28,9 @@ namespace datamodel
 		ss << "objectType=Track;" << LayoutItem::Serialize()
 			<< ";type=" << static_cast<int>(type)
 			<< ";feedbacks=" << feedbackString
+			<< ";state=" << static_cast<int>(state)
 			<< ";lockState=" << static_cast<int>(lockState)
-			<< ";locoID=" << (int) locoID
+			<< ";locoID=" << static_cast<int>(locoID)
 			<< ";locoDirection=" << static_cast<int>(locoDirection);
 		return ss.str();
 	}
@@ -53,6 +54,7 @@ namespace datamodel
 		{
 			feedbacks.push_back(Util::StringToInteger(feedbackString));
 		}
+		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
 		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 		locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));
