@@ -43,7 +43,7 @@ namespace datamodel
 			bool AssignRelations(const std::vector<datamodel::Relation*>& newRelations);
 			const std::vector<datamodel::Relation*>& GetRelations() const { return relations; };
 
-			bool fromTrackDirection(trackID_t trackID, direction_t direction) { return fromTrack == trackID; }// FIXME: && fromDirection == direction; }
+			bool FromTrackDirection(trackID_t trackID, direction_t direction) { return fromTrack == trackID; }// FIXME: && fromDirection == direction; }
 
 			bool Execute();
 			static bool ExecuteStatic(Street* street) { return street->Execute(); }
@@ -54,10 +54,10 @@ namespace datamodel
 
 			delay_t Delay() const { return delay; }
 			void Delay(delay_t delay) { this->delay = delay; }
-			locoID_t getLoco() const { return locoID; }
-			lockState_t getState() const { return lockState; }
+			locoID_t GetLoco() const { return locoID; }
+			lockState_t GetState() const { return lockState; }
 
-			trackID_t destinationTrack() const { return toTrack; };
+			trackID_t DestinationTrack() const { return toTrack; };
 
 		private:
 			delay_t delay;

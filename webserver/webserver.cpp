@@ -261,7 +261,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locointotrack;loco=" << locoID << ";track=" << trackID;
-		status << manager.LocoName(locoID) << " is on track " << manager.getTrackName(trackID);
+		status << manager.LocoName(locoID) << " is on track " << manager.GetTrackName(trackID);
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -289,7 +289,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoStreet;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		status << manager.LocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.getTrackName(trackID);
+		status << manager.LocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.GetTrackName(trackID);
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -298,7 +298,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		status << manager.LocoName(locoID) << " has reached the destination track " << manager.getTrackName(trackID) << " on street " << manager.getStreetName(streetID);
+		status << manager.LocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.getStreetName(streetID);
 		AddUpdate(command.str(), status.str());
 	}
 

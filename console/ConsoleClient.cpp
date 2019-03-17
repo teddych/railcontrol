@@ -1078,7 +1078,7 @@ namespace console
 			<< "\nControl:  " << manager.getControlName(loco->controlID)
 			<< "\nProtocol: " << protocolSymbols[loco->protocol]
 			<< "\nAddress:  " << loco->address;
-		const char* const locoStateText = loco->getStateText();
+		const char* const locoStateText = loco->GetStateText();
 		status << "\nStatus:   " << locoStateText;
 		status << "\nTrack:    ";
 		if (loco->GetTrack() == TrackNone)
@@ -1087,7 +1087,7 @@ namespace console
 		}
 		else
 		{
-			status << manager.getTrackName(loco->GetTrack()) << " (" << loco->GetTrack() << ")";
+			status << manager.GetTrackName(loco->GetTrack()) << " (" << loco->GetTrack() << ")";
 		}
 		status << "\nStreet:   ";
 		if (loco->GetStreet() == StreetNone)
@@ -1352,7 +1352,7 @@ namespace console
 		}
 		else
 		{
-			status << manager.getTrackName(street->fromTrack) << " (" << street->fromTrack << ") " << (street->fromDirection ? ">" : "<");
+			status << manager.GetTrackName(street->fromTrack) << " (" << street->fromTrack << ") " << (street->fromDirection ? ">" : "<");
 		}
 		status << "\nEnd:      ";
 		if (street->toTrack == TrackNone)
@@ -1361,19 +1361,19 @@ namespace console
 		}
 		else
 		{
-			status << manager.getTrackName(street->toTrack) << " (" << street->toTrack << ") " << (street->toDirection ? ">" : "<");
+			status << manager.GetTrackName(street->toTrack) << " (" << street->toTrack << ") " << (street->toDirection ? ">" : "<");
 		}
 		string stateText;
-		text::Converters::lockStatus(street->getState(), stateText);
+		text::Converters::lockStatus(street->GetState(), stateText);
 		status << "\nStatus:   " << stateText;
 		status << "\nLoco:     ";
-		if (street->getLoco() == LocoNone)
+		if (street->GetLoco() == LocoNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.LocoName(street->getLoco()) << " (" << street->getLoco() << ")";
+			status << manager.LocoName(street->GetLoco()) << " (" << street->GetLoco() << ")";
 		}
 		SendAndPrompt(status.str());
 	}

@@ -95,7 +95,7 @@ class Manager {
 		// track
 		void track(const controlType_t controlType, const feedbackID_t feedbackID, const lockState_t);
 		datamodel::Track* GetTrack(const trackID_t trackID) const;
-		const std::string& getTrackName(const trackID_t trackID) const;
+		const std::string& GetTrackName(const trackID_t trackID) const;
 		const std::map<trackID_t,datamodel::Track*>& trackList() const { return tracks; }
 		const std::map<std::string,datamodel::Track*> trackListByName() const;
 		const std::map<std::string,trackID_t> trackListIdByName() const;
@@ -140,7 +140,7 @@ class Manager {
 		bool feedbackRelease(const feedbackID_t feedbackID);
 		bool streetRelease(const streetID_t streetID);
 		//bool switchRelease(const switchID_t switchID);
-		bool locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID);
+		bool LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID, const std::string& locoName);
 		bool locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID);
 		bool LocoStart(const locoID_t locoID);
 		bool LocoStop(const locoID_t locoID);
@@ -174,6 +174,7 @@ class Manager {
 
 		bool LocoReleaseInternal(const locoID_t locoID);
 		bool TrackReleaseInternal(const trackID_t trackID);
+		bool TrackReleaseInternal(datamodel::Track* track);
 
 		template<class Key, class Value>
 		void DeleteAllMapEntries(std::map<Key,Value*>& m, std::mutex& x, storage::StorageHandler* storage = nullptr)

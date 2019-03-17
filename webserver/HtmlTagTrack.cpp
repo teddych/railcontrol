@@ -74,8 +74,8 @@ namespace webserver
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(track->name))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent("Release track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_set").AddContent("Set loco").AddAttribute("onClick", "loadPopup('/?cmd=tracksetloco&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent("Release loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_start_loco").AddContent("Start loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstartloco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_stop_loco").AddContent("Stop loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstoploco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))

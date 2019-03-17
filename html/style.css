@@ -156,7 +156,6 @@ body {
 
 .loco_known .track_set,
 .loco_known .trackname,
-.loco_unknown .track_release,
 .loco_unknown .loconame {
 	display: none;
 }

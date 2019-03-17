@@ -144,7 +144,7 @@ namespace console
 	void ConsoleServer::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " is in track " << manager.getTrackName(trackID);
+		status << manager.LocoName(locoID) << " is in track " << manager.GetTrackName(trackID);
 		AddUpdate(status.str());
 	}
 
@@ -153,26 +153,26 @@ namespace console
 		stringstream status;
 		status << manager.LocoName(locoID) << " is not in a track anymore";
 		AddUpdate(status.str());
-	};
+	}
 
 	void ConsoleServer::StreetRelease(const streetID_t streetID)
 	{
 		stringstream status;
 		status << manager.getStreetName(streetID) << " is  released";
 		AddUpdate(status.str());
-	};
+	}
 
 	void ConsoleServer::LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.getTrackName(trackID);
+		status << manager.LocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.GetTrackName(trackID);
 		AddUpdate(status.str());
 	}
 
 	void ConsoleServer::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " has reached the destination track " << manager.getTrackName(trackID) << " on street " << manager.getStreetName(streetID);
+		status << manager.LocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.getStreetName(streetID);
 		AddUpdate(status.str());
 	}
 

@@ -160,7 +160,7 @@ namespace datamodel
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto street : streets)
 		{
-			if (street->fromTrackDirection(objectID, locoDirection))
+			if (street->FromTrackDirection(objectID, locoDirection))
 			{
 				validStreets.push_back(street);
 			}

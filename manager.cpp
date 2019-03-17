@@ -625,7 +625,7 @@ bool Manager::locoDelete(const locoID_t locoID)
 		}
 
 		loco = locos.at(locoID);
-		if (loco->isInUse())
+		if (loco->IsInUse())
 		{
 			return false;
 		}
@@ -1219,7 +1219,7 @@ Track* Manager::GetTrack(const trackID_t trackID) const
 	return tracks.at(trackID);
 }
 
-const std::string& Manager::getTrackName(const trackID_t trackID) const
+const std::string& Manager::GetTrackName(const trackID_t trackID) const
 {
 	if (tracks.count(trackID) != 1)
 	{
@@ -1974,7 +1974,7 @@ bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 		return false;
 	}
 
-	reserved = loco->toTrack(trackID);
+	reserved = loco->ToTrack(trackID);
 	if (reserved == false)
 	{
 		track->Release(locoID);
@@ -2044,7 +2044,7 @@ bool Manager::TrackRelease(const trackID_t trackID)
 	}
 	locoID_t locoID = track->GetLoco();
 	bool ret = LocoReleaseInternal(locoID);
-	ret &= TrackReleaseInternal(trackID);
+	ret &= TrackReleaseInternal(track);
 	return ret;
 }
 
@@ -2075,6 +2075,11 @@ bool Manager::TrackReleaseInternal(const trackID_t trackID)
 	{
 		return false;
 	}
+	return TrackReleaseInternal(track);
+}
+
+bool Manager::TrackReleaseInternal(Track* track)
+{
 	bool ret = track->Release(LocoNone);
 	if (ret == false)
 	{
@@ -2083,7 +2088,7 @@ bool Manager::TrackReleaseInternal(const trackID_t trackID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackState(ControlTypeInternal, track->Name(), trackID, track->FeedbackState(), "");
+		control.second->TrackState(ControlTypeInternal, track->Name(), track->objectID, track->FeedbackState(), "");
 	}
 	return true;
 }
@@ -2105,7 +2110,7 @@ bool Manager::streetRelease(const streetID_t streetID)
 	{
 		return false;
 	}
-	locoID_t locoID = street->getLoco();
+	locoID_t locoID = street->GetLoco();
 	return street->Release(locoID);
 }
 
@@ -2120,12 +2125,14 @@ bool Manager::switchRelease(const switchID_t switchID) {
 }
 */
 
-bool Manager::locoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
+bool Manager::LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID, const string& locoName)
 {
+	const Track* track = GetTrack(trackID);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
 		control.second->LocoStreet(locoID, streetID, trackID);
+		control.second->TrackState(ControlTypeInternal, track->Name(), trackID, track->FeedbackState(), locoName);
 	}
 	return true;
 }
@@ -2146,7 +2153,7 @@ bool Manager::LocoStart(const locoID_t locoID)
 	{
 		return false;
 	}
-	bool ret = loco->start();
+	bool ret = loco->Start();
 	if (ret == false)
 	{
 		return false;
@@ -2166,7 +2173,7 @@ bool Manager::LocoStop(const locoID_t locoID)
 	{
 		return false;
 	}
-	bool ret = loco->stop();
+	bool ret = loco->Stop();
 	if (ret == false)
 	{
 		return false;
@@ -2183,7 +2190,7 @@ bool Manager::locoStartAll()
 {
 	for (auto loco : locos)
 	{
-		bool ret = loco.second->start();
+		bool ret = loco.second->Start();
 		if (ret == false)
 		{
 			continue;
@@ -2204,11 +2211,11 @@ bool Manager::locoStopAll()
 	bool ret1 = true;
 	for (auto loco : locos)
 	{
-		if (!loco.second->isInUse())
+		if (!loco.second->IsInUse())
 		{
 			continue;
 		}
-		bool ret2 = loco.second->stop();
+		bool ret2 = loco.second->Stop();
 		ret1 &= ret2;
 		if (ret2 == false)
 		{

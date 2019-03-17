@@ -60,7 +60,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Loco::toTrack(const trackID_t trackID)
+	bool Loco::ToTrack(const trackID_t trackID)
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		// there must not be set a track
@@ -72,7 +72,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Loco::toTrack(const trackID_t trackIDOld, const trackID_t trackIDNew)
+	bool Loco::ToTrack(const trackID_t trackIDOld, const trackID_t trackIDNew)
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		// the old track must be the currently set track
@@ -96,7 +96,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Loco::start()
+	bool Loco::Start()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		if (trackID == TrackNone)
@@ -121,12 +121,12 @@ namespace datamodel
 		}
 
 		state = LocoStateSearching;
-		locoThread = std::thread(&datamodel::Loco::autoMode, this, this);
+		locoThread = std::thread(&datamodel::Loco::AutoMode, this, this);
 
 		return true;
 	}
 
-	bool Loco::stop()
+	bool Loco::Stop()
 	{
 		{
 			std::lock_guard<std::mutex> Guard(stateMutex);
@@ -160,7 +160,7 @@ namespace datamodel
 		return true;
 	}
 
-	void Loco::autoMode(Loco* loco)
+	void Loco::AutoMode(Loco* loco)
 	{
 		const string& name = loco->name;
 		logger->Info("Loco {0} is now in automode", name);
@@ -197,14 +197,20 @@ namespace datamodel
 						trackID_t toTrackID = TrackNone;
 						for (auto street : streets)
 						{
-							if (street->Reserve(objectID))
+							if (!street->Reserve(objectID))
 							{
-								street->Lock(objectID);
-								streetID = street->objectID;
-								toTrackID = street->destinationTrack();
-								logger->Info("Loco \"{0}\" found street \"{1}\" with destination \"{2}\"", name, street->name, manager->getTrackName(toTrackID));
-								break; // break for
+								continue;
 							}
+							if (!street->Lock(objectID))
+							{
+								continue;
+							}
+
+							streetID = street->objectID;
+							toTrackID = street->DestinationTrack();
+							street->Execute();
+							logger->Info("Loco \"{0}\" found street \"{1}\" with destination \"{2}\"", name, street->name, manager->GetTrackName(toTrackID));
+							break; // break for
 						}
 
 						if (streetID == StreetNone)
@@ -214,7 +220,7 @@ namespace datamodel
 						}
 
 						// start loco
-						manager->locoStreet(objectID, streetID, toTrackID);
+						manager->LocoStreet(objectID, streetID, toTrackID, name);
 						// FIXME: make maxspeed configurable
 						manager->LocoSpeed(ControlTypeInternal, objectID, MaxSpeed >> 1);
 						loco->state = LocoStateRunning;
@@ -232,6 +238,7 @@ namespace datamodel
 					case LocoStateManual:
 						logger->Error("Loco {0} is in manual state while automode is running. Putting loco into error state", name);
 						state = LocoStateError;
+						// fall through / no break
 
 					case LocoStateError:
 						logger->Error("Loco {0} is in error state.", name);
@@ -244,7 +251,7 @@ namespace datamodel
 		}
 	}
 
-	const char* const Loco::getStateText() const
+	const char* const Loco::GetStateText() const
 	{
 		switch (state)
 		{
@@ -271,7 +278,7 @@ namespace datamodel
 		}
 	}
 
-	void Loco::destinationReached()
+	void Loco::DestinationReached()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		manager->LocoSpeed(ControlTypeInternal, objectID, 0);
@@ -283,7 +290,7 @@ namespace datamodel
 			logger->Error("Loco {0} is running in automode without a street. Putting loco into error state", name);
 			return;
 		}
-		trackID = street->destinationTrack();
+		trackID = street->DestinationTrack();
 		manager->locoDestinationReached(objectID, streetID, trackID);
 		// release old track & old street
 		street->Release(objectID);

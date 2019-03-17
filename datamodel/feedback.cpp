@@ -79,7 +79,7 @@ namespace datamodel
 			return false;
 		}
 
-		loco->destinationReached();
+		loco->DestinationReached();
 		return true;
 	}
 

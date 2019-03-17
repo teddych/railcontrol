@@ -129,16 +129,16 @@ namespace datamodel
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 
-			bool start();
-			bool stop();
+			bool Start();
+			bool Stop();
 
-			bool toTrack(const trackID_t trackID);
-			bool toTrack(const trackID_t trackIDOld, const trackID_t trackIDNew);
+			bool ToTrack(const trackID_t trackID);
+			bool ToTrack(const trackID_t trackIDOld, const trackID_t trackIDNew);
 			bool Release();
 			trackID_t GetTrack() const { return trackID; }
 			streetID_t GetStreet() const { return streetID; }
-			const char* const getStateText() const;
-			void destinationReached();
+			const char* const GetStateText() const;
+			void DestinationReached();
 
 			void Speed(const locoSpeed_t speed) { this->speed = speed; }
 			const locoSpeed_t Speed() const { return speed; }
@@ -150,7 +150,7 @@ namespace datamodel
 			void SetDirection(const direction_t direction) { this->direction = direction; }
 			direction_t GetDirection() const { return direction; }
 
-			bool isInUse() const;
+			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackID != TrackNone || this->streetID != StreetNone; }
 
 			// FIXME: make private:
 			controlID_t controlID;
@@ -158,6 +158,8 @@ namespace datamodel
 			address_t address;
 
 		private:
+			void AutoMode(Loco* loco);
+
 			enum locoState_t : unsigned char
 			{
 				LocoStateManual = 0,
@@ -180,13 +182,5 @@ namespace datamodel
 			direction_t direction;
 
 			Logger::Logger* logger;
-
-			void autoMode(Loco* loco);
 	};
-
-	inline bool Loco::isInUse() const
-	{
-		return this->speed > 0 || this->state != LocoStateManual || this->trackID != TrackNone || this->streetID != StreetNone;
-	}
-
 } // namespace datamodel
