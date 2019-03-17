@@ -35,7 +35,6 @@ namespace console
 			void LocoIntoTrack(const locoID_t locoID, const trackID_t trackID) override;
 			void LocoRelease(const locoID_t locoID) override;
 			void StreetRelease(const streetID_t streetID) override;
-			void LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
 			void LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
 			void LocoStart(const locoID_t locoID) override;
 			void LocoStop(const locoID_t locoID) override;

@@ -101,7 +101,6 @@ class Manager {
 		const std::map<std::string,trackID_t> trackListIdByName() const;
 		trackID_t TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, const trackType_t trackType, std::vector<feedbackID_t> feedbacks, std::string& result);
 		bool TrackDelete(const trackID_t trackID);
-		bool TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t feedbackID, const feedbackState_t state, const std::string& locoName);
 
 		// switch
 		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state);
@@ -135,12 +134,14 @@ class Manager {
 		bool LocoIntoTrack(const locoID_t locoID, const trackID_t trackID);
 		bool LocoRelease(const locoID_t locoID);
 		bool TrackRelease(const trackID_t trackID);
+		bool TrackReleaseWithLoco(const trackID_t trackID);
 		bool TrackStartLoco(const trackID_t trackID);
 		bool TrackStopLoco(const trackID_t trackID);
+		void TrackPublishState(const trackID_t trackID);
+		void TrackPublishState(const datamodel::Track* track);
 		bool feedbackRelease(const feedbackID_t feedbackID);
 		bool StreetRelease(const streetID_t streetID);
 		//bool switchRelease(const switchID_t switchID);
-		bool LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID, const std::string& locoName);
 		bool LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID);
 		bool LocoStart(const locoID_t locoID);
 		bool LocoStop(const locoID_t locoID);

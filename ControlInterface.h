@@ -40,7 +40,6 @@ class ControlInterface
 		virtual void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) {};
 		virtual void LocoStart(const locoID_t locoID) {};
 		virtual void LocoStop(const locoID_t locoID) {};
-		virtual void LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) {};
 		virtual void StreetDelete(const streetID_t streetID, const std::string& name) {};
 		virtual void StreetRelease(const streetID_t streetID) {};
 		virtual void StreetSettings(const streetID_t streetID, const std::string& name) {};

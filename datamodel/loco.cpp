@@ -177,7 +177,6 @@ namespace datamodel
 
 					case LocoStateSearching:
 					{
-						logger->Info("Looking for new track for loco {0}", name);
 						// check if already running
 						if (streetID != StreetNone)
 						{
@@ -189,8 +188,18 @@ namespace datamodel
 						Track* fromTrack = manager->GetTrack(trackID);
 						if (!fromTrack)
 						{
+							loco->state = LocoStateOff;
+							logger->Info("Loco {0} is not on a track. Switching to manual mode.", name);
 							break;
 						}
+						if (fromTrack->objectID != trackID)
+						{
+							loco->state = LocoStateError;
+							logger->Error("Loco {0} thinks it is on track {1} but there is loco {2}. Going to error state.", name, fromTrack->Name(), manager->LocoName(fromTrack->GetLoco()));
+							break;
+						}
+						logger->Info("Looking for new track for loco {0} on track {1}.", name, fromTrack->Name());
+
 						// get best fitting destination and reserve street
 						vector<Street*> streets;
 						fromTrack->ValidStreets(streets);
@@ -220,7 +229,7 @@ namespace datamodel
 						}
 
 						// start loco
-						manager->LocoStreet(objectID, streetID, toTrackID, name);
+						manager->TrackPublishState(toTrackID);
 						// FIXME: make maxspeed configurable
 						manager->LocoSpeed(ControlTypeInternal, objectID, MaxSpeed >> 1);
 						loco->state = LocoStateRunning;
@@ -281,7 +290,7 @@ namespace datamodel
 	void Loco::DestinationReached()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		manager->LocoSpeed(ControlTypeInternal, objectID, 0);
+		manager->LocoSpeed(ControlTypeInternal, objectID, MinSpeed);
 		// set loco to new track
 		Street* street = manager->GetStreet(streetID);
 		Track* track = manager->GetTrack(trackID);
@@ -291,6 +300,7 @@ namespace datamodel
 			logger->Error("Loco {0} is running in automode without a street / track. Putting loco into error state", name);
 			return;
 		}
+
 		trackID = street->DestinationTrack();
 		manager->LocoDestinationReached(objectID, streetID, trackID);
 		// release old street & old track
@@ -300,6 +310,7 @@ namespace datamodel
 		// set state
 		state = (state == LocoStateRunning /* else is LocoStateStopping */ ? LocoStateSearching : LocoStateOff);
 		logger->Info("Loco {0} reached its destination", name);
+		manager->TrackPublishState(track);
 	}
 
 } // namespace datamodel

@@ -457,18 +457,23 @@ function dataUpdate(event)
 			}
 			if (argumentMap.has('loconame'))
 			{
-				var locoElement = document.getElementById(elementName + '_text_loconame');
+				var contextElement = document.getElementById(elementName + '_context');
 				var locoName = argumentMap.get('loconame');
 				if (locoName == '')
 				{
 					element.classList.remove('loco_known');
 					element.classList.add('loco_unknown');
+					contextElement.classList.remove('loco_known');
+					contextElement.classList.add('loco_unknown');
 				}
 				else
 				{
 					element.classList.remove('loco_unknown');
 					element.classList.add('loco_known');
+					contextElement.classList.remove('loco_unknown');
+					contextElement.classList.add('loco_known');
 				}
+				var locoElement = document.getElementById(elementName + '_text_loconame');
 				if (locoElement)
 				{
 					locoElement.innerHTML = locoName;

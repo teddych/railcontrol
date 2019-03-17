@@ -224,8 +224,9 @@ namespace datamodel
 		Feedback* feedback = manager->GetFeedback(feedbackIdStop);
 		if (feedback == nullptr)
 		{
-			feedback->SetLoco(LocoNone);
+			return true;
 		}
+		feedback->SetLoco(LocoNone);
 		return true;
 	}
 

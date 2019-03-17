@@ -42,7 +42,6 @@ namespace webserver
 			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;
 			void LocoStart(const locoID_t locoID) override;
 			void LocoStop(const locoID_t locoID) override;
-			void LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
 			void StreetDelete(const streetID_t streetID, const std::string& nam) override;
 			void StreetRelease(const streetID_t streetID) override;
 			void StreetSettings(const streetID_t streetID, const std::string& name) override;

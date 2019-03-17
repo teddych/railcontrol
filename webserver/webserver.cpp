@@ -282,16 +282,6 @@ namespace webserver {
 		status << manager.getStreetName(streetID) << " is  released";
 		AddUpdate(command.str(), status.str());
 	}
-	;
-
-	void WebServer::LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
-	{
-		stringstream command;
-		stringstream status;
-		command << "locoStreet;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		status << manager.LocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.GetTrackName(trackID);
-		AddUpdate(command.str(), status.str());
-	}
 
 	void WebServer::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{

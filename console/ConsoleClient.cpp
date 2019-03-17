@@ -819,7 +819,7 @@ namespace console
 	void ConsoleClient::HandleTrackRelease(string& s, size_t& i)
 	{
 		trackID_t trackID = ReadNumber(s, i);
-		if (!manager.TrackRelease(trackID))
+		if (!manager.TrackReleaseWithLoco(trackID))
 		{
 			SendAndPrompt("Track not found or track in use");
 			return;

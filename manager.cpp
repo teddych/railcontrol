@@ -1038,13 +1038,15 @@ void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t 
 	{
 		return;
 	}
-	feedback->SetState(state);
 	logger->Info("Feedback {0} is now {1}", feedback->Name(), (state ? "on" : "off"));
-	std::lock_guard<std::mutex> Guard(controlMutex);
-	for (auto control : controls)
 	{
-		control.second->FeedbackState(controlType, feedback->Name(), feedbackID, state);
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		for (auto control : controls)
+		{
+			control.second->FeedbackState(controlType, feedback->Name(), feedbackID, state);
+		}
 	}
+	feedback->SetState(state);
 }
 
 datamodel::Feedback* Manager::GetFeedback(feedbackID_t feedbackID) const
@@ -1430,31 +1432,6 @@ bool Manager::TrackDelete(const trackID_t trackID)
 	}
 	delete track;
 	return true;
-}
-
-bool Manager::TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t feedbackID, const feedbackState_t state, const string& locoName)
-{
-	if (trackID == TrackNone)
-	{
-		return false;
-	}
-	datamodel::Track* track = GetTrack(trackID);
-	if (track == nullptr)
-	{
-		return false;
-	}
-	bool ret = track->FeedbackState(feedbackID, state);
-	if (ret)
-	{
-		std::lock_guard<std::mutex> Guard(controlMutex);
-		for (auto control : controls)
-		{
-			control.second->TrackState(ControlTypeInternal, track->Name(), trackID, state, locoName);
-		}
-
-	}
-
-	return ret;
 }
 
 /***************************
@@ -2010,7 +1987,7 @@ bool Manager::LocoRelease(const locoID_t locoID)
 	streetID_t streetID = loco->GetStreet();
 	bool ret = LocoReleaseInternal(locoID);
 	ret &= StreetRelease(streetID);
-	ret &= TrackReleaseInternal(trackID);
+	ret &= TrackRelease(trackID);
 	return ret;
 }
 
@@ -2043,12 +2020,36 @@ bool Manager::TrackRelease(const trackID_t trackID)
 	{
 		return false;
 	}
+	return TrackReleaseInternal(track);
+}
+
+bool Manager::TrackReleaseWithLoco(const trackID_t trackID)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return false;
+	}
 	locoID_t locoID = track->GetLoco();
 	bool ret = LocoReleaseInternal(locoID);
 	ret &= TrackReleaseInternal(track);
 	return ret;
 }
 
+bool Manager::TrackReleaseInternal(Track* track)
+{
+	bool ret = track->Release(LocoNone);
+	if (ret == false)
+	{
+		return false;
+	}
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->TrackState(ControlTypeInternal, track->Name(), track->objectID, track->FeedbackState(), "");
+	}
+	return true;
+}
 bool Manager::TrackStartLoco(const trackID_t trackID)
 {
 	Track* track = GetTrack(trackID);
@@ -2069,30 +2070,26 @@ bool Manager::TrackStopLoco(const trackID_t trackID)
 	return LocoStop(track->GetLoco());
 }
 
-bool Manager::TrackReleaseInternal(const trackID_t trackID)
+void Manager::TrackPublishState(const trackID_t trackID)
 {
 	Track* track = GetTrack(trackID);
 	if (track == nullptr)
 	{
-		return false;
+		return;
 	}
-	return TrackReleaseInternal(track);
+	TrackPublishState(track);
 }
 
-bool Manager::TrackReleaseInternal(Track* track)
+void Manager::TrackPublishState(const datamodel::Track* track)
 {
-	bool ret = track->Release(LocoNone);
-	if (ret == false)
-	{
-		return false;
-	}
+	Loco* loco = GetLoco(track->GetLoco());
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackState(ControlTypeInternal, track->Name(), track->objectID, track->FeedbackState(), "");
+		control.second->TrackState(ControlTypeInternal, track->Name(), track->objectID, track->FeedbackState(), loco == nullptr ? "" : loco->Name());
 	}
-	return true;
 }
+
 bool Manager::feedbackRelease(const feedbackID_t feedbackID)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
@@ -2126,17 +2123,6 @@ bool Manager::switchRelease(const switchID_t switchID) {
 }
 */
 
-bool Manager::LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID, const string& locoName)
-{
-	const Track* track = GetTrack(trackID);
-	std::lock_guard<std::mutex> Guard(controlMutex);
-	for (auto control : controls)
-	{
-		control.second->LocoStreet(locoID, streetID, trackID);
-		control.second->TrackState(ControlTypeInternal, track->Name(), trackID, track->FeedbackState(), locoName);
-	}
-	return true;
-}
 bool Manager::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);

@@ -2356,7 +2356,7 @@ namespace webserver
 	void WebClient::handleTrackRelease(const map<string, string>& arguments)
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
-		bool ret = manager.TrackRelease(trackID);
+		bool ret = manager.TrackReleaseWithLoco(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Track released" : "Track not released"));
 	}
 

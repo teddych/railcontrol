@@ -65,23 +65,19 @@ namespace datamodel
 	{
 		this->state = static_cast<feedbackState_t>((state ^ inverted) & 0x01);
 
+		Track* track = manager->GetTrack(trackID);
+		if (track != nullptr)
+		{
+			track->FeedbackState(objectID, this->state);
+		}
+
 		Loco* loco = manager->GetLoco(locoID);
-
-		manager->TrackSetFeedbackState(trackID, this->objectID, this->state, loco == nullptr ? "" : loco->Name());
-
-		if (this->state == FeedbackStateFree)
+		if (loco != nullptr && this->state == FeedbackStateOccupied)
 		{
-			return true;
+			loco->DestinationReached();
 		}
 
-		if (loco == nullptr)
-		{
-			return false;
-		}
-
-		loco->DestinationReached();
 		return true;
 	}
-
 } // namespace datamodel
 

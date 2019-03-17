@@ -63,6 +63,13 @@ namespace datamodel
 
 	bool Track::FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
 	{
+		bool ret = FeedbackStateInternal(feedbackID, state);
+		manager->TrackPublishState(this);
+		return ret;
+	}
+
+	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state)
+	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (state != FeedbackStateFree)
 		{

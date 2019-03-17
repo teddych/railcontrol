@@ -69,6 +69,8 @@ namespace datamodel
 			}
 
 		private:
+			bool FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state);
+
 			Manager* manager;
 			trackType_t type;
 			std::vector<feedbackID_t> feedbacks;

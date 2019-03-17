@@ -162,13 +162,6 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
-	{
-		std::stringstream status;
-		status << manager.LocoName(locoID) << " runs on street " << manager.getStreetName(streetID) << " with destination track " << manager.GetTrackName(trackID);
-		AddUpdate(status.str());
-	}
-
 	void ConsoleServer::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		std::stringstream status;
