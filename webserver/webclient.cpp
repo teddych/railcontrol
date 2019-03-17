@@ -2093,7 +2093,8 @@ namespace webserver
 	void WebClient::handleStreetExecute(const map<string, string>& arguments)
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
-		manager.executeStreetInParallel(streetID);
+		manager.ExecuteStreetAsync(streetID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Street executed"));
 	}
 
 	void WebClient::handleStreetRelease(const map<string, string>& arguments)

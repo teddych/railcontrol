@@ -1649,7 +1649,7 @@ bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& cont
 * Street                   *
 ***************************/
 
-void Manager::executeStreet(const streetID_t streetID)
+void Manager::ExecuteStreet(const streetID_t streetID)
 {
 	Street* street = GetStreet(streetID);
 	if (street == nullptr)
@@ -1659,7 +1659,7 @@ void Manager::executeStreet(const streetID_t streetID)
 	street->Execute();
 }
 
-void Manager::executeStreetInParallel(const streetID_t streetID)
+void Manager::ExecuteStreetAsync(const streetID_t streetID)
 {
 	Street* street = GetStreet(streetID);
 	if (street == nullptr)
