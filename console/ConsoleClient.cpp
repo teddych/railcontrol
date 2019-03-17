@@ -1335,7 +1335,7 @@ namespace console
 
 		// list one street
 		streetID_t streetID = ReadNumber(s, i);
-		datamodel::Street* street = manager.getStreet(streetID);
+		datamodel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr)
 		{
 			SendAndPrompt("Unknown street");
@@ -1388,7 +1388,7 @@ namespace console
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		string result;
 		std::vector<datamodel::Relation*> relations;
-		if (!manager.streetSave(StreetNone, name, 250, relations, VisibleNo, 0, 0, 0, AutomodeNo, fromTrack, fromDirection, toTrack, toDirection, feedbackID, result))
+		if (!manager.StreetSave(StreetNone, name, 250, relations, VisibleNo, 0, 0, 0, AutomodeNo, fromTrack, fromDirection, toTrack, toDirection, feedbackID, result))
 		{
 			SendAndPrompt(result);
 			return;

@@ -1109,6 +1109,7 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 		// create new feedback
 		feedbackID_t newFeedbackID = 0;
 		// get next feedbackID
+		std::lock_guard<std::mutex> Guard(feedbackMutex);
 		for (auto feedback : feedbacks)
 		{
 			if (feedback.first > newFeedbackID)
@@ -1650,7 +1651,7 @@ bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& cont
 
 void Manager::executeStreet(const streetID_t streetID)
 {
-	Street* street = getStreet(streetID);
+	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
 		return;
@@ -1660,7 +1661,7 @@ void Manager::executeStreet(const streetID_t streetID)
 
 void Manager::executeStreetInParallel(const streetID_t streetID)
 {
-	Street* street = getStreet(streetID);
+	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
 		return;
@@ -1668,7 +1669,7 @@ void Manager::executeStreetInParallel(const streetID_t streetID)
 	std::async(std::launch::async, Street::ExecuteStatic, street);
 }
 
-Street* Manager::getStreet(const streetID_t streetID) const
+Street* Manager::GetStreet(const streetID_t streetID) const
 {
 	std::lock_guard<std::mutex> Guard(streetMutex);
 	if (streets.count(streetID) != 1)
@@ -1689,7 +1690,7 @@ const string& Manager::getStreetName(const streetID_t streetID) const
 
 bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
-	Street* street = getStreet(streetID);
+	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
 		return false;
@@ -1703,7 +1704,7 @@ bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPositio
 	return (street->posX == posX && street->posY == posY && street->posZ == posZ);
 }
 
-bool Manager::streetSave(const streetID_t streetID, const std::string& name, const delay_t delay, const std::vector<datamodel::Relation*>& relations, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, string& result)
+bool Manager::StreetSave(const streetID_t streetID, const std::string& name, const delay_t delay, const std::vector<datamodel::Relation*>& relations, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, string& result)
 {
 
 	if (visible && !CheckStreetPosition(streetID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
@@ -1714,53 +1715,66 @@ bool Manager::streetSave(const streetID_t streetID, const std::string& name, con
 		return false;
 	}
 
-	Street* street;
+	Street* street = GetStreet(streetID);
+	if (street != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(streetMutex);
-		if (streetID != StreetNone && streets.count(streetID))
+		// update existing street
+		// remove street from old track
+		Track* track = GetTrack(street->fromTrack);
+		if (track != nullptr)
 		{
-			// update existing street
-			street = streets.at(streetID);
-			if (street == nullptr)
+			track->RemoveStreet(street);
+			if (storage)
 			{
-				result.assign("Street does not exist");
-				return false;
+				storage->Save(*track);
 			}
-			street->name = name;
-			street->Delay(delay);
-			street->AssignRelations(relations);
-			street->visible = visible;
-			street->posX = posX;
-			street->posY = posY;
-			street->posZ = posZ;
-			street->automode = automode;
-			street->fromTrack = fromTrack;
-			street->fromDirection = fromDirection;
-			street->toTrack = toTrack;
-			street->toDirection = toDirection;
-			street->feedbackIdStop = feedbackID;
 		}
-		else
+		street->name = name;
+		street->Delay(delay);
+		street->AssignRelations(relations);
+		street->visible = visible;
+		street->posX = posX;
+		street->posY = posY;
+		street->posZ = posZ;
+		street->automode = automode;
+		street->fromTrack = fromTrack;
+		street->fromDirection = fromDirection;
+		street->toTrack = toTrack;
+		street->toDirection = toDirection;
+		street->feedbackIdStop = feedbackID;
+	}
+	else
+	{
+		// create new street
+		streetID_t newStreetID = 0;
+		// get next streetID
+		std::lock_guard<std::mutex> Guard(streetMutex);
+		for (auto street : streets)
 		{
-			// create new street
-			streetID_t newStreetID = 0;
-			// get next streetID
-			for (auto street : streets)
+			if (street.first > newStreetID)
 			{
-				if (street.first > newStreetID)
-				{
-					newStreetID = street.first;
-				}
+				newStreetID = street.first;
 			}
-			++newStreetID;
-			street = new Street(this, newStreetID, name, delay, relations, visible, posX, posY, posZ, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackID);
-			if (street == nullptr)
-			{
-				result.assign("Unable to allocate memory for street");
-				return false;
-			}
-			// save in map
-			streets[newStreetID] = street;
+		}
+		++newStreetID;
+		street = new Street(this, newStreetID, name, delay, relations, visible, posX, posY, posZ, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackID);
+		if (street == nullptr)
+		{
+			result.assign("Unable to allocate memory for street");
+			return false;
+		}
+		// save in map
+		streets[newStreetID] = street;
+	}
+
+	//Add new street
+	Track* track = GetTrack(fromTrack);
+	if (track != nullptr)
+	{
+		track->AddStreet(street);
+		if (storage)
+		{
+			storage->Save(*track);
 		}
 	}
 	// save in db
@@ -2086,13 +2100,13 @@ bool Manager::feedbackRelease(const feedbackID_t feedbackID)
 
 bool Manager::streetRelease(const streetID_t streetID)
 {
-	Street* street = getStreet(streetID);
+	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
 		return false;
 	}
 	locoID_t locoID = street->getLoco();
-	return street->release(locoID);
+	return street->Release(locoID);
 }
 
 /*

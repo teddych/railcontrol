@@ -1,4 +1,4 @@
-
+#include <algorithm>
 #include <map>
 #include <sstream>
 #include <string>
@@ -149,8 +149,10 @@ namespace datamodel
 	bool Track::RemoveStreet(Street* street)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		/* FIXME */
-		return false;
+		size_t sizeBefore = streets.size();
+		streets.erase(std::remove(streets.begin(), streets.end(), street), streets.end());
+		size_t sizeAfter = streets.size();
+		return sizeBefore > sizeAfter;
 	}
 
 	bool Track::ValidStreets(std::vector<Street*>& validStreets)

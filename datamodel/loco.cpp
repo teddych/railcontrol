@@ -197,9 +197,9 @@ namespace datamodel
 						trackID_t toTrackID = TrackNone;
 						for (auto street : streets)
 						{
-							if (street->reserve(objectID))
+							if (street->Reserve(objectID))
 							{
-								street->lock(objectID);
+								street->Lock(objectID);
 								streetID = street->objectID;
 								toTrackID = street->destinationTrack();
 								logger->Info("Loco \"{0}\" found street \"{1}\" with destination \"{2}\"", name, street->name, manager->getTrackName(toTrackID));
@@ -276,7 +276,7 @@ namespace datamodel
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 		// set loco to new track
-		Street* street = manager->getStreet(streetID);
+		Street* street = manager->GetStreet(streetID);
 		if (street == nullptr)
 		{
 			state = LocoStateError;
@@ -286,7 +286,7 @@ namespace datamodel
 		trackID = street->destinationTrack();
 		manager->locoDestinationReached(objectID, streetID, trackID);
 		// release old track & old street
-		street->release(objectID);
+		street->Release(objectID);
 		streetID = StreetNone;
 		// set state
 		if (state == LocoStateRunning)

@@ -142,7 +142,7 @@ namespace datamodel
 		return ret;
 	}
 
-	bool Street::reserve(const locoID_t locoID)
+	bool Street::Reserve(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (locoID == this->locoID)
@@ -154,7 +154,7 @@ namespace datamodel
 			return false;
 		}
 		Track* track = manager->GetTrack(toTrack);
-		if (!track)
+		if (track == nullptr)
 		{
 			return false;
 		}
@@ -167,7 +167,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Street::lock(const locoID_t locoID)
+	bool Street::Lock(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (lockState != LockStateReserved)
@@ -179,7 +179,7 @@ namespace datamodel
 			return false;
 		}
 		Track* track = manager->GetTrack(toTrack);
-		if (!track)
+		if (track == nullptr)
 		{
 			return false;
 		}
@@ -187,13 +187,18 @@ namespace datamodel
 		{
 			return false;
 		}
-		lockState = LockStateHardLocked;
 		Feedback* feedback = manager->GetFeedback(feedbackIdStop);
+		if (feedback == nullptr)
+		{
+			track->Release(locoID);
+			return false;
+		}
 		feedback->SetLoco(locoID);
+		lockState = LockStateHardLocked;
 		return true;
 	}
 
-	bool Street::release(const locoID_t locoID)
+	bool Street::Release(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (lockState == LockStateFree)
@@ -205,11 +210,18 @@ namespace datamodel
 			return false;
 		}
 		Track* track = manager->GetTrack(fromTrack);
-		track->Release(locoID);
+		if (track != nullptr)
+		{
+			track->Release(locoID);
+		}
 		this->locoID = LocoNone;
 		lockState = LockStateFree;
+
 		Feedback* feedback = manager->GetFeedback(feedbackIdStop);
-		feedback->SetLoco(LocoNone);
+		if (feedback == nullptr)
+		{
+			feedback->SetLoco(LocoNone);
+		}
 		return true;
 	}
 

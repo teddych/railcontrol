@@ -1839,7 +1839,7 @@ namespace webserver
 	void WebClient::handleStreetGet(const map<string, string>& arguments)
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street");
-		const datamodel::Street* street = manager.getStreet(streetID);
+		const datamodel::Street* street = manager.GetStreet(streetID);
 		if (street->visible == VisibleNo)
 		{
 			HtmlReplyWithHeader(HtmlTag());
@@ -1867,7 +1867,7 @@ namespace webserver
 		feedbackID_t feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
 		if (streetID > StreetNone)
 		{
-			const datamodel::Street* street = manager.getStreet(streetID);
+			const datamodel::Street* street = manager.GetStreet(streetID);
 			name = street->name;
 			delay = street->Delay();
 			relations = street->GetRelations();
@@ -2003,7 +2003,7 @@ namespace webserver
 		}
 
 		string result;
-		if (!manager.streetSave(streetID, name, delay, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdStop, result))
+		if (!manager.StreetSave(streetID, name, delay, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdStop, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -2021,7 +2021,7 @@ namespace webserver
 			return;
 		}
 
-		const datamodel::Street* street = manager.getStreet(streetID);
+		const datamodel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown street");
@@ -2043,7 +2043,7 @@ namespace webserver
 	void WebClient::handleStreetDelete(const map<string, string>& arguments)
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
-		const datamodel::Street* street = manager.getStreet(streetID);
+		const datamodel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete street");
