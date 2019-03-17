@@ -1432,7 +1432,7 @@ bool Manager::TrackDelete(const trackID_t trackID)
 	return true;
 }
 
-bool Manager::TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t feedbackID, const feedbackState_t state)
+bool Manager::TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t feedbackID, const feedbackState_t state, const string& locoName)
 {
 	if (trackID == TrackNone)
 	{
@@ -1449,7 +1449,7 @@ bool Manager::TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t 
 		std::lock_guard<std::mutex> Guard(controlMutex);
 		for (auto control : controls)
 		{
-			control.second->TrackState(ControlTypeInternal, track->Name(), trackID, state);
+			control.second->TrackState(ControlTypeInternal, track->Name(), trackID, state, locoName);
 		}
 
 	}
@@ -2083,7 +2083,7 @@ bool Manager::TrackReleaseInternal(const trackID_t trackID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackRelease(trackID);
+		control.second->TrackState(ControlTypeInternal, track->Name(), trackID, track->FeedbackState(), "");
 	}
 	return true;
 }

@@ -168,14 +168,22 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::TrackState(const controlType_t controlType, const string& name, const trackID_t trackID, const feedbackState_t state)
+	void WebServer::TrackState(const controlType_t controlType, const string& name, const trackID_t trackID, const feedbackState_t state, const string& locoName)
 	{
 		stringstream command;
 		stringstream status;
 		string stateText;
 		text::Converters::feedbackStatus(state, stateText);
-		command << "trackstate;track=" << trackID << ";state=" << stateText;
-		status << name << " is " << stateText;
+		command << "trackstate;track=" << trackID << ";state=" << stateText << ";loconame=" << locoName;
+		status << name << " is " << stateText << " ";
+		if (locoName.length() > 0)
+		{
+			if (state != FeedbackStateOccupied)
+			{
+				status << "but reserved ";
+			}
+			status << "by " << locoName;
+		}
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -265,17 +273,6 @@ namespace webserver {
 		status << manager.LocoName(locoID) << " is not on a track anymore";
 		AddUpdate(command.str(), status.str());
 	}
-	;
-
-	void WebServer::TrackRelease(const trackID_t trackID)
-	{
-		stringstream command;
-		stringstream status;
-		command << "trackrelease;track=" << trackID;
-		status << manager.getTrackName(trackID) << " is released";
-		AddUpdate(command.str(), status.str());
-	}
-	;
 
 	void WebServer::StreetRelease(const streetID_t streetID)
 	{

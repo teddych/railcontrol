@@ -64,17 +64,19 @@ namespace datamodel
 	bool Feedback::SetState(const feedbackState_t state)
 	{
 		this->state = static_cast<feedbackState_t>((state ^ inverted) & 0x01);
-		manager->TrackSetFeedbackState(trackID, this->objectID, this->state);
+
+		Loco* loco = manager->GetLoco(locoID);
+
+		manager->TrackSetFeedbackState(trackID, this->objectID, this->state, loco == nullptr ? "" : loco->Name());
 
 		if (this->state == FeedbackStateFree)
 		{
 			return true;
 		}
 
-		Loco* loco = manager->GetLoco(locoID);
 		if (loco == nullptr)
 		{
-			return true;
+			return false;
 		}
 
 		loco->destinationReached();

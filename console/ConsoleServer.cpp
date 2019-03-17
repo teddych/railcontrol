@@ -119,12 +119,12 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::TrackState(const controlType_t controlType, const string& name, const trackID_t trackID, const feedbackState_t state)
+	void ConsoleServer::TrackState(const controlType_t controlType, const string& name, const trackID_t trackID, const feedbackState_t state, const string& locoName)
 	{
 		std::stringstream status;
 		string stateText;
 		text::Converters::feedbackStatus(state, stateText);
-		status << name << " is " << stateText;
+		status << name << " is " << stateText << " with loco " << locoName;
 		AddUpdate(status.str());
 	}
 
@@ -152,13 +152,6 @@ namespace console
 	{
 		stringstream status;
 		status << manager.LocoName(locoID) << " is not in a track anymore";
-		AddUpdate(status.str());
-	};
-
-	void ConsoleServer::TrackRelease(const trackID_t trackID)
-	{
-		stringstream status;
-		status << manager.getTrackName(trackID) << " is released";
 		AddUpdate(status.str());
 	};
 

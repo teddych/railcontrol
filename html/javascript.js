@@ -439,22 +439,44 @@ function dataUpdate(event)
 	{
 		elementName = 't_' + argumentMap.get('track');
 		var element = document.getElementById(elementName);
-		if (element && argumentMap.has('state'))
+		if (element)
 		{
-			var state = argumentMap.get('state');
-			if (state == 'occupied')
+			if (argumentMap.has('state'))
 			{
-				element.classList.remove('track_free');
-				element.classList.add('track_occupied');
+				var state = argumentMap.get('state');
+				if (state == 'occupied')
+				{
+					element.classList.remove('track_free');
+					element.classList.add('track_occupied');
+				}
+				else
+				{
+					element.classList.remove('track_occupied');
+					element.classList.add('track_free');
+				}
 			}
-			else
+			if (argumentMap.has('loconame'))
 			{
-				element.classList.remove('track_occupied');
-				element.classList.add('track_free');
+				var locoElement = document.getElementById(elementName + '_text_loconame');
+				var locoName = argumentMap.get('loconame');
+				if (locoName == '')
+				{
+					element.classList.remove('loco_known');
+					element.classList.add('loco_unknown');
+				}
+				else
+				{
+					element.classList.remove('loco_unknown');
+					element.classList.add('loco_known');
+				}
+				if (locoElement)
+				{
+					locoElement.innerHTML = locoName;
+				}
 			}
 		}
 	}
-	else if (command == 'tracksettings' || command == 'trackrelease')
+	else if (command == 'tracksettings')
 	{
 		updateTrack(argumentMap.get('track'));
 	}

@@ -101,7 +101,7 @@ class Manager {
 		const std::map<std::string,trackID_t> trackListIdByName() const;
 		trackID_t TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, const trackType_t trackType, std::vector<feedbackID_t> feedbacks, std::string& result);
 		bool TrackDelete(const trackID_t trackID);
-		bool TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t feedbackID, const feedbackState_t state);
+		bool TrackSetFeedbackState(const trackID_t trackID, const feedbackID_t feedbackID, const feedbackState_t state, const std::string& locoName);
 
 		// switch
 		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state);
