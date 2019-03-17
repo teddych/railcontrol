@@ -74,6 +74,7 @@ namespace webserver
 			void handleLocoList(const std::map<std::string, std::string>& arguments);
 			void handleLocoAskDelete(const std::map<std::string, std::string>& arguments);
 			void handleLocoDelete(const std::map<std::string, std::string>& arguments);
+			void handleLocoRelease(const std::map<std::string, std::string>& arguments);
 			void handleProtocolLoco(const std::map<std::string, std::string>& arguments);
 			void handleProtocolAccessory(const std::map<std::string, std::string>& arguments);
 			void handleProtocolSwitch(const std::map<std::string, std::string>& arguments);

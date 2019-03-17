@@ -217,6 +217,10 @@ namespace webserver
 			{
 				handleLocoDelete(arguments);
 			}
+			else if (arguments["cmd"].compare("locorelease") == 0)
+			{
+				handleLocoRelease(arguments);
+			}
 			else if (arguments["cmd"].compare("accessoryedit") == 0)
 			{
 				handleAccessoryEdit(arguments);
@@ -976,6 +980,13 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
+	void WebClient::handleLocoRelease(const map<string, string>& arguments)
+	{
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco");
+		bool ret = manager.LocoRelease(locoID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco released" : "Loco not released"));
+	}
+
 	HtmlTag WebClient::HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol)
 	{
 		HtmlTag content;
@@ -1336,6 +1347,10 @@ namespace webserver
 			locoArgument["loco"] = locoIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "locoaskdelete_" + locoIdString, locoArgument)));
+			if (loco.second->GetTrack() != TrackNone || loco.second->GetStreet() != StreetNone)
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "locorelease_" + locoIdString, locoArgument)));
+			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));

@@ -2007,8 +2007,9 @@ bool Manager::LocoRelease(const locoID_t locoID)
 		return false;
 	}
 	trackID_t trackID = loco->GetTrack();
-	// FIXME: streetID_t streetID = loco->GetStreet();
+	streetID_t streetID = loco->GetStreet();
 	bool ret = LocoReleaseInternal(locoID);
+	ret &= StreetRelease(streetID);
 	ret &= TrackReleaseInternal(trackID);
 	return ret;
 }
