@@ -1401,7 +1401,7 @@ namespace console
 	void ConsoleClient::HandleStreetRelease(string& s, size_t& i)
 	{
 		streetID_t streetID = ReadNumber(s, i);
-		if (!manager.streetRelease(streetID))
+		if (!manager.StreetRelease(streetID))
 		{
 			SendAndPrompt("Street not found or track in use");
 			return;

@@ -138,10 +138,10 @@ class Manager {
 		bool TrackStartLoco(const trackID_t trackID);
 		bool TrackStopLoco(const trackID_t trackID);
 		bool feedbackRelease(const feedbackID_t feedbackID);
-		bool streetRelease(const streetID_t streetID);
+		bool StreetRelease(const streetID_t streetID);
 		//bool switchRelease(const switchID_t switchID);
 		bool LocoStreet(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID, const std::string& locoName);
-		bool locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID);
+		bool LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID);
 		bool LocoStart(const locoID_t locoID);
 		bool LocoStop(const locoID_t locoID);
 		bool locoStartAll();

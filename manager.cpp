@@ -2103,7 +2103,7 @@ bool Manager::feedbackRelease(const feedbackID_t feedbackID)
 	return feedback->Release(locoID);
 }
 
-bool Manager::streetRelease(const streetID_t streetID)
+bool Manager::StreetRelease(const streetID_t streetID)
 {
 	Street* street = GetStreet(streetID);
 	if (street == nullptr)
@@ -2136,7 +2136,7 @@ bool Manager::LocoStreet(const locoID_t locoID, const streetID_t streetID, const
 	}
 	return true;
 }
-bool Manager::locoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
+bool Manager::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)

@@ -301,6 +301,10 @@ namespace webserver
 			{
 				handleStreetExecute(arguments);
 			}
+			else if (arguments["cmd"].compare("streetrelease") == 0)
+			{
+				handleStreetRelease(arguments);
+			}
 			else if (arguments["cmd"].compare("trackedit") == 0)
 			{
 				handleTrackEdit(arguments);
@@ -2074,6 +2078,10 @@ namespace webserver
 			streetArgument["street"] = streetIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "streetedit_list_" + streetIdString, streetArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "streetaskdelete_" + streetIdString, streetArgument)));
+			if (street.second->GetState() != LockStateFree)
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "streetrelease_" + streetIdString, streetArgument)));
+			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
@@ -2086,6 +2094,13 @@ namespace webserver
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
 		manager.executeStreetInParallel(streetID);
+	}
+
+	void WebClient::handleStreetRelease(const map<string, string>& arguments)
+	{
+		streetID_t streetID = GetIntegerMapEntry(arguments, "street");
+		bool ret = manager.StreetRelease(streetID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Street released" : "Street not released"));
 	}
 
 	void WebClient::handleTrackEdit(const map<string, string>& arguments)

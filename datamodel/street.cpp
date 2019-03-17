@@ -162,6 +162,9 @@ namespace datamodel
 		{
 			return false;
 		}
+
+		// FIXME: Reserve also relation objects
+
 		lockState = LockStateReserved;
 		this->locoID = locoID;
 		return true;
@@ -187,6 +190,9 @@ namespace datamodel
 		{
 			return false;
 		}
+
+		// FIXME: Lock also relation objects
+
 		Feedback* feedback = manager->GetFeedback(feedbackIdStop);
 		if (feedback == nullptr)
 		{
@@ -209,11 +215,9 @@ namespace datamodel
 		{
 			return false;
 		}
-		Track* track = manager->GetTrack(fromTrack);
-		if (track != nullptr)
-		{
-			track->Release(locoID);
-		}
+
+		// FIXME: Release also relation objects
+
 		this->locoID = LocoNone;
 		lockState = LockStateFree;
 

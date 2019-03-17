@@ -284,26 +284,21 @@ namespace datamodel
 		manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 		// set loco to new track
 		Street* street = manager->GetStreet(streetID);
-		if (street == nullptr)
+		Track* track = manager->GetTrack(trackID);
+		if (street == nullptr || track == nullptr)
 		{
 			state = LocoStateError;
-			logger->Error("Loco {0} is running in automode without a street. Putting loco into error state", name);
+			logger->Error("Loco {0} is running in automode without a street / track. Putting loco into error state", name);
 			return;
 		}
 		trackID = street->DestinationTrack();
-		manager->locoDestinationReached(objectID, streetID, trackID);
-		// release old track & old street
+		manager->LocoDestinationReached(objectID, streetID, trackID);
+		// release old street & old track
 		street->Release(objectID);
+		track->Release(objectID);
 		streetID = StreetNone;
 		// set state
-		if (state == LocoStateRunning)
-		{
-			state = LocoStateSearching;
-		}
-		else
-		{ // LOCO_STATE_STOPPING
-			state = LocoStateOff;
-		}
+		state = (state == LocoStateRunning /* else is LocoStateStopping */ ? LocoStateSearching : LocoStateOff);
 		logger->Info("Loco {0} reached its destination", name);
 	}
 

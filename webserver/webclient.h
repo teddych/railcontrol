@@ -99,6 +99,7 @@ namespace webserver
 			void handleStreetDelete(const std::map<std::string,std::string>& arguments);
 			void handleStreetGet(const std::map<std::string,std::string>& arguments);
 			void handleStreetExecute(const std::map<std::string,std::string>& arguments);
+			void handleStreetRelease(const std::map<std::string,std::string>& arguments);
 			void handleTrackEdit(const std::map<std::string,std::string>& arguments);
 			void handleTrackSave(const std::map<std::string,std::string>& arguments);
 			void handleTrackList(const std::map<std::string, std::string>& arguments);
