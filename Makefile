@@ -21,6 +21,7 @@ OBJ= \
 	datamodel/accessory.o \
 	datamodel/feedback.o \
 	datamodel/layout_item.o \
+	datamodel/LockableItem.o \
 	datamodel/loco.o \
 	datamodel/object.o \
 	datamodel/relation.o \

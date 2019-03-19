@@ -25,12 +25,12 @@ namespace datamodel
 			feedbackString += std::to_string(feedback);
 		}
 		std::stringstream ss;
-		ss << "objectType=Track;" << LayoutItem::Serialize()
+		ss << "objectType=Track;"
+			<< LayoutItem::Serialize()
+			<< LockableItem::Serialize()
 			<< ";type=" << static_cast<int>(type)
 			<< ";feedbacks=" << feedbackString
 			<< ";state=" << static_cast<int>(state)
-			<< ";lockState=" << static_cast<int>(lockState)
-			<< ";locoID=" << static_cast<int>(locoID)
 			<< ";locoDirection=" << static_cast<int>(locoDirection);
 		return ss.str();
 	}
@@ -40,6 +40,7 @@ namespace datamodel
 		map<string, string> arguments;
 		parseArguments(serialized, arguments);
 		LayoutItem::Deserialize(arguments);
+		LockableItem::Deserialize(arguments);
 		width = Width1;
 		visible = VisibleYes;
 		if (!arguments.count("objectType") || arguments.at("objectType").compare("Track") != 0)
@@ -55,8 +56,6 @@ namespace datamodel
 			feedbacks.push_back(Util::StringToInteger(feedbackString));
 		}
 		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
-		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
-		locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));
 		return true;
 	}
@@ -70,6 +69,13 @@ namespace datamodel
 
 	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state)
 	{
+
+		Loco* loco = manager->GetLoco(GetLoco());
+		if (loco != nullptr && state == FeedbackStateOccupied)
+		{
+			loco->DestinationReached(feedbackID);
+		}
+
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (state != FeedbackStateFree)
 		{
@@ -89,53 +95,6 @@ namespace datamodel
 			}
 		}
 		this->state = FeedbackStateFree;
-		return true;
-	}
-
-	bool Track::Reserve(const locoID_t locoID)
-	{
-		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (locoID == this->locoID)
-		{
-			if (lockState == LockStateFree)
-			{
-				lockState = LockStateReserved;
-			}
-			return true;
-		}
-		if (lockState != LockStateFree)
-		{
-			return false;
-		}
-		lockState = LockStateReserved;
-		this->locoID = locoID;
-		return true;
-	}
-
-	bool Track::Lock(const locoID_t locoID)
-	{
-		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LockStateReserved)
-		{
-			return false;
-		}
-		if (this->locoID != locoID)
-		{
-			return false;
-		}
-		lockState = LockStateHardLocked;
-		return true;
-	}
-
-	bool Track::Release(const locoID_t locoID)
-	{
-		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (this->locoID != locoID && locoID != LocoNone)
-		{
-			return false;
-		}
-		this->locoID = LocoNone;
-		lockState = LockStateFree;
 		return true;
 	}
 

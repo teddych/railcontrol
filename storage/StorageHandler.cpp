@@ -330,7 +330,7 @@ namespace storage {
 			vector<Relation*> relations;
 			for (auto relationString : relationsString)
 			{
-				relations.push_back(new Relation(relationString));
+				relations.push_back(new Relation(manager, relationString));
 			}
 			street->AssignRelations(relations);
 			streets[street->objectID] = street;

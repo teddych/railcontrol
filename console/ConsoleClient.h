@@ -73,7 +73,6 @@ namespace console
 			void HandleFeedbackList(std::string& s, size_t& i);
 			void HandleFeedbackNew(std::string& s, size_t& i);
 			void HandleFeedbackSet(std::string& s, size_t& i);
-			void HandleFeedbackRelease(std::string& s, size_t& i);
 			void HandleLocoAutomode(std::string& s, size_t& i);
 			void HandleLocoTrack(std::string& s, size_t& i);
 			void HandleLocoDelete(std::string& s, size_t& i);

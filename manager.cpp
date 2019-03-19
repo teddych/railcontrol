@@ -2044,17 +2044,6 @@ void Manager::TrackPublishState(const datamodel::Track* track)
 	}
 }
 
-bool Manager::FeedbackRelease(const feedbackID_t feedbackID)
-{
-	Feedback* feedback = GetFeedback(feedbackID);
-	if (feedback == nullptr)
-	{
-		return false;
-	}
-	locoID_t locoID = feedback->GetLoco();
-	return feedback->Release(locoID);
-}
-
 bool Manager::StreetRelease(const streetID_t streetID)
 {
 	Street* street = GetStreet(streetID);

@@ -107,8 +107,10 @@ namespace datamodel
 				manager(manager),
 				speed(0),
 				state(LocoStateManual),
-				trackID(TrackNone),
+				fromTrackID(TrackNone),
+				toTrackID(TrackNone),
 				streetID(StreetNone),
+				feedbackIdStop(FeedbackNone),
 				direction(DirectionLeft)
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
@@ -118,7 +120,8 @@ namespace datamodel
 			:	manager(manager),
 				speed(0),
 				state(LocoStateManual),
-				streetID(StreetNone)
+				streetID(StreetNone),
+				feedbackIdStop(FeedbackNone)
 			{
 				Deserialize(serialized);
 				logger = Logger::Logger::GetLogger("Loco " + name);
@@ -133,12 +136,11 @@ namespace datamodel
 			bool Stop();
 
 			bool ToTrack(const trackID_t trackID);
-			bool ToTrack(const trackID_t trackIDOld, const trackID_t trackIDNew);
 			bool Release();
-			trackID_t GetTrack() const { return trackID; }
+			trackID_t GetTrack() const { return toTrackID; }
 			streetID_t GetStreet() const { return streetID; }
 			const char* const GetStateText() const;
-			void DestinationReached();
+			void DestinationReached(const feedbackID_t feedbackID);
 
 			void Speed(const locoSpeed_t speed) { this->speed = speed; }
 			const locoSpeed_t Speed() const { return speed; }
@@ -150,7 +152,7 @@ namespace datamodel
 			void SetDirection(const direction_t direction) { this->direction = direction; }
 			direction_t GetDirection() const { return direction; }
 
-			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackID != TrackNone || this->streetID != StreetNone; }
+			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->toTrackID != TrackNone || this->streetID != StreetNone; }
 
 			// FIXME: make private:
 			controlID_t controlID;
@@ -159,6 +161,7 @@ namespace datamodel
 
 		private:
 			void AutoMode(Loco* loco);
+			void SearchDestination();
 
 			enum locoState_t : unsigned char
 			{
@@ -173,8 +176,11 @@ namespace datamodel
 			Manager* manager;
 			locoSpeed_t speed;
 			locoState_t state;
-			trackID_t trackID;
+			trackID_t fromTrackID;
+			trackID_t toTrackID;
 			streetID_t streetID;
+			feedbackID_t feedbackIdStop;
+
 			std::mutex stateMutex;
 			std::thread locoThread;
 

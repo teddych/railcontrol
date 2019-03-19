@@ -6,12 +6,13 @@
 
 #include "datatypes.h"
 #include "layout_item.h"
+#include "LockableItem.h"
 #include "serializable.h"
 #include "street.h"
 
 namespace datamodel
 {
-	class Track : public LayoutItem
+	class Track : public LayoutItem, public LockableItem
 	{
 		public:
 			Track(Manager* manager,
@@ -25,12 +26,11 @@ namespace datamodel
 				const trackType_t type,
 				const std::vector<feedbackID_t>& feedbacks)
 			:	LayoutItem(trackID, name, VisibleYes, x, y, z, Width1, height, rotation),
+			 	LockableItem(LockStateFree),
 			 	manager(manager),
 				type(type),
 				feedbacks(feedbacks),
 				state(FeedbackStateFree),
-				lockState(LockStateFree),
-			 	locoID(LocoNone),
 			 	locoDirection(DirectionLeft)
 			{
 			}
@@ -52,21 +52,10 @@ namespace datamodel
 			bool FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state);
 			feedbackState_t FeedbackState() const { return state; };
 
-			bool Reserve(const locoID_t locoID);
-			bool Lock(const locoID_t locoID);
-			bool Release(const locoID_t locoID);
-			locoID_t GetLoco() const { return locoID; }
-			lockState_t GetLockState() const { return lockState; }
-
 			bool AddStreet(Street* street);
 			bool RemoveStreet(Street* street);
 
 			bool ValidStreets(std::vector<Street*>& validStreets);
-
-			bool IsInUse() const
-			{
-				return this->lockState != LockStateFree || this->locoID != LocoNone;
-			}
 
 		private:
 			bool FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state);
@@ -75,10 +64,7 @@ namespace datamodel
 			trackType_t type;
 			std::vector<feedbackID_t> feedbacks;
 			feedbackState_t state;
-			lockState_t lockState;
-			locoID_t locoID;
 			direction_t locoDirection;
-			std::mutex updateMutex;
 			std::vector<Street*> streets;
 	};
 } // namespace datamodel

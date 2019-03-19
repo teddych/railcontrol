@@ -6,21 +6,24 @@
 #include "datatypes.h"
 #include "serializable.h"
 
+class Manager;
+
 namespace datamodel
 {
-
 	class Relation : protected Serializable
 	{
 		public:
-			Relation(const objectType_t objectType1,
+			Relation(Manager* manager,
+				const objectType_t objectType1,
 				const objectID_t objectID1,
 				const objectType_t objectType2,
 				const objectID_t objectID2,
 				const priority_t priority,
 				const accessoryState_t accessoryState,
 				const lockState_t lockState)
-			:	objectType1(objectType1),
-				objectID1(objectID1),
+			:	manager(manager),
+				objectType1(objectType1),
+			 	objectID1(objectID1),
 				objectType2(objectType2),
 				objectID2(objectID2),
 				priority(priority),
@@ -28,8 +31,10 @@ namespace datamodel
 				lockState(lockState)
 			{}
 
-			Relation(const std::string& serialized)
-			:	accessoryState(AccessoryStateOff),
+			Relation(Manager* manager,
+				const std::string& serialized)
+			:	manager(manager),
+				accessoryState(AccessoryStateOff),
 				lockState(LockStateFree)
 			{
 				Deserialize(serialized);
@@ -43,11 +48,13 @@ namespace datamodel
 			priority_t Priority() { return priority; }
 			accessoryState_t AccessoryState() { return accessoryState; }
 			lockState_t LockState() { return lockState; }
-
-		protected:
-			virtual bool deserialize(const std::map<std::string,std::string>& arguments);
+			bool Reserve(const locoID_t locoID);
+			bool Lock(const locoID_t locoID);
+			bool Release(const locoID_t locoID);
+			bool Execute();
 
 		private:
+			Manager* manager;
 			objectType_t objectType1;
 			objectID_t objectID1;
 			objectType_t objectType2;

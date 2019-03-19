@@ -11,7 +11,6 @@ class Manager;
 
 namespace datamodel
 {
-
 	class Street : public LayoutItem
 	{
 		public:
@@ -60,6 +59,8 @@ namespace datamodel
 			trackID_t DestinationTrack() const { return toTrack; };
 
 		private:
+			void ReleaseInternal(const locoID_t locoID);
+
 			delay_t delay;
 
 		public:

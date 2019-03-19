@@ -39,44 +39,16 @@ namespace datamodel
 		return true;
 	}
 
-	bool Feedback::Release(const locoID_t locoID)
+	bool Feedback::SetState(const feedbackState_t newState)
 	{
-		if (locoID != this->locoID)
-		{
-			return false;
-		}
-		this->locoID = LocoNone;
-		return true;
-	}
-
-	bool Feedback::SetLoco(const locoID_t locoID)
-	{
-		// FIXME: should check if already a loco is set / basically is done by street
-		/*
-		if (locoID == LOCO_NONE) {
-			return false;
-		}
-		*/
-		this->locoID = locoID;
-		return true;
-	}
-
-	bool Feedback::SetState(const feedbackState_t state)
-	{
-		this->state = static_cast<feedbackState_t>((state ^ inverted) & 0x01);
+		state = static_cast<feedbackState_t>(newState != inverted);
 
 		Track* track = manager->GetTrack(trackID);
-		if (track != nullptr)
+		if (track == nullptr)
 		{
-			track->FeedbackState(objectID, this->state);
+			return true;
 		}
-
-		Loco* loco = manager->GetLoco(locoID);
-		if (loco != nullptr && this->state == FeedbackStateOccupied)
-		{
-			loco->DestinationReached();
-		}
-
+		track->FeedbackState(objectID, state);
 		return true;
 	}
 } // namespace datamodel

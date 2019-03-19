@@ -123,20 +123,7 @@ namespace datamodel
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto relation : relations)
 		{
-			switch (relation->ObjectType2())
-			{
-				case ObjectTypeAccessory:
-					manager->AccessoryState(ControlTypeInternal, relation->ObjectID2(), relation->AccessoryState());
-					break;
-
-				case ObjectTypeSwitch:
-					manager->SwitchState(ControlTypeInternal, relation->ObjectID2(), relation->AccessoryState());
-					break;
-
-				default:
-					ret = false;
-					break;
-			}
+			ret &= relation->Execute();
 			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		}
 		return ret;
@@ -145,26 +132,29 @@ namespace datamodel
 	bool Street::Reserve(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (locoID == this->locoID)
-		{
-			return true;
-		}
-		if (lockState != LockStateFree)
+		if ((this->locoID != LocoNone && this->locoID != locoID)
+			|| (lockState != LockStateFree && lockState != LockStateReserved))
 		{
 			return false;
 		}
+
+		bool ret = true;
+		for (auto relation : relations)
+		{
+			ret &= relation->Reserve(locoID);
+		}
+		if (ret == false)
+		{
+			ReleaseInternal(locoID);
+			return false;
+		}
+
 		Track* track = manager->GetTrack(toTrack);
-		if (track == nullptr)
+		if (track == nullptr || track->Reserve(locoID) == false)
 		{
+			ReleaseInternal(locoID);
 			return false;
 		}
-		if (!track->Reserve(locoID))
-		{
-			return false;
-		}
-
-		// FIXME: Reserve also relation objects
-
 		lockState = LockStateReserved;
 		this->locoID = locoID;
 		return true;
@@ -173,33 +163,29 @@ namespace datamodel
 	bool Street::Lock(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LockStateReserved)
+		if (lockState != LockStateReserved || this->locoID != locoID)
 		{
 			return false;
 		}
-		if (this->locoID != locoID)
+
+		bool ret = true;
+		for (auto relation : relations)
 		{
+			ret &= relation->Lock(locoID);
+		}
+		if (ret == false)
+		{
+			ReleaseInternal(locoID);
 			return false;
 		}
+
 		Track* track = manager->GetTrack(toTrack);
-		if (track == nullptr)
+		if (track == nullptr || track->Lock(locoID) == false)
 		{
-			return false;
-		}
-		if (!track->Lock(locoID))
-		{
+			ReleaseInternal(locoID);
 			return false;
 		}
 
-		// FIXME: Lock also relation objects
-
-		Feedback* feedback = manager->GetFeedback(feedbackIdStop);
-		if (feedback == nullptr)
-		{
-			track->Release(locoID);
-			return false;
-		}
-		feedback->SetLoco(locoID);
 		lockState = LockStateHardLocked;
 		return true;
 	}
@@ -207,28 +193,24 @@ namespace datamodel
 	bool Street::Release(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState == LockStateFree)
-		{
-			return true;
-		}
-		if (this->locoID != locoID)
+		if (this->locoID != locoID && locoID != LocoNone)
 		{
 			return false;
 		}
 
-		// FIXME: Release also relation objects
-
-		this->locoID = LocoNone;
-		lockState = LockStateFree;
-
-		Feedback* feedback = manager->GetFeedback(feedbackIdStop);
-		if (feedback == nullptr)
-		{
-			return true;
-		}
-		feedback->SetLoco(LocoNone);
+		ReleaseInternal(locoID);
 		return true;
 	}
 
+	void Street::ReleaseInternal(const locoID_t locoID)
+	{
+		for (auto relation : relations)
+		{
+			relation->Release(locoID);
+		}
+
+		this->locoID = LocoNone;
+		lockState = LockStateFree;
+	}
 } // namespace datamodel
 

@@ -544,11 +544,6 @@ namespace console
 				HandleFeedbackSet(s, i);
 				break;
 
-			case 'r':
-			case 'R':
-				HandleFeedbackRelease(s, i);
-				break;
-
 			default:
 				SendAndPrompt("Unknown feedback command");
 		}
@@ -943,15 +938,6 @@ namespace console
 		string stateText;
 		text::Converters::feedbackStatus(feedback->GetState(), stateText);
 		status << "\nStatus:   " << stateText;
-		status << "\nLoco:     ";
-		if (feedback->GetLoco() == LocoNone)
-		{
-			status << "-";
-		}
-		else
-		{
-			status << manager.LocoName(feedback->GetLoco()) << " (" << feedback->GetLoco() << ")";
-		}
 		SendAndPrompt(status.str());
 	}
 
@@ -995,17 +981,6 @@ namespace console
 		stringstream status;
 		status << "Feedback \"" << manager.GetFeedbackName(feedbackID) << "\" turned " << text;
 		SendAndPrompt(status.str());
-	}
-
-	void ConsoleClient::HandleFeedbackRelease(string& s, size_t& i)
-	{
-		feedbackID_t feedbackID = ReadNumber(s, i);
-		if (!manager.FeedbackRelease(feedbackID))
-		{
-			SendAndPrompt("Feedback not found");
-			return;
-		}
-		SendAndPrompt("Feedback released");
 	}
 
 	void ConsoleClient::HandleLocoAutomode(string& s, size_t& i)

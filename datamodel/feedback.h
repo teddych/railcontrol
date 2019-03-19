@@ -28,15 +28,13 @@ namespace datamodel
 				pin(pin),
 				manager(manager),
 				state(FeedbackStateFree),
-				locoID(LocoNone),
 				inverted(inverted),
 				trackID(TrackNone)
 			{
 			}
 
 			Feedback(Manager* manager, const std::string& serialized)
-			:	manager(manager),
-				locoID(LocoNone)
+			:	manager(manager)
 			{
 				Deserialize(serialized);
 			}
@@ -48,11 +46,8 @@ namespace datamodel
 			void Inverted(const bool inverted) { this->inverted = inverted; }
 			bool IsInverted() const { return inverted; }
 
-			bool Release(const locoID_t locoID);
 			bool SetState(const feedbackState_t state);
 			feedbackState_t GetState() const { return state; }
-			bool SetLoco(const locoID_t locoID);
-			locoID_t GetLoco() const { return locoID; }
 			void SetTrack(const trackID_t trackID) { this->trackID = trackID; }
 			trackID_t GetTrack() const { return trackID; }
 
@@ -63,7 +58,6 @@ namespace datamodel
 		private:
 			Manager* manager;
 			feedbackState_t state;
-			locoID_t locoID;
 			bool inverted;
 			trackID_t trackID;
 	};
