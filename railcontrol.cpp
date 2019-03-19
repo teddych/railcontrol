@@ -21,10 +21,20 @@ using std::string;
 
 static volatile unsigned int runRailcontrol;
 
+static volatile unsigned char stopSignalCounter;
+static const unsigned char maxStopSignalCounter = 3;
+
 void stopRailControlSignal(int signo)
 {
-	Logger::Logger::GetLogger("Main")->Info("Stopping railcontrol requested by signal {0}", signo);
+	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
+	logger->Info("Stopping railcontrol requested by signal {0}", signo);
 	runRailcontrol = false;
+	if (++stopSignalCounter < maxStopSignalCounter)
+	{
+		return;
+	}
+	logger->Info("Received a signal kill {0} times. Exiting without saving.", maxStopSignalCounter);
+	exit(1);
 }
 
 void stopRailControlWebserver()
@@ -41,6 +51,7 @@ void stopRailControlConsole()
 
 int main (int argc, char* argv[])
 {
+	stopSignalCounter = 0;
 	signal(SIGINT, stopRailControlSignal);
 	signal(SIGTERM, stopRailControlSignal);
 
