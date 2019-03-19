@@ -40,7 +40,7 @@ body {
 }
 
 .loco {
-	height: calc(100% - 174px);
+	height: calc(100% - 204px);
 	width: 250px;
 	position: fixed;
 	top: 90px;
@@ -50,7 +50,7 @@ body {
 }
 
 .layout {
-	height: calc(100% - 92px);
+	height: calc(100% - 204px);
 	width: calc(100% - 254px);
 	border: solid 1px;
 	overflow: auto;
@@ -220,8 +220,8 @@ select {
 .status {
 	position: fixed;
 	bottom: 0px;
-	height: 80px;
-	width: 250px;
+	height: 110px;
+	width: 100%;
 	border: solid 1px;
 	overflow-x: hidden;
 	overflow-y: scroll;
