@@ -747,13 +747,15 @@ namespace webserver
 			return;
 		}
 
+		string name = layer->Name();
+
 		if (!manager.LayerDelete(layerID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete layer");
 			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + layer->Name() + "&quot; deleted."));
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + name + "&quot; deleted."));
 	}
 
 	void WebClient::handleLayerList(const map<string, string>& arguments)
@@ -910,13 +912,15 @@ namespace webserver
 			return;
 		}
 
+		string name = control->name;
+
 		if (!manager.ControlDelete(controlID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete control");
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Control &quot;" + control->name + "&quot; deleted.");
+		HtmlReplyWithHeaderAndParagraph("Control &quot;" + name + "&quot; deleted.");
 	}
 
 	void WebClient::handleControlList(const map<string, string>& arguments)
@@ -1398,13 +1402,15 @@ namespace webserver
 			return;
 		}
 
+		string name = loco->Name();
+
 		if (!manager.LocoDelete(locoID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete loco");
 			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Loco &quot;" + loco->name + "&quot; deleted."));
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Loco &quot;" + name + "&quot; deleted."));
 	}
 
 	HtmlTag WebClient::HtmlTagLayerSelector() const
@@ -1651,13 +1657,15 @@ namespace webserver
 			return;
 		}
 
+		string name = accessory->Name();
+
 		if (!manager.AccessoryDelete(accessoryID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete accessory");
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + accessory->name + "&quot; deleted.");
+		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + name + "&quot; deleted.");
 	}
 
 	void WebClient::handleSwitchEdit(const map<string, string>& arguments)
@@ -1839,13 +1847,15 @@ namespace webserver
 			return;
 		}
 
+		string name = mySwitch->Name();
+
 		if (!manager.SwitchDelete(switchID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete switch");
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Switch &quot;" + mySwitch->name + "&quot; deleted.");
+		HtmlReplyWithHeaderAndParagraph("Switch &quot;" + name + "&quot; deleted.");
 	}
 
 	void WebClient::handleSwitchGet(const map<string, string>& arguments)
@@ -2016,8 +2026,7 @@ namespace webserver
 			{
 				continue;
 			}
-			Relation* relation = new Relation(ObjectTypeStreet, streetID, objectType, switchId, priority, state, LockStateFree);
-			relations.push_back(relation);
+			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, switchId, priority, state, LockStateFree));
 			++priority;
 		}
 
@@ -2069,13 +2078,15 @@ namespace webserver
 			return;
 		}
 
+		string name = street->Name();
+
 		if (!manager.StreetDelete(streetID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete street");
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Street &quot;" + street->name + "&quot; deleted.");
+		HtmlReplyWithHeaderAndParagraph("Street &quot;" + name + "&quot; deleted.");
 	}
 
 	void WebClient::handleStreetList(const map<string, string>& arguments)
@@ -2310,13 +2321,15 @@ namespace webserver
 			return;
 		}
 
+		string name = track->Name();
+
 		if (!manager.TrackDelete(trackID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete track");
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Track &quot;" + track->name + "&quot; deleted.");
+		HtmlReplyWithHeaderAndParagraph("Track &quot;" + name + "&quot; deleted.");
 	}
 
 	void WebClient::handleTrackGet(const map<string, string>& arguments)
@@ -2538,13 +2551,15 @@ namespace webserver
 			return;
 		}
 
+		string name = feedback->Name();
+
 		if (!manager.FeedbackDelete(feedbackID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete feedback");
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + feedback->Name() + "&quot; deleted.");
+		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + name + "&quot; deleted.");
 	}
 
 	void WebClient::handleFeedbackGet(const map<string, string>& arguments)
