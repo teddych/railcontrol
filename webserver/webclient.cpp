@@ -796,7 +796,7 @@ namespace webserver
 
 		if (controlID != ControlIdNone)
 		{
-			hardware::HardwareParams* params = manager.getHardware(controlID);
+			hardware::HardwareParams* params = manager.GetHardware(controlID);
 			if (params != nullptr)
 			{
 				hardwareType = params->hardwareType;
@@ -809,7 +809,7 @@ namespace webserver
 			}
 		}
 
-		const std::map<hardwareType_t,string> hardwares = manager.hardwareListNames();
+		const std::map<hardwareType_t,string> hardwares = manager.HardwareListNames();
 		std::map<string, string> hardwareOptions;
 		for(auto hardware : hardwares)
 		{
@@ -862,7 +862,7 @@ namespace webserver
 		string arg5 = GetStringMapEntry(arguments, "arg5");
 		string result;
 
-		if (!manager.controlSave(controlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
+		if (!manager.ControlSave(controlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -881,7 +881,7 @@ namespace webserver
 			return;
 		}
 
-		const hardware::HardwareParams* control = manager.getHardware(controlID);
+		const hardware::HardwareParams* control = manager.GetHardware(controlID);
 		if (control == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown control");
@@ -903,7 +903,7 @@ namespace webserver
 	void WebClient::handleControlDelete(const map<string, string>& arguments)
 	{
 		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlNone);
-		const hardware::HardwareParams* control = manager.getHardware(controlID);
+		const hardware::HardwareParams* control = manager.GetHardware(controlID);
 		if (control == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete control");
@@ -1214,7 +1214,7 @@ namespace webserver
 			return;
 		}
 		accessoryID_t accessoryId = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		Accessory* accessory = manager.getAccessory(accessoryId);
+		Accessory* accessory = manager.GetAccessory(accessoryId);
 		if (accessory == nullptr)
 		{
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown accessory"));
@@ -1249,7 +1249,7 @@ namespace webserver
 			return;
 		}
 		switchID_t switchId = GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		Switch* mySwitch = manager.getSwitch(switchId);
+		Switch* mySwitch = manager.GetSwitch(switchId);
 		if (mySwitch == nullptr)
 		{
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown switch"));
@@ -1322,7 +1322,7 @@ namespace webserver
 		function_t nrOfFunctions = GetIntegerMapEntry(arguments, "function", 0);
 		string result;
 
-		if (!manager.locoSave(locoID, name, controlId, protocol, address, nrOfFunctions, result))
+		if (!manager.LocoSave(locoID, name, controlId, protocol, address, nrOfFunctions, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -1507,7 +1507,7 @@ namespace webserver
 		bool inverted = false;
 		if (accessoryID > AccessoryNone)
 		{
-			const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+			const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 			controlID = accessory->controlID;
 			protocol = accessory->protocol;
 			address = accessory->address;
@@ -1551,7 +1551,7 @@ namespace webserver
 	void WebClient::handleAccessoryGet(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory");
-		const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		HtmlReplyWithHeader(HtmlTagAccessory(accessory));
 	}
 
@@ -1568,7 +1568,7 @@ namespace webserver
 		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
 		bool inverted = GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.accessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
+		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -1622,7 +1622,7 @@ namespace webserver
 			return;
 		}
 
-		const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown accessory");
@@ -1644,7 +1644,7 @@ namespace webserver
 	void WebClient::handleAccessoryDelete(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		const datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete accessory");
@@ -1677,7 +1677,7 @@ namespace webserver
 		bool inverted = false;
 		if (switchID > SwitchNone)
 		{
-			const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+			const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
 			controlID = mySwitch->controlID;
 			protocol = mySwitch->protocol;
 			address = mySwitch->address;
@@ -1757,7 +1757,7 @@ namespace webserver
 		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
 		bool inverted = GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.switchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, timeout, inverted, result))
+		if (!manager.SwitchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, timeout, inverted, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -1810,7 +1810,7 @@ namespace webserver
 			return;
 		}
 
-		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown switch");
@@ -1832,7 +1832,7 @@ namespace webserver
 	void WebClient::handleSwitchDelete(const map<string, string>& arguments)
 	{
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete switch");
@@ -1851,7 +1851,7 @@ namespace webserver
 	void WebClient::handleSwitchGet(const map<string, string>& arguments)
 	{
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
-		const datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
 		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
 	}
 

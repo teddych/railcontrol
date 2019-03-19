@@ -192,7 +192,7 @@ void Manager::Booster(const controlType_t controlType, const boosterState_t stat
 * Control                  *
 ***************************/
 
-const std::map<hardwareType_t,string> Manager::hardwareListNames()
+const std::map<hardwareType_t,string> Manager::HardwareListNames()
 {
 	std::map<hardwareType_t,string> hardwareList;
 	hardwareList[HardwareTypeM6051] = "Märklin Interface 6051/6051";
@@ -202,7 +202,7 @@ const std::map<hardwareType_t,string> Manager::hardwareListNames()
 	return hardwareList;
 }
 
-bool Manager::controlSave(const controlID_t& controlID,
+bool Manager::ControlSave(const controlID_t& controlID,
 	const hardwareType_t& hardwareType,
 	const std::string& name,
 	const std::string& arg1,
@@ -217,49 +217,43 @@ bool Manager::controlSave(const controlID_t& controlID,
 		result.assign("Invalid controlID");
 		return false;
 	}
-	HardwareParams* params;
+
+	HardwareParams* params = GetHardware(controlID);
+	if (params != nullptr)
 	{
+		params->name = name;
+		params->hardwareType = hardwareType;
+		params->arg1 = arg1;
+		params->arg2 = arg2;
+		params->arg3 = arg3;
+		params->arg4 = arg4;
+		params->arg5 = arg5;
+		// FIXME: reload hardware
+	}
+	else
+	{
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		controlID_t newControlID = ControlIdFirstHardware - 1;
+		// get next controlID
+		for (auto control : controls)
+		{
+			if (control.first > newControlID)
+			{
+				newControlID = control.first;
+			}
+		}
+		++newControlID;
+		// create new control
+		params = new HardwareParams(newControlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5);
+		if (params == nullptr)
+		{
+			result.assign("Unable to allocate memory for control");
+			return false;
+		}
+
+		controls[newControlID] = new HardwareHandler(*this, params);
 		std::lock_guard<std::mutex> Guard(hardwareMutex);
-		if (hardwareParams.count(controlID) == 1)
-		{
-			params = hardwareParams.at(controlID);
-			if (params == nullptr)
-			{
-				result.assign("Control does not exist");
-				return false;
-			}
-			params->name = name;
-			params->hardwareType = hardwareType;
-			params->arg1 = arg1;
-			params->arg2 = arg2;
-			params->arg3 = arg3;
-			params->arg4 = arg4;
-			params->arg5 = arg5;
-			// FIXME: reload hardware
-		}
-		else
-		{
-			std::lock_guard<std::mutex> Guard(controlMutex);
-			controlID_t newControlID = ControlIdFirstHardware - 1;
-			// get next controlID
-			for (auto control : controls)
-			{
-				if (control.first > newControlID)
-				{
-					newControlID = control.first;
-				}
-			}
-			++newControlID;
-			// create new control
-			params = new HardwareParams(newControlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5);
-			if (params == nullptr)
-			{
-				result.assign("Unable to allocate memory for control");
-				return false;
-			}
-			hardwareParams[newControlID] = params;
-			controls[newControlID] = new HardwareHandler(*this, params);
-		}
+		hardwareParams[newControlID] = params;
 	}
 	if (storage)
 	{
@@ -308,7 +302,7 @@ bool Manager::controlDelete(controlID_t controlID)
 	return true;
 }
 
-HardwareParams* Manager::getHardware(controlID_t controlID)
+HardwareParams* Manager::GetHardware(controlID_t controlID)
 {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) != 1)
@@ -554,53 +548,47 @@ const map<string,datamodel::Loco*> Manager::LocoListByName() const
 	return out;
 }
 
-bool Manager::locoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, string& result)
+bool Manager::LocoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, string& result)
 {
-	Loco* loco;
 	if (!checkControlLocoProtocolAddress(controlID, protocol, address, result))
 	{
 		return false;
 	}
+
+	Loco* loco = GetLoco(locoID);
+	if (loco != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(locoMutex);
-		if (locoID != LocoNone && locos.count(locoID))
-		{
-			// update existing loco
-			loco = locos.at(locoID);
-			if (loco == nullptr)
-			{
-				result.assign("Loco does not exist");
-				return false;
-			}
-			loco->name = name;
-			loco->controlID = controlID;
-			loco->protocol = protocol;
-			loco->address = address;
-			loco->SetNrOfFunctions(nr);
-		}
-		else
-		{
-			// create new loco
-			locoID_t newLocoID = 0;
-			// get next locoID
-			for (auto loco : locos)
-			{
-				if (loco.first > newLocoID)
-				{
-					newLocoID = loco.first;
-				}
-			}
-			++newLocoID;
-			loco = new Loco(this, newLocoID, name, controlID, protocol, address, nr);
-			if (loco == nullptr)
-			{
-				result.assign("Unable to allocate memory for loco");
-				return false;
-			}
-			// save in map
-			locos[newLocoID] = loco;
-		}
+		// update existing loco
+		loco->name = name;
+		loco->controlID = controlID;
+		loco->protocol = protocol;
+		loco->address = address;
+		loco->SetNrOfFunctions(nr);
 	}
+	else
+	{
+		// create new loco
+		std::lock_guard<std::mutex> Guard(locoMutex);
+		locoID_t newLocoID = 0;
+		// get next locoID
+		for (auto loco : locos)
+		{
+			if (loco.first > newLocoID)
+			{
+				newLocoID = loco.first;
+			}
+		}
+		++newLocoID;
+		loco = new Loco(this, newLocoID, name, controlID, protocol, address, nr);
+		if (loco == nullptr)
+		{
+			result.assign("Unable to allocate memory for loco");
+			return false;
+		}
+		// save in map
+		locos[newLocoID] = loco;
+	}
+
 	// save in db
 	if (storage)
 	{
@@ -821,7 +809,7 @@ void Manager::AccessoryState(const controlType_t controlType, const controlID_t 
 
 void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state)
 {
-	Accessory* accessory = getAccessory(accessoryID);
+	Accessory* accessory = GetAccessory(accessoryID);
 	if (accessory == nullptr)
 	{
 		return;
@@ -843,7 +831,7 @@ void Manager::AccessoryState(const controlType_t controlType, const accessoryID_
 	}
 }
 
-Accessory* Manager::getAccessory(const accessoryID_t accessoryID) const
+Accessory* Manager::GetAccessory(const accessoryID_t accessoryID) const
 {
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
 	if (accessories.count(accessoryID) != 1)
@@ -864,7 +852,7 @@ const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) co
 
 bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
-	Accessory* accessory = getAccessory(accessoryID);
+	Accessory* accessory = GetAccessory(accessoryID);
 	if (accessory == nullptr)
 	{
 		return false;
@@ -873,9 +861,8 @@ bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layo
 	return (accessory->posX == posX && accessory->posY == posY && accessory->posZ == posZ);
 }
 
-bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, string& result)
+bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, string& result)
 {
-	Accessory* accessory;
 	if (!checkControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
 		result.append("Invalid control-protocol-address combination.");
@@ -890,51 +877,45 @@ bool Manager::accessorySave(const accessoryID_t accessoryID, const string& name,
 		return false;
 	}
 
+	Accessory* accessory = GetAccessory(accessoryID);
+	if (accessory != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(accessoryMutex);
-		if (accessoryID != AccessoryNone && accessories.count(accessoryID))
-		{
-			// update existing accessory
-			accessory = accessories.at(accessoryID);
-			if (accessory == nullptr)
-			{
-				result.assign("Accessory does not exist");
-				return false;
-			}
-			accessory->name = name;
-			accessory->posX = posX;
-			accessory->posY = posY;
-			accessory->posZ = posZ;
-			accessory->controlID = controlID;
-			accessory->protocol = protocol;
-			accessory->address = address;
-			accessory->type = type;
-			accessory->timeout = timeout;
-			accessory->Inverted(inverted);
-		}
-		else
-		{
-			// create new accessory
-			accessoryID_t newAccessoryID = 0;
-			// get next accessoryID
-			for (auto accessory : accessories)
-			{
-				if (accessory.first > newAccessoryID)
-				{
-					newAccessoryID = accessory.first;
-				}
-			}
-			++newAccessoryID;
-			accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, Rotation0, controlID, protocol, address, type, timeout, inverted);
-			if (accessory == nullptr)
-			{
-				result.assign("Unable to allocate memory for accessory");
-				return false;
-			}
-			// save in map
-			accessories[newAccessoryID] = accessory;
-		}
+		// update existing accessory
+		accessory->name = name;
+		accessory->posX = posX;
+		accessory->posY = posY;
+		accessory->posZ = posZ;
+		accessory->controlID = controlID;
+		accessory->protocol = protocol;
+		accessory->address = address;
+		accessory->type = type;
+		accessory->timeout = timeout;
+		accessory->Inverted(inverted);
 	}
+	else
+	{
+		// create new accessory
+		std::lock_guard<std::mutex> Guard(accessoryMutex);
+		accessoryID_t newAccessoryID = 0;
+		// get next accessoryID
+		for (auto accessory : accessories)
+		{
+			if (accessory.first > newAccessoryID)
+			{
+				newAccessoryID = accessory.first;
+			}
+		}
+		++newAccessoryID;
+		accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, Rotation0, controlID, protocol, address, type, timeout, inverted);
+		if (accessory == nullptr)
+		{
+			result.assign("Unable to allocate memory for accessory");
+			return false;
+		}
+		// save in map
+		accessories[newAccessoryID] = accessory;
+	}
+
 	// save in db
 	if (storage)
 	{
@@ -1109,9 +1090,9 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 	else
 	{
 		// create new feedback
+		std::lock_guard<std::mutex> Guard(feedbackMutex);
 		feedbackID_t newFeedbackID = 0;
 		// get next feedbackID
-		std::lock_guard<std::mutex> Guard(feedbackMutex);
 		for (auto feedback : feedbacks)
 		{
 			if (feedback.first > newFeedbackID)
@@ -1337,7 +1318,6 @@ const std::vector<feedbackID_t> Manager::CleanupAndCheckFeedbacks(trackID_t trac
 
 trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, std::vector<feedbackID_t> newFeedbacks, string& result)
 {
-	Track* track;
 	if (!CheckTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
 	{
 		result.append(" Unable to ");
@@ -1346,49 +1326,43 @@ trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, c
 		return TrackNone;
 	}
 
+	Track* track = GetTrack(trackID);
+	if (track != nullptr)
 	{
-		std::lock_guard<std::mutex> trackGuard(trackMutex);
-		if (trackID != TrackNone && tracks.count(trackID))
-		{
-			// update existing track
-			track = tracks.at(trackID);
-			if (track == nullptr)
-			{
-				result.assign("Track does not exist");
-				return TrackNone;
-			}
-			track->name = name;
-			track->height = height;
-			track->rotation = rotation;
-			track->posX = posX;
-			track->posY = posY;
-			track->posZ = posZ;
-			track->Type(type);
-			track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
-		}
-		else
-		{
-			// create new track
-			trackID_t newTrackID = 0;
-			// get next trackID
-			for (auto track : tracks)
-			{
-				if (track.first > newTrackID)
-				{
-					newTrackID = track.first;
-				}
-			}
-			++newTrackID;
-			track = new Track(this, newTrackID, name, posX, posY, posZ, height, rotation, type, CleanupAndCheckFeedbacks(trackID, newFeedbacks));
-			if (track == nullptr)
-			{
-				result.assign("Unable to allocate memory for track");
-				return TrackNone;
-			}
-			// save in map
-			tracks[newTrackID] = track;
-		}
+		// update existing track
+		track->name = name;
+		track->height = height;
+		track->rotation = rotation;
+		track->posX = posX;
+		track->posY = posY;
+		track->posZ = posZ;
+		track->Type(type);
+		track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
 	}
+	else
+	{
+		// create new track
+		std::lock_guard<std::mutex> trackGuard(trackMutex);
+		trackID_t newTrackID = 0;
+		// get next trackID
+		for (auto track : tracks)
+		{
+			if (track.first > newTrackID)
+			{
+				newTrackID = track.first;
+			}
+		}
+		++newTrackID;
+		track = new Track(this, newTrackID, name, posX, posY, posZ, height, rotation, type, CleanupAndCheckFeedbacks(trackID, newFeedbacks));
+		if (track == nullptr)
+		{
+			result.assign("Unable to allocate memory for track");
+			return TrackNone;
+		}
+		// save in map
+		tracks[newTrackID] = track;
+	}
+
 	// save in db
 	if (storage)
 	{
@@ -1440,7 +1414,7 @@ bool Manager::TrackDelete(const trackID_t trackID)
 
 void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state)
 {
-	Switch* mySwitch = getSwitch(switchID);
+	Switch* mySwitch = GetSwitch(switchID);
 	if (mySwitch == nullptr)
 	{
 		return;
@@ -1462,7 +1436,7 @@ void Manager::SwitchState(const controlType_t controlType, const switchID_t swit
 	}
 }
 
-Switch* Manager::getSwitch(const switchID_t switchID) const
+Switch* Manager::GetSwitch(const switchID_t switchID) const
 {
 	std::lock_guard<std::mutex> Guard(switchMutex);
 	if (switches.count(switchID) != 1)
@@ -1483,7 +1457,7 @@ const std::string& Manager::getSwitchName(const switchID_t switchID) const
 
 bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
 {
-	Switch* mySwitch = getSwitch(switchID);
+	Switch* mySwitch = GetSwitch(switchID);
 	if (mySwitch == nullptr)
 	{
 		return false;
@@ -1492,9 +1466,8 @@ bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPositio
 	return (mySwitch->posX == posX && mySwitch->posY == posY && mySwitch->posZ == posZ);
 }
 
-bool Manager::switchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, string& result)
+bool Manager::SwitchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, string& result)
 {
-	Switch* mySwitch;
 	if (!checkControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
 		return false;
@@ -1508,52 +1481,46 @@ bool Manager::switchSave(const switchID_t switchID, const string& name, const la
 		return false;
 	}
 
+	Switch* mySwitch = GetSwitch(switchID);
+	if (mySwitch != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(switchMutex);
-		if (switchID != SwitchNone && switches.count(switchID))
-		{
-			// update existing switch
-			mySwitch = switches.at(switchID);
-			if (mySwitch == nullptr)
-			{
-				result.assign("Switch does not exist");
-				return false;
-			}
-			mySwitch->name = name;
-			mySwitch->posX = posX;
-			mySwitch->posY = posY;
-			mySwitch->posZ = posZ;
-			mySwitch->rotation = rotation;
-			mySwitch->controlID = controlID;
-			mySwitch->protocol = protocol;
-			mySwitch->address = address;
-			mySwitch->type = type;
-			mySwitch->timeout = timeout;
-			mySwitch->Inverted(inverted);
-		}
-		else
-		{
-			// create new switch
-			switchID_t newSwitchID = 0;
-			// get next switchID
-			for (auto mySwitch : switches)
-			{
-				if (mySwitch.first > newSwitchID)
-				{
-					newSwitchID = mySwitch.first;
-				}
-			}
-			++newSwitchID;
-			mySwitch = new Switch(newSwitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, timeout, inverted);
-			if (mySwitch == nullptr)
-			{
-				result.assign("Unable to allocate memory for switch");
-				return false;
-			}
-			// save in map
-			switches[newSwitchID] = mySwitch;
-		}
+		// update existing switch
+		mySwitch->name = name;
+		mySwitch->posX = posX;
+		mySwitch->posY = posY;
+		mySwitch->posZ = posZ;
+		mySwitch->rotation = rotation;
+		mySwitch->controlID = controlID;
+		mySwitch->protocol = protocol;
+		mySwitch->address = address;
+		mySwitch->type = type;
+		mySwitch->timeout = timeout;
+		mySwitch->Inverted(inverted);
 	}
+	else
+	{
+		// create new switch
+		std::lock_guard<std::mutex> Guard(switchMutex);
+		switchID_t newSwitchID = 0;
+		// get next switchID
+		for (auto mySwitch : switches)
+		{
+			if (mySwitch.first > newSwitchID)
+			{
+				newSwitchID = mySwitch.first;
+			}
+		}
+		++newSwitchID;
+		mySwitch = new Switch(newSwitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, timeout, inverted);
+		if (mySwitch == nullptr)
+		{
+			result.assign("Unable to allocate memory for switch");
+			return false;
+		}
+		// save in map
+		switches[newSwitchID] = mySwitch;
+	}
+
 	// save in db
 	if (storage)
 	{
@@ -1723,9 +1690,9 @@ bool Manager::StreetSave(const streetID_t streetID, const std::string& name, con
 	else
 	{
 		// create new street
+		std::lock_guard<std::mutex> Guard(streetMutex);
 		streetID_t newStreetID = 0;
 		// get next streetID
-		std::lock_guard<std::mutex> Guard(streetMutex);
 		for (auto street : streets)
 		{
 			if (street.first > newStreetID)
@@ -1844,43 +1811,36 @@ const map<string,layerID_t> Manager::LayerListByNameWithFeedback() const
 
 bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::string& result)
 {
-	Layer* layer;
+	Layer* layer = GetLayer(layerID);
+	if (layer != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(layerMutex);
-		if (layers.count(layerID))
-		{
-			// update existing layer
-			layer = layers.at(layerID);
-			if (layer == nullptr)
-			{
-				result.assign("Layer does not exist");
-				return false;
-			}
-			layer->name = name;
-		}
-		else
-		{
-			// create new street
-			layerID_t newLayerID = 0;
-			// get next streetID
-			for (auto layer : layers)
-			{
-				if (layer.first > newLayerID)
-				{
-					newLayerID = layer.first;
-				}
-			}
-			++newLayerID;
-			layer = new Layer(newLayerID, name);
-			if (layer == nullptr)
-			{
-				result.assign("Unable to allocate memory for layer");
-				return false;
-			}
-			// save in map
-			layers[newLayerID] = layer;
-		}
+		// update existing layer
+		layer->name = name;
 	}
+	else
+	{
+		// create new layer
+		std::lock_guard<std::mutex> Guard(layerMutex);
+		layerID_t newLayerID = 0;
+		// get next streetID
+		for (auto layer : layers)
+		{
+			if (layer.first > newLayerID)
+			{
+				newLayerID = layer.first;
+			}
+		}
+		++newLayerID;
+		layer = new Layer(newLayerID, name);
+		if (layer == nullptr)
+		{
+			result.assign("Unable to allocate memory for layer");
+			return false;
+		}
+		// save in map
+		layers[newLayerID] = layer;
+	}
+
 	// save in db
 	if (storage)
 	{
@@ -2114,7 +2074,7 @@ bool Manager::StreetRelease(const streetID_t streetID)
 
 /*
 bool Manager::switchRelease(const switchID_t switchID) {
-	Switch* mySwitch = getSwitch(switchID);
+	Switch* mySwitch = GetSwitch(switchID);
 	if (mySwitch == nullptr) {
 		return false;
 	}

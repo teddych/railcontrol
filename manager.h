@@ -24,8 +24,8 @@ class Manager {
 		void Booster(const controlType_t controlType, const boosterState_t status);
 
 		// hardware (virt, CS2, ...)
-		static const std::map<hardwareType_t,std::string> hardwareListNames();
-		bool controlSave(const controlID_t& controlID,
+		static const std::map<hardwareType_t,std::string> HardwareListNames();
+		bool ControlSave(const controlID_t& controlID,
 			const hardwareType_t& hardwareType,
 			const std::string& name,
 			const std::string& arg1,
@@ -35,7 +35,7 @@ class Manager {
 			const std::string& arg5,
 			std::string& result);
 		bool controlDelete(controlID_t controlID);
-		hardware::HardwareParams* getHardware(controlID_t controlID);
+		hardware::HardwareParams* GetHardware(controlID_t controlID);
 		unsigned int controlsOfHardwareType(const hardwareType_t hardwareType);
 		bool hardwareLibraryAdd(const hardwareType_t hardwareType, void* libraryHandle);
 		void* hardwareLibraryGet(const hardwareType_t hardwareType) const;
@@ -58,7 +58,7 @@ class Manager {
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
 		const std::map<std::string,locoID_t> LocoListFree() const;
 		const std::map<std::string,datamodel::Loco*> LocoListByName() const;
-		bool locoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
+		bool LocoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
 		bool locoDelete(const locoID_t locoID);
 		bool locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 		void LocoSpeed(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const locoSpeed_t speed);
@@ -73,11 +73,11 @@ class Manager {
 		void AccessoryState(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryState_t state);
 		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state);
 		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
-		datamodel::Accessory* getAccessory(const accessoryID_t accessoryID) const;
+		datamodel::Accessory* GetAccessory(const accessoryID_t accessoryID) const;
 		const std::string& getAccessoryName(const accessoryID_t accessoryID) const;
 		const std::map<accessoryID_t,datamodel::Accessory*>& accessoryList() const { return accessories; }
 		const std::map<std::string,datamodel::Accessory*> accessoryListByName() const;
-		bool accessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, std::string& result);
+		bool AccessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, std::string& result);
 		bool accessoryDelete(const accessoryID_t accessoryID);
 		bool accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
@@ -105,11 +105,11 @@ class Manager {
 		// switch
 		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state);
 		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
-		datamodel::Switch* getSwitch(const switchID_t switchID) const;
+		datamodel::Switch* GetSwitch(const switchID_t switchID) const;
 		const std::string& getSwitchName(const switchID_t switchID) const;
 		const std::map<switchID_t,datamodel::Switch*>& switchList() const { return switches; }
 		const std::map<std::string,datamodel::Switch*> switchListByName() const;
-		bool switchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, std::string& result);
+		bool SwitchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, std::string& result);
 		bool switchDelete(const switchID_t switchID);
 		bool switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 

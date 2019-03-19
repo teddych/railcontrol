@@ -691,7 +691,7 @@ namespace console
 		}
 
 		accessoryID_t accessoryID = ReadNumber(s, i);
-		datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			SendAndPrompt("Unknown accessory");
@@ -715,7 +715,7 @@ namespace console
 		accessoryTimeout_t timeout = ReadNumber(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
-		if (!manager.accessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
+		if (!manager.AccessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
 		{
 			SendAndPrompt(result);
 			return;
@@ -728,7 +728,7 @@ namespace console
 	void ConsoleClient::HandleAccessorySwitch(string& s, size_t& i)
 	{
 		accessoryID_t accessoryID = ReadNumber(s, i);
-		datamodel::Accessory* accessory = manager.getAccessory(accessoryID);
+		datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			SendAndPrompt("Unknown accessory");
@@ -855,7 +855,7 @@ namespace console
 		}
 
 		controlID_t controlID = ReadNumber(s, i);
-		hardware::HardwareParams* param = manager.getHardware(controlID);
+		hardware::HardwareParams* param = manager.GetHardware(controlID);
 		if (param == nullptr)
 		{
 			SendAndPrompt("Unknown Control");
@@ -884,7 +884,7 @@ namespace console
 		string arg5 = ReadText(s, i);
 
 		string result;
-		if (!manager.controlSave(ControlIdNone, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
+		if (!manager.ControlSave(ControlIdNone, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
 		{
 			SendAndPrompt(result);
 			return;
@@ -1126,7 +1126,7 @@ namespace console
 		address_t address = ReadNumber(s, i);
 		function_t functions = ReadNumber(s, i);
 		string result;
-		if (!manager.locoSave(LocoNone, name, control, protocol, address, functions, result))
+		if (!manager.LocoSave(LocoNone, name, control, protocol, address, functions, result))
 		{
 			SendAndPrompt(result);
 			return;
@@ -1437,7 +1437,7 @@ namespace console
 
 		// list one switch
 		switchID_t switchID = ReadNumber(s, i);
-		datamodel::Switch* mySwitch = manager.getSwitch(switchID);
+		datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
 			SendAndPrompt("Unknown switch");
@@ -1482,7 +1482,7 @@ namespace console
 		accessoryTimeout_t timeout = ReadNumber(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
-		if (!manager.switchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, timeout, inverted, result))
+		if (!manager.SwitchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, timeout, inverted, result))
 		{
 			SendAndPrompt(result);
 			return;
