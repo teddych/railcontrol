@@ -73,7 +73,7 @@ Manager::Manager(Config& config)
 	{
 		logger->Info("Loaded layer {0}: {1}", layer.second->objectID, layer.second->Name());
 	}
-	if (layers.count(LayerUndeletable) == 0)
+	if (layers.count(LayerUndeletable) != 1)
 	{
 		string result;
 		bool initLayer0 = LayerSave(0, "Layer 1", result);
@@ -123,7 +123,7 @@ Manager::Manager(Config& config)
 
 Manager::~Manager()
 {
-	while (!locoStopAll())
+	while (!LocoStopAll())
 	{
 		sleep(1);
 	}
@@ -252,7 +252,6 @@ bool Manager::ControlSave(const controlID_t& controlID,
 		}
 
 		controls[newControlID] = new HardwareHandler(*this, params);
-		std::lock_guard<std::mutex> Guard(hardwareMutex);
 		hardwareParams[newControlID] = params;
 	}
 	if (storage)
@@ -262,7 +261,7 @@ bool Manager::ControlSave(const controlID_t& controlID,
 	return true;
 }
 
-bool Manager::controlDelete(controlID_t controlID)
+bool Manager::ControlDelete(controlID_t controlID)
 {
 	HardwareParams* params = nullptr;
 	{
@@ -272,15 +271,13 @@ bool Manager::controlDelete(controlID_t controlID)
 			return false;
 		}
 
-		if (hardwareParams.count(controlID) != 1)
-		{
-			return false;
-		}
 		params = hardwareParams.at(controlID);
 		if (params == nullptr)
 		{
 			return false;
 		}
+		hardwareParams.erase(controlID);
+		delete params;
 	}
 	{
 		std::lock_guard<std::mutex> Guard(controlMutex);
@@ -293,8 +290,6 @@ bool Manager::controlDelete(controlID_t controlID)
 		delete control;
 	}
 
-	hardwareParams.erase(controlID);
-	delete params;
 	if (storage)
 	{
 		storage->deleteHardwareParams(controlID);
@@ -307,12 +302,12 @@ HardwareParams* Manager::GetHardware(controlID_t controlID)
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	if (hardwareParams.count(controlID) != 1)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return hardwareParams.at(controlID);
 }
 
-unsigned int Manager::controlsOfHardwareType(const hardwareType_t hardwareType)
+unsigned int Manager::ControlsOfHardwareType(const hardwareType_t hardwareType)
 {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
 	unsigned int counter = 0;
@@ -326,7 +321,7 @@ unsigned int Manager::controlsOfHardwareType(const hardwareType_t hardwareType)
 	return counter;
 }
 
-bool Manager::hardwareLibraryAdd(const hardwareType_t hardwareType, void* libraryHandle)
+bool Manager::HardwareLibraryAdd(const hardwareType_t hardwareType, void* libraryHandle)
 {
 	std::lock_guard<std::mutex> Guard(hardwareLibrariesMutex);
 	if (hardwareLibraries.count(hardwareType) == 1)
@@ -337,7 +332,7 @@ bool Manager::hardwareLibraryAdd(const hardwareType_t hardwareType, void* librar
 	return true;
 }
 
-void* Manager::hardwareLibraryGet(const hardwareType_t hardwareType) const
+void* Manager::HardwareLibraryGet(const hardwareType_t hardwareType) const
 {
 	std::lock_guard<std::mutex> Guard(hardwareLibrariesMutex);
 	if (hardwareLibraries.count(hardwareType) != 1)
@@ -347,7 +342,7 @@ void* Manager::hardwareLibraryGet(const hardwareType_t hardwareType) const
 	return hardwareLibraries.at(hardwareType);
 }
 
-bool Manager::hardwareLibraryRemove(const hardwareType_t hardwareType)
+bool Manager::HardwareLibraryRemove(const hardwareType_t hardwareType)
 {
 	std::lock_guard<std::mutex> Guard(hardwareLibrariesMutex);
 	if (hardwareLibraries.count(hardwareType) != 1)
@@ -358,7 +353,17 @@ bool Manager::hardwareLibraryRemove(const hardwareType_t hardwareType)
 	return true;
 }
 
-const std::string Manager::getControlName(const controlID_t controlID)
+const ControlInterface* Manager::GetControl(const controlID_t controlID) const
+{
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	if (controls.count(controlID) != 1)
+	{
+		return nullptr;
+	}
+	return controls.at(controlID);
+}
+
+const std::string Manager::GetControlName(const controlID_t controlID)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	if (controls.count(controlID) != 1)
@@ -414,25 +419,19 @@ const std::map<controlID_t,std::string> Manager::AccessoryControlListNames() con
 const std::map<controlID_t,std::string> Manager::FeedbackControlListNames() const
 {
 	std::map<controlID_t,std::string> ret;
-	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	for (auto hardware : hardwareParams)
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
 	{
-		std::lock_guard<std::mutex> Guard2(controlMutex);
-		if (controls.count(hardware.second->controlID) != 1)
+		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleFeedback() == false)
 		{
 			continue;
 		}
-		ControlInterface* c = controls.at(hardware.second->controlID);
-		if (c->CanHandleFeedback() == false)
-		{
-			continue;
-		}
-		ret[hardware.first] = hardware.second->name;
+		ret[control.first] = control.second->Name();
 	}
 	return ret;
 }
 
-const map<string,hardware::HardwareParams*> Manager::controlListByName() const
+const map<string,hardware::HardwareParams*> Manager::ControlListByName() const
 {
 	map<string,hardware::HardwareParams*> out;
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
@@ -447,15 +446,8 @@ const std::map<std::string, protocol_t> Manager::ProtocolsOfControl(const addres
 {
 	std::map<std::string,protocol_t> ret;
 	{
-		std::lock_guard<std::mutex> Guard(controlMutex);
-		if (controls.count(controlID) != 1)
-		{
-			ret[protocolSymbols[ProtocolNone]] = ProtocolNone;
-			return ret;
-		}
-
-		ControlInterface* control = controls.at(controlID);
-		if (control->ControlType() != ControlTypeHardware)
+		const ControlInterface* control = GetControl(controlID);
+		if (control == nullptr || control->ControlType() != ControlTypeHardware)
 		{
 			ret[protocolSymbols[ProtocolNone]] = ProtocolNone;
 			return ret;
@@ -550,7 +542,7 @@ const map<string,datamodel::Loco*> Manager::LocoListByName() const
 
 bool Manager::LocoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, string& result)
 {
-	if (!checkControlLocoProtocolAddress(controlID, protocol, address, result))
+	if (!CheckControlLocoProtocolAddress(controlID, protocol, address, result))
 	{
 		return false;
 	}
@@ -602,12 +594,12 @@ bool Manager::LocoSave(const locoID_t locoID, const string& name, const controlI
 	return true;
 }
 
-bool Manager::locoDelete(const locoID_t locoID)
+bool Manager::LocoDelete(const locoID_t locoID)
 {
 	Loco* loco = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(locoMutex);
-		if (locoID == LocoNone || locos.count(locoID) == 0)
+		if (locoID == LocoNone || locos.count(locoID) != 1)
 		{
 			return false;
 		}
@@ -634,10 +626,10 @@ bool Manager::locoDelete(const locoID_t locoID)
 	return true;
 }
 
-bool Manager::locoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
+bool Manager::LocoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
 {
 	std::lock_guard<std::mutex> Guard(locoMutex);
-	if (locos.count(locoID) < 1)
+	if (locos.count(locoID) != 1)
 	{
 		controlID = 0;
 		protocol = ProtocolNone;
@@ -843,6 +835,7 @@ Accessory* Manager::GetAccessory(const accessoryID_t accessoryID) const
 
 const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) const
 {
+	std::lock_guard<std::mutex> Guard(accessoryMutex);
 	if (accessories.count(accessoryID) != 1)
 	{
 		return unknownAccessory;
@@ -863,7 +856,7 @@ bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layo
 
 bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, string& result)
 {
-	if (!checkControlAccessoryProtocolAddress(controlID, protocol, address, result))
+	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
 		result.append("Invalid control-protocol-address combination.");
 		return false;
@@ -929,7 +922,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	return true;
 }
 
-const map<string,datamodel::Accessory*> Manager::accessoryListByName() const
+const map<string,datamodel::Accessory*> Manager::AccessoryListByName() const
 {
 	map<string,datamodel::Accessory*> out;
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
@@ -940,12 +933,12 @@ const map<string,datamodel::Accessory*> Manager::accessoryListByName() const
 	return out;
 }
 
-bool Manager::accessoryDelete(const accessoryID_t accessoryID)
+bool Manager::AccessoryDelete(const accessoryID_t accessoryID)
 {
 	Accessory* accessory = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(accessoryMutex);
-		if (accessoryID == AccessoryNone || accessories.count(accessoryID) == 0)
+		if (accessoryID == AccessoryNone || accessories.count(accessoryID) != 1)
 		{
 			return false;
 		}
@@ -967,9 +960,9 @@ bool Manager::accessoryDelete(const accessoryID_t accessoryID)
 	return true;
 }
 
-bool Manager::accessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
+bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
 {
-	if (accessories.count(accessoryID) < 1)
+	if (accessories.count(accessoryID) != 1)
 	{
 		controlID = 0;
 		protocol = ProtocolNone;
@@ -1161,7 +1154,7 @@ bool Manager::FeedbackDelete(const feedbackID_t feedbackID)
 	Feedback* feedback = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(feedbackMutex);
-		if (feedbackID == FeedbackNone || feedbacks.count(feedbackID) == 0)
+		if (feedbackID == FeedbackNone || feedbacks.count(feedbackID) != 1)
 		{
 			return false;
 		}
@@ -1211,7 +1204,7 @@ const std::string& Manager::GetTrackName(const trackID_t trackID) const
 	return tracks.at(trackID)->name;
 }
 
-const map<string,datamodel::Track*> Manager::trackListByName() const
+const map<string,datamodel::Track*> Manager::TrackListByName() const
 {
 	map<string,datamodel::Track*> out;
 	std::lock_guard<std::mutex> Guard(trackMutex);
@@ -1222,7 +1215,7 @@ const map<string,datamodel::Track*> Manager::trackListByName() const
 	return out;
 }
 
-const map<string,trackID_t> Manager::trackListIdByName() const
+const map<string,trackID_t> Manager::TrackListIdByName() const
 {
 	map<string,trackID_t> out;
 	std::lock_guard<std::mutex> Guard(trackMutex);
@@ -1381,7 +1374,7 @@ bool Manager::TrackDelete(const trackID_t trackID)
 	Track* track = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(trackMutex);
-		if (trackID == TrackNone || tracks.count(trackID) == 0)
+		if (trackID == TrackNone || tracks.count(trackID) != 1)
 		{
 			return false;
 		}
@@ -1441,12 +1434,12 @@ Switch* Manager::GetSwitch(const switchID_t switchID) const
 	std::lock_guard<std::mutex> Guard(switchMutex);
 	if (switches.count(switchID) != 1)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return switches.at(switchID);
 }
 
-const std::string& Manager::getSwitchName(const switchID_t switchID) const
+const std::string& Manager::GetSwitchName(const switchID_t switchID) const
 {
 	if (switches.count(switchID) != 1)
 	{
@@ -1468,7 +1461,7 @@ bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPositio
 
 bool Manager::SwitchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, string& result)
 {
-	if (!checkControlAccessoryProtocolAddress(controlID, protocol, address, result))
+	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
 		return false;
 	}
@@ -1534,12 +1527,12 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 	return true;
 }
 
-bool Manager::switchDelete(const switchID_t switchID)
+bool Manager::SwitchDelete(const switchID_t switchID)
 {
 	Switch* mySwitch = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(switchMutex);
-		if (switchID == SwitchNone || switches.count(switchID) == 0)
+		if (switchID == SwitchNone || switches.count(switchID) != 1)
 		{
 			return false;
 		}
@@ -1562,7 +1555,7 @@ bool Manager::switchDelete(const switchID_t switchID)
 	return true;
 }
 
-const map<string,datamodel::Switch*> Manager::switchListByName() const
+const map<string,datamodel::Switch*> Manager::SwitchListByName() const
 {
 	map<string,datamodel::Switch*> out;
 	std::lock_guard<std::mutex> Guard(switchMutex);
@@ -1573,9 +1566,9 @@ const map<string,datamodel::Switch*> Manager::switchListByName() const
 	return out;
 }
 
-bool Manager::switchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
+bool Manager::SwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
 {
-	if (switches.count(switchID) < 1)
+	if (switches.count(switchID) != 1)
 	{
 		controlID = 0;
 		protocol = ProtocolNone;
@@ -1618,13 +1611,14 @@ Street* Manager::GetStreet(const streetID_t streetID) const
 	std::lock_guard<std::mutex> Guard(streetMutex);
 	if (streets.count(streetID) != 1)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return streets.at(streetID);
 }
 
-const string& Manager::getStreetName(const streetID_t streetID) const
+const string& Manager::GetStreetName(const streetID_t streetID) const
 {
+	std::lock_guard<std::mutex> Guard(streetMutex);
 	if (streets.count(streetID) != 1)
 	{
 		return unknownStreet;
@@ -1734,7 +1728,7 @@ bool Manager::StreetSave(const streetID_t streetID, const std::string& name, con
 	return true;
 }
 
-const map<string,datamodel::Street*> Manager::streetListByName() const
+const map<string,datamodel::Street*> Manager::StreetListByName() const
 {
 	map<string,datamodel::Street*> out;
 	std::lock_guard<std::mutex> Guard(streetMutex);
@@ -1745,12 +1739,12 @@ const map<string,datamodel::Street*> Manager::streetListByName() const
 	return out;
 }
 
-bool Manager::streetDelete(const streetID_t streetID)
+bool Manager::StreetDelete(const streetID_t streetID)
 {
 	Street* street = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(streetMutex);
-		if (streetID == StreetNone || streets.count(streetID) == 0)
+		if (streetID == StreetNone || streets.count(streetID) != 1)
 		{
 			return false;
 		}
@@ -1778,7 +1772,7 @@ Layer* Manager::GetLayer(const layerID_t layerID) const
 	std::lock_guard<std::mutex> Guard(layerMutex);
 	if (layers.count(layerID) != 1)
 	{
-		return NULL;
+		return nullptr;
 	}
 	return layers.at(layerID);
 }
@@ -1864,7 +1858,7 @@ bool Manager::LayerDelete(const layerID_t layerID)
 	Layer* layer = nullptr;
 	{
 		std::lock_guard<std::mutex> Guard(layerMutex);
-		if (layers.count(layerID) == 0)
+		if (layers.count(layerID) != 1)
 		{
 			return false;
 		}
@@ -2050,7 +2044,7 @@ void Manager::TrackPublishState(const datamodel::Track* track)
 	}
 }
 
-bool Manager::feedbackRelease(const feedbackID_t feedbackID)
+bool Manager::FeedbackRelease(const feedbackID_t feedbackID)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
 	if (feedback == nullptr)
@@ -2133,7 +2127,7 @@ bool Manager::LocoStop(const locoID_t locoID)
 	return true;
 }
 
-bool Manager::locoStartAll()
+bool Manager::LocoStartAll()
 {
 	for (auto loco : locos)
 	{
@@ -2153,7 +2147,7 @@ bool Manager::locoStartAll()
 	return true;
 }
 
-bool Manager::locoStopAll()
+bool Manager::LocoStopAll()
 {
 	bool ret1 = true;
 	for (auto loco : locos)
@@ -2251,7 +2245,7 @@ bool Manager::CheckLayoutPositionFree(const layoutPosition_t posX, const layoutP
 	return true;
 }
 
-bool Manager::checkAddressLoco(const protocol_t protocol, const address_t address, string& result)
+bool Manager::CheckAddressLoco(const protocol_t protocol, const address_t address, string& result)
 {
 	switch (protocol)
 	{
@@ -2277,7 +2271,7 @@ bool Manager::checkAddressLoco(const protocol_t protocol, const address_t addres
 	}
 }
 
-bool Manager::checkAddressAccessory(const protocol_t protocol, const address_t address, string& result)
+bool Manager::CheckAddressAccessory(const protocol_t protocol, const address_t address, string& result)
 {
 	switch (protocol)
 	{
@@ -2302,7 +2296,7 @@ bool Manager::checkAddressAccessory(const protocol_t protocol, const address_t a
 	}
 }
 
-bool Manager::checkControlProtocolAddress(const addressType_t type, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result)
+bool Manager::CheckControlProtocolAddress(const addressType_t type, const controlID_t controlID, const protocol_t protocol, const address_t address, string& result)
 {
 	{
 		std::lock_guard<std::mutex> Guard(controlMutex);
@@ -2355,10 +2349,10 @@ bool Manager::checkControlProtocolAddress(const addressType_t type, const contro
 	switch (type)
 	{
 		case AddressTypeLoco:
-			return checkAddressLoco(protocol, address, result);
+			return CheckAddressLoco(protocol, address, result);
 
 		case AddressTypeAccessory:
-			return checkAddressAccessory(protocol, address, result);
+			return CheckAddressAccessory(protocol, address, result);
 
 		default:
 			return false;

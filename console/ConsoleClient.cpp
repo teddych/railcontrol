@@ -666,7 +666,7 @@ namespace console
 	void ConsoleClient::HandleAccessoryDelete(string& s, size_t& i)
 	{
 		accessoryID_t accessoryID = ReadNumber(s, i);
-		if (!manager.accessoryDelete(accessoryID))
+		if (!manager.AccessoryDelete(accessoryID))
 		{
 			SendAndPrompt("Accessory not found or accessory in use");
 			return;
@@ -679,7 +679,7 @@ namespace console
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all accessories
-			std::map<accessoryID_t,datamodel::Accessory*> accessories = manager.accessoryList();
+			std::map<accessoryID_t,datamodel::Accessory*> accessories = manager.AccessoryList();
 			stringstream status;
 			for (auto accessory : accessories)
 			{
@@ -691,7 +691,7 @@ namespace console
 		}
 
 		accessoryID_t accessoryID = ReadNumber(s, i);
-		datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
+		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			SendAndPrompt("Unknown accessory");
@@ -728,7 +728,7 @@ namespace console
 	void ConsoleClient::HandleAccessorySwitch(string& s, size_t& i)
 	{
 		accessoryID_t accessoryID = ReadNumber(s, i);
-		datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
+		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			SendAndPrompt("Unknown accessory");
@@ -755,7 +755,7 @@ namespace console
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all tracks
-			std::map<trackID_t,datamodel::Track*> tracks = manager.trackList();
+			std::map<trackID_t,datamodel::Track*> tracks = manager.TrackList();
 			stringstream status;
 			for (auto track : tracks)
 			{
@@ -830,7 +830,7 @@ namespace console
 	void ConsoleClient::HandleControlDelete(string& s, size_t& i)
 	{
 		controlID_t controlID = ReadNumber(s, i);
-		if (!manager.controlDelete(controlID))
+		if (!manager.ControlDelete(controlID))
 		{
 			SendAndPrompt("Control not found or control in use");
 			return;
@@ -911,7 +911,7 @@ namespace console
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all feedbacks
-			std::map<feedbackID_t,datamodel::Feedback*> feedbacks = manager.feedbackList();
+			std::map<feedbackID_t,datamodel::Feedback*> feedbacks = manager.FeedbackList();
 			stringstream status;
 			for (auto feedback : feedbacks)
 			{
@@ -935,7 +935,7 @@ namespace console
 		status
 			<< "FeedbackID" << feedbackID
 			<< "\nName:     " << feedback->name
-			<< "\nControl:  " << manager.getControlName(feedback->controlID)
+			<< "\nControl:  " << manager.GetControlName(feedback->controlID)
 			<< "\nPin:      " << feedback->pin
 			<< "\nX:        " << static_cast<int>(feedback->posX)
 			<< "\nY:        " << static_cast<int>(feedback->posY)
@@ -1000,7 +1000,7 @@ namespace console
 	void ConsoleClient::HandleFeedbackRelease(string& s, size_t& i)
 	{
 		feedbackID_t feedbackID = ReadNumber(s, i);
-		if (!manager.feedbackRelease(feedbackID))
+		if (!manager.FeedbackRelease(feedbackID))
 		{
 			SendAndPrompt("Feedback not found");
 			return;
@@ -1012,7 +1012,7 @@ namespace console
 	{
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{ // set all locos to automode
-			manager.locoStartAll();
+			manager.LocoStartAll();
 			return;
 		}
 
@@ -1039,7 +1039,7 @@ namespace console
 	void ConsoleClient::HandleLocoDelete(string& s, size_t& i)
 	{
 		locoID_t locoID = ReadNumber(s, i);
-		if (!manager.locoDelete(locoID))
+		if (!manager.LocoDelete(locoID))
 		{
 			SendAndPrompt("Loco not found or loco in use");
 			return;
@@ -1075,7 +1075,7 @@ namespace console
 			<< "Loco ID:  " << locoID
 			<< "\nName:     " << loco->name
 			<< "\nSpeed:    " << manager.LocoSpeed(locoID)
-			<< "\nControl:  " << manager.getControlName(loco->controlID)
+			<< "\nControl:  " << manager.GetControlName(loco->controlID)
 			<< "\nProtocol: " << protocolSymbols[loco->protocol]
 			<< "\nAddress:  " << loco->address;
 		const char* const locoStateText = loco->GetStateText();
@@ -1096,7 +1096,7 @@ namespace console
 		}
 		else
 		{
-			status << manager.getStreetName(loco->GetStreet()) << " (" << loco->GetStreet() << ")";
+			status << manager.GetStreetName(loco->GetStreet()) << " (" << loco->GetStreet() << ")";
 		}
 		SendAndPrompt(status.str());
 	}
@@ -1106,7 +1106,7 @@ namespace console
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// set all locos to manual mode
-			manager.locoStopAll();
+			manager.LocoStopAll();
 			return;
 		}
 		// set specific loco to manual mode
@@ -1236,7 +1236,7 @@ namespace console
 		status << "\033[0;0H";
 		status << "Layout 0";
 		// print tracks
-		const map<trackID_t,datamodel::Track*>& tracks = manager.trackList();
+		const map<trackID_t,datamodel::Track*>& tracks = manager.TrackList();
 		for (auto track : tracks)
 		{
 			layoutPosition_t posX;
@@ -1254,7 +1254,7 @@ namespace console
 			status << "Bloc";
 		}
 		// print switches
-		const map<switchID_t,datamodel::Switch*>& switches = manager.switchList();
+		const map<switchID_t,datamodel::Switch*>& switches = manager.SwitchList();
 		for (auto mySwitch : switches)
 		{
 			layoutPosition_t posX;
@@ -1272,7 +1272,7 @@ namespace console
 			status << "S";
 		}
 		// print accessories
-		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
+		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.AccessoryList();
 		for (auto accessory : accessories)
 		{
 			layoutPosition_t posX;
@@ -1310,7 +1310,7 @@ namespace console
 	void ConsoleClient::HandleStreetDelete(string& s, size_t& i)
 	{
 		streetID_t streetID = ReadNumber(s, i);
-		if (!manager.streetDelete(streetID))
+		if (!manager.StreetDelete(streetID))
 		{
 			SendAndPrompt("Street not found or street in use");
 			return;
@@ -1323,7 +1323,7 @@ namespace console
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all streetes
-			std::map<streetID_t,datamodel::Street*> streets = manager.streetList();
+			std::map<streetID_t,datamodel::Street*> streets = manager.StreetList();
 			stringstream status;
 			for (auto street : streets) {
 				status << street.first << " " << street.second->name << "\n";
@@ -1412,7 +1412,7 @@ namespace console
 	void ConsoleClient::HandleSwitchDelete(string& s, size_t& i)
 	{
 		switchID_t switchID = ReadNumber(s, i);
-		if (!manager.switchDelete(switchID))
+		if (!manager.SwitchDelete(switchID))
 		{
 			SendAndPrompt("Switch not found or switch in use");
 			return;
@@ -1425,7 +1425,7 @@ namespace console
 		if (ReadCharacterWithoutEating(s, i) == 'a')
 		{
 			// list all switches
-			std::map<switchID_t,datamodel::Switch*> switches = manager.switchList();
+			std::map<switchID_t,datamodel::Switch*> switches = manager.SwitchList();
 			stringstream status;
 			for (auto mySwitch : switches) {
 				status << mySwitch.first << " " << mySwitch.second->name << "\n";

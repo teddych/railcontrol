@@ -137,7 +137,7 @@ namespace console
 		std::stringstream status;
 		string stateText;
 		text::Converters::switchStatus(state, stateText);
-		status << manager.getSwitchName(switchID) << " is " << stateText;
+		status << manager.GetSwitchName(switchID) << " is " << stateText;
 		AddUpdate(status.str());
 	}
 
@@ -158,14 +158,14 @@ namespace console
 	void ConsoleServer::StreetRelease(const streetID_t streetID)
 	{
 		stringstream status;
-		status << manager.getStreetName(streetID) << " is  released";
+		status << manager.GetStreetName(streetID) << " is  released";
 		AddUpdate(status.str());
 	}
 
 	void ConsoleServer::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.getStreetName(streetID);
+		status << manager.LocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.GetStreetName(streetID);
 		AddUpdate(status.str());
 	}
 

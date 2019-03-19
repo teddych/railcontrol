@@ -910,7 +910,7 @@ namespace webserver
 			return;
 		}
 
-		if (!manager.controlDelete(controlID))
+		if (!manager.ControlDelete(controlID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete control");
 			return;
@@ -924,7 +924,7 @@ namespace webserver
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Controls"));
 		HtmlTag table("table");
-		const map<string,hardware::HardwareParams*> hardwareList = manager.controlListByName();
+		const map<string,hardware::HardwareParams*> hardwareList = manager.ControlListByName();
 		map<string,string> hardwareArgument;
 		for (auto hardware : hardwareList)
 		{
@@ -1067,7 +1067,7 @@ namespace webserver
 		{
 			case ObjectTypeSwitch:
 			{
-				std::map<string, Switch*> switches = manager.switchListByName();
+				std::map<string, Switch*> switches = manager.SwitchListByName();
 				map<string, switchID_t> switchOptions;
 				for (auto mySwitch : switches)
 				{
@@ -1084,7 +1084,7 @@ namespace webserver
 
 			case ObjectTypeAccessory:
 			{
-				std::map<string, Accessory*> accessories = manager.accessoryListByName();
+				std::map<string, Accessory*> accessories = manager.AccessoryListByName();
 				map<string, accessoryID_t> accessoryOptions;
 				for (auto accessory : accessories)
 				{
@@ -1167,7 +1167,7 @@ namespace webserver
 	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction, const string& onchange) const
 	{
 		HtmlTag tag;
-		map<string,trackID_t> tracks = manager.trackListIdByName();
+		map<string,trackID_t> tracks = manager.TrackListIdByName();
 		HtmlTagSelectWithLabel selectTrack(name + "track", label, tracks, trackId);
 		selectTrack.AddClass("select_track");
 		if (onchange.size() > 0)
@@ -1398,7 +1398,7 @@ namespace webserver
 			return;
 		}
 
-		if (!manager.locoDelete(locoID))
+		if (!manager.LocoDelete(locoID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete loco");
 			return;
@@ -1420,7 +1420,7 @@ namespace webserver
 
 		if (layer < LayerUndeletable)
 		{
-			const map<feedbackID_t,Feedback*>& feedbacks = manager.feedbackList();
+			const map<feedbackID_t,Feedback*>& feedbacks = manager.FeedbackList();
 			for (auto feedback : feedbacks)
 			{
 				if (feedback.second->controlID != -layer)
@@ -1440,7 +1440,7 @@ namespace webserver
 			return;
 		}
 
-		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.accessoryList();
+		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.AccessoryList();
 		for (auto accessory : accessories)
 		{
 			if (accessory.second->posZ != layer)
@@ -1450,7 +1450,7 @@ namespace webserver
 			content.AddChildTag(HtmlTagAccessory(accessory.second));
 		}
 
-		const map<switchID_t,datamodel::Switch*>& switches = manager.switchList();
+		const map<switchID_t,datamodel::Switch*>& switches = manager.SwitchList();
 		for (auto mySwitch : switches)
 		{
 			if (mySwitch.second->posZ != layer)
@@ -1460,7 +1460,7 @@ namespace webserver
 			content.AddChildTag(HtmlTagSwitch(mySwitch.second));
 		}
 
-		const map<switchID_t,datamodel::Track*>& tracks = manager.trackList();
+		const map<switchID_t,datamodel::Track*>& tracks = manager.TrackList();
 		for (auto track : tracks)
 		{
 			if (track.second->posZ != layer)
@@ -1470,7 +1470,7 @@ namespace webserver
 			content.AddChildTag(HtmlTagTrack(manager, track.second));
 		}
 
-		const map<streetID_t,datamodel::Street*>& streets = manager.streetList();
+		const map<streetID_t,datamodel::Street*>& streets = manager.StreetList();
 		for (auto street : streets)
 		{
 			if (street.second->posZ != layer || street.second->visible == VisibleNo)
@@ -1480,7 +1480,7 @@ namespace webserver
 			content.AddChildTag(HtmlTagStreet(street.second));
 		}
 
-		const map<feedbackID_t,Feedback*>& feedbacks = manager.feedbackList();
+		const map<feedbackID_t,Feedback*>& feedbacks = manager.FeedbackList();
 		for (auto feedback : feedbacks)
 		{
 			if (feedback.second->posZ != layer || feedback.second->visible == VisibleNo)
@@ -1594,7 +1594,7 @@ namespace webserver
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Accessories"));
 		HtmlTag table("table");
-		const map<string,datamodel::Accessory*> accessoryList = manager.accessoryListByName();
+		const map<string,datamodel::Accessory*> accessoryList = manager.AccessoryListByName();
 		map<string,string> locoArgument;
 		for (auto accessory : accessoryList)
 		{
@@ -1651,7 +1651,7 @@ namespace webserver
 			return;
 		}
 
-		if (!manager.accessoryDelete(accessoryID))
+		if (!manager.AccessoryDelete(accessoryID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete accessory");
 			return;
@@ -1773,7 +1773,7 @@ namespace webserver
 		manager.SwitchState(ControlTypeWebserver, switchID, switchState);
 
 		stringstream ss;
-		ss << "Switch &quot;" << manager.getSwitchName(switchID) << "&quot; is now set to " << switchState;
+		ss << "Switch &quot;" << manager.GetSwitchName(switchID) << "&quot; is now set to " << switchState;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
@@ -1782,7 +1782,7 @@ namespace webserver
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Switches"));
 		HtmlTag table("table");
-		const map<string,datamodel::Switch*> switchList = manager.switchListByName();
+		const map<string,datamodel::Switch*> switchList = manager.SwitchListByName();
 		map<string,string> switchArgument;
 		for (auto mySwitch : switchList)
 		{
@@ -1839,7 +1839,7 @@ namespace webserver
 			return;
 		}
 
-		if (!manager.switchDelete(switchID))
+		if (!manager.SwitchDelete(switchID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete switch");
 			return;
@@ -2069,7 +2069,7 @@ namespace webserver
 			return;
 		}
 
-		if (!manager.streetDelete(streetID))
+		if (!manager.StreetDelete(streetID))
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete street");
 			return;
@@ -2083,7 +2083,7 @@ namespace webserver
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Streets"));
 		HtmlTag table("table");
-		const map<string,datamodel::Street*> streetList = manager.streetListByName();
+		const map<string,datamodel::Street*> streetList = manager.StreetListByName();
 		map<string,string> streetArgument;
 		for (auto street : streetList)
 		{
@@ -2282,7 +2282,7 @@ namespace webserver
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Tracks"));
 		HtmlTag table("table");
-		const map<string,datamodel::Track*> trackList = manager.trackListByName();
+		const map<string,datamodel::Track*> trackList = manager.TrackListByName();
 		map<string,string> trackArgument;
 		for (auto track : trackList)
 		{

@@ -216,7 +216,7 @@ namespace webserver {
 		string stateText;
 		text::Converters::switchStatus(state, stateText);
 		command << "switch;switch=" << switchID << ";state=" << stateText;
-		status << manager.getSwitchName(switchID) << " is " << stateText;
+		status << manager.GetSwitchName(switchID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -279,7 +279,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "streetRelease;street=" << streetID;
-		status << manager.getStreetName(streetID) << " is  released";
+		status << manager.GetStreetName(streetID) << " is  released";
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -288,7 +288,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		status << manager.LocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.getStreetName(streetID);
+		status << manager.LocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.GetStreetName(streetID);
 		AddUpdate(command.str(), status.str());
 	}
 

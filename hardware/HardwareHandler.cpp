@@ -78,7 +78,7 @@ namespace hardware
 		ss << "hardware/" << symbol << ".so";
 
 		Logger::Logger* logger = Logger::Logger::GetLogger("HardwareHandler");
-		void* dlhandle = manager.hardwareLibraryGet(type);
+		void* dlhandle = manager.HardwareLibraryGet(type);
 		if (dlhandle == nullptr)
 		{
 			// open dynamic library
@@ -89,7 +89,7 @@ namespace hardware
 				return;
 			}
 			logger->Info("Hardware library {0} loaded", symbol);
-			if (!manager.hardwareLibraryAdd(type, dlhandle))
+			if (!manager.HardwareLibraryAdd(type, dlhandle))
 			{
 				logger->Error("Unable to store library address");
 				return;
@@ -144,16 +144,16 @@ namespace hardware
 #ifndef AMALGAMAGTION
 		hardwareType_t type = params->hardwareType;
 		// close library
-		if (manager.controlsOfHardwareType(type) > 1)
+		if (manager.ControlsOfHardwareType(type) > 1)
 		{
 			return;
 		}
-		void* dlhandle = manager.hardwareLibraryGet(type);
+		void* dlhandle = manager.HardwareLibraryGet(type);
 		if (dlhandle == nullptr)
 		{
 			return;
 		}
-		if (manager.hardwareLibraryRemove(type) == false)
+		if (manager.HardwareLibraryRemove(type) == false)
 		{
 			return;
 		}
@@ -268,7 +268,7 @@ namespace hardware
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
-		manager.locoProtocolAddress(locoID, controlID, protocol, address);
+		manager.LocoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != ControlID())
 		{
 			return;
@@ -285,7 +285,7 @@ namespace hardware
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
-		manager.locoProtocolAddress(locoID, controlID, protocol, address);
+		manager.LocoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != ControlID())
 		{
 			return;
@@ -302,7 +302,7 @@ namespace hardware
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
-		manager.locoProtocolAddress(locoID, controlID, protocol, address);
+		manager.LocoProtocolAddress(locoID, controlID, protocol, address);
 		if (controlID != ControlID())
 		{
 			return;
@@ -319,7 +319,7 @@ namespace hardware
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
-		manager.accessoryProtocolAddress(accessoryID, controlID, protocol, address);
+		manager.AccessoryProtocolAddress(accessoryID, controlID, protocol, address);
 		if (controlID != ControlID())
 		{
 			return;
@@ -336,7 +336,7 @@ namespace hardware
 		controlID_t controlID = 0;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
-		manager.switchProtocolAddress(switchID, controlID, protocol, address);
+		manager.SwitchProtocolAddress(switchID, controlID, protocol, address);
 		if (controlID != ControlID())
 		{
 			return;
