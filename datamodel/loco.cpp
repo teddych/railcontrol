@@ -24,7 +24,7 @@ namespace datamodel
 					return;
 				}
 			}
-			logger->Info("Waiting until loco {0} has stopped", name);
+			logger->Info("Waiting until {0} has stopped", name);
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 	}
@@ -101,12 +101,12 @@ namespace datamodel
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		if (trackID == TrackNone)
 		{
-			logger->Warning("Can not start loco {0} because it is not in a track", name);
+			logger->Warning("Can not start {0} because it is not in a track", name);
 			return false;
 		}
 		if (state == LocoStateError)
 		{
-			logger->Warning("Can not start loco {0} because it is in error state", name);
+			logger->Warning("Can not start {0} because it is in error state", name);
 			return false;
 		}
 		if (state == LocoStateOff)
@@ -116,7 +116,7 @@ namespace datamodel
 		}
 		if (state != LocoStateManual)
 		{
-			logger->Info("Can not start loco {0} because it is already running", name);
+			logger->Info("Can not start {0} because it is already running", name);
 			return false;
 		}
 
@@ -144,12 +144,12 @@ namespace datamodel
 
 				case LocoStateRunning:
 				case LocoStateStopping:
-					logger->Info("Loco {0} is actually running, waiting until loco reached its destination", name);
+					logger->Info("{0} is actually running, waiting until reached its destination", name);
 					state = LocoStateStopping;
 					return false;
 
 				default:
-					logger->Error("Loco {0} is in unknown state. Setting to error state and setting speed to 0.", name);
+					logger->Error("{0} is in unknown state. Setting to error state and setting speed to 0.", name);
 					state = LocoStateError;
 					manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 					return false;
@@ -163,7 +163,7 @@ namespace datamodel
 	void Loco::AutoMode(Loco* loco)
 	{
 		const string& name = loco->name;
-		logger->Info("Loco {0} is now in automode", name);
+		logger->Info("{0} is now in automode", name);
 		while (true)
 		{
 			{
@@ -172,7 +172,7 @@ namespace datamodel
 				{
 					case LocoStateOff:
 						// automode is turned off, terminate thread
-						logger->Info("Loco {0} is now in manual mode", name);
+						logger->Info("{0} is now in manual mode", name);
 						return;
 
 					case LocoStateSearching:
@@ -181,7 +181,7 @@ namespace datamodel
 						if (streetID != StreetNone)
 						{
 							loco->state = LocoStateError;
-							logger->Error("Loco {0} has already a street reserved. Going to error state.", name);
+							logger->Error("{0} has already a street reserved. Going to error state.", name);
 							break;
 						}
 						// get possible destinations
@@ -189,16 +189,16 @@ namespace datamodel
 						if (!fromTrack)
 						{
 							loco->state = LocoStateOff;
-							logger->Info("Loco {0} is not on a track. Switching to manual mode.", name);
+							logger->Info("{0} is not on a track. Switching to manual mode.", name);
 							break;
 						}
 						if (fromTrack->objectID != trackID)
 						{
 							loco->state = LocoStateError;
-							logger->Error("Loco {0} thinks it is on track {1} but there is loco {2}. Going to error state.", name, fromTrack->Name(), manager->LocoName(fromTrack->GetLoco()));
+							logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, fromTrack->Name(), manager->LocoName(fromTrack->GetLoco()));
 							break;
 						}
-						logger->Info("Looking for new track for loco {0} on track {1}.", name, fromTrack->Name());
+						logger->Info("Looking for new destination starting from {1}.", fromTrack->Name());
 
 						// get best fitting destination and reserve street
 						vector<Street*> streets;
@@ -206,25 +206,30 @@ namespace datamodel
 						trackID_t toTrackID = TrackNone;
 						for (auto street : streets)
 						{
-							if (!street->Reserve(objectID))
+							if (street->Reserve(objectID) == false)
 							{
 								continue;
 							}
-							if (!street->Lock(objectID))
+							if (street->Lock(objectID) == false)
 							{
+								street->Release(objectID);
 								continue;
 							}
 
+							if (street->Execute() == false)
+							{
+								street->Release(objectID);
+								continue;
+							}
 							streetID = street->objectID;
 							toTrackID = street->DestinationTrack();
-							street->Execute();
-							logger->Info("Loco \"{0}\" found street \"{1}\" with destination \"{2}\"", name, street->name, manager->GetTrackName(toTrackID));
+							logger->Info("Heading to {0} via {1}", manager->GetTrackName(toTrackID), street->name);
 							break; // break for
 						}
 
 						if (streetID == StreetNone)
 						{
-							logger->Info("No valid street found for loco {0}", name);
+							logger->Info("No valid street found for {0}", name);
 							break; // break switch
 						}
 
@@ -241,16 +246,16 @@ namespace datamodel
 						break;
 
 					case LocoStateStopping:
-						logger->Info("Loco {0} has not yet reached its destination. Going to manual mode when it reached its destination.", name);
+						logger->Info("{0} has not yet reached its destination. Going to manual mode when it reached its destination.", name);
 						break;
 
 					case LocoStateManual:
-						logger->Error("Loco {0} is in manual state while automode is running. Putting loco into error state", name);
+						logger->Error("{0} is in manual state while automode is running. Putting loco into error state", name);
 						state = LocoStateError;
 						// fall through / no break
 
 					case LocoStateError:
-						logger->Error("Loco {0} is in error state.", name);
+						logger->Error("{0} is in error state.", name);
 						manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 						break;
 				}
@@ -292,25 +297,25 @@ namespace datamodel
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		manager->LocoSpeed(ControlTypeInternal, objectID, MinSpeed);
 		// set loco to new track
-		Street* street = manager->GetStreet(streetID);
-		Track* track = manager->GetTrack(trackID);
-		if (street == nullptr || track == nullptr)
+		Street* oldStreet = manager->GetStreet(streetID);
+		Track* oldTrack = manager->GetTrack(trackID);
+		if (oldStreet == nullptr || oldTrack == nullptr)
 		{
 			state = LocoStateError;
 			logger->Error("Loco {0} is running in automode without a street / track. Putting loco into error state", name);
 			return;
 		}
 
-		trackID = street->DestinationTrack();
+		trackID = oldStreet->DestinationTrack();
 		manager->LocoDestinationReached(objectID, streetID, trackID);
-		// release old street & old track
-		street->Release(objectID);
-		track->Release(objectID);
+		oldStreet->Release(objectID);
+		oldTrack->Release(objectID);
+
 		streetID = StreetNone;
 		// set state
 		state = (state == LocoStateRunning /* else is LocoStateStopping */ ? LocoStateSearching : LocoStateOff);
 		logger->Info("Loco {0} reached its destination", name);
-		manager->TrackPublishState(track);
+		manager->TrackPublishState(oldTrack);
 	}
 
 } // namespace datamodel
