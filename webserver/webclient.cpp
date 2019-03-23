@@ -82,11 +82,15 @@ namespace webserver
 				size_t ret = connection->Receive(buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
 				if (ret == static_cast<size_t>(-1))
 				{
-					if (errno == ETIMEDOUT)
+					if (errno != ETIMEDOUT)
 					{
-						continue;
+						return;
 					}
-					return;
+					if (run == false)
+					{
+						return;
+					}
+					continue;
 				}
 				pos += ret;
 				s = string(buffer_in);
