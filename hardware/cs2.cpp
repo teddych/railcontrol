@@ -358,13 +358,15 @@ namespace hardware
 			{
 				// speed event
 				locoSpeed_t speed = dataToShort(buffer + 9);
+				logger->Info("Received loco speed command for protocol {0} address {1} and speed {2}", protocol, address, speed);
 				manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), speed);
 			}
 			else if (command == 0x05 && !response && length == 5)
 			{
 				// direction event (implies speed=0)
 				direction_t direction = (buffer[9] == 1 ? DirectionRight : DirectionLeft);
-				manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), 0);
+				logger->Info("Received loco direction command for protocol {0} address {1} and direction {2}", protocol, address, direction);
+				manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), MinSpeed);
 				manager->LocoDirection(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), direction);
 			}
 			else if (command == 0x06 && !response && length == 6)
@@ -372,6 +374,7 @@ namespace hardware
 				// function event
 				function_t function = buffer[9];
 				bool on = buffer[10] != 0;
+				logger->Info("Received loco function command for protocol {0} address {1} and function {2} state {3}", protocol, address, function, on);
 				manager->LocoFunction(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), function, on);
 			}
 			else if (command == 0x0B && !response && length == 6 && buffer[10] == 1)
@@ -380,6 +383,7 @@ namespace hardware
 				accessoryState_t state = buffer[9];
 				// GUI-address is 1-based, protocol-address is 0-based
 				++address;
+				logger->Info("Received accessory command for protocol {0} address {1} and state {2}", protocol, address, state);
 				manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 			}
 		}
