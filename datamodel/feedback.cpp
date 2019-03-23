@@ -25,8 +25,9 @@ namespace datamodel
 	bool Feedback::Deserialize(const std::string& serialized)
 	{
 		map<string, string> arguments;
-		parseArguments(serialized, arguments);
-		if (arguments.count("objectType") != 1 || arguments.at("objectType").compare("Feedback") != 0)
+		ParseArguments(serialized, arguments);
+		string objectType = GetStringMapEntry(arguments, "objectType");
+		if (objectType.compare("Feedback") != 0)
 		{
 			return false;
 		}

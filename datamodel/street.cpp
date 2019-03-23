@@ -27,6 +27,7 @@ namespace datamodel
 		const direction_t toDirection,
 		const feedbackID_t feedbackIDStop)
 	:	LayoutItem(streetID, name, visible, posX, posY, posZ, Width1, Height1, Rotation0),
+	 	LockableItem(),
 	 	delay(delay),
 	 	automode(automode),
 		fromTrack(fromTrack),
@@ -35,9 +36,7 @@ namespace datamodel
 		toDirection(toDirection),
 		feedbackIdStop(feedbackIDStop),
 		manager(manager),
-		relations(relations),
-		lockState(LockStateFree),
-		locoID(LocoNone)
+		relations(relations)
 	{
 		Track* track = manager->GetTrack(fromTrack);
 		if (track == nullptr)
@@ -48,8 +47,8 @@ namespace datamodel
 	}
 
 	Street::Street(Manager* manager, const std::string& serialized)
-	:	manager(manager),
-		locoID(LocoNone)
+	:	LockableItem(),
+	 	manager(manager)
 	{
 		Deserialize(serialized);
 		Track* track = manager->GetTrack(fromTrack);
@@ -65,8 +64,8 @@ namespace datamodel
 		stringstream ss;
 		ss << "objectType=Street;"
 			<< LayoutItem::Serialize()
+			<< ";" << LockableItem::Serialize()
 			<< ";delay=" << static_cast<int>(delay)
-			<< ";lockState=" << static_cast<int>(lockState)
 			<< ";automode=" << static_cast<int>(automode)
 			<< ";fromTrack=" << static_cast<int>(fromTrack)
 			<< ";fromDirection=" << static_cast<int>(fromDirection)
@@ -79,21 +78,24 @@ namespace datamodel
 	bool Street::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
-		parseArguments(serialized, arguments);
-		if (arguments.count("objectType") && arguments.at("objectType").compare("Street") == 0)
+		ParseArguments(serialized, arguments);
+		string objectType = GetStringMapEntry(arguments, "objectType");
+		if (objectType.compare("Street") != 0)
 		{
-			LayoutItem::Deserialize(arguments);
-			delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay", 250));
-			lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
-			automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
-			fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
-			fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionLeft));
-			toTrack = GetIntegerMapEntry(arguments, "toTrack", TrackNone);
-			toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
-			feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackIdStop", FeedbackNone);
-			return true;
+			return false;
 		}
-		return false;
+
+		LayoutItem::Deserialize(arguments);
+		LockableItem::Deserialize(arguments);
+
+		delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay", 250));
+		automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
+		fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
+		fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionLeft));
+		toTrack = GetIntegerMapEntry(arguments, "toTrack", TrackNone);
+		toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
+		feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackIdStop", FeedbackNone);
+		return true;
 	}
 
 	void Street::DeleteRelations()
@@ -108,7 +110,7 @@ namespace datamodel
 	bool Street::AssignRelations(const std::vector<datamodel::Relation*>& newRelations)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LockStateFree)
+		if (GetLockState() != LockStateFree)
 		{
 			return false;
 		}
@@ -132,20 +134,9 @@ namespace datamodel
 	bool Street::Reserve(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if ((this->locoID != LocoNone && this->locoID != locoID)
-			|| (lockState != LockStateFree && lockState != LockStateReserved))
-		{
-			return false;
-		}
-
-		bool ret = true;
-		for (auto relation : relations)
-		{
-			ret &= relation->Reserve(locoID);
-		}
+		bool ret = LockableItem::Reserve(locoID);
 		if (ret == false)
 		{
-			ReleaseInternal(locoID);
 			return false;
 		}
 
@@ -155,27 +146,26 @@ namespace datamodel
 			ReleaseInternal(locoID);
 			return false;
 		}
-		lockState = LockStateReserved;
-		this->locoID = locoID;
+
+		ret = true;
+		for (auto relation : relations)
+		{
+			ret &= relation->Reserve(locoID);
+		}
+		if (ret == false)
+		{
+			ReleaseInternal(locoID);
+			return false;
+		}
 		return true;
 	}
 
 	bool Street::Lock(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (lockState != LockStateReserved || this->locoID != locoID)
-		{
-			return false;
-		}
-
-		bool ret = true;
-		for (auto relation : relations)
-		{
-			ret &= relation->Lock(locoID);
-		}
+		bool ret = LockableItem::Lock(locoID);
 		if (ret == false)
 		{
-			ReleaseInternal(locoID);
 			return false;
 		}
 
@@ -186,31 +176,33 @@ namespace datamodel
 			return false;
 		}
 
-		lockState = LockStateHardLocked;
+		ret = true;
+		for (auto relation : relations)
+		{
+			ret &= relation->Lock(locoID);
+		}
+		if (ret == false)
+		{
+			ReleaseInternal(locoID);
+			return false;
+		}
+
 		return true;
 	}
 
 	bool Street::Release(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (this->locoID != locoID && locoID != LocoNone)
-		{
-			return false;
-		}
-
-		ReleaseInternal(locoID);
-		return true;
+		return ReleaseInternal(locoID);
 	}
 
-	void Street::ReleaseInternal(const locoID_t locoID)
+	bool Street::ReleaseInternal(const locoID_t locoID)
 	{
 		for (auto relation : relations)
 		{
 			relation->Release(locoID);
 		}
-
-		this->locoID = LocoNone;
-		lockState = LockStateFree;
+		return LockableItem::Release(locoID);
 	}
 } // namespace datamodel
 

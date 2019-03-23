@@ -71,7 +71,7 @@ class Manager {
 
 		// accessory
 		void AccessoryState(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryState_t state);
-		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state);
+		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool force);
 		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
 		datamodel::Accessory* GetAccessory(const accessoryID_t accessoryID) const;
 		const std::string& getAccessoryName(const accessoryID_t accessoryID) const;
@@ -102,7 +102,7 @@ class Manager {
 		bool TrackDelete(const trackID_t trackID);
 
 		// switch
-		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state);
+		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool force);
 		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
 		datamodel::Switch* GetSwitch(const switchID_t switchID) const;
 		const std::string& GetSwitchName(const switchID_t switchID) const;

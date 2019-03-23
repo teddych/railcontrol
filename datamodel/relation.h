@@ -4,13 +4,14 @@
 #include <string>
 
 #include "datatypes.h"
+#include "LockableItem.h"
 #include "serializable.h"
 
 class Manager;
 
 namespace datamodel
 {
-	class Relation : protected Serializable
+	class Relation : protected Serializable, public LockableItem
 	{
 		public:
 			Relation(Manager* manager,
@@ -27,15 +28,13 @@ namespace datamodel
 				objectType2(objectType2),
 				objectID2(objectID2),
 				priority(priority),
-				accessoryState(accessoryState),
-				lockState(lockState)
+				accessoryState(accessoryState)
 			{}
 
 			Relation(Manager* manager,
 				const std::string& serialized)
 			:	manager(manager),
-				accessoryState(AccessoryStateOff),
-				lockState(LockStateFree)
+				accessoryState(AccessoryStateOff)
 			{
 				Deserialize(serialized);
 			}
@@ -47,13 +46,14 @@ namespace datamodel
 			objectID_t ObjectID2() { return objectID2; }
 			priority_t Priority() { return priority; }
 			accessoryState_t AccessoryState() { return accessoryState; }
-			lockState_t LockState() { return lockState; }
-			bool Reserve(const locoID_t locoID);
-			bool Lock(const locoID_t locoID);
-			bool Release(const locoID_t locoID);
+			bool Reserve(const locoID_t locoID) override;
+			bool Lock(const locoID_t locoID) override;
+			bool Release(const locoID_t locoID) override;
 			bool Execute();
 
 		private:
+			LockableItem* GetObject2();
+
 			Manager* manager;
 			objectType_t objectType1;
 			objectID_t objectID1;
@@ -61,7 +61,6 @@ namespace datamodel
 			objectID_t objectID2;
 			priority_t priority;
 			accessoryState_t accessoryState;
-			lockState_t lockState;
 	};
 } // namespace datamodel
 

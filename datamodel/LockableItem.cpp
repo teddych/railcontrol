@@ -22,7 +22,7 @@ namespace datamodel
 
 	bool LockableItem::Reserve(const locoID_t locoID)
 	{
-		std::lock_guard<std::mutex> Guard(updateMutex);
+		std::lock_guard<std::mutex> Guard(lockMutex);
 		if (locoID == this->locoID)
 		{
 			if (lockState == LockStateFree)
@@ -42,7 +42,7 @@ namespace datamodel
 
 	bool LockableItem::Lock(const locoID_t locoID)
 	{
-		std::lock_guard<std::mutex> Guard(updateMutex);
+		std::lock_guard<std::mutex> Guard(lockMutex);
 		if (lockState != LockStateReserved || this->locoID != locoID)
 		{
 			return false;
@@ -53,7 +53,7 @@ namespace datamodel
 
 	bool LockableItem::Release(const locoID_t locoID)
 	{
-		std::lock_guard<std::mutex> Guard(updateMutex);
+		std::lock_guard<std::mutex> Guard(lockMutex);
 		if (this->locoID != locoID && locoID != LocoNone)
 		{
 			return false;

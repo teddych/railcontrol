@@ -4,11 +4,12 @@
 
 #include "datatypes.h"
 #include "layout_item.h"
+#include "LockableItem.h"
 #include "serializable.h"
 
 namespace datamodel
 {
-	class Accessory : public LayoutItem
+	class Accessory : public LayoutItem, public LockableItem
 	{
 		public:
 			Accessory(const accessoryID_t accessoryID,
@@ -59,7 +60,7 @@ namespace datamodel
 			accessoryTimeout_t timeout; // timeout in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
 
 		protected:
-			std::string serializeWithoutType() const;
+			std::string SerializeWithoutType() const;
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 
 			bool inverted;

@@ -26,7 +26,7 @@ namespace datamodel
 				const trackType_t type,
 				const std::vector<feedbackID_t>& feedbacks)
 			:	LayoutItem(trackID, name, VisibleYes, x, y, z, Width1, height, rotation),
-			 	LockableItem(LockStateFree),
+			 	LockableItem(),
 			 	manager(manager),
 				type(type),
 				feedbacks(feedbacks),
@@ -66,6 +66,7 @@ namespace datamodel
 			feedbackState_t state;
 			direction_t locoDirection;
 			std::vector<Street*> streets;
+			std::mutex updateMutex;
 	};
 } // namespace datamodel
 

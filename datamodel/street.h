@@ -11,7 +11,7 @@ class Manager;
 
 namespace datamodel
 {
-	class Street : public LayoutItem
+	class Street : public LayoutItem, public LockableItem
 	{
 		public:
 			Street(Manager* manager,
@@ -47,19 +47,17 @@ namespace datamodel
 			bool Execute();
 			static bool ExecuteStatic(Street* street) { return street->Execute(); }
 
-			bool Reserve(const locoID_t locoID);
-			bool Lock(const locoID_t locoID);
-			bool Release(const locoID_t locoID);
+			bool Reserve(const locoID_t locoID) override;
+			bool Lock(const locoID_t locoID) override;
+			bool Release(const locoID_t locoID) override;
 
 			delay_t Delay() const { return delay; }
 			void Delay(delay_t delay) { this->delay = delay; }
-			locoID_t GetLoco() const { return locoID; }
-			lockState_t GetState() const { return lockState; }
 
 			trackID_t DestinationTrack() const { return toTrack; };
 
 		private:
-			void ReleaseInternal(const locoID_t locoID);
+			bool ReleaseInternal(const locoID_t locoID);
 
 			delay_t delay;
 
@@ -75,8 +73,6 @@ namespace datamodel
 		private:
 			Manager* manager;
 			std::vector<datamodel::Relation*> relations;
-			lockState_t lockState;
-			locoID_t locoID;
 			std::mutex updateMutex;
 	};
 

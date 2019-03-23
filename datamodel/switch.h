@@ -25,9 +25,7 @@ namespace datamodel {
 				switchType_t type,
 				switchTimeout_t timeout,
 				bool inverted)
-			:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, timeout, inverted),
-		 		lockState(LockStateFree),
-		 		locoIDHardLock(LocoNone)
+			:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, timeout, inverted)
 			{
 			}
 
@@ -42,17 +40,6 @@ namespace datamodel {
 
 			switchState_t GetState() const { return static_cast<switchState_t>(state); }
 			switchType_t GetType() const { return static_cast<switchType_t>(type); }
-
-			bool reserve(const locoID_t locoID);
-			bool hardLock(const locoID_t locoID, const switchState_t switchState);
-			bool softLock(const locoID_t locoID, const switchState_t switchState);
-			bool release(const locoID_t locoID);
-
-		private:
-			lockState_t lockState;
-			locoID_t locoIDHardLock;
-			//vector<locoID_t> locoIDSoftLock;
-			std::mutex updateMutex;
 	};
 
 } // namespace datamodel

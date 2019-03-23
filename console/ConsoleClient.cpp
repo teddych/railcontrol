@@ -731,7 +731,7 @@ namespace console
 		}
 
 		accessoryState_t state = ReadAccessoryState(s, i);
-		manager.AccessoryState(ControlTypeConsole, accessoryID, state);
+		manager.AccessoryState(ControlTypeConsole, accessoryID, state, false);
 	}
 
 	void ConsoleClient::HandleTrackDelete(string& s, size_t& i)
@@ -1339,7 +1339,7 @@ namespace console
 			status << manager.GetTrackName(street->toTrack) << " (" << street->toTrack << ") " << (street->toDirection ? ">" : "<");
 		}
 		string stateText;
-		text::Converters::lockStatus(street->GetState(), stateText);
+		text::Converters::lockStatus(street->GetLockState(), stateText);
 		status << "\nStatus:   " << stateText;
 		status << "\nLoco:     ";
 		if (street->GetLoco() == LocoNone)

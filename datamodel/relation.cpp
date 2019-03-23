@@ -14,27 +14,27 @@ namespace datamodel
 	std::string Relation::Serialize() const
 	{
 		stringstream ss;
-		ss << "objectType1=" << static_cast<int>(objectType1)
+		ss << LockableItem::Serialize()
+			<< ";objectType1=" << static_cast<int>(objectType1)
 			<< ";objectID1=" << objectID1
 			<< ";objectType2=" << static_cast<int>(objectType2)
 			<< ";objectID2=" << objectID2
 			<< ";priority=" << static_cast<int>(priority)
-			<< ";accessoryState=" << static_cast<int>(accessoryState)
-			<< ";lockState=" << static_cast<int>(lockState);
+			<< ";accessoryState=" << static_cast<int>(accessoryState);
 		return ss.str();
 	}
 
 	bool Relation::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
-		parseArguments(serialized, arguments);
+		ParseArguments(serialized, arguments);
+		LockableItem::Deserialize(arguments);
 		objectType1 = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "objectType1"));
 		objectID1 = GetIntegerMapEntry(arguments, "objectID1");
 		objectType2 = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "objectType2"));
 		objectID2 = GetIntegerMapEntry(arguments, "objectID2");
 		priority = GetIntegerMapEntry(arguments, "priority");
 		accessoryState = GetIntegerMapEntry(arguments, "accessoryState");
-		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 		return true;
 	}
 
@@ -43,60 +43,78 @@ namespace datamodel
 		switch (objectType2)
 		{
 			case ObjectTypeAccessory:
-				manager->AccessoryState(ControlTypeInternal, objectID2, accessoryState);
+				manager->AccessoryState(ControlTypeInternal, objectID2, accessoryState, true);
 				return true;
 
 			case ObjectTypeSwitch:
-				manager->SwitchState(ControlTypeInternal, objectID2, accessoryState);
+				manager->SwitchState(ControlTypeInternal, objectID2, accessoryState, true);
 				return true;
 
 			default:
 				return false;
 		}
 
+	}
+
+	LockableItem* Relation::GetObject2()
+	{
+		switch (objectType2)
+		{
+			case ObjectTypeAccessory:
+				return manager->GetAccessory(objectID2);
+
+			case ObjectTypeSwitch:
+				return manager->GetSwitch(objectID2);
+
+			default:
+				return nullptr;
+		}
 	}
 
 	bool Relation::Reserve(const locoID_t locoID)
 	{
-		if (lockState == LockStateFree)
+		bool ret = LockableItem::Reserve(locoID);
+		if (ret == false)
 		{
-			return true;
+			return false;
 		}
-		switch (objectType2)
+
+		LockableItem* object = GetObject2();
+		if (object == nullptr)
 		{
-			case ObjectTypeAccessory:
-			{
-				Accessory* accessory = manager->GetAccessory(objectID2);
-				if (accessory == nullptr)
-				{
-					return false;
-				}
-				return true; // FIXME: fix accessory locking
-			}
-
-			case ObjectTypeSwitch:
-			{
-				Switch* mySwitch = manager->GetSwitch(objectID2);
-				if (mySwitch == nullptr)
-				{
-					return false;
-				}
-				return true; // FIXME: fix switch locking
-			}
-
-			default:
-				return false;
+			LockableItem::Release(locoID);
+			return false;
 		}
+
+		return object->Reserve(locoID);
 	}
 
 	bool Relation::Lock(const locoID_t locoID)
 	{
-		return true;
+		bool ret = LockableItem::Lock(locoID);
+		if (ret == false)
+		{
+			return false;
+		}
+
+		LockableItem* object = GetObject2();
+		if (object == nullptr)
+		{
+			LockableItem::Release(locoID);
+			return false;
+		}
+
+		return object->Lock(locoID);
 	}
 
 	bool Relation::Release(const locoID_t locoID)
 	{
-		return true;
+		LockableItem* object = GetObject2();
+		if (object != nullptr)
+		{
+			object->Release(locoID);
+		}
+		return LockableItem::Release(locoID);
 	}
 } // namespace datamodel
 

@@ -12,14 +12,15 @@ namespace datamodel
 	std::string Accessory::Serialize() const
 	{
 		stringstream ss;
-		ss << "objectType=Accessory;" << serializeWithoutType();
+		ss << "objectType=Accessory;" << SerializeWithoutType();
 		return ss.str();
 	}
 
-	std::string Accessory::serializeWithoutType() const
+	std::string Accessory::SerializeWithoutType() const
 	{
 		stringstream ss;
 		ss << LayoutItem::Serialize()
+			<< ";" << LockableItem::Serialize()
 			<< ";controlID=" << static_cast<int>(controlID)
 			<< ";protocol=" << static_cast<int>(protocol)
 			<< ";address=" << static_cast<int>(address)
@@ -33,17 +34,20 @@ namespace datamodel
 	bool Accessory::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
-		parseArguments(serialized, arguments);
-		if (arguments.count("objectType") && arguments.at("objectType").compare("Accessory") == 0)
+		ParseArguments(serialized, arguments);
+		string objectType = GetStringMapEntry(arguments, "objectType");
+		if (objectType.compare("Accessory") != 0)
 		{
-			return Deserialize(arguments);
+			return false;
 		}
-		return false;
+
+		return Deserialize(arguments);
 	}
 
 	bool Accessory::Deserialize(const map<string,string>& arguments)
 	{
 		LayoutItem::Deserialize(arguments);
+		LockableItem::Deserialize(arguments);
 		width = Width1;
 		height = Height1;
 		visible = VisibleYes;

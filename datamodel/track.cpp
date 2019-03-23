@@ -38,12 +38,13 @@ namespace datamodel
 	bool Track::Deserialize(const std::string& serialized)
 	{
 		map<string, string> arguments;
-		parseArguments(serialized, arguments);
+		ParseArguments(serialized, arguments);
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
 		width = Width1;
 		visible = VisibleYes;
-		if (!arguments.count("objectType") || arguments.at("objectType").compare("Track") != 0)
+		string objectType = GetStringMapEntry(arguments, "objectType");
+		if (objectType.compare("Track") != 0)
 		{
 			return false;
 		}

@@ -45,7 +45,7 @@ namespace datamodel
 	bool Loco::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
-		parseArguments(serialized, arguments);
+		ParseArguments(serialized, arguments);
 		Object::Deserialize(arguments);
 		if (!arguments.count("objectType") || arguments.at("objectType").compare("Loco") != 0)
 		{
@@ -205,7 +205,7 @@ namespace datamodel
 
 		// get possible destinations
 		Track* toTrack = manager->GetTrack(toTrackID);
-		if (!toTrack)
+		if (toTrack == nullptr)
 		{
 			state = LocoStateOff;
 			logger->Info("{0} is not on a track. Switching to manual mode.", name);

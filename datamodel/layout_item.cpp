@@ -95,7 +95,7 @@ namespace datamodel
 	bool LayoutItem::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
-		parseArguments(serialized, arguments);
+		ParseArguments(serialized, arguments);
 		return Deserialize(arguments);
 	}
 

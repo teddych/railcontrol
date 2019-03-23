@@ -15,7 +15,7 @@ namespace datamodel {
 			virtual bool Deserialize(const std::string& serialized) = 0;
 
 		protected:
-			void parseArguments(std::string serialized, std::map<std::string,std::string>& arguments);
+			void ParseArguments(std::string serialized, std::map<std::string,std::string>& arguments);
 	};
 
 } // namespace datamodel

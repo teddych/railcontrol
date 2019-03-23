@@ -1588,7 +1588,7 @@ namespace webserver
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		accessoryState_t accessoryState = (GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? AccessoryStateOff : AccessoryStateOn);
 
-		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState);
+		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState, false);
 
 		stringstream ss;
 		ss << "Accessory &quot;" << manager.getAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
@@ -1778,7 +1778,7 @@ namespace webserver
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		switchState_t switchState = (GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SwitchStateTurnout : SwitchStateStraight);
 
-		manager.SwitchState(ControlTypeWebserver, switchID, switchState);
+		manager.SwitchState(ControlTypeWebserver, switchID, switchState, false);
 
 		stringstream ss;
 		ss << "Switch &quot;" << manager.GetSwitchName(switchID) << "&quot; is now set to " << switchState;
@@ -2104,7 +2104,7 @@ namespace webserver
 			streetArgument["street"] = streetIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "streetedit_list_" + streetIdString, streetArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "streetaskdelete_" + streetIdString, streetArgument)));
-			if (street.second->GetState() != LockStateFree)
+			if (street.second->GetLockState() != LockStateFree)
 			{
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "streetrelease_" + streetIdString, streetArgument)));
 			}

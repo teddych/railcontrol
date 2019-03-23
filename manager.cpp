@@ -772,7 +772,7 @@ void Manager::AccessoryState(const controlType_t controlType, const controlID_t 
 	}
 	if (accessoryID != AccessoryNone)
 	{
-		AccessoryState(controlType, accessoryID, state);
+		AccessoryState(controlType, accessoryID, state, true);
 		return;
 	}
 
@@ -792,14 +792,14 @@ void Manager::AccessoryState(const controlType_t controlType, const controlID_t 
 	}
 	if (switchID != SwitchNone)
 	{
-		SwitchState(controlType, switchID, state);
+		SwitchState(controlType, switchID, state, true);
 		return;
 	}
 
 	// FIXME: add code for signals
 }
 
-void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state)
+void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool force)
 {
 	Accessory* accessory = GetAccessory(accessoryID);
 	if (accessory == nullptr)
@@ -1405,13 +1405,19 @@ bool Manager::TrackDelete(const trackID_t trackID)
 * Switch                   *
 ***************************/
 
-void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state)
+void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool force)
 {
 	Switch* mySwitch = GetSwitch(switchID);
 	if (mySwitch == nullptr)
 	{
 		return;
 	}
+
+	if (force == false && mySwitch->IsInUse())
+	{
+		return;
+	}
+
 	mySwitch->state = state;
 
 	this->SwitchState(controlType, switchID, state, mySwitch->IsInverted(), true);
