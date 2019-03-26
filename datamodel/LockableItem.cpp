@@ -23,7 +23,7 @@ namespace datamodel
 	bool LockableItem::Reserve(const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(lockMutex);
-		if (locoID == this->locoID)
+		if (this->locoID == locoID)
 		{
 			if (lockState == LockStateFree)
 			{
@@ -31,7 +31,7 @@ namespace datamodel
 			}
 			return true;
 		}
-		if (locoID != LocoNone || lockState != LockStateFree)
+		if (this->locoID != LocoNone || lockState != LockStateFree)
 		{
 			return false;
 		}
