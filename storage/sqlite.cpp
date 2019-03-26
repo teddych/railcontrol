@@ -36,7 +36,7 @@ namespace storage
 	 	logger(Logger::Logger::GetLogger("SQLite"))
 	{
 		int rc;
-		char* dbError = NULL;
+		char* dbError = nullptr;
 
 		logger->Info("Loading SQLite database with filename {0}", filename);
 		rc = sqlite3_open(filename.c_str(), &db);
@@ -44,19 +44,19 @@ namespace storage
 		{
 			logger->Error("Unable to load SQLite database: {0}", sqlite3_errmsg(db));
 			sqlite3_close(db);
-			db = NULL;
+			db = nullptr;
 			return;
 		}
 
 		// check if needed tables exist
 		map<string, bool> tablenames;
-		rc = sqlite3_exec(db, "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", callbackListTables, &tablenames, &dbError);
+		rc = sqlite3_exec(db, "SELECT name FROM sqlite_master WHERE type='table' ORDER BY name;", CallbackListTables, &tablenames, &dbError);
 		if (rc != SQLITE_OK)
 		{
 			logger->Error("SQLite error: {0}", dbError);
 			sqlite3_free(dbError);
 			sqlite3_close(db);
-			db = NULL;
+			db = nullptr;
 			return;
 		}
 
@@ -72,13 +72,13 @@ namespace storage
 				" arg2 VARCHAR(255),"
 				" arg3 VARCHAR(255),"
 				" arg4 VARCHAR(255),"
-				" arg5 VARCHAR(255));", NULL, NULL, &dbError);
+				" arg5 VARCHAR(255));", nullptr, nullptr, &dbError);
 			if (rc != SQLITE_OK)
 			{
 				logger->Error("SQLite error: {0}", dbError);
 				sqlite3_free(dbError);
 				sqlite3_close(db);
-				db = NULL;
+				db = nullptr;
 				return;
 			}
 		}
@@ -93,13 +93,13 @@ namespace storage
 				"name VARCHAR(50), "
 				"object SHORTTEXT,"
 				"PRIMARY KEY (objecttype, objectid));",
-			NULL, NULL, &dbError);
+			nullptr, nullptr, &dbError);
 			if (rc != SQLITE_OK)
 			{
 				logger->Error("SQLite error: {0}", dbError);
 				sqlite3_free(dbError);
 				sqlite3_close(db);
-				db = NULL;
+				db = nullptr;
 				return;
 			}
 		}
@@ -116,7 +116,26 @@ namespace storage
 				"priority UNSIGNED TINYINT, "
 				"relation SHORTTEXT,"
 				"PRIMARY KEY (objecttype1, objectid1, objecttype2, objectid2, priority));",
-			NULL, NULL, &dbError);
+			nullptr, nullptr, &dbError);
+			if (rc != SQLITE_OK)
+			{
+				logger->Error("SQLite error: {0}", dbError);
+				sqlite3_free(dbError);
+				sqlite3_close(db);
+				db = nullptr;
+				return;
+			}
+		}
+
+		// create settings table if needed
+		if (tablenames["settings"] != true)
+		{
+			logger->Info("Creating table settings");
+			rc = sqlite3_exec(db, "CREATE TABLE settings ("
+				"key TINYTEXT, "
+				"value SHORTTEXT,"
+				"PRIMARY KEY (key));",
+			nullptr, nullptr, &dbError);
 			if (rc != SQLITE_OK)
 			{
 				logger->Error("SQLite error: {0}", dbError);
@@ -149,14 +168,14 @@ namespace storage
 		destination.close();
 	}
 
-	int SQLite::callbackListTables(void* v, int argc, char **argv, char **colName)
+	int SQLite::CallbackListTables(void* v, int argc, char **argv, char **colName)
 	{
 		map<string, bool>* tablenames = static_cast<map<string, bool>*>(v);
 		(*tablenames)[argv[0]] = true;
 		return 0;
 	}
 
-	void SQLite::hardwareParams(const hardware::HardwareParams& hardwareParams)
+	void SQLite::SaveHardwareParams(const hardware::HardwareParams& hardwareParams)
 	{
 		stringstream ss;
 		ss << "INSERT OR REPLACE INTO hardware VALUES ("
@@ -172,7 +191,7 @@ namespace storage
 		Execute(ss.str());
 	}
 
-	void SQLite::allHardwareParams(std::map<controlID_t, hardware::HardwareParams*>& hardwareParams)
+	void SQLite::AllHardwareParams(std::map<controlID_t, hardware::HardwareParams*>& hardwareParams)
 	{
 		if (db == nullptr)
 		{
@@ -180,7 +199,7 @@ namespace storage
 		}
 
 		char* dbError = 0;
-		int rc = sqlite3_exec(db, "SELECT controlid, hardwaretype, name, arg1, arg2, arg3, arg4, arg5 FROM hardware ORDER BY controlid;", callbackAllHardwareParams, &hardwareParams, &dbError);
+		int rc = sqlite3_exec(db, "SELECT controlid, hardwaretype, name, arg1, arg2, arg3, arg4, arg5 FROM hardware ORDER BY controlid;", CallbackAllHardwareParams, &hardwareParams, &dbError);
 		if (rc == SQLITE_OK)
 		{
 			return;
@@ -191,7 +210,7 @@ namespace storage
 	}
 
 	// callback read hardwareparams
-	int SQLite::callbackAllHardwareParams(void* v, int argc, char **argv, char **colName)
+	int SQLite::CallbackAllHardwareParams(void* v, int argc, char **argv, char **colName)
 	{
 		map<controlID_t,HardwareParams*>* hardwareParams = static_cast<map<controlID_t,HardwareParams*>*>(v);
 		if (argc != 8)
@@ -206,7 +225,7 @@ namespace storage
 	}
 
 	// delete control
-	void SQLite::deleteHardwareParams(const controlID_t controlID)
+	void SQLite::DeleteHardwareParams(const controlID_t controlID)
 	{
 		stringstream ss;
 		ss << "DELETE FROM hardware WHERE controlid = " << (int)controlID << ";";
@@ -214,7 +233,7 @@ namespace storage
 	}
 
 	// save datamodelobject
-	void SQLite::saveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object)
+	void SQLite::SaveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object)
 	{
 		stringstream ss;
 		// FIXME: escape "'" in object
@@ -223,7 +242,7 @@ namespace storage
 	}
 
 	// delete datamodelobject
-	void SQLite::deleteObject(const objectType_t objectType, const objectID_t objectID)
+	void SQLite::DeleteObject(const objectType_t objectType, const objectID_t objectID)
 	{
 		stringstream ss;
 		ss << "DELETE FROM objects WHERE objecttype = " << (int) objectType << " AND objectid = " << (int) objectID << ";";
@@ -231,7 +250,7 @@ namespace storage
 	}
 
 	// read datamodelobjects
-	void SQLite::objectsOfType(const objectType_t objectType, vector<string>& objects)
+	void SQLite::ObjectsOfType(const objectType_t objectType, vector<string>& objects)
 	{
 		if (db == nullptr)
 		{
@@ -242,7 +261,7 @@ namespace storage
 		stringstream ss;
 		ss << "SELECT object FROM objects WHERE objecttype = " << (int) objectType << " ORDER BY objectid;";
 		string s(ss.str());
-		int rc = sqlite3_exec(db, s.c_str(), callbackStringVector, &objects, &dbError);
+		int rc = sqlite3_exec(db, s.c_str(), CallbackStringVector, &objects, &dbError);
 		if (rc == SQLITE_OK)
 		{
 			return;
@@ -253,7 +272,7 @@ namespace storage
 	}
 
 	// save datamodelrelation
-	void SQLite::saveRelation(const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation)
+	void SQLite::SaveRelation(const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation)
 	{
 		stringstream ss;
 		// FIXME: escape "'" in relation
@@ -268,7 +287,7 @@ namespace storage
 	}
 
 	// delete datamodelrelaton
-	void SQLite::deleteRelationFrom(const objectType_t objectType, const objectID_t objectID)
+	void SQLite::DeleteRelationFrom(const objectType_t objectType, const objectID_t objectID)
 	{
 		stringstream ss;
 		ss << "DELETE FROM relations WHERE objecttype1 = " << (int) objectType << " AND objectid1 = " << (int) objectID << ";";
@@ -276,7 +295,7 @@ namespace storage
 	}
 
 	// delete datamodelrelaton
-	void SQLite::deleteRelationTo(const objectType_t objectType, const objectID_t objectID)
+	void SQLite::DeleteRelationTo(const objectType_t objectType, const objectID_t objectID)
 	{
 		stringstream ss;
 		ss << "DELETE FROM relations WHERE objecttype2 = " << (int) objectType << " AND objectid2 = " << (int) objectID << ";";
@@ -284,7 +303,7 @@ namespace storage
 	}
 
 	// read datamodelrelations
-	void SQLite::relationsFrom(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
+	void SQLite::RelationsFrom(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
 	{
 		if (db == nullptr)
 		{
@@ -296,7 +315,7 @@ namespace storage
 		ss << "SELECT relation FROM relations WHERE objecttype1 = " << static_cast<int>(objectType)
 			<< " AND objectid1 = " << static_cast<int>(objectID) << " ORDER BY priority ASC;";
 		string s(ss.str());
-		int rc = sqlite3_exec(db, s.c_str(), callbackStringVector, &relations, &dbError);
+		int rc = sqlite3_exec(db, s.c_str(), CallbackStringVector, &relations, &dbError);
 		if (rc == SQLITE_OK)
 		{
 			return;
@@ -307,7 +326,7 @@ namespace storage
 	}
 
 	// read datamodelrelations
-	void SQLite::relationsTo(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
+	void SQLite::RelationsTo(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
 	{
 		if (db == nullptr)
 		{
@@ -319,7 +338,7 @@ namespace storage
 		ss << "SELECT relation FROM relations WHERE objecttype2 = " << static_cast<int>(objectType)
 			<< " AND objectid2 = " << static_cast<int>(objectID) << ";";
 		string s(ss.str());
-		int rc = sqlite3_exec(db, s.c_str(), callbackStringVector, &relations, &dbError);
+		int rc = sqlite3_exec(db, s.c_str(), CallbackStringVector, &relations, &dbError);
 		if (rc == SQLITE_OK)
 		{
 			return;
@@ -329,8 +348,37 @@ namespace storage
 		sqlite3_free(dbError);
 	}
 
+	void SQLite::SaveSetting(const string& key, const string& value)
+	{
+		Execute("INSERT OR REPLACE INTO settings (key, value) values ('" + key + "', '" + value + "');");
+	}
+
+	string SQLite::GetSetting(const string& key)
+	{
+		if (db == nullptr)
+		{
+			return "";
+		}
+
+		char* dbError = 0;
+		vector<string> values;
+		string s("SELECT value FROM settings WHERE key = '" + key + "';");
+		int rc = sqlite3_exec(db, s.c_str(), CallbackStringVector, &values, &dbError);
+		if (rc != SQLITE_OK)
+		{
+			logger->Error("SQLite error: {0} Query: {1}", dbError, s);
+			sqlite3_free(dbError);
+			return "";
+		}
+		if (values.size() == 0)
+		{
+			return "";
+		}
+		return values[0];
+	}
+
 	// callback read all datamodelobjects/relations
-	int SQLite::callbackStringVector(void* v, int argc, char **argv, char **colName)
+	int SQLite::CallbackStringVector(void* v, int argc, char **argv, char **colName)
 	{
 		vector<string>* objects = static_cast<vector<string>*>(v);
 		if (argc != 1)
@@ -348,8 +396,8 @@ namespace storage
 			return;
 		}
 
-		char* dbError = NULL;
-		int rc = sqlite3_exec(db, s.c_str(), NULL, NULL, &dbError);
+		char* dbError = nullptr;
+		int rc = sqlite3_exec(db, s.c_str(), nullptr, nullptr, &dbError);
 		if (rc == SQLITE_OK)
 		{
 			return;

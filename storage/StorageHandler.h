@@ -10,7 +10,6 @@
 
 namespace storage
 {
-
 	// the types of the class factories
 	typedef storage::StorageInterface* createStorage_t(struct StorageParams params);
 	typedef void destroyStorage_t(storage::StorageInterface*);
@@ -20,22 +19,22 @@ namespace storage
 		public:
 			StorageHandler(Manager* manager, const StorageParams& params);
 			~StorageHandler();
-			void allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
-			void deleteHardwareParams(const controlID_t controlID);
-			void allLocos(std::map<locoID_t,datamodel::Loco*>& locos);
-			void deleteLoco(locoID_t locoID);
-			void allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
-			void deleteAccessory(accessoryID_t accessoryID);
-			void allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks);
-			void deleteFeedback(feedbackID_t feedbackID);
+			void AllHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
+			void DeleteHardwareParams(const controlID_t controlID);
+			void AllLocos(std::map<locoID_t,datamodel::Loco*>& locos);
+			void DeleteLoco(locoID_t locoID);
+			void AllAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
+			void DeleteAccessory(accessoryID_t accessoryID);
+			void AllFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks);
+			void DeleteFeedback(feedbackID_t feedbackID);
 			void AllTracks(std::map<trackID_t,datamodel::Track*>& tracks);
-			void deleteTrack(trackID_t trackID);
-			void allSwitches(std::map<switchID_t,datamodel::Switch*>& switches);
-			void deleteSwitch(switchID_t switchID);
-			void allStreets(std::map<streetID_t,datamodel::Street*>& streets);
-			void deleteStreet(streetID_t streetID);
-			void allLayers(std::map<layerID_t,datamodel::Layer*>& layers);
-			void deleteLayer(layerID_t layerID);
+			void DeleteTrack(trackID_t trackID);
+			void AllSwitches(std::map<switchID_t,datamodel::Switch*>& switches);
+			void DeleteSwitch(switchID_t switchID);
+			void AllStreets(std::map<streetID_t,datamodel::Street*>& streets);
+			void DeleteStreet(streetID_t streetID);
+			void AllLayers(std::map<layerID_t,datamodel::Layer*>& layers);
+			void DeleteLayer(layerID_t layerID);
 			void Save(const hardware::HardwareParams& hardwareParams);
 			void Save(const datamodel::Loco& loco);
 			void Save(const datamodel::Accessory& accessory);
@@ -45,6 +44,8 @@ namespace storage
 			void Save(const datamodel::Street& street);
 			void Save(const datamodel::Layer& layer);
 			template <class T> static void Save(StorageHandler* storageHandler, const T* t) { storageHandler->Save(*t); }
+			void SaveSetting(const std::string& key, const std::string& value);
+			std::string GetSetting(const std::string& key) ;
 
 		private:
 			Manager* manager;

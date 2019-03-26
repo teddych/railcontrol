@@ -56,12 +56,13 @@ Manager::Manager(Config& config)
 		return;
 	}
 
-	//loadDefaultValuesToDB();
+	defaultAccessoryTimeout = Util::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
+
 
 	controls[ControlIdConsole] = new ConsoleServer(*this, config.getValue("consoleport", 2222));
 	controls[ControlIdWebserver] = new WebServer(*this, config.getValue("webserverport", 80));
 
-	storage->allHardwareParams(hardwareParams);
+	storage->AllHardwareParams(hardwareParams);
 	for (auto hardwareParam : hardwareParams)
 	{
 		hardwareParam.second->manager = this;
@@ -69,7 +70,7 @@ Manager::Manager(Config& config)
 		logger->Info("Loaded control {0}: {1}", hardwareParam.first, hardwareParam.second->name);
 	}
 
-	storage->allLayers(layers);
+	storage->AllLayers(layers);
 	for (auto layer : layers)
 	{
 		logger->Info("Loaded layer {0}: {1}", layer.second->objectID, layer.second->Name());
@@ -84,19 +85,19 @@ Manager::Manager(Config& config)
 		}
 	}
 
-	storage->allLocos(locos);
+	storage->AllLocos(locos);
 	for (auto loco : locos)
 	{
 		logger->Info("Loaded loco {0}: {1}", loco.second->objectID, loco.second->name);
 	}
 
-	storage->allAccessories(accessories);
+	storage->AllAccessories(accessories);
 	for (auto accessory : accessories)
 	{
 		logger->Info("Loaded accessory {0}: {1}", accessory.second->objectID, accessory.second->name);
 	}
 
-	storage->allFeedbacks(feedbacks);
+	storage->AllFeedbacks(feedbacks);
 	for (auto feedback : feedbacks)
 	{
 		logger->Info("Loaded feedback {0}: {1}", feedback.second->objectID, feedback.second->name);
@@ -108,13 +109,13 @@ Manager::Manager(Config& config)
 		logger->Info("Loaded track {0}: {1}", track.second->objectID, track.second->name);
 	}
 
-	storage->allSwitches(switches);
+	storage->AllSwitches(switches);
 	for (auto mySwitch : switches)
 	{
 		logger->Info("Loaded switch {0}: {1}", mySwitch.second->objectID, mySwitch.second->name);
 	}
 
-	storage->allStreets(streets);
+	storage->AllStreets(streets);
 	for (auto street : streets)
 	{
 		logger->Info("Loaded street {0}: {1}", street.second->objectID, street.second->name);
@@ -293,7 +294,7 @@ bool Manager::ControlDelete(controlID_t controlID)
 
 	if (storage)
 	{
-		storage->deleteHardwareParams(controlID);
+		storage->DeleteHardwareParams(controlID);
 	}
 	return true;
 }
@@ -616,7 +617,7 @@ bool Manager::LocoDelete(const locoID_t locoID)
 
 	if (storage)
 	{
-		storage->deleteLoco(locoID);
+		storage->DeleteLoco(locoID);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -957,7 +958,7 @@ bool Manager::AccessoryDelete(const accessoryID_t accessoryID)
 
 	if (storage)
 	{
-		storage->deleteAccessory(accessoryID);
+		storage->DeleteAccessory(accessoryID);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1189,7 +1190,7 @@ bool Manager::FeedbackDelete(const feedbackID_t feedbackID)
 
 	if (storage)
 	{
-		storage->deleteFeedback(feedbackID);
+		storage->DeleteFeedback(feedbackID);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1409,7 +1410,7 @@ bool Manager::TrackDelete(const trackID_t trackID)
 
 	if (storage)
 	{
-		storage->deleteTrack(trackID);
+		storage->DeleteTrack(trackID);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -1569,7 +1570,7 @@ bool Manager::SwitchDelete(const switchID_t switchID)
 
 	if (storage)
 	{
-		storage->deleteSwitch(switchID);
+		storage->DeleteSwitch(switchID);
 	}
 
 	std::lock_guard<std::mutex> Guard(controlMutex);
@@ -1792,7 +1793,7 @@ bool Manager::StreetDelete(const streetID_t streetID)
 
 	if (storage)
 	{
-		storage->deleteStreet(streetID);
+		storage->DeleteStreet(streetID);
 	}
 
 	std::lock_guard<std::mutex> Guard(controlMutex);
@@ -1906,7 +1907,7 @@ bool Manager::LayerDelete(const layerID_t layerID)
 
 	if (storage)
 	{
-		storage->deleteLayer(layerID);
+		storage->DeleteLayer(layerID);
 	}
 
 	std::lock_guard<std::mutex> Guard(controlMutex);
@@ -2388,5 +2389,10 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 bool Manager::SaveSettings(const accessoryTimeout_t timeout)
 {
 	defaultAccessoryTimeout = timeout;
+	if (storage == nullptr)
+	{
+		return false;
+	}
+	storage->SaveSetting("DefaultAccessoryDuration", std::to_string(timeout));
 	return true;
 }

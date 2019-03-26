@@ -108,25 +108,25 @@ namespace storage {
 		{
 			return;
 		}
-		instance->hardwareParams(hardwareParams);
+		instance->SaveHardwareParams(hardwareParams);
 	}
 
-	void StorageHandler::allHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams)
+	void StorageHandler::AllHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->allHardwareParams(hardwareParams);
+		instance->AllHardwareParams(hardwareParams);
 	}
 
-	void StorageHandler::deleteHardwareParams(const controlID_t controlID)
+	void StorageHandler::DeleteHardwareParams(const controlID_t controlID)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->deleteHardwareParams(controlID);
+		instance->DeleteHardwareParams(controlID);
 	}
 
 	void StorageHandler::Save(const Loco& loco)
@@ -136,30 +136,30 @@ namespace storage {
 			return;
 		}
 		string serialized = loco.Serialize();
-		instance->saveObject(ObjectTypeLoco, loco.objectID, loco.name, serialized);
+		instance->SaveObject(ObjectTypeLoco, loco.objectID, loco.name, serialized);
 	}
 
-	void StorageHandler::allLocos(map<locoID_t,datamodel::Loco*>& locos)
+	void StorageHandler::AllLocos(map<locoID_t,datamodel::Loco*>& locos)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
 		vector<string> objects;
-		instance->objectsOfType(ObjectTypeLoco, objects);
+		instance->ObjectsOfType(ObjectTypeLoco, objects);
 		for(auto object : objects) {
 			Loco* loco = new Loco(manager, object);
 			locos[loco->objectID] = loco;
 		}
 	}
 
-	void StorageHandler::deleteLoco(const locoID_t locoID)
+	void StorageHandler::DeleteLoco(const locoID_t locoID)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->deleteObject(ObjectTypeLoco, locoID);
+		instance->DeleteObject(ObjectTypeLoco, locoID);
 	}
 
 	void StorageHandler::Save(const Accessory& accessory)
@@ -169,17 +169,17 @@ namespace storage {
 			return;
 		}
 		string serialized = accessory.Serialize();
-		instance->saveObject(ObjectTypeAccessory, accessory.objectID, accessory.name, serialized);
+		instance->SaveObject(ObjectTypeAccessory, accessory.objectID, accessory.name, serialized);
 	}
 
-	void StorageHandler::allAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories)
+	void StorageHandler::AllAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
 		vector<string> objects;
-		instance->objectsOfType(ObjectTypeAccessory, objects);
+		instance->ObjectsOfType(ObjectTypeAccessory, objects);
 		for(auto object : objects)
 		{
 			Accessory* accessory = new Accessory(object);
@@ -187,13 +187,13 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::deleteAccessory(const accessoryID_t accessoryID)
+	void StorageHandler::DeleteAccessory(const accessoryID_t accessoryID)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->deleteObject(ObjectTypeAccessory, accessoryID);
+		instance->DeleteObject(ObjectTypeAccessory, accessoryID);
 	}
 
 	void StorageHandler::Save(const Feedback& feedback)
@@ -203,17 +203,17 @@ namespace storage {
 			return;
 		}
 		string serialized = feedback.Serialize();
-		instance->saveObject(ObjectTypeFeedback, feedback.objectID, feedback.name, serialized);
+		instance->SaveObject(ObjectTypeFeedback, feedback.objectID, feedback.name, serialized);
 	}
 
-	void StorageHandler::allFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks)
+	void StorageHandler::AllFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
 		vector<string> objects;
-		instance->objectsOfType(ObjectTypeFeedback, objects);
+		instance->ObjectsOfType(ObjectTypeFeedback, objects);
 		for(auto object : objects)
 		{
 			Feedback* feedback = new Feedback(manager, object);
@@ -221,13 +221,13 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::deleteFeedback(const feedbackID_t feedbackID)
+	void StorageHandler::DeleteFeedback(const feedbackID_t feedbackID)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->deleteObject(ObjectTypeFeedback, feedbackID);
+		instance->DeleteObject(ObjectTypeFeedback, feedbackID);
 	}
 
 	void StorageHandler::Save(const Track& track)
@@ -237,7 +237,7 @@ namespace storage {
 			return;
 		}
 		string serialized = track.Serialize();
-		instance->saveObject(ObjectTypeTrack, track.objectID, track.name, serialized);
+		instance->SaveObject(ObjectTypeTrack, track.objectID, track.name, serialized);
 	}
 
 	void StorageHandler::AllTracks(std::map<trackID_t,datamodel::Track*>& tracks)
@@ -247,7 +247,7 @@ namespace storage {
 			return;
 		}
 		vector<string> objects;
-		instance->objectsOfType(ObjectTypeTrack, objects);
+		instance->ObjectsOfType(ObjectTypeTrack, objects);
 		for(auto object : objects)
 		{
 			Track* track = new Track(manager, object);
@@ -255,13 +255,13 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::deleteTrack(const trackID_t trackID)
+	void StorageHandler::DeleteTrack(const trackID_t trackID)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->deleteObject(ObjectTypeTrack, trackID);
+		instance->DeleteObject(ObjectTypeTrack, trackID);
 	}
 
 	void StorageHandler::Save(const Switch& mySwitch)
@@ -271,17 +271,17 @@ namespace storage {
 			return;
 		}
 		string serialized = mySwitch.Serialize();
-		instance->saveObject(ObjectTypeSwitch, mySwitch.objectID, mySwitch.name, serialized);
+		instance->SaveObject(ObjectTypeSwitch, mySwitch.objectID, mySwitch.name, serialized);
 	}
 
-	void StorageHandler::allSwitches(std::map<switchID_t,datamodel::Switch*>& switches)
+	void StorageHandler::AllSwitches(std::map<switchID_t,datamodel::Switch*>& switches)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
 		vector<string> objects;
-		instance->objectsOfType(ObjectTypeSwitch, objects);
+		instance->ObjectsOfType(ObjectTypeSwitch, objects);
 		for(auto object : objects)
 		{
 			Switch* mySwitch = new Switch(object);
@@ -289,13 +289,13 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::deleteSwitch(const switchID_t switchID)
+	void StorageHandler::DeleteSwitch(const switchID_t switchID)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->deleteObject(ObjectTypeSwitch, switchID);
+		instance->DeleteObject(ObjectTypeSwitch, switchID);
 	}
 
 	void StorageHandler::Save(const datamodel::Street& street)
@@ -305,28 +305,28 @@ namespace storage {
 			return;
 		}
 		string serialized = street.Serialize();
-		instance->saveObject(ObjectTypeStreet, street.objectID, street.name, serialized);
-		instance->deleteRelationFrom(ObjectTypeStreet, street.objectID);
+		instance->SaveObject(ObjectTypeStreet, street.objectID, street.name, serialized);
+		instance->DeleteRelationFrom(ObjectTypeStreet, street.objectID);
 		const vector<datamodel::Relation*> relations = street.GetRelations();
 		for (auto relation : relations)
 		{
 			string serializedRelation = relation->Serialize();
-			instance->saveRelation(ObjectTypeStreet, street.objectID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
+			instance->SaveRelation(ObjectTypeStreet, street.objectID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
 		}
 	}
 
-	void StorageHandler::allStreets(std::map<streetID_t,datamodel::Street*>& streets)
+	void StorageHandler::AllStreets(std::map<streetID_t,datamodel::Street*>& streets)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
 		vector<string> objects;
-		instance->objectsOfType(ObjectTypeStreet, objects);
+		instance->ObjectsOfType(ObjectTypeStreet, objects);
 		for(auto object : objects) {
 			Street* street = new Street(manager, object);
 			vector<string> relationsString;
-			instance->relationsFrom(ObjectTypeStreet, street->objectID, relationsString);
+			instance->RelationsFrom(ObjectTypeStreet, street->objectID, relationsString);
 			vector<Relation*> relations;
 			for (auto relationString : relationsString)
 			{
@@ -337,13 +337,13 @@ namespace storage {
 		}
 	}
 
-	void StorageHandler::deleteStreet(const streetID_t streetID)
+	void StorageHandler::DeleteStreet(const streetID_t streetID)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->deleteObject(ObjectTypeStreet, streetID);
+		instance->DeleteObject(ObjectTypeStreet, streetID);
 	}
 
 	void StorageHandler::Save(const datamodel::Layer& layer)
@@ -353,30 +353,48 @@ namespace storage {
 			return;
 		}
 		string serialized = layer.Serialize();
-		instance->saveObject(ObjectTypeLayer, layer.objectID, layer.name, serialized);
+		instance->SaveObject(ObjectTypeLayer, layer.objectID, layer.name, serialized);
 	}
 
-	void StorageHandler::allLayers(std::map<layerID_t,datamodel::Layer*>& layers)
+	void StorageHandler::AllLayers(std::map<layerID_t,datamodel::Layer*>& layers)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
 		vector<string> objects;
-		instance->objectsOfType(ObjectTypeLayer, objects);
+		instance->ObjectsOfType(ObjectTypeLayer, objects);
 		for(auto object : objects) {
 			Layer* layer = new Layer(object);
 			layers[layer->objectID] = layer;
 		}
 	}
 
-	void StorageHandler::deleteLayer(const layerID_t layerID)
+	void StorageHandler::DeleteLayer(const layerID_t layerID)
 	{
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->deleteObject(ObjectTypeLayer, layerID);
+		instance->DeleteObject(ObjectTypeLayer, layerID);
+	}
+
+	void StorageHandler::SaveSetting(const std::string& key, const std::string& value)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->SaveSetting(key, value);
+	}
+
+	std::string StorageHandler::GetSetting(const std::string& key)
+	{
+		if (instance == nullptr)
+		{
+			return "";
+		}
+		return instance->GetSetting(key);
 	}
 } // namespace storage
 
