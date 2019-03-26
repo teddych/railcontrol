@@ -80,7 +80,7 @@ namespace console
 	void ConsoleServer::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " speed is " << speed;
+		status << manager.GetLocoName(locoID) << " speed is " << speed;
 		AddUpdate(status.str());
 	}
 
@@ -88,14 +88,14 @@ namespace console
 	{
 		std::stringstream status;
 		const char* directionText = (direction ? "forward" : "reverse");
-		status << manager.LocoName(locoID) << " direction is " << directionText;
+		status << manager.GetLocoName(locoID) << " direction is " << directionText;
 		AddUpdate(status.str());
 	}
 
 	void ConsoleServer::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
+		status << manager.GetLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
 		AddUpdate(status.str());
 	}
 
@@ -108,7 +108,7 @@ namespace console
 		std::stringstream status;
 		string stateText;
 		text::Converters::accessoryStatus(state, stateText);
-		status << manager.getAccessoryName(accessoryID)  << " is " << stateText;
+		status << manager.GetAccessoryName(accessoryID)  << " is " << stateText;
 		AddUpdate(status.str());
 	}
 
@@ -144,14 +144,14 @@ namespace console
 	void ConsoleServer::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " is in track " << manager.GetTrackName(trackID);
+		status << manager.GetLocoName(locoID) << " is in track " << manager.GetTrackName(trackID);
 		AddUpdate(status.str());
 	}
 
 	void ConsoleServer::LocoRelease(const locoID_t locoID)
 	{
 		stringstream status;
-		status << manager.LocoName(locoID) << " is not in a track anymore";
+		status << manager.GetLocoName(locoID) << " is not in a track anymore";
 		AddUpdate(status.str());
 	}
 
@@ -165,21 +165,21 @@ namespace console
 	void ConsoleServer::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.GetStreetName(streetID);
+		status << manager.GetLocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.GetStreetName(streetID);
 		AddUpdate(status.str());
 	}
 
 	void ConsoleServer::LocoStart(const locoID_t locoID)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " is in auto mode";
+		status << manager.GetLocoName(locoID) << " is in auto mode";
 		AddUpdate(status.str());
 	}
 
 	void ConsoleServer::LocoStop(const locoID_t locoID)
 	{
 		std::stringstream status;
-		status << manager.LocoName(locoID) << " is in manual mode";
+		status << manager.GetLocoName(locoID) << " is in manual mode";
 		AddUpdate(status.str());
 	}
 

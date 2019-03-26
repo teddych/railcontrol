@@ -505,7 +505,7 @@ datamodel::Loco* Manager::GetLoco(const locoID_t locoID) const
 	return locos.at(locoID);
 }
 
-const std::string& Manager::LocoName(const locoID_t locoID) const
+const std::string& Manager::GetLocoName(const locoID_t locoID) const
 {
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	if (locos.count(locoID) != 1)
@@ -833,7 +833,7 @@ Accessory* Manager::GetAccessory(const accessoryID_t accessoryID) const
 	return accessories.at(accessoryID);
 }
 
-const std::string& Manager::getAccessoryName(const accessoryID_t accessoryID) const
+const std::string& Manager::GetAccessoryName(const accessoryID_t accessoryID) const
 {
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
 	if (accessories.count(accessoryID) != 1)

@@ -54,7 +54,7 @@ class Manager {
 
 		// loco
 		datamodel::Loco* GetLoco(const locoID_t locoID) const;
-		const std::string& LocoName(const locoID_t locoID) const;
+		const std::string& GetLocoName(const locoID_t locoID) const;
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
 		const std::map<std::string,locoID_t> LocoListFree() const;
 		const std::map<std::string,datamodel::Loco*> LocoListByName() const;
@@ -74,7 +74,7 @@ class Manager {
 		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool force);
 		void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on);
 		datamodel::Accessory* GetAccessory(const accessoryID_t accessoryID) const;
-		const std::string& getAccessoryName(const accessoryID_t accessoryID) const;
+		const std::string& GetAccessoryName(const accessoryID_t accessoryID) const;
 		const std::map<accessoryID_t,datamodel::Accessory*>& AccessoryList() const { return accessories; }
 		const std::map<std::string,datamodel::Accessory*> AccessoryListByName() const;
 		bool AccessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, std::string& result);

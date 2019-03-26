@@ -786,7 +786,7 @@ namespace console
 		}
 		else
 		{
-			status << manager.LocoName(track->GetLoco()) << " (" << track->GetLoco() << ")";
+			status << manager.GetLocoName(track->GetLoco()) << " (" << track->GetLoco() << ")";
 		}
 		SendAndPrompt(status.str());
 	}
@@ -1348,7 +1348,7 @@ namespace console
 		}
 		else
 		{
-			status << manager.LocoName(street->GetLoco()) << " (" << street->GetLoco() << ")";
+			status << manager.GetLocoName(street->GetLoco()) << " (" << street->GetLoco() << ")";
 		}
 		SendAndPrompt(status.str());
 	}

@@ -39,7 +39,7 @@ namespace webserver
 		}
 		else
 		{
-			const string& locoName = manager.LocoName(locoID);
+			const string& locoName = manager.GetLocoName(locoID);
 			const string& trackName = track->Name();
 			image = "<polygon class=\"track\" points=\"13,0 22,0 22," + layoutHeight + " 13," + layoutHeight + "\"/>";
 			image += "<text class=\"loconame\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";

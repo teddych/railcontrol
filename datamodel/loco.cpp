@@ -215,7 +215,7 @@ namespace datamodel
 		if (toTrack->objectID != toTrackID)
 		{
 			state = LocoStateError;
-			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, toTrack->Name(), manager->LocoName(toTrack->GetLoco()));
+			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, toTrack->Name(), manager->GetLocoName(toTrack->GetLoco()));
 			return;
 		}
 		logger->Info("Looking for new destination starting from {0}.", toTrack->Name());

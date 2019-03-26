@@ -966,7 +966,7 @@ namespace webserver
 		manager.LocoSpeed(ControlTypeWebserver, locoID, speed);
 
 		stringstream ss;
-		ss << "Loco &quot;" << manager.LocoName(locoID) << "&quot; is now set to speed " << speed;
+		ss << "Loco &quot;" << manager.GetLocoName(locoID) << "&quot; is now set to speed " << speed;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
@@ -978,7 +978,7 @@ namespace webserver
 		manager.LocoDirection(ControlTypeWebserver, locoID, direction);
 
 		stringstream ss;
-		ss << "Loco &quot;" << manager.LocoName(locoID) << "&quot; is now set to " << direction;
+		ss << "Loco &quot;" << manager.GetLocoName(locoID) << "&quot; is now set to " << direction;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
@@ -991,7 +991,7 @@ namespace webserver
 		manager.LocoFunction(ControlTypeWebserver, locoID, function, on);
 
 		stringstream ss;
-		ss << "Loco &quot;" << manager.LocoName(locoID) << "&quot; has now f";
+		ss << "Loco &quot;" << manager.GetLocoName(locoID) << "&quot; has now f";
 		ss << function << " set to " << (on ? "on" : "off");
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
@@ -1603,7 +1603,7 @@ namespace webserver
 		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState, false);
 
 		stringstream ss;
-		ss << "Accessory &quot;" << manager.getAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
+		ss << "Accessory &quot;" << manager.GetAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 

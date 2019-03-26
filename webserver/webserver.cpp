@@ -86,7 +86,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locospeed;loco=" << locoID << ";speed=" << speed;
-		status << manager.LocoName(locoID) << " speed is " << speed;
+		status << manager.GetLocoName(locoID) << " speed is " << speed;
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -95,7 +95,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locodirection;loco=" << locoID << ";direction=" << (direction ? "true" : "false");
-		status << manager.LocoName(locoID) << " direction is " << (direction ? "right" : "left");
+		status << manager.GetLocoName(locoID) << " direction is " << (direction ? "right" : "left");
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -104,7 +104,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int) function << ";on=" << (state ? "true" : "false");
-		status << manager.LocoName(locoID) << " f" << (unsigned int) function << " is " << (state ? "on" : "off");
+		status << manager.GetLocoName(locoID) << " f" << (unsigned int) function << " is " << (state ? "on" : "off");
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -119,7 +119,7 @@ namespace webserver {
 		string stateText;
 		text::Converters::accessoryStatus(state, stateText);
 		command << "accessory;accessory=" << accessoryID << ";state=" << stateText;
-		status << manager.getAccessoryName(accessoryID) << " is " << stateText;
+		status << manager.GetAccessoryName(accessoryID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -261,7 +261,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locointotrack;loco=" << locoID << ";track=" << trackID;
-		status << manager.LocoName(locoID) << " is on track " << manager.GetTrackName(trackID);
+		status << manager.GetLocoName(locoID) << " is on track " << manager.GetTrackName(trackID);
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -270,7 +270,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locorelease;loco=" << locoID;
-		status << manager.LocoName(locoID) << " is not on a track anymore";
+		status << manager.GetLocoName(locoID) << " is not on a track anymore";
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -288,7 +288,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		status << manager.LocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.GetStreetName(streetID);
+		status << manager.GetLocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.GetStreetName(streetID);
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -297,7 +297,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoStart;loco=" << locoID;
-		status << manager.LocoName(locoID) << " is in auto mode";
+		status << manager.GetLocoName(locoID) << " is in auto mode";
 		AddUpdate(command.str(), status.str());
 	}
 
@@ -306,7 +306,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		command << "locoStop;loco=" << locoID;
-		status << manager.LocoName(locoID) << " is in manual mode";
+		status << manager.GetLocoName(locoID) << " is in manual mode";
 		AddUpdate(command.str(), status.str());
 	}
 
