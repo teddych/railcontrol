@@ -253,6 +253,10 @@ namespace webserver
 			{
 				handleAccessoryGet(arguments);
 			}
+			else if (arguments["cmd"].compare("accessoryrelease") == 0)
+			{
+				handleAccessoryRelease(arguments);
+			}
 			else if (arguments["cmd"].compare("switchedit") == 0)
 			{
 				handleSwitchEdit(arguments);
@@ -424,6 +428,10 @@ namespace webserver
 			else if (arguments["cmd"].compare("stopall") == 0)
 			{
 				manager.StopAllLocosImmediately(ControlTypeWebserver);
+			}
+			else if (arguments["cmd"].compare("settingsedit") == 0)
+			{
+				handleSettingsEdit(headers);
 			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
@@ -1605,15 +1613,19 @@ namespace webserver
 		content.AddChildTag(HtmlTag("h1").AddContent("Accessories"));
 		HtmlTag table("table");
 		const map<string,datamodel::Accessory*> accessoryList = manager.AccessoryListByName();
-		map<string,string> locoArgument;
+		map<string,string> accessoryArgument;
 		for (auto accessory : accessoryList)
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(accessory.first));
 			string accessoryIdString = to_string(accessory.second->objectID);
-			locoArgument["accessory"] = accessoryIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "accessoryedit_list_" + accessoryIdString, locoArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "accessoryaskdelete_" + accessoryIdString, locoArgument)));
+			accessoryArgument["accessory"] = accessoryIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
+			if (accessory.second->IsInUse())
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "accessoryrelease_" + accessoryIdString, accessoryArgument)));
+			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
@@ -1670,6 +1682,13 @@ namespace webserver
 		}
 
 		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + name + "&quot; deleted.");
+	}
+
+	void WebClient::handleAccessoryRelease(const map<string, string>& arguments)
+	{
+		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory");
+		bool ret = manager.AccessoryRelease(accessoryID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Accessory released" : "Accessory not released"));
 	}
 
 	void WebClient::handleSwitchEdit(const map<string, string>& arguments)
@@ -1804,6 +1823,10 @@ namespace webserver
 			switchArgument["switch"] = switchIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "switchedit_list_" + switchIdString, switchArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "switchaskdelete_" + switchIdString, switchArgument)));
+			if (mySwitch.second->IsInUse())
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "switchrelease_" + switchIdString, switchArgument)));
+			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
@@ -1867,6 +1890,13 @@ namespace webserver
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
 		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
 		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
+	}
+
+	void WebClient::handleSwitchRelease(const map<string, string>& arguments)
+	{
+		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
+		bool ret = manager.SwitchRelease(switchID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Switch released" : "Switch not released"));
 	}
 
 	void WebClient::handleStreetGet(const map<string, string>& arguments)
@@ -2108,7 +2138,7 @@ namespace webserver
 			streetArgument["street"] = streetIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "streetedit_list_" + streetIdString, streetArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "streetaskdelete_" + streetIdString, streetArgument)));
-			if (street.second->GetLockState() != LockStateFree)
+			if (street.second->IsInUse())
 			{
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "streetrelease_" + streetIdString, streetArgument)));
 			}

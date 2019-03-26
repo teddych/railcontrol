@@ -960,6 +960,17 @@ bool Manager::AccessoryDelete(const accessoryID_t accessoryID)
 	return true;
 }
 
+bool Manager::AccessoryRelease(const accessoryID_t accessoryID)
+{
+	Accessory* accessory = GetAccessory(accessoryID);
+	if (accessory == nullptr)
+	{
+		return false;
+	}
+	locoID_t locoID = accessory->GetLoco();
+	return accessory->Release(locoID);
+}
+
 bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
 {
 	if (accessories.count(accessoryID) != 1)
@@ -1586,6 +1597,17 @@ bool Manager::SwitchProtocolAddress(const switchID_t switchID, controlID_t& cont
 	protocol = mySwitch->protocol;
 	address = mySwitch->address;
 	return true;
+}
+
+bool Manager::SwitchRelease(const streetID_t switchID)
+{
+	Switch* mySwitch = GetSwitch(switchID);
+	if (mySwitch == nullptr)
+	{
+		return false;
+	}
+	locoID_t locoID = mySwitch->GetLoco();
+	return mySwitch->Release(locoID);
 }
 
 /***************************

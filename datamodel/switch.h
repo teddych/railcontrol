@@ -8,9 +8,10 @@
 #include "datatypes.h"
 #include "serializable.h"
 
-namespace datamodel {
-
-	class Switch : public Accessory {
+namespace datamodel
+{
+	class Switch : public Accessory
+	{
 		public:
 			// FIXME: const
 			Switch(switchID_t switchID,
