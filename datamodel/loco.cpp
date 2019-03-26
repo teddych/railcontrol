@@ -154,6 +154,14 @@ namespace datamodel
 	{
 		const string& name = loco->name;
 		logger->Info("{0} is now in automode", name);
+
+		sched_param param;
+		int policy;
+		pthread_t self = pthread_self();
+		pthread_getschedparam(self, &policy, &param);
+		param.__sched_priority = sched_get_priority_min(policy);
+		pthread_setschedparam(self, policy, &param);
+
 		while (true)
 		{
 			{
@@ -220,7 +228,7 @@ namespace datamodel
 		}
 		logger->Info("Looking for new destination starting from {0}.", toTrack->Name());
 
-		// get best fitting destination and reserve street
+		// FIXME: get best fitting destination and reserve street
 		vector<Street*> streets;
 		toTrack->ValidStreets(streets);
 		for (auto street : streets)
@@ -266,8 +274,8 @@ namespace datamodel
 		if (feedbackID == feedbackIdStop)
 		{
 			locoID_t& locoID = objectID;
-			std::lock_guard<std::mutex> Guard(stateMutex);
 			manager->LocoSpeed(ControlTypeInternal, locoID, MinSpeed);
+			std::lock_guard<std::mutex> Guard(stateMutex);
 			// set loco to new track
 			Street* oldStreet = manager->GetStreet(streetID);
 			Track* fromTrack = manager->GetTrack(fromTrackID);
