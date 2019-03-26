@@ -807,6 +807,13 @@ void Manager::AccessoryState(const controlType_t controlType, const accessoryID_
 	{
 		return;
 	}
+
+	if (force == false && accessory->IsInUse())
+	{
+		logger->Warning("{0} is locked", accessory->Name());
+		return;
+	}
+
 	accessory->state = state;
 
 	this->AccessoryState(controlType, accessoryID, state, accessory->IsInverted(), true);
@@ -1427,6 +1434,7 @@ void Manager::SwitchState(const controlType_t controlType, const switchID_t swit
 
 	if (force == false && mySwitch->IsInUse())
 	{
+		logger->Warning("{0} is locked", mySwitch->Name());
 		return;
 	}
 
