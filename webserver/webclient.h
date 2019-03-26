@@ -46,7 +46,7 @@ namespace webserver
 			HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
-			HtmlTag HtmlTagTimeout(const accessoryTimeout_t timeout) const;
+			HtmlTag HtmlTagTimeout(const accessoryTimeout_t timeout, const std::string& label = "Timeout:") const;
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz);
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible);
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;
@@ -126,6 +126,8 @@ namespace webserver
 			void handleRelationAdd(const std::map<std::string,std::string>& arguments);
 			void handleFeedbackAdd(const std::map<std::string,std::string>& arguments);
 			void handleRelationObject(const std::map<std::string, std::string>& arguments);
+			void handleSettingsEdit(const std::map<std::string, std::string>& arguments);
+			void handleSettingsSave(const std::map<std::string, std::string>& arguments);
 			void handleUpdater(const std::map<std::string,std::string>& arguments);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

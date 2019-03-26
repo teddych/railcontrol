@@ -66,6 +66,8 @@ static const locoSpeed_t MinSpeed = 0;
 static const layoutItemSize_t Width1 = 1;
 static const layoutItemSize_t Height1 = 1;
 
+static const accessoryTimeout_t DefaultAccessoryTimeout = 100;
+
 enum controlType_t : unsigned char
 {
 	ControlTypeHardware = 0,

@@ -149,6 +149,10 @@ class Manager {
 		bool LocoStopAll();
 		void StopAllLocosImmediately(const controlType_t controlType);
 
+		// settings
+		accessoryTimeout_t GetDefaultAccessoryTimeout() const { return defaultAccessoryTimeout; }
+		bool SaveSettings(const accessoryTimeout_t timeout);
+
 	private:
 		const ControlInterface* GetControl(const controlID_t controlID) const;
 
@@ -246,6 +250,8 @@ class Manager {
 		// storage
 		storage::StorageHandler* storage;
 		DelayedCall* delayedCall;
+
+		accessoryTimeout_t defaultAccessoryTimeout;
 
 		const std::string unknownControl;
 		const std::string unknownLoco;

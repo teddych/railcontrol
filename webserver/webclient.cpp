@@ -431,7 +431,11 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("settingsedit") == 0)
 			{
-				handleSettingsEdit(headers);
+				handleSettingsEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("settingssave") == 0)
+			{
+				handleSettingsSave(arguments);
 			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
@@ -1039,14 +1043,14 @@ namespace webserver
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagTimeout(const accessoryTimeout_t timeout) const
+	HtmlTag WebClient::HtmlTagTimeout(const accessoryTimeout_t timeout, const string& label) const
 	{
 		std::map<string,string> timeoutOptions;
 		timeoutOptions["0000"] = "0";
 		timeoutOptions["0100"] = "100";
 		timeoutOptions["0250"] = "250";
 		timeoutOptions["1000"] = "1000";
-		return HtmlTagSelectWithLabel("timeout", "Timeout:", timeoutOptions, toStringWithLeadingZeros(timeout, 4));
+		return HtmlTagSelectWithLabel("timeout", label, timeoutOptions, toStringWithLeadingZeros(timeout, 4));
 	}
 
 	HtmlTag WebClient::HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz)
@@ -2618,6 +2622,28 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagLayerSelector());
 	}
 
+	void WebClient::handleSettingsEdit(const map<string, string>& arguments)
+	{
+		const accessoryTimeout_t defaultAccessoryTimeout = manager.GetDefaultAccessoryTimeout();
+		HtmlTag content;
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit settings"));
+
+		HtmlTag formContent("form");
+		formContent.AddAttribute("id", "editform");
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "settingssave"));
+		formContent.AddChildTag(HtmlTagTimeout(defaultAccessoryTimeout, "Default timeout for accessory/switch (ms):"));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleSettingsSave(const map<string, string>& arguments)
+	{
+		const accessoryTimeout_t defaultAccessoryTimeout = GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryTimeout);
+		manager.SaveSettings(defaultAccessoryTimeout);
+		HtmlReplyWithHeaderAndParagraph("Settings saved.");	}
+
 	void WebClient::handleUpdater(const map<string, string>& headers)
 	{
 		Response response(Response::OK);
@@ -2758,11 +2784,13 @@ namespace webserver
 		HtmlTag menuAdd("div");
 		menuAdd.AddClass("menu_add");
 		menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
+		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><circle r=\"7\" cx=\"14\" cy=\"14\" fill=\"black\" /><line x1=\"14\" y1=\"5\" x2=\"14\" y2=\"23\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"9.5\" y1=\"6.2\" x2=\"18.5\" y2=\"21.8\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"6.2\" y1=\"9.5\" x2=\"21.8\" y2=\"18.5\" stroke-width=\"2\" stroke=\"black\" /><line y1=\"14\" x1=\"5\" y2=\"14\" x2=\"23\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"9.5\" y1=\"21.8\" x2=\"18.5\" y2=\"6.2\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"6.2\" y1=\"18.5\" x2=\"21.8\" y2=\"9.5\" stroke-width=\"2\" stroke=\"black\" /><circle r=\"5\" cx=\"14\" cy=\"14\" fill=\"white\" /><circle r=\"4\" cx=\"24\" cy=\"24\" fill=\"black\" /><line x1=\"18\" y1=\"24\" x2=\"30\" y2=\"24\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"28.2\" y1=\"28.2\" x2=\"19.8\" y2=\"19.8\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"24\" y1=\"18\" x2=\"24\" y2=\"30\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"19.8\" y1=\"28.2\" x2=\"28.2\" y2=\"19.8\" stroke-width=\"2\" stroke=\"black\" /><circle r=\"2\" cx=\"24\" cy=\"24\" fill=\"white\" /></svg>", "settingsedit"));
+		menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"10,0.5 25,0.5 25,34.5 10,34.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"13,3.5 22,3.5 22,7.5 13,7.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><circle cx=\"14.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"11\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"14\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"17\" r=\"1\" fill=\"black\"/><circle cx=\"14.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"20.5\" cy=\"20\" r=\"1\" fill=\"black\"/><circle cx=\"17.5\" cy=\"27.5\" r=\"5\" fill=\"black\"/></svg>", "controllist"));
 		menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"0,10 5,10 5,0 10,0 10,10 25,10 25,0 35,0 35,5 30,5 30,10 35,10 35,25 0,25\" fill=\"black\"/><circle cx=\"5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"17.5\" cy=\"30\" r=\"5\" fill=\"black\"/><circle cx=\"30\" cy=\"30\" r=\"5\" fill=\"black\"/</svg>", "locolist"));
 		menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
-		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\" id=\"_img\"><polygon points=\"1,30 25,30 34,20 10,20\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,25 25,25 34,15 10,15\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,20 25,20 34,10 10,10\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,15 25,15 34,5 10,5\" fill=\"white\" stroke=\"black\"/></svg>", "layerlist"));
+		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polygon points=\"1,30 25,30 34,20 10,20\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,25 25,25 34,15 10,15\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,20 25,20 34,10 10,10\" fill=\"white\" stroke=\"black\"/><polygon points=\"1,15 25,15 34,5 10,5\" fill=\"white\" stroke=\"black\"/></svg>", "layerlist"));
 		menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polyline points=\"1,12 34,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,23 34,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,10 3,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,10 6,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,10 9,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,10 12,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,10 15,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,10 18,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,10 21,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,10 24,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,10 27,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,10 30,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,10 33,25\" stroke=\"black\" stroke-width=\"1\"/></svg>", "tracklist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polyline points=\"1,20 7.1,19.5 13,17.9 18.5,15.3 23.5,11.8 27.8,7.5\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"1,28 8.5,27.3 15.7,25.4 22.5,22.2 28.6,17.9 33.9,12.6\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"1,20 34,20\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,28 34,28\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,18 3,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,18 6,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,17 9,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,16 12,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,15 15,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,13 18,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,12 21,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,9 24,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,17 27,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,18 30,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,18 33,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,9 32,17\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"26,7 34,15\" stroke=\"black\" stroke-width=\"1\"/></svg>", "switchlist"));

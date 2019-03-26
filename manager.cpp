@@ -37,6 +37,7 @@ Manager::Manager(Config& config)
  	boosterState(BoosterStop),
 	storage(nullptr),
  	delayedCall(new DelayedCall(*this)),
+	defaultAccessoryTimeout(DefaultAccessoryTimeout),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
@@ -2376,3 +2377,8 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 	}
 }
 
+bool Manager::SaveSettings(const accessoryTimeout_t timeout)
+{
+	defaultAccessoryTimeout = timeout;
+	return true;
+}
