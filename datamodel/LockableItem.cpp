@@ -31,7 +31,7 @@ namespace datamodel
 			}
 			return true;
 		}
-		if (lockState != LockStateFree)
+		if (locoID != LocoNone || lockState != LockStateFree)
 		{
 			return false;
 		}
