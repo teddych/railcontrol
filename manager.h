@@ -151,7 +151,12 @@ class Manager {
 
 		// settings
 		accessoryDuration_t GetDefaultAccessoryDuration() const { return defaultAccessoryDuration; }
-		bool SaveSettings(const accessoryDuration_t duration);
+		bool GetAutoAddFeedback() const { return autoAddFeedback; }
+		bool SaveSettings
+		(
+			const accessoryDuration_t duration,
+			const bool autoAddFeedback
+		);
 
 	private:
 		const ControlInterface* GetControl(const controlID_t controlID) const;
@@ -252,6 +257,7 @@ class Manager {
 		DelayedCall* delayedCall;
 
 		accessoryDuration_t defaultAccessoryDuration;
+		bool autoAddFeedback;
 
 		const std::string unknownControl;
 		const std::string unknownLoco;

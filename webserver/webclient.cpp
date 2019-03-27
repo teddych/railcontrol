@@ -2625,6 +2625,7 @@ namespace webserver
 	void WebClient::handleSettingsEdit(const map<string, string>& arguments)
 	{
 		const accessoryDuration_t defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
+		const bool autoAddFeedback = manager.GetAutoAddFeedback();
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit settings"));
 
@@ -2632,6 +2633,7 @@ namespace webserver
 		formContent.AddAttribute("id", "editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "settingssave"));
 		formContent.AddChildTag(HtmlTagDuration(defaultAccessoryDuration, "Default duration for accessory/switch (ms):"));
+		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", "Automatically add unknown feedbacks", "autoaddfeedback", autoAddFeedback));
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
@@ -2641,7 +2643,8 @@ namespace webserver
 	void WebClient::handleSettingsSave(const map<string, string>& arguments)
 	{
 		const accessoryDuration_t defaultAccessoryDuration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
-		manager.SaveSettings(defaultAccessoryDuration);
+		const bool autoAddFeedback = GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
+		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback);
 		HtmlReplyWithHeaderAndParagraph("Settings saved.");	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)

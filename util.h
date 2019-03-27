@@ -21,4 +21,5 @@ class Util
 {
 	public:
 		static int StringToInteger(const std::string&  value, const int min = 0, const int max = INT_MAX);
+		static bool StringToBool(const std::string&  value);
 };

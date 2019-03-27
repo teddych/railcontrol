@@ -38,6 +38,7 @@ Manager::Manager(Config& config)
 	storage(nullptr),
  	delayedCall(new DelayedCall(*this)),
 	defaultAccessoryDuration(DefaultAccessoryDuration),
+	autoAddFeedback(false),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
@@ -57,6 +58,7 @@ Manager::Manager(Config& config)
 	}
 
 	defaultAccessoryDuration = Util::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
+	autoAddFeedback = Util::StringToBool(storage->GetSetting("AutoAddFeedback"));
 
 
 	controls[ControlIdConsole] = new ConsoleServer(*this, config.getValue("consoleport", 2222));
@@ -1020,7 +1022,7 @@ void Manager::FeedbackState(const controlType_t controlType, const controlID_t c
 			}
 		}
 	}
-	if (feedbackID == FeedbackNone)
+	if (feedbackID == FeedbackNone && GetAutoAddFeedback() == true)
 	{
 		string name = "Feedback auto added " + std::to_string(controlID) + "/" + std::to_string(pin);
 		logger->Info("Adding feedback {0}", name);
@@ -2392,13 +2394,16 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 	}
 }
 
-bool Manager::SaveSettings(const accessoryDuration_t duration)
+bool Manager::SaveSettings(const accessoryDuration_t duration,
+	const bool autoAddFeedback)
 {
-	defaultAccessoryDuration = duration;
+	this->defaultAccessoryDuration = duration;
+	this->autoAddFeedback = autoAddFeedback;
 	if (storage == nullptr)
 	{
 		return false;
 	}
 	storage->SaveSetting("DefaultAccessoryDuration", std::to_string(duration));
+	storage->SaveSetting("AutoAddFeedback", std::to_string(autoAddFeedback));
 	return true;
 }

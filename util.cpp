@@ -109,3 +109,10 @@ int Util::StringToInteger(const std::string&  value, const int min, const int ma
 
 	return intValue;
 }
+
+bool Util::StringToBool(const std::string&  value)
+{
+
+	int intValue = StringToInteger(value);
+	return intValue != 0;
+}
