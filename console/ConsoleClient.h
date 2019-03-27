@@ -49,7 +49,6 @@ namespace console
 			static layoutRotation_t ReadRotation(std::string& s, size_t& i);
 			static direction_t ReadDirection(std::string& s, size_t& i);
 			static accessoryState_t ReadAccessoryState(std::string& s, size_t& i);
-			void HandleClient();
 			void HandleCommand(std::string& s);
 			void HandleAccessoryCommand(std::string& s, size_t& i);
 			void HandleTrackCommand(std::string& s, size_t& i);

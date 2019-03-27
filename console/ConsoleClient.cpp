@@ -338,41 +338,6 @@ namespace console
 		return (state ? AccessoryStateOn : AccessoryStateOff);
 	}
 
-	/*
-	void ConsoleClient::HandleClient()
-	{
-		AddUpdate("Welcome to railcontrol console!\nType h for help\n");
-		char buffer_in[1024];
-		memset(buffer_in, 0, sizeof(buffer_in));
-
-		while(run)
-		{
-			size_t pos = 0;
-			string s;
-			while(run && pos < sizeof(buffer_in) - 1 && s.find("\n") == string::npos && s.find("\r") == string::npos)
-			{
-				ssize_t ret = recv_timeout(clientSocket, buffer_in + pos, sizeof(buffer_in) - 1 - pos, 0);
-				if (ret > 0)
-				{
-					pos += ret;
-					s = string(buffer_in);
-					continue;
-				}
-
-				if (errno == ETIMEDOUT)
-				{
-					continue;
-				}
-
-				close(clientSocket);
-				return;
-			}
-
-			HandleCommand(s);
-		}
-	}
-	*/
-
 	void ConsoleClient::HandleCommand(string& s)
 	{
 		size_t i = 0;
