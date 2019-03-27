@@ -707,10 +707,10 @@ namespace console
 		controlID_t controlID = ReadNumber(s, i);
 		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
 		address_t address = ReadNumber(s, i);
-		accessoryTimeout_t timeout = ReadNumber(s, i);
+		accessoryDuration_t duration = ReadNumber(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
-		if (!manager.AccessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
+		if (!manager.AccessorySave(AccessoryNone, name, posX, posY, posZ, controlID, protocol, address, AccessoryTypeDefault, duration, inverted, result))
 		{
 			SendAndPrompt(result);
 			return;
@@ -1142,7 +1142,7 @@ namespace console
 				"A D accessory#                    Delete accessory\n"
 				"A L A                             List all accessories\n"
 				"A L accessory#                    List accessory\n"
-				"A N Name X Y Z Control Protocol Address Timeout(ms) Inverted\n"
+				"A N Name X Y Z Control Protocol Address Duration(ms) Inverted\n"
 				"                                  New Accessory\n"
 				"A S accessory# state              Switch accessory\n"
 				"\n"
@@ -1193,7 +1193,7 @@ namespace console
 				"W D switch#                       Delete switch\n"
 				"W L A                             List all switches\n"
 				"W L switch#                       List switch\n"
-				"W N Name X Y Z Rotation Control Protocol Address Type(L/R) Timeout(ms) Inverted\n"
+				"W N Name X Y Z Rotation Control Protocol Address Type(L/R) Duration(ms) Inverted\n"
 				"                                  New Switch\n"
 				"\n"
 				"Other commands\n"
@@ -1454,10 +1454,10 @@ namespace console
 		protocol_t protocol = static_cast<protocol_t>(ReadNumber(s, i));
 		address_t address = ReadNumber(s, i);
 		switchType_t type = ReadSwitchType(s, i);
-		accessoryTimeout_t timeout = ReadNumber(s, i);
+		accessoryDuration_t duration = ReadNumber(s, i);
 		bool inverted = ReadBool(s, i);
 		string result;
-		if (!manager.SwitchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, timeout, inverted, result))
+		if (!manager.SwitchSave(SwitchNone, name, posX, posY, posZ, rotation, controlID, protocol, address, type, duration, inverted, result))
 		{
 			SendAndPrompt(result);
 			return;

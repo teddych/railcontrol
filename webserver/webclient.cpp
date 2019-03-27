@@ -1043,14 +1043,14 @@ namespace webserver
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagTimeout(const accessoryTimeout_t timeout, const string& label) const
+	HtmlTag WebClient::HtmlTagDuration(const accessoryDuration_t duration, const string& label) const
 	{
-		std::map<string,string> timeoutOptions;
-		timeoutOptions["0000"] = "0";
-		timeoutOptions["0100"] = "100";
-		timeoutOptions["0250"] = "250";
-		timeoutOptions["1000"] = "1000";
-		return HtmlTagSelectWithLabel("timeout", label, timeoutOptions, toStringWithLeadingZeros(timeout, 4));
+		std::map<string,string> durationOptions;
+		durationOptions["0000"] = "0";
+		durationOptions["0100"] = "100";
+		durationOptions["0250"] = "250";
+		durationOptions["1000"] = "1000";
+		return HtmlTagSelectWithLabel("duration", label, durationOptions, toStringWithLeadingZeros(duration, 4));
 	}
 
 	HtmlTag WebClient::HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz)
@@ -1525,7 +1525,7 @@ namespace webserver
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		accessoryTimeout_t timeout = 100;
+		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (accessoryID > AccessoryNone)
 		{
@@ -1561,7 +1561,7 @@ namespace webserver
 				)
 			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)))
 			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
-			.AddChildTag(HtmlTagTimeout(timeout))
+			.AddChildTag(HtmlTagDuration(duration))
 			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
 			.AddChildTag(HtmlTagPosition(posx, posy, posz))
 		));
@@ -1587,10 +1587,10 @@ namespace webserver
 		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
-		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
+		accessoryDuration_t duration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, timeout, inverted, result))
+		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, duration, inverted, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -1708,7 +1708,7 @@ namespace webserver
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		switchType_t type = SwitchTypeLeft;
-		accessoryTimeout_t timeout = 100;
+		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (switchID > SwitchNone)
 		{
@@ -1722,7 +1722,7 @@ namespace webserver
 			posz = mySwitch->posZ;
 			rotation = mySwitch->rotation;
 			type = mySwitch->GetType();
-			timeout = mySwitch->timeout;
+			duration = mySwitch->duration;
 			inverted = mySwitch->IsInverted();
 		}
 
@@ -1759,7 +1759,7 @@ namespace webserver
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('switch', " + to_string(switchID) + ")"));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044));
-		mainContent.AddChildTag(HtmlTagTimeout(timeout));
+		mainContent.AddChildTag(HtmlTagDuration(duration));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted));
 		formContent.AddChildTag(mainContent);
 
@@ -1789,10 +1789,10 @@ namespace webserver
 		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		switchType_t type = GetIntegerMapEntry(arguments, "type", SwitchTypeLeft);
-		accessoryTimeout_t timeout = GetIntegerMapEntry(arguments, "timeout", 100);
+		accessoryDuration_t duration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.SwitchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, timeout, inverted, result))
+		if (!manager.SwitchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -2624,14 +2624,14 @@ namespace webserver
 
 	void WebClient::handleSettingsEdit(const map<string, string>& arguments)
 	{
-		const accessoryTimeout_t defaultAccessoryTimeout = manager.GetDefaultAccessoryTimeout();
+		const accessoryDuration_t defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit settings"));
 
 		HtmlTag formContent("form");
 		formContent.AddAttribute("id", "editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "settingssave"));
-		formContent.AddChildTag(HtmlTagTimeout(defaultAccessoryTimeout, "Default timeout for accessory/switch (ms):"));
+		formContent.AddChildTag(HtmlTagDuration(defaultAccessoryDuration, "Default duration for accessory/switch (ms):"));
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
@@ -2640,8 +2640,8 @@ namespace webserver
 
 	void WebClient::handleSettingsSave(const map<string, string>& arguments)
 	{
-		const accessoryTimeout_t defaultAccessoryTimeout = GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryTimeout);
-		manager.SaveSettings(defaultAccessoryTimeout);
+		const accessoryDuration_t defaultAccessoryDuration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		manager.SaveSettings(defaultAccessoryDuration);
 		HtmlReplyWithHeaderAndParagraph("Settings saved.");	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)

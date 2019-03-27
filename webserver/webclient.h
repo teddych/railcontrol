@@ -46,7 +46,7 @@ namespace webserver
 			HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
-			HtmlTag HtmlTagTimeout(const accessoryTimeout_t timeout, const std::string& label = "Timeout:") const;
+			HtmlTag HtmlTagDuration(const accessoryDuration_t duration, const std::string& label = "Duration (ms):") const;
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz);
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible);
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;

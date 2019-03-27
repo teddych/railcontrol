@@ -27,7 +27,7 @@ void DelayedCall::Thread(DelayedCall* thisClass)
 		while (thisClass->run && callElement != thisClass->waitingCalls.end())
 		{
 			DelayedCallEntry* entry = *callElement;
-			if (entry->timeout > thisClass->counter)
+			if (entry->waitTime > thisClass->counter)
 			{
 				++callElement;
 				continue;
@@ -50,17 +50,17 @@ void DelayedCall::Thread(DelayedCall* thisClass)
 	}
 }
 
-void DelayedCall::Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const unsigned long timeout)
+void DelayedCall::Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const unsigned long waitTime)
 {
-	unsigned int count = (timeout / CountStep) + counter + 1;
+	unsigned int count = (waitTime / CountStep) + counter + 1;
 	auto entry = new DelayedCallEntryAccessory(manager, controlType, accessoryID, state, inverted, count);
 	std::lock_guard<std::mutex> lock(mutex);
 	waitingCalls.push_back(entry);
 }
 
-void DelayedCall::Switch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const unsigned long timeout)
+void DelayedCall::Switch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const unsigned long waitTime)
 {
-	unsigned int count = (timeout / CountStep) + counter + 1;
+	unsigned int count = (waitTime / CountStep) + counter + 1;
 	auto entry = new DelayedCallEntrySwitch(manager, controlType, switchID, state, inverted, count);
 	std::lock_guard<std::mutex> lock(mutex);
 	waitingCalls.push_back(entry);

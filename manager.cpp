@@ -37,7 +37,7 @@ Manager::Manager(Config& config)
  	boosterState(BoosterStop),
 	storage(nullptr),
  	delayedCall(new DelayedCall(*this)),
-	defaultAccessoryTimeout(DefaultAccessoryTimeout),
+	defaultAccessoryDuration(DefaultAccessoryDuration),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
@@ -56,7 +56,7 @@ Manager::Manager(Config& config)
 		return;
 	}
 
-	defaultAccessoryTimeout = Util::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
+	defaultAccessoryDuration = Util::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
 
 
 	controls[ControlIdConsole] = new ConsoleServer(*this, config.getValue("consoleport", 2222));
@@ -819,7 +819,7 @@ void Manager::AccessoryState(const controlType_t controlType, const accessoryID_
 
 	this->AccessoryState(controlType, accessoryID, state, accessory->IsInverted(), true);
 
-	delayedCall->Accessory(controlType, accessoryID, state, accessory->IsInverted(), accessory->timeout);
+	delayedCall->Accessory(controlType, accessoryID, state, accessory->IsInverted(), accessory->duration);
 }
 
 void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
@@ -863,7 +863,7 @@ bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layo
 	return (accessory->posX == posX && accessory->posY == posY && accessory->posZ == posZ);
 }
 
-bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, string& result)
+bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryDuration_t duration, const bool inverted, string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
@@ -891,7 +891,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 		accessory->protocol = protocol;
 		accessory->address = address;
 		accessory->type = type;
-		accessory->timeout = timeout;
+		accessory->duration = duration;
 		accessory->Inverted(inverted);
 	}
 	else
@@ -908,7 +908,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 			}
 		}
 		++newAccessoryID;
-		accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, Rotation0, controlID, protocol, address, type, timeout, inverted);
+		accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, Rotation0, controlID, protocol, address, type, duration, inverted);
 		if (accessory == nullptr)
 		{
 			result.assign("Unable to allocate memory for accessory");
@@ -1443,7 +1443,7 @@ void Manager::SwitchState(const controlType_t controlType, const switchID_t swit
 
 	this->SwitchState(controlType, switchID, state, mySwitch->IsInverted(), true);
 
-	delayedCall->Switch(controlType, switchID, state, mySwitch->IsInverted(), mySwitch->timeout);
+	delayedCall->Switch(controlType, switchID, state, mySwitch->IsInverted(), mySwitch->duration);
 }
 
 void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)
@@ -1486,7 +1486,7 @@ bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPositio
 	return (mySwitch->posX == posX && mySwitch->posY == posY && mySwitch->posZ == posZ);
 }
 
-bool Manager::SwitchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, string& result)
+bool Manager::SwitchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t duration, const bool inverted, string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
@@ -1514,7 +1514,7 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 		mySwitch->protocol = protocol;
 		mySwitch->address = address;
 		mySwitch->type = type;
-		mySwitch->timeout = timeout;
+		mySwitch->duration = duration;
 		mySwitch->Inverted(inverted);
 	}
 	else
@@ -1531,7 +1531,7 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 			}
 		}
 		++newSwitchID;
-		mySwitch = new Switch(newSwitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, timeout, inverted);
+		mySwitch = new Switch(newSwitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, duration, inverted);
 		if (mySwitch == nullptr)
 		{
 			result.assign("Unable to allocate memory for switch");
@@ -2386,13 +2386,13 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 	}
 }
 
-bool Manager::SaveSettings(const accessoryTimeout_t timeout)
+bool Manager::SaveSettings(const accessoryDuration_t duration)
 {
-	defaultAccessoryTimeout = timeout;
+	defaultAccessoryDuration = duration;
 	if (storage == nullptr)
 	{
 		return false;
 	}
-	storage->SaveSetting("DefaultAccessoryDuration", std::to_string(timeout));
+	storage->SaveSetting("DefaultAccessoryDuration", std::to_string(duration));
 	return true;
 }

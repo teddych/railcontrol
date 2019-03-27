@@ -22,7 +22,7 @@ typedef unsigned char layoutPosition_t;
 typedef objectID_t accessoryID_t;
 typedef unsigned char accessoryType_t;
 typedef bool accessoryState_t;
-typedef unsigned short accessoryTimeout_t;
+typedef unsigned short accessoryDuration_t;
 
 // feedback
 typedef objectID_t feedbackID_t;
@@ -33,7 +33,7 @@ typedef objectID_t trackID_t;
 
 // switch
 typedef accessoryID_t switchID_t;
-typedef accessoryTimeout_t switchTimeout_t;
+typedef accessoryDuration_t switchDuration_t;
 typedef accessoryState_t switchState_t;
 typedef accessoryType_t switchType_t;
 
@@ -66,7 +66,7 @@ static const locoSpeed_t MinSpeed = 0;
 static const layoutItemSize_t Width1 = 1;
 static const layoutItemSize_t Height1 = 1;
 
-static const accessoryTimeout_t DefaultAccessoryTimeout = 100;
+static const accessoryDuration_t DefaultAccessoryDuration = 100;
 
 enum controlType_t : unsigned char
 {

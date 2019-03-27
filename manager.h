@@ -77,7 +77,7 @@ class Manager {
 		const std::string& GetAccessoryName(const accessoryID_t accessoryID) const;
 		const std::map<accessoryID_t,datamodel::Accessory*>& AccessoryList() const { return accessories; }
 		const std::map<std::string,datamodel::Accessory*> AccessoryListByName() const;
-		bool AccessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryTimeout_t timeout, const bool inverted, std::string& result);
+		bool AccessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryDuration_t timeout, const bool inverted, std::string& result);
 		bool AccessoryDelete(const accessoryID_t accessoryID);
 		bool AccessoryRelease(const accessoryID_t accessoryID);
 		bool AccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
@@ -109,7 +109,7 @@ class Manager {
 		const std::string& GetSwitchName(const switchID_t switchID) const;
 		const std::map<switchID_t,datamodel::Switch*>& SwitchList() const { return switches; }
 		const std::map<std::string,datamodel::Switch*> SwitchListByName() const;
-		bool SwitchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchTimeout_t timeout, const bool inverted, std::string& result);
+		bool SwitchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t timeout, const bool inverted, std::string& result);
 		bool SwitchDelete(const switchID_t switchID);
 		bool SwitchRelease(const switchID_t switchID);
 		bool SwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
@@ -150,8 +150,8 @@ class Manager {
 		void StopAllLocosImmediately(const controlType_t controlType);
 
 		// settings
-		accessoryTimeout_t GetDefaultAccessoryTimeout() const { return defaultAccessoryTimeout; }
-		bool SaveSettings(const accessoryTimeout_t timeout);
+		accessoryDuration_t GetDefaultAccessoryDuration() const { return defaultAccessoryDuration; }
+		bool SaveSettings(const accessoryDuration_t duration);
 
 	private:
 		const ControlInterface* GetControl(const controlID_t controlID) const;
@@ -251,7 +251,7 @@ class Manager {
 		storage::StorageHandler* storage;
 		DelayedCall* delayedCall;
 
-		accessoryTimeout_t defaultAccessoryTimeout;
+		accessoryDuration_t defaultAccessoryDuration;
 
 		const std::string unknownControl;
 		const std::string unknownLoco;

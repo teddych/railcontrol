@@ -9,14 +9,14 @@
 class DelayedCallEntry
 {
 	public:
-		DelayedCallEntry(Manager& manager, const controlType_t controlType, const unsigned long timeout)
-		:	timeout(timeout),
+		DelayedCallEntry(Manager& manager, const controlType_t controlType, const unsigned long waitTime)
+		:	waitTime(waitTime),
 		 	manager(manager),
 		 	controlType(controlType)
 		{}
 		virtual ~DelayedCallEntry(){}
 		virtual void Execute() = 0;
-		unsigned long timeout;
+		unsigned long waitTime;
 
 	protected:
 		Manager& manager;

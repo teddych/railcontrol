@@ -22,7 +22,7 @@ namespace datamodel
 				const protocol_t protocol,
 				const address_t address,
 				const accessoryType_t type,
-				const accessoryTimeout_t timeout,
+				const accessoryDuration_t duration,
 				const bool inverted)
 			:	LayoutItem(accessoryID, name, VisibleYes, x, y, z, Width1, Height1, rotation),
 				controlID(controlID),
@@ -30,7 +30,7 @@ namespace datamodel
 				address(address),
 				type(type),
 				state(AccessoryStateOff),
-				timeout(timeout),
+				duration(duration),
 				inverted(inverted)
 			{
 			}
@@ -57,7 +57,7 @@ namespace datamodel
 			address_t address;
 			accessoryType_t type;
 			accessoryState_t state;
-			accessoryTimeout_t timeout; // timeout in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
+			accessoryDuration_t duration; // duration in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
 
 		protected:
 			std::string SerializeWithoutType() const;

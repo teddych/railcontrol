@@ -24,7 +24,7 @@ namespace datamodel
 				protocol_t protocol,
 				address_t address,
 				switchType_t type,
-				switchTimeout_t timeout,
+				switchDuration_t timeout,
 				bool inverted)
 			:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, timeout, inverted)
 			{

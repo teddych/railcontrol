@@ -26,7 +26,7 @@ namespace datamodel
 			<< ";address=" << static_cast<int>(address)
 			<< ";type=" << static_cast<int>(type)
 			<< ";state=" << static_cast<int>(state)
-			<< ";timeout=" << static_cast<int>(timeout)
+			<< ";duration=" << static_cast<int>(duration)
 			<< ";inverted=" << static_cast<int>(inverted);
 		return ss.str();
 	}
@@ -56,7 +56,8 @@ namespace datamodel
 		address = GetIntegerMapEntry(arguments, "address");
 		type = GetIntegerMapEntry(arguments, "type");
 		state = GetIntegerMapEntry(arguments, "state");
-		timeout = GetIntegerMapEntry(arguments, "timeout", 100);
+		duration = GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryDuration); // FIXME: remove in later versions, is only here for conversion
+		duration = GetIntegerMapEntry(arguments, "duration", DefaultAccessoryDuration);
 		inverted = GetBoolMapEntry(arguments, "inverted");
 		return true;
 	}
