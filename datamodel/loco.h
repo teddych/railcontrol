@@ -99,19 +99,27 @@ namespace datamodel
 				const controlID_t controlID,
 				const protocol_t protocol,
 				const address_t address,
-				const function_t nr)
+				const function_t nr,
+				const locoSpeed_t maxSpeed,
+				const locoSpeed_t travelSpeed,
+				const locoSpeed_t reducedSpeed,
+				const locoSpeed_t creepSpeed)
 			:	Object(locoID, name),
 			 	controlID(controlID),
 				protocol(protocol),
 				address(address),
+				maxSpeed(maxSpeed),
+				travelSpeed(travelSpeed),
+				reducedSpeed(reducedSpeed),
+				creepSpeed(creepSpeed),
 				manager(manager),
 				speed(0),
+				direction(DirectionLeft),
 				state(LocoStateManual),
 				fromTrackID(TrackNone),
 				toTrackID(TrackNone),
 				streetID(StreetNone),
-				feedbackIdStop(FeedbackNone),
-				direction(DirectionLeft)
+				feedbackIdStop(FeedbackNone)
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
 			}
@@ -159,6 +167,11 @@ namespace datamodel
 			protocol_t protocol;
 			address_t address;
 
+			locoSpeed_t maxSpeed;
+			locoSpeed_t travelSpeed;
+			locoSpeed_t reducedSpeed;
+			locoSpeed_t creepSpeed;
+
 		private:
 			void AutoMode(Loco* loco);
 			void SearchDestination();
@@ -175,6 +188,7 @@ namespace datamodel
 
 			Manager* manager;
 			locoSpeed_t speed;
+			direction_t direction;
 			locoState_t state;
 			trackID_t fromTrackID;
 			trackID_t toTrackID;
@@ -185,7 +199,6 @@ namespace datamodel
 			std::thread locoThread;
 
 			LocoFunctions functions;
-			direction_t direction;
 
 			Logger::Logger* logger;
 	};

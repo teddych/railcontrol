@@ -61,6 +61,9 @@ static const layerID_t LayerNone = 0;
 static const layerID_t LayerUndeletable = 1;
 
 static const locoSpeed_t MaxSpeed = 1023;
+static const locoSpeed_t DefaultTravelSpeed = 700;
+static const locoSpeed_t DefaultReducedSpeed = 400;
+static const locoSpeed_t DefaultCreepSpeed = 100;
 static const locoSpeed_t MinSpeed = 0;
 
 static const layoutItemSize_t Width1 = 1;

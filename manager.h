@@ -58,7 +58,20 @@ class Manager {
 		const std::map<locoID_t,datamodel::Loco*>& locoList() const { return locos; }
 		const std::map<std::string,locoID_t> LocoListFree() const;
 		const std::map<std::string,datamodel::Loco*> LocoListByName() const;
-		bool LocoSave(const locoID_t locoID, const std::string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, std::string& result);
+		bool LocoSave
+		(
+			const locoID_t locoID,
+			const std::string& name,
+			const controlID_t controlID,
+			const protocol_t protocol,
+			const address_t address,
+			const function_t nr,
+			const locoSpeed_t maxSpeed,
+			const locoSpeed_t travelSpeed,
+			const locoSpeed_t reducedSpeed,
+			const locoSpeed_t creepSpeed,
+			std::string& result
+		);
 		bool LocoDelete(const locoID_t locoID);
 		bool LocoProtocolAddress(const locoID_t locoID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 		void LocoSpeed(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const locoSpeed_t speed);

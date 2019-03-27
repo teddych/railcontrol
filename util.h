@@ -20,6 +20,8 @@ std::string toStringWithLeadingZeros(const unsigned int number, const unsigned c
 class Util
 {
 	public:
-		static int StringToInteger(const std::string&  value, const int min = 0, const int max = INT_MAX);
+		static int StringToInteger(const std::string&  value) { return StringToInteger(value, 0, INT_MAX); }
+		static int StringToInteger(const std::string&  value, const int defaultValue);
+		static int StringToInteger(const std::string&  value, const int min, const int max);
 		static bool StringToBool(const std::string&  value);
 };

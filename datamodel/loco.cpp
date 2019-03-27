@@ -38,7 +38,11 @@ namespace datamodel
 			<< ";address=" << static_cast<int>(address)
 			<< ";functions=" << functions.Serialize()
 			<< ";direction=" << (direction == DirectionRight ? "right" : "left")
-			<< ";trackID=" << static_cast<int>(toTrackID);
+			<< ";trackID=" << static_cast<int>(toTrackID)
+			<< ";maxspeed=" << maxSpeed
+			<< ";travelspeed=" << travelSpeed
+			<< ";reducedspeed=" << reducedSpeed
+			<< ";creepspeed=" << creepSpeed;
 		return ss.str();
 	}
 
@@ -57,6 +61,10 @@ namespace datamodel
 		toTrackID = GetIntegerMapEntry(arguments, "trackID", TrackNone);
 		functions.Deserialize(GetStringMapEntry(arguments, "functions", "0"));
 		direction = (GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
+		maxSpeed = GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
+		travelSpeed = GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
+		reducedSpeed = GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
+		creepSpeed = GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
 		return true;
 	}
 

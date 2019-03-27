@@ -550,7 +550,17 @@ const map<string,datamodel::Loco*> Manager::LocoListByName() const
 	return out;
 }
 
-bool Manager::LocoSave(const locoID_t locoID, const string& name, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t nr, string& result)
+bool Manager::LocoSave(const locoID_t locoID,
+	const string& name,
+	const controlID_t controlID,
+	const protocol_t protocol,
+	const address_t address,
+	const function_t nr,
+	const locoSpeed_t maxSpeed,
+	const locoSpeed_t travelSpeed,
+	const locoSpeed_t reducedSpeed,
+	const locoSpeed_t creepSpeed,
+	string& result)
 {
 	if (!CheckControlLocoProtocolAddress(controlID, protocol, address, result))
 	{
@@ -566,6 +576,10 @@ bool Manager::LocoSave(const locoID_t locoID, const string& name, const controlI
 		loco->protocol = protocol;
 		loco->address = address;
 		loco->SetNrOfFunctions(nr);
+		loco->maxSpeed = maxSpeed;
+		loco->travelSpeed = travelSpeed;
+		loco->reducedSpeed = reducedSpeed;
+		loco->creepSpeed = creepSpeed;
 	}
 	else
 	{
@@ -581,7 +595,7 @@ bool Manager::LocoSave(const locoID_t locoID, const string& name, const controlI
 			}
 		}
 		++newLocoID;
-		loco = new Loco(this, newLocoID, name, controlID, protocol, address, nr);
+		loco = new Loco(this, newLocoID, name, controlID, protocol, address, nr, maxSpeed, travelSpeed, reducedSpeed, creepSpeed);
 		if (loco == nullptr)
 		{
 			result.assign("Unable to allocate memory for loco");
