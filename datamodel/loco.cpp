@@ -273,7 +273,7 @@ namespace datamodel
 		// start loco
 		manager->TrackPublishState(toTrackID);
 		// FIXME: make maxspeed configurable
-		manager->LocoSpeed(ControlTypeInternal, objectID, MaxSpeed >> 1);
+		manager->LocoSpeed(ControlTypeInternal, objectID, travelSpeed);
 		state = LocoStateRunning;
 	}
 
