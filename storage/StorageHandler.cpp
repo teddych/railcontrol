@@ -28,7 +28,8 @@ namespace storage {
 		createStorage(nullptr),
 		destroyStorage(nullptr),
 		instance(nullptr),
-		dlhandle(nullptr)
+		dlhandle(nullptr),
+		transactionRunning(false)
 	{
 #ifdef AMALGAMATION
 		createStorage = (storage::StorageInterface* (*)(storage::StorageParams))(&create_sqlite);
@@ -108,7 +109,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->SaveHardwareParams(hardwareParams);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::AllHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams)
@@ -126,7 +129,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->DeleteHardwareParams(controlID);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::Save(const Loco& loco)
@@ -136,7 +141,9 @@ namespace storage {
 			return;
 		}
 		string serialized = loco.Serialize();
+		StartTransactionInternal();
 		instance->SaveObject(ObjectTypeLoco, loco.objectID, loco.name, serialized);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::AllLocos(map<locoID_t,datamodel::Loco*>& locos)
@@ -159,7 +166,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->DeleteObject(ObjectTypeLoco, locoID);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::Save(const Accessory& accessory)
@@ -169,7 +178,9 @@ namespace storage {
 			return;
 		}
 		string serialized = accessory.Serialize();
+		StartTransactionInternal();
 		instance->SaveObject(ObjectTypeAccessory, accessory.objectID, accessory.name, serialized);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::AllAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories)
@@ -193,7 +204,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->DeleteObject(ObjectTypeAccessory, accessoryID);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::Save(const Feedback& feedback)
@@ -203,7 +216,9 @@ namespace storage {
 			return;
 		}
 		string serialized = feedback.Serialize();
+		StartTransactionInternal();
 		instance->SaveObject(ObjectTypeFeedback, feedback.objectID, feedback.name, serialized);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::AllFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks)
@@ -227,7 +242,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->DeleteObject(ObjectTypeFeedback, feedbackID);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::Save(const Track& track)
@@ -237,7 +254,9 @@ namespace storage {
 			return;
 		}
 		string serialized = track.Serialize();
+		StartTransactionInternal();
 		instance->SaveObject(ObjectTypeTrack, track.objectID, track.name, serialized);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::AllTracks(std::map<trackID_t,datamodel::Track*>& tracks)
@@ -261,7 +280,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->DeleteObject(ObjectTypeTrack, trackID);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::Save(const Switch& mySwitch)
@@ -271,7 +292,9 @@ namespace storage {
 			return;
 		}
 		string serialized = mySwitch.Serialize();
+		StartTransactionInternal();
 		instance->SaveObject(ObjectTypeSwitch, mySwitch.objectID, mySwitch.name, serialized);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::AllSwitches(std::map<switchID_t,datamodel::Switch*>& switches)
@@ -295,7 +318,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->DeleteObject(ObjectTypeSwitch, switchID);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::Save(const datamodel::Street& street)
@@ -305,6 +330,7 @@ namespace storage {
 			return;
 		}
 		string serialized = street.Serialize();
+		StartTransactionInternal();
 		instance->SaveObject(ObjectTypeStreet, street.objectID, street.name, serialized);
 		instance->DeleteRelationFrom(ObjectTypeStreet, street.objectID);
 		const vector<datamodel::Relation*> relations = street.GetRelations();
@@ -313,6 +339,7 @@ namespace storage {
 			string serializedRelation = relation->Serialize();
 			instance->SaveRelation(ObjectTypeStreet, street.objectID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
 		}
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::AllStreets(std::map<streetID_t,datamodel::Street*>& streets)
@@ -343,7 +370,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->DeleteObject(ObjectTypeStreet, streetID);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::Save(const datamodel::Layer& layer)
@@ -353,7 +382,9 @@ namespace storage {
 			return;
 		}
 		string serialized = layer.Serialize();
+		StartTransactionInternal();
 		instance->SaveObject(ObjectTypeLayer, layer.objectID, layer.name, serialized);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::AllLayers(std::map<layerID_t,datamodel::Layer*>& layers)
@@ -376,7 +407,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->DeleteObject(ObjectTypeLayer, layerID);
+		CommitTransactionInternal();
 	}
 
 	void StorageHandler::SaveSetting(const std::string& key, const std::string& value)
@@ -385,7 +418,9 @@ namespace storage {
 		{
 			return;
 		}
+		StartTransactionInternal();
 		instance->SaveSetting(key, value);
+		CommitTransactionInternal();
 	}
 
 	std::string StorageHandler::GetSetting(const std::string& key)
@@ -395,6 +430,44 @@ namespace storage {
 			return "";
 		}
 		return instance->GetSetting(key);
+	}
+
+	void StorageHandler::StartTransaction()
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		transactionRunning = true;
+		instance->StartTransaction();
+	}
+
+	void StorageHandler::CommitTransaction()
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		transactionRunning = false;
+		instance->CommitTransaction();
+	}
+
+	void StorageHandler::StartTransactionInternal()
+	{
+		if (transactionRunning == true)
+		{
+			return;
+		}
+		instance->StartTransaction();
+	}
+
+	void StorageHandler::CommitTransactionInternal()
+	{
+		if (transactionRunning == true)
+		{
+			return;
+		}
+		instance->CommitTransaction();
 	}
 } // namespace storage
 

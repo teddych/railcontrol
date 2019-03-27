@@ -389,6 +389,16 @@ namespace storage
 		return 0;
 	}
 
+	void SQLite::StartTransaction()
+	{
+		Execute("BEGIN TRANSACTION");
+	}
+
+	void SQLite::CommitTransaction()
+	{
+		Execute("COMMIT");
+	}
+
 	void SQLite::Execute(const string& s)
 	{
 		if (db == nullptr)

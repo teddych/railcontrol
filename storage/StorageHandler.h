@@ -46,13 +46,19 @@ namespace storage
 			template <class T> static void Save(StorageHandler* storageHandler, const T* t) { storageHandler->Save(*t); }
 			void SaveSetting(const std::string& key, const std::string& value);
 			std::string GetSetting(const std::string& key) ;
+			void StartTransaction();
+			void CommitTransaction();
 
 		private:
+			void StartTransactionInternal();
+			void CommitTransactionInternal();
+
 			Manager* manager;
 			createStorage_t* createStorage;
 			destroyStorage_t* destroyStorage;
 			storage::StorageInterface* instance;
 			void* dlhandle;
+			bool transactionRunning;
 	};
 
 } // namespace storage

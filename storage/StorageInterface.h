@@ -55,6 +55,12 @@ namespace storage
 
 			// read setting
 			virtual std::string GetSetting(const std::string& key) = 0;
+
+			// start transaction
+			virtual void StartTransaction() {}
+
+			// commit transaction
+			virtual void CommitTransaction() {}
 	};
 } // namespace
 

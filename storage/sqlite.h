@@ -29,7 +29,8 @@ namespace storage
 			void RelationsTo(const objectType_t objectType, const objectID_t objectID, std::vector<std::string>& relations) override;
 			void SaveSetting(const std::string& key, const std::string& value) override;
 			std::string GetSetting(const std::string& key) override;
-
+			void StartTransaction() override;
+			void CommitTransaction() override;
 
 		private:
 			void Execute(const std::string& query);

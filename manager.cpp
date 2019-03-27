@@ -156,6 +156,11 @@ Manager::~Manager()
 		}
 	}
 
+	if (storage != nullptr)
+	{
+		storage->StartTransaction();
+	}
+
 	DeleteAllMapEntries(streets, streetMutex);
 	DeleteAllMapEntries(switches, switchMutex, storage);
 	DeleteAllMapEntries(accessories, accessoryMutex, storage);
@@ -172,6 +177,7 @@ Manager::~Manager()
 		return;
 	}
 
+	storage->CommitTransaction();
 	delete storage;
 	storage = nullptr;
 }
