@@ -164,11 +164,11 @@ Manager::~Manager()
 	}
 
 	DeleteAllMapEntries(streets, streetMutex);
-	DeleteAllMapEntries(switches, switchMutex, storage);
-	DeleteAllMapEntries(accessories, accessoryMutex, storage);
-	DeleteAllMapEntries(feedbacks, feedbackMutex, storage);
-	DeleteAllMapEntries(tracks, trackMutex, storage);
-	DeleteAllMapEntries(locos, locoMutex, storage);
+	DeleteAllMapEntries(switches, switchMutex);
+	DeleteAllMapEntries(accessories, accessoryMutex);
+	DeleteAllMapEntries(feedbacks, feedbackMutex);
+	DeleteAllMapEntries(tracks, trackMutex);
+	DeleteAllMapEntries(locos, locoMutex);
 	DeleteAllMapEntries(layers, layerMutex);
 
 	delete delayedCall;

@@ -202,7 +202,7 @@ class Manager {
 		bool TrackReleaseInternal(datamodel::Track* track);
 
 		template<class Key, class Value>
-		void DeleteAllMapEntries(std::map<Key,Value*>& m, std::mutex& x, storage::StorageHandler* storage = nullptr)
+		void DeleteAllMapEntries(std::map<Key,Value*>& m, std::mutex& x)
 		{
 			std::lock_guard<std::mutex> Guard(x);
 			while (m.size())
@@ -212,9 +212,9 @@ class Manager {
 				m.erase(it);
 				if (storage != nullptr)
 				{
+					logger->Info("Saving {0}", content->Name());
 					storage->Save(*content);
 				}
-				logger->Info("Saving {0}", content->Name());
 				delete content;
 			}
 		}
