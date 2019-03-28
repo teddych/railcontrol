@@ -132,6 +132,8 @@ Manager::~Manager()
 		sleep(1);
 	}
 
+	Booster(ControlTypeInternal, BoosterStop);
+
 	{
 		std::lock_guard<std::mutex> Guard2(controlMutex);
 		for (auto control : controls)

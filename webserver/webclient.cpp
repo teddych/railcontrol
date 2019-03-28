@@ -128,7 +128,6 @@ namespace webserver
 			if (arguments["cmd"].compare("quit") == 0)
 			{
 				HtmlReplyWithHeader(string("Stopping Railcontrol"));
-				manager.Booster(ControlTypeWebserver, BoosterStop);
 				stopRailControlWebserver();
 			}
 			else if (arguments["cmd"].compare("booster") == 0)
