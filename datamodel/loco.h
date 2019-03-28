@@ -122,6 +122,7 @@ namespace datamodel
 				creepSpeed(creepSpeed)
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
+				SetNrOfFunctions(nr);
 			}
 
 			Loco(Manager* manager, const std::string& serialized)
