@@ -87,30 +87,24 @@ string toStringWithLeadingZeros(const unsigned int number, const unsigned char c
 
 int Util::StringToInteger(const std::string&  value, const int defaultValue)
 {
-	int intValue;
+	if (value.size() == 0)
+	{
+		return defaultValue;
+	}
+
 	try
 	{
-		intValue = std::stoi(value);
+		return std::stoi(value);
 	}
 	catch (...)
 	{
 		return defaultValue;
 	}
-
-	return intValue;
 }
 
 int Util::StringToInteger(const std::string&  value, const int min, const int max)
 {
-	int intValue;
-	try
-	{
-		intValue = std::stoi(value);
-	}
-	catch (...)
-	{
-		return min;
-	}
+	int intValue = StringToInteger(value, min);
 
 	if (intValue < min)
 	{
