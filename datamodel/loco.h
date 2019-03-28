@@ -108,10 +108,6 @@ namespace datamodel
 			 	controlID(controlID),
 				protocol(protocol),
 				address(address),
-				maxSpeed(maxSpeed),
-				travelSpeed(travelSpeed),
-				reducedSpeed(reducedSpeed),
-				creepSpeed(creepSpeed),
 				manager(manager),
 				speed(0),
 				direction(DirectionLeft),
@@ -119,7 +115,11 @@ namespace datamodel
 				fromTrackID(TrackNone),
 				toTrackID(TrackNone),
 				streetID(StreetNone),
-				feedbackIdStop(FeedbackNone)
+				feedbackIdStop(FeedbackNone),
+				maxSpeed(maxSpeed),
+				travelSpeed(travelSpeed),
+				reducedSpeed(reducedSpeed),
+				creepSpeed(creepSpeed)
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
 			}
@@ -162,15 +162,19 @@ namespace datamodel
 
 			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->toTrackID != TrackNone || this->streetID != StreetNone; }
 
+			locoSpeed_t GetMaxSpeed() const { return maxSpeed; }
+			locoSpeed_t GetTravelSpeed() const { return travelSpeed; }
+			locoSpeed_t GetReducedSpeed() const { return reducedSpeed; }
+			locoSpeed_t GetCreepSpeed() const { return creepSpeed; }
+			void SetMaxSpeed(locoSpeed_t speed) { maxSpeed = speed; }
+			void SetTravelSpeed(locoSpeed_t speed) { travelSpeed = speed; }
+			void SetReducedSpeed(locoSpeed_t speed) { reducedSpeed = speed; }
+			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
+
 			// FIXME: make private:
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;
-
-			locoSpeed_t maxSpeed;
-			locoSpeed_t travelSpeed;
-			locoSpeed_t reducedSpeed;
-			locoSpeed_t creepSpeed;
 
 		private:
 			void AutoMode(Loco* loco);
@@ -194,6 +198,11 @@ namespace datamodel
 			trackID_t toTrackID;
 			streetID_t streetID;
 			feedbackID_t feedbackIdStop;
+
+			locoSpeed_t maxSpeed;
+			locoSpeed_t travelSpeed;
+			locoSpeed_t reducedSpeed;
+			locoSpeed_t creepSpeed;
 
 			std::mutex stateMutex;
 			std::thread locoThread;

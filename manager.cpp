@@ -576,10 +576,10 @@ bool Manager::LocoSave(const locoID_t locoID,
 		loco->protocol = protocol;
 		loco->address = address;
 		loco->SetNrOfFunctions(nr);
-		loco->maxSpeed = maxSpeed;
-		loco->travelSpeed = travelSpeed;
-		loco->reducedSpeed = reducedSpeed;
-		loco->creepSpeed = creepSpeed;
+		loco->SetMaxSpeed(maxSpeed);
+		loco->SetTravelSpeed(travelSpeed);
+		loco->SetReducedSpeed(reducedSpeed);
+		loco->SetCreepSpeed(creepSpeed);
 	}
 	else
 	{

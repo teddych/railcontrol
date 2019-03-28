@@ -1307,10 +1307,10 @@ namespace webserver
 			address = loco->address;
 			name = loco->name;
 			nrOfFunctions = loco->GetNrOfFunctions();
-			maxSpeed = loco->maxSpeed;
-			travelSpeed = loco->travelSpeed;
-			reducedSpeed = loco->reducedSpeed;
-			creepSpeed = loco->creepSpeed;
+			maxSpeed = loco->GetMaxSpeed();
+			travelSpeed = loco->GetTravelSpeed();
+			reducedSpeed = loco->GetReducedSpeed();
+			creepSpeed = loco->GetCreepSpeed();
 		}
 
 		std::map<controlID_t,string> controls = manager.LocoControlListNames();
@@ -2772,17 +2772,17 @@ namespace webserver
 			buttonArguments["loco"] = to_string(locoID);
 
 			string id = "locospeed_" + to_string(locoID);
-			ss << HtmlTagInputSliderLocoSpeed("speed", "locospeed", MinSpeed, MaxSpeed, speed, locoID);
-			buttonArguments["speed"] = "0";
-			ss << HtmlTagButtonCommand("0%", id + "_0", buttonArguments);
-			buttonArguments["speed"] = "102";
-			ss << HtmlTagButtonCommand("10%", id + "_1", buttonArguments);
-			buttonArguments["speed"] = "408";
-			ss << HtmlTagButtonCommand("40%", id + "_2", buttonArguments);
-			buttonArguments["speed"] = "714";
-			ss << HtmlTagButtonCommand("70%", id + "_3", buttonArguments);
-			buttonArguments["speed"] = "1023";
-			ss << HtmlTagButtonCommand("100%", id + "_4", buttonArguments);
+			ss << HtmlTagInputSliderLocoSpeed("speed", "locospeed", MinSpeed, loco->GetMaxSpeed(), speed, locoID);
+			buttonArguments["speed"] = to_string(MinSpeed);
+			ss << HtmlTagButtonCommand("0", id + "_0", buttonArguments);
+			buttonArguments["speed"] = to_string(loco->GetCreepSpeed());
+			ss << HtmlTagButtonCommand("I", id + "_1", buttonArguments);
+			buttonArguments["speed"] = to_string(loco->GetReducedSpeed());
+			ss << HtmlTagButtonCommand("II", id + "_2", buttonArguments);
+			buttonArguments["speed"] = to_string(loco->GetTravelSpeed());
+			ss << HtmlTagButtonCommand("III", id + "_3", buttonArguments);
+			buttonArguments["speed"] = to_string(loco->GetMaxSpeed());
+			ss << HtmlTagButtonCommand("IV", id + "_4", buttonArguments);
 			buttonArguments.erase("speed");
 
 			id = "locoedit_" + to_string(locoID);
