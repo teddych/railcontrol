@@ -517,6 +517,21 @@ datamodel::Loco* Manager::GetLoco(const locoID_t locoID) const
 	return locos.at(locoID);
 }
 
+Loco* Manager::GetLoco(const controlID_t controlID, const protocol_t protocol, const address_t address) const
+{
+	std::lock_guard<std::mutex> Guard(locoMutex);
+	for (auto loco : locos)
+	{
+		if (loco.second->controlID == controlID
+		&& loco.second->protocol == protocol
+		&& loco.second->address == address)
+		{
+			return loco.second;
+		}
+	}
+	return nullptr;
+}
+
 const std::string& Manager::GetLocoName(const locoID_t locoID) const
 {
 	std::lock_guard<std::mutex> Guard(locoMutex);
@@ -671,17 +686,12 @@ bool Manager::LocoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 
 void Manager::LocoSpeed(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 {
-	std::lock_guard<std::mutex> Guard(locoMutex);
-	for (auto loco : locos)
+	Loco* loco = GetLoco(controlID, protocol, address);
+	if (loco == nullptr)
 	{
-		if (loco.second->controlID == controlID
-			&& loco.second->protocol == protocol
-			&& loco.second->address == address)
-		{
-			LocoSpeed(controlType, loco.second, speed);
-			return;
-		}
+		return;
 	}
+	LocoSpeed(controlType, loco, speed);
 }
 
 bool Manager::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
@@ -723,17 +733,12 @@ const locoSpeed_t Manager::LocoSpeed(const locoID_t locoID) const
 
 void Manager::LocoDirection(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const direction_t direction)
 {
-	std::lock_guard<std::mutex> Guard(locoMutex);
-	for (auto loco : locos)
+	Loco* loco = GetLoco(controlID, protocol, address);
+	if (loco == nullptr)
 	{
-		if (loco.second->controlID == controlID
-			&& loco.second->protocol == protocol
-			&& loco.second->address == address)
-		{
-			LocoDirection(controlType, loco.second, direction);
-			return;
-		}
+		return;
 	}
+	LocoDirection(controlType, loco, direction);
 }
 
 void Manager::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
@@ -759,17 +764,12 @@ void Manager::LocoDirection(const controlType_t controlType, Loco* loco, const d
 
 void Manager::LocoFunction(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t function, const bool on)
 {
-	std::lock_guard<std::mutex> Guard(locoMutex);
-	for (auto loco : locos)
+	Loco* loco = GetLoco(controlID, protocol, address);
+	if (loco == nullptr)
 	{
-		if (loco.second->controlID == controlID
-			&& loco.second->protocol == protocol
-			&& loco.second->address == address)
-		{
-			LocoFunction(controlType, loco.first, function, on);
-			return;
-		}
+		return;
 	}
+	LocoFunction(controlType, loco, function, on);
 }
 
 void Manager::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
@@ -800,32 +800,18 @@ void Manager::LocoFunction(const controlType_t controlType, Loco* loco, const fu
 
 void Manager::AccessoryState(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryState_t state)
 {
+	Accessory* accessory = GetAccessory(controlID, protocol, address);
+	if (accessory != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(accessoryMutex);
-		for (auto accessory : accessories)
-		{
-			if (accessory.second->controlID == controlID
-				&& accessory.second->protocol == protocol
-				&& accessory.second->address == address)
-			{
-				AccessoryState(controlType, accessory.second, state, true);
-				return;
-			}
-		}
+		AccessoryState(controlType, accessory, state, true);
+		return;
 	}
 
+	Switch* mySwitch = GetSwitch(controlID, protocol, address);
+	if (mySwitch != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(switchMutex);
-		for (auto mySwitch : switches)
-		{
-			if (mySwitch.second->controlID == controlID
-				&& mySwitch.second->protocol == protocol
-				&& mySwitch.second->address == address)
-			{
-				SwitchState(controlType, mySwitch.second, state, true);
-				return;
-			}
-		}
+		SwitchState(controlType, mySwitch, state, true);
+		return;
 	}
 
 	// FIXME: add code for signals
@@ -875,6 +861,21 @@ Accessory* Manager::GetAccessory(const accessoryID_t accessoryID) const
 		return nullptr;
 	}
 	return accessories.at(accessoryID);
+}
+
+Accessory* Manager::GetAccessory(const controlID_t controlID, const protocol_t protocol, const address_t address) const
+{
+	std::lock_guard<std::mutex> Guard(accessoryMutex);
+	for (auto accessory : accessories)
+	{
+		if (accessory.second->controlID == controlID
+			&& accessory.second->protocol == protocol
+			&& accessory.second->address == address)
+		{
+			return accessory.second;
+		}
+	}
+	return nullptr;
 }
 
 const std::string& Manager::GetAccessoryName(const accessoryID_t accessoryID) const
@@ -1037,17 +1038,18 @@ bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 
 void Manager::FeedbackState(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state)
 {
+	Feedback* feedback = GetFeedback(controlID, pin);
+	if (feedback != nullptr)
 	{
-		std::lock_guard<std::mutex> Guard(feedbackMutex);
-		for (auto feedback : feedbacks)
-		{
-			if (feedback.second->controlID == controlID && feedback.second->pin == pin)
-			{
-				FeedbackState(controlType, feedback.second, state);
-				return;
-			}
-		}
+		FeedbackState(controlType, feedback, state);
+		return;
 	}
+
+	if (GetAutoAddFeedback() == false)
+	{
+		return;
+	}
+
 	string name = "Feedback auto added " + std::to_string(controlID) + "/" + std::to_string(pin);
 	logger->Info("Adding feedback {0}", name);
 	string result;
@@ -1078,7 +1080,7 @@ void Manager::FeedbackState(const controlType_t controlType, Feedback* feedback,
 	feedback->SetState(state);
 }
 
-datamodel::Feedback* Manager::GetFeedback(feedbackID_t feedbackID) const
+Feedback* Manager::GetFeedback(const feedbackID_t feedbackID) const
 {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	if (feedbacks.count(feedbackID) != 1)
@@ -1087,6 +1089,21 @@ datamodel::Feedback* Manager::GetFeedback(feedbackID_t feedbackID) const
 	}
 	return feedbacks.at(feedbackID);
 }
+
+Feedback* Manager::GetFeedback(const controlID_t controlID, const feedbackPin_t pin) const
+{
+	std::lock_guard<std::mutex> Guard(feedbackMutex);
+	for (auto feedback : feedbacks)
+	{
+		if (feedback.second->controlID == controlID
+			&& feedback.second->pin == pin)
+		{
+			return feedback.second;
+		}
+	}
+	return nullptr;
+}
+
 
 const std::string& Manager::GetFeedbackName(const feedbackID_t feedbackID) const
 {
@@ -1504,6 +1521,21 @@ Switch* Manager::GetSwitch(const switchID_t switchID) const
 		return nullptr;
 	}
 	return switches.at(switchID);
+}
+
+Switch* Manager::GetSwitch(const controlID_t controlID, const protocol_t protocol, const address_t address) const
+{
+	std::lock_guard<std::mutex> Guard(switchMutex);
+	for (auto mySwitch : switches)
+	{
+		if (mySwitch.second->controlID == controlID
+			&& mySwitch.second->protocol == protocol
+			&& mySwitch.second->address == address)
+		{
+			return mySwitch.second;
+		}
+	}
+	return nullptr;
 }
 
 const std::string& Manager::GetSwitchName(const switchID_t switchID) const

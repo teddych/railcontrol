@@ -98,7 +98,7 @@ class Manager {
 		// feedback
 		void FeedbackState(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state);
 		void FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state);
-		datamodel::Feedback* GetFeedback(feedbackID_t feedbackID) const;
+		datamodel::Feedback* GetFeedback(const feedbackID_t feedbackID) const;
 		const std::string& GetFeedbackName(const feedbackID_t feedbackID) const;
 		const std::map<feedbackID_t,datamodel::Feedback*>& FeedbackList() const { return feedbacks; }
 		const std::map<std::string,datamodel::Feedback*> FeedbackListByName() const;
@@ -173,6 +173,10 @@ class Manager {
 
 	private:
 		const ControlInterface* GetControl(const controlID_t controlID) const;
+		datamodel::Loco* GetLoco(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
+		datamodel::Accessory* GetAccessory(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
+		datamodel::Switch* GetSwitch(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
+		datamodel::Feedback* GetFeedback(const controlID_t controlID, const feedbackPin_t pin) const;
 
 		bool LocoSpeed(const controlType_t controlType, datamodel::Loco* loco, const locoSpeed_t speed);
 		void LocoDirection(const controlType_t controlType, datamodel::Loco* loco, const direction_t direction);
