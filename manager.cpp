@@ -671,29 +671,27 @@ bool Manager::LocoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 
 void Manager::LocoSpeed(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 {
-	locoID_t locoID = LocoNone;
+	std::lock_guard<std::mutex> Guard(locoMutex);
+	for (auto loco : locos)
 	{
-		std::lock_guard<std::mutex> Guard(locoMutex);
-		for (auto loco : locos) {
-			if (loco.second->controlID == controlID
-				&& loco.second->protocol == protocol
-				&& loco.second->address == address)
-			{
-				locoID = loco.first;
-				break;
-			}
+		if (loco.second->controlID == controlID
+			&& loco.second->protocol == protocol
+			&& loco.second->address == address)
+		{
+			LocoSpeed(controlType, loco.second, speed);
+			return;
 		}
 	}
-	if (locoID == LocoNone)
-	{
-		return;
-	}
-	LocoSpeed(controlType, locoID, speed);
 }
 
 bool Manager::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 {
 	Loco* loco = GetLoco(locoID);
+	return LocoSpeed(controlType, loco, speed);
+}
+
+bool Manager::LocoSpeed(const controlType_t controlType, Loco* loco, const locoSpeed_t speed)
+{
 	if (loco == nullptr)
 	{
 		return false;
@@ -703,12 +701,12 @@ bool Manager::LocoSpeed(const controlType_t controlType, const locoID_t locoID, 
 	{
 		s = MaxSpeed;
 	}
-	logger->Info("{0} ({1}) speed is now {2}", loco->name, locoID, s);
+	logger->Info("{0} ({1}) speed is now {2}", loco->name, loco->objectID, s);
 	loco->Speed(s);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoSpeed(controlType, locoID, s);
+		control.second->LocoSpeed(controlType, loco->objectID, s);
 	}
 	return true;
 }
@@ -732,20 +730,30 @@ void Manager::LocoDirection(const controlType_t controlType, const controlID_t c
 			&& loco.second->protocol == protocol
 			&& loco.second->address == address)
 		{
-			LocoDirection(controlType, loco.first, direction);
+			LocoDirection(controlType, loco.second, direction);
 			return;
 		}
 	}
 }
+
 void Manager::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 {
 	Loco* loco = GetLoco(locoID);
+	LocoDirection(controlType, loco, direction);
+}
+
+void Manager::LocoDirection(const controlType_t controlType, Loco* loco, const direction_t direction)
+{
+	if (loco == nullptr)
+	{
+		return;
+	}
 	loco->SetDirection(direction);
-	logger->Info("{0} ({1}) direction is now {2}", loco->name, locoID, direction);
+	logger->Info("{0} ({1}) direction is now {2}", loco->name, loco->objectID, direction);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoDirection(controlType, locoID, direction);
+		control.second->LocoDirection(controlType, loco->objectID, direction);
 	}
 }
 
@@ -767,12 +775,22 @@ void Manager::LocoFunction(const controlType_t controlType, const controlID_t co
 void Manager::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
 {
 	Loco* loco = GetLoco(locoID);
+	LocoFunction(controlType, loco, function, on);
+}
+
+void Manager::LocoFunction(const controlType_t controlType, Loco* loco, const function_t function, const bool on)
+{
+	if (loco == nullptr)
+	{
+		return;
+	}
+
 	loco->SetFunction(function, on);
-	logger->Info("{0} ({1}) function {2} is now {3}", loco->name, locoID, function, (on ? "on" : "off"));
+	logger->Info("{0} ({1}) function {2} is now {3}", loco->name, loco->objectID, function, (on ? "on" : "off"));
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoFunction(controlType, locoID, function, on);
+		control.second->LocoFunction(controlType, loco->objectID, function, on);
 	}
 }
 
@@ -782,7 +800,6 @@ void Manager::LocoFunction(const controlType_t controlType, const locoID_t locoI
 
 void Manager::AccessoryState(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryState_t state)
 {
-	accessoryID_t accessoryID = AccessoryNone;
 	{
 		std::lock_guard<std::mutex> Guard(accessoryMutex);
 		for (auto accessory : accessories)
@@ -791,18 +808,12 @@ void Manager::AccessoryState(const controlType_t controlType, const controlID_t 
 				&& accessory.second->protocol == protocol
 				&& accessory.second->address == address)
 			{
-				accessoryID = accessory.first;
-				break;
+				AccessoryState(controlType, accessory.second, state, true);
+				return;
 			}
 		}
 	}
-	if (accessoryID != AccessoryNone)
-	{
-		AccessoryState(controlType, accessoryID, state, true);
-		return;
-	}
 
-	switchID_t switchID = SwitchNone;
 	{
 		std::lock_guard<std::mutex> Guard(switchMutex);
 		for (auto mySwitch : switches)
@@ -811,15 +822,10 @@ void Manager::AccessoryState(const controlType_t controlType, const controlID_t 
 				&& mySwitch.second->protocol == protocol
 				&& mySwitch.second->address == address)
 			{
-				switchID = mySwitch.first;
-				break;
+				SwitchState(controlType, mySwitch.second, state, true);
+				return;
 			}
 		}
-	}
-	if (switchID != SwitchNone)
-	{
-		SwitchState(controlType, switchID, state, true);
-		return;
 	}
 
 	// FIXME: add code for signals
@@ -828,6 +834,11 @@ void Manager::AccessoryState(const controlType_t controlType, const controlID_t 
 void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool force)
 {
 	Accessory* accessory = GetAccessory(accessoryID);
+	AccessoryState(controlType, accessory, state, force);
+}
+
+void Manager::AccessoryState(const controlType_t controlType, Accessory* accessory, const accessoryState_t state, const bool force)
+{
 	if (accessory == nullptr)
 	{
 		return;
@@ -841,9 +852,9 @@ void Manager::AccessoryState(const controlType_t controlType, const accessoryID_
 
 	accessory->state = state;
 
-	this->AccessoryState(controlType, accessoryID, state, accessory->IsInverted(), true);
+	this->AccessoryState(controlType, accessory->objectID, state, accessory->IsInverted(), true);
 
-	delayedCall->Accessory(controlType, accessoryID, state, accessory->IsInverted(), accessory->duration);
+	delayedCall->Accessory(controlType, accessory->objectID, state, accessory->IsInverted(), accessory->duration);
 }
 
 void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
@@ -1026,32 +1037,32 @@ bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 
 void Manager::FeedbackState(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state)
 {
-	feedbackID_t feedbackID = FeedbackNone;
 	{
 		std::lock_guard<std::mutex> Guard(feedbackMutex);
 		for (auto feedback : feedbacks)
 		{
 			if (feedback.second->controlID == controlID && feedback.second->pin == pin)
 			{
-				feedbackID = feedback.first;
-				break;
+				FeedbackState(controlType, feedback.second, state);
+				return;
 			}
 		}
 	}
-	if (feedbackID == FeedbackNone && GetAutoAddFeedback() == true)
-	{
-		string name = "Feedback auto added " + std::to_string(controlID) + "/" + std::to_string(pin);
-		logger->Info("Adding feedback {0}", name);
-		string result;
-		feedbackID = FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
-	}
+	string name = "Feedback auto added " + std::to_string(controlID) + "/" + std::to_string(pin);
+	logger->Info("Adding feedback {0}", name);
+	string result;
 
-	return FeedbackState(controlType, feedbackID, state);
+	FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
 }
 
 void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
+	FeedbackState(controlType, feedback, state);
+}
+
+void Manager::FeedbackState(const controlType_t controlType, Feedback* feedback, const feedbackState_t state)
+{
 	if (feedback == nullptr)
 	{
 		return;
@@ -1061,7 +1072,7 @@ void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t 
 		std::lock_guard<std::mutex> Guard(controlMutex);
 		for (auto control : controls)
 		{
-			control.second->FeedbackState(controlType, feedback->Name(), feedbackID, state);
+			control.second->FeedbackState(controlType, feedback->Name(), feedback->objectID, state);
 		}
 	}
 	feedback->SetState(state);
@@ -1452,6 +1463,11 @@ bool Manager::TrackDelete(const trackID_t trackID)
 void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool force)
 {
 	Switch* mySwitch = GetSwitch(switchID);
+	SwitchState(controlType, mySwitch, state, force);
+}
+
+void Manager::SwitchState(const controlType_t controlType, Switch* mySwitch, const switchState_t state, const bool force)
+{
 	if (mySwitch == nullptr)
 	{
 		return;
@@ -1465,9 +1481,9 @@ void Manager::SwitchState(const controlType_t controlType, const switchID_t swit
 
 	mySwitch->state = state;
 
-	this->SwitchState(controlType, switchID, state, mySwitch->IsInverted(), true);
+	this->SwitchState(controlType, mySwitch->objectID, state, mySwitch->IsInverted(), true);
 
-	delayedCall->Switch(controlType, switchID, state, mySwitch->IsInverted(), mySwitch->duration);
+	delayedCall->Switch(controlType, mySwitch->objectID, state, mySwitch->IsInverted(), mySwitch->duration);
 }
 
 void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)

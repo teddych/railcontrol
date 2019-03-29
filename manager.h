@@ -174,6 +174,13 @@ class Manager {
 	private:
 		const ControlInterface* GetControl(const controlID_t controlID) const;
 
+		bool LocoSpeed(const controlType_t controlType, datamodel::Loco* loco, const locoSpeed_t speed);
+		void LocoDirection(const controlType_t controlType, datamodel::Loco* loco, const direction_t direction);
+		void LocoFunction(const controlType_t controlType, datamodel::Loco* loco, const function_t function, const bool on);
+		void AccessoryState(const controlType_t controlType, datamodel::Accessory* accessory, const accessoryState_t state, const bool force);
+		void SwitchState(const controlType_t controlType, datamodel::Switch* mySwitch, const accessoryState_t state, const bool force);
+		void FeedbackState(const controlType_t controlType, datamodel::Feedback* feedback, const feedbackState_t state);
+
 		// layout
 		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result) const;
 		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result) const;
