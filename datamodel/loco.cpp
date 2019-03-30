@@ -259,7 +259,10 @@ namespace datamodel
 			fromTrackID = toTrackID;
 			toTrackID = street->DestinationTrack();
 			streetID = street->objectID;
+			feedbackIdReduced = street->feedbackIdReduced;
+			feedbackIdCreep = street->feedbackIdCreep;
 			feedbackIdStop = street->feedbackIdStop;
+			feedbackIdOver = street->feedbackIdOver;
 			logger->Info("Heading to {0} via {1}", manager->GetTrackName(toTrackID), street->name);
 			break;
 		}
@@ -277,12 +280,19 @@ namespace datamodel
 		state = LocoStateRunning;
 	}
 
-	void Loco::DestinationReached(const feedbackID_t feedbackID)
+	void Loco::LocationReached(const feedbackID_t feedbackID)
 	{
+		locoID_t& locoID = objectID;
+		if (feedbackID == feedbackIdOver)
+		{
+			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
+			manager->Booster(ControlTypeInternal, BoosterStop);
+			return;
+		}
+
 		if (feedbackID == feedbackIdStop)
 		{
-			locoID_t& locoID = objectID;
-			manager->LocoSpeed(ControlTypeInternal, locoID, MinSpeed);
+			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 			std::lock_guard<std::mutex> Guard(stateMutex);
 			// set loco to new track
 			Street* oldStreet = manager->GetStreet(streetID);
@@ -307,6 +317,24 @@ namespace datamodel
 			state = (state == LocoStateRunning /* else is LocoStateStopping */? LocoStateSearching : LocoStateOff);
 			logger->Info("{0} reached its destination", name);
 			manager->TrackPublishState(fromTrack);
+			return;
+		}
+
+		if (feedbackID == feedbackIdCreep)
+		{
+			if (speed > creepSpeed)
+			{
+				manager->LocoSpeed(ControlTypeInternal, this, creepSpeed);
+			}
+			return;
+		}
+
+		if (feedbackID == feedbackIdReduced)
+		{
+			if (speed > creepSpeed)
+			{
+				manager->LocoSpeed(ControlTypeInternal, this, reducedSpeed);
+			}
 		}
 	}
 

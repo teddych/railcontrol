@@ -109,13 +109,16 @@ namespace datamodel
 				protocol(protocol),
 				address(address),
 				manager(manager),
-				speed(0),
+				speed(MinSpeed),
 				direction(DirectionLeft),
 				state(LocoStateManual),
 				fromTrackID(TrackNone),
 				toTrackID(TrackNone),
 				streetID(StreetNone),
+				feedbackIdReduced(FeedbackNone),
+				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
+				feedbackIdOver(FeedbackNone),
 				maxSpeed(maxSpeed),
 				travelSpeed(travelSpeed),
 				reducedSpeed(reducedSpeed),
@@ -127,10 +130,13 @@ namespace datamodel
 
 			Loco(Manager* manager, const std::string& serialized)
 			:	manager(manager),
-				speed(0),
+				speed(MinSpeed),
 				state(LocoStateManual),
 				streetID(StreetNone),
-				feedbackIdStop(FeedbackNone)
+				feedbackIdReduced(FeedbackNone),
+				feedbackIdCreep(FeedbackNone),
+				feedbackIdStop(FeedbackNone),
+				feedbackIdOver(FeedbackNone)
 			{
 				Deserialize(serialized);
 				logger = Logger::Logger::GetLogger("Loco " + name);
@@ -149,7 +155,7 @@ namespace datamodel
 			trackID_t GetTrack() const { return toTrackID; }
 			streetID_t GetStreet() const { return streetID; }
 			const char* const GetStateText() const;
-			void DestinationReached(const feedbackID_t feedbackID);
+			void LocationReached(const feedbackID_t feedbackID);
 
 			void Speed(const locoSpeed_t speed) { this->speed = speed; }
 			const locoSpeed_t Speed() const { return speed; }
@@ -198,7 +204,10 @@ namespace datamodel
 			trackID_t fromTrackID;
 			trackID_t toTrackID;
 			streetID_t streetID;
+			feedbackID_t feedbackIdReduced;
+			feedbackID_t feedbackIdCreep;
 			feedbackID_t feedbackIdStop;
+			feedbackID_t feedbackIdOver;
 
 			locoSpeed_t maxSpeed;
 			locoSpeed_t travelSpeed;

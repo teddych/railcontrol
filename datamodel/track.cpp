@@ -87,7 +87,7 @@ namespace datamodel
 		Loco* loco = manager->GetLoco(GetLoco());
 		if (loco != nullptr && state == FeedbackStateOccupied)
 		{
-			loco->DestinationReached(feedbackID);
+			loco->LocationReached(feedbackID);
 		}
 
 		std::lock_guard<std::mutex> Guard(updateMutex);
