@@ -1946,7 +1946,7 @@ const map<string,layerID_t> Manager::LayerListByNameWithFeedback() const
 		{
 			continue;
 		}
-		list["Feedback at " + control.second->Name()] = -control.first;
+		list["| Feedbacks of " + control.second->Name()] = -control.first;
 	}
 	return list;
 }
