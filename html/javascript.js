@@ -6,7 +6,7 @@ function updateFeedbacksOfTrack()
 		return false;
 	}
 	var url = '?cmd=feedbacksoftrack&track=' + track.value;
-	requestUpdateItem('feedbackstop', url);
+	requestUpdateItem('feedbacks', url);
 	return false;
 }
 

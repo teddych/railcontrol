@@ -1201,11 +1201,16 @@ namespace webserver
 		return tag;
 	}
 
-	HtmlTag WebClient::HtmlTagSelectFeedbacksOfTrack(const trackID_t trackId, const feedbackID_t feedbackId) const
+	HtmlTag WebClient::HtmlTagSelectFeedbacksOfTrack(const trackID_t trackId, const feedbackID_t feedbackIdReduced, const feedbackID_t feedbackIdCreep, const feedbackID_t feedbackIdStop, const feedbackID_t feedbackIdOver) const
 	{
 		HtmlTag tag;
 		map<string,feedbackID_t> feedbacks = manager.FeedbacksOfTrack(trackId);
-		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackstop", "Stop at feedback:", feedbacks, trackId).AddClass("select_feedback"));
+		map<string,feedbackID_t> feedbacksWithNone = feedbacks;
+		feedbacksWithNone["-"] = FeedbackNone;
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackreduced", "Reduce speed at:", feedbacksWithNone, feedbackIdReduced).AddClass("select_feedback"));
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackcreep", "Creep at:", feedbacksWithNone, feedbackIdCreep).AddClass("select_feedback"));
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackstop", "Stop at:", feedbacks, feedbackIdStop).AddClass("select_feedback"));
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackover", "Overrun at:", feedbacksWithNone, feedbackIdOver).AddClass("select_feedback"));
 		return tag;
 	}
 
@@ -1974,7 +1979,10 @@ namespace webserver
 		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
 		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
 		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		feedbackID_t feedbackIdReduced = GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
+		feedbackID_t feedbackIdCreep = GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
 		feedbackID_t feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
+		feedbackID_t feedbackIdOver = GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
 		if (streetID > StreetNone)
 		{
 			const datamodel::Street* street = manager.GetStreet(streetID);
@@ -1990,7 +1998,10 @@ namespace webserver
 			fromDirection = street->fromDirection;
 			toTrack = street->toTrack;
 			toDirection = street->toDirection;
+			feedbackIdReduced = street->feedbackIdReduced;
+			feedbackIdCreep = street->feedbackIdCreep;
 			feedbackIdStop = street->feedbackIdStop;
+			feedbackIdOver = street->feedbackIdOver;
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit street &quot;" + name + "&quot;"));
@@ -2059,10 +2070,10 @@ namespace webserver
 		}
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", "From track:", fromTrack, fromDirection));
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", "To track:", toTrack, toDirection, "updateFeedbacksOfTrack(); return false;"));
-		HtmlTag feedbackStopDiv("div");
-		feedbackStopDiv.AddAttribute("id", "feedbackstop");
-		feedbackStopDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdStop));
-		tracksDiv.AddChildTag(feedbackStopDiv);
+		HtmlTag feedbackDiv("div");
+		feedbackDiv.AddAttribute("id", "feedbacks");
+		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
+		tracksDiv.AddChildTag(feedbackDiv);
 		automodeContent.AddChildTag(tracksDiv);
 		formContent.AddChildTag(automodeContent);
 
@@ -2075,7 +2086,7 @@ namespace webserver
 	void WebClient::handleFeedbacksOfTrack(const map<string, string>& arguments)
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
-		HtmlReplyWithHeader(HtmlTagSelectFeedbacksOfTrack(trackID, FeedbackNone));
+		HtmlReplyWithHeader(HtmlTagSelectFeedbacksOfTrack(trackID, FeedbackNone, FeedbackNone, FeedbackNone, FeedbackNone));
 	}
 
 	void WebClient::handleStreetSave(const map<string, string>& arguments)
@@ -2092,7 +2103,10 @@ namespace webserver
 		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
 		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
 		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		feedbackID_t feedbackIdReduced = GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
+		feedbackID_t feedbackIdCreep = GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
 		feedbackID_t feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
+		feedbackID_t feedbackIdOver = GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
 
 		vector<Relation*> relations;
 		priority_t relationCount = GetIntegerMapEntry(arguments, "relationcounter", 0);
@@ -2112,7 +2126,7 @@ namespace webserver
 		}
 
 		string result;
-		if (!manager.StreetSave(streetID, name, delay, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdStop, result))
+		if (manager.StreetSave(streetID, name, delay, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver, result) == false)
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;

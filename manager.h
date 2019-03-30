@@ -136,7 +136,24 @@ class Manager {
 		const std::string& GetStreetName(const streetID_t streetID) const;
 		const std::map<streetID_t,datamodel::Street*>& StreetList() const { return streets; }
 		const std::map<std::string,datamodel::Street*> StreetListByName() const;
-		bool StreetSave(const streetID_t streetID, const std::string& name, const delay_t delay, const std::vector<datamodel::Relation*>& relations, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const automode_t automode, const trackID_t fromTrack, const direction_t fromDirection, const trackID_t toTrack, const direction_t toDirection, const feedbackID_t feedbackID, std::string& result);
+		bool StreetSave(const streetID_t streetID,
+			const std::string& name,
+			const delay_t delay,
+			const std::vector<datamodel::Relation*>& relations,
+			const visible_t visible,
+			const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			const automode_t automode,
+			const trackID_t fromTrack,
+			const direction_t fromDirection,
+			const trackID_t toTrack,
+			const direction_t toDirection,
+			const feedbackID_t feedbackIdReduced,
+			const feedbackID_t feedbackIdCreep,
+			const feedbackID_t feedbackIdStop,
+			const feedbackID_t feedbackIdOver,
+			std::string& result);
 		bool StreetDelete(const streetID_t streetID);
 
 		// layer

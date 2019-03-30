@@ -1328,7 +1328,7 @@ namespace console
 		feedbackID_t feedbackID = ReadNumber(s, i);
 		string result;
 		std::vector<datamodel::Relation*> relations;
-		if (!manager.StreetSave(StreetNone, name, 250, relations, VisibleNo, 0, 0, 0, AutomodeNo, fromTrack, fromDirection, toTrack, toDirection, feedbackID, result))
+		if (manager.StreetSave(StreetNone, name, 250, relations, VisibleNo, 0, 0, 0, AutomodeNo, fromTrack, fromDirection, toTrack, toDirection, FeedbackNone, FeedbackNone, feedbackID, FeedbackNone, result) == false)
 		{
 			SendAndPrompt(result);
 			return;

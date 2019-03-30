@@ -25,7 +25,10 @@ namespace datamodel
 		const direction_t fromDirection,
 		const trackID_t toTrack,
 		const direction_t toDirection,
-		const feedbackID_t feedbackIDStop)
+		const feedbackID_t feedbackIdReduced,
+		const feedbackID_t feedbackIdCreep,
+		const feedbackID_t feedbackIdStop,
+		const feedbackID_t feedbackIdOver)
 	:	LayoutItem(streetID, name, visible, posX, posY, posZ, Width1, Height1, Rotation0),
 	 	LockableItem(),
 	 	delay(delay),
@@ -34,7 +37,10 @@ namespace datamodel
 		fromDirection(fromDirection),
 		toTrack(toTrack),
 		toDirection(toDirection),
-		feedbackIdStop(feedbackIDStop),
+		feedbackIdReduced(feedbackIdReduced),
+		feedbackIdCreep(feedbackIdCreep),
+		feedbackIdStop(feedbackIdStop),
+		feedbackIdOver(feedbackIdOver),
 		manager(manager),
 		relations(relations)
 	{
@@ -71,7 +77,10 @@ namespace datamodel
 			<< ";fromDirection=" << static_cast<int>(fromDirection)
 			<< ";toTrack=" << static_cast<int>(toTrack)
 			<< ";toDirection=" << static_cast<int>(toDirection)
-			<< ";feedbackIdStop=" << static_cast<int>(feedbackIdStop);
+			<< ";feedbackIdReduced=" << static_cast<int>(feedbackIdReduced)
+			<< ";feedbackIdCreep=" << static_cast<int>(feedbackIdCreep)
+			<< ";feedbackIdStop=" << static_cast<int>(feedbackIdStop)
+			<< ";feedbackIdOver=" << static_cast<int>(feedbackIdOver);
 		return ss.str();
 	}
 
@@ -94,7 +103,10 @@ namespace datamodel
 		fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionLeft));
 		toTrack = GetIntegerMapEntry(arguments, "toTrack", TrackNone);
 		toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
+		feedbackIdReduced = GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
+		feedbackIdCreep = GetIntegerMapEntry(arguments, "feedbackIdCreep", FeedbackNone);
 		feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackIdStop", FeedbackNone);
+		feedbackIdOver = GetIntegerMapEntry(arguments, "feedbackIdOver", FeedbackNone);
 		return true;
 	}
 
