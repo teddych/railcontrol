@@ -96,9 +96,11 @@ class Manager {
 		bool AccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
-		void FeedbackState(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state);
-		void FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state);
+		void FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state);
+		void FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state);
+		void FeedbackState(datamodel::Feedback* feedback);
 		datamodel::Feedback* GetFeedback(const feedbackID_t feedbackID) const;
+		datamodel::Feedback* GetFeedbackUnlocked(const feedbackID_t feedbackID) const;
 		const std::string& GetFeedbackName(const feedbackID_t feedbackID) const;
 		const std::map<feedbackID_t,datamodel::Feedback*>& FeedbackList() const { return feedbacks; }
 		const std::map<std::string,datamodel::Feedback*> FeedbackListByName() const;
@@ -183,7 +185,7 @@ class Manager {
 		void LocoFunction(const controlType_t controlType, datamodel::Loco* loco, const function_t function, const bool on);
 		void AccessoryState(const controlType_t controlType, datamodel::Accessory* accessory, const accessoryState_t state, const bool force);
 		void SwitchState(const controlType_t controlType, datamodel::Switch* mySwitch, const accessoryState_t state, const bool force);
-		void FeedbackState(const controlType_t controlType, datamodel::Feedback* feedback, const feedbackState_t state);
+		void FeedbackState(datamodel::Feedback* feedback, const feedbackState_t state);
 
 		// layout
 		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result) const;
@@ -231,6 +233,7 @@ class Manager {
 		}
 
 		const std::vector<feedbackID_t> CleanupAndCheckFeedbacks(trackID_t trackID, std::vector<feedbackID_t>& newFeedbacks);
+		void DebounceWorker(Manager* manager);
 
 		Logger::Logger* logger;
 		boosterState_t boosterState;
@@ -282,6 +285,8 @@ class Manager {
 
 		accessoryDuration_t defaultAccessoryDuration;
 		bool autoAddFeedback;
+		volatile bool debounceRun;
+		std::thread debounceThread;
 
 		const std::string unknownControl;
 		const std::string unknownLoco;

@@ -2563,7 +2563,7 @@ namespace webserver
 		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		feedbackState_t state = (GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? FeedbackStateOccupied : FeedbackStateFree);
 
-		manager.FeedbackState(ControlTypeWebserver, feedbackID, state);
+		manager.FeedbackState(feedbackID, state);
 
 		stringstream ss;
 		ss << "Feedback &quot;" << manager.GetFeedbackName(feedbackID) << "&quot; is now set to " << state;

@@ -39,6 +39,7 @@ Manager::Manager(Config& config)
  	delayedCall(new DelayedCall(*this)),
 	defaultAccessoryDuration(DefaultAccessoryDuration),
 	autoAddFeedback(false),
+	debounceRun(true),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
@@ -122,7 +123,8 @@ Manager::Manager(Config& config)
 	{
 		logger->Info("Loaded street {0}: {1}", street.second->objectID, street.second->name);
 	}
-	// FIXME: load locos into tracks
+
+	debounceThread = std::thread(&Manager::DebounceWorker, this, this);
 }
 
 Manager::~Manager()
@@ -131,6 +133,9 @@ Manager::~Manager()
 	{
 		sleep(1);
 	}
+
+	debounceRun = false;
+	debounceThread.join();
 
 	Booster(ControlTypeInternal, BoosterStop);
 
@@ -1036,12 +1041,12 @@ bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 * Feedback                 *
 ***************************/
 
-void Manager::FeedbackState(const controlType_t controlType, const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state)
+void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state)
 {
 	Feedback* feedback = GetFeedback(controlID, pin);
 	if (feedback != nullptr)
 	{
-		FeedbackState(controlType, feedback, state);
+		FeedbackState(feedback, state);
 		return;
 	}
 
@@ -1057,32 +1062,46 @@ void Manager::FeedbackState(const controlType_t controlType, const controlID_t c
 	FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
 }
 
-void Manager::FeedbackState(const controlType_t controlType, const feedbackID_t feedbackID, const feedbackState_t state)
+void Manager::FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
-	FeedbackState(controlType, feedback, state);
+	FeedbackState(feedback, state);
 }
 
-void Manager::FeedbackState(const controlType_t controlType, Feedback* feedback, const feedbackState_t state)
+void Manager::FeedbackState(Feedback* feedback, const feedbackState_t state)
 {
 	if (feedback == nullptr)
 	{
 		return;
 	}
+	feedback->SetState(state);
+}
+
+void Manager::FeedbackState(Feedback* feedback)
+{
+	if (feedback == nullptr)
+	{
+		return;
+	}
+	feedbackState_t state = feedback->GetState();
 	logger->Info("Feedback {0} is now {1}", feedback->Name(), (state ? "on" : "off"));
 	{
 		std::lock_guard<std::mutex> Guard(controlMutex);
 		for (auto control : controls)
 		{
-			control.second->FeedbackState(controlType, feedback->Name(), feedback->objectID, state);
+			control.second->FeedbackState(feedback->Name(), feedback->objectID, state);
 		}
 	}
-	feedback->SetState(state);
 }
 
 Feedback* Manager::GetFeedback(const feedbackID_t feedbackID) const
 {
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
+	return GetFeedbackUnlocked(feedbackID);
+}
+
+Feedback* Manager::GetFeedbackUnlocked(const feedbackID_t feedbackID) const
+{
 	if (feedbacks.count(feedbackID) != 1)
 	{
 		return nullptr;
@@ -1103,7 +1122,6 @@ Feedback* Manager::GetFeedback(const controlID_t controlID, const feedbackPin_t 
 	}
 	return nullptr;
 }
-
 
 const std::string& Manager::GetFeedbackName(const feedbackID_t feedbackID) const
 {
@@ -2470,4 +2488,21 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 	storage->SaveSetting("DefaultAccessoryDuration", std::to_string(duration));
 	storage->SaveSetting("AutoAddFeedback", std::to_string(autoAddFeedback));
 	return true;
+}
+
+void Manager::DebounceWorker(Manager* manager)
+{
+	logger->Info("Debounce thread started");
+	while (debounceRun)
+	{
+		{
+			std::lock_guard<std::mutex> Guard(feedbackMutex);
+			for (auto feedback : feedbacks)
+			{
+				feedback.second->Debounce();
+			}
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
+	}
+	logger->Info("Debounce thread terminated");
 }

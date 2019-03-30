@@ -27,9 +27,9 @@ namespace datamodel
 				controlID(controlID),
 				pin(pin),
 				manager(manager),
-				state(FeedbackStateFree),
 				inverted(inverted),
-				trackID(TrackNone)
+				trackID(TrackNone),
+				stateCounter(0)
 			{
 			}
 
@@ -46,8 +46,9 @@ namespace datamodel
 			void Inverted(const bool inverted) { this->inverted = inverted; }
 			bool IsInverted() const { return inverted; }
 
-			bool SetState(const feedbackState_t state);
-			feedbackState_t GetState() const { return state; }
+			void SetState(const feedbackState_t state);
+			feedbackState_t GetState() const { return static_cast<feedbackState_t>(stateCounter > 0); }
+			void Debounce();
 			void SetTrack(const trackID_t trackID) { this->trackID = trackID; }
 			trackID_t GetTrack() const { return trackID; }
 
@@ -56,10 +57,13 @@ namespace datamodel
 			feedbackPin_t pin;
 
 		private:
+			void UpdateTrackState(const feedbackState_t state);
+
 			Manager* manager;
-			feedbackState_t state;
 			bool inverted;
 			trackID_t trackID;
+			unsigned char stateCounter;
+			const unsigned char MaxStateCounter = 10;
 	};
 
 } // namespace datamodel

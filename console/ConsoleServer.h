@@ -29,7 +29,7 @@ namespace console
 			void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) override;
 			void LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on) override;
 			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
-			void FeedbackState(const controlType_t controlType, const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state) override;
+			void FeedbackState(const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state) override;
 			void TrackState(const controlType_t controlType, const std::string& name, const trackID_t trackID, const feedbackState_t state, const std::string& locoName) override;
 			void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) override;
 			void LocoIntoTrack(const locoID_t locoID, const trackID_t trackID) override;

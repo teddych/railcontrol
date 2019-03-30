@@ -336,7 +336,7 @@ namespace hardware
 					state = FeedbackStateFree;
 				}
 				logger->Info("S88 Pin {0} set to {1}", address, text);
-				manager->FeedbackState(ControlTypeHardware, controlID, address, state);
+				manager->FeedbackState(controlID, address, state);
 			}
 			else if (command == 0x00 && !response && length == 5)
 			{

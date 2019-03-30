@@ -94,7 +94,7 @@ namespace datamodel
 		}
 		for (auto f : feedbacks)
 		{
-			datamodel::Feedback* feedback = manager->GetFeedback(f);
+			datamodel::Feedback* feedback = manager->GetFeedbackUnlocked(f);
 			if (feedback == nullptr)
 			{
 				continue;

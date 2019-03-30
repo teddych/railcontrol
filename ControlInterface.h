@@ -25,7 +25,7 @@ class ControlInterface
 		virtual bool CanHandleLocos() const { return false; }
 		virtual void FeedbackDelete(const feedbackID_t feedbackID, const std::string& name) {}
 		virtual void FeedbackSettings(const feedbackID_t feedbackID, const std::string& name) {}
-		virtual void FeedbackState(const controlType_t controlType, const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state) {};
+		virtual void FeedbackState(const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state) {};
 		virtual void LayerDelete(const layerID_t layerID, const std::string& name) {};
 		virtual void LayerSettings(const layerID_t layerID, const std::string& name) {};
 		virtual void LocoDelete(const locoID_t locoID, const std::string& name) {};

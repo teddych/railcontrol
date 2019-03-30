@@ -112,7 +112,7 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::FeedbackState(const controlType_t controlType, const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state)
+	void ConsoleServer::FeedbackState(const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		std::stringstream status;
 		status << "Feedback " << name << " is " << (state ? "on" : "off");

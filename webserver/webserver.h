@@ -29,7 +29,7 @@ namespace webserver
 			void Booster(const controlType_t controlType, const boosterState_t status) override;
 			void FeedbackDelete(const feedbackID_t feedbackID, const std::string& name) override;
 			void FeedbackSettings(const feedbackID_t feedbackID, const std::string& name) override;
-			void FeedbackState(const controlType_t controlType, const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state) override;
+			void FeedbackState(const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state) override;
 			void LayerDelete(const layerID_t layerID, const std::string& name) override;
 			void LayerSettings(const layerID_t layerID, const std::string& name) override;
 			void LocoDelete(const locoID_t locoID, const std::string& name) override;

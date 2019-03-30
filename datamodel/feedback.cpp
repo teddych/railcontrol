@@ -17,7 +17,7 @@ namespace datamodel
 			<< ";controlID=" << static_cast<int>(controlID)
 			<< ";pin=" << static_cast<int>(pin)
 			<< ";inverted=" << static_cast<int>(inverted)
-			<< ";state=" << static_cast<int>(state)
+			<< ";state=" << static_cast<int>(stateCounter > 0)
 			<< ";track=" << static_cast<int>(trackID);
 		return ss.str();
 	}
@@ -35,22 +35,51 @@ namespace datamodel
 		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 		pin = GetIntegerMapEntry(arguments, "pin");
 		inverted = GetBoolMapEntry(arguments, "inverted", false);
-		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
+		stateCounter = GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
 		trackID = static_cast<trackID_t>(GetIntegerMapEntry(arguments, "track", TrackNone));
 		return true;
 	}
 
-	bool Feedback::SetState(const feedbackState_t newState)
+	void Feedback::SetState(const feedbackState_t newState)
 	{
-		state = static_cast<feedbackState_t>(newState != inverted);
+		feedbackState_t state = static_cast<feedbackState_t>(newState != inverted);
+		if (state == FeedbackStateFree)
+		{
 
+			stateCounter = MaxStateCounter - 1;
+			return;
+		}
+
+		stateCounter = MaxStateCounter;
+		manager->FeedbackState(this);
+		UpdateTrackState(FeedbackStateOccupied);
+	}
+
+	void Feedback::UpdateTrackState(const feedbackState_t state)
+	{
 		Track* track = manager->GetTrack(trackID);
 		if (track == nullptr)
 		{
-			return true;
+			return;
 		}
 		track->FeedbackState(objectID, state);
-		return true;
+		return;
+	}
+
+	void Feedback::Debounce()
+	{
+		if (stateCounter == MaxStateCounter || stateCounter == 0)
+		{
+			return;
+		}
+
+		--stateCounter;
+		if (stateCounter != 0)
+		{
+			return;
+		}
+		manager->FeedbackState(this);
+		UpdateTrackState(FeedbackStateFree);
 	}
 } // namespace datamodel
 

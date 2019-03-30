@@ -80,7 +80,7 @@ namespace hardware
 				if (state == FeedbackStateOccupied)
 				{
 					logger->Info("Pin {0}, {1}", pin, state);
-					manager->FeedbackState(ControlTypeHardware, controlID, pin, state);
+					manager->FeedbackState(controlID, pin, state);
 				}
 				dataByte >>= 1;
 			}
@@ -120,7 +120,7 @@ namespace hardware
 						feedbackState_t state = (((newData[pos] >> shift) & 0x01) == 0 ? FeedbackStateFree : FeedbackStateOccupied);
 						uint16_t pin = (byteAddress * 8) + shift + 1;
 						logger->Info("Pin {0}, {1}", pin, state);
-						manager->FeedbackState(ControlTypeHardware, controlID, pin, state);
+						manager->FeedbackState(controlID, pin, state);
 					}
 				}
 				data[byteAddress] = newData[pos];

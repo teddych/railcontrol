@@ -942,7 +942,7 @@ namespace console
 			state = FeedbackStateFree;
 			text = (char*)"OFF";
 		}
-		manager.FeedbackState(ControlTypeConsole, feedbackID, state);
+		manager.FeedbackState(feedbackID, state);
 		stringstream status;
 		status << "Feedback \"" << manager.GetFeedbackName(feedbackID) << "\" turned " << text;
 		SendAndPrompt(status.str());
