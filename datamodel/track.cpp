@@ -72,8 +72,12 @@ namespace datamodel
 
 	bool Track::FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
 	{
+		feedbackState_t oldState = this->state;
 		bool ret = FeedbackStateInternal(feedbackID, state);
-		manager->TrackPublishState(this);
+		if (ret == true && oldState != state)
+		{
+			manager->TrackPublishState(this);
+		}
 		return ret;
 	}
 
