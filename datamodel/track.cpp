@@ -74,19 +74,23 @@ namespace datamodel
 
 	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state)
 	{
-
-		Loco* loco = manager->GetLoco(GetLoco());
-		if (loco != nullptr && state == FeedbackStateOccupied)
-		{
-			loco->LocationReached(feedbackID);
-		}
-
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (state != FeedbackStateFree)
+		if (state == FeedbackStateOccupied)
 		{
+			Loco* loco = manager->GetLoco(GetLoco());
+			if (loco == nullptr)
+			{
+				manager->Booster(ControlTypeInternal, BoosterStop);
+			}
+			else
+			{
+				loco->LocationReached(feedbackID);
+			}
+
 			this->state = state;
 			return true;
 		}
+
 		for (auto f : feedbacks)
 		{
 			datamodel::Feedback* feedback = manager->GetFeedbackUnlocked(f);
