@@ -441,25 +441,37 @@ function dataUpdate(event)
 		var element = document.getElementById(elementName);
 		if (element)
 		{
-			if (argumentMap.has('state'))
+			var contextElement = document.getElementById(elementName + '_context');
+			var locoElement = document.getElementById(elementName + '_text_loconame');
+
+			var oldState = element.classList.contains('track_occupied');
+			var newState = argumentMap.has('state') && argumentMap.get('state') == 'occupied';
+			var oldLocoName = locoElement ? locoElement.innerHTML : '';
+			var newLocoName = argumentMap.has('loconame') ? argumentMap.get('loconame') : '';
+
+
+			if (newState || (oldState && newLocoName !== ''))
 			{
-				var state = argumentMap.get('state');
-				if (state == 'occupied')
-				{
-					element.classList.remove('track_free');
-					element.classList.add('track_occupied');
-				}
-				else
-				{
-					element.classList.remove('track_occupied');
-					element.classList.add('track_free');
-				}
+				element.classList.remove('track_free');
+				element.classList.remove('track_reserved');
+				element.classList.add('track_occupied');
 			}
-			if (argumentMap.has('loconame'))
+			else if (oldLocoName === '' && newLocoName !== '')
 			{
-				var contextElement = document.getElementById(elementName + '_context');
-				var locoName = argumentMap.get('loconame');
-				if (locoName == '')
+				element.classList.remove('track_free');
+				element.classList.remove('track_occupied');
+				element.classList.add('track_reserved');
+			}
+			else
+			{
+				element.classList.remove('track_occupied');
+				element.classList.remove('track_reserved');
+				element.classList.add('track_free');
+			}
+
+			if (contextElement)
+			{
+				if (newLocoName == '')
 				{
 					element.classList.remove('loco_known');
 					element.classList.add('loco_unknown');
@@ -473,11 +485,10 @@ function dataUpdate(event)
 					contextElement.classList.remove('loco_unknown');
 					contextElement.classList.add('loco_known');
 				}
-				var locoElement = document.getElementById(elementName + '_text_loconame');
-				if (locoElement)
-				{
-					locoElement.innerHTML = locoName;
-				}
+			}
+			if (locoElement)
+			{
+				locoElement.innerHTML = newLocoName;
 			}
 		}
 	}

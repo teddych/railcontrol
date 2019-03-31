@@ -150,8 +150,13 @@ body {
 }
 
 .track_occupied .track,
-.loco_known .loconame {
+.track_occupied.loco_known .loconame {
 	fill: red;
+}
+
+.track_reserved .track,
+.track_reserved.loco_known .loconame {
+	fill: green;
 }
 
 .loco_known .track_set,
