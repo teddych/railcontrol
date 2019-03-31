@@ -45,6 +45,7 @@ namespace datamodel
 			bool Deserialize(const std::string& serialized) override;
 
 			bool Reserve(const locoID_t locoID) override;
+			bool ReserveForce(const locoID_t locoID) { return LockableItem::Reserve(locoID); }
 
 			std::string LayoutType() const override { return "track"; };
 			trackType_t GetType() const { return type; }

@@ -2047,7 +2047,7 @@ bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 		return false;
 	}
 
-	bool reserved = track->Reserve(locoID);
+	bool reserved = track->ReserveForce(locoID);
 	if (reserved == false)
 	{
 		return false;
