@@ -39,6 +39,7 @@ namespace datamodel
 			<< ";functions=" << functions.Serialize()
 			<< ";direction=" << (direction == DirectionRight ? "right" : "left")
 			<< ";trackID=" << static_cast<int>(toTrackID)
+			<< ";commuter=" << static_cast<int>(commuter)
 			<< ";maxspeed=" << maxSpeed
 			<< ";travelspeed=" << travelSpeed
 			<< ";reducedspeed=" << reducedSpeed
@@ -61,6 +62,7 @@ namespace datamodel
 		toTrackID = GetIntegerMapEntry(arguments, "trackID", TrackNone);
 		functions.Deserialize(GetStringMapEntry(arguments, "functions", "0"));
 		direction = (GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
+		commuter = GetBoolMapEntry(arguments, "commuter", false);
 		maxSpeed = GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
 		travelSpeed = GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
 		reducedSpeed = GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
@@ -220,25 +222,25 @@ namespace datamodel
 		}
 
 		// get possible destinations
-		Track* toTrack = manager->GetTrack(toTrackID);
-		if (toTrack == nullptr)
+		Track* oldToTrack = manager->GetTrack(toTrackID);
+		if (oldToTrack == nullptr)
 		{
 			state = LocoStateOff;
 			logger->Info("{0} is not on a track. Switching to manual mode.", name);
 			return;
 		}
 
-		if (toTrack->objectID != toTrackID)
+		if (oldToTrack->objectID != toTrackID)
 		{
 			state = LocoStateError;
-			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, toTrack->Name(), manager->GetLocoName(toTrack->GetLoco()));
+			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, oldToTrack->Name(), manager->GetLocoName(oldToTrack->GetLoco()));
 			return;
 		}
-		logger->Info("Looking for new destination starting from {0}.", toTrack->Name());
+		logger->Info("Looking for new destination starting from {0}.", oldToTrack->Name());
 
-		// FIXME: get best fitting destination and reserve street
+		// FIXME: get BEST fitting destination and reserve street
 		vector<Street*> streets;
-		toTrack->ValidStreets(streets);
+		oldToTrack->ValidStreets(this, streets);
 		for (auto street : streets)
 		{
 			if (street->Reserve(objectID) == false)
@@ -263,7 +265,11 @@ namespace datamodel
 			feedbackIdCreep = street->feedbackIdCreep;
 			feedbackIdStop = street->feedbackIdStop;
 			feedbackIdOver = street->feedbackIdOver;
-			logger->Info("Heading to {0} via {1}", manager->GetTrackName(toTrackID), street->name);
+			Track* newToTrack = manager->GetTrack(toTrackID);
+			direction_t newLocoDirection = static_cast<direction_t>(direction != (oldToTrack->GetLocoDirection() != street->fromDirection));
+			manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
+			newToTrack->SetLocoDirection(static_cast<direction_t>(!street->toDirection));
+			logger->Info("Heading to {0} via {1}", newToTrack->Name(), street->name);
 			break;
 		}
 

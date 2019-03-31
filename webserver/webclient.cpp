@@ -1298,6 +1298,7 @@ namespace webserver
 		address_t address = 1;
 		string name("New Loco");
 		function_t nrOfFunctions = 0;
+		bool commuter = false;
 		locoSpeed_t maxSpeed = MaxSpeed;
 		locoSpeed_t travelSpeed = DefaultTravelSpeed;
 		locoSpeed_t reducedSpeed = DefaultReducedSpeed;
@@ -1311,6 +1312,7 @@ namespace webserver
 			address = loco->address;
 			name = loco->name;
 			nrOfFunctions = loco->GetNrOfFunctions();
+			commuter = loco->GetCommuter();
 			maxSpeed = loco->GetMaxSpeed();
 			travelSpeed = loco->GetTravelSpeed();
 			reducedSpeed = loco->GetReducedSpeed();
@@ -1330,33 +1332,34 @@ namespace webserver
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("speed", "Speed"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", "Basic", true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", "Automode"));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent;
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "locosave"));
 		formContent.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)));
 
-		HtmlTag mainContent("div");
-		mainContent.AddAttribute("id", "tab_main");
-		mainContent.AddClass("tab_content");
-		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Loco Name:", name));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('loco', " + to_string(locoID) + ")"));
-		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
-		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999));
-		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions));
-		formContent.AddChildTag(mainContent);
+		HtmlTag basicContent("div");
+		basicContent.AddAttribute("id", "tab_basic");
+		basicContent.AddClass("tab_content");
+		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Loco Name:", name));
+		basicContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('loco', " + to_string(locoID) + ")"));
+		basicContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions));
+		formContent.AddChildTag(basicContent);
 
-		HtmlTag positionContent("div");
-		positionContent.AddAttribute("id", "tab_speed");
-		positionContent.AddClass("tab_content");
-		positionContent.AddClass("hidden");
-		positionContent.AddChildTag(HtmlTagInputIntegerWithLabel("maxspeed", "Maximum speed:", maxSpeed, 0, MaxSpeed));
-		positionContent.AddChildTag(HtmlTagInputIntegerWithLabel("travelspeed", "Travel speed:", travelSpeed, 0, MaxSpeed));
-		positionContent.AddChildTag(HtmlTagInputIntegerWithLabel("reducedspeed", "Reduced speed:", reducedSpeed, 0, MaxSpeed));
-		positionContent.AddChildTag(HtmlTagInputIntegerWithLabel("creepspeed", "Creep speed:", creepSpeed, 0, MaxSpeed));
-		formContent.AddChildTag(positionContent);
+		HtmlTag automodeContent("div");
+		automodeContent.AddAttribute("id", "tab_automode");
+		automodeContent.AddClass("tab_content");
+		automodeContent.AddClass("hidden");
+		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("commuter", "Commuter:", "commuter", commuter));
+		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("maxspeed", "Maximum speed:", maxSpeed, 0, MaxSpeed));
+		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("travelspeed", "Travel speed:", travelSpeed, 0, MaxSpeed));
+		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("reducedspeed", "Reduced speed:", reducedSpeed, 0, MaxSpeed));
+		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("creepspeed", "Creep speed:", creepSpeed, 0, MaxSpeed));
+		formContent.AddChildTag(automodeContent);
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -1372,6 +1375,7 @@ namespace webserver
 		const protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		const address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
 		const function_t nrOfFunctions = GetIntegerMapEntry(arguments, "function", 0);
+		const bool commuter = GetBoolMapEntry(arguments, "commuter", false);
 		const locoSpeed_t maxSpeed = GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
 		locoSpeed_t travelSpeed = GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
 		if (travelSpeed > maxSpeed)
@@ -1390,7 +1394,7 @@ namespace webserver
 		}
 		string result;
 
-		if (!manager.LocoSave(locoID, name, controlId, protocol, address, nrOfFunctions, maxSpeed, travelSpeed, reducedSpeed, creepSpeed, result))
+		if (!manager.LocoSave(locoID, name, controlId, protocol, address, nrOfFunctions, commuter, maxSpeed, travelSpeed, reducedSpeed, creepSpeed, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;

@@ -100,7 +100,7 @@ namespace datamodel
 		delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay", 250));
 		automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
-		fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionLeft));
+		fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
 		toTrack = GetIntegerMapEntry(arguments, "toTrack", TrackNone);
 		toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
 		feedbackIdReduced = GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
@@ -130,6 +130,27 @@ namespace datamodel
 		relations = newRelations;
 		return true;
 	}
+
+	bool Street::FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const bool commuter)
+	{
+		if (automode == false)
+		{
+			return false;
+		}
+
+		if (fromTrack != trackID)
+		{
+			return false;
+		}
+
+		if (commuter == true)
+		{
+			return true;
+		}
+
+		return fromDirection == trackDirection;
+	}
+
 
 	bool Street::Execute()
 	{

@@ -577,7 +577,8 @@ bool Manager::LocoSave(const locoID_t locoID,
 	const controlID_t controlID,
 	const protocol_t protocol,
 	const address_t address,
-	const function_t nr,
+	const function_t nrOfFunctions,
+	const bool commuter,
 	const locoSpeed_t maxSpeed,
 	const locoSpeed_t travelSpeed,
 	const locoSpeed_t reducedSpeed,
@@ -597,7 +598,8 @@ bool Manager::LocoSave(const locoID_t locoID,
 		loco->controlID = controlID;
 		loco->protocol = protocol;
 		loco->address = address;
-		loco->SetNrOfFunctions(nr);
+		loco->SetNrOfFunctions(nrOfFunctions);
+		loco->SetCommuter(commuter);
 		loco->SetMaxSpeed(maxSpeed);
 		loco->SetTravelSpeed(travelSpeed);
 		loco->SetReducedSpeed(reducedSpeed);
@@ -617,7 +619,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 			}
 		}
 		++newLocoID;
-		loco = new Loco(this, newLocoID, name, controlID, protocol, address, nr, maxSpeed, travelSpeed, reducedSpeed, creepSpeed);
+		loco = new Loco(this, newLocoID, name, controlID, protocol, address, nrOfFunctions, commuter, maxSpeed, travelSpeed, reducedSpeed, creepSpeed);
 		if (loco == nullptr)
 		{
 			result.assign("Unable to allocate memory for loco");
@@ -1374,9 +1376,15 @@ const std::vector<feedbackID_t> Manager::CleanupAndCheckFeedbacks(trackID_t trac
 		std::lock_guard<std::mutex> feedbackGuard(feedbackMutex);
 		for (auto feedback : feedbacks)
 		{
-			if (feedback.second->GetTrack() == trackID)
+			if (feedback.second->GetTrack() != trackID)
 			{
-				feedback.second->SetTrack(TrackNone);
+				continue;
+			}
+
+			feedback.second->SetTrack(TrackNone);
+			if (storage != nullptr)
+			{
+				storage->Save(*feedback.second);
 			}
 		}
 	}

@@ -7,6 +7,7 @@
 #include "datatypes.h"
 #include "layout_item.h"
 #include "LockableItem.h"
+#include "loco.h"
 #include "serializable.h"
 #include "street.h"
 
@@ -31,7 +32,7 @@ namespace datamodel
 				type(type),
 				feedbacks(feedbacks),
 				state(FeedbackStateFree),
-			 	locoDirection(DirectionLeft)
+			 	locoDirection(DirectionRight)
 			{
 			}
 
@@ -59,7 +60,9 @@ namespace datamodel
 			bool AddStreet(Street* street);
 			bool RemoveStreet(Street* street);
 
-			bool ValidStreets(std::vector<Street*>& validStreets);
+			bool ValidStreets(const datamodel::Loco* loco, std::vector<Street*>& validStreets);
+			direction_t GetLocoDirection() { return locoDirection; }
+			void SetLocoDirection(const direction_t direction) { locoDirection = direction; }
 
 		private:
 			bool FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state);

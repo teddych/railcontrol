@@ -57,7 +57,7 @@ namespace datamodel
 			feedbacks.push_back(Util::StringToInteger(feedbackString));
 		}
 		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
-		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionLeft));
+		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
 		return true;
 	}
 
@@ -139,12 +139,12 @@ namespace datamodel
 		return sizeBefore > sizeAfter;
 	}
 
-	bool Track::ValidStreets(std::vector<Street*>& validStreets)
+	bool Track::ValidStreets(const Loco* loco, std::vector<Street*>& validStreets)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto street : streets)
 		{
-			if (street->FromTrackDirection(objectID, locoDirection))
+			if (street->FromTrackDirection(objectID, locoDirection, loco->GetCommuter()))
 			{
 				validStreets.push_back(street);
 			}

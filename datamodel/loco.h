@@ -100,6 +100,7 @@ namespace datamodel
 				const protocol_t protocol,
 				const address_t address,
 				const function_t nr,
+				const bool commuter,
 				const locoSpeed_t maxSpeed,
 				const locoSpeed_t travelSpeed,
 				const locoSpeed_t reducedSpeed,
@@ -109,8 +110,13 @@ namespace datamodel
 				protocol(protocol),
 				address(address),
 				manager(manager),
+				commuter(commuter),
+				maxSpeed(maxSpeed),
+				travelSpeed(travelSpeed),
+				reducedSpeed(reducedSpeed),
+				creepSpeed(creepSpeed),
 				speed(MinSpeed),
-				direction(DirectionLeft),
+				direction(DirectionRight),
 				state(LocoStateManual),
 				fromTrackID(TrackNone),
 				toTrackID(TrackNone),
@@ -118,11 +124,7 @@ namespace datamodel
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
-				feedbackIdOver(FeedbackNone),
-				maxSpeed(maxSpeed),
-				travelSpeed(travelSpeed),
-				reducedSpeed(reducedSpeed),
-				creepSpeed(creepSpeed)
+				feedbackIdOver(FeedbackNone)
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
 				SetNrOfFunctions(nr);
@@ -132,6 +134,8 @@ namespace datamodel
 			:	manager(manager),
 				speed(MinSpeed),
 				state(LocoStateManual),
+				fromTrackID(TrackNone),
+				toTrackID(TrackNone),
 				streetID(StreetNone),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
@@ -169,10 +173,12 @@ namespace datamodel
 
 			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->toTrackID != TrackNone || this->streetID != StreetNone; }
 
+			bool GetCommuter() const { return commuter; }
 			locoSpeed_t GetMaxSpeed() const { return maxSpeed; }
 			locoSpeed_t GetTravelSpeed() const { return travelSpeed; }
 			locoSpeed_t GetReducedSpeed() const { return reducedSpeed; }
 			locoSpeed_t GetCreepSpeed() const { return creepSpeed; }
+			void SetCommuter(bool commuter) { this->commuter = commuter; }
 			void SetMaxSpeed(locoSpeed_t speed) { maxSpeed = speed; }
 			void SetTravelSpeed(locoSpeed_t speed) { travelSpeed = speed; }
 			void SetReducedSpeed(locoSpeed_t speed) { reducedSpeed = speed; }
@@ -198,8 +204,16 @@ namespace datamodel
 			};
 
 			Manager* manager;
+
+			bool commuter;
+			locoSpeed_t maxSpeed;
+			locoSpeed_t travelSpeed;
+			locoSpeed_t reducedSpeed;
+			locoSpeed_t creepSpeed;
+
 			locoSpeed_t speed;
 			direction_t direction;
+
 			locoState_t state;
 			trackID_t fromTrackID;
 			trackID_t toTrackID;
@@ -208,11 +222,6 @@ namespace datamodel
 			feedbackID_t feedbackIdCreep;
 			feedbackID_t feedbackIdStop;
 			feedbackID_t feedbackIdOver;
-
-			locoSpeed_t maxSpeed;
-			locoSpeed_t travelSpeed;
-			locoSpeed_t reducedSpeed;
-			locoSpeed_t creepSpeed;
 
 			std::mutex stateMutex;
 			std::thread locoThread;

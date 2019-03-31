@@ -65,7 +65,8 @@ class Manager {
 			const controlID_t controlID,
 			const protocol_t protocol,
 			const address_t address,
-			const function_t nr,
+			const function_t nrOfFunctions,
+			const bool commuter,
 			const locoSpeed_t maxSpeed,
 			const locoSpeed_t travelSpeed,
 			const locoSpeed_t reducedSpeed,
@@ -80,6 +81,7 @@ class Manager {
 		const locoSpeed_t LocoSpeed(const locoID_t locoID) const;
 		void LocoDirection(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const direction_t direction);
 		void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction);
+		void LocoDirection(const controlType_t controlType, datamodel::Loco* loco, const direction_t direction);
 		void LocoFunction(const controlType_t controlType, const controlID_t controlID, const protocol_t protocol, const address_t address, const function_t function, const bool on);
 		void LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on);
 
@@ -198,7 +200,6 @@ class Manager {
 		datamodel::Switch* GetSwitch(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
 		datamodel::Feedback* GetFeedback(const controlID_t controlID, const feedbackPin_t pin) const;
 
-		void LocoDirection(const controlType_t controlType, datamodel::Loco* loco, const direction_t direction);
 		void LocoFunction(const controlType_t controlType, datamodel::Loco* loco, const function_t function, const bool on);
 		void AccessoryState(const controlType_t controlType, datamodel::Accessory* accessory, const accessoryState_t state, const bool force);
 		void SwitchState(const controlType_t controlType, datamodel::Switch* mySwitch, const accessoryState_t state, const bool force);
