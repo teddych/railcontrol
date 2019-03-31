@@ -2441,8 +2441,9 @@ namespace webserver
 		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID != LocoNone)
 		{
-			manager.LocoIntoTrack(locoID, trackID);
-			HtmlReplyWithHeaderAndParagraph("Loco added to track.");
+			bool ok = manager.LocoIntoTrack(locoID, trackID);
+			HtmlReplyWithHeaderAndParagraph(ok ? "Loco added to track." : "Unable to add loco to track.");
+			return;
 		}
 		const datamodel::Track* track = manager.GetTrack(trackID);
 		if (track->IsInUse())

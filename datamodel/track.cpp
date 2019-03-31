@@ -61,15 +61,6 @@ namespace datamodel
 		return true;
 	}
 
-	bool Track::Reserve(const locoID_t locoID)
-	{
-		if (state != FeedbackStateFree)
-		{
-			return false;
-		}
-		return LockableItem::Reserve(locoID);
-	}
-
 	bool Track::FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		feedbackState_t oldState = this->state;
