@@ -2080,12 +2080,12 @@ namespace webserver
 		feedbackDiv.AddAttribute("id", "feedbacks");
 		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
 		tracksDiv.AddChildTag(feedbackDiv);
-		automodeContent.AddChildTag(tracksDiv);
 		map<string,string> commuterOptions;
-		commuterOptions[to_string(Street::CommuterTypeNo)] = "No commuter";
+		commuterOptions[to_string(Street::CommuterTypeNo)] = "Only non-commuter";
 		commuterOptions[to_string(Street::CommuterTypeBoth)] = "Commuter and non-commuter";
 		commuterOptions[to_string(Street::CommuterTypeOnly)] = "Only commuter";
-		automodeContent.AddChildTag(HtmlTagSelectWithLabel("commuter", "Allow commuter trains:", commuterOptions, to_string(commuter)));
+		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("commuter", "Allow trains:", commuterOptions, to_string(commuter)));
+		automodeContent.AddChildTag(tracksDiv);
 		formContent.AddChildTag(automodeContent);
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
