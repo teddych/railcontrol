@@ -56,6 +56,7 @@ namespace webserver
 			HtmlTag HtmlTagRelationObject(const std::string& priority, const objectType_t objectType, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected = false) const;
 			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID = FeedbackNone);
+			HtmlTag HtmlTagSelectSelectStreetApproach(const datamodel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault);
 			void handleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void handleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void handleLayerSave(const std::map<std::string, std::string>& arguments);

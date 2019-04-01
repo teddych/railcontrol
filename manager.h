@@ -117,7 +117,17 @@ class Manager {
 		const std::map<trackID_t,datamodel::Track*>& TrackList() const { return tracks; }
 		const std::map<std::string,datamodel::Track*> TrackListByName() const;
 		const std::map<std::string,trackID_t> TrackListIdByName() const;
-		trackID_t TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutRotation_t rotation, const trackType_t trackType, std::vector<feedbackID_t> feedbacks, std::string& result);
+		trackID_t TrackSave(const trackID_t trackID,
+			const std::string& name,
+			const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			const layoutItemSize_t width,
+			const layoutRotation_t rotation,
+			const trackType_t trackType,
+			std::vector<feedbackID_t> feedbacks,
+			const datamodel::Track::selectStreetApproach_t selectStreetApproach,
+			std::string& result);
 		bool TrackDelete(const trackID_t trackID);
 
 		// switch
@@ -188,10 +198,12 @@ class Manager {
 		// settings
 		accessoryDuration_t GetDefaultAccessoryDuration() const { return defaultAccessoryDuration; }
 		bool GetAutoAddFeedback() const { return autoAddFeedback; }
+		datamodel::Track::selectStreetApproach_t GetSelectStreetApproach() const { return selectStreetApproach; }
 		bool SaveSettings
 		(
 			const accessoryDuration_t duration,
-			const bool autoAddFeedback
+			const bool autoAddFeedback,
+			const datamodel::Track::selectStreetApproach_t selectStreetApproach
 		);
 
 	private:
@@ -304,6 +316,8 @@ class Manager {
 
 		accessoryDuration_t defaultAccessoryDuration;
 		bool autoAddFeedback;
+		datamodel::Track::selectStreetApproach_t selectStreetApproach;
+
 		volatile bool debounceRun;
 		std::thread debounceThread;
 

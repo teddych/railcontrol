@@ -39,6 +39,7 @@ Manager::Manager(Config& config)
  	delayedCall(new DelayedCall(*this)),
 	defaultAccessoryDuration(DefaultAccessoryDuration),
 	autoAddFeedback(false),
+	selectStreetApproach(datamodel::Track::SelectStreetRandom),
 	debounceRun(true),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
@@ -1407,7 +1408,17 @@ const std::vector<feedbackID_t> Manager::CleanupAndCheckFeedbacks(trackID_t trac
 	return checkedFeedbacks;
 }
 
-trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, const trackType_t type, std::vector<feedbackID_t> newFeedbacks, string& result)
+trackID_t Manager::TrackSave(const trackID_t trackID,
+	const std::string& name,
+	const layoutPosition_t posX,
+	const layoutPosition_t posY,
+	const layoutPosition_t posZ,
+	const layoutItemSize_t height,
+	const layoutRotation_t rotation,
+	const trackType_t type,
+	std::vector<feedbackID_t> newFeedbacks,
+	const datamodel::Track::selectStreetApproach_t selectStreetApproach,
+	string& result)
 {
 	if (!CheckTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
 	{
@@ -1427,8 +1438,9 @@ trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, c
 		track->posX = posX;
 		track->posY = posY;
 		track->posZ = posZ;
-		track->Type(type);
+		track->SetType(type);
 		track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
+		track->SetSelectStreetApproach(selectStreetApproach);
 	}
 	else
 	{
@@ -1444,7 +1456,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID, const std::string& name, c
 			}
 		}
 		++newTrackID;
-		track = new Track(this, newTrackID, name, posX, posY, posZ, height, rotation, type, CleanupAndCheckFeedbacks(trackID, newFeedbacks));
+		track = new Track(this, newTrackID, name, posX, posY, posZ, height, rotation, type, CleanupAndCheckFeedbacks(trackID, newFeedbacks), selectStreetApproach);
 		if (track == nullptr)
 		{
 			result.assign("Unable to allocate memory for track");
@@ -2507,16 +2519,19 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 }
 
 bool Manager::SaveSettings(const accessoryDuration_t duration,
-	const bool autoAddFeedback)
+	const bool autoAddFeedback,
+	const datamodel::Track::selectStreetApproach_t selectStreetApproach)
 {
 	this->defaultAccessoryDuration = duration;
 	this->autoAddFeedback = autoAddFeedback;
+	this->selectStreetApproach = selectStreetApproach;
 	if (storage == nullptr)
 	{
 		return false;
 	}
 	storage->SaveSetting("DefaultAccessoryDuration", std::to_string(duration));
 	storage->SaveSetting("AutoAddFeedback", std::to_string(autoAddFeedback));
+	storage->SaveSetting("SelectStreetApproach", std::to_string(static_cast<int>(selectStreetApproach)));
 	return true;
 }
 

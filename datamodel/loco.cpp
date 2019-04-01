@@ -1,4 +1,4 @@
-
+#include <algorithm>
 #include <map>
 #include <sstream>
 
@@ -238,10 +238,11 @@ namespace datamodel
 		}
 		logger->Info("Looking for new destination starting from {0}.", oldToTrack->Name());
 
-		// FIXME: get BEST fitting destination and reserve street
-		vector<Street*> streets;
-		oldToTrack->ValidStreets(this, streets);
-		for (auto street : streets)
+		vector<Street*> validStreets;
+		oldToTrack->GetValidStreets(this, validStreets);
+
+		Street* usedStreet = nullptr;
+		for (auto street : validStreets)
 		{
 			if (street->Reserve(objectID) == false)
 			{
@@ -258,30 +259,31 @@ namespace datamodel
 				street->Release(objectID);
 				continue;
 			}
-			fromTrackID = toTrackID;
-			toTrackID = street->DestinationTrack();
-			streetID = street->objectID;
-			feedbackIdReduced = street->feedbackIdReduced;
-			feedbackIdCreep = street->feedbackIdCreep;
-			feedbackIdStop = street->feedbackIdStop;
-			feedbackIdOver = street->feedbackIdOver;
-			Track* newToTrack = manager->GetTrack(toTrackID);
-			direction_t newLocoDirection = static_cast<direction_t>(direction != (oldToTrack->GetLocoDirection() != street->fromDirection));
-			manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
-			newToTrack->SetLocoDirection(static_cast<direction_t>(!street->toDirection));
-			logger->Info("Heading to {0} via {1}", newToTrack->Name(), street->name);
+			usedStreet = street;
 			break;
 		}
 
-		if (streetID == StreetNone)
+		if (usedStreet == nullptr)
 		{
 			logger->Info("No valid street found for {0}", name);
 			return;
 		}
 
+		fromTrackID = toTrackID;
+		toTrackID = usedStreet->DestinationTrack();
+		streetID = usedStreet->objectID;
+		feedbackIdReduced = usedStreet->feedbackIdReduced;
+		feedbackIdCreep = usedStreet->feedbackIdCreep;
+		feedbackIdStop = usedStreet->feedbackIdStop;
+		feedbackIdOver = usedStreet->feedbackIdOver;
+		Track* newToTrack = manager->GetTrack(toTrackID);
+		direction_t newLocoDirection = static_cast<direction_t>(direction != (oldToTrack->GetLocoDirection() != usedStreet->fromDirection));
+		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
+		newToTrack->SetLocoDirection(static_cast<direction_t>(!usedStreet->toDirection));
+		logger->Info("Heading to {0} via {1}", newToTrack->Name(), usedStreet->Name());
+
 		// start loco
 		manager->TrackPublishState(toTrackID);
-		// FIXME: make maxspeed configurable
 		manager->LocoSpeed(ControlTypeInternal, objectID, travelSpeed);
 		state = LocoStateRunning;
 	}

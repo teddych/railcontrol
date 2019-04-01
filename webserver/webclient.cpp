@@ -1228,6 +1228,19 @@ namespace webserver
 		return button;
 	}
 
+	HtmlTag WebClient::HtmlTagSelectSelectStreetApproach(const datamodel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault)
+	{
+		map<string,string> options;
+		if (addDefault)
+		{
+			options[to_string(datamodel::Track::SelectStreetSystemDefault)] = "Use system default";
+		}
+		options[to_string(datamodel::Track::SelectStreetDoNotCare)] = "Do not care";
+		options[to_string(datamodel::Track::SelectStreetRandom)] = "Random";
+		options[to_string(datamodel::Track::SelectStreetMinTrackLength)] = "Minimal destination track length";
+		options[to_string(datamodel::Track::SelectStreetLongestUnused)] = "Longest unused";
+		return HtmlTagSelectWithLabel("selectstreetapproach", "Select street by:", options, to_string(static_cast<int>(selectStreetApproach)));
+	}
 
 	void WebClient::handleProtocolAccessory(const map<string, string>& arguments)
 	{
@@ -2249,6 +2262,7 @@ namespace webserver
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		trackType_t type = TrackTypeStraight;
 		std::vector<feedbackID_t> feedbacks;
+		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
 		if (trackID > TrackNone)
 		{
 			const datamodel::Track* track = manager.GetTrack(trackID);
@@ -2260,6 +2274,7 @@ namespace webserver
 			rotation = track->rotation;
 			type = track->GetType();
 			feedbacks = track->GetFeedbacks();
+			selectStreetApproach = track->GetSelectStreetApproach();
 		}
 		if (type == TrackTypeTurn)
 		{
@@ -2275,6 +2290,7 @@ namespace webserver
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("feedback", "Feedbacks"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", "Automode"));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
@@ -2304,6 +2320,13 @@ namespace webserver
 		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
 		positionContent.AddChildTag(HtmlTagRotation(rotation));
 		formContent.AddChildTag(positionContent);
+
+		HtmlTag automodeContent("div");
+		automodeContent.AddAttribute("id", "tab_automode");
+		automodeContent.AddClass("tab_content");
+		automodeContent.AddClass("hidden");
+		automodeContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, true));
+		formContent.AddChildTag(automodeContent);
 
 		unsigned int feedbackCounter = 0;
 		HtmlTag existingFeedbacks("div");
@@ -2356,8 +2379,9 @@ namespace webserver
 				feedbacks.push_back(feedbackID);
 			}
 		}
+		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
 		string result;
-		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, result) == TrackNone)
+		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, selectStreetApproach, result) == TrackNone)
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -2696,6 +2720,8 @@ namespace webserver
 	{
 		const accessoryDuration_t defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
+		const datamodel::Track::selectStreetApproach_t selectStreetApproach = manager.GetSelectStreetApproach();
+
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit settings"));
 
@@ -2704,6 +2730,8 @@ namespace webserver
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "settingssave"));
 		formContent.AddChildTag(HtmlTagDuration(defaultAccessoryDuration, "Default duration for accessory/switch (ms):"));
 		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", "Automatically add unknown feedbacks", "autoaddfeedback", autoAddFeedback));
+		formContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, false));
+
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
@@ -2714,7 +2742,8 @@ namespace webserver
 	{
 		const accessoryDuration_t defaultAccessoryDuration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		const bool autoAddFeedback = GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
-		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback);
+		const datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetRandom));
+		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach);
 		HtmlReplyWithHeaderAndParagraph("Settings saved.");	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)

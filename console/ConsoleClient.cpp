@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 #include "console/ConsoleClient.h"
+#include "datamodel/track.h"
 #include "datatypes.h"
 #include "railcontrol.h"
 #include "text/converters.h"
@@ -766,7 +767,7 @@ namespace console
 		layoutRotation_t rotation = ReadRotation(s, i);
 		vector<feedbackID_t> feedbacks;
 		string result;
-		if (manager.TrackSave(TrackNone, name, posX, posY, posZ, length, rotation, TrackTypeStraight, feedbacks, result) > TrackNone)
+		if (manager.TrackSave(TrackNone, name, posX, posY, posZ, length, rotation, TrackTypeStraight, feedbacks, datamodel::Track::SelectStreetSystemDefault, result) > TrackNone)
 		{
 			SendAndPrompt(result);
 			return;

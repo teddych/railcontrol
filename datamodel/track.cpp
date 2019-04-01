@@ -30,6 +30,7 @@ namespace datamodel
 			<< LockableItem::Serialize()
 			<< ";type=" << static_cast<int>(type)
 			<< ";feedbacks=" << feedbackString
+			<< ";selectstreetapproach=" << static_cast<int>(selectStreetApproach)
 			<< ";state=" << static_cast<int>(state)
 			<< ";locoDirection=" << static_cast<int>(locoDirection);
 		return ss.str();
@@ -56,6 +57,7 @@ namespace datamodel
 		{
 			feedbacks.push_back(Util::StringToInteger(feedbackString));
 		}
+		selectStreetApproach = static_cast<selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
 		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
 		return true;
@@ -139,7 +141,16 @@ namespace datamodel
 		return sizeBefore > sizeAfter;
 	}
 
-	bool Track::ValidStreets(const Loco* loco, std::vector<Street*>& validStreets)
+	Track::selectStreetApproach_t Track::GetSelectStreetApproachCalculated() const
+	{
+		if (selectStreetApproach == SelectStreetSystemDefault)
+		{
+			return manager->GetSelectStreetApproach();
+		}
+		return selectStreetApproach;
+	}
+
+	bool Track::GetValidStreets(const Loco* loco, std::vector<Street*>& validStreets) const
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto street : streets)
@@ -149,6 +160,32 @@ namespace datamodel
 				validStreets.push_back(street);
 			}
 		}
+		OrderValidStreets(validStreets);
 		return true;
+	}
+
+	void Track::OrderValidStreets(vector<Street*>& validStreets) const
+	{
+		switch (GetSelectStreetApproachCalculated())
+		{
+
+			case Track::SelectStreetRandom:
+				std::random_shuffle(validStreets.begin(), validStreets.end());
+				break;
+
+			case Track::SelectStreetMinTrackLength:
+				// FIXME
+				break;
+
+			case Track::SelectStreetLongestUnused:
+				// FIXME
+				break;
+
+		//std::sort(validStreets.begin(), validStreets.end(), Street::CompareRoundRobin);
+			case Track::SelectStreetDoNotCare:
+			default:
+				// do nothing
+				break;
+		}
 	}
 } // namespace datamodel

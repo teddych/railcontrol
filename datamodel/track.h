@@ -5,17 +5,27 @@
 #include <vector>
 
 #include "datatypes.h"
-#include "layout_item.h"
-#include "LockableItem.h"
-#include "loco.h"
-#include "serializable.h"
-#include "street.h"
+#include "datamodel/layout_item.h"
+#include "datamodel/LockableItem.h"
+#include "datamodel/serializable.h"
+#include "datamodel/street.h"
 
 namespace datamodel
 {
+	class Loco;
+
 	class Track : public LayoutItem, public LockableItem
 	{
 		public:
+			enum selectStreetApproach_t : unsigned char
+			{
+				SelectStreetSystemDefault = 0,
+				SelectStreetDoNotCare = 1,
+				SelectStreetRandom = 2,
+				SelectStreetMinTrackLength = 3,
+				SelectStreetLongestUnused = 4
+			};
+
 			Track(Manager* manager,
 				const trackID_t trackID,
 				const std::string& name,
@@ -25,12 +35,14 @@ namespace datamodel
 				const layoutItemSize_t height,
 				const layoutRotation_t rotation,
 				const trackType_t type,
-				const std::vector<feedbackID_t>& feedbacks)
+				const std::vector<feedbackID_t>& feedbacks,
+				const selectStreetApproach_t selectStreetApproach)
 			:	LayoutItem(trackID, name, VisibleYes, x, y, z, Width1, height, rotation),
 			 	LockableItem(),
 			 	manager(manager),
 				type(type),
 				feedbacks(feedbacks),
+				selectStreetApproach(selectStreetApproach),
 				state(FeedbackStateFree),
 			 	locoDirection(DirectionRight)
 			{
@@ -50,7 +62,7 @@ namespace datamodel
 
 			std::string LayoutType() const override { return "track"; };
 			trackType_t GetType() const { return type; }
-			void Type(const trackType_t type) { this->type = type; }
+			void SetType(const trackType_t type) { this->type = type; }
 			std::vector<feedbackID_t> GetFeedbacks() const { return feedbacks; }
 			void Feedbacks(const std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
 
@@ -60,20 +72,26 @@ namespace datamodel
 			bool AddStreet(Street* street);
 			bool RemoveStreet(Street* street);
 
-			bool ValidStreets(const datamodel::Loco* loco, std::vector<Street*>& validStreets);
-			direction_t GetLocoDirection() { return locoDirection; }
+			selectStreetApproach_t GetSelectStreetApproach() const { return selectStreetApproach; }
+			void SetSelectStreetApproach(const selectStreetApproach_t selectStreetApproach) { this->selectStreetApproach = selectStreetApproach; }
+
+			bool GetValidStreets(const datamodel::Loco* loco, std::vector<Street*>& validStreets) const;
+			direction_t GetLocoDirection() const { return locoDirection; }
 			void SetLocoDirection(const direction_t direction) { locoDirection = direction; }
 
 		private:
 			bool FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state);
+			void OrderValidStreets(std::vector<datamodel::Street*>& validStreets) const;
+			selectStreetApproach_t GetSelectStreetApproachCalculated() const;
 
 			Manager* manager;
 			trackType_t type;
 			std::vector<feedbackID_t> feedbacks;
+			selectStreetApproach_t selectStreetApproach;
 			feedbackState_t state;
 			direction_t locoDirection;
 			std::vector<Street*> streets;
-			std::mutex updateMutex;
+			mutable std::mutex updateMutex;
 	};
 } // namespace datamodel
 
