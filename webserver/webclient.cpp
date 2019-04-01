@@ -1972,7 +1972,8 @@ namespace webserver
 		HtmlTag content;
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name("New Street");
-		delay_t delay = 250;
+		delay_t delay = Street::DefaultDelay;
+		Street::commuterType_t commuter = Street::CommuterTypeBoth;
 		vector<Relation*> relations;
 		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleYes));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
@@ -1991,7 +1992,8 @@ namespace webserver
 		{
 			const datamodel::Street* street = manager.GetStreet(streetID);
 			name = street->name;
-			delay = street->Delay();
+			delay = street->GetDelay();
+			commuter = street->GetCommuter();
 			relations = street->GetRelations();
 			visible = street->visible;
 			posx = street->posX;
@@ -2010,7 +2012,7 @@ namespace webserver
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit street &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", "Basic", true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("relation", "Relations"));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", "Auto-mode"));
@@ -2021,12 +2023,12 @@ namespace webserver
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "streetsave"));
 		formContent.AddChildTag(HtmlTagInputHidden("street", to_string(streetID)));
 
-		HtmlTag mainContent("div");
-		mainContent.AddAttribute("id", "tab_main");
-		mainContent.AddClass("tab_content");
-		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Street Name:", name));
-		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("delay", "Delay in ms:", delay, 1, USHRT_MAX));
-		formContent.AddChildTag(mainContent);
+		HtmlTag basicContent("div");
+		basicContent.AddAttribute("id", "tab_basic");
+		basicContent.AddClass("tab_content");
+		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Street Name:", name));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("delay", "Delay in ms:", delay, 1, USHRT_MAX));
+		formContent.AddChildTag(basicContent);
 
 		HtmlTag relationDiv("div");
 		relationDiv.AddChildTag(HtmlTagInputHidden("relationcounter", to_string(relations.size())));
@@ -2079,6 +2081,11 @@ namespace webserver
 		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
 		tracksDiv.AddChildTag(feedbackDiv);
 		automodeContent.AddChildTag(tracksDiv);
+		map<string,string> commuterOptions;
+		commuterOptions[to_string(Street::CommuterTypeNo)] = "No commuter";
+		commuterOptions[to_string(Street::CommuterTypeBoth)] = "Commuter and non-commuter";
+		commuterOptions[to_string(Street::CommuterTypeOnly)] = "Only commuter";
+		automodeContent.AddChildTag(HtmlTagSelectWithLabel("commuter", "Allow commuter trains:", commuterOptions, to_string(commuter)));
 		formContent.AddChildTag(automodeContent);
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
@@ -2098,6 +2105,7 @@ namespace webserver
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name = GetStringMapEntry(arguments, "name");
 		delay_t delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay"));
+		Street::commuterType_t commuter = static_cast<Street::commuterType_t>(GetIntegerMapEntry(arguments, "commuter", Street::CommuterTypeBoth));
 		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible"));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
@@ -2130,7 +2138,7 @@ namespace webserver
 		}
 
 		string result;
-		if (manager.StreetSave(streetID, name, delay, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver, result) == false)
+		if (!manager.StreetSave(streetID, name, delay, commuter, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;

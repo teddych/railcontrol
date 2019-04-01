@@ -1781,6 +1781,7 @@ bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPositio
 bool Manager::StreetSave(const streetID_t streetID,
 	const std::string& name,
 	const delay_t delay,
+	const Street::commuterType_t commuter,
 	const std::vector<datamodel::Relation*>& relations,
 	const visible_t visible,
 	const layoutPosition_t posX,
@@ -1821,7 +1822,8 @@ bool Manager::StreetSave(const streetID_t streetID,
 			}
 		}
 		street->name = name;
-		street->Delay(delay);
+		street->SetDelay(delay);
+		street->SetCommuter(commuter);
 		street->AssignRelations(relations);
 		street->visible = visible;
 		street->posX = posX;
@@ -1851,7 +1853,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 			}
 		}
 		++newStreetID;
-		street = new Street(this, newStreetID, name, delay, relations, visible, posX, posY, posZ, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver);
+		street = new Street(this, newStreetID, name, delay, commuter, relations, visible, posX, posY, posZ, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver);
 		if (street == nullptr)
 		{
 			result.assign("Unable to allocate memory for street");

@@ -15,6 +15,7 @@ namespace datamodel
 		const streetID_t streetID,
 		const std::string& name,
 		const delay_t delay,
+		const commuterType_t commuter,
 		const std::vector<datamodel::Relation*>& relations,
 		const visible_t visible,
 		const layoutPosition_t posX,
@@ -32,6 +33,7 @@ namespace datamodel
 	:	LayoutItem(streetID, name, visible, posX, posY, posZ, Width1, Height1, Rotation0),
 	 	LockableItem(),
 	 	delay(delay),
+	 	commuter(commuter),
 	 	automode(automode),
 		fromTrack(fromTrack),
 		fromDirection(fromDirection),
@@ -72,6 +74,7 @@ namespace datamodel
 			<< LayoutItem::Serialize()
 			<< ";" << LockableItem::Serialize()
 			<< ";delay=" << static_cast<int>(delay)
+			<< ";commuter=" << static_cast<int>(commuter)
 			<< ";automode=" << static_cast<int>(automode)
 			<< ";fromTrack=" << static_cast<int>(fromTrack)
 			<< ";fromDirection=" << static_cast<int>(fromDirection)
@@ -97,7 +100,8 @@ namespace datamodel
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
 
-		delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay", 250));
+		delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay", DefaultDelay));
+		commuter = static_cast<commuterType_t>(GetIntegerMapEntry(arguments, "commuter", CommuterTypeBoth));
 		automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
 		fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
@@ -131,7 +135,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Street::FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const bool commuter)
+	bool Street::FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const bool locoCommuter)
 	{
 		if (automode == false)
 		{
@@ -143,7 +147,12 @@ namespace datamodel
 			return false;
 		}
 
-		if (commuter == true)
+		if (commuter != locoCommuter && commuter != CommuterTypeBoth)
+		{
+			return false;
+		}
+
+		if (locoCommuter == true)
 		{
 			return true;
 		}

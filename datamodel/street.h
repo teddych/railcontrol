@@ -14,10 +14,20 @@ namespace datamodel
 	class Street : public LayoutItem, public LockableItem
 	{
 		public:
+			static const delay_t DefaultDelay = 250;
+
+			enum commuterType_t : unsigned char
+			{
+				CommuterTypeNo = 0,
+				CommuterTypeOnly = 1,
+				CommuterTypeBoth = 2
+			};
+
 			Street(Manager* manager,
 				const streetID_t streetID,
 				const std::string& name,
 				const delay_t delay,
+				const commuterType_t commuter,
 				const std::vector<datamodel::Relation*>& relations,
 				const visible_t visible,
 				const layoutPosition_t posX,
@@ -54,8 +64,10 @@ namespace datamodel
 			bool Lock(const locoID_t locoID) override;
 			bool Release(const locoID_t locoID) override;
 
-			delay_t Delay() const { return delay; }
-			void Delay(delay_t delay) { this->delay = delay; }
+			delay_t GetDelay() const { return delay; }
+			void SetDelay(delay_t delay) { this->delay = delay; }
+			commuterType_t GetCommuter() const { return commuter; }
+			void SetCommuter(const commuterType_t commuter) { this->commuter = commuter; }
 
 			trackID_t DestinationTrack() const { return toTrack; };
 
@@ -63,6 +75,7 @@ namespace datamodel
 			bool ReleaseInternal(const locoID_t locoID);
 
 			delay_t delay;
+			commuterType_t commuter;
 
 		public:
 			// FIXME: make private

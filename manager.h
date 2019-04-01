@@ -142,6 +142,7 @@ class Manager {
 		bool StreetSave(const streetID_t streetID,
 			const std::string& name,
 			const delay_t delay,
+			const datamodel::Street::commuterType_t commuter,
 			const std::vector<datamodel::Relation*>& relations,
 			const visible_t visible,
 			const layoutPosition_t posX,
