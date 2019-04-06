@@ -28,6 +28,8 @@ namespace datamodel
 				const std::string& name,
 				const delay_t delay,
 				const commuterType_t commuter,
+				const length_t minTrainLength,
+				const length_t maxTrainLength,
 				const std::vector<datamodel::Relation*>& relations,
 				const visible_t visible,
 				const layoutPosition_t posX,
@@ -68,14 +70,23 @@ namespace datamodel
 			void SetDelay(delay_t delay) { this->delay = delay; }
 			commuterType_t GetCommuter() const { return commuter; }
 			void SetCommuter(const commuterType_t commuter) { this->commuter = commuter; }
+			length_t GetMinTrainLength() const { return minTrainLength; }
+			void SetMinTrainLength(const length_t length) { this->minTrainLength = length; }
+			length_t GetMaxTrainLength() const { return maxTrainLength; }
+			void SetMaxTrainLength(const length_t length) { this->maxTrainLength = length; }
 
 			trackID_t DestinationTrack() const { return toTrack; };
+
+			static bool CompareRoundRobin(const Street* s1, const Street* s2) { return static_cast<bool>(rand() & 0x1); }
+			static bool CompareShortestFirst(const Street* s1, const Street* s2) { return s1->objectID > s2->objectID; }
 
 		private:
 			bool ReleaseInternal(const locoID_t locoID);
 
 			delay_t delay;
 			commuterType_t commuter;
+			length_t minTrainLength;
+			length_t maxTrainLength;
 
 		public:
 			// FIXME: make private

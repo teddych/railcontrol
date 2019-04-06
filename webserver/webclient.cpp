@@ -2003,6 +2003,8 @@ namespace webserver
 		string name("New Street");
 		delay_t delay = Street::DefaultDelay;
 		Street::commuterType_t commuter = Street::CommuterTypeBoth;
+		length_t minTrainLength = 0;
+		length_t maxTrainLength = 0;
 		vector<Relation*> relations;
 		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleYes));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
@@ -2023,6 +2025,8 @@ namespace webserver
 			name = street->name;
 			delay = street->GetDelay();
 			commuter = street->GetCommuter();
+			minTrainLength = street->GetMinTrainLength();
+			maxTrainLength = street->GetMaxTrainLength();
 			relations = street->GetRelations();
 			visible = street->visible;
 			posx = street->posX;
@@ -2114,6 +2118,8 @@ namespace webserver
 		commuterOptions[to_string(Street::CommuterTypeBoth)] = "Commuter and non-commuter";
 		commuterOptions[to_string(Street::CommuterTypeOnly)] = "Only commuter";
 		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("commuter", "Allow trains:", commuterOptions, to_string(commuter)));
+		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("mintrainlength", "Min. train length:", minTrainLength, 0, 99999));
+		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("maxtrainlength", "Max. train length:", maxTrainLength, 0, 99999));
 		automodeContent.AddChildTag(tracksDiv);
 		formContent.AddChildTag(automodeContent);
 
@@ -2135,6 +2141,8 @@ namespace webserver
 		string name = GetStringMapEntry(arguments, "name");
 		delay_t delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay"));
 		Street::commuterType_t commuter = static_cast<Street::commuterType_t>(GetIntegerMapEntry(arguments, "commuter", Street::CommuterTypeBoth));
+		length_t mintrainlength = static_cast<length_t>(GetIntegerMapEntry(arguments, "mintrainlength", 0));
+		length_t maxtrainlength = static_cast<length_t>(GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible"));
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
@@ -2167,7 +2175,27 @@ namespace webserver
 		}
 
 		string result;
-		if (!manager.StreetSave(streetID, name, delay, commuter, relations, visible, posx, posy, posz, automode, fromTrack, fromDirection, toTrack, toDirection, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver, result))
+		if (!manager.StreetSave(streetID,
+			name,
+			delay,
+			commuter,
+			mintrainlength,
+			maxtrainlength,
+			relations,
+			visible,
+			posx,
+			posy,
+			posz,
+			automode,
+			fromTrack,
+			fromDirection,
+			toTrack,
+			toDirection,
+			feedbackIdReduced,
+			feedbackIdCreep,
+			feedbackIdStop,
+			feedbackIdOver,
+			result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
