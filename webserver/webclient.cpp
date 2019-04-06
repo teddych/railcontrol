@@ -1312,6 +1312,7 @@ namespace webserver
 		string name("New Loco");
 		function_t nrOfFunctions = 0;
 		bool commuter = false;
+		length_t length = 0;
 		locoSpeed_t maxSpeed = MaxSpeed;
 		locoSpeed_t travelSpeed = DefaultTravelSpeed;
 		locoSpeed_t reducedSpeed = DefaultReducedSpeed;
@@ -1326,6 +1327,7 @@ namespace webserver
 			name = loco->name;
 			nrOfFunctions = loco->GetNrOfFunctions();
 			commuter = loco->GetCommuter();
+			length = loco->GetLength();
 			maxSpeed = loco->GetMaxSpeed();
 			travelSpeed = loco->GetTravelSpeed();
 			reducedSpeed = loco->GetReducedSpeed();
@@ -1361,6 +1363,7 @@ namespace webserver
 		basicContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Train length:", length, 0, 99999));
 		formContent.AddChildTag(basicContent);
 
 		HtmlTag automodeContent("div");
@@ -1388,6 +1391,7 @@ namespace webserver
 		const protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		const address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
 		const function_t nrOfFunctions = GetIntegerMapEntry(arguments, "function", 0);
+		const length_t length = GetIntegerMapEntry(arguments, "length", 0);
 		const bool commuter = GetBoolMapEntry(arguments, "commuter", false);
 		const locoSpeed_t maxSpeed = GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
 		locoSpeed_t travelSpeed = GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
@@ -1407,7 +1411,19 @@ namespace webserver
 		}
 		string result;
 
-		if (!manager.LocoSave(locoID, name, controlId, protocol, address, nrOfFunctions, commuter, maxSpeed, travelSpeed, reducedSpeed, creepSpeed, result))
+		if (!manager.LocoSave(locoID,
+			name,
+			controlId,
+			protocol,
+			address,
+			nrOfFunctions,
+			length,
+			commuter,
+			maxSpeed,
+			travelSpeed,
+			reducedSpeed,
+			creepSpeed,
+			result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;

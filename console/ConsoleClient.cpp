@@ -1067,7 +1067,7 @@ namespace console
 		address_t address = ReadNumber(s, i);
 		function_t functions = ReadNumber(s, i);
 		string result;
-		if (!manager.LocoSave(LocoNone, name, control, protocol, address, functions, false, MaxSpeed, DefaultTravelSpeed, DefaultReducedSpeed, DefaultCreepSpeed, result))
+		if (!manager.LocoSave(LocoNone, name, control, protocol, address, functions, 0, false, MaxSpeed, DefaultTravelSpeed, DefaultReducedSpeed, DefaultCreepSpeed, result))
 		{
 			SendAndPrompt(result);
 			return;

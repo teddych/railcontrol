@@ -102,6 +102,7 @@ namespace datamodel
 				const protocol_t protocol,
 				const address_t address,
 				const function_t nr,
+				const length_t length,
 				const bool commuter,
 				const locoSpeed_t maxSpeed,
 				const locoSpeed_t travelSpeed,
@@ -112,6 +113,7 @@ namespace datamodel
 				protocol(protocol),
 				address(address),
 				manager(manager),
+				length(length),
 				commuter(commuter),
 				maxSpeed(maxSpeed),
 				travelSpeed(travelSpeed),
@@ -176,6 +178,8 @@ namespace datamodel
 			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->toTrackID != TrackNone || this->streetID != StreetNone; }
 
 			bool GetCommuter() const { return commuter; }
+			length_t GetLength() const { return length; }
+			void SetLength(const length_t length) {  this->length = length; }
 			locoSpeed_t GetMaxSpeed() const { return maxSpeed; }
 			locoSpeed_t GetTravelSpeed() const { return travelSpeed; }
 			locoSpeed_t GetReducedSpeed() const { return reducedSpeed; }
@@ -207,6 +211,7 @@ namespace datamodel
 
 			Manager* manager;
 
+			length_t length;
 			bool commuter;
 			locoSpeed_t maxSpeed;
 			locoSpeed_t travelSpeed;

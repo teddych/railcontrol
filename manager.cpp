@@ -579,6 +579,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 	const protocol_t protocol,
 	const address_t address,
 	const function_t nrOfFunctions,
+	const length_t length,
 	const bool commuter,
 	const locoSpeed_t maxSpeed,
 	const locoSpeed_t travelSpeed,
@@ -600,6 +601,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 		loco->protocol = protocol;
 		loco->address = address;
 		loco->SetNrOfFunctions(nrOfFunctions);
+		loco->SetLength(length);
 		loco->SetCommuter(commuter);
 		loco->SetMaxSpeed(maxSpeed);
 		loco->SetTravelSpeed(travelSpeed);
@@ -620,7 +622,19 @@ bool Manager::LocoSave(const locoID_t locoID,
 			}
 		}
 		++newLocoID;
-		loco = new Loco(this, newLocoID, name, controlID, protocol, address, nrOfFunctions, commuter, maxSpeed, travelSpeed, reducedSpeed, creepSpeed);
+		loco = new Loco(this,
+			newLocoID,
+			name,
+			controlID,
+			protocol,
+			address,
+			nrOfFunctions,
+			length,
+			commuter,
+			maxSpeed,
+			travelSpeed,
+			reducedSpeed,
+			creepSpeed);
 		if (loco == nullptr)
 		{
 			result.assign("Unable to allocate memory for loco");

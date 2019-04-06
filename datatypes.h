@@ -13,6 +13,7 @@ typedef objectID_t locoID_t;
 typedef unsigned short address_t;
 typedef unsigned short locoSpeed_t;
 typedef unsigned char function_t;
+typedef unsigned int length_t;
 
 // layoutItem
 typedef unsigned char layoutItemSize_t;

@@ -66,6 +66,7 @@ class Manager {
 			const protocol_t protocol,
 			const address_t address,
 			const function_t nrOfFunctions,
+			const length_t length,
 			const bool commuter,
 			const locoSpeed_t maxSpeed,
 			const locoSpeed_t travelSpeed,
