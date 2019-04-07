@@ -12,7 +12,7 @@ LIBS= \
 	rm485.so \
 	virtual.so
 
-%.so: %.cpp *.h ../*.h ../datamodel/*.h
+%.so: %.cpp *.h ../*.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
 all: $(LIBS)
