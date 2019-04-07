@@ -1531,8 +1531,8 @@ namespace webserver
 					continue;
 				}
 				feedbackPin_t pin = feedback.second->pin - 1;
-				layoutPosition_t x = pin % 16;
-				layoutPosition_t y = pin / 16;
+				layoutPosition_t x = pin & 0x0F; // => % 16;
+				layoutPosition_t y = pin >> 4;   // => / 16;
 				if (x >= 8)
 				{
 					++x;
