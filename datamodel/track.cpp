@@ -174,14 +174,13 @@ namespace datamodel
 				break;
 
 			case Track::SelectStreetMinTrackLength:
-				// FIXME
+				std::sort(validStreets.begin(), validStreets.end(), Street::CompareShortest);
 				break;
 
 			case Track::SelectStreetLongestUnused:
 				// FIXME
 				break;
 
-		//std::sort(validStreets.begin(), validStreets.end(), Street::CompareRoundRobin);
 			case Track::SelectStreetDoNotCare:
 			default:
 				// do nothing
