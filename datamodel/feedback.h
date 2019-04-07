@@ -52,7 +52,7 @@ namespace datamodel
 			void SetTrack(const trackID_t trackID) { this->trackID = trackID; }
 			trackID_t GetTrack() const { return trackID; }
 
-			// make privete
+			// FIXME: make privete
 			controlID_t controlID;
 			feedbackPin_t pin;
 
