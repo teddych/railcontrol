@@ -74,10 +74,12 @@ namespace datamodel
 			void SetMinTrainLength(const length_t length) { this->minTrainLength = length; }
 			length_t GetMaxTrainLength() const { return maxTrainLength; }
 			void SetMaxTrainLength(const length_t length) { this->maxTrainLength = length; }
+			time_t GetLastUsed() const { return lastUsed; }
 
 			trackID_t DestinationTrack() const { return toTrack; };
 
 			static bool CompareShortest(const Street* s1, const Street* s2) { return s1->GetMinTrainLength() < s2->GetMinTrainLength(); }
+			static bool CompareLastUsed(const Street* s1, const Street* s2) { return s1->GetLastUsed() < s2->GetLastUsed(); }
 
 		private:
 			bool ReleaseInternal(const locoID_t locoID);
@@ -86,6 +88,8 @@ namespace datamodel
 			commuterType_t commuter;
 			length_t minTrainLength;
 			length_t maxTrainLength;
+			time_t lastUsed;
+			unsigned int counter;
 
 		public:
 			// FIXME: make private

@@ -38,6 +38,8 @@ namespace datamodel
 	 	commuter(commuter),
 		minTrainLength(minTrainLength),
 		maxTrainLength(maxTrainLength),
+		lastUsed(0),
+		counter(0),
 	 	automode(automode),
 		fromTrack(fromTrack),
 		fromDirection(fromDirection),
@@ -81,6 +83,8 @@ namespace datamodel
 			<< ";commuter=" << static_cast<int>(commuter)
 			<< ";mintrainlength=" << static_cast<int>(minTrainLength)
 			<< ";maxtrainlength=" << static_cast<int>(maxTrainLength)
+			<< ";lastused=" << lastUsed
+			<< ";counter=" << counter
 			<< ";automode=" << static_cast<int>(automode)
 			<< ";fromTrack=" << static_cast<int>(fromTrack)
 			<< ";fromDirection=" << static_cast<int>(fromDirection)
@@ -110,6 +114,8 @@ namespace datamodel
 		commuter = static_cast<commuterType_t>(GetIntegerMapEntry(arguments, "commuter", CommuterTypeBoth));
 		minTrainLength = static_cast<length_t>(GetIntegerMapEntry(arguments, "mintrainlength", 0));
 		maxTrainLength = static_cast<length_t>(GetIntegerMapEntry(arguments, "maxtrainlength", 0));
+		lastUsed = GetIntegerMapEntry(arguments, "lastused", 0);
+		counter = GetIntegerMapEntry(arguments, "counter", 0);
 		automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
 		fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
@@ -178,6 +184,8 @@ namespace datamodel
 			ret &= relation->Execute();
 			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
 		}
+		lastUsed = time(nullptr);
+		++counter;
 		return ret;
 	}
 

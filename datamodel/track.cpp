@@ -178,7 +178,7 @@ namespace datamodel
 				break;
 
 			case Track::SelectStreetLongestUnused:
-				// FIXME
+				std::sort(validStreets.begin(), validStreets.end(), Street::CompareLastUsed);
 				break;
 
 			case Track::SelectStreetDoNotCare:
