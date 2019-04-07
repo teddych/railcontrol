@@ -13,19 +13,18 @@ namespace datamodel
 	class Switch : public Accessory
 	{
 		public:
-			// FIXME: const
-			Switch(switchID_t switchID,
-				std::string name,
-				layoutPosition_t x,
-				layoutPosition_t y,
-				layoutPosition_t z,
-				layoutRotation_t rotation,
-				controlID_t controlID,
-				protocol_t protocol,
-				address_t address,
-				switchType_t type,
-				switchDuration_t timeout,
-				bool inverted)
+			Switch(const switchID_t switchID,
+				const std::string& name,
+				const layoutPosition_t x,
+				const layoutPosition_t y,
+				const layoutPosition_t z,
+				const layoutRotation_t rotation,
+				const controlID_t controlID,
+				const protocol_t protocol,
+				const address_t address,
+				const switchType_t type,
+				const switchDuration_t timeout,
+				const bool inverted)
 			:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, timeout, inverted)
 			{
 			}
