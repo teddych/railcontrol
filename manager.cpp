@@ -860,9 +860,9 @@ void Manager::AccessoryState(const controlType_t controlType, Accessory* accesso
 
 	accessory->SetState(state);
 
-	this->AccessoryState(controlType, accessory->objectID, state, accessory->IsInverted(), true);
+	this->AccessoryState(controlType, accessory->objectID, state, accessory->GetInverted(), true);
 
-	delayedCall->Accessory(controlType, accessory->objectID, state, accessory->IsInverted(), accessory->GetDuration());
+	delayedCall->Accessory(controlType, accessory->objectID, state, accessory->GetInverted(), accessory->GetDuration());
 }
 
 void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
@@ -950,7 +950,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 		accessory->address = address;
 		accessory->SetType(type);
 		accessory->SetDuration(duration);
-		accessory->Inverted(inverted);
+		accessory->SetInverted(inverted);
 	}
 	else
 	{
@@ -1550,9 +1550,9 @@ void Manager::SwitchState(const controlType_t controlType, Switch* mySwitch, con
 
 	mySwitch->SetState(state);
 
-	this->SwitchState(controlType, mySwitch->objectID, state, mySwitch->IsInverted(), true);
+	this->SwitchState(controlType, mySwitch->objectID, state, mySwitch->GetInverted(), true);
 
-	delayedCall->Switch(controlType, mySwitch->objectID, state, mySwitch->IsInverted(), mySwitch->GetDuration());
+	delayedCall->Switch(controlType, mySwitch->objectID, state, mySwitch->GetInverted(), mySwitch->GetDuration());
 }
 
 void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)
@@ -1639,7 +1639,7 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 		mySwitch->address = address;
 		mySwitch->SetType(type);
 		mySwitch->SetDuration(duration);
-		mySwitch->Inverted(inverted);
+		mySwitch->SetInverted(inverted);
 	}
 	else
 	{

@@ -55,8 +55,8 @@ namespace datamodel
 			void SetDuration(accessoryDuration_t duration) { this->duration = duration; }
 			accessoryType_t GetDuration() const { return duration; }
 
-			virtual void Inverted(const bool inverted) { this->inverted = inverted; }
-			virtual bool IsInverted() const { return inverted; }
+			void SetInverted(const bool inverted) { this->inverted = inverted; }
+			bool GetInverted() const { return inverted; }
 
 			time_t GetLastUsed() const { return lastUsed; }
 

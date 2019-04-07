@@ -1618,7 +1618,7 @@ namespace webserver
 			posx = accessory->posX;
 			posy = accessory->posY;
 			posz = accessory->posZ;
-			inverted = accessory->IsInverted();
+			inverted = accessory->GetInverted();
 		}
 
 		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
@@ -1804,7 +1804,7 @@ namespace webserver
 			rotation = mySwitch->rotation;
 			type = mySwitch->GetType();
 			duration = mySwitch->GetDuration();
-			inverted = mySwitch->IsInverted();
+			inverted = mySwitch->GetInverted();
 		}
 
 		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
