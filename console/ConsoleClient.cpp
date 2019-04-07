@@ -1267,7 +1267,7 @@ namespace console
 			std::map<streetID_t,datamodel::Street*> streets = manager.StreetList();
 			stringstream status;
 			for (auto street : streets) {
-				status << street.first << " " << street.second->name << "\n";
+				status << street.first << " " << street.second->Name() << "\n";
 			}
 			status << "Total number of streets: " << streets.size();
 			SendAndPrompt(status.str());
@@ -1285,36 +1285,39 @@ namespace console
 		stringstream status;
 		status
 			<< "Street ID " << streetID
-			<< "\nName:     " << street->name
+			<< "\nName:     " << street->Name()
 			<< "\nStart:    ";
-		if (street->fromTrack == TrackNone)
+		trackID_t fromTrackID = street->GetFromTrack();
+		if (fromTrackID == TrackNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.GetTrackName(street->fromTrack) << " (" << street->fromTrack << ") " << (street->fromDirection ? ">" : "<");
+			status << manager.GetTrackName(fromTrackID) << " (" << fromTrackID << ") " << (street->GetFromDirection() ? ">" : "<");
 		}
 		status << "\nEnd:      ";
-		if (street->toTrack == TrackNone)
+		trackID_t toTrackID = street->GetToTrack();
+		if (toTrackID == TrackNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.GetTrackName(street->toTrack) << " (" << street->toTrack << ") " << (street->toDirection ? ">" : "<");
+			status << manager.GetTrackName(toTrackID) << " (" << toTrackID << ") " << (street->GetToDirection() ? ">" : "<");
 		}
 		string stateText;
 		text::Converters::lockStatus(street->GetLockState(), stateText);
 		status << "\nStatus:   " << stateText;
 		status << "\nLoco:     ";
-		if (street->GetLoco() == LocoNone)
+		locoID_t locoID = street->GetLoco();
+		if (locoID == LocoNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.GetLocoName(street->GetLoco()) << " (" << street->GetLoco() << ")";
+			status << manager.GetLocoName(locoID) << " (" << locoID << ")";
 		}
 		SendAndPrompt(status.str());
 	}

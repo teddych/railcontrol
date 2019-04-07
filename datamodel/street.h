@@ -75,8 +75,24 @@ namespace datamodel
 			length_t GetMaxTrainLength() const { return maxTrainLength; }
 			void SetMaxTrainLength(const length_t length) { this->maxTrainLength = length; }
 			time_t GetLastUsed() const { return lastUsed; }
-
-			trackID_t DestinationTrack() const { return toTrack; };
+			void SetAutomode(const automode_t automode) { this->automode = automode; }
+			automode_t GetAutomode() const { return automode; }
+			void SetFromTrack(const trackID_t fromTrack) { this->fromTrack = fromTrack; }
+			trackID_t GetFromTrack() const { return fromTrack; }
+			void SetFromDirection(const direction_t fromDirection) { this->fromDirection = fromDirection; }
+			direction_t GetFromDirection() const { return fromDirection; }
+			void SetToTrack(const trackID_t toTrack) { this->toTrack = toTrack; }
+			trackID_t GetToTrack() const { return toTrack; };
+			void SetToDirection(const direction_t toDirection) { this->toDirection = toDirection; }
+			direction_t GetToDirection() const { return toDirection; }
+			void SetFeedbackIdReduced(const feedbackID_t feedbackIdReduced) { this->feedbackIdReduced = feedbackIdReduced; }
+			feedbackID_t GetFeedbackIdReduced() const { return feedbackIdReduced; }
+			void SetFeedbackIdCreep(const feedbackID_t feedbackIdCreep) { this->feedbackIdCreep = feedbackIdCreep; }
+			feedbackID_t GetFeedbackIdCreep() const { return feedbackIdCreep; }
+			void SetFeedbackIdStop(const feedbackID_t feedbackIdStop) { this->feedbackIdStop = feedbackIdStop; }
+			feedbackID_t GetFeedbackIdStop() const { return feedbackIdStop; }
+			void SetFeedbackIdOver(const feedbackID_t feedbackIdOver) { this->feedbackIdOver = feedbackIdOver; }
+			feedbackID_t GetFeedbackIdOver() const { return feedbackIdOver; }
 
 			static bool CompareShortest(const Street* s1, const Street* s2) { return s1->GetMinTrainLength() < s2->GetMinTrainLength(); }
 			static bool CompareLastUsed(const Street* s1, const Street* s2) { return s1->GetLastUsed() < s2->GetLastUsed(); }
@@ -88,11 +104,6 @@ namespace datamodel
 			commuterType_t commuter;
 			length_t minTrainLength;
 			length_t maxTrainLength;
-			time_t lastUsed;
-			unsigned int counter;
-
-		public:
-			// FIXME: make private
 			automode_t automode;
 			trackID_t fromTrack;
 			direction_t fromDirection;
@@ -103,10 +114,11 @@ namespace datamodel
 			feedbackID_t feedbackIdStop;
 			feedbackID_t feedbackIdOver;
 
-		private:
 			Manager* manager;
 			std::vector<datamodel::Relation*> relations;
 			std::mutex updateMutex;
+			time_t lastUsed;
+			unsigned int counter;
 	};
 
 } // namespace datamodel

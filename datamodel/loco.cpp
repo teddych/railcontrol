@@ -269,16 +269,16 @@ namespace datamodel
 		}
 
 		fromTrackID = toTrackID;
-		toTrackID = usedStreet->DestinationTrack();
+		toTrackID = usedStreet->GetToTrack();
 		streetID = usedStreet->objectID;
-		feedbackIdReduced = usedStreet->feedbackIdReduced;
-		feedbackIdCreep = usedStreet->feedbackIdCreep;
-		feedbackIdStop = usedStreet->feedbackIdStop;
-		feedbackIdOver = usedStreet->feedbackIdOver;
+		feedbackIdReduced = usedStreet->GetFeedbackIdReduced();
+		feedbackIdCreep = usedStreet->GetFeedbackIdCreep();
+		feedbackIdStop = usedStreet->GetFeedbackIdStop();
+		feedbackIdOver = usedStreet->GetFeedbackIdOver();
 		Track* newToTrack = manager->GetTrack(toTrackID);
-		direction_t newLocoDirection = static_cast<direction_t>(direction != (oldToTrack->GetLocoDirection() != usedStreet->fromDirection));
+		direction_t newLocoDirection = static_cast<direction_t>(direction != (oldToTrack->GetLocoDirection() != usedStreet->GetFromDirection()));
 		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
-		newToTrack->SetLocoDirection(static_cast<direction_t>(!usedStreet->toDirection));
+		newToTrack->SetLocoDirection(static_cast<direction_t>(!usedStreet->GetToDirection()));
 		logger->Info("Heading to {0} via {1}", newToTrack->Name(), usedStreet->Name());
 
 		// start loco
@@ -312,7 +312,7 @@ namespace datamodel
 				return;
 			}
 
-			fromTrackID = oldStreet->DestinationTrack();
+			fromTrackID = oldStreet->GetToTrack();
 			manager->LocoDestinationReached(locoID, streetID, fromTrackID);
 			oldStreet->Release(locoID);
 			fromTrack->Release(locoID);

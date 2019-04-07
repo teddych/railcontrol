@@ -1844,7 +1844,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	{
 		// update existing street
 		// remove street from old track
-		Track* track = GetTrack(street->fromTrack);
+		Track* track = GetTrack(street->GetFromTrack());
 		if (track != nullptr)
 		{
 			track->RemoveStreet(street);
@@ -1863,15 +1863,15 @@ bool Manager::StreetSave(const streetID_t streetID,
 		street->posX = posX;
 		street->posY = posY;
 		street->posZ = posZ;
-		street->automode = automode;
-		street->fromTrack = fromTrack;
-		street->fromDirection = fromDirection;
-		street->toTrack = toTrack;
-		street->toDirection = toDirection;
-		street->feedbackIdReduced = feedbackIdReduced;
-		street->feedbackIdCreep = feedbackIdCreep;
-		street->feedbackIdStop = feedbackIdStop;
-		street->feedbackIdOver = feedbackIdOver;
+		street->SetAutomode(automode);
+		street->SetFromTrack(fromTrack);
+		street->SetFromDirection(fromDirection);
+		street->SetToTrack(toTrack);
+		street->SetToDirection(toDirection);
+		street->SetFeedbackIdReduced(feedbackIdReduced);
+		street->SetFeedbackIdCreep(feedbackIdCreep);
+		street->SetFeedbackIdStop(feedbackIdStop);
+		street->SetFeedbackIdOver(feedbackIdOver);
 	}
 	else
 	{

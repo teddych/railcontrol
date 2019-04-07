@@ -38,8 +38,6 @@ namespace datamodel
 	 	commuter(commuter),
 		minTrainLength(minTrainLength),
 		maxTrainLength(maxTrainLength),
-		lastUsed(0),
-		counter(0),
 	 	automode(automode),
 		fromTrack(fromTrack),
 		fromDirection(fromDirection),
@@ -50,7 +48,9 @@ namespace datamodel
 		feedbackIdStop(feedbackIdStop),
 		feedbackIdOver(feedbackIdOver),
 		manager(manager),
-		relations(relations)
+		relations(relations),
+		lastUsed(0),
+		counter(0)
 	{
 		Track* track = manager->GetTrack(fromTrack);
 		if (track == nullptr)

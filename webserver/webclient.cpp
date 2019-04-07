@@ -2032,15 +2032,15 @@ namespace webserver
 			posx = street->posX;
 			posy = street->posY;
 			posz = street->posZ;
-			automode = street->automode;
-			fromTrack = street->fromTrack;
-			fromDirection = street->fromDirection;
-			toTrack = street->toTrack;
-			toDirection = street->toDirection;
-			feedbackIdReduced = street->feedbackIdReduced;
-			feedbackIdCreep = street->feedbackIdCreep;
-			feedbackIdStop = street->feedbackIdStop;
-			feedbackIdOver = street->feedbackIdOver;
+			automode = street->GetAutomode();
+			fromTrack = street->GetFromTrack();
+			fromDirection = street->GetFromDirection();
+			toTrack = street->GetToTrack();
+			toDirection = street->GetToDirection();
+			feedbackIdReduced = street->GetFeedbackIdReduced();
+			feedbackIdCreep = street->GetFeedbackIdCreep();
+			feedbackIdStop = street->GetFeedbackIdStop();
+			feedbackIdOver = street->GetFeedbackIdOver();
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit street &quot;" + name + "&quot;"));
