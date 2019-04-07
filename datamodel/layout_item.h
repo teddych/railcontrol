@@ -51,6 +51,7 @@ namespace datamodel
 			virtual std::string Rotation() const { return Rotation(rotation); }
 			static std::string Rotation(layoutRotation_t rotation);
 			
+			// FIXME: make private
 			visible_t visible;
 			layoutPosition_t posX;
 			layoutPosition_t posY;

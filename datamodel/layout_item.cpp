@@ -118,24 +118,18 @@ namespace datamodel
 		switch (rotation)
 		{
 			case Rotation90:
-				rotationText = "90";
-				break;
+				return "90";
 
 			case Rotation180:
-				rotationText = "180";
-				break;
+				return "180";
 
 			case Rotation270:
-				rotationText = "270";
-				break;
+				return "270";
 
 			case Rotation0:
 			default:
-				rotationText = "0";
-				break;
+				return "0";
 		}
-		return rotationText;
 	}
-
 } // namespace datamodel
 
