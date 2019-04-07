@@ -1803,7 +1803,7 @@ namespace webserver
 			posz = mySwitch->posZ;
 			rotation = mySwitch->rotation;
 			type = mySwitch->GetType();
-			duration = mySwitch->duration;
+			duration = mySwitch->GetDuration();
 			inverted = mySwitch->IsInverted();
 		}
 

@@ -1393,19 +1393,8 @@ namespace console
 			<< "\nZ:        " << static_cast<int>(mySwitch->posZ)
 			<< "\nRotation: " << datamodel::LayoutItem::Rotation(mySwitch->rotation);
 		string state;
-		text::Converters::switchStatus(static_cast<switchState_t>(mySwitch->state), state);
+		text::Converters::switchStatus(static_cast<switchState_t>(mySwitch->GetState()), state);
 		status << "\nState:    " << state;
-		/*
-		status << "\nLoco:     ";
-		if (mySwitch->getLoco() == LOCO_NONE)
-		{
-			status << "-";
-		}
-		else
-		{
-			status << manager.getLocoName(mySwitch->getLoco()) << " (" << mySwitch->getLoco() << ")";
-		}
-		*/
 		SendAndPrompt(status.str());
 	}
 

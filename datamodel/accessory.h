@@ -31,7 +31,9 @@ namespace datamodel
 				type(type),
 				state(AccessoryStateOff),
 				duration(duration),
-				inverted(inverted)
+				inverted(inverted),
+				lastUsed(0),
+				counter(0)
 			{
 			}
 
@@ -44,26 +46,36 @@ namespace datamodel
 
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
-			virtual std::string LayoutType() const override { return "accessory"; };
+			virtual std::string LayoutType() const override { return "accessory"; }
+
+			void SetType(accessoryType_t type) { this->state = type; }
+			accessoryType_t GetType() const { return type; }
+			void SetState(accessoryState_t state) { this->state = state; lastUsed = time(nullptr); ++counter; }
+			accessoryState_t GetState() const { return state; }
+			void SetDuration(accessoryDuration_t duration) { this->duration = duration; }
+			accessoryType_t GetDuration() const { return duration; }
 
 			virtual void Inverted(const bool inverted) { this->inverted = inverted; }
 			virtual bool IsInverted() const { return inverted; }
 
-			accessoryState_t GetState() const { return state; }
+			time_t GetLastUsed() const { return lastUsed; }
 
 			// FIXME: make this private
 			controlID_t controlID;
 			protocol_t protocol;
 			address_t address;
-			accessoryType_t type;
-			accessoryState_t state;
-			accessoryDuration_t duration; // duration in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
 
 		protected:
 			std::string SerializeWithoutType() const;
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 
+			accessoryType_t type;
+			accessoryState_t state;
+			accessoryDuration_t duration; // duration in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
 			bool inverted;
+
+			time_t lastUsed;
+			unsigned int counter;
 	};
 } // namespace datamodel
 

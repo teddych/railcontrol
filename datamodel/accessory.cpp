@@ -27,7 +27,9 @@ namespace datamodel
 			<< ";type=" << static_cast<int>(type)
 			<< ";state=" << static_cast<int>(state)
 			<< ";duration=" << static_cast<int>(duration)
-			<< ";inverted=" << static_cast<int>(inverted);
+			<< ";inverted=" << static_cast<int>(inverted)
+			<< ";lastused=" << lastUsed
+			<< ";counter=" << counter;
 		return ss.str();
 	}
 
@@ -59,6 +61,8 @@ namespace datamodel
 		duration = GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryDuration); // FIXME: remove in later versions, is only here for conversion
 		duration = GetIntegerMapEntry(arguments, "duration", DefaultAccessoryDuration);
 		inverted = GetBoolMapEntry(arguments, "inverted");
+		lastUsed = GetIntegerMapEntry(arguments, "lastused", 0);
+		counter = GetIntegerMapEntry(arguments, "counter", 0);
 		return true;
 	}
 } // namespace datamodel

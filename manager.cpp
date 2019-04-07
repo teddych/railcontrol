@@ -858,11 +858,11 @@ void Manager::AccessoryState(const controlType_t controlType, Accessory* accesso
 		return;
 	}
 
-	accessory->state = state;
+	accessory->SetState(state);
 
 	this->AccessoryState(controlType, accessory->objectID, state, accessory->IsInverted(), true);
 
-	delayedCall->Accessory(controlType, accessory->objectID, state, accessory->IsInverted(), accessory->duration);
+	delayedCall->Accessory(controlType, accessory->objectID, state, accessory->IsInverted(), accessory->GetDuration());
 }
 
 void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
@@ -948,8 +948,8 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 		accessory->controlID = controlID;
 		accessory->protocol = protocol;
 		accessory->address = address;
-		accessory->type = type;
-		accessory->duration = duration;
+		accessory->SetType(type);
+		accessory->SetDuration(duration);
 		accessory->Inverted(inverted);
 	}
 	else
@@ -1548,11 +1548,11 @@ void Manager::SwitchState(const controlType_t controlType, Switch* mySwitch, con
 		return;
 	}
 
-	mySwitch->state = state;
+	mySwitch->SetState(state);
 
 	this->SwitchState(controlType, mySwitch->objectID, state, mySwitch->IsInverted(), true);
 
-	delayedCall->Switch(controlType, mySwitch->objectID, state, mySwitch->IsInverted(), mySwitch->duration);
+	delayedCall->Switch(controlType, mySwitch->objectID, state, mySwitch->IsInverted(), mySwitch->GetDuration());
 }
 
 void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)
@@ -1637,8 +1637,8 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 		mySwitch->controlID = controlID;
 		mySwitch->protocol = protocol;
 		mySwitch->address = address;
-		mySwitch->type = type;
-		mySwitch->duration = duration;
+		mySwitch->SetType(type);
+		mySwitch->SetDuration(duration);
 		mySwitch->Inverted(inverted);
 	}
 	else
