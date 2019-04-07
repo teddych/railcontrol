@@ -673,7 +673,7 @@ namespace webserver
 			Layer* layer = manager.GetLayer(layerID);
 			if (layer != nullptr)
 			{
-				name = layer->name;
+				name = layer->GetName();
 			}
 		}
 
@@ -728,8 +728,8 @@ namespace webserver
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete layer &quot;" + layer->Name() + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the layer &quot;" + layer->Name() + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent("Delete layer &quot;" + layer->GetName() + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the layer &quot;" + layer->GetName() + "&quot;?"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "layerdelete"))
 			.AddContent(HtmlTagInputHidden("layer", to_string(layerID))
@@ -762,7 +762,7 @@ namespace webserver
 			return;
 		}
 
-		string name = layer->Name();
+		string name = layer->GetName();
 
 		if (!manager.LayerDelete(layerID))
 		{
@@ -1090,7 +1090,7 @@ namespace webserver
 				map<string, switchID_t> switchOptions;
 				for (auto mySwitch : switches)
 				{
-					switchOptions[mySwitch.first] = mySwitch.second->objectID;
+					switchOptions[mySwitch.first] = mySwitch.second->GetID();
 				}
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, switchOptions, objectId).AddClass("select_relation_id"));
 
@@ -1107,7 +1107,7 @@ namespace webserver
 				map<string, accessoryID_t> accessoryOptions;
 				for (auto accessory : accessories)
 				{
-					accessoryOptions[accessory.first] = accessory.second->objectID;
+					accessoryOptions[accessory.first] = accessory.second->GetID();
 				}
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, accessoryOptions, objectId).AddClass("select_relation_id"));
 
@@ -1165,7 +1165,7 @@ namespace webserver
 			const trackID_t trackIDOfFeedback = feedback.second->GetTrack();
 			if (trackIDOfFeedback == TrackNone || trackIDOfFeedback == trackID)
 			{
-				feedbackOptions[feedback.first] = feedback.second->objectID;
+				feedbackOptions[feedback.first] = feedback.second->GetID();
 			}
 		}
 		content.AddChildTag(HtmlTagSelect("feedback_" + counterString, feedbackOptions, feedbackID));
@@ -1324,7 +1324,7 @@ namespace webserver
 			controlID = loco->GetControlID();
 			protocol = loco->GetProtocol();
 			address = loco->GetAddress();
-			name = loco->name;
+			name = loco->GetName();
 			nrOfFunctions = loco->GetNrOfFunctions();
 			commuter = loco->GetCommuter();
 			length = loco->GetLength();
@@ -1444,7 +1444,7 @@ namespace webserver
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(loco.first));
 			row.AddChildTag(HtmlTag("td").AddContent(to_string(loco.second->GetAddress())));
-			string locoIdString = to_string(loco.second->objectID);
+			string locoIdString = to_string(loco.second->GetID());
 			locoArgument["loco"] = locoIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "locoaskdelete_" + locoIdString, locoArgument)));
@@ -1478,8 +1478,9 @@ namespace webserver
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete loco &quot;" + loco->name + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the loco &quot;" + loco->name + "&quot;?"));
+		const string& locoName = loco->GetName();
+		content.AddContent(HtmlTag("h1").AddContent("Delete loco &quot;" + locoName + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the loco &quot;" + locoName + "&quot;?"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "locodelete"))
 			.AddContent(HtmlTagInputHidden("loco", to_string(locoID))
@@ -1499,7 +1500,7 @@ namespace webserver
 			return;
 		}
 
-		string name = loco->Name();
+		string name = loco->GetName();
 
 		if (!manager.LocoDelete(locoID))
 		{
@@ -1614,7 +1615,7 @@ namespace webserver
 			controlID = accessory->GetControlID();
 			protocol = accessory->GetProtocol();
 			address = accessory->GetAddress();
-			name = accessory->Name();
+			name = accessory->GetName();
 			posx = accessory->GetPosX();
 			posy = accessory->GetPosY();
 			posz = accessory->GetPosZ();
@@ -1703,7 +1704,7 @@ namespace webserver
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(accessory.first));
-			string accessoryIdString = to_string(accessory.second->objectID);
+			string accessoryIdString = to_string(accessory.second->GetID());
 			accessoryArgument["accessory"] = accessoryIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
@@ -1737,8 +1738,9 @@ namespace webserver
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete accessory &quot;" + accessory->name + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the accessory &quot;" + accessory->name + "&quot;?"));
+		const string& accessoryName = accessory->GetName();
+		content.AddContent(HtmlTag("h1").AddContent("Delete accessory &quot;" + accessoryName + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the accessory &quot;" + accessoryName + "&quot;?"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "accessorydelete"))
 			.AddContent(HtmlTagInputHidden("accessory", to_string(accessoryID))
@@ -1758,7 +1760,7 @@ namespace webserver
 			return;
 		}
 
-		string name = accessory->Name();
+		string name = accessory->GetName();
 
 		if (!manager.AccessoryDelete(accessoryID))
 		{
@@ -1797,7 +1799,7 @@ namespace webserver
 			controlID = mySwitch->GetControlID();
 			protocol = mySwitch->GetProtocol();
 			address = mySwitch->GetAddress();
-			name = mySwitch->Name();
+			name = mySwitch->GetName();
 			posx = mySwitch->GetPosX();
 			posy = mySwitch->GetPosY();
 			posz = mySwitch->GetPosZ();
@@ -1904,7 +1906,7 @@ namespace webserver
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(mySwitch.first));
-			string switchIdString = to_string(mySwitch.second->objectID);
+			string switchIdString = to_string(mySwitch.second->GetID());
 			switchArgument["switch"] = switchIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "switchedit_list_" + switchIdString, switchArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "switchaskdelete_" + switchIdString, switchArgument)));
@@ -1938,8 +1940,9 @@ namespace webserver
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete switch &quot;" + mySwitch->name + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the switch &quot;" + mySwitch->name + "&quot;?"));
+		const string& switchName = mySwitch->GetName();
+		content.AddContent(HtmlTag("h1").AddContent("Delete switch &quot;" + switchName + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the switch &quot;" + switchName + "&quot;?"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "switchdelete"))
 			.AddContent(HtmlTagInputHidden("switch", to_string(switchID))
@@ -1959,7 +1962,7 @@ namespace webserver
 			return;
 		}
 
-		string name = mySwitch->Name();
+		string name = mySwitch->GetName();
 
 		if (!manager.SwitchDelete(switchID))
 		{
@@ -2022,7 +2025,7 @@ namespace webserver
 		if (streetID > StreetNone)
 		{
 			const datamodel::Street* street = manager.GetStreet(streetID);
-			name = street->name;
+			name = street->GetName();
 			delay = street->GetDelay();
 			commuter = street->GetCommuter();
 			minTrainLength = street->GetMinTrainLength();
@@ -2221,8 +2224,9 @@ namespace webserver
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete street &quot;" + street->name + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the street &quot;" + street->name + "&quot;?"));
+		const string& streetName = street->GetName();
+		content.AddContent(HtmlTag("h1").AddContent("Delete street &quot;" + streetName + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the street &quot;" + streetName + "&quot;?"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "streetdelete"))
 			.AddContent(HtmlTagInputHidden("street", to_string(streetID))
@@ -2242,7 +2246,7 @@ namespace webserver
 			return;
 		}
 
-		string name = street->Name();
+		string name = street->GetName();
 
 		if (!manager.StreetDelete(streetID))
 		{
@@ -2264,7 +2268,7 @@ namespace webserver
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(street.first));
-			string streetIdString = to_string(street.second->objectID);
+			string streetIdString = to_string(street.second->GetID());
 			streetArgument["street"] = streetIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "streetedit_list_" + streetIdString, streetArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "streetaskdelete_" + streetIdString, streetArgument)));
@@ -2310,7 +2314,7 @@ namespace webserver
 		if (trackID > TrackNone)
 		{
 			const datamodel::Track* track = manager.GetTrack(trackID);
-			name = track->Name();
+			name = track->GetName();
 			posx = track->GetPosX();
 			posy = track->GetPosY();
 			posz = track->GetPosZ();
@@ -2452,8 +2456,9 @@ namespace webserver
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete track &quot;" + track->name + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the track &quot;" + track->name + "&quot;?"));
+		const string& trackName = track->GetName();
+		content.AddContent(HtmlTag("h1").AddContent("Delete track &quot;" + trackName + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the track &quot;" + trackName + "&quot;?"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "trackdelete"))
 			.AddContent(HtmlTagInputHidden("track", to_string(trackID))
@@ -2474,7 +2479,7 @@ namespace webserver
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(track.first));
-			string locoIdString = to_string(track.second->objectID);
+			string locoIdString = to_string(track.second->GetID());
 			trackArgument["track"] = locoIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "trackedit_list_" + locoIdString, trackArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "trackaskdelete_" + locoIdString, trackArgument)));
@@ -2496,7 +2501,7 @@ namespace webserver
 			return;
 		}
 
-		string name = track->Name();
+		string name = track->GetName();
 
 		if (!manager.TrackDelete(trackID))
 		{
@@ -2528,11 +2533,11 @@ namespace webserver
 		const datamodel::Track* track = manager.GetTrack(trackID);
 		if (track->IsInUse())
 		{
-			HtmlReplyErrorWithHeader("Track " + track->Name() + " is in use.");
+			HtmlReplyErrorWithHeader("Track " + track->GetName() + " is in use.");
 			return;
 		}
 		map<string,locoID_t> locos = manager.LocoListFree();
-		content.AddChildTag(HtmlTag("h1").AddContent("Select loco for track " + track->Name()));
+		content.AddChildTag(HtmlTag("h1").AddContent("Select loco for track " + track->GetName()));
 		content.AddChildTag(HtmlTagInputHidden("cmd", "tracksetloco"));
 		content.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
 		content.AddChildTag(HtmlTagSelectWithLabel("loco", "Loco:", locos));
@@ -2578,7 +2583,7 @@ namespace webserver
 		if (feedbackID > FeedbackNone)
 		{
 			const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
-			name = feedback->name;
+			name = feedback->GetName();
 			controlId = feedback->controlID;
 			pin = feedback->pin;
 			inverted = feedback->IsInverted();
@@ -2676,7 +2681,7 @@ namespace webserver
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(feedback.first));
-			string feedbackIdString = to_string(feedback.second->objectID);
+			string feedbackIdString = to_string(feedback.second->GetID());
 			feedbackArgument["feedback"] = feedbackIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "feedbackedit_list_" + feedbackIdString, feedbackArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "feedbackaskdelete_" + feedbackIdString, feedbackArgument)));
@@ -2706,8 +2711,9 @@ namespace webserver
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete feedback &quot;" + feedback->name + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the feedback &quot;" + feedback->name + "&quot;?"));
+		const string& feedbackName = feedback->GetName();
+		content.AddContent(HtmlTag("h1").AddContent("Delete feedback &quot;" + feedbackName + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the feedback &quot;" + feedbackName + "&quot;?"));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "feedbackdelete"))
 			.AddContent(HtmlTagInputHidden("feedback", to_string(feedbackID))
@@ -2727,7 +2733,7 @@ namespace webserver
 			return;
 		}
 
-		string name = feedback->Name();
+		string name = feedback->GetName();
 
 		if (!manager.FeedbackDelete(feedbackID))
 		{
@@ -2852,7 +2858,7 @@ namespace webserver
 		for (auto locoTMP : locos)
 		{
 			Loco* loco = locoTMP.second;
-			options[loco->name] = loco->objectID;
+			options[loco->GetName()] = loco->GetID();
 		}
 		return HtmlTagSelect("loco", options).AddAttribute("onchange", "loadLoco();");
 	}
@@ -2865,7 +2871,7 @@ namespace webserver
 		{
 			stringstream ss;
 			Loco* loco = manager.GetLoco(locoID);
-			ss << HtmlTag("p").AddContent(loco->name);
+			ss << HtmlTag("p").AddContent(loco->GetName());
 			unsigned int speed = loco->Speed();
 			map<string,string> buttonArguments;
 			buttonArguments["loco"] = to_string(locoID);

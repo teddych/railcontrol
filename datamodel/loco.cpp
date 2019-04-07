@@ -229,13 +229,13 @@ namespace datamodel
 			return;
 		}
 
-		if (oldToTrack->objectID != toTrackID)
+		if (oldToTrack->GetID() != toTrackID)
 		{
 			state = LocoStateError;
-			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, oldToTrack->Name(), manager->GetLocoName(oldToTrack->GetLoco()));
+			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, oldToTrack->GetName(), manager->GetLocoName(oldToTrack->GetLoco()));
 			return;
 		}
-		logger->Info("Looking for new destination starting from {0}.", oldToTrack->Name());
+		logger->Info("Looking for new destination starting from {0}.", oldToTrack->GetName());
 
 		vector<Street*> validStreets;
 		oldToTrack->GetValidStreets(this, validStreets);
@@ -270,7 +270,7 @@ namespace datamodel
 
 		fromTrackID = toTrackID;
 		toTrackID = usedStreet->GetToTrack();
-		streetID = usedStreet->objectID;
+		streetID = usedStreet->GetID();
 		feedbackIdReduced = usedStreet->GetFeedbackIdReduced();
 		feedbackIdCreep = usedStreet->GetFeedbackIdCreep();
 		feedbackIdStop = usedStreet->GetFeedbackIdStop();
@@ -279,7 +279,7 @@ namespace datamodel
 		direction_t newLocoDirection = static_cast<direction_t>(direction != (oldToTrack->GetLocoDirection() != usedStreet->GetFromDirection()));
 		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
 		newToTrack->SetLocoDirection(static_cast<direction_t>(!usedStreet->GetToDirection()));
-		logger->Info("Heading to {0} via {1}", newToTrack->Name(), usedStreet->Name());
+		logger->Info("Heading to {0} via {1}", newToTrack->GetName(), usedStreet->GetName());
 
 		// start loco
 		manager->TrackPublishState(toTrackID);

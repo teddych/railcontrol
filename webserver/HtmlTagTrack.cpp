@@ -20,9 +20,10 @@ namespace webserver
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
 		locoID_t locoID = track->GetLoco();
+		const string& trackName = track->GetName();
 
 		HtmlTag div1("div");
-		string trackIdString = to_string(track->objectID);
+		string trackIdString = to_string(track->GetID());
 		string id("t_" + trackIdString);
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
@@ -41,7 +42,6 @@ namespace webserver
 		else
 		{
 			const string& locoName = locoID == LocoNone ? "" : manager.GetLocoName(locoID);
-			const string& trackName = track->Name();
 			image = "<polygon class=\"track\" points=\"13,0 22,0 22," + layoutHeight + " 13," + layoutHeight + "\"/>";
 			image += "<text class=\"loconame\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";
 			image += "<text class=\"trackname\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + trackName + "</text>";
@@ -65,7 +65,7 @@ namespace webserver
 		}
 
 		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->GetRotation()) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
-		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(track->name));
+		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(trackName));
 		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);
 
@@ -75,7 +75,7 @@ namespace webserver
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(track->name))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(trackName))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent("Release track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_set").AddContent("Set loco").AddAttribute("onClick", "loadPopup('/?cmd=tracksetloco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_start_loco").AddContent("Start loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstartloco&track=" + trackIdString + "');"))

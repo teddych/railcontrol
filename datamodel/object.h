@@ -21,13 +21,14 @@ namespace datamodel
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
 
-			const std::string& Name() const { return name; }
+			void SetID(const objectID_t id) { this->objectID = id; }
+			objectID_t GetID() const { return objectID; }
+			void SetName(const std::string& name) { this->name = name; }
+			const std::string& GetName() const { return name; }
 
 		protected:
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 
-		// FIXME: make private
-		public:
 			objectID_t objectID;
 			std::string name;
 	};

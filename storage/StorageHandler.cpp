@@ -134,18 +134,6 @@ namespace storage {
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::Save(const Loco& loco)
-	{
-		if (instance == nullptr)
-		{
-			return;
-		}
-		string serialized = loco.Serialize();
-		StartTransactionInternal();
-		instance->SaveObject(ObjectTypeLoco, loco.objectID, loco.name, serialized);
-		CommitTransactionInternal();
-	}
-
 	void StorageHandler::AllLocos(map<locoID_t,datamodel::Loco*>& locos)
 	{
 		if (instance == nullptr)
@@ -156,7 +144,7 @@ namespace storage {
 		instance->ObjectsOfType(ObjectTypeLoco, objects);
 		for(auto object : objects) {
 			Loco* loco = new Loco(manager, object);
-			locos[loco->objectID] = loco;
+			locos[loco->GetID()] = loco;
 		}
 	}
 
@@ -171,18 +159,6 @@ namespace storage {
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::Save(const Accessory& accessory)
-	{
-		if (instance == nullptr)
-		{
-			return;
-		}
-		string serialized = accessory.Serialize();
-		StartTransactionInternal();
-		instance->SaveObject(ObjectTypeAccessory, accessory.objectID, accessory.name, serialized);
-		CommitTransactionInternal();
-	}
-
 	void StorageHandler::AllAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories)
 	{
 		if (instance == nullptr)
@@ -194,7 +170,7 @@ namespace storage {
 		for(auto object : objects)
 		{
 			Accessory* accessory = new Accessory(object);
-			accessories[accessory->objectID] = accessory;
+			accessories[accessory->GetID()] = accessory;
 		}
 	}
 
@@ -209,18 +185,6 @@ namespace storage {
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::Save(const Feedback& feedback)
-	{
-		if (instance == nullptr)
-		{
-			return;
-		}
-		string serialized = feedback.Serialize();
-		StartTransactionInternal();
-		instance->SaveObject(ObjectTypeFeedback, feedback.objectID, feedback.name, serialized);
-		CommitTransactionInternal();
-	}
-
 	void StorageHandler::AllFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks)
 	{
 		if (instance == nullptr)
@@ -232,7 +196,7 @@ namespace storage {
 		for(auto object : objects)
 		{
 			Feedback* feedback = new Feedback(manager, object);
-			feedbacks[feedback->objectID] = feedback;
+			feedbacks[feedback->GetID()] = feedback;
 		}
 	}
 
@@ -247,18 +211,6 @@ namespace storage {
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::Save(const Track& track)
-	{
-		if (instance == nullptr)
-		{
-			return;
-		}
-		string serialized = track.Serialize();
-		StartTransactionInternal();
-		instance->SaveObject(ObjectTypeTrack, track.objectID, track.name, serialized);
-		CommitTransactionInternal();
-	}
-
 	void StorageHandler::AllTracks(std::map<trackID_t,datamodel::Track*>& tracks)
 	{
 		if (instance == nullptr)
@@ -270,7 +222,7 @@ namespace storage {
 		for(auto object : objects)
 		{
 			Track* track = new Track(manager, object);
-			tracks[track->objectID] = track;
+			tracks[track->GetID()] = track;
 		}
 	}
 
@@ -285,18 +237,6 @@ namespace storage {
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::Save(const Switch& mySwitch)
-	{
-		if (instance == nullptr)
-		{
-			return;
-		}
-		string serialized = mySwitch.Serialize();
-		StartTransactionInternal();
-		instance->SaveObject(ObjectTypeSwitch, mySwitch.objectID, mySwitch.name, serialized);
-		CommitTransactionInternal();
-	}
-
 	void StorageHandler::AllSwitches(std::map<switchID_t,datamodel::Switch*>& switches)
 	{
 		if (instance == nullptr)
@@ -308,7 +248,7 @@ namespace storage {
 		for(auto object : objects)
 		{
 			Switch* mySwitch = new Switch(object);
-			switches[mySwitch->objectID] = mySwitch;
+			switches[mySwitch->GetID()] = mySwitch;
 		}
 	}
 
@@ -331,13 +271,14 @@ namespace storage {
 		}
 		string serialized = street.Serialize();
 		StartTransactionInternal();
-		instance->SaveObject(ObjectTypeStreet, street.objectID, street.name, serialized);
-		instance->DeleteRelationFrom(ObjectTypeStreet, street.objectID);
+		const streetID_t streetID = street.GetID();
+		instance->SaveObject(ObjectTypeStreet, streetID, street.GetName(), serialized);
+		instance->DeleteRelationFrom(ObjectTypeStreet, streetID);
 		const vector<datamodel::Relation*> relations = street.GetRelations();
 		for (auto relation : relations)
 		{
 			string serializedRelation = relation->Serialize();
-			instance->SaveRelation(ObjectTypeStreet, street.objectID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
+			instance->SaveRelation(ObjectTypeStreet, streetID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
 		}
 		CommitTransactionInternal();
 	}
@@ -350,17 +291,18 @@ namespace storage {
 		}
 		vector<string> objects;
 		instance->ObjectsOfType(ObjectTypeStreet, objects);
-		for(auto object : objects) {
+		for (auto object : objects) {
 			Street* street = new Street(manager, object);
 			vector<string> relationsString;
-			instance->RelationsFrom(ObjectTypeStreet, street->objectID, relationsString);
+			const streetID_t streetID = street->GetID();
+			instance->RelationsFrom(ObjectTypeStreet, streetID, relationsString);
 			vector<Relation*> relations;
 			for (auto relationString : relationsString)
 			{
 				relations.push_back(new Relation(manager, relationString));
 			}
 			street->AssignRelations(relations);
-			streets[street->objectID] = street;
+			streets[streetID] = street;
 		}
 	}
 
@@ -375,18 +317,6 @@ namespace storage {
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::Save(const datamodel::Layer& layer)
-	{
-		if (instance == nullptr)
-		{
-			return;
-		}
-		string serialized = layer.Serialize();
-		StartTransactionInternal();
-		instance->SaveObject(ObjectTypeLayer, layer.objectID, layer.name, serialized);
-		CommitTransactionInternal();
-	}
-
 	void StorageHandler::AllLayers(std::map<layerID_t,datamodel::Layer*>& layers)
 	{
 		if (instance == nullptr)
@@ -397,7 +327,7 @@ namespace storage {
 		instance->ObjectsOfType(ObjectTypeLayer, objects);
 		for(auto object : objects) {
 			Layer* layer = new Layer(object);
-			layers[layer->objectID] = layer;
+			layers[layer->GetID()] = layer;
 		}
 	}
 

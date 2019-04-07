@@ -644,7 +644,7 @@ namespace console
 			stringstream status;
 			for (auto accessory : accessories)
 			{
-				status << accessory.first << " " << accessory.second->name << "\n";
+				status << accessory.first << " " << accessory.second->GetName() << "\n";
 			}
 			status << "Total number of accessorys: " << accessories.size();
 			SendAndPrompt(status.str());
@@ -660,7 +660,7 @@ namespace console
 		}
 
 		stringstream status;
-		status << accessoryID << " " << accessory->Name() << " (" << static_cast<int>(accessory->GetPosX()) << "/" << static_cast<int>(accessory->GetPosY()) << "/" << static_cast<int>(accessory->GetPosZ()) << ")";
+		status << accessoryID << " " << accessory->GetName() << " (" << static_cast<int>(accessory->GetPosX()) << "/" << static_cast<int>(accessory->GetPosY()) << "/" << static_cast<int>(accessory->GetPosZ()) << ")";
 		SendAndPrompt(status.str());
 	}
 
@@ -720,7 +720,7 @@ namespace console
 			stringstream status;
 			for (auto track : tracks)
 			{
-				status << track.first << " " << track.second->name << "\n";
+				status << track.first << " " << track.second->GetName() << "\n";
 			}
 			status << "Total number of tracks: " << tracks.size();
 			SendAndPrompt(status.str());
@@ -738,7 +738,7 @@ namespace console
 		stringstream status;
 		status
 			<< "Track ID: " << trackID
-			<< "\nName:     " << track->name
+			<< "\nName:     " << track->GetName()
 			<< "\nX:        " << static_cast<int>(track->GetPosX())
 			<< "\nY:        " << static_cast<int>(track->GetPosY())
 			<< "\nZ:        " << static_cast<int>(track->GetPosZ());
@@ -876,7 +876,7 @@ namespace console
 			stringstream status;
 			for (auto feedback : feedbacks)
 			{
-				status << feedback.first << " " << feedback.second->name << "\n";
+				status << feedback.first << " " << feedback.second->GetName() << "\n";
 			}
 			status << "Total number of feedbacks: " << feedbacks.size();
 			SendAndPrompt(status.str());
@@ -895,7 +895,7 @@ namespace console
 		stringstream status;
 		status
 			<< "FeedbackID" << feedbackID
-			<< "\nName:     " << feedback->name
+			<< "\nName:     " << feedback->GetName()
 			<< "\nControl:  " << manager.GetControlName(feedback->controlID)
 			<< "\nPin:      " << feedback->pin
 			<< "\nX:        " << static_cast<int>(feedback->GetPosX())
@@ -996,7 +996,7 @@ namespace console
 			std::map<locoID_t,datamodel::Loco*> locos = manager.locoList();
 			stringstream status;
 			for (auto loco : locos) {
-				status << loco.first << " " << loco.second->name << "\n";
+				status << loco.first << " " << loco.second->GetName() << "\n";
 			}
 			status << "Total number of locos: " << locos.size();
 			SendAndPrompt(status.str());
@@ -1014,7 +1014,7 @@ namespace console
 		stringstream status;
 		status
 			<< "Loco ID:  " << locoID
-			<< "\nName:     " << loco->name
+			<< "\nName:     " << loco->GetName()
 			<< "\nSpeed:    " << manager.LocoSpeed(locoID)
 			<< "\nControl:  " << manager.GetControlName(loco->GetControlID())
 			<< "\nProtocol: " << protocolSymbols[loco->GetProtocol()]
@@ -1267,7 +1267,7 @@ namespace console
 			std::map<streetID_t,datamodel::Street*> streets = manager.StreetList();
 			stringstream status;
 			for (auto street : streets) {
-				status << street.first << " " << street.second->Name() << "\n";
+				status << street.first << " " << street.second->GetName() << "\n";
 			}
 			status << "Total number of streets: " << streets.size();
 			SendAndPrompt(status.str());
@@ -1285,7 +1285,7 @@ namespace console
 		stringstream status;
 		status
 			<< "Street ID " << streetID
-			<< "\nName:     " << street->Name()
+			<< "\nName:     " << street->GetName()
 			<< "\nStart:    ";
 		trackID_t fromTrackID = street->GetFromTrack();
 		if (fromTrackID == TrackNone)
@@ -1372,7 +1372,7 @@ namespace console
 			std::map<switchID_t,datamodel::Switch*> switches = manager.SwitchList();
 			stringstream status;
 			for (auto mySwitch : switches) {
-				status << mySwitch.first << " " << mySwitch.second->name << "\n";
+				status << mySwitch.first << " " << mySwitch.second->GetName() << "\n";
 			}
 			status << "Total number of switches: " << switches.size();
 			SendAndPrompt(status.str());
@@ -1390,7 +1390,7 @@ namespace console
 		stringstream status;
 		status
 			<< "Switch ID " << switchID
-			<< "\nName:     " << mySwitch->name
+			<< "\nName:     " << mySwitch->GetName()
 			<< "\nX:        " << static_cast<int>(mySwitch->GetPosX())
 			<< "\nY:        " << static_cast<int>(mySwitch->GetPosY())
 			<< "\nZ:        " << static_cast<int>(mySwitch->GetPosZ())

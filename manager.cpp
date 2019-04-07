@@ -77,7 +77,7 @@ Manager::Manager(Config& config)
 	storage->AllLayers(layers);
 	for (auto layer : layers)
 	{
-		logger->Info("Loaded layer {0}: {1}", layer.second->objectID, layer.second->Name());
+		logger->Info("Loaded layer {0}: {1}", layer.second->GetID(), layer.second->GetName());
 	}
 	if (layers.count(LayerUndeletable) != 1)
 	{
@@ -92,37 +92,37 @@ Manager::Manager(Config& config)
 	storage->AllLocos(locos);
 	for (auto loco : locos)
 	{
-		logger->Info("Loaded loco {0}: {1}", loco.second->objectID, loco.second->name);
+		logger->Info("Loaded loco {0}: {1}", loco.second->GetID(), loco.second->GetName());
 	}
 
 	storage->AllAccessories(accessories);
 	for (auto accessory : accessories)
 	{
-		logger->Info("Loaded accessory {0}: {1}", accessory.second->objectID, accessory.second->name);
+		logger->Info("Loaded accessory {0}: {1}", accessory.second->GetID(), accessory.second->GetName());
 	}
 
 	storage->AllFeedbacks(feedbacks);
 	for (auto feedback : feedbacks)
 	{
-		logger->Info("Loaded feedback {0}: {1}", feedback.second->objectID, feedback.second->name);
+		logger->Info("Loaded feedback {0}: {1}", feedback.second->GetID(), feedback.second->GetName());
 	}
 
 	storage->AllTracks(tracks);
 	for (auto track : tracks)
 	{
-		logger->Info("Loaded track {0}: {1}", track.second->objectID, track.second->name);
+		logger->Info("Loaded track {0}: {1}", track.second->GetID(), track.second->GetName());
 	}
 
 	storage->AllSwitches(switches);
 	for (auto mySwitch : switches)
 	{
-		logger->Info("Loaded switch {0}: {1}", mySwitch.second->objectID, mySwitch.second->name);
+		logger->Info("Loaded switch {0}: {1}", mySwitch.second->GetID(), mySwitch.second->GetName());
 	}
 
 	storage->AllStreets(streets);
 	for (auto street : streets)
 	{
-		logger->Info("Loaded street {0}: {1}", street.second->objectID, street.second->name);
+		logger->Info("Loaded street {0}: {1}", street.second->GetID(), street.second->GetName());
 	}
 
 	debounceThread = std::thread(&Manager::DebounceWorker, this, this);
@@ -545,7 +545,7 @@ const std::string& Manager::GetLocoName(const locoID_t locoID) const
 	{
 		return unknownLoco;
 	}
-	return locos.at(locoID)->Name();
+	return locos.at(locoID)->GetName();
 }
 
 const map<string,locoID_t> Manager::LocoListFree() const
@@ -556,7 +556,7 @@ const map<string,locoID_t> Manager::LocoListFree() const
 	{
 		if (loco.second->GetTrack() == TrackNone)
 		{
-			out[loco.second->Name()] = loco.second->objectID;
+			out[loco.second->GetName()] = loco.second->GetID();
 		}
 	}
 	return out;
@@ -568,7 +568,7 @@ const map<string,datamodel::Loco*> Manager::LocoListByName() const
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	for(auto loco : locos)
 	{
-		out[loco.second->Name()] = loco.second;
+		out[loco.second->GetName()] = loco.second;
 	}
 	return out;
 }
@@ -596,7 +596,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 	if (loco != nullptr)
 	{
 		// update existing loco
-		loco->name = name;
+		loco->SetName(name);
 		loco->SetControlID(controlID);
 		loco->SetProtocol(protocol);
 		loco->SetAddress(address);
@@ -649,10 +649,11 @@ bool Manager::LocoSave(const locoID_t locoID,
 	{
 		storage->Save(*loco);
 	}
+	const locoID_t locoIdSave = loco->GetID();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoSettings(loco->objectID, name);
+		control.second->LocoSettings(locoIdSave, name);
 	}
 	return true;
 }
@@ -680,10 +681,11 @@ bool Manager::LocoDelete(const locoID_t locoID)
 	{
 		storage->DeleteLoco(locoID);
 	}
+	const string& name = loco->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoDelete(loco->objectID, loco->Name());
+		control.second->LocoDelete(locoID, name);
 	}
 	delete loco;
 	return true;
@@ -737,12 +739,13 @@ bool Manager::LocoSpeed(const controlType_t controlType, Loco* loco, const locoS
 	{
 		s = MaxSpeed;
 	}
-	logger->Info("{0} ({1}) speed is now {2}", loco->name, loco->objectID, s);
+	const locoID_t locoID = loco->GetID();
+	logger->Info("{0} ({1}) speed is now {2}", loco->GetName(), locoID, s);
 	loco->Speed(s);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoSpeed(controlType, loco->objectID, s);
+		control.second->LocoSpeed(controlType, locoID, s);
 	}
 	return true;
 }
@@ -780,11 +783,12 @@ void Manager::LocoDirection(const controlType_t controlType, Loco* loco, const d
 		return;
 	}
 	loco->SetDirection(direction);
-	logger->Info("{0} ({1}) direction is now {2}", loco->name, loco->objectID, direction);
+	const locoID_t locoID = loco->GetID();
+	logger->Info("{0} ({1}) direction is now {2}", loco->GetName(), locoID, direction);
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoDirection(controlType, loco->objectID, direction);
+		control.second->LocoDirection(controlType, locoID, direction);
 	}
 }
 
@@ -812,11 +816,12 @@ void Manager::LocoFunction(const controlType_t controlType, Loco* loco, const fu
 	}
 
 	loco->SetFunction(function, on);
-	logger->Info("{0} ({1}) function {2} is now {3}", loco->name, loco->objectID, function, (on ? "on" : "off"));
+	const locoID_t locoID = loco->GetID();
+	logger->Info("{0} ({1}) function {2} is now {3}", loco->GetName(), locoID, function, (on ? "on" : "off"));
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoFunction(controlType, loco->objectID, function, on);
+		control.second->LocoFunction(controlType, locoID, function, on);
 	}
 }
 
@@ -858,15 +863,17 @@ void Manager::AccessoryState(const controlType_t controlType, Accessory* accesso
 
 	if (force == false && accessory->IsInUse())
 	{
-		logger->Warning("{0} is locked", accessory->Name());
+		logger->Warning("{0} is locked", accessory->GetName());
 		return;
 	}
 
 	accessory->SetState(state);
+	const accessoryID_t accessoryID = accessory->GetID();
+	const bool inverted = accessory->GetInverted();
 
-	this->AccessoryState(controlType, accessory->objectID, state, accessory->GetInverted(), true);
+	this->AccessoryState(controlType, accessoryID, state, inverted, true);
 
-	delayedCall->Accessory(controlType, accessory->objectID, state, accessory->GetInverted(), accessory->GetDuration());
+	delayedCall->Accessory(controlType, accessoryID, state, inverted, accessory->GetDuration());
 }
 
 void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
@@ -911,7 +918,7 @@ const std::string& Manager::GetAccessoryName(const accessoryID_t accessoryID) co
 	{
 		return unknownAccessory;
 	}
-	return accessories.at(accessoryID)->name;
+	return accessories.at(accessoryID)->GetName();
 }
 
 bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
@@ -945,7 +952,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	if (accessory != nullptr)
 	{
 		// update existing accessory
-		accessory->name = name;
+		accessory->SetName(name);
 		accessory->SetPosX(posX);
 		accessory->SetPosY(posY);
 		accessory->SetPosZ(posZ);
@@ -985,10 +992,11 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	{
 		storage->Save(*accessory);
 	}
+	accessoryID_t accessoryIdSave = accessory->GetID();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->AccessorySettings(accessory->objectID, name);
+		control.second->AccessorySettings(accessoryIdSave, name);
 	}
 	return true;
 }
@@ -999,7 +1007,7 @@ const map<string,datamodel::Accessory*> Manager::AccessoryListByName() const
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
 	for(auto accessory : accessories)
 	{
-		out[accessory.second->name] = accessory.second;
+		out[accessory.second->GetName()] = accessory.second;
 	}
 	return out;
 }
@@ -1025,7 +1033,7 @@ bool Manager::AccessoryDelete(const accessoryID_t accessoryID)
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->AccessoryDelete(accessoryID, accessory->Name());
+		control.second->AccessoryDelete(accessoryID, accessory->GetName());
 	}
 	delete accessory;
 	return true;
@@ -1105,12 +1113,14 @@ void Manager::FeedbackState(Feedback* feedback)
 		return;
 	}
 	feedbackState_t state = feedback->GetState();
-	logger->Info("Feedback {0} is now {1}", feedback->Name(), (state ? "on" : "off"));
+	logger->Info("Feedback {0} is now {1}", feedback->GetName(), (state ? "on" : "off"));
 	{
+		const string& name = feedback->GetName();
+		const feedbackID_t feedbackID = feedback->GetID();
 		std::lock_guard<std::mutex> Guard(controlMutex);
 		for (auto control : controls)
 		{
-			control.second->FeedbackState(feedback->Name(), feedback->objectID, state);
+			control.second->FeedbackState(name, feedbackID, state);
 		}
 	}
 }
@@ -1151,7 +1161,7 @@ const std::string& Manager::GetFeedbackName(const feedbackID_t feedbackID) const
 	{
 		return unknownFeedback;
 	}
-	return feedbacks.at(feedbackID)->Name();
+	return feedbacks.at(feedbackID)->GetName();
 }
 
 bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
@@ -1183,7 +1193,7 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 	Feedback* feedback = GetFeedback(feedbackID);
 	if (feedback != nullptr)
 	{
-		feedback->name = name;
+		feedback->SetName(name);
 		feedback->SetVisible(visible);
 		feedback->SetPosX(posX);
 		feedback->SetPosY(posY);
@@ -1220,12 +1230,13 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 	{
 		storage->Save(*feedback);
 	}
+	feedbackID_t feedbackIdSave = feedback->GetID();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->FeedbackSettings(feedback->objectID, name);
+		control.second->FeedbackSettings(feedbackIdSave, name);
 	}
-	return feedback->objectID;
+	return feedbackIdSave;
 }
 
 const map<string,datamodel::Feedback*> Manager::FeedbackListByName() const
@@ -1234,7 +1245,7 @@ const map<string,datamodel::Feedback*> Manager::FeedbackListByName() const
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	for(auto feedback : feedbacks)
 	{
-		out[feedback.second->name] = feedback.second;
+		out[feedback.second->GetName()] = feedback.second;
 	}
 	return out;
 }
@@ -1255,7 +1266,7 @@ const map<string,feedbackID_t> Manager::FeedbacksOfTrack(const trackID_t trackID
 		{
 			continue;
 		}
-		out[feedback->Name()] = feedbackID;
+		out[feedback->GetName()] = feedbackID;
 	}
 	return out;
 }
@@ -1283,10 +1294,11 @@ bool Manager::FeedbackDelete(const feedbackID_t feedbackID)
 	{
 		storage->DeleteFeedback(feedbackID);
 	}
+	const string& name = feedback->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->FeedbackDelete(feedback->objectID, feedback->Name());
+		control.second->FeedbackDelete(feedbackID, name);
 	}
 	delete feedback;
 	return true;
@@ -1312,7 +1324,7 @@ const std::string& Manager::GetTrackName(const trackID_t trackID) const
 	{
 		return unknownTrack;
 	}
-	return tracks.at(trackID)->name;
+	return tracks.at(trackID)->GetName();
 }
 
 const map<string,datamodel::Track*> Manager::TrackListByName() const
@@ -1321,7 +1333,7 @@ const map<string,datamodel::Track*> Manager::TrackListByName() const
 	std::lock_guard<std::mutex> Guard(trackMutex);
 	for(auto track : tracks)
 	{
-		out[track.second->name] = track.second;
+		out[track.second->GetName()] = track.second;
 	}
 	return out;
 }
@@ -1332,7 +1344,7 @@ const map<string,trackID_t> Manager::TrackListIdByName() const
 	std::lock_guard<std::mutex> Guard(trackMutex);
 	for(auto track : tracks)
 	{
-		out[track.second->name] = track.second->objectID;
+		out[track.second->GetName()] = track.second->GetID();
 	}
 	return out;
 }
@@ -1450,7 +1462,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	if (track != nullptr)
 	{
 		// update existing track
-		track->name = name;
+		track->SetName(name);
 		track->SetHeight(height);
 		track->SetRotation(rotation);
 		track->SetPosX(posX);
@@ -1490,11 +1502,12 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 		storage->Save(*track);
 	}
 	std::lock_guard<std::mutex> Guard(controlMutex);
+	trackID_t trackIdSave = track->GetID();
 	for (auto control : controls)
 	{
-		control.second->TrackSettings(track->objectID, name);
+		control.second->TrackSettings(trackIdSave, name);
 	}
-	return track->objectID;
+	return trackIdSave;
 }
 
 bool Manager::TrackDelete(const trackID_t trackID)
@@ -1520,10 +1533,11 @@ bool Manager::TrackDelete(const trackID_t trackID)
 	{
 		storage->DeleteTrack(trackID);
 	}
+	const string& name = track->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackDelete(track->objectID, track->Name());
+		control.second->TrackDelete(trackID, name);
 	}
 	delete track;
 	return true;
@@ -1548,15 +1562,17 @@ void Manager::SwitchState(const controlType_t controlType, Switch* mySwitch, con
 
 	if (force == false && mySwitch->IsInUse())
 	{
-		logger->Warning("{0} is locked", mySwitch->Name());
+		logger->Warning("{0} is locked", mySwitch->GetName());
 		return;
 	}
 
 	mySwitch->SetState(state);
+	switchID_t switchID = mySwitch->GetID();
+	bool inverted = mySwitch->GetInverted();
 
-	this->SwitchState(controlType, mySwitch->objectID, state, mySwitch->GetInverted(), true);
+	this->SwitchState(controlType, switchID, state, inverted, true);
 
-	delayedCall->Switch(controlType, mySwitch->objectID, state, mySwitch->GetInverted(), mySwitch->GetDuration());
+	delayedCall->Switch(controlType, switchID, state, inverted, mySwitch->GetDuration());
 }
 
 void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)
@@ -1600,7 +1616,7 @@ const std::string& Manager::GetSwitchName(const switchID_t switchID) const
 	{
 		return unknownSwitch;
 	}
-	return switches.at(switchID)->name;
+	return switches.at(switchID)->GetName();
 }
 
 bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
@@ -1633,7 +1649,7 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 	if (mySwitch != nullptr)
 	{
 		// update existing switch
-		mySwitch->name = name;
+		mySwitch->SetName(name);
 		mySwitch->SetPosX(posX);
 		mySwitch->SetPosY(posY);
 		mySwitch->SetPosZ(posZ);
@@ -1674,10 +1690,11 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 	{
 		storage->Save(*mySwitch);
 	}
+	const switchID_t switchIdSave = mySwitch->GetID();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->SwitchSettings(mySwitch->objectID, name);
+		control.second->SwitchSettings(switchIdSave, name);
 	}
 	return true;
 }
@@ -1701,10 +1718,11 @@ bool Manager::SwitchDelete(const switchID_t switchID)
 		storage->DeleteSwitch(switchID);
 	}
 
+	const string& switchName = mySwitch->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->SwitchDelete(switchID, mySwitch->Name());
+		control.second->SwitchDelete(switchID, switchName);
 	}
 	delete mySwitch;
 	return true;
@@ -1716,7 +1734,7 @@ const map<string,datamodel::Switch*> Manager::SwitchListByName() const
 	std::lock_guard<std::mutex> Guard(switchMutex);
 	for(auto mySwitch : switches)
 	{
-		out[mySwitch.second->name] = mySwitch.second;
+		out[mySwitch.second->GetName()] = mySwitch.second;
 	}
 	return out;
 }
@@ -1789,7 +1807,7 @@ const string& Manager::GetStreetName(const streetID_t streetID) const
 	{
 		return unknownStreet;
 	}
-	return streets.at(streetID)->name;
+	return streets.at(streetID)->GetName();
 }
 
 bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
@@ -1853,7 +1871,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 				storage->Save(*track);
 			}
 		}
-		street->name = name;
+		street->SetName(name);
 		street->SetDelay(delay);
 		street->SetCommuter(commuter);
 		street->SetMinTrainLength(minTrainLength);
@@ -1935,7 +1953,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->StreetSettings(street->objectID, name);
+		control.second->StreetSettings(street->GetID(), name);
 	}
 	return true;
 }
@@ -1946,7 +1964,7 @@ const map<string,datamodel::Street*> Manager::StreetListByName() const
 	std::lock_guard<std::mutex> Guard(streetMutex);
 	for(auto street : streets)
 	{
-		out[street.second->name] = street.second;
+		out[street.second->GetName()] = street.second;
 	}
 	return out;
 }
@@ -1970,10 +1988,11 @@ bool Manager::StreetDelete(const streetID_t streetID)
 		storage->DeleteStreet(streetID);
 	}
 
+	const string& streetName = street->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->StreetDelete(streetID, street->Name());
+		control.second->StreetDelete(streetID, streetName);
 	}
 	delete street;
 	return true;
@@ -1995,7 +2014,7 @@ const map<string,layerID_t> Manager::LayerListByName() const
 	std::lock_guard<std::mutex> Guard(layerMutex);
 	for (auto layer : layers)
 	{
-		list[layer.second->Name()] = layer.first;
+		list[layer.second->GetName()] = layer.first;
 	}
 	return list;
 }
@@ -2021,7 +2040,7 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 	if (layer != nullptr)
 	{
 		// update existing layer
-		layer->name = name;
+		layer->SetName(name);
 	}
 	else
 	{
@@ -2052,10 +2071,11 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 	{
 		storage->Save(*layer);
 	}
+	const layerID_t layerIdSave = layer->GetID();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LayerSettings(layer->objectID, name);
+		control.second->LayerSettings(layerIdSave, name);
 	}
 	return true;
 }
@@ -2084,10 +2104,11 @@ bool Manager::LayerDelete(const layerID_t layerID)
 		storage->DeleteLayer(layerID);
 	}
 
+	const string& layerName = layer->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LayerDelete(layerID, layer->Name());
+		control.second->LayerDelete(layerID, layerName);
 	}
 	delete layer;
 	return true;
@@ -2132,7 +2153,7 @@ bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 		return false;
 	}
 
-	logger->Info("{0} ({1}) is now on track {2} ({3})", loco->name, loco->objectID, track->name, track->objectID);
+	logger->Info("{0} ({1}) is now on track {2} ({3})", loco->GetName(), loco->GetID(), track->GetName(), track->GetID());
 
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
@@ -2209,10 +2230,13 @@ bool Manager::TrackReleaseInternal(Track* track)
 	{
 		return false;
 	}
+	const string& trackName = track->GetName();
+	const trackID_t trackID = track->GetID();
+	const feedbackState_t trackState = track->FeedbackState();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackState(ControlTypeInternal, track->Name(), track->objectID, track->FeedbackState(), "");
+		control.second->TrackState(ControlTypeInternal, trackName, trackID, trackState, "");
 	}
 	return true;
 }
@@ -2249,10 +2273,14 @@ void Manager::TrackPublishState(const trackID_t trackID)
 void Manager::TrackPublishState(const datamodel::Track* track)
 {
 	Loco* loco = GetLoco(track->GetLoco());
+	const string& trackName = track->GetName();
+	const trackID_t trackID = track->GetID();
+	const feedbackState_t trackState = track->FeedbackState();
+	const string& locoName = loco == nullptr ? "" : loco->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackState(ControlTypeInternal, track->Name(), track->objectID, track->FeedbackState(), loco == nullptr ? "" : loco->Name());
+		control.second->TrackState(ControlTypeInternal, trackName, trackID, trackState, locoName);
 	}
 }
 
@@ -2378,7 +2406,7 @@ void Manager::StopAllLocosImmediately(const controlType_t controlType)
 {
 	for (auto loco : locos)
 	{
-		locoID_t locoId = loco.second->objectID;
+		locoID_t locoId = loco.second->GetID();
 		LocoSpeed(controlType, locoId, MinSpeed);
 	}
 }
@@ -2439,7 +2467,7 @@ bool Manager::CheckLayoutPositionFree(const layoutPosition_t posX, const layoutP
 			continue;
 		}
 		stringstream status;
-		status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by " << layout.second->LayoutType() << " \"" << layout.second->name << "\".";
+		status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by " << layout.second->LayoutType() << " \"" << layout.second->GetName() << "\".";
 		result.assign(status.str());
 		return false;
 	}

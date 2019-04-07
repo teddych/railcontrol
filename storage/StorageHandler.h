@@ -36,13 +36,19 @@ namespace storage
 			void AllLayers(std::map<layerID_t,datamodel::Layer*>& layers);
 			void DeleteLayer(layerID_t layerID);
 			void Save(const hardware::HardwareParams& hardwareParams);
-			void Save(const datamodel::Loco& loco);
-			void Save(const datamodel::Accessory& accessory);
-			void Save(const datamodel::Feedback& feedback);
-			void Save(const datamodel::Track& track);
-			void Save(const datamodel::Switch& mySwitch);
 			void Save(const datamodel::Street& street);
-			void Save(const datamodel::Layer& layer);
+			template<class T> void Save(const T& t)
+			{
+				if (instance == nullptr)
+				{
+					return;
+				}
+				const std::string serialized = t.Serialize();
+				StartTransactionInternal();
+				instance->SaveObject(ObjectTypeLoco, t.GetID(), t.GetName(), serialized);
+				CommitTransactionInternal();
+			}
+
 			template <class T> static void Save(StorageHandler* storageHandler, const T* t) { storageHandler->Save(*t); }
 			void SaveSetting(const std::string& key, const std::string& value);
 			std::string GetSetting(const std::string& key) ;
