@@ -21,9 +21,7 @@ namespace datamodel
 		stringstream ss;
 		ss << LayoutItem::Serialize()
 			<< ";" << LockableItem::Serialize()
-			<< ";controlID=" << static_cast<int>(controlID)
-			<< ";protocol=" << static_cast<int>(protocol)
-			<< ";address=" << static_cast<int>(address)
+			<< ";" << HardwareHandle::Serialize()
 			<< ";type=" << static_cast<int>(type)
 			<< ";state=" << static_cast<int>(state)
 			<< ";duration=" << static_cast<int>(duration)
@@ -50,12 +48,10 @@ namespace datamodel
 	{
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
+		HardwareHandle::Deserialize(arguments);
 		width = Width1;
 		height = Height1;
 		visible = VisibleYes;
-		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
-		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		address = GetIntegerMapEntry(arguments, "address");
 		type = GetIntegerMapEntry(arguments, "type");
 		state = GetIntegerMapEntry(arguments, "state");
 		duration = GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryDuration); // FIXME: remove in later versions, is only here for conversion

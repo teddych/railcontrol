@@ -528,9 +528,9 @@ Loco* Manager::GetLoco(const controlID_t controlID, const protocol_t protocol, c
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	for (auto loco : locos)
 	{
-		if (loco.second->controlID == controlID
-		&& loco.second->protocol == protocol
-		&& loco.second->address == address)
+		if (loco.second->GetControlID() == controlID
+			&& loco.second->GetProtocol() == protocol
+			&& loco.second->GetAddress() == address)
 		{
 			return loco.second;
 		}
@@ -597,9 +597,9 @@ bool Manager::LocoSave(const locoID_t locoID,
 	{
 		// update existing loco
 		loco->name = name;
-		loco->controlID = controlID;
-		loco->protocol = protocol;
-		loco->address = address;
+		loco->SetControlID(controlID);
+		loco->SetProtocol(protocol);
+		loco->SetAddress(address);
 		loco->SetNrOfFunctions(nrOfFunctions);
 		loco->SetLength(length);
 		loco->SetCommuter(commuter);
@@ -700,9 +700,13 @@ bool Manager::LocoProtocolAddress(const locoID_t locoID, controlID_t& controlID,
 		return false;
 	}
 	Loco* loco = locos.at(locoID);
-	controlID = loco->controlID;
-	protocol = loco->protocol;
-	address = loco->address;
+	if (loco == nullptr)
+	{
+		return false;
+	}
+	controlID = loco->GetControlID();
+	protocol = loco->GetProtocol();
+	address = loco->GetAddress();
 	return true;
 }
 
@@ -890,9 +894,9 @@ Accessory* Manager::GetAccessory(const controlID_t controlID, const protocol_t p
 	std::lock_guard<std::mutex> Guard(accessoryMutex);
 	for (auto accessory : accessories)
 	{
-		if (accessory.second->controlID == controlID
-			&& accessory.second->protocol == protocol
-			&& accessory.second->address == address)
+		if (accessory.second->GetControlID() == controlID
+			&& accessory.second->GetProtocol() == protocol
+			&& accessory.second->GetAddress() == address)
 		{
 			return accessory.second;
 		}
@@ -945,9 +949,9 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 		accessory->posX = posX;
 		accessory->posY = posY;
 		accessory->posZ = posZ;
-		accessory->controlID = controlID;
-		accessory->protocol = protocol;
-		accessory->address = address;
+		accessory->SetControlID(controlID);
+		accessory->SetProtocol(protocol);
+		accessory->SetAddress(address);
 		accessory->SetType(type);
 		accessory->SetDuration(duration);
 		accessory->SetInverted(inverted);
@@ -1048,9 +1052,9 @@ bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 		return false;
 	}
 	Accessory* accessory = accessories.at(accessoryID);
-	controlID = accessory->controlID;
-	protocol = accessory->protocol;
-	address = accessory->address;
+	controlID = accessory->GetControlID();
+	protocol = accessory->GetProtocol();
+	address = accessory->GetAddress();
 	return true;
 }
 
@@ -1580,9 +1584,9 @@ Switch* Manager::GetSwitch(const controlID_t controlID, const protocol_t protoco
 	std::lock_guard<std::mutex> Guard(switchMutex);
 	for (auto mySwitch : switches)
 	{
-		if (mySwitch.second->controlID == controlID
-			&& mySwitch.second->protocol == protocol
-			&& mySwitch.second->address == address)
+		if (mySwitch.second->GetControlID() == controlID
+			&& mySwitch.second->GetProtocol() == protocol
+			&& mySwitch.second->GetAddress() == address)
 		{
 			return mySwitch.second;
 		}
@@ -1634,9 +1638,9 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 		mySwitch->posY = posY;
 		mySwitch->posZ = posZ;
 		mySwitch->rotation = rotation;
-		mySwitch->controlID = controlID;
-		mySwitch->protocol = protocol;
-		mySwitch->address = address;
+		mySwitch->SetControlID(controlID);
+		mySwitch->SetProtocol(protocol);
+		mySwitch->SetAddress(address);
 		mySwitch->SetType(type);
 		mySwitch->SetDuration(duration);
 		mySwitch->SetInverted(inverted);
@@ -1727,9 +1731,9 @@ bool Manager::SwitchProtocolAddress(const switchID_t switchID, controlID_t& cont
 		return false;
 	}
 	Switch* mySwitch = switches.at(switchID);
-	controlID = mySwitch->controlID;
-	protocol = mySwitch->protocol;
-	address = mySwitch->address;
+	controlID = mySwitch->GetControlID();
+	protocol = mySwitch->GetProtocol();
+	address = mySwitch->GetAddress();
 	return true;
 }
 

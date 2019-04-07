@@ -6,6 +6,7 @@
 
 #include "datatypes.h"
 #include "Logger/Logger.h"
+#include "datamodel/HardwareHandle.h"
 #include "datamodel/object.h"
 #include "datamodel/street.h"
 #include "datamodel/track.h"
@@ -92,7 +93,7 @@ namespace datamodel
 			bool states[maxCount];
 	};
 
-	class Loco : public Object
+	class Loco : public Object, public HardwareHandle
 	{
 		public:
 			Loco(Manager* manager,
@@ -109,9 +110,7 @@ namespace datamodel
 				const locoSpeed_t reducedSpeed,
 				const locoSpeed_t creepSpeed)
 			:	Object(locoID, name),
-			 	controlID(controlID),
-				protocol(protocol),
-				address(address),
+			 	HardwareHandle(controlID, protocol, address),
 				manager(manager),
 				length(length),
 				commuter(commuter),
@@ -189,11 +188,6 @@ namespace datamodel
 			void SetTravelSpeed(locoSpeed_t speed) { travelSpeed = speed; }
 			void SetReducedSpeed(locoSpeed_t speed) { reducedSpeed = speed; }
 			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
-
-			// FIXME: make private:
-			controlID_t controlID;
-			protocol_t protocol;
-			address_t address;
 
 		private:
 			void AutoMode(Loco* loco);

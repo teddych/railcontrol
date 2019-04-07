@@ -3,13 +3,13 @@
 #include <string>
 
 #include "datatypes.h"
-#include "layout_item.h"
-#include "LockableItem.h"
-#include "serializable.h"
+#include "datamodel/HardwareHandle.h"
+#include "datamodel/layout_item.h"
+#include "datamodel/LockableItem.h"
 
 namespace datamodel
 {
-	class Accessory : public LayoutItem, public LockableItem
+	class Accessory : public LayoutItem, public LockableItem, public HardwareHandle
 	{
 		public:
 			Accessory(const accessoryID_t accessoryID,
@@ -25,9 +25,7 @@ namespace datamodel
 				const accessoryDuration_t duration,
 				const bool inverted)
 			:	LayoutItem(accessoryID, name, VisibleYes, x, y, z, Width1, Height1, rotation),
-				controlID(controlID),
-				protocol(protocol),
-				address(address),
+			 	HardwareHandle(controlID, protocol, address),
 				type(type),
 				state(AccessoryStateOff),
 				duration(duration),
@@ -59,11 +57,6 @@ namespace datamodel
 			bool GetInverted() const { return inverted; }
 
 			time_t GetLastUsed() const { return lastUsed; }
-
-			// FIXME: make this private
-			controlID_t controlID;
-			protocol_t protocol;
-			address_t address;
 
 		protected:
 			std::string SerializeWithoutType() const;

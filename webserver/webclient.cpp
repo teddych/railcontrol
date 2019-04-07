@@ -1030,7 +1030,7 @@ namespace webserver
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown loco"));
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagProtocolLoco(controlId, loco->protocol));
+		HtmlReplyWithHeader(HtmlTagProtocolLoco(controlId, loco->GetProtocol()));
 	}
 
 	HtmlTag WebClient::HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol)
@@ -1257,7 +1257,7 @@ namespace webserver
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown accessory"));
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, accessory->protocol));
+		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, accessory->GetProtocol()));
 	}
 
 	void WebClient::handleRelationAdd(const map<string, string>& arguments)
@@ -1292,7 +1292,7 @@ namespace webserver
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown switch"));
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch->protocol));
+		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch->GetProtocol()));
 	}
 
 	void WebClient::handleRelationObject(const map<string, string>& arguments)
@@ -1321,9 +1321,9 @@ namespace webserver
 		if (locoID > LocoNone)
 		{
 			const datamodel::Loco* loco = manager.GetLoco(locoID);
-			controlID = loco->controlID;
-			protocol = loco->protocol;
-			address = loco->address;
+			controlID = loco->GetControlID();
+			protocol = loco->GetProtocol();
+			address = loco->GetAddress();
 			name = loco->name;
 			nrOfFunctions = loco->GetNrOfFunctions();
 			commuter = loco->GetCommuter();
@@ -1443,7 +1443,7 @@ namespace webserver
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(loco.first));
-			row.AddChildTag(HtmlTag("td").AddContent(to_string(loco.second->address)));
+			row.AddChildTag(HtmlTag("td").AddContent(to_string(loco.second->GetAddress())));
 			string locoIdString = to_string(loco.second->objectID);
 			locoArgument["loco"] = locoIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
@@ -1611,9 +1611,9 @@ namespace webserver
 		if (accessoryID > AccessoryNone)
 		{
 			const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
-			controlID = accessory->controlID;
-			protocol = accessory->protocol;
-			address = accessory->address;
+			controlID = accessory->GetControlID();
+			protocol = accessory->GetProtocol();
+			address = accessory->GetAddress();
 			name = accessory->name;
 			posx = accessory->posX;
 			posy = accessory->posY;
@@ -1794,9 +1794,9 @@ namespace webserver
 		if (switchID > SwitchNone)
 		{
 			const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
-			controlID = mySwitch->controlID;
-			protocol = mySwitch->protocol;
-			address = mySwitch->address;
+			controlID = mySwitch->GetControlID();
+			protocol = mySwitch->GetProtocol();
+			address = mySwitch->GetAddress();
 			name = mySwitch->name;
 			posx = mySwitch->posX;
 			posy = mySwitch->posY;

@@ -33,7 +33,7 @@ namespace webserver
 			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->rotation) + "deg);\"><polygon points=\"22,26 22,35 13,35\" fill=\"black\" /><polygon points=\"22,26 35,13 35,22 22,35\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,26 13,35\" fill=\"gray\" class=\"straight\"/></svg>";
 		}
 		div1.AddChildTag(HtmlTag().AddContent(image));
-		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(mySwitch->name + " (addr=" + to_string(mySwitch->address) + ")"));
+		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(mySwitch->Name() + " (addr=" + to_string(mySwitch->GetAddress()) + ")"));
 		div1.AddAttribute("onclick", "return onClickSwitch(" + switchIdString + ");");
 		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);
@@ -43,7 +43,7 @@ namespace webserver
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(mySwitch->name))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(mySwitch->Name()))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Release").AddAttribute("onClick", "fireRequestAndForget('/?cmd=switchrelease&switch=" + switchIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=" + switchIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=switchaskdelete&switch=" + switchIdString + "');"))

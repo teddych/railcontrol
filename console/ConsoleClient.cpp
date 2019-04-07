@@ -1016,9 +1016,9 @@ namespace console
 			<< "Loco ID:  " << locoID
 			<< "\nName:     " << loco->name
 			<< "\nSpeed:    " << manager.LocoSpeed(locoID)
-			<< "\nControl:  " << manager.GetControlName(loco->controlID)
-			<< "\nProtocol: " << protocolSymbols[loco->protocol]
-			<< "\nAddress:  " << loco->address;
+			<< "\nControl:  " << manager.GetControlName(loco->GetControlID())
+			<< "\nProtocol: " << protocolSymbols[loco->GetProtocol()]
+			<< "\nAddress:  " << loco->GetAddress();
 		const char* const locoStateText = loco->GetStateText();
 		status << "\nStatus:   " << locoStateText;
 		status << "\nTrack:    ";

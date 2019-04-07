@@ -32,10 +32,9 @@ namespace datamodel
 	std::string Loco::Serialize() const
 	{
 		stringstream ss;
-		ss << "objectType=Loco;" << Object::Serialize()
-			<< ";controlID=" << static_cast<int>(controlID)
-			<< ";protocol=" << static_cast<int>(protocol)
-			<< ";address=" << static_cast<int>(address)
+		ss << "objectType=Loco"
+			<< ";" << Object::Serialize()
+			<< ";" << HardwareHandle::Serialize()
 			<< ";functions=" << functions.Serialize()
 			<< ";direction=" << (direction == DirectionRight ? "right" : "left")
 			<< ";trackID=" << static_cast<int>(toTrackID)
@@ -57,9 +56,7 @@ namespace datamodel
 		{
 			return false;
 		}
-		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
-		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		address = GetIntegerMapEntry(arguments, "address", AddressNone);
+		HardwareHandle::Deserialize(arguments);
 		toTrackID = GetIntegerMapEntry(arguments, "trackID", TrackNone);
 		functions.Deserialize(GetStringMapEntry(arguments, "functions", "0"));
 		direction = (GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
