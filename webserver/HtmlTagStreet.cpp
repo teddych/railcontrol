@@ -9,8 +9,8 @@ namespace webserver
 {
 	HtmlTagStreet::HtmlTagStreet(const datamodel::Street* street)
 	{
-		unsigned int layoutPosX = street->posX * EdgeLength;
-		unsigned int layoutPosY = street->posY * EdgeLength;
+		unsigned int layoutPosX = street->GetPosX() * EdgeLength;
+		unsigned int layoutPosY = street->GetPosY() * EdgeLength;
 
 		HtmlTag div1("div");
 		string streetIdString = to_string(street->objectID);

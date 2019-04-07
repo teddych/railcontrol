@@ -922,7 +922,7 @@ bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layo
 		return false;
 	}
 
-	return (accessory->posX == posX && accessory->posY == posY && accessory->posZ == posZ);
+	return accessory->HasPosition(posX, posY, posZ);
 }
 
 bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryDuration_t duration, const bool inverted, string& result)
@@ -946,9 +946,9 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	{
 		// update existing accessory
 		accessory->name = name;
-		accessory->posX = posX;
-		accessory->posY = posY;
-		accessory->posZ = posZ;
+		accessory->SetPosX(posX);
+		accessory->SetPosY(posY);
+		accessory->SetPosZ(posZ);
 		accessory->SetControlID(controlID);
 		accessory->SetProtocol(protocol);
 		accessory->SetAddress(address);
@@ -1162,12 +1162,12 @@ bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutP
 		return false;
 	}
 
-	if (feedback->visible == VisibleNo)
+	if (feedback->GetVisible() == VisibleNo)
 	{
 		return false;
 	}
 
-	return (feedback->posX == posX && feedback->posY == posY && feedback->posZ == posZ);
+	return feedback->HasPosition(posX, posY, posZ);
 }
 
 feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result)
@@ -1184,10 +1184,10 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 	if (feedback != nullptr)
 	{
 		feedback->name = name;
-		feedback->visible = visible;
-		feedback->posX = posX;
-		feedback->posY = posY;
-		feedback->posZ = posZ;
+		feedback->SetVisible(visible);
+		feedback->SetPosX(posX);
+		feedback->SetPosY(posY);
+		feedback->SetPosZ(posZ);
 		feedback->controlID = controlID;
 		feedback->pin = pin;
 	}
@@ -1360,8 +1360,8 @@ bool Manager::CheckTrackPosition(const trackID_t trackID, const layoutPosition_t
 	Track* track = GetTrack(trackID);
 	if (track != nullptr)
 	{
-		z2 = track->posZ;
-		ret = datamodel::LayoutItem::MapPosition(track->posX, track->posY, Width1, track->height, track->rotation, x2, y2, w2, h2);
+		z2 = track->GetPosZ();
+		ret = datamodel::LayoutItem::MapPosition(track->GetPosX(), track->GetPosY(), Width1, track->GetHeight(), track->GetRotation(), x2, y2, w2, h2);
 		if (ret == false)
 		{
 			result = "Unable to calculate position";
@@ -1451,11 +1451,11 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	{
 		// update existing track
 		track->name = name;
-		track->height = height;
-		track->rotation = rotation;
-		track->posX = posX;
-		track->posY = posY;
-		track->posZ = posZ;
+		track->SetHeight(height);
+		track->SetRotation(rotation);
+		track->SetPosX(posX);
+		track->SetPosY(posY);
+		track->SetPosZ(posZ);
 		track->SetType(type);
 		track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
 		track->SetSelectStreetApproach(selectStreetApproach);
@@ -1611,7 +1611,7 @@ bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPositio
 		return false;
 	}
 
-	return (mySwitch->posX == posX && mySwitch->posY == posY && mySwitch->posZ == posZ);
+	return mySwitch->HasPosition(posX, posY, posZ);
 }
 
 bool Manager::SwitchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t duration, const bool inverted, string& result)
@@ -1634,10 +1634,10 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 	{
 		// update existing switch
 		mySwitch->name = name;
-		mySwitch->posX = posX;
-		mySwitch->posY = posY;
-		mySwitch->posZ = posZ;
-		mySwitch->rotation = rotation;
+		mySwitch->SetPosX(posX);
+		mySwitch->SetPosY(posY);
+		mySwitch->SetPosZ(posZ);
+		mySwitch->SetRotation(rotation);
 		mySwitch->SetControlID(controlID);
 		mySwitch->SetProtocol(protocol);
 		mySwitch->SetAddress(address);
@@ -1800,12 +1800,12 @@ bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPositio
 		return false;
 	}
 
-	if (street->visible == VisibleNo)
+	if (street->GetVisible() == VisibleNo)
 	{
 		return false;
 	}
 
-	return (street->posX == posX && street->posY == posY && street->posZ == posZ);
+	return street->HasPosition(posX, posY, posZ);
 }
 
 bool Manager::StreetSave(const streetID_t streetID,
@@ -1859,10 +1859,10 @@ bool Manager::StreetSave(const streetID_t streetID,
 		street->SetMinTrainLength(minTrainLength);
 		street->SetMaxTrainLength(maxTrainLength);
 		street->AssignRelations(relations);
-		street->visible = visible;
-		street->posX = posX;
-		street->posY = posY;
-		street->posZ = posZ;
+		street->SetVisible(visible);
+		street->SetPosX(posX);
+		street->SetPosY(posY);
+		street->SetPosZ(posZ);
 		street->SetAutomode(automode);
 		street->SetFromTrack(fromTrack);
 		street->SetFromDirection(fromDirection);

@@ -11,8 +11,8 @@ namespace webserver
 	{
 		accessoryState_t state = accessory->GetState();
 
-		unsigned int layoutPosX = accessory->posX * EdgeLength;
-		unsigned int layoutPosY = accessory->posY * EdgeLength;
+		unsigned int layoutPosX = accessory->GetPosX() * EdgeLength;
+		unsigned int layoutPosY = accessory->GetPosY() * EdgeLength;
 
 		HtmlTag div1("div");
 		string accessoryIdString = to_string(accessory->objectID);

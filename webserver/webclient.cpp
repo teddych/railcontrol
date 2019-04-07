@@ -1546,7 +1546,7 @@ namespace webserver
 		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.AccessoryList();
 		for (auto accessory : accessories)
 		{
-			if (accessory.second->posZ != layer)
+			if (accessory.second->IsVisibleOnLayer(layer) == false)
 			{
 				continue;
 			}
@@ -1556,7 +1556,7 @@ namespace webserver
 		const map<switchID_t,datamodel::Switch*>& switches = manager.SwitchList();
 		for (auto mySwitch : switches)
 		{
-			if (mySwitch.second->posZ != layer)
+			if (mySwitch.second->IsVisibleOnLayer(layer) == false)
 			{
 				continue;
 			}
@@ -1566,7 +1566,7 @@ namespace webserver
 		const map<switchID_t,datamodel::Track*>& tracks = manager.TrackList();
 		for (auto track : tracks)
 		{
-			if (track.second->posZ != layer)
+			if (track.second->IsVisibleOnLayer(layer) == false)
 			{
 				continue;
 			}
@@ -1576,7 +1576,7 @@ namespace webserver
 		const map<streetID_t,datamodel::Street*>& streets = manager.StreetList();
 		for (auto street : streets)
 		{
-			if (street.second->posZ != layer || street.second->visible == VisibleNo)
+			if (street.second->IsVisibleOnLayer(layer) == false)
 			{
 				continue;
 			}
@@ -1586,7 +1586,7 @@ namespace webserver
 		const map<feedbackID_t,Feedback*>& feedbacks = manager.FeedbackList();
 		for (auto feedback : feedbacks)
 		{
-			if (feedback.second->posZ != layer || feedback.second->visible == VisibleNo)
+			if (feedback.second->IsVisibleOnLayer(layer) == false)
 			{
 				continue;
 			}
@@ -1614,10 +1614,10 @@ namespace webserver
 			controlID = accessory->GetControlID();
 			protocol = accessory->GetProtocol();
 			address = accessory->GetAddress();
-			name = accessory->name;
-			posx = accessory->posX;
-			posy = accessory->posY;
-			posz = accessory->posZ;
+			name = accessory->Name();
+			posx = accessory->GetPosX();
+			posy = accessory->GetPosY();
+			posz = accessory->GetPosZ();
 			inverted = accessory->GetInverted();
 		}
 
@@ -1797,11 +1797,11 @@ namespace webserver
 			controlID = mySwitch->GetControlID();
 			protocol = mySwitch->GetProtocol();
 			address = mySwitch->GetAddress();
-			name = mySwitch->name;
-			posx = mySwitch->posX;
-			posy = mySwitch->posY;
-			posz = mySwitch->posZ;
-			rotation = mySwitch->rotation;
+			name = mySwitch->Name();
+			posx = mySwitch->GetPosX();
+			posy = mySwitch->GetPosY();
+			posz = mySwitch->GetPosZ();
+			rotation = mySwitch->GetRotation();
 			type = mySwitch->GetType();
 			duration = mySwitch->GetDuration();
 			inverted = mySwitch->GetInverted();
@@ -1988,7 +1988,7 @@ namespace webserver
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street");
 		const datamodel::Street* street = manager.GetStreet(streetID);
-		if (street->visible == VisibleNo)
+		if (street->GetVisible() == VisibleNo)
 		{
 			HtmlReplyWithHeader(HtmlTag());
 			return;
@@ -2028,10 +2028,10 @@ namespace webserver
 			minTrainLength = street->GetMinTrainLength();
 			maxTrainLength = street->GetMaxTrainLength();
 			relations = street->GetRelations();
-			visible = street->visible;
-			posx = street->posX;
-			posy = street->posY;
-			posz = street->posZ;
+			visible = street->GetVisible();
+			posx = street->GetPosX();
+			posy = street->GetPosY();
+			posz = street->GetPosZ();
 			automode = street->GetAutomode();
 			fromTrack = street->GetFromTrack();
 			fromDirection = street->GetFromDirection();
@@ -2310,12 +2310,12 @@ namespace webserver
 		if (trackID > TrackNone)
 		{
 			const datamodel::Track* track = manager.GetTrack(trackID);
-			name = track->name;
-			posx = track->posX;
-			posy = track->posY;
-			posz = track->posZ;
-			height = track->height;
-			rotation = track->rotation;
+			name = track->Name();
+			posx = track->GetPosX();
+			posy = track->GetPosY();
+			posz = track->GetPosZ();
+			height = track->GetHeight();
+			rotation = track->GetRotation();
 			type = track->GetType();
 			feedbacks = track->GetFeedbacks();
 			selectStreetApproach = track->GetSelectStreetApproach();
@@ -2582,10 +2582,10 @@ namespace webserver
 			controlId = feedback->controlID;
 			pin = feedback->pin;
 			inverted = feedback->IsInverted();
-			visible = feedback->visible;
-			posx = feedback->posX;
-			posy = feedback->posY;
-			posz = feedback->posZ;
+			visible = feedback->GetVisible();
+			posx = feedback->GetPosX();
+			posy = feedback->GetPosY();
+			posz = feedback->GetPosZ();
 		}
 
 		std::map<controlID_t,string> controls = manager.FeedbackControlListNames();
@@ -2742,7 +2742,7 @@ namespace webserver
 	{
 		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
-		if (feedback->visible == VisibleNo)
+		if (feedback->GetVisible() == VisibleNo)
 		{
 			HtmlReplyWithHeader(HtmlTag());
 			return;

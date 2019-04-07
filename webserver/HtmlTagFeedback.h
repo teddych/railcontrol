@@ -13,7 +13,7 @@ namespace webserver
 		public:
 			HtmlTagFeedback(const datamodel::Feedback* feedback, layoutPosition_t posX, layoutPosition_t posY);
 			HtmlTagFeedback(const datamodel::Feedback* feedback)
-			:	HtmlTagFeedback(feedback, feedback->posX, feedback->posY)
+			:	HtmlTagFeedback(feedback, feedback->GetPosX(), feedback->GetPosY())
 			{}
 	};
 }; // namespace webserver

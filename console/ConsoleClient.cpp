@@ -660,7 +660,7 @@ namespace console
 		}
 
 		stringstream status;
-		status << accessoryID << " " << accessory->name << " (" << static_cast<int>(accessory->posX) << "/" << static_cast<int>(accessory->posY) << "/" << static_cast<int>(accessory->posZ) << ")";
+		status << accessoryID << " " << accessory->Name() << " (" << static_cast<int>(accessory->GetPosX()) << "/" << static_cast<int>(accessory->GetPosY()) << "/" << static_cast<int>(accessory->GetPosZ()) << ")";
 		SendAndPrompt(status.str());
 	}
 
@@ -739,9 +739,9 @@ namespace console
 		status
 			<< "Track ID: " << trackID
 			<< "\nName:     " << track->name
-			<< "\nX:        " << static_cast<int>(track->posX)
-			<< "\nY:        " << static_cast<int>(track->posY)
-			<< "\nZ:        " << static_cast<int>(track->posZ);
+			<< "\nX:        " << static_cast<int>(track->GetPosX())
+			<< "\nY:        " << static_cast<int>(track->GetPosY())
+			<< "\nZ:        " << static_cast<int>(track->GetPosZ());
 		string stateText;
 		text::Converters::lockStatus(track->GetLockState(), stateText);
 		status << "\nStatus:   " << stateText;
@@ -898,9 +898,9 @@ namespace console
 			<< "\nName:     " << feedback->name
 			<< "\nControl:  " << manager.GetControlName(feedback->controlID)
 			<< "\nPin:      " << feedback->pin
-			<< "\nX:        " << static_cast<int>(feedback->posX)
-			<< "\nY:        " << static_cast<int>(feedback->posY)
-			<< "\nZ:        " << static_cast<int>(feedback->posZ);
+			<< "\nX:        " << static_cast<int>(feedback->GetPosX())
+			<< "\nY:        " << static_cast<int>(feedback->GetPosY())
+			<< "\nZ:        " << static_cast<int>(feedback->GetPosZ());
 		string stateText;
 		text::Converters::feedbackStatus(feedback->GetState(), stateText);
 		status << "\nStatus:   " << stateText;
@@ -1391,10 +1391,10 @@ namespace console
 		status
 			<< "Switch ID " << switchID
 			<< "\nName:     " << mySwitch->name
-			<< "\nX:        " << static_cast<int>(mySwitch->posX)
-			<< "\nY:        " << static_cast<int>(mySwitch->posY)
-			<< "\nZ:        " << static_cast<int>(mySwitch->posZ)
-			<< "\nRotation: " << datamodel::LayoutItem::Rotation(mySwitch->rotation);
+			<< "\nX:        " << static_cast<int>(mySwitch->GetPosX())
+			<< "\nY:        " << static_cast<int>(mySwitch->GetPosY())
+			<< "\nZ:        " << static_cast<int>(mySwitch->GetPosZ())
+			<< "\nRotation: " << datamodel::LayoutItem::Rotation(mySwitch->GetRotation());
 		string state;
 		text::Converters::switchStatus(static_cast<switchState_t>(mySwitch->GetState()), state);
 		status << "\nState:    " << state;

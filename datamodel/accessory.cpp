@@ -49,9 +49,9 @@ namespace datamodel
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
 		HardwareHandle::Deserialize(arguments);
-		width = Width1;
-		height = Height1;
-		visible = VisibleYes;
+		SetWidth(Width1);
+		SetHeight(Height1);
+		SetVisible(VisibleYes);
 		type = GetIntegerMapEntry(arguments, "type");
 		state = GetIntegerMapEntry(arguments, "state");
 		duration = GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryDuration); // FIXME: remove in later versions, is only here for conversion

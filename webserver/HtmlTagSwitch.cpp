@@ -12,8 +12,8 @@ namespace webserver
 		switchState_t state = mySwitch->GetState();
 		switchType_t type = mySwitch->GetType();
 
-		unsigned int layoutPosX = mySwitch->posX * EdgeLength;
-		unsigned int layoutPosY = mySwitch->posY * EdgeLength;
+		unsigned int layoutPosX = mySwitch->GetPosX() * EdgeLength;
+		unsigned int layoutPosY = mySwitch->GetPosY() * EdgeLength;
 
 		HtmlTag div1("div");
 		string switchIdString = to_string(mySwitch->objectID);
@@ -26,11 +26,11 @@ namespace webserver
 		string image;
 		if (type == SwitchTypeLeft)
 		{
-			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->rotation) + "deg);\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>";
+			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->GetRotation()) + "deg);\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>";
 		}
 		else
 		{
-			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->rotation) + "deg);\"><polygon points=\"22,26 22,35 13,35\" fill=\"black\" /><polygon points=\"22,26 35,13 35,22 22,35\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,26 13,35\" fill=\"gray\" class=\"straight\"/></svg>";
+			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->GetRotation()) + "deg);\"><polygon points=\"22,26 22,35 13,35\" fill=\"black\" /><polygon points=\"22,26 35,13 35,22 22,35\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,26 13,35\" fill=\"gray\" class=\"straight\"/></svg>";
 		}
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(mySwitch->Name() + " (addr=" + to_string(mySwitch->GetAddress()) + ")"));

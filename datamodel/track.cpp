@@ -42,8 +42,8 @@ namespace datamodel
 		ParseArguments(serialized, arguments);
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
-		width = Width1;
-		visible = VisibleYes;
+		SetWidth(Width1);
+		SetVisible(VisibleYes);
 		string objectType = GetStringMapEntry(arguments, "objectType");
 		if (objectType.compare("Track") != 0)
 		{

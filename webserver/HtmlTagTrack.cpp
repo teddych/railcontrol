@@ -31,7 +31,8 @@ namespace webserver
 		div1.AddClass(locoID == LocoNone ? "loco_unknown" : "loco_known");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
-		string layoutHeight = to_string(EdgeLength * track->height);
+		layoutItemSize_t trackHeight = track->GetHeight();
+		string layoutHeight = to_string(EdgeLength * trackHeight);
 
 		if (type == TrackTypeTurn)
 		{
@@ -48,21 +49,22 @@ namespace webserver
 
 		int translateX = 0;
 		int translateY = 0;
-		if (track->height > Height1)
+		if (trackHeight > Height1)
 		{
-			if (track->rotation == Rotation90 || track->rotation == Rotation270)
+			layoutRotation_t trackRotation = track->GetRotation();
+			if (trackRotation == Rotation90 || trackRotation == Rotation270)
 			{
-				translateX = ((((track->height - 1) * EdgeLength) + 1) / 2);
-				translateY = (((track->height - 1) * EdgeLength) / 2);
+				translateX = ((((trackHeight - 1) * EdgeLength) + 1) / 2);
+				translateY = (((trackHeight - 1) * EdgeLength) / 2);
 			}
-			if (track->rotation == Rotation90)
+			if (trackRotation == Rotation90)
 			{
 				translateX = -translateX;
 				translateY = -translateY;
 			}
 		}
 
-		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->rotation) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
+		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->GetRotation()) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(track->name));
 		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);
