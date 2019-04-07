@@ -77,7 +77,7 @@ namespace datamodel
 
 			trackID_t DestinationTrack() const { return toTrack; };
 
-			static bool CompareShortest(const Street* s1, const Street* s2) { return s1->GetMinTrainLength() > s2->GetMinTrainLength(); }
+			static bool CompareShortest(const Street* s1, const Street* s2) { return s1->GetMinTrainLength() < s2->GetMinTrainLength(); }
 
 		private:
 			bool ReleaseInternal(const locoID_t locoID);
