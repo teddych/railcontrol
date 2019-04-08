@@ -729,6 +729,14 @@ function loadLayout()
 	}
 }
 
+function sendTimestamp()
+{
+	var url = '/?cmd=timestamp&timestamp=';
+	var timestamp = Math.round(Date.now() / 1000);
+	url += timestamp;
+	fireRequestAndForget(url);
+}
+
 function startUp()
 {
 	var body = document.getElementById('body');
@@ -745,6 +753,7 @@ function startUp()
 	}
 	loadLoco();
 	loadLayout();
+	sendTimestamp();
 }
 
 function ShowTab(tabName)

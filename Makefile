@@ -67,6 +67,7 @@ all: $(OBJ)
 	make -C hardware
 	make -C storage
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
+	rm timestamp.h
 
 amalgamation:
 	./amalgamation.bash
@@ -75,6 +76,7 @@ amalgamation:
 	$(CPP) -g amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
+	rm timestamp.h
 
 raspi:
 	./amalgamation.bash
@@ -83,9 +85,13 @@ raspi:
 	$(CPPRASPI) -g amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
+	rm timestamp.h
 
 sqlite-shell:
 	make -C storage/sqlite
+
+webserver/webclient.o: webserver/webclient.cpp timestamp.h *.h console/*.h datamodel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h text/*.h webserver/*.h
+	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 %.o: %.cpp *.h console/*.h datamodel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h text/*.h webserver/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
@@ -101,3 +107,6 @@ clean-sqlite-shell:
 
 test:
 	make -C test
+
+timestamp.h:
+	echo "#pragma once\n#define __UNIX_TIMESTAMP__ `date +%s`" > timestamp.h

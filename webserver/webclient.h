@@ -130,7 +130,8 @@ namespace webserver
 			void handleRelationObject(const std::map<std::string, std::string>& arguments);
 			void handleSettingsEdit(const std::map<std::string, std::string>& arguments);
 			void handleSettingsSave(const std::map<std::string, std::string>& arguments);
-			void handleUpdater(const std::map<std::string,std::string>& arguments);
+			void handleTimestamp(const std::map<std::string,std::string>& arguments);
+			void handleUpdater(const std::map<std::string,std::string>& headers);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);
 			void WorkerImpl();

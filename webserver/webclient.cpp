@@ -5,10 +5,12 @@
 #include <sstream>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <unistd.h>
 
 #include "datamodel/datamodel.h"
 #include "railcontrol.h"
+#include "timestamp.h"
 #include "util.h"
 #include "webserver/webclient.h"
 #include "webserver/webserver.h"
@@ -435,6 +437,10 @@ namespace webserver
 			else if (arguments["cmd"].compare("settingssave") == 0)
 			{
 				handleSettingsSave(arguments);
+			}
+			else if (arguments["cmd"].compare("timestamp") == 0)
+			{
+				handleTimestamp(arguments);
 			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
@@ -2794,7 +2800,34 @@ namespace webserver
 		const bool autoAddFeedback = GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
 		const datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetRandom));
 		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach);
-		HtmlReplyWithHeaderAndParagraph("Settings saved.");	}
+		HtmlReplyWithHeaderAndParagraph("Settings saved.");
+	}
+
+	void WebClient::handleTimestamp(const map<string, string>& arguments)
+	{
+		const time_t timestamp = GetIntegerMapEntry(arguments, "timestamp", 0);
+		if (timestamp == 0)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp not set"));
+			return;
+		}
+		struct timeval tv;
+		int ret = gettimeofday(&tv, nullptr);
+		if (ret != 0 || tv.tv_sec > __UNIX_TIMESTAMP__)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp already set"));
+			return;
+		}
+
+		tv.tv_sec = timestamp;
+		ret = settimeofday(&tv, nullptr);
+		if (ret != 0)
+		{
+			HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp not set"));
+			return;
+		}
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp set"));
+	}
 
 	void WebClient::handleUpdater(const map<string, string>& headers)
 	{
