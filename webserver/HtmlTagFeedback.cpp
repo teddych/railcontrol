@@ -26,7 +26,7 @@ namespace webserver
 		string image;
 		image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\"><circle r=\"12\" cx=\"18\" cy=\"18\" stroke=\"black\" stroke-width=\"2\" class=\"feedback\"/></svg>";
 		div1.AddChildTag(HtmlTag().AddContent(image));
-		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(feedbackName + " (pin=" + to_string(feedback->pin) + ")"));
+		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(feedbackName + " (pin=" + to_string(feedback->GetPin()) + ")"));
 		div1.AddAttribute("onclick", "return onClickFeedback(" + feedbackIdString + ");");
 		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);

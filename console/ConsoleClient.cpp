@@ -896,8 +896,8 @@ namespace console
 		status
 			<< "FeedbackID" << feedbackID
 			<< "\nName:     " << feedback->GetName()
-			<< "\nControl:  " << manager.GetControlName(feedback->controlID)
-			<< "\nPin:      " << feedback->pin
+			<< "\nControl:  " << manager.GetControlName(feedback->GetControlID())
+			<< "\nPin:      " << feedback->GetPin()
 			<< "\nX:        " << static_cast<int>(feedback->GetPosX())
 			<< "\nY:        " << static_cast<int>(feedback->GetPosY())
 			<< "\nZ:        " << static_cast<int>(feedback->GetPosZ());

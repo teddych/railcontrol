@@ -1527,11 +1527,11 @@ namespace webserver
 			const map<feedbackID_t,Feedback*>& feedbacks = manager.FeedbackList();
 			for (auto feedback : feedbacks)
 			{
-				if (feedback.second->controlID != -layer)
+				if (feedback.second->GetControlID() != -layer)
 				{
 					continue;
 				}
-				feedbackPin_t pin = feedback.second->pin - 1;
+				feedbackPin_t pin = feedback.second->GetPin() - 1;
 				layoutPosition_t x = pin & 0x0F; // => % 16;
 				layoutPosition_t y = pin >> 4;   // => / 16;
 				if (x >= 8)
@@ -2584,8 +2584,8 @@ namespace webserver
 		{
 			const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
 			name = feedback->GetName();
-			controlId = feedback->controlID;
-			pin = feedback->pin;
+			controlId = feedback->GetControlID();
+			pin = feedback->GetPin();
 			inverted = feedback->IsInverted();
 			visible = feedback->GetVisible();
 			posx = feedback->GetPosX();

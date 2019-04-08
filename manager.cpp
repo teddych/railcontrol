@@ -1145,8 +1145,8 @@ Feedback* Manager::GetFeedback(const controlID_t controlID, const feedbackPin_t 
 	std::lock_guard<std::mutex> Guard(feedbackMutex);
 	for (auto feedback : feedbacks)
 	{
-		if (feedback.second->controlID == controlID
-			&& feedback.second->pin == pin)
+		if (feedback.second->GetControlID() == controlID
+			&& feedback.second->GetPin() == pin)
 		{
 			return feedback.second;
 		}
@@ -1198,8 +1198,8 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 		feedback->SetPosX(posX);
 		feedback->SetPosY(posY);
 		feedback->SetPosZ(posZ);
-		feedback->controlID = controlID;
-		feedback->pin = pin;
+		feedback->SetControlID(controlID);
+		feedback->SetPin(pin);
 	}
 	else
 	{

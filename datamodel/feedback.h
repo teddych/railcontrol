@@ -49,14 +49,17 @@ namespace datamodel
 			void SetState(const feedbackState_t state);
 			feedbackState_t GetState() const { return static_cast<feedbackState_t>(stateCounter > 0); }
 			void Debounce();
+			void SetControlID(const controlID_t controlID) { this->controlID = controlID; }
+			controlID_t GetControlID() const { return controlID; }
+			void SetPin(const feedbackPin_t pin) { this->pin = pin; }
+			feedbackPin_t GetPin() const { return pin; }
 			void SetTrack(const trackID_t trackID) { this->trackID = trackID; }
 			trackID_t GetTrack() const { return trackID; }
 
-			// FIXME: make privete
+		private:
 			controlID_t controlID;
 			feedbackPin_t pin;
 
-		private:
 			void UpdateTrackState(const feedbackState_t state);
 
 			Manager* manager;
