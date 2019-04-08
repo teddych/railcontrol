@@ -69,7 +69,7 @@ all: $(OBJ)
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 	rm timestamp.h
 
-amalgamation:
+amalgamation: timestamp.h
 	./amalgamation.bash
 	$(CPP) $(CPPFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C storage amalgamation
@@ -78,7 +78,7 @@ amalgamation:
 	rm -f amalgamation.cpp
 	rm timestamp.h
 
-raspi:
+raspi: timestamp.h
 	./amalgamation.bash
 	$(CPPRASPI) $(CPPFLAGSRASPI) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C storage raspi
