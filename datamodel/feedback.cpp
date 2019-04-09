@@ -45,11 +45,18 @@ namespace datamodel
 		feedbackState_t state = static_cast<feedbackState_t>(newState != inverted);
 		if (state == FeedbackStateFree)
 		{
-
+			if (stateCounter < MaxStateCounter)
+			{
+				return;
+			}
 			stateCounter = MaxStateCounter - 1;
 			return;
 		}
 
+		if (stateCounter == MaxStateCounter)
+		{
+			return;
+		}
 		stateCounter = MaxStateCounter;
 		manager->FeedbackState(this);
 		UpdateTrackState(FeedbackStateOccupied);
