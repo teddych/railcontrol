@@ -156,7 +156,7 @@ namespace datamodel
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto street : streets)
 		{
-			if (street->FromTrackDirection(objectID, locoDirection, loco->GetCommuter()))
+			if (street->FromTrackDirection(objectID, locoDirection, loco))
 			{
 				validStreets.push_back(street);
 			}

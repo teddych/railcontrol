@@ -152,7 +152,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Street::FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const bool locoCommuter)
+	bool Street::FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const Loco* loco)
 	{
 		if (automode == false)
 		{
@@ -164,6 +164,17 @@ namespace datamodel
 			return false;
 		}
 
+		const length_t locoLength = loco->GetLength();
+		if (locoLength < minTrainLength)
+		{
+			return false;
+		}
+		if (maxTrainLength > 0 && locoLength > maxTrainLength)
+		{
+			return false;
+		}
+
+		const bool locoCommuter = loco->GetCommuter();
 		if (commuter != locoCommuter && commuter != CommuterTypeBoth)
 		{
 			return false;
