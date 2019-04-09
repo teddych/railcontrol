@@ -2,9 +2,12 @@
 
 #include <string>
 
-#include "datamodel/accessory.h"
-#include "datatypes.h"
 #include "webserver/HtmlTagLayoutItem.h"
+
+namespace datamodel
+{
+	class Accessory;
+}
 
 namespace webserver
 {

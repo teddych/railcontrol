@@ -2,9 +2,13 @@
 
 #include <string>
 
-#include "datamodel/feedback.h"
 #include "datatypes.h"
 #include "webserver/HtmlTagLayoutItem.h"
+
+namespace datamodel
+{
+	class Feedback;
+}
 
 namespace webserver
 {

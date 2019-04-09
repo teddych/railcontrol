@@ -2,8 +2,11 @@
 #include <map>
 #include <sstream>
 
+#include "datamodel/loco.h"
+#include "datamodel/relation.h"
 #include "datamodel/street.h"
 #include "manager.h"
+#include "util.h"
 
 using std::map;
 using std::stringstream;

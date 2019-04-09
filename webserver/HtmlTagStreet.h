@@ -2,9 +2,12 @@
 
 #include <string>
 
-#include "datamodel/street.h"
-#include "datatypes.h"
 #include "webserver/HtmlTagLayoutItem.h"
+
+namespace datamodel
+{
+	class Street;
+}
 
 namespace webserver
 {

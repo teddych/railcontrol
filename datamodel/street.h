@@ -2,15 +2,19 @@
 
 #include <mutex>
 #include <string>
+#include <vector>
 
 #include "datatypes.h"
 #include "datamodel/layout_item.h"
-#include "datamodel/relation.h"
+#include "datamodel/LockableItem.h"
 
 class Manager;
 
 namespace datamodel
 {
+	class Loco;
+	class Relation;
+
 	class Street : public LayoutItem, public LockableItem
 	{
 		public:
@@ -122,6 +126,5 @@ namespace datamodel
 			time_t lastUsed;
 			unsigned int counter;
 	};
-
 } // namespace datamodel
 

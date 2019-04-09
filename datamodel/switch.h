@@ -4,9 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "accessory.h"
+#include "datamodel/accessory.h"
 #include "datatypes.h"
-#include "serializable.h"
 
 namespace datamodel
 {

@@ -3,8 +3,7 @@
 #include <string>
 
 #include "datatypes.h"
-#include "layout_item.h"
-#include "serializable.h"
+#include "datamodel/layout_item.h"
 
 class Manager;
 

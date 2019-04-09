@@ -5,6 +5,7 @@
 #include "datamodel/loco.h"
 #include "datamodel/track.h"
 #include "manager.h"
+#include "util.h"
 
 using std::map;
 using std::stringstream;

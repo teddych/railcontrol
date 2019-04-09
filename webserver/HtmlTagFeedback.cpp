@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "datamodel/feedback.h"
 #include "webserver/HtmlTagFeedback.h"
 
 using std::string;

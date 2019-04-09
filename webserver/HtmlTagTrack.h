@@ -2,10 +2,13 @@
 
 #include <string>
 
-#include "datamodel/track.h"
-#include "datatypes.h"
 #include "manager.h"
 #include "webserver/HtmlTagLayoutItem.h"
+
+namespace datamodel
+{
+	class Track;
+}
 
 namespace webserver
 {

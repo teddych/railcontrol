@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "datamodel/accessory.h"
 #include "webserver/HtmlTagAccessory.h"
 
 using std::string;

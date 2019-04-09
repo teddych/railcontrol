@@ -7,12 +7,13 @@
 #include "datatypes.h"
 #include "datamodel/layout_item.h"
 #include "datamodel/LockableItem.h"
-#include "datamodel/serializable.h"
-#include "datamodel/street.h"
+
+class Manager;
 
 namespace datamodel
 {
 	class Loco;
+	class Street;
 
 	class Track : public LayoutItem, public LockableItem
 	{
@@ -96,4 +97,3 @@ namespace datamodel
 			mutable std::mutex updateMutex;
 	};
 } // namespace datamodel
-

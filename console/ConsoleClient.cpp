@@ -11,6 +11,7 @@
 #include "datatypes.h"
 #include "railcontrol.h"
 #include "text/converters.h"
+#include "util.h"
 
 using std::map;
 using std::thread;

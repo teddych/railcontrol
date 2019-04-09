@@ -1,5 +1,7 @@
+#include <vector>
 
 #include "datamodel/serializable.h"
+#include "util.h"
 
 using std::string;
 using std::map;

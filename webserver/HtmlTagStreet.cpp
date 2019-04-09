@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "datamodel/street.h"
 #include "webserver/HtmlTagStreet.h"
 
 using std::string;

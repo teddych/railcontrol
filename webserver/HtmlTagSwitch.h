@@ -2,9 +2,12 @@
 
 #include <string>
 
-#include "datamodel/switch.h"
-#include "datatypes.h"
 #include "webserver/HtmlTagLayoutItem.h"
+
+namespace datamodel
+{
+	class Switch;
+}
 
 namespace webserver
 {

@@ -2,6 +2,7 @@
 #include <sstream>
 
 #include "datamodel/accessory.h"
+#include "util.h"
 
 using std::map;
 using std::stringstream;

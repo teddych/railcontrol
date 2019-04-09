@@ -4,6 +4,7 @@
 
 #include "datamodel/relation.h"
 #include "manager.h"
+#include "util.h"
 
 using std::map;
 using std::stringstream;

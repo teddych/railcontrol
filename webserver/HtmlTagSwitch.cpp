@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "datamodel/switch.h"
 #include "webserver/HtmlTagSwitch.h"
 
 using std::string;

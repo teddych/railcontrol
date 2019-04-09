@@ -1,4 +1,5 @@
 #include "datamodel/HardwareHandle.h"
+#include "util.h"
 
 using std::map;
 using std::stringstream;
