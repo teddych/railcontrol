@@ -1124,6 +1124,18 @@ namespace webserver
 				return content;
 			}
 
+			case ObjectTypeTrack:
+			{
+				std::map<string, Track*> tracks = manager.TrackListByName();
+				map<string, trackID_t> trackOptions;
+				for (auto track : tracks)
+				{
+					trackOptions[track.first] = track.second->GetID();
+				}
+				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, trackOptions, objectId).AddClass("select_relation_id"));
+				return content;
+			}
+
 			default:
 			{
 				content.AddContent("Unknown objecttype");
@@ -1143,6 +1155,7 @@ namespace webserver
 		map<string,objectType_t> objectTypeOptions;
 		objectTypeOptions["Accessory"] = ObjectTypeAccessory;
 		objectTypeOptions["Switch"] = ObjectTypeSwitch;
+		objectTypeOptions["Track"] = ObjectTypeTrack;
 		HtmlTagSelect select("relation_type_" + priority, objectTypeOptions, objectType);
 		select.AddClass("select_relation_objecttype");
 		select.AddAttribute("onchange", "loadRelationObject(" + priority + ");return false;");

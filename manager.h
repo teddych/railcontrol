@@ -187,7 +187,6 @@ class Manager {
 		bool TrackReleaseWithLoco(const trackID_t trackID);
 		bool TrackStartLoco(const trackID_t trackID);
 		bool TrackStopLoco(const trackID_t trackID);
-		void TrackPublishState(const trackID_t trackID);
 		void TrackPublishState(const datamodel::Track* track);
 		bool StreetRelease(const streetID_t streetID);
 		//bool switchRelease(const switchID_t switchID);

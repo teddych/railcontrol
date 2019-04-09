@@ -283,7 +283,7 @@ namespace datamodel
 		logger->Info("Heading to {0} via {1}", newToTrack->GetName(), usedStreet->GetName());
 
 		// start loco
-		manager->TrackPublishState(toTrackID);
+		manager->TrackPublishState(newToTrack);
 		manager->LocoSpeed(ControlTypeInternal, objectID, travelSpeed);
 		state = LocoStateRunning;
 	}
@@ -324,7 +324,6 @@ namespace datamodel
 			// set state
 			state = (state == LocoStateRunning /* else is LocoStateStopping */? LocoStateSearching : LocoStateOff);
 			logger->Info("{0} reached its destination", name);
-			manager->TrackPublishState(fromTrack);
 			return;
 		}
 

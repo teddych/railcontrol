@@ -73,6 +73,20 @@ namespace datamodel
 		return LockableItem::Reserve(locoID);
 	}
 
+	bool Track::Lock(const locoID_t locoID)
+	{
+		bool ret = LockableItem::Lock(locoID);
+		manager->TrackPublishState(this);
+		return ret;
+	}
+
+	bool Track::Release(const locoID_t locoID)
+	{
+		bool ret = LockableItem::Release(locoID);
+		manager->TrackPublishState(this);
+		return ret;
+	}
+
 	bool Track::FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		feedbackState_t oldState = this->state;

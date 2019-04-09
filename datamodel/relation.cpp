@@ -39,22 +39,26 @@ namespace datamodel
 		return true;
 	}
 
-	bool Relation::Execute()
+	bool Relation::Execute(const delay_t delay)
 	{
 		switch (objectType2)
 		{
 			case ObjectTypeAccessory:
 				manager->AccessoryState(ControlTypeInternal, objectID2, accessoryState, true);
-				return true;
+				break;
 
 			case ObjectTypeSwitch:
 				manager->SwitchState(ControlTypeInternal, objectID2, accessoryState, true);
+				break;
+
+			case ObjectTypeTrack:
 				return true;
 
 			default:
 				return false;
 		}
-
+		std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+		return true;
 	}
 
 	LockableItem* Relation::GetObject2()
@@ -66,6 +70,9 @@ namespace datamodel
 
 			case ObjectTypeSwitch:
 				return manager->GetSwitch(objectID2);
+
+			case ObjectTypeTrack:
+				return manager->GetTrack(objectID2);
 
 			default:
 				return nullptr;

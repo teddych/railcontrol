@@ -2260,23 +2260,13 @@ bool Manager::TrackStopLoco(const trackID_t trackID)
 	return LocoStop(track->GetLoco());
 }
 
-void Manager::TrackPublishState(const trackID_t trackID)
-{
-	Track* track = GetTrack(trackID);
-	if (track == nullptr)
-	{
-		return;
-	}
-	TrackPublishState(track);
-}
-
 void Manager::TrackPublishState(const datamodel::Track* track)
 {
-	Loco* loco = GetLoco(track->GetLoco());
+	const Loco* loco = GetLoco(track->GetLoco());
+	const string& locoName = loco == nullptr ? "" : loco->GetName();
 	const string& trackName = track->GetName();
 	const trackID_t trackID = track->GetID();
 	const feedbackState_t trackState = track->FeedbackState();
-	const string& locoName = loco == nullptr ? "" : loco->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{

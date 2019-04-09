@@ -195,8 +195,7 @@ namespace datamodel
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto relation : relations)
 		{
-			ret &= relation->Execute();
-			std::this_thread::sleep_for(std::chrono::milliseconds(delay));
+			ret &= relation->Execute(delay);
 		}
 		lastUsed = time(nullptr);
 		++counter;

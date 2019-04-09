@@ -49,7 +49,7 @@ namespace datamodel
 			bool Reserve(const locoID_t locoID) override;
 			bool Lock(const locoID_t locoID) override;
 			bool Release(const locoID_t locoID) override;
-			bool Execute();
+			bool Execute(const delay_t delay);
 
 		private:
 			LockableItem* GetObject2();
