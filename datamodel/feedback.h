@@ -39,6 +39,8 @@ namespace datamodel
 				Deserialize(serialized);
 			}
 
+			objectType_t GetObjectType() const { return ObjectTypeFeedback; }
+
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 			std::string LayoutType() const override { return "feedback"; };

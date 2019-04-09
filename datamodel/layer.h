@@ -16,6 +16,8 @@ namespace datamodel
 			:	Object(layerID, name)
 			{
 			}
+
+			objectType_t GetObjectType() const { return ObjectTypeLayer; }
 	};
 } // namespace datamodel
 

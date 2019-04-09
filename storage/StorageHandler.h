@@ -45,7 +45,7 @@ namespace storage
 				}
 				const std::string serialized = t.Serialize();
 				StartTransactionInternal();
-				instance->SaveObject(ObjectTypeLoco, t.GetID(), t.GetName(), serialized);
+				instance->SaveObject(t.GetObjectType(), t.GetID(), t.GetName(), serialized);
 				CommitTransactionInternal();
 			}
 

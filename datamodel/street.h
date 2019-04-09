@@ -49,6 +49,8 @@ namespace datamodel
 
 			~Street() { DeleteRelations(); }
 
+			objectType_t GetObjectType() const { return ObjectTypeStreet; }
+
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 			std::string LayoutType() const override { return "street"; };

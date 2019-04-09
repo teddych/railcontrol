@@ -42,6 +42,8 @@ namespace datamodel
 
 			Accessory() {}
 
+			virtual objectType_t GetObjectType() const { return ObjectTypeAccessory; }
+
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
 			virtual std::string LayoutType() const override { return "accessory"; }

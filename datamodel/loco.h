@@ -151,6 +151,8 @@ namespace datamodel
 
 			~Loco();
 
+			objectType_t GetObjectType() const { return ObjectTypeLoco; }
+
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 

@@ -54,6 +54,8 @@ namespace datamodel
 				Deserialize(serialized);
 			}
 
+			objectType_t GetObjectType() const { return ObjectTypeTrack; }
+
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 
