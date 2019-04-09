@@ -21,7 +21,8 @@ using std::vector;
 
 void str_replace(std::string& str, const std::string& from, const std::string& to)
 {
-	while (true) {
+	while (true)
+	{
 		size_t start_pos = str.find(from);
 		if (start_pos == string::npos)
 		{
@@ -87,7 +88,8 @@ string toStringWithLeadingZeros(const unsigned int number, const unsigned char c
 
 int Util::StringToInteger(const std::string&  value, const int defaultValue)
 {
-	if (value.size() == 0)
+	size_t valueSize = value.size();
+	if (valueSize == 0 || valueSize > 9)
 	{
 		return defaultValue;
 	}
