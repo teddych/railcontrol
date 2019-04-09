@@ -27,7 +27,7 @@ namespace datamodel
 		std::stringstream ss;
 		ss << "objectType=Track;"
 			<< LayoutItem::Serialize()
-			<< LockableItem::Serialize()
+			<< ";" << LockableItem::Serialize()
 			<< ";type=" << static_cast<int>(type)
 			<< ";feedbacks=" << feedbackString
 			<< ";selectstreetapproach=" << static_cast<int>(selectStreetApproach)
