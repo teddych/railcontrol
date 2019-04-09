@@ -11,23 +11,8 @@ namespace datamodel
 	class LayoutItem : public Object
 	{
 		public:
-			LayoutItem(const objectID_t objectID,
-				const std::string& name,
-				const visible_t visible,
-				const layoutPosition_t posX,
-				const layoutPosition_t posY,
-				const layoutPosition_t posZ,
-				const layoutItemSize_t width,
-				const layoutItemSize_t height,
-				const layoutRotation_t rotation)
-			:	Object(objectID, name),
-				visible(visible),
-				posX(posX),
-				posY(posY),
-				posZ(posZ),
-				width(width),
-				height(height),
-				rotation(rotation)
+			LayoutItem(const objectID_t objectID)
+			:	Object(objectID)
 			{
 			}
 

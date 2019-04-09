@@ -267,6 +267,50 @@ class Manager {
 		const std::vector<feedbackID_t> CleanupAndCheckFeedbacks(trackID_t trackID, std::vector<feedbackID_t>& newFeedbacks);
 		void DebounceWorker(Manager* manager);
 
+		template<class T>
+		T* CreateAndAddObject(std::map<signed short,T*>& objects, std::mutex& mutex)
+		{
+			std::lock_guard<std::mutex> Guard(mutex);
+			objectID_t newObjectID = 0;
+			for (auto object : objects)
+			{
+				if (object.first > newObjectID)
+				{
+					newObjectID = object.first;
+				}
+			}
+			++newObjectID;
+			T* newObject = new T(this, newObjectID);
+			if (newObject == nullptr)
+			{
+				return nullptr;
+			}
+			objects[newObjectID] = newObject;
+			return newObject;
+		}
+
+		template<class T>
+		T* CreateAndAddObject(std::map<objectID_t,T*>& objects, std::mutex& mutex)
+		{
+			std::lock_guard<std::mutex> Guard(mutex);
+			objectID_t newObjectID = 0;
+			for (auto object : objects)
+			{
+				if (object.first > newObjectID)
+				{
+					newObjectID = object.first;
+				}
+			}
+			++newObjectID;
+			T* newObject = new T(this, newObjectID);
+			if (newObject == nullptr)
+			{
+				return nullptr;
+			}
+			objects[newObjectID] = newObject;
+			return newObject;
+		}
+
 		Logger::Logger* logger;
 		boosterState_t boosterState;
 

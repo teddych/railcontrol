@@ -7,29 +7,15 @@
 #include "datamodel/layout_item.h"
 #include "datamodel/LockableItem.h"
 
+class Manager;
+
 namespace datamodel
 {
 	class Accessory : public LayoutItem, public LockableItem, public HardwareHandle
 	{
 		public:
-			Accessory(const accessoryID_t accessoryID,
-				const std::string& name,
-				const layoutPosition_t x,
-				const layoutPosition_t y,
-				const layoutPosition_t z,
-				const layoutRotation_t rotation,
-				const controlID_t controlID,
-				const protocol_t protocol,
-				const address_t address,
-				const accessoryType_t type,
-				const accessoryDuration_t duration,
-				const bool inverted)
-			:	LayoutItem(accessoryID, name, VisibleYes, x, y, z, Width1, Height1, rotation),
-			 	HardwareHandle(controlID, protocol, address),
-				type(type),
-				state(AccessoryStateOff),
-				duration(duration),
-				inverted(inverted),
+			Accessory(Manager* manager, const accessoryID_t accessoryID)
+			:	LayoutItem(accessoryID),
 				lastUsed(0),
 				counter(0)
 			{

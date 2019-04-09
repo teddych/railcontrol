@@ -27,23 +27,10 @@ namespace datamodel
 				SelectStreetLongestUnused = 4
 			};
 
-			Track(Manager* manager,
-				const trackID_t trackID,
-				const std::string& name,
-				const layoutPosition_t x,
-				const layoutPosition_t y,
-				const layoutPosition_t z,
-				const layoutItemSize_t height,
-				const layoutRotation_t rotation,
-				const trackType_t type,
-				const std::vector<feedbackID_t>& feedbacks,
-				const selectStreetApproach_t selectStreetApproach)
-			:	LayoutItem(trackID, name, VisibleYes, x, y, z, Width1, height, rotation),
+			Track(Manager* manager, const trackID_t trackID)
+			:	LayoutItem(trackID),
 			 	LockableItem(),
 			 	manager(manager),
-				type(type),
-				feedbacks(feedbacks),
-				selectStreetApproach(selectStreetApproach),
 				state(FeedbackStateFree),
 			 	locoDirection(DirectionRight)
 			{
@@ -90,12 +77,12 @@ namespace datamodel
 			selectStreetApproach_t GetSelectStreetApproachCalculated() const;
 
 			Manager* manager;
+			mutable std::mutex updateMutex;
 			trackType_t type;
 			std::vector<feedbackID_t> feedbacks;
 			selectStreetApproach_t selectStreetApproach;
 			feedbackState_t state;
-			direction_t locoDirection;
 			std::vector<Street*> streets;
-			mutable std::mutex updateMutex;
+			direction_t locoDirection;
 	};
 } // namespace datamodel

@@ -593,56 +593,28 @@ bool Manager::LocoSave(const locoID_t locoID,
 	}
 
 	Loco* loco = GetLoco(locoID);
-	if (loco != nullptr)
+	if (loco == nullptr)
 	{
-		// update existing loco
-		loco->SetName(name);
-		loco->SetControlID(controlID);
-		loco->SetProtocol(protocol);
-		loco->SetAddress(address);
-		loco->SetNrOfFunctions(nrOfFunctions);
-		loco->SetLength(length);
-		loco->SetCommuter(commuter);
-		loco->SetMaxSpeed(maxSpeed);
-		loco->SetTravelSpeed(travelSpeed);
-		loco->SetReducedSpeed(reducedSpeed);
-		loco->SetCreepSpeed(creepSpeed);
+		loco = CreateAndAddObject(locos, locoMutex);
 	}
-	else
+
+	if (loco == nullptr)
 	{
-		// create new loco
-		std::lock_guard<std::mutex> Guard(locoMutex);
-		locoID_t newLocoID = 0;
-		// get next locoID
-		for (auto loco : locos)
-		{
-			if (loco.first > newLocoID)
-			{
-				newLocoID = loco.first;
-			}
-		}
-		++newLocoID;
-		loco = new Loco(this,
-			newLocoID,
-			name,
-			controlID,
-			protocol,
-			address,
-			nrOfFunctions,
-			length,
-			commuter,
-			maxSpeed,
-			travelSpeed,
-			reducedSpeed,
-			creepSpeed);
-		if (loco == nullptr)
-		{
-			result.assign("Unable to allocate memory for loco");
-			return false;
-		}
-		// save in map
-		locos[newLocoID] = loco;
+		return false;
 	}
+
+	// update existing loco
+	loco->SetName(name);
+	loco->SetControlID(controlID);
+	loco->SetProtocol(protocol);
+	loco->SetAddress(address);
+	loco->SetNrOfFunctions(nrOfFunctions);
+	loco->SetLength(length);
+	loco->SetCommuter(commuter);
+	loco->SetMaxSpeed(maxSpeed);
+	loco->SetTravelSpeed(travelSpeed);
+	loco->SetReducedSpeed(reducedSpeed);
+	loco->SetCreepSpeed(creepSpeed);
 
 	// save in db
 	if (storage)
@@ -949,43 +921,27 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	}
 
 	Accessory* accessory = GetAccessory(accessoryID);
-	if (accessory != nullptr)
+	if (accessory == nullptr)
 	{
-		// update existing accessory
-		accessory->SetName(name);
-		accessory->SetPosX(posX);
-		accessory->SetPosY(posY);
-		accessory->SetPosZ(posZ);
-		accessory->SetControlID(controlID);
-		accessory->SetProtocol(protocol);
-		accessory->SetAddress(address);
-		accessory->SetType(type);
-		accessory->SetDuration(duration);
-		accessory->SetInverted(inverted);
+		accessory = CreateAndAddObject(accessories, accessoryMutex);
 	}
-	else
+
+	if (accessory == nullptr)
 	{
-		// create new accessory
-		std::lock_guard<std::mutex> Guard(accessoryMutex);
-		accessoryID_t newAccessoryID = 0;
-		// get next accessoryID
-		for (auto accessory : accessories)
-		{
-			if (accessory.first > newAccessoryID)
-			{
-				newAccessoryID = accessory.first;
-			}
-		}
-		++newAccessoryID;
-		accessory = new Accessory(newAccessoryID, name, posX, posY, posZ, Rotation0, controlID, protocol, address, type, duration, inverted);
-		if (accessory == nullptr)
-		{
-			result.assign("Unable to allocate memory for accessory");
-			return false;
-		}
-		// save in map
-		accessories[newAccessoryID] = accessory;
+		return false;
 	}
+
+	// update existing accessory
+	accessory->SetName(name);
+	accessory->SetPosX(posX);
+	accessory->SetPosY(posY);
+	accessory->SetPosZ(posZ);
+	accessory->SetControlID(controlID);
+	accessory->SetProtocol(protocol);
+	accessory->SetAddress(address);
+	accessory->SetType(type);
+	accessory->SetDuration(duration);
+	accessory->SetInverted(inverted);
 
 	// save in db
 	if (storage)
@@ -1191,39 +1147,23 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 	}
 
 	Feedback* feedback = GetFeedback(feedbackID);
-	if (feedback != nullptr)
+	if (feedback == nullptr)
 	{
-		feedback->SetName(name);
-		feedback->SetVisible(visible);
-		feedback->SetPosX(posX);
-		feedback->SetPosY(posY);
-		feedback->SetPosZ(posZ);
-		feedback->SetControlID(controlID);
-		feedback->SetPin(pin);
+		feedback = CreateAndAddObject(feedbacks, feedbackMutex);
 	}
-	else
+
+	if (feedback == nullptr)
 	{
-		// create new feedback
-		std::lock_guard<std::mutex> Guard(feedbackMutex);
-		feedbackID_t newFeedbackID = 0;
-		// get next feedbackID
-		for (auto feedback : feedbacks)
-		{
-			if (feedback.first > newFeedbackID)
-			{
-				newFeedbackID = feedback.first;
-			}
-		}
-		++newFeedbackID;
-		feedback = new Feedback(this, newFeedbackID, name, visible, posX, posY, posZ, controlID, pin, inverted);
-		if (feedback == nullptr)
-		{
-			result.assign("Unable to allocate memory for feedback");
-			return FeedbackNone;
-		}
-		// save in map
-		feedbacks[newFeedbackID] = feedback;
+		return false;
 	}
+
+	feedback->SetName(name);
+	feedback->SetVisible(visible);
+	feedback->SetPosX(posX);
+	feedback->SetPosY(posY);
+	feedback->SetPosZ(posZ);
+	feedback->SetControlID(controlID);
+	feedback->SetPin(pin);
 
 	// save in db
 	if (storage)
@@ -1459,42 +1399,26 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	}
 
 	Track* track = GetTrack(trackID);
-	if (track != nullptr)
+	if (track == nullptr)
 	{
-		// update existing track
-		track->SetName(name);
-		track->SetHeight(height);
-		track->SetRotation(rotation);
-		track->SetPosX(posX);
-		track->SetPosY(posY);
-		track->SetPosZ(posZ);
-		track->SetType(type);
-		track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
-		track->SetSelectStreetApproach(selectStreetApproach);
+		track = CreateAndAddObject(tracks, trackMutex);
 	}
-	else
+
+	if (track == nullptr)
 	{
-		// create new track
-		std::lock_guard<std::mutex> trackGuard(trackMutex);
-		trackID_t newTrackID = 0;
-		// get next trackID
-		for (auto track : tracks)
-		{
-			if (track.first > newTrackID)
-			{
-				newTrackID = track.first;
-			}
-		}
-		++newTrackID;
-		track = new Track(this, newTrackID, name, posX, posY, posZ, height, rotation, type, CleanupAndCheckFeedbacks(trackID, newFeedbacks), selectStreetApproach);
-		if (track == nullptr)
-		{
-			result.assign("Unable to allocate memory for track");
-			return TrackNone;
-		}
-		// save in map
-		tracks[newTrackID] = track;
+		return false;
 	}
+
+	// update existing track
+	track->SetName(name);
+	track->SetHeight(height);
+	track->SetRotation(rotation);
+	track->SetPosX(posX);
+	track->SetPosY(posY);
+	track->SetPosZ(posZ);
+	track->SetType(type);
+	track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
+	track->SetSelectStreetApproach(selectStreetApproach);
 
 	// save in db
 	if (storage)
@@ -1646,44 +1570,28 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 	}
 
 	Switch* mySwitch = GetSwitch(switchID);
-	if (mySwitch != nullptr)
+	if (mySwitch == nullptr)
 	{
-		// update existing switch
-		mySwitch->SetName(name);
-		mySwitch->SetPosX(posX);
-		mySwitch->SetPosY(posY);
-		mySwitch->SetPosZ(posZ);
-		mySwitch->SetRotation(rotation);
-		mySwitch->SetControlID(controlID);
-		mySwitch->SetProtocol(protocol);
-		mySwitch->SetAddress(address);
-		mySwitch->SetType(type);
-		mySwitch->SetDuration(duration);
-		mySwitch->SetInverted(inverted);
+		mySwitch = CreateAndAddObject(switches, switchMutex);
 	}
-	else
+
+	if (mySwitch == nullptr)
 	{
-		// create new switch
-		std::lock_guard<std::mutex> Guard(switchMutex);
-		switchID_t newSwitchID = 0;
-		// get next switchID
-		for (auto mySwitch : switches)
-		{
-			if (mySwitch.first > newSwitchID)
-			{
-				newSwitchID = mySwitch.first;
-			}
-		}
-		++newSwitchID;
-		mySwitch = new Switch(newSwitchID, name, posX, posY, posZ, rotation, controlID, protocol, address, type, duration, inverted);
-		if (mySwitch == nullptr)
-		{
-			result.assign("Unable to allocate memory for switch");
-			return false;
-		}
-		// save in map
-		switches[newSwitchID] = mySwitch;
+		return false;
 	}
+
+	// update existing switch
+	mySwitch->SetName(name);
+	mySwitch->SetPosX(posX);
+	mySwitch->SetPosY(posY);
+	mySwitch->SetPosZ(posZ);
+	mySwitch->SetRotation(rotation);
+	mySwitch->SetControlID(controlID);
+	mySwitch->SetProtocol(protocol);
+	mySwitch->SetAddress(address);
+	mySwitch->SetType(type);
+	mySwitch->SetDuration(duration);
+	mySwitch->SetInverted(inverted);
 
 	// save in db
 	if (storage)
@@ -1858,85 +1766,50 @@ bool Manager::StreetSave(const streetID_t streetID,
 	}
 
 	Street* street = GetStreet(streetID);
-	if (street != nullptr)
+	if (street == nullptr)
 	{
-		// update existing street
-		// remove street from old track
-		Track* track = GetTrack(street->GetFromTrack());
-		if (track != nullptr)
-		{
-			track->RemoveStreet(street);
-			if (storage)
-			{
-				storage->Save(*track);
-			}
-		}
-		street->SetName(name);
-		street->SetDelay(delay);
-		street->SetCommuter(commuter);
-		street->SetMinTrainLength(minTrainLength);
-		street->SetMaxTrainLength(maxTrainLength);
-		street->AssignRelations(relations);
-		street->SetVisible(visible);
-		street->SetPosX(posX);
-		street->SetPosY(posY);
-		street->SetPosZ(posZ);
-		street->SetAutomode(automode);
-		street->SetFromTrack(fromTrack);
-		street->SetFromDirection(fromDirection);
-		street->SetToTrack(toTrack);
-		street->SetToDirection(toDirection);
-		street->SetFeedbackIdReduced(feedbackIdReduced);
-		street->SetFeedbackIdCreep(feedbackIdCreep);
-		street->SetFeedbackIdStop(feedbackIdStop);
-		street->SetFeedbackIdOver(feedbackIdOver);
-	}
-	else
-	{
-		// create new street
-		std::lock_guard<std::mutex> Guard(streetMutex);
-		streetID_t newStreetID = 0;
-		// get next streetID
-		for (auto street : streets)
-		{
-			if (street.first > newStreetID)
-			{
-				newStreetID = street.first;
-			}
-		}
-		++newStreetID;
-		street = new Street(this,
-			newStreetID,
-			name,
-			delay,
-			commuter,
-			minTrainLength,
-			maxTrainLength,
-			relations,
-			visible,
-			posX,
-			posY,
-			posZ,
-			automode,
-			fromTrack,
-			fromDirection,
-			toTrack,
-			toDirection,
-			feedbackIdReduced,
-			feedbackIdCreep,
-			feedbackIdStop,
-			feedbackIdOver);
-		if (street == nullptr)
-		{
-			result.assign("Unable to allocate memory for street");
-			return false;
-		}
-		// save in map
-		streets[newStreetID] = street;
+		street = CreateAndAddObject(streets, streetMutex);
 	}
 
+	if (street == nullptr)
+	{
+		return false;
+	}
+
+	// remove street from old track
+	Track* track = GetTrack(street->GetFromTrack());
+	if (track != nullptr)
+	{
+		track->RemoveStreet(street);
+		if (storage)
+		{
+			storage->Save(*track);
+		}
+	}
+
+	// update existing street
+	street->SetName(name);
+	street->SetDelay(delay);
+	street->SetCommuter(commuter);
+	street->SetMinTrainLength(minTrainLength);
+	street->SetMaxTrainLength(maxTrainLength);
+	street->AssignRelations(relations);
+	street->SetVisible(visible);
+	street->SetPosX(posX);
+	street->SetPosY(posY);
+	street->SetPosZ(posZ);
+	street->SetAutomode(automode);
+	street->SetFromTrack(fromTrack);
+	street->SetFromDirection(fromDirection);
+	street->SetToTrack(toTrack);
+	street->SetToDirection(toDirection);
+	street->SetFeedbackIdReduced(feedbackIdReduced);
+	street->SetFeedbackIdCreep(feedbackIdCreep);
+	street->SetFeedbackIdStop(feedbackIdStop);
+	street->SetFeedbackIdOver(feedbackIdOver);
+
 	//Add new street
-	Track* track = GetTrack(fromTrack);
+	track = GetTrack(fromTrack);
 	if (track != nullptr)
 	{
 		track->AddStreet(street);
@@ -2037,34 +1910,18 @@ const map<string,layerID_t> Manager::LayerListByNameWithFeedback() const
 bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::string& result)
 {
 	Layer* layer = GetLayer(layerID);
-	if (layer != nullptr)
+	if (layer == nullptr)
 	{
-		// update existing layer
-		layer->SetName(name);
+		layer = CreateAndAddObject(layers, layerMutex);
 	}
-	else
+
+	if (layer == nullptr)
 	{
-		// create new layer
-		std::lock_guard<std::mutex> Guard(layerMutex);
-		layerID_t newLayerID = 0;
-		// get next streetID
-		for (auto layer : layers)
-		{
-			if (layer.first > newLayerID)
-			{
-				newLayerID = layer.first;
-			}
-		}
-		++newLayerID;
-		layer = new Layer(newLayerID, name);
-		if (layer == nullptr)
-		{
-			result.assign("Unable to allocate memory for layer");
-			return false;
-		}
-		// save in map
-		layers[newLayerID] = layer;
+		return false;
 	}
+
+	// update existing layer
+	layer->SetName(name);
 
 	// save in db
 	if (storage)

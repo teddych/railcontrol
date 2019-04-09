@@ -12,18 +12,13 @@ namespace datamodel
 	{
 		public:
 			Object() {}
-			Object(const objectID_t objectID, const std::string& name)
-			:	objectID(objectID),
-				name(name)
-			{
-			}
+			Object(const objectID_t objectID) : objectID(objectID) {}
 
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
 
-			void SetID(const objectID_t id) { this->objectID = id; }
 			objectID_t GetID() const { return objectID; }
-			void SetName(const std::string& name) { this->name = name; }
+			virtual void SetName(const std::string& name) { this->name = name; }
 			const std::string& GetName() const { return name; }
 
 		protected:

@@ -13,21 +13,9 @@ namespace datamodel
 	{
 		public:
 			Feedback(Manager* manager,
-				const feedbackID_t feedbackID,
-				const std::string& name,
-				const visible_t visible,
-				const layoutPosition_t x,
-				const layoutPosition_t y,
-				const layoutPosition_t z,
-				const controlID_t controlID,
-				const feedbackPin_t pin,
-				const bool inverted)
-			:	LayoutItem(feedbackID, name, visible, x, y, z, Width1, Height1, Rotation0),
-				controlID(controlID),
-				pin(pin),
-				manager(manager),
-				inverted(inverted),
-				trackID(TrackNone),
+				const feedbackID_t feedbackID)
+			:	LayoutItem(feedbackID),
+			 	manager(manager),
 				stateCounter(0)
 			{
 			}

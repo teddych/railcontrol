@@ -12,19 +12,8 @@ namespace datamodel
 	class Switch : public Accessory
 	{
 		public:
-			Switch(const switchID_t switchID,
-				const std::string& name,
-				const layoutPosition_t x,
-				const layoutPosition_t y,
-				const layoutPosition_t z,
-				const layoutRotation_t rotation,
-				const controlID_t controlID,
-				const protocol_t protocol,
-				const address_t address,
-				const switchType_t type,
-				const switchDuration_t timeout,
-				const bool inverted)
-			:	Accessory(switchID, name, x, y, z, rotation, controlID, protocol, address, type, timeout, inverted)
+			Switch(Manager* manager, const switchID_t switchID)
+			:	Accessory(manager, switchID)
 			{
 			}
 

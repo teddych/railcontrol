@@ -94,28 +94,9 @@ namespace datamodel
 	class Loco : public Object, public HardwareHandle
 	{
 		public:
-			Loco(Manager* manager,
-				const locoID_t locoID,
-				const std::string& name,
-				const controlID_t controlID,
-				const protocol_t protocol,
-				const address_t address,
-				const function_t nr,
-				const length_t length,
-				const bool commuter,
-				const locoSpeed_t maxSpeed,
-				const locoSpeed_t travelSpeed,
-				const locoSpeed_t reducedSpeed,
-				const locoSpeed_t creepSpeed)
-			:	Object(locoID, name),
-			 	HardwareHandle(controlID, protocol, address),
-				manager(manager),
-				length(length),
-				commuter(commuter),
-				maxSpeed(maxSpeed),
-				travelSpeed(travelSpeed),
-				reducedSpeed(reducedSpeed),
-				creepSpeed(creepSpeed),
+			Loco(Manager* manager, const locoID_t locoID)
+			:	Object(locoID),
+			 	manager(manager),
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
@@ -128,12 +109,13 @@ namespace datamodel
 				feedbackIdOver(FeedbackNone)
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
-				SetNrOfFunctions(nr);
+				SetNrOfFunctions(0);
 			}
 
 			Loco(Manager* manager, const std::string& serialized)
 			:	manager(manager),
 				speed(MinSpeed),
+				direction(DirectionRight),
 				state(LocoStateManual),
 				fromTrackID(TrackNone),
 				toTrackID(TrackNone),
@@ -153,6 +135,12 @@ namespace datamodel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
+
+			virtual void SetName(const std::string& name) override
+			{
+				Object::SetName(name);
+				logger = Logger::Logger::GetLogger("Loco " + name);
+			}
 
 			bool Start();
 			bool Stop();
@@ -204,6 +192,8 @@ namespace datamodel
 			};
 
 			Manager* manager;
+			std::mutex stateMutex;
+			std::thread locoThread;
 
 			length_t length;
 			bool commuter;
@@ -223,9 +213,6 @@ namespace datamodel
 			feedbackID_t feedbackIdCreep;
 			feedbackID_t feedbackIdStop;
 			feedbackID_t feedbackIdOver;
-
-			std::mutex stateMutex;
-			std::thread locoThread;
 
 			LocoFunctions functions;
 
