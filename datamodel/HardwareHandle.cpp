@@ -9,7 +9,7 @@ namespace datamodel
 	std::string HardwareHandle::Serialize() const
 	{
 		stringstream ss;
-		ss << ";controlID=" << static_cast<int>(controlID)
+		ss << "controlID=" << static_cast<int>(controlID)
 			<< ";protocol=" << static_cast<int>(protocol)
 			<< ";address=" << static_cast<int>(address);
 		return ss.str();
