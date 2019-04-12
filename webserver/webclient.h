@@ -115,6 +115,7 @@ namespace webserver
 			void handleTrackRelease(const std::map<std::string, std::string>& arguments);
 			void handleTrackStartLoco(const std::map<std::string, std::string>& arguments);
 			void handleTrackStopLoco(const std::map<std::string, std::string>& arguments);
+			void handleTrackBlock(const std::map<std::string, std::string>& arguments);
 			void handleFeedbackEdit(const std::map<std::string,std::string>& arguments);
 			void handleFeedbackSave(const std::map<std::string,std::string>& arguments);
 			void handleFeedbackState(const std::map<std::string,std::string>& arguments);

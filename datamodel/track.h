@@ -32,7 +32,8 @@ namespace datamodel
 			 	LockableItem(),
 			 	manager(manager),
 				state(FeedbackStateFree),
-			 	locoDirection(DirectionRight)
+			 	locoDirection(DirectionRight),
+			 	blocked(false)
 			{
 			}
 
@@ -70,6 +71,8 @@ namespace datamodel
 			bool GetValidStreets(const datamodel::Loco* loco, std::vector<Street*>& validStreets) const;
 			direction_t GetLocoDirection() const { return locoDirection; }
 			void SetLocoDirection(const direction_t direction) { locoDirection = direction; }
+			bool GetBlocked() const { return blocked; }
+			void SetBlocked(const bool blocked) { this->blocked = blocked; }
 
 		private:
 			bool FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state);
@@ -84,5 +87,6 @@ namespace datamodel
 			feedbackState_t state;
 			std::vector<Street*> streets;
 			direction_t locoDirection;
+			bool blocked;
 	};
 } // namespace datamodel

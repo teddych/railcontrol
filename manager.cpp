@@ -2117,6 +2117,16 @@ bool Manager::TrackStopLoco(const trackID_t trackID)
 	return LocoStop(track->GetLoco());
 }
 
+void Manager::TrackBlock(const trackID_t trackID, const bool blocked)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return;
+	}
+	track->SetBlocked(blocked);
+}
+
 void Manager::TrackPublishState(const datamodel::Track* track)
 {
 	const Loco* loco = GetLoco(track->GetLoco());

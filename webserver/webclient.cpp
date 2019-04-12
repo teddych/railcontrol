@@ -358,6 +358,10 @@ namespace webserver
 			{
 				handleTrackStopLoco(arguments);
 			}
+			else if (arguments["cmd"].compare("trackblock") == 0)
+			{
+				handleTrackBlock(arguments);
+			}
 			else if (arguments["cmd"].compare("feedbackedit") == 0)
 			{
 				handleFeedbackEdit(arguments);
@@ -2585,6 +2589,14 @@ namespace webserver
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackStopLoco(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco stopped" : "Loco not stopped"));
+	}
+
+	void WebClient::handleTrackBlock(const map<string, string>& arguments)
+	{
+		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		bool blocked = GetBoolMapEntry(arguments, "blocked");
+		manager.TrackBlock(trackID, blocked);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Track block/unblock received"));
 	}
 
 	void WebClient::handleFeedbackEdit(const map<string, string>& arguments)

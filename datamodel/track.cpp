@@ -33,7 +33,8 @@ namespace datamodel
 			<< ";feedbacks=" << feedbackString
 			<< ";selectstreetapproach=" << static_cast<int>(selectStreetApproach)
 			<< ";state=" << static_cast<int>(state)
-			<< ";locoDirection=" << static_cast<int>(locoDirection);
+			<< ";locoDirection=" << static_cast<int>(locoDirection)
+			<< ";blocked=" << static_cast<int>(blocked);
 		return ss.str();
 	}
 
@@ -61,11 +62,16 @@ namespace datamodel
 		selectStreetApproach = static_cast<selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
 		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
+		blocked = GetBoolMapEntry(arguments, "blocked", false);
 		return true;
 	}
 
 	bool Track::Reserve(const locoID_t locoID)
 	{
+		if (blocked == true)
+		{
+			return false;
+		}
 		if (state != FeedbackStateFree)
 		{
 			return false;
