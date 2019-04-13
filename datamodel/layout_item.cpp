@@ -21,20 +21,18 @@ namespace datamodel
 			layoutItemSize_t& w,
 			layoutItemSize_t& h)
 	{
+		x = posX;
+		y = posY;
 		switch (rotation)
 		{
 			case Rotation0:
 			case Rotation180:
-				x = posX;
-				y = posY;
 				w = width;
 				h = height;
 				return true;
 
 			case Rotation90:
 			case Rotation270:
-				x = posX;
-				y = posY;
 				w = height;
 				h = width;
 				return true;

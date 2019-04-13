@@ -168,21 +168,27 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::TrackState(const controlType_t controlType, const string& name, const trackID_t trackID, const feedbackState_t state, const string& locoName)
+	void WebServer::TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const std::string& locoName)
 	{
 		stringstream command;
 		stringstream status;
-		string stateText;
-		text::Converters::feedbackStatus(state, stateText);
-		command << "trackstate;track=" << trackID << ";state=" << stateText << ";loconame=" << locoName;
-		status << name << " is " << stateText << " ";
-		if (locoName.length() > 0)
+		const string occupiedText = (occupied ? "true" : "false");
+		const string blockedText = (blocked ? "true" : "false");
+		const bool reserved = locoName.length() > 0;
+		const string reservedText = (reserved ? "true" : "false");
+		command << "trackstate;track=" << trackID
+			<< ";occupied=" << occupiedText
+			<< ";reserved=" << reservedText
+			<< ";blocked=" << blockedText
+			<< ";loconame=" << locoName;
+		status << name << " is " << (blocked ? "blocked and " : "") << (occupied ? "occupied" : "free");
+		if (reserved)
 		{
-			if (state != FeedbackStateOccupied)
+			if (occupied == false)
 			{
-				status << "but reserved ";
+				status << " but reserved";
 			}
-			status << "by " << locoName;
+			status << " by " << locoName;
 		}
 		AddUpdate(command.str(), status.str());
 	}

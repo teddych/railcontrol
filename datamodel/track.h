@@ -32,8 +32,10 @@ namespace datamodel
 			 	LockableItem(),
 			 	manager(manager),
 				state(FeedbackStateFree),
+			 	stateDelayed(FeedbackStateFree),
 			 	locoDirection(DirectionRight),
-			 	blocked(false)
+			 	blocked(false),
+			 	locoIdDelayed(LocoNone)
 			{
 			}
 
@@ -41,6 +43,8 @@ namespace datamodel
 			:	manager(manager)
 			{
 				Deserialize(serialized);
+				this->stateDelayed = this->state;
+				this->locoIdDelayed = this->GetLoco();
 			}
 
 			objectType_t GetObjectType() const { return ObjectTypeTrack; }
@@ -59,8 +63,9 @@ namespace datamodel
 			std::vector<feedbackID_t> GetFeedbacks() const { return feedbacks; }
 			void Feedbacks(const std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
 
-			bool FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state);
-			feedbackState_t FeedbackState() const { return state; };
+			bool SetFeedbackState(const feedbackID_t feedbackID, const feedbackState_t state);
+			feedbackState_t GetFeedbackState() const { return state; };
+			feedbackState_t GetFeedbackStateDelayed() const { return stateDelayed; };
 
 			bool AddStreet(Street* street);
 			bool RemoveStreet(Street* street);
@@ -73,6 +78,7 @@ namespace datamodel
 			void SetLocoDirection(const direction_t direction) { locoDirection = direction; }
 			bool GetBlocked() const { return blocked; }
 			void SetBlocked(const bool blocked) { this->blocked = blocked; }
+			locoID_t GetLocoDelayed() const { return this->locoIdDelayed; }
 
 		private:
 			bool FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state);
@@ -85,8 +91,10 @@ namespace datamodel
 			std::vector<feedbackID_t> feedbacks;
 			selectStreetApproach_t selectStreetApproach;
 			feedbackState_t state;
+			feedbackState_t stateDelayed;
 			std::vector<Street*> streets;
 			direction_t locoDirection;
 			bool blocked;
+			locoID_t locoIdDelayed;
 	};
 } // namespace datamodel

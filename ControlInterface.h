@@ -48,7 +48,7 @@ class ControlInterface
 		virtual void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) {};
 		virtual void TrackDelete(const trackID_t trackID, const std::string& name) {};
 		virtual void TrackSettings(const trackID_t trackID, const std::string& name) {};
-		virtual void TrackState(const controlType_t controlType, const std::string& name, const trackID_t trackID, const feedbackState_t state, const std::string& locoName) {};
+		virtual void TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const std::string& locoName) {};
 
 	private:
 		controlType_t controlType;

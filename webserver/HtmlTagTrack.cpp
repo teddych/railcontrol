@@ -1,5 +1,6 @@
 #include <sstream>
 
+#include "datamodel/loco.h"
 #include "webserver/HtmlTagTrack.h"
 
 using std::string;
@@ -19,8 +20,15 @@ namespace webserver
 		trackType_t type = track->GetType();
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
-		locoID_t locoID = track->GetLoco();
+
 		const string& trackName = track->GetName();
+		bool occupied = track->GetFeedbackStateDelayed() == FeedbackStateOccupied;
+
+		locoID_t locoID = track->GetLocoDelayed();
+		datamodel::Loco* loco = manager.GetLoco(locoID);
+		bool reserved = locoID != LocoNone;
+
+		bool blocked = track->GetBlocked();
 
 		HtmlTag div1("div");
 		string trackIdString = to_string(track->GetID());
@@ -28,8 +36,29 @@ namespace webserver
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("track_item");
-		div1.AddClass(track->FeedbackState() == FeedbackStateFree ? "track_free" : "track_occupied");
-		div1.AddClass(locoID == LocoNone ? "loco_unknown" : "loco_known");
+		string trackClass;
+		if (reserved && occupied)
+		{
+			trackClass = "track_reserved_occupied";
+		}
+		else if (reserved)
+		{
+			trackClass = "track_reserved";
+		}
+		else if (occupied)
+		{
+			trackClass = "track_occupied";
+		}
+		else if (blocked)
+		{
+			trackClass = "track_blocked";
+		}
+		else
+		{
+			trackClass = "track_free";
+		}
+
+		div1.AddClass(trackClass);
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
 		layoutItemSize_t trackHeight = track->GetHeight();
@@ -41,7 +70,7 @@ namespace webserver
 		}
 		else
 		{
-			const string& locoName = locoID == LocoNone ? "" : manager.GetLocoName(locoID);
+			const string& locoName = reserved ? loco->GetName() : "";
 			image = "<polygon class=\"track\" points=\"13,0 22,0 22," + layoutHeight + " 13," + layoutHeight + "\"/>";
 			image += "<text class=\"loconame\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";
 			image += "<text class=\"trackname\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + trackName + "</text>";
@@ -71,17 +100,18 @@ namespace webserver
 
 		HtmlTag div2("div");
 		div2.AddClass("contextmenu");
-		div2.AddClass(locoID == LocoNone ? "loco_unknown" : "loco_known");
+		div2.AddClass(reserved ? "loco_known" : "loco_unknown");
+		div2.AddClass(blocked ? "track_blocked" : "track_unblocked");
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(trackName))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_block").AddContent("Block track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=true');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_unblock").AddContent("Unblock track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=false');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent("Release track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_set").AddContent("Set loco").AddAttribute("onClick", "loadPopup('/?cmd=tracksetloco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_start_loco").AddContent("Start loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstartloco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_stop_loco").AddContent("Stop loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstoploco&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_unblocked").AddContent("Block track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=true');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_blocked").AddContent("Unblock track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=false');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
 			);

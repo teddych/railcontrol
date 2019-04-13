@@ -150,18 +150,33 @@ body {
 }
 
 .track_occupied .track,
-.track_occupied.loco_known .loconame {
+.track_reserved_occupied .track,
+.track_reserved_occupied .loconame {
 	fill: red;
 }
 
 .track_reserved .track,
-.track_reserved.loco_known .loconame {
+.track_reserved .loconame {
 	fill: green;
 }
 
+.track_blocked .track {
+	fill: gray;
+}
+
+.track_error {
+	background-color: orange;
+}
+
+.track_blocked .track_block,
+.track_unblocked .track_unblock,
 .loco_known .track_set,
-.loco_known .trackname,
-.loco_unknown .loconame {
+.track_free .loconame,
+.track_reserved .trackname,
+.track_reserved_occupied .trackname,
+.track_occupied .loconame,
+.track_blocked .loconame,
+.track_error .loconame {
 	display: none;
 }
 

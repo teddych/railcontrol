@@ -119,15 +119,6 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::TrackState(const controlType_t controlType, const string& name, const trackID_t trackID, const feedbackState_t state, const string& locoName)
-	{
-		std::stringstream status;
-		string stateText;
-		text::Converters::feedbackStatus(state, stateText);
-		status << name << " is " << stateText << " with loco " << locoName;
-		AddUpdate(status.str());
-	}
-
 	void ConsoleServer::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
 		if (on == false)

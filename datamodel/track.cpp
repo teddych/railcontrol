@@ -68,6 +68,10 @@ namespace datamodel
 
 	bool Track::Reserve(const locoID_t locoID)
 	{
+		if (this->locoIdDelayed != LocoNone)
+		{
+			return false;
+		}
 		if (blocked == true)
 		{
 			return false;
@@ -76,7 +80,13 @@ namespace datamodel
 		{
 			return false;
 		}
-		return LockableItem::Reserve(locoID);
+		bool ret = LockableItem::Reserve(locoID);
+		if (ret == false)
+		{
+			return false;
+		}
+		this->locoIdDelayed = locoID;
+		return true;
 	}
 
 	bool Track::Lock(const locoID_t locoID)
@@ -89,19 +99,34 @@ namespace datamodel
 	bool Track::Release(const locoID_t locoID)
 	{
 		bool ret = LockableItem::Release(locoID);
+		if (ret == false)
+		{
+			return false;
+		}
+		if (state != FeedbackStateFree)
+		{
+			return true;
+		}
+		this->locoIdDelayed = LocoNone;
+		this->stateDelayed = FeedbackStateFree;
 		manager->TrackPublishState(this);
-		return ret;
+		return true;
 	}
 
-	bool Track::FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
+	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		feedbackState_t oldState = this->state;
 		bool ret = FeedbackStateInternal(feedbackID, state);
-		if (ret == true && oldState != state)
+		if (ret == false)
 		{
-			manager->TrackPublishState(this);
+			return false;
 		}
-		return ret;
+		if (oldState == state)
+		{
+			return true;
+		}
+		manager->TrackPublishState(this);
+		return true;
 	}
 
 	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state)
@@ -109,7 +134,7 @@ namespace datamodel
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (state == FeedbackStateOccupied)
 		{
-			Loco* loco = manager->GetLoco(GetLoco());
+			Loco* loco = manager->GetLoco(GetLocoDelayed());
 			if (loco == nullptr)
 			{
 				manager->Booster(ControlTypeInternal, BoosterStop);
@@ -120,6 +145,7 @@ namespace datamodel
 			}
 
 			this->state = state;
+			this->stateDelayed = state;
 			return true;
 		}
 
@@ -136,6 +162,11 @@ namespace datamodel
 			}
 		}
 		this->state = FeedbackStateFree;
+		if (this->GetLoco() == LocoNone)
+		{
+			this->stateDelayed = FeedbackStateFree;
+			this->locoIdDelayed = LocoNone;
+		}
 		return true;
 	}
 

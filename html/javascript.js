@@ -441,54 +441,95 @@ function dataUpdate(event)
 		var element = document.getElementById(elementName);
 		if (element)
 		{
-			var contextElement = document.getElementById(elementName + '_context');
-			var locoElement = document.getElementById(elementName + '_text_loconame');
-
-			var oldState = element.classList.contains('track_occupied');
-			var newState = argumentMap.has('state') && argumentMap.get('state') == 'occupied';
-			var oldLocoName = locoElement ? locoElement.innerHTML : '';
-			var newLocoName = argumentMap.has('loconame') ? argumentMap.get('loconame') : '';
+			var reserved = false;
+			var occupied = false;
+			var blocked = false;
+			var error = false;
 
 
-			if (newState || (oldState && newLocoName !== ''))
+			if (argumentMap.has('occupied'))
 			{
-				element.classList.remove('track_free');
-				element.classList.remove('track_reserved');
+				occupied = argumentMap.get('occupied') == 'true';
+			}
+
+			if (argumentMap.has('reserved'))
+			{
+				reserved = argumentMap.get('reserved') == 'true';
+			}
+
+			if (argumentMap.has('blocked'))
+			{
+				blocked = argumentMap.get('blocked') == 'true';
+			}
+
+			element.classList.remove('track_free');
+			element.classList.remove('track_reserved');
+			element.classList.remove('track_reserved_occupied');
+			element.classList.remove('track_occupied');
+			element.classList.remove('track_error');
+			element.classList.remove('track_blocked');
+
+			if (reserved && occupied)
+			{
+				element.classList.add('track_reserved_occupied');
+			}
+			else if (reserved)
+			{
+				element.classList.add('track_reserved');
+			}
+			else if (occupied)
+			{
 				element.classList.add('track_occupied');
 			}
-			else if (oldLocoName === '' && newLocoName !== '')
+			else if (blocked)
 			{
-				element.classList.remove('track_free');
-				element.classList.remove('track_occupied');
-				element.classList.add('track_reserved');
+				element.classList.add('track_blocked');
 			}
 			else
 			{
-				element.classList.remove('track_occupied');
-				element.classList.remove('track_reserved');
 				element.classList.add('track_free');
 			}
 
+			if (error)
+			{
+				element.classList.add('track_error');
+			}
+
+			var contextElement = document.getElementById(elementName + '_context');
 			if (contextElement)
 			{
-				if (newLocoName == '')
-				{
-					element.classList.remove('loco_known');
-					element.classList.add('loco_unknown');
-					contextElement.classList.remove('loco_known');
-					contextElement.classList.add('loco_unknown');
-				}
-				else
+				if (reserved == true)
 				{
 					element.classList.remove('loco_unknown');
 					element.classList.add('loco_known');
 					contextElement.classList.remove('loco_unknown');
 					contextElement.classList.add('loco_known');
 				}
+				else
+				{
+					element.classList.remove('loco_known');
+					element.classList.add('loco_unknown');
+					contextElement.classList.remove('loco_known');
+					contextElement.classList.add('loco_unknown');
+				}
+
+				if (blocked == true)
+				{
+					contextElement.classList.remove('track_unblocked');
+					contextElement.classList.add('track_blocked');
+				}
+				else
+				{
+					contextElement.classList.remove('track_blocked');
+					contextElement.classList.add('track_unblocked');
+				}
 			}
+
+			var locoElement = document.getElementById(elementName + '_text_loconame');
 			if (locoElement)
 			{
-				locoElement.innerHTML = newLocoName;
+				var locoName = argumentMap.has('loconame') ? argumentMap.get('loconame') : '';
+				locoElement.innerHTML = locoName;
 			}
 		}
 	}

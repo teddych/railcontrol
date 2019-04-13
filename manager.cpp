@@ -2087,14 +2087,7 @@ bool Manager::TrackReleaseInternal(Track* track)
 	{
 		return false;
 	}
-	const string& trackName = track->GetName();
-	const trackID_t trackID = track->GetID();
-	const feedbackState_t trackState = track->FeedbackState();
-	std::lock_guard<std::mutex> Guard(controlMutex);
-	for (auto control : controls)
-	{
-		control.second->TrackState(ControlTypeInternal, trackName, trackID, trackState, "");
-	}
+	TrackPublishState(track);
 	return true;
 }
 bool Manager::TrackStartLoco(const trackID_t trackID)
@@ -2125,19 +2118,22 @@ void Manager::TrackBlock(const trackID_t trackID, const bool blocked)
 		return;
 	}
 	track->SetBlocked(blocked);
+	TrackPublishState(track);
 }
 
 void Manager::TrackPublishState(const datamodel::Track* track)
 {
-	const Loco* loco = GetLoco(track->GetLoco());
-	const string& locoName = loco == nullptr ? "" : loco->GetName();
+	const Loco* loco = GetLoco(track->GetLocoDelayed());
+	const bool hasLoco = loco != nullptr;
+	const string& locoName = hasLoco ? loco->GetName() : "";
 	const string& trackName = track->GetName();
 	const trackID_t trackID = track->GetID();
-	const feedbackState_t trackState = track->FeedbackState();
+	const bool occupied = track->GetFeedbackStateDelayed() == FeedbackStateOccupied;
+	const bool blocked = track->GetBlocked();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackState(ControlTypeInternal, trackName, trackID, trackState, locoName);
+		control.second->TrackState(trackID, trackName, occupied, blocked, locoName);
 	}
 }
 

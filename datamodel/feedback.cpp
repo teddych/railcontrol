@@ -70,7 +70,7 @@ namespace datamodel
 		{
 			return;
 		}
-		track->FeedbackState(objectID, state);
+		track->SetFeedbackState(objectID, state);
 		return;
 	}
 
