@@ -676,7 +676,7 @@ namespace webserver
 	{
 		HtmlTag content;
 		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
-		string name("New Layer");
+		string name;
 
 		if (layerID != LayerNone)
 		{
@@ -814,7 +814,7 @@ namespace webserver
 		HtmlTag content;
 		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		hardwareType_t hardwareType = HardwareTypeNone;
-		string name("New Control");
+		string name;
 		string arg1;
 		string arg2;
 		string arg3;
@@ -1332,7 +1332,7 @@ namespace webserver
 		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = 1;
-		string name("New Loco");
+		string name;
 		function_t nrOfFunctions = 0;
 		bool commuter = false;
 		length_t length = 0;
@@ -1808,7 +1808,7 @@ namespace webserver
 		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
-		string name("New Switch");
+		string name;
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
@@ -2026,7 +2026,7 @@ namespace webserver
 	{
 		HtmlTag content;
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
-		string name("New Street");
+		string name;
 		delay_t delay = Street::DefaultDelay;
 		Street::commuterType_t commuter = Street::CommuterTypeBoth;
 		length_t minTrainLength = 0;
@@ -2325,7 +2325,7 @@ namespace webserver
 	{
 		HtmlTag content;
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
-		string name("New Track");
+		string name;
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
@@ -2603,7 +2603,7 @@ namespace webserver
 	{
 		HtmlTag content;
 		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		string name("New feedback");
+		string name;
 		controlID_t controlId = ControlNone;
 		feedbackPin_t pin = FeedbackPinNone;
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);

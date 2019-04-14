@@ -22,7 +22,7 @@ namespace webserver
 
 			bool NextUpdate(unsigned int& updateIDClient, std::string& s);
 
-			const std::string Name() const override { return "Webserver"; }
+			const std::string GetName() const override { return "Webserver"; }
 			void AccessoryDelete(const accessoryID_t accessoryID, const std::string& name) override;
 			void AccessorySettings(const accessoryID_t accessoryID, const std::string& name) override;
 			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;

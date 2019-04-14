@@ -162,7 +162,7 @@ namespace hardware
 #endif
 	}
 
-	const std::string HardwareHandler::Name() const
+	const std::string HardwareHandler::GetName() const
 	{
 		if (instance == nullptr)
 		{

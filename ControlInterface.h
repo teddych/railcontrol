@@ -12,7 +12,7 @@ class ControlInterface
 		ControlInterface(controlType_t controlType) : controlType(controlType) {}
 		virtual ~ControlInterface() {};
 		const controlType_t ControlType() const { return controlType; }
-		virtual const std::string Name() const = 0;
+		virtual const std::string GetName() const = 0;
 		virtual void AccessoryDelete(const accessoryID_t accessoryID, const std::string& name) {}
 		virtual void AccessoryProtocols(std::vector<protocol_t>& protocols) const {};
 		virtual bool AccessoryProtocolSupported(protocol_t protocol) const { return false; };

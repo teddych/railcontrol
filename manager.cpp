@@ -239,7 +239,7 @@ bool Manager::ControlSave(const controlID_t& controlID,
 	HardwareParams* params = GetHardware(controlID);
 	if (params != nullptr)
 	{
-		params->name = name;
+		params->name = CheckObjectName(controls, controlMutex, name.size() == 0 ? "C" : name);
 		params->hardwareType = hardwareType;
 		params->arg1 = arg1;
 		params->arg2 = arg2;
@@ -389,7 +389,7 @@ const std::string Manager::GetControlName(const controlID_t controlID)
 		return unknownControl;
 	}
 	ControlInterface* control = controls.at(controlID);
-	return control->Name();
+	return control->GetName();
 }
 
 const std::map<controlID_t,std::string> Manager::LocoControlListNames() const
@@ -444,7 +444,7 @@ const std::map<controlID_t,std::string> Manager::FeedbackControlListNames() cons
 		{
 			continue;
 		}
-		ret[control.first] = control.second->Name();
+		ret[control.first] = control.second->GetName();
 	}
 	return ret;
 }
@@ -604,7 +604,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 	}
 
 	// update existing loco
-	loco->SetName(name);
+	loco->SetName(CheckObjectName(locos, locoMutex, name.size() == 0 ? "L" : name));
 	loco->SetControlID(controlID);
 	loco->SetProtocol(protocol);
 	loco->SetAddress(address);
@@ -1157,7 +1157,7 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 		return false;
 	}
 
-	feedback->SetName(name);
+	feedback->SetName(CheckObjectName(feedbacks, feedbackMutex, name.size() == 0 ? "F" : name));
 	feedback->SetVisible(visible);
 	feedback->SetPosX(posX);
 	feedback->SetPosY(posY);
@@ -1410,7 +1410,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	}
 
 	// update existing track
-	track->SetName(name);
+	track->SetName(CheckObjectName(tracks, trackMutex, name.size() == 0 ? "T" : name));
 	track->SetHeight(height);
 	track->SetRotation(rotation);
 	track->SetPosX(posX);
@@ -1581,7 +1581,7 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 	}
 
 	// update existing switch
-	mySwitch->SetName(name);
+	mySwitch->SetName(CheckObjectName(switches, switchMutex, name.size() == 0 ? "S" : name));
 	mySwitch->SetPosX(posX);
 	mySwitch->SetPosY(posY);
 	mySwitch->SetPosZ(posZ);
@@ -1788,7 +1788,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	}
 
 	// update existing street
-	street->SetName(name);
+	street->SetName(CheckObjectName(streets, streetMutex, name.size() == 0 ? "S" : name));
 	street->SetDelay(delay);
 	street->SetCommuter(commuter);
 	street->SetMinTrainLength(minTrainLength);
@@ -1902,7 +1902,7 @@ const map<string,layerID_t> Manager::LayerListByNameWithFeedback() const
 		{
 			continue;
 		}
-		list["| Feedbacks of " + control.second->Name()] = -control.first;
+		list["| Feedbacks of " + control.second->GetName()] = -control.first;
 	}
 	return list;
 }
@@ -1921,7 +1921,7 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 	}
 
 	// update existing layer
-	layer->SetName(name);
+	layer->SetName(CheckObjectName(layers, layerMutex, name.size() == 0 ? "L" : name));
 
 	// save in db
 	if (storage)

@@ -23,7 +23,7 @@ namespace console
 
 			void Work(Network::TcpConnection* connection) override;
 
-			const std::string Name() const override { return "Console"; }
+			const std::string GetName() const override { return "Console"; }
 			void Booster(const controlType_t controlType, const boosterState_t status) override;
 			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;
 			void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) override;

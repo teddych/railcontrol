@@ -20,7 +20,7 @@ namespace hardware {
 			HardwareHandler(Manager& manager, const HardwareParams* params);
 			~HardwareHandler();
 			controlID_t ControlID() const { return params->controlID; }
-			const std::string Name() const override;
+			const std::string GetName() const override;
 
 			void AccessoryProtocols(std::vector<protocol_t>& protocols) const override;
 			bool AccessoryProtocolSupported(protocol_t protocol) const override;
