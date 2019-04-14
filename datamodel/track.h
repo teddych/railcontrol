@@ -32,10 +32,8 @@ namespace datamodel
 			 	LockableItem(),
 			 	manager(manager),
 				state(FeedbackStateFree),
-			 	stateDelayed(FeedbackStateFree),
 			 	locoDirection(DirectionRight),
-			 	blocked(false),
-			 	locoIdDelayed(LocoNone)
+			 	blocked(false)
 			{
 			}
 
@@ -43,8 +41,6 @@ namespace datamodel
 			:	manager(manager)
 			{
 				Deserialize(serialized);
-				this->stateDelayed = this->state;
-				this->locoIdDelayed = this->GetLoco();
 			}
 
 			objectType_t GetObjectType() const { return ObjectTypeTrack; }

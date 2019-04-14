@@ -33,8 +33,10 @@ namespace datamodel
 			<< ";feedbacks=" << feedbackString
 			<< ";selectstreetapproach=" << static_cast<int>(selectStreetApproach)
 			<< ";state=" << static_cast<int>(state)
+			<< ";statedelayed=" << static_cast<int>(stateDelayed)
 			<< ";locoDirection=" << static_cast<int>(locoDirection)
-			<< ";blocked=" << static_cast<int>(blocked);
+			<< ";blocked=" << static_cast<int>(blocked)
+			<< ";locodelayed=" << static_cast<int>(locoIdDelayed);
 		return ss.str();
 	}
 
@@ -61,8 +63,10 @@ namespace datamodel
 		}
 		selectStreetApproach = static_cast<selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
 		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
+		stateDelayed = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "statedelayed", state));
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
 		blocked = GetBoolMapEntry(arguments, "blocked", false);
+		locoIdDelayed = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "locodelayed", GetLoco()));
 		return true;
 	}
 
