@@ -898,7 +898,7 @@ bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layo
 	Accessory* accessory = GetAccessory(accessoryID);
 	if (accessory == nullptr)
 	{
-		return false;
+		return true;
 	}
 
 	return accessory->HasPosition(posX, posY, posZ);
@@ -1125,12 +1125,12 @@ bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutP
 	Feedback* feedback = GetFeedback(feedbackID);
 	if (feedback == nullptr)
 	{
-		return false;
+		return true;
 	}
 
 	if (feedback->GetVisible() == VisibleNo)
 	{
-		return false;
+		return true;
 	}
 
 	return feedback->HasPosition(posX, posY, posZ);
@@ -1548,7 +1548,7 @@ bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPositio
 	Switch* mySwitch = GetSwitch(switchID);
 	if (mySwitch == nullptr)
 	{
-		return false;
+		return true;
 	}
 
 	return mySwitch->HasPosition(posX, posY, posZ);
@@ -1723,12 +1723,12 @@ bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPositio
 	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
-		return false;
+		return true;
 	}
 
 	if (street->GetVisible() == VisibleNo)
 	{
-		return false;
+		return true;
 	}
 
 	return street->HasPosition(posX, posY, posZ);
