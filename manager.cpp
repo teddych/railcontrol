@@ -932,7 +932,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	}
 
 	// update existing accessory
-	accessory->SetName(name);
+	accessory->SetName(CheckObjectName(accessories, accessoryMutex, name.size() == 0 ? "A" : name));
 	accessory->SetPosX(posX);
 	accessory->SetPosY(posY);
 	accessory->SetPosZ(posZ);

@@ -2,7 +2,9 @@
 
 #include <map>
 #include <mutex>
+#include <sstream>
 #include <string>
+#include <iomanip>
 #include <vector>
 
 #include "config.h"
@@ -292,6 +294,41 @@ class Manager {
 
 		Logger::Logger* logger;
 		boosterState_t boosterState;
+
+		template<class ID, class T>
+		bool CheckObjectName(std::map<ID,T*>& objects, const std::string& name)
+		{
+			for (auto object : objects)
+			{
+				if (object.second->GetName().compare(name) == 0)
+				{
+					return false;
+				}
+			}
+			return true;
+		}
+
+		template<class ID, class T>
+		std::string CheckObjectName(std::map<ID,T*>& objects, std::mutex& mutex, const std::string& name)
+		{
+			std::lock_guard<std::mutex> Guard(mutex);
+			if (CheckObjectName(objects, name))
+			{
+				return name;
+			}
+			unsigned int counter = 0;
+			while (true)
+			{
+				++counter;
+				std::stringstream ss;
+				ss << name << std::setw(3) << std::setfill('0') << counter;
+				std::string newName = ss.str();
+				if (CheckObjectName(objects, newName))
+				{
+					return newName;
+				}
+			}
+		}
 
 		// FIXME: check usage of all mutexes
 

@@ -1626,7 +1626,7 @@ namespace webserver
 		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
-		string name("New Accessory");
+		string name;
 		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
