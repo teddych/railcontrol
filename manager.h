@@ -308,6 +308,16 @@ class Manager {
 			return true;
 		}
 
+		bool CheckIfNumber(const char& c) { return c >= '0' && c <= '9'; }
+		bool CheckIfThreeNumbers(const std::string& s)
+		{
+			size_t sSize = s.size();
+			return sSize >= 3
+			&& CheckIfNumber(s.at(sSize-1))
+			&& CheckIfNumber(s.at(sSize-2))
+			&& CheckIfNumber(s.at(sSize-3));
+		}
+
 		template<class ID, class T>
 		std::string CheckObjectName(std::map<ID,T*>& objects, std::mutex& mutex, const std::string& name)
 		{
@@ -317,11 +327,14 @@ class Manager {
 				return name;
 			}
 			unsigned int counter = 0;
+
+			const std::string baseName = CheckIfThreeNumbers(name) ? name.substr(0, name.size() - 3) : name;
+
 			while (true)
 			{
 				++counter;
 				std::stringstream ss;
-				ss << name << std::setw(3) << std::setfill('0') << counter;
+				ss << baseName << std::setw(3) << std::setfill('0') << counter;
 				std::string newName = ss.str();
 				if (CheckObjectName(objects, newName))
 				{
