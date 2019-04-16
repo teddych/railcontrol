@@ -66,7 +66,7 @@ namespace datamodel
 		stateDelayed = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "statedelayed", state));
 		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
 		blocked = GetBoolMapEntry(arguments, "blocked", false);
-		locoIdDelayed = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "locodelayed", GetLoco()));
+		locoIdDelayed = static_cast<locoID_t>(GetIntegerMapEntry(arguments, "locodelayed", GetLoco()));
 		return true;
 	}
 
