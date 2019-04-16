@@ -84,6 +84,11 @@ namespace datamodel
 		{
 			return false;
 		}
+		return ReserveForce(locoID);
+	}
+
+	bool Track::ReserveForce(const locoID_t locoID)
+	{
 		bool ret = LockableItem::Reserve(locoID);
 		if (ret == false)
 		{

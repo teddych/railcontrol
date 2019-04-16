@@ -49,7 +49,7 @@ namespace datamodel
 			bool Deserialize(const std::string& serialized) override;
 
 			bool Reserve(const locoID_t locoID) override;
-			bool ReserveForce(const locoID_t locoID) { return LockableItem::Reserve(locoID); }
+			bool ReserveForce(const locoID_t locoID);
 			bool Lock(const locoID_t locoID) override;
 			bool Release(const locoID_t locoID) override;
 
