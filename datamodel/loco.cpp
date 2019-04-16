@@ -277,7 +277,13 @@ namespace datamodel
 		feedbackIdStop = usedStreet->GetFeedbackIdStop();
 		feedbackIdOver = usedStreet->GetFeedbackIdOver();
 		Track* newToTrack = manager->GetTrack(toTrackID);
-		direction_t newLocoDirection = static_cast<direction_t>(direction != (oldToTrack->GetLocoDirection() != usedStreet->GetFromDirection()));
+		bool turnLoco = (oldToTrack->GetLocoDirection() != usedStreet->GetFromDirection());
+		direction_t newLocoDirection = static_cast<direction_t>(direction != turnLoco);
+		if (turnLoco)
+		{
+			oldToTrack->SetLocoDirection(usedStreet->GetFromDirection());
+			manager->TrackPublishState(oldToTrack);
+		}
 		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
 		newToTrack->SetLocoDirection(static_cast<direction_t>(!usedStreet->GetToDirection()));
 		logger->Info("Heading to {0} via {1}", newToTrack->GetName(), usedStreet->GetName());
