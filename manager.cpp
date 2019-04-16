@@ -2130,10 +2130,11 @@ void Manager::TrackPublishState(const datamodel::Track* track)
 	const trackID_t trackID = track->GetID();
 	const bool occupied = track->GetFeedbackStateDelayed() == FeedbackStateOccupied;
 	const bool blocked = track->GetBlocked();
+	const direction_t direction = track->GetLocoDirection();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackState(trackID, trackName, occupied, blocked, locoName);
+		control.second->TrackState(trackID, trackName, occupied, blocked, direction, locoName);
 	}
 }
 

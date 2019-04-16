@@ -168,7 +168,7 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const std::string& locoName)
+	void WebServer::TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const direction_t direction, const std::string& locoName)
 	{
 		stringstream command;
 		stringstream status;
@@ -176,10 +176,12 @@ namespace webserver {
 		const string blockedText = (blocked ? "true" : "false");
 		const bool reserved = locoName.length() > 0;
 		const string reservedText = (reserved ? "true" : "false");
+		const string directionText = (direction ? "true" : "false");
 		command << "trackstate;track=" << trackID
 			<< ";occupied=" << occupiedText
 			<< ";reserved=" << reservedText
 			<< ";blocked=" << blockedText
+			<< ";direction=" << directionText
 			<< ";loconame=" << locoName;
 		status << name << " is " << (blocked ? "blocked and " : "") << (occupied ? "occupied" : "free");
 		if (reserved)

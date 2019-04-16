@@ -70,7 +70,8 @@ namespace webserver
 		}
 		else
 		{
-			const string& locoName = reserved ? loco->GetName() : "";
+			const string& directionSign = track->GetLocoDirection() == DirectionRight ? "&rarr; " : "&larr; ";
+			const string& locoName = reserved ? directionSign + loco->GetName() : "";
 			image = "<polygon class=\"track\" points=\"13,0 22,0 22," + layoutHeight + " 13," + layoutHeight + "\"/>";
 			image += "<text class=\"loconame\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";
 			image += "<text class=\"trackname\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + trackName + "</text>";

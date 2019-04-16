@@ -50,7 +50,7 @@ namespace webserver
 			void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) override;
 			void TrackDelete(const trackID_t trackID, const std::string& name) override;
 			void TrackSettings(const trackID_t trackID, const std::string& name) override;
-			void TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const std::string& locoName) override;
+			void TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const direction_t direction, const std::string& locoName) override;
 
 		private:
 			void AddUpdate(const std::string& command, const std::string& status);

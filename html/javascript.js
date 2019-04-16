@@ -528,8 +528,13 @@ function dataUpdate(event)
 			var locoElement = document.getElementById(elementName + '_text_loconame');
 			if (locoElement)
 			{
+				var direction = '&larr;';
+				if (argumentMap.has('direction'))
+				{
+					direction = argumentMap.get('direction') == 'true' ? '&rarr; ' : '&larr; ';
+				}
 				var locoName = argumentMap.has('loconame') ? argumentMap.get('loconame') : '';
-				locoElement.innerHTML = locoName;
+				locoElement.innerHTML = direction + locoName;
 			}
 		}
 	}
