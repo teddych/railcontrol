@@ -38,6 +38,12 @@ typedef accessoryDuration_t switchDuration_t;
 typedef accessoryState_t switchState_t;
 typedef accessoryType_t switchType_t;
 
+// signal
+typedef accessoryID_t signalID_t;
+typedef accessoryDuration_t signalDuration_t;
+typedef accessoryState_t signalState_t;
+typedef accessoryType_t signalType_t;
+
 // street
 typedef objectID_t streetID_t;
 typedef unsigned short delay_t;
@@ -167,12 +173,13 @@ enum automode_t : bool
 enum objectType_t : unsigned char
 {
 	ObjectTypeLoco = 1,
-	ObjectTypeTrack,
-	ObjectTypeFeedback,
-	ObjectTypeAccessory,
-	ObjectTypeSwitch,
-	ObjectTypeStreet,
-	ObjectTypeLayer
+	ObjectTypeTrack = 2,
+	ObjectTypeFeedback = 3,
+	ObjectTypeAccessory = 4,
+	ObjectTypeSwitch = 5,
+	ObjectTypeStreet = 6,
+	ObjectTypeLayer = 7,
+	ObjectTypeSignal = 8
 };
 
 enum accessoryType : accessoryType_t

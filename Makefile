@@ -27,6 +27,7 @@ OBJ= \
 	datamodel/object.o \
 	datamodel/relation.o \
 	datamodel/serializable.o \
+	datamodel/signal.o \
 	datamodel/street.o \
 	datamodel/switch.o \
 	datamodel/track.o \
