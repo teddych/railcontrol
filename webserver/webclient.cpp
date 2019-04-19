@@ -31,6 +31,7 @@
 #include "webserver/HtmlTagInputSliderLocoSpeed.h"
 #include "webserver/HtmlTagInputTextWithLabel.h"
 #include "webserver/HtmlTagSelectWithLabel.h"
+#include "webserver/HtmlTagSignal.h"
 #include "webserver/HtmlTagStreet.h"
 #include "webserver/HtmlTagSwitch.h"
 #include "webserver/HtmlTagTrack.h"
@@ -285,6 +286,34 @@ namespace webserver
 			else if (arguments["cmd"].compare("switchget") == 0)
 			{
 				handleSwitchGet(arguments);
+			}
+			else if (arguments["cmd"].compare("signaledit") == 0)
+			{
+				handleSignalEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("signalsave") == 0)
+			{
+				handleSignalSave(arguments);
+			}
+			else if (arguments["cmd"].compare("signalstate") == 0)
+			{
+				handleSignalState(arguments);
+			}
+			else if (arguments["cmd"].compare("signallist") == 0)
+			{
+				handleSignalList(arguments);
+			}
+			else if (arguments["cmd"].compare("signalaskdelete") == 0)
+			{
+				handleSignalAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("signaldelete") == 0)
+			{
+				handleSignalDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("signalget") == 0)
+			{
+				handleSignalGet(arguments);
 			}
 			else if (arguments["cmd"].compare("streetedit") == 0)
 			{
@@ -1616,6 +1645,17 @@ namespace webserver
 			}
 			content.AddChildTag(HtmlTagFeedback(feedback.second));
 		}
+
+		const map<signalID_t,datamodel::Signal*>& signals = manager.SignalList();
+		for (auto signal : signals)
+		{
+			if (signal.second->IsVisibleOnLayer(layer) == false)
+			{
+				continue;
+			}
+			content.AddChildTag(HtmlTagSignal(signal.second));
+		}
+
 		HtmlReplyWithHeader(content);
 	}
 
@@ -2008,6 +2048,214 @@ namespace webserver
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
 		bool ret = manager.SwitchRelease(switchID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Switch released" : "Switch not released"));
+	}
+
+	void WebClient::handleSignalEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
+		controlID_t controlID = ControlIdNone;
+		protocol_t protocol = ProtocolNone;
+		address_t address = AddressNone;
+		string name;
+		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		signalType_t type = SignalTypeSimple;
+		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
+		bool inverted = false;
+		if (signalID > SignalNone)
+		{
+			const datamodel::Signal* signal = manager.GetSignal(signalID);
+			controlID = signal->GetControlID();
+			protocol = signal->GetProtocol();
+			address = signal->GetAddress();
+			name = signal->GetName();
+			posx = signal->GetPosX();
+			posy = signal->GetPosY();
+			posz = signal->GetPosZ();
+			rotation = signal->GetRotation();
+			type = signal->GetType();
+			duration = signal->GetDuration();
+			inverted = signal->GetInverted();
+		}
+
+		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
+		std::map<string, string> controlOptions;
+		for(auto control : controls)
+		{
+			controlOptions[to_string(control.first)] = control.second;
+			if (controlID == ControlIdNone)
+			{
+				controlID = control.first;
+			}
+		}
+
+		std::map<string, string> typeOptions;
+		typeOptions[to_string(SignalTypeSimple)] = "Simple";
+
+		content.AddChildTag(HtmlTag("h1").AddContent("Edit signal &quot;" + name + "&quot;"));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag formContent;
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "signalsave"));
+		formContent.AddChildTag(HtmlTagInputHidden("signal", to_string(signalID)));
+
+		HtmlTag mainContent("div");
+		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddClass("tab_content");
+		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Signal Name:", name));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('signal', " + to_string(signalID) + ")"));
+		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044));
+		mainContent.AddChildTag(HtmlTagDuration(duration));
+		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted));
+		formContent.AddChildTag(mainContent);
+
+		HtmlTag positionContent("div");
+		positionContent.AddAttribute("id", "tab_position");
+		positionContent.AddClass("tab_content");
+		positionContent.AddClass("hidden");
+		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
+		positionContent.AddChildTag(HtmlTagRotation(rotation));
+		formContent.AddChildTag(positionContent);
+
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleSignalSave(const map<string, string>& arguments)
+	{
+		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
+		string name = GetStringMapEntry(arguments, "name");
+		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
+		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		signalType_t type = GetIntegerMapEntry(arguments, "type", SignalTypeSimple);
+		accessoryDuration_t duration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		bool inverted = GetBoolMapEntry(arguments, "inverted");
+		string result;
+		if (!manager.SignalSave(signalID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
+		{
+			HtmlReplyWithHeaderAndParagraph(result);
+			return;
+		}
+		HtmlReplyWithHeaderAndParagraph("Signal &quot;" + name + "&quot; saved.");
+	}
+
+	void WebClient::handleSignalState(const map<string, string>& arguments)
+	{
+		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
+		signalState_t signalState = (GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SignalStateRed : SignalStateGreen);
+
+		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
+
+		stringstream ss;
+		ss << "Signal &quot;" << manager.GetSignalName(signalID) << "&quot; is now set to " << signalState;
+		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+	}
+
+	void WebClient::handleSignalList(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTag("h1").AddContent("Signals"));
+		HtmlTag table("table");
+		const map<string,datamodel::Signal*> signalList = manager.SignalListByName();
+		map<string,string> signalArgument;
+		for (auto signal : signalList)
+		{
+			HtmlTag row("tr");
+			row.AddChildTag(HtmlTag("td").AddContent(signal.first));
+			string signalIdString = to_string(signal.second->GetID());
+			signalArgument["signal"] = signalIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "signaledit_list_" + signalIdString, signalArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "signalaskdelete_" + signalIdString, signalArgument)));
+			if (signal.second->IsInUse())
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "signalrelease_" + signalIdString, signalArgument)));
+			}
+			table.AddChildTag(row);
+		}
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonPopup("New", "signaledit_0"));
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleSignalAskDelete(const map<string, string>& arguments)
+	{
+		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
+
+		if (signalID == SignalNone)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown signal");
+			return;
+		}
+
+		const datamodel::Signal* signal = manager.GetSignal(signalID);
+		if (signal == nullptr)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unknown signal");
+			return;
+		}
+
+		HtmlTag content;
+		const string& signalName = signal->GetName();
+		content.AddContent(HtmlTag("h1").AddContent("Delete signal &quot;" + signalName + "&quot;?"));
+		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the signal &quot;" + signalName + "&quot;?"));
+		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+			.AddContent(HtmlTagInputHidden("cmd", "signaldelete"))
+			.AddContent(HtmlTagInputHidden("signal", to_string(signalID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		HtmlReplyWithHeader(content);
+	}
+
+	void WebClient::handleSignalDelete(const map<string, string>& arguments)
+	{
+		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
+		const datamodel::Signal* signal = manager.GetSignal(signalID);
+		if (signal == nullptr)
+		{
+			HtmlReplyWithHeaderAndParagraph("Unable to delete signal");
+			return;
+		}
+
+		string name = signal->GetName();
+
+		if (!manager.SignalDelete(signalID))
+		{
+			HtmlReplyWithHeaderAndParagraph("Unable to delete signal");
+			return;
+		}
+
+		HtmlReplyWithHeaderAndParagraph("Signal &quot;" + name + "&quot; deleted.");
+	}
+
+	void WebClient::handleSignalGet(const map<string, string>& arguments)
+	{
+		signalID_t signalID = GetIntegerMapEntry(arguments, "signal");
+		const datamodel::Signal* signal = manager.GetSignal(signalID);
+		HtmlReplyWithHeader(HtmlTagSignal(signal));
+	}
+
+	void WebClient::handleSignalRelease(const map<string, string>& arguments)
+	{
+		signalID_t signalID = GetIntegerMapEntry(arguments, "signal");
+		bool ret = manager.SignalRelease(signalID);
+		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Signal released" : "Signal not released"));
 	}
 
 	void WebClient::handleStreetGet(const map<string, string>& arguments)
@@ -3004,6 +3252,7 @@ namespace webserver
 		menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polyline points=\"1,12 34,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,23 34,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,10 3,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,10 6,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,10 9,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,10 12,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,10 15,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,10 18,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,10 21,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,10 24,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,10 27,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,10 30,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,10 33,25\" stroke=\"black\" stroke-width=\"1\"/></svg>", "tracklist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polyline points=\"1,20 7.1,19.5 13,17.9 18.5,15.3 23.5,11.8 27.8,7.5\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"1,28 8.5,27.3 15.7,25.4 22.5,22.2 28.6,17.9 33.9,12.6\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"1,20 34,20\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,28 34,28\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,18 3,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,18 6,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,17 9,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,16 12,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,15 15,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,13 18,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,12 21,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,9 24,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,17 27,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,18 30,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,18 33,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,9 32,17\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"26,7 34,15\" stroke=\"black\" stroke-width=\"1\"/></svg>", "switchlist"));
+		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polygon points=\"17,36 17,28 15,28 10,23 10,5 15,0 21,0 26,5 26,23 21,28 19,28 19,36\" fill=\"black\" /><circle cx=\"18\" cy=\"8\" r=\"4\" fill=\"red\" /><circle cx=\"18\" cy=\"20\" r=\"4\" fill=\"green\" /></svg>", "signallist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polyline points=\"1,20 10,20 30,15\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"28,17 28,20 34,20\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></svg>", "accessorylist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"35\" height=\"35\"><polyline points=\"5,34 15,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"30,34 20,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"17.5,34 17.5,30\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"17.5,24 17.5,20\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"17.5,14 17.5,10\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"17.5,4 17.5,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></svg>", "streetlist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,25 35,25\" fill=\"none\" stroke=\"black\"/><polygon points=\"4,25 4,23 8,23 8,25\" fill=\"black\" stroke=\"black\"/><polygon points=\"35,22 16,22 15,19 18,10 35,10\" stroke=\"black\" fill=\"black\"/><polygon points=\"20,12 25,12 25,15 19,15\" fill=\"white\"/><polyline points=\"26,10 30,8 26,6\" stroke=\"black\" fill=\"none\"/><circle cx=\"22\" cy=\"22\" r=\"3\"/><circle cx=\"30\" cy=\"22\" r=\"3\"/></svg>", "feedbacklist"));
@@ -3021,6 +3270,7 @@ namespace webserver
 			.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add track").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add switch").AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add signal").AddAttribute("onClick", "loadPopup('/?cmd=signaledit&signal=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add street").AddAttribute("onClick", "loadPopup('/?cmd=streetedit&street=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add feedback").AddAttribute("onClick", "loadPopup('/?cmd=feedbackedit&feedback=0');"))

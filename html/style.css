@@ -137,6 +137,14 @@ body {
 	fill: black;
 }
 
+.signal_red .red {
+	fill: red;
+}
+
+.signal_green .green {
+	fill: lightgreen;
+}
+
 .feedback_free .feedback {
 	fill: lightgreen;
 }

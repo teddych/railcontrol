@@ -231,3 +231,14 @@ enum trackType_t : bool
 	TrackTypeStraight = false,
 	TrackTypeTurn = true
 };
+
+enum signalType : signalType_t
+{
+	SignalTypeSimple = 0
+};
+
+enum signalState : signalState_t
+{
+	SignalStateRed = false,
+	SignalStateGreen = true
+};

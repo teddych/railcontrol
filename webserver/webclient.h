@@ -97,6 +97,14 @@ namespace webserver
 			void handleSwitchDelete(const std::map<std::string,std::string>& arguments);
 			void handleSwitchGet(const std::map<std::string,std::string>& arguments);
 			void handleSwitchRelease(const std::map<std::string,std::string>& arguments);
+			void handleSignalEdit(const std::map<std::string,std::string>& arguments);
+			void handleSignalSave(const std::map<std::string,std::string>& arguments);
+			void handleSignalState(const std::map<std::string,std::string>& arguments);
+			void handleSignalList(const std::map<std::string,std::string>& arguments);
+			void handleSignalAskDelete(const std::map<std::string,std::string>& arguments);
+			void handleSignalDelete(const std::map<std::string,std::string>& arguments);
+			void handleSignalGet(const std::map<std::string,std::string>& arguments);
+			void handleSignalRelease(const std::map<std::string,std::string>& arguments);
 			void handleStreetEdit(const std::map<std::string,std::string>& arguments);
 			void handleStreetSave(const std::map<std::string,std::string>& arguments);
 			void handleStreetList(const std::map<std::string,std::string>& arguments);
