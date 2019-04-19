@@ -10,7 +10,7 @@
 
 #include "datamodel/datamodel.h"
 #include "railcontrol.h"
-#include "timestamp.h"
+#include "Timestamp.h"
 #include "util.h"
 #include "webserver/webclient.h"
 #include "webserver/webserver.h"
@@ -2838,7 +2838,7 @@ namespace webserver
 		}
 		struct timeval tv;
 		int ret = gettimeofday(&tv, nullptr);
-		if (ret != 0 || tv.tv_sec > __UNIX_TIMESTAMP__)
+		if (ret != 0 || tv.tv_sec > GetCompileTime())
 		{
 			HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp already set"));
 			return;
