@@ -88,10 +88,10 @@ body {
 }
 
 .layout_item {
-	line-height: 35px;
+	line-height: 36px;
 	text-align: center;
-	height: 35px;
-	width: 35px;
+	height: 36px;
+	width: 36px;
 	position: absolute;
 	border: 0px;
 }

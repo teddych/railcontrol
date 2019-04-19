@@ -737,8 +737,8 @@ function loadLayoutContext(event)
 	menu.style.display = 'block';
 	menu.style.left = event.pageX + 'px';
 	menu.style.top = event.pageY + 'px';
-	window.layoutPosX = Math.floor((event.pageX - 254) / 35);
-	window.layoutPosY = Math.floor((event.pageY - 92) / 35);
+	window.layoutPosX = Math.floor((event.pageX - 254) / 36);
+	window.layoutPosY = Math.floor((event.pageY - 92) / 36);
 	return true;
 }
 

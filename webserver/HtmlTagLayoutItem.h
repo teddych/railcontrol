@@ -13,7 +13,7 @@ namespace webserver
 			HtmlTagLayoutItem(const std::string& name) : HtmlTag(name) {}
 			virtual ~HtmlTagLayoutItem() {};
 
-			const unsigned char EdgeLength = 35;
+			const unsigned char EdgeLength = 36;
 			const std::string EdgeLengthString = std::to_string(EdgeLength);
 	};
 }; // namespace webserver

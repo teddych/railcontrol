@@ -28,11 +28,11 @@ namespace webserver
 		string image;
 		if (type == SwitchTypeLeft)
 		{
-			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->GetRotation()) + "deg);\"><polygon points=\"13,26 22,35 13,35\" fill=\"black\" /><polygon points=\"0,13 13,26 13,35 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,35 13,26\" fill=\"gray\" class=\"straight\"/></svg>";
+			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->GetRotation()) + "deg);\"><polygon points=\"14,27 22,36 14,36\" fill=\"black\" /><polygon points=\"0,14 14,27 14,36 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"14,0 22,0 22,36 14,27\" fill=\"gray\" class=\"straight\"/></svg>";
 		}
 		else
 		{
-			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->GetRotation()) + "deg);\"><polygon points=\"22,26 22,35 13,35\" fill=\"black\" /><polygon points=\"22,26 35,13 35,22 22,35\" fill=\"gray\" class=\"turnout\"/><polygon points=\"13,0 22,0 22,26 13,35\" fill=\"gray\" class=\"straight\"/></svg>";
+			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->GetRotation()) + "deg);\"><polygon points=\"22,27 22,36 14,36\" fill=\"black\" /><polygon points=\"22,27 36,14 36,22 22,36\" fill=\"gray\" class=\"turnout\"/><polygon points=\"14,0 22,0 22,27 14,36\" fill=\"gray\" class=\"straight\"/></svg>";
 		}
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(switchName + " (addr=" + to_string(mySwitch->GetAddress()) + ")"));

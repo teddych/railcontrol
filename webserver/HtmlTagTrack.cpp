@@ -66,35 +66,32 @@ namespace webserver
 
 		if (type == TrackTypeTurn)
 		{
-			image = "<polygon class=\"track\" points=\"0,22 0,13 22,35 13,35\"/>";
+			image = "<polygon class=\"track\" points=\"0,22 0,14 22,36 14,36\"/>";
 		}
 		else
 		{
 			const string& directionSign = track->GetLocoDirection() == DirectionRight ? "&rarr; " : "&larr; ";
 			const string& locoName = reserved ? directionSign + loco->GetName() : "";
-			image = "<polygon class=\"track\" points=\"13,0 22,0 22," + layoutHeight + " 13," + layoutHeight + "\"/>";
+			image = "<polygon class=\"track\" points=\"14,0 22,0 22," + layoutHeight + " 14," + layoutHeight + "\"/>";
 			image += "<text class=\"loconame\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";
 			image += "<text class=\"trackname\" x=\"-" + layoutHeight + "\" y=\"11\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + trackName + "</text>";
 		}
 
-		int translateX = 0;
-		int translateY = 0;
+		int translate = 0;
 		if (trackHeight > Height1)
 		{
 			layoutRotation_t trackRotation = track->GetRotation();
 			if (trackRotation == Rotation90 || trackRotation == Rotation270)
 			{
-				translateX = ((((trackHeight - 1) * EdgeLength) + 1) / 2);
-				translateY = (((trackHeight - 1) * EdgeLength) / 2);
+				translate = (((trackHeight - 1) * EdgeLength) / 2);
 			}
 			if (trackRotation == Rotation90)
 			{
-				translateX = -translateX;
-				translateY = -translateY;
+				translate = -translate;
 			}
 		}
 
-		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->GetRotation()) + "deg) translate(" + to_string(translateX) + "px," + to_string(translateY) + "px);\">" + image + "</svg>"));
+		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->GetRotation()) + "deg) translate(" + to_string(translate) + "px," + to_string(translate) + "px);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(trackName));
 		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);
