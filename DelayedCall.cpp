@@ -65,3 +65,11 @@ void DelayedCall::Switch(const controlType_t controlType, const switchID_t switc
 	std::lock_guard<std::mutex> lock(mutex);
 	waitingCalls.push_back(entry);
 }
+
+void DelayedCall::Signal(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool inverted, const unsigned long waitTime)
+{
+	unsigned int count = (waitTime / CountStep) + counter + 1;
+	auto entry = new DelayedCallEntrySignal(manager, controlType, signalID, state, inverted, count);
+	std::lock_guard<std::mutex> lock(mutex);
+	waitingCalls.push_back(entry);
+}

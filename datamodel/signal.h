@@ -31,6 +31,5 @@ namespace datamodel
 			signalState_t GetState() const { return static_cast<signalState_t>(state); }
 			signalType_t GetType() const { return static_cast<signalType_t>(type); }
 	};
-
 } // namespace datamodel
 

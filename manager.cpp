@@ -20,6 +20,7 @@ using datamodel::Feedback;
 using datamodel::Layer;
 using datamodel::LayoutItem;
 using datamodel::Loco;
+using datamodel::Signal;
 using datamodel::Street;
 using datamodel::Switch;
 using hardware::HardwareHandler;
@@ -47,7 +48,8 @@ Manager::Manager(Config& config)
 	unknownFeedback("Unknown Feedback"),
 	unknownTrack("Unknown Track"),
 	unknownSwitch("Unknown Switch"),
-	unknownStreet("Unknown Street")
+	unknownStreet("Unknown Street"),
+	unknownSignal("Unknown Signal")
 {
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "sqlite");
@@ -119,6 +121,12 @@ Manager::Manager(Config& config)
 		logger->Info("Loaded switch {0}: {1}", mySwitch.second->GetID(), mySwitch.second->GetName());
 	}
 
+	storage->AllSignals(signals);
+	for (auto signal : signals)
+	{
+		logger->Info("Loaded signal {0}: {1}", signal.second->GetID(), signal.second->GetName());
+	}
+
 	storage->AllStreets(streets);
 	for (auto street : streets)
 	{
@@ -172,6 +180,7 @@ Manager::~Manager()
 	}
 
 	DeleteAllMapEntries(streets, streetMutex);
+	DeleteAllMapEntries(signals, signalMutex);
 	DeleteAllMapEntries(switches, switchMutex);
 	DeleteAllMapEntries(accessories, accessoryMutex);
 	DeleteAllMapEntries(feedbacks, feedbackMutex);
@@ -1969,6 +1978,213 @@ bool Manager::LayerDelete(const layerID_t layerID)
 	}
 	delete layer;
 	return true;
+}
+
+/***************************
+* Signal                   *
+***************************/
+
+void Manager::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool force)
+{
+	Signal* signal = GetSignal(signalID);
+	SignalState(controlType, signal, state, force);
+}
+
+void Manager::SignalState(const controlType_t controlType, Signal* signal, const signalState_t state, const bool force)
+{
+	if (signal == nullptr)
+	{
+		return;
+	}
+
+	if (force == false && signal->IsInUse())
+	{
+		logger->Warning("{0} is locked", signal->GetName());
+		return;
+	}
+
+	signal->SetState(state);
+	signalID_t signalID = signal->GetID();
+	bool inverted = signal->GetInverted();
+
+	this->SignalState(controlType, signalID, state, inverted, true);
+
+	delayedCall->Signal(controlType, signalID, state, inverted, signal->GetDuration());
+}
+
+void Manager::SignalState(const controlType_t controlType, const signalID_t signalID, const switchState_t state, const bool inverted, const bool on)
+{
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		switchState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
+		control.second->SignalState(controlType, signalID, tempState, on);
+	}
+}
+
+Signal* Manager::GetSignal(const signalID_t signalID) const
+{
+	std::lock_guard<std::mutex> Guard(signalMutex);
+	if (switches.count(signalID) != 1)
+	{
+		return nullptr;
+	}
+	return signals.at(signalID);
+}
+
+Signal* Manager::GetSignal(const controlID_t controlID, const protocol_t protocol, const address_t address) const
+{
+	std::lock_guard<std::mutex> Guard(signalMutex);
+	for (auto signal : signals)
+	{
+		if (signal.second->GetControlID() == controlID
+			&& signal.second->GetProtocol() == protocol
+			&& signal.second->GetAddress() == address)
+		{
+			return signal.second;
+		}
+	}
+	return nullptr;
+}
+
+const std::string& Manager::GetSignalName(const signalID_t signalID) const
+{
+	if (signals.count(signalID) != 1)
+	{
+		return unknownSignal;
+	}
+	return switches.at(signalID)->GetName();
+}
+
+bool Manager::CheckSignalPosition(const signalID_t signalID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+{
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		return true;
+	}
+
+	return signal->HasPosition(posX, posY, posZ);
+}
+
+bool Manager::SignalSave(const signalID_t signalID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t duration, const bool inverted, string& result)
+{
+	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
+	{
+		return false;
+	}
+
+	if (!CheckSignalPosition(signalID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
+	{
+		result.append("Unable to ");
+		result.append(signalID == SignalNone ? "add" : "move");
+		result.append(" switch.");
+		return false;
+	}
+
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		signal = CreateAndAddObject(signals, signalMutex);
+	}
+
+	if (signal == nullptr)
+	{
+		return false;
+	}
+
+	// update existing switch
+	signal->SetName(CheckObjectName(signals, signalMutex, name.size() == 0 ? "S" : name));
+	signal->SetPosX(posX);
+	signal->SetPosY(posY);
+	signal->SetPosZ(posZ);
+	signal->SetRotation(rotation);
+	signal->SetControlID(controlID);
+	signal->SetProtocol(protocol);
+	signal->SetAddress(address);
+	signal->SetType(type);
+	signal->SetDuration(duration);
+	signal->SetInverted(inverted);
+
+	// save in db
+	if (storage)
+	{
+		storage->Save(*signal);
+	}
+	const signalID_t signalIdSave = signal->GetID();
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->SignalSettings(signalIdSave, name);
+	}
+	return true;
+}
+
+bool Manager::SignalDelete(const signalID_t signalID)
+{
+	Signal* signal = nullptr;
+	{
+		std::lock_guard<std::mutex> Guard(signalMutex);
+		if (signalID == SignalNone || signals.count(signalID) != 1)
+		{
+			return false;
+		}
+
+		signal = signals.at(signalID);
+		signals.erase(signalID);
+	}
+
+	if (storage)
+	{
+		storage->DeleteSignal(signalID);
+	}
+
+	const string& switchName = signal->GetName();
+	std::lock_guard<std::mutex> Guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->SignalDelete(signalID, switchName);
+	}
+	delete signal;
+	return true;
+}
+
+const map<string,datamodel::Signal*> Manager::SignalListByName() const
+{
+	map<string,datamodel::Signal*> out;
+	std::lock_guard<std::mutex> Guard(signalMutex);
+	for(auto signal : signals)
+	{
+		out[signal.second->GetName()] = signal.second;
+	}
+	return out;
+}
+
+bool Manager::SignalProtocolAddress(const signalID_t signalID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
+{
+	if (signals.count(signalID) != 1)
+	{
+		controlID = 0;
+		protocol = ProtocolNone;
+		address = 0;
+		return false;
+	}
+	Signal* signal = signals.at(signalID);
+	controlID = signal->GetControlID();
+	protocol = signal->GetProtocol();
+	address = signal->GetAddress();
+	return true;
+}
+
+bool Manager::SignalRelease(const streetID_t signalID)
+{
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		return false;
+	}
+	locoID_t locoID = signal->GetLoco();
+	return signal->Release(locoID);
 }
 
 /***************************

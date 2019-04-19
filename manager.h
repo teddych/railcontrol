@@ -16,7 +16,8 @@
 
 class DelayedCall;
 
-class Manager {
+class Manager
+{
 	public:
 		Manager(Config& config);
 		~Manager();
@@ -182,6 +183,18 @@ class Manager {
 		bool LayerSave(const layerID_t layerID, const std::string&name, std::string& result);
 		bool LayerDelete(const layerID_t layerID);
 
+		// signal
+		void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool force);
+		void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool inverted, const bool on);
+		datamodel::Signal* GetSignal(const signalID_t signalID) const;
+		const std::string& GetSignalName(const signalID_t signalID) const;
+		const std::map<signalID_t,datamodel::Signal*>& SignalList() const { return signals; }
+		const std::map<std::string,datamodel::Signal*> SignalListByName() const;
+		bool SignalSave(const signalID_t signalID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const signalType_t type, const signalDuration_t timeout, const bool inverted, std::string& result);
+		bool SignalDelete(const signalID_t signalID);
+		bool SignalRelease(const signalID_t signalID);
+		bool SignalProtocolAddress(const signalID_t signalID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
+
 		// automode
 		bool LocoIntoTrack(const locoID_t locoID, const trackID_t trackID);
 		bool LocoRelease(const locoID_t locoID);
@@ -216,11 +229,13 @@ class Manager {
 		datamodel::Accessory* GetAccessory(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
 		datamodel::Switch* GetSwitch(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
 		datamodel::Feedback* GetFeedback(const controlID_t controlID, const feedbackPin_t pin) const;
+		datamodel::Signal* GetSignal(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
 
 		void LocoFunction(const controlType_t controlType, datamodel::Loco* loco, const function_t function, const bool on);
 		void AccessoryState(const controlType_t controlType, datamodel::Accessory* accessory, const accessoryState_t state, const bool force);
 		void SwitchState(const controlType_t controlType, datamodel::Switch* mySwitch, const accessoryState_t state, const bool force);
 		void FeedbackState(datamodel::Feedback* feedback, const feedbackState_t state);
+		void SignalState(const controlType_t controlType, datamodel::Signal* signal, const accessoryState_t state, const bool force);
 
 		// layout
 		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result) const;
@@ -231,6 +246,7 @@ class Manager {
 		bool CheckStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 		bool CheckTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result) const;
 		bool CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
+		bool CheckSignalPosition(const signalID_t signalID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 
 		bool CheckAddressLoco(const protocol_t protocol, const address_t address, std::string& result);
 		bool CheckAddressAccessory(const protocol_t protocol, const address_t address, std::string& result);
@@ -384,6 +400,10 @@ class Manager {
 		std::map<layerID_t,datamodel::Layer*> layers;
 		mutable std::mutex layerMutex;
 
+		// signal
+		std::map<signalID_t,datamodel::Signal*> signals;
+		mutable std::mutex signalMutex;
+
 		// storage
 		storage::StorageHandler* storage;
 		DelayedCall* delayedCall;
@@ -402,4 +422,5 @@ class Manager {
 		const std::string unknownTrack;
 		const std::string unknownSwitch;
 		const std::string unknownStreet;
+		const std::string unknownSignal;
 };

@@ -66,6 +66,7 @@ static const streetID_t StreetNone = 0;
 static const controlID_t ControlNone = 0;
 static const layerID_t LayerNone = 0;
 static const layerID_t LayerUndeletable = 1;
+static const signalID_t SignalNone = 0;
 
 static const locoSpeed_t MaxSpeed = 1023;
 static const locoSpeed_t DefaultTravelSpeed = 700;

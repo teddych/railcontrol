@@ -35,6 +35,8 @@ namespace storage
 			void DeleteStreet(streetID_t streetID);
 			void AllLayers(std::map<layerID_t,datamodel::Layer*>& layers);
 			void DeleteLayer(layerID_t layerID);
+			void AllSignals(std::map<signalID_t,datamodel::Signal*>& signals);
+			void DeleteSignal(signalID_t signalID);
 			void Save(const hardware::HardwareParams& hardwareParams);
 			void Save(const datamodel::Street& street);
 			template<class T> void Save(const T& t)

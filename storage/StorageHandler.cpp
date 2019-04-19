@@ -15,6 +15,7 @@ using datamodel::Feedback;
 using datamodel::Layer;
 using datamodel::Loco;
 using datamodel::Relation;
+using datamodel::Signal;
 using datamodel::Street;
 using datamodel::Switch;
 using std::map;
@@ -339,6 +340,32 @@ namespace storage {
 		}
 		StartTransactionInternal();
 		instance->DeleteObject(ObjectTypeLayer, layerID);
+		CommitTransactionInternal();
+	}
+
+	void StorageHandler::AllSignals(std::map<signalID_t,datamodel::Signal*>& signals)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		vector<string> objects;
+		instance->ObjectsOfType(ObjectTypeSignal, objects);
+		for(auto object : objects)
+		{
+			Signal* signal = new Signal(object);
+			signals[signal->GetID()] = signal;
+		}
+	}
+
+	void StorageHandler::DeleteSignal(const signalID_t signalID)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		StartTransactionInternal();
+		instance->DeleteObject(ObjectTypeSignal, signalID);
 		CommitTransactionInternal();
 	}
 

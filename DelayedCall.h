@@ -59,6 +59,24 @@ class DelayedCallEntrySwitch : public DelayedCallEntry
 		bool inverted;
 };
 
+class DelayedCallEntrySignal : public DelayedCallEntry
+{
+	public:
+		DelayedCallEntrySignal(Manager& manager, const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool inverted, const unsigned long timeout)
+		:	DelayedCallEntry(manager, controlType, timeout),
+		 	signalID(signalID),
+		 	state(state),
+		 	inverted(inverted)
+		{}
+
+		void Execute() override { manager.SignalState(controlType, signalID, state, inverted, false); }
+
+	private:
+		signalID_t signalID;
+		signalState_t state;
+		bool inverted;
+};
+
 class DelayedCall
 {
 	public:
@@ -68,6 +86,7 @@ class DelayedCall
 		static void Thread(DelayedCall* delayedCall);
 		void Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const unsigned long timeout);
 		void Switch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const unsigned long timeout);
+		void Signal(const controlType_t controlType, const signalID_t signalID, const switchState_t state, const bool inverted, const unsigned long timeout);
 		unsigned long counter;
 
 		const unsigned int CountStep = 100; // ms

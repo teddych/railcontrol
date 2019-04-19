@@ -5,6 +5,7 @@
 #include "datamodel/layer.h"
 #include "datamodel/loco.h"
 #include "datamodel/relation.h"
+#include "datamodel/signal.h"
 #include "datamodel/street.h"
 #include "datamodel/switch.h"
 #include "datamodel/track.h"

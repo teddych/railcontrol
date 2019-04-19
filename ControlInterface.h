@@ -49,6 +49,9 @@ class ControlInterface
 		virtual void TrackDelete(const trackID_t trackID, const std::string& name) {};
 		virtual void TrackSettings(const trackID_t trackID, const std::string& name) {};
 		virtual void TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const direction_t direction, const std::string& locoName) {};
+		virtual void SignalDelete(const signalID_t signalID, const std::string& name) {};
+		virtual void SignalSettings(const signalID_t signalID, const std::string& name) {};
+		virtual void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on) {};
 
 	private:
 		controlType_t controlType;
