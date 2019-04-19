@@ -32,8 +32,10 @@ namespace datamodel
 			 	LockableItem(),
 			 	manager(manager),
 				state(FeedbackStateFree),
+				stateDelayed(FeedbackStateFree),
 			 	locoDirection(DirectionRight),
-			 	blocked(false)
+			 	blocked(false),
+			 	locoIdDelayed(LocoNone)
 			{
 			}
 
