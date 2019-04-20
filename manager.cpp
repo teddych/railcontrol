@@ -248,7 +248,7 @@ bool Manager::ControlSave(const controlID_t& controlID,
 	HardwareParams* params = GetHardware(controlID);
 	if (params != nullptr)
 	{
-		params->name = CheckObjectName(controls, controlMutex, name.size() == 0 ? "C" : name);
+		params->name = CheckObjectName(controls, controlMutex, controlID, name.size() == 0 ? "C" : name);
 		params->hardwareType = hardwareType;
 		params->arg1 = arg1;
 		params->arg2 = arg2;
@@ -613,7 +613,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 	}
 
 	// update existing loco
-	loco->SetName(CheckObjectName(locos, locoMutex, name.size() == 0 ? "L" : name));
+	loco->SetName(CheckObjectName(locos, locoMutex, locoID, name.size() == 0 ? "L" : name));
 	loco->SetControlID(controlID);
 	loco->SetProtocol(protocol);
 	loco->SetAddress(address);
@@ -941,7 +941,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	}
 
 	// update existing accessory
-	accessory->SetName(CheckObjectName(accessories, accessoryMutex, name.size() == 0 ? "A" : name));
+	accessory->SetName(CheckObjectName(accessories, accessoryMutex, accessoryID, name.size() == 0 ? "A" : name));
 	accessory->SetPosX(posX);
 	accessory->SetPosY(posY);
 	accessory->SetPosZ(posZ);
@@ -1166,7 +1166,7 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 		return false;
 	}
 
-	feedback->SetName(CheckObjectName(feedbacks, feedbackMutex, name.size() == 0 ? "F" : name));
+	feedback->SetName(CheckObjectName(feedbacks, feedbackMutex, feedbackID, name.size() == 0 ? "F" : name));
 	feedback->SetVisible(visible);
 	feedback->SetPosX(posX);
 	feedback->SetPosY(posY);
@@ -1419,7 +1419,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	}
 
 	// update existing track
-	track->SetName(CheckObjectName(tracks, trackMutex, name.size() == 0 ? "T" : name));
+	track->SetName(CheckObjectName(tracks, trackMutex, trackID, name.size() == 0 ? "T" : name));
 	track->SetHeight(height);
 	track->SetRotation(rotation);
 	track->SetPosX(posX);
@@ -1590,7 +1590,7 @@ bool Manager::SwitchSave(const switchID_t switchID, const string& name, const la
 	}
 
 	// update existing switch
-	mySwitch->SetName(CheckObjectName(switches, switchMutex, name.size() == 0 ? "S" : name));
+	mySwitch->SetName(CheckObjectName(switches, switchMutex, switchID, name.size() == 0 ? "S" : name));
 	mySwitch->SetPosX(posX);
 	mySwitch->SetPosY(posY);
 	mySwitch->SetPosZ(posZ);
@@ -1797,7 +1797,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	}
 
 	// update existing street
-	street->SetName(CheckObjectName(streets, streetMutex, name.size() == 0 ? "S" : name));
+	street->SetName(CheckObjectName(streets, streetMutex, streetID, name.size() == 0 ? "S" : name));
 	street->SetDelay(delay);
 	street->SetCommuter(commuter);
 	street->SetMinTrainLength(minTrainLength);
@@ -1930,7 +1930,7 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 	}
 
 	// update existing layer
-	layer->SetName(CheckObjectName(layers, layerMutex, name.size() == 0 ? "L" : name));
+	layer->SetName(CheckObjectName(layers, layerMutex, layerID, name.size() == 0 ? "L" : name));
 
 	// save in db
 	if (storage)
@@ -2093,7 +2093,7 @@ bool Manager::SignalSave(const signalID_t signalID, const string& name, const la
 		return false;
 	}
 
-	signal->SetName(CheckObjectName(signals, signalMutex, name.size() == 0 ? "S" : name));
+	signal->SetName(CheckObjectName(signals, signalMutex, signalID, name.size() == 0 ? "S" : name));
 	signal->SetPosX(posX);
 	signal->SetPosY(posY);
 	signal->SetPosZ(posZ);

@@ -335,9 +335,18 @@ class Manager
 		}
 
 		template<class ID, class T>
-		std::string CheckObjectName(std::map<ID,T*>& objects, std::mutex& mutex, const std::string& name)
+		std::string CheckObjectName(std::map<ID,T*>& objects, std::mutex& mutex, const ID objectID, const std::string& name)
 		{
 			std::lock_guard<std::mutex> Guard(mutex);
+			if (objects.count(objectID) == 1)
+			{
+				const T* o = objects.at(objectID);
+				const std::string& oldName = o->GetName();
+				if (oldName.compare(name) == 0)
+				{
+					return name;
+				}
+			}
 			if (CheckObjectName(objects, name))
 			{
 				return name;
