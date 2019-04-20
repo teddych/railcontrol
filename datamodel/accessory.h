@@ -34,7 +34,7 @@ namespace datamodel
 			virtual bool Deserialize(const std::string& serialized) override;
 			virtual std::string LayoutType() const override { return "accessory"; }
 
-			void SetType(accessoryType_t type) { this->state = type; }
+			void SetType(accessoryType_t type) { this->type = type; }
 			accessoryType_t GetType() const { return type; }
 			void SetState(accessoryState_t state) { this->state = state; lastUsed = time(nullptr); ++counter; }
 			accessoryState_t GetState() const { return state; }
