@@ -51,6 +51,9 @@ namespace datamodel
 				manager->SwitchState(ControlTypeInternal, objectID2, accessoryState, true);
 				break;
 
+			case ObjectTypeSignal:
+				manager->SignalState(ControlTypeInternal, objectID2, accessoryState, true);
+
 			case ObjectTypeTrack:
 				return true;
 
@@ -73,6 +76,9 @@ namespace datamodel
 
 			case ObjectTypeTrack:
 				return manager->GetTrack(objectID2);
+
+			case ObjectTypeSignal:
+				return manager->GetSignal(objectID2);
 
 			default:
 				return nullptr;

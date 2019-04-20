@@ -41,6 +41,7 @@ using datamodel::Feedback;
 using datamodel::Layer;
 using datamodel::Loco;
 using datamodel::Relation;
+using datamodel::Signal;
 using datamodel::Street;
 using datamodel::Switch;
 using datamodel::Track;
@@ -1140,6 +1141,23 @@ namespace webserver
 				return content;
 			}
 
+			case ObjectTypeSignal:
+			{
+				std::map<string, Signal*> signals = manager.SignalListByName();
+				map<string, signalID_t> signalOptions;
+				for (auto signal : signals)
+				{
+					signalOptions[signal.first] = signal.second->GetID();
+				}
+				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, signalOptions, objectId).AddClass("select_relation_id"));
+
+				map<string, signalState_t> stateOptions;
+				stateOptions["Green"] = SignalStateGreen;
+				stateOptions["Red"] = SignalStateRed;
+				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
+				return content;
+			}
+
 			case ObjectTypeAccessory:
 			{
 				std::map<string, Accessory*> accessories = manager.AccessoryListByName();
@@ -1187,6 +1205,7 @@ namespace webserver
 
 		map<string,objectType_t> objectTypeOptions;
 		objectTypeOptions["Accessory"] = ObjectTypeAccessory;
+		objectTypeOptions["Signal"] = ObjectTypeSignal;
 		objectTypeOptions["Switch"] = ObjectTypeSwitch;
 		objectTypeOptions["Track"] = ObjectTypeTrack;
 		HtmlTagSelect select("relation_type_" + priority, objectTypeOptions, objectType);
