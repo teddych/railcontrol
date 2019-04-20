@@ -12,7 +12,10 @@ namespace datamodel
 	{
 		public:
 			LayoutItem(const objectID_t objectID)
-			:	Object(objectID)
+			:	Object(objectID),
+			 	visible(VisibleYes),
+			 	width(Width1),
+			 	height(Height1)
 			{
 			}
 
