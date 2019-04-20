@@ -186,6 +186,7 @@ class Manager
 		// signal
 		void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool force);
 		void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool inverted, const bool on);
+		void SignalState(const controlType_t controlType, datamodel::Signal* signal, const accessoryState_t state, const bool force);
 		datamodel::Signal* GetSignal(const signalID_t signalID) const;
 		const std::string& GetSignalName(const signalID_t signalID) const;
 		const std::map<signalID_t,datamodel::Signal*>& SignalList() const { return signals; }
@@ -235,7 +236,6 @@ class Manager
 		void AccessoryState(const controlType_t controlType, datamodel::Accessory* accessory, const accessoryState_t state, const bool force);
 		void SwitchState(const controlType_t controlType, datamodel::Switch* mySwitch, const accessoryState_t state, const bool force);
 		void FeedbackState(datamodel::Feedback* feedback, const feedbackState_t state);
-		void SignalState(const controlType_t controlType, datamodel::Signal* signal, const accessoryState_t state, const bool force);
 
 		// layout
 		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result) const;

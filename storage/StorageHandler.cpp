@@ -349,11 +349,11 @@ namespace storage {
 		{
 			return;
 		}
-		vector<string> objects;
-		instance->ObjectsOfType(ObjectTypeSignal, objects);
-		for(auto object : objects)
+		vector<string> serializedObjects;
+		instance->ObjectsOfType(ObjectTypeSignal, serializedObjects);
+		for(auto serializedObject : serializedObjects)
 		{
-			Signal* signal = new Signal(object);
+			Signal* signal = new Signal(manager, serializedObject);
 			signals[signal->GetID()] = signal;
 		}
 	}

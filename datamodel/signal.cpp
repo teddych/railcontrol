@@ -1,6 +1,7 @@
 #include <map>
 
 #include "datamodel/signal.h"
+#include "manager.h"
 #include "util.h"
 
 using std::map;
@@ -25,6 +26,17 @@ namespace datamodel
 		}
 
 		return Accessory::Deserialize(arguments);
+	}
+
+	bool Signal::Release(const locoID_t locoID)
+	{
+		bool ret = LockableItem::Release(locoID);
+		if (ret == false)
+		{
+			return false;
+		}
+		manager->SignalState(ControlTypeInternal, this, SignalStateRed, true);
+		return true;
 	}
 } // namespace datamodel
 
