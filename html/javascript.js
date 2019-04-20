@@ -167,6 +167,17 @@ function onClickFeedback(feedbackID)
 	return false;
 }
 
+function onClickSignal(signalID)
+{
+	var element = document.getElementById('si_' + signalID);
+	var url = '/?cmd=signalstate';
+	url += '&state=' + (element.classList.contains('signal_green') ? 'red' : 'green');
+	url += '&signal=' + signalID;
+	fireRequestAndForget(url);
+	return false;
+}
+
+
 function onContextLayoutItem(event, ID)
 {
 	if (event.shiftKey)
@@ -403,20 +414,6 @@ function dataUpdate(event)
 			}
 		}
 	}
-	else if (command == 'streetsettings')
-	{
-		var streetID = argumentMap.get('street');
-		elementName = 'st_' + streetID;
-		var url = '/?cmd=streetget';
-		url += '&street=' + streetID;
-		requestUpdateLayoutItem(elementName, url);
-	}
-	else if (command == 'streetdelete')
-	{
-		elementName = 'st_' + argumentMap.get('street');
-		deleteElement(elementName);
-		deleteElement(elementName + '_context');
-	}
 	else if (command == 'switchsettings')
 	{
 		var switchID = argumentMap.get('switch');
@@ -428,6 +425,53 @@ function dataUpdate(event)
 	else if (command == 'switchdelete')
 	{
 		elementName = 'sw_' + argumentMap.get('switch');
+		deleteElement(elementName);
+		deleteElement(elementName + '_context');
+	}
+	else if (command == 'signal')
+	{
+		elementName = 'si_' + argumentMap.get('signal');
+		var element = document.getElementById(elementName);
+		if (element && argumentMap.has('state'))
+		{
+			var state = argumentMap.get('state');
+			if (state == 'green')
+			{
+				element.classList.remove('signal_red');
+				element.classList.add('signal_green');
+			}
+			else
+			{
+				element.classList.remove('signal_green');
+				element.classList.add('signal_red');
+			}
+		}
+	}
+	else if (command == 'signalsettings')
+	{
+		var signalID = argumentMap.get('signal');
+		elementName = 'si_' + signalID;
+		var url = '/?cmd=signalget';
+		url += '&signal=' + signalID;
+		requestUpdateLayoutItem(elementName, url);
+	}
+	else if (command == 'signaldelete')
+	{
+		elementName = 'si_' + argumentMap.get('signal');
+		deleteElement(elementName);
+		deleteElement(elementName + '_context');
+	}
+	else if (command == 'streetsettings')
+	{
+		var streetID = argumentMap.get('street');
+		elementName = 'st_' + streetID;
+		var url = '/?cmd=streetget';
+		url += '&street=' + streetID;
+		requestUpdateLayoutItem(elementName, url);
+	}
+	else if (command == 'streetdelete')
+	{
+		elementName = 'st_' + argumentMap.get('street');
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}

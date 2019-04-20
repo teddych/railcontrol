@@ -2157,7 +2157,7 @@ namespace webserver
 	void WebClient::handleSignalState(const map<string, string>& arguments)
 	{
 		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
-		signalState_t signalState = (GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SignalStateRed : SignalStateGreen);
+		signalState_t signalState = (GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? SignalStateRed : SignalStateGreen);
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
 

@@ -43,6 +43,11 @@ namespace text
 
 	void Converters::switchStatus(const switchState_t state, string& stateText)
 	{
-		stateText.assign(state == SwitchStateStraight ?"straight" : "turnout");
+		stateText.assign(state == SwitchStateStraight ? "straight" : "turnout");
+	}
+
+	void Converters::signalStatus(const signalState_t state, string& stateText)
+	{
+		stateText.assign(state == SignalStateGreen ? "green" : "red");
 	}
 }

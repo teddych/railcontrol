@@ -344,4 +344,20 @@ namespace hardware
 		instance->Accessory(protocol, address, state, on);
 	}
 
+	void HardwareHandler::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on)
+	{
+		if (controlType == ControlTypeHardware || instance == nullptr)
+		{
+			return;
+		}
+		controlID_t controlID = 0;
+		protocol_t protocol = ProtocolNone;
+		address_t address = AddressNone;
+		manager.SignalProtocolAddress(signalID, controlID, protocol, address);
+		if (controlID != ControlID())
+		{
+			return;
+		}
+		instance->Accessory(protocol, address, state, on);
+	}
 } // namespace hardware

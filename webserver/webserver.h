@@ -51,6 +51,9 @@ namespace webserver
 			void TrackDelete(const trackID_t trackID, const std::string& name) override;
 			void TrackSettings(const trackID_t trackID, const std::string& name) override;
 			void TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const direction_t direction, const std::string& locoName) override;
+			void SignalDelete(const signalID_t signalID, const std::string& name) override;
+			void SignalSettings(const signalID_t signalID, const std::string& name) override;
+			void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on) override;
 
 		private:
 			void AddUpdate(const std::string& command, const std::string& status);

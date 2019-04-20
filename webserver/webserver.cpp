@@ -273,6 +273,39 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
+	void WebServer::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on)
+	{
+		if (on == false)
+		{
+			return;
+		}
+		stringstream command;
+		stringstream status;
+		string stateText;
+		text::Converters::signalStatus(state, stateText);
+		command << "signal;signal=" << signalID << ";state=" << stateText;
+		status << manager.GetSignalName(signalID) << " is " << stateText;
+		AddUpdate(command.str(), status.str());
+	}
+
+	void WebServer::SignalSettings(const signalID_t signalID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "signalsettings;signal=" << signalID;
+		status << name << " updated";
+		AddUpdate(command.str(), status.str());
+	}
+
+	void WebServer::SignalDelete(const signalID_t signalID, const std::string& name)
+	{
+		stringstream command;
+		stringstream status;
+		command << "signaldelete;signal=" << signalID;
+		status << name << " deleted";
+		AddUpdate(command.str(), status.str());
+	}
+
 	void WebServer::LocoRelease(const locoID_t locoID)
 	{
 		stringstream command;

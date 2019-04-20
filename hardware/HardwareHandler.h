@@ -36,6 +36,7 @@ namespace hardware {
 			bool LocoProtocolSupported(protocol_t protocol) const override;
 			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;
 			void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) override;
+			void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on) override;
 
 		private:
 			Manager& manager;

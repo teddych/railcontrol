@@ -2012,12 +2012,12 @@ void Manager::SignalState(const controlType_t controlType, Signal* signal, const
 	delayedCall->Signal(controlType, signalID, state, inverted, signal->GetDuration());
 }
 
-void Manager::SignalState(const controlType_t controlType, const signalID_t signalID, const switchState_t state, const bool inverted, const bool on)
+void Manager::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool inverted, const bool on)
 {
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		switchState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
+		signalState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
 		control.second->SignalState(controlType, signalID, tempState, on);
 	}
 }
@@ -2025,7 +2025,7 @@ void Manager::SignalState(const controlType_t controlType, const signalID_t sign
 Signal* Manager::GetSignal(const signalID_t signalID) const
 {
 	std::lock_guard<std::mutex> Guard(signalMutex);
-	if (switches.count(signalID) != 1)
+	if (signals.count(signalID) != 1)
 	{
 		return nullptr;
 	}
@@ -2053,7 +2053,7 @@ const std::string& Manager::GetSignalName(const signalID_t signalID) const
 	{
 		return unknownSignal;
 	}
-	return switches.at(signalID)->GetName();
+	return signals.at(signalID)->GetName();
 }
 
 bool Manager::CheckSignalPosition(const signalID_t signalID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
@@ -2067,7 +2067,7 @@ bool Manager::CheckSignalPosition(const signalID_t signalID, const layoutPositio
 	return signal->HasPosition(posX, posY, posZ);
 }
 
-bool Manager::SignalSave(const signalID_t signalID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t duration, const bool inverted, string& result)
+bool Manager::SignalSave(const signalID_t signalID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const signalType_t type, const signalDuration_t duration, const bool inverted, string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
@@ -2078,7 +2078,7 @@ bool Manager::SignalSave(const signalID_t signalID, const string& name, const la
 	{
 		result.append("Unable to ");
 		result.append(signalID == SignalNone ? "add" : "move");
-		result.append(" switch.");
+		result.append(" signal.");
 		return false;
 	}
 
@@ -2093,7 +2093,6 @@ bool Manager::SignalSave(const signalID_t signalID, const string& name, const la
 		return false;
 	}
 
-	// update existing switch
 	signal->SetName(CheckObjectName(signals, signalMutex, name.size() == 0 ? "S" : name));
 	signal->SetPosX(posX);
 	signal->SetPosY(posY);
@@ -2139,11 +2138,11 @@ bool Manager::SignalDelete(const signalID_t signalID)
 		storage->DeleteSignal(signalID);
 	}
 
-	const string& switchName = signal->GetName();
+	const string& signalName = signal->GetName();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->SignalDelete(signalID, switchName);
+		control.second->SignalDelete(signalID, signalName);
 	}
 	delete signal;
 	return true;
@@ -2481,7 +2480,7 @@ bool Manager::CheckPositionFree(const layoutPosition_t posX, const layoutPositio
 		&& CheckLayoutPositionFree(posX, posY, posZ, result, feedbacks, feedbackMutex)
 		&& CheckLayoutPositionFree(posX, posY, posZ, result, switches, switchMutex)
 		&& CheckLayoutPositionFree(posX, posY, posZ, result, streets, streetMutex)
-		&& CheckLayoutPositionFree(posX, posY, posZ, result, feedbacks, feedbackMutex);
+		&& CheckLayoutPositionFree(posX, posY, posZ, result, signals, signalMutex);
 }
 
 bool Manager::CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
