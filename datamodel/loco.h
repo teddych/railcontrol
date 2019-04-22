@@ -13,6 +13,8 @@ class Manager;
 
 namespace datamodel
 {
+	class Street;
+	class Track;
 	class LocoFunctions
 	{
 		public:
@@ -100,9 +102,12 @@ namespace datamodel
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
-				fromTrackID(TrackNone),
-				toTrackID(TrackNone),
-				streetID(StreetNone),
+				trackIdFrom(TrackNone),
+				trackIdFirst(TrackNone),
+				trackIdSecond(TrackNone),
+				streetIdFirst(StreetNone),
+				streetIdSecond(StreetNone),
+				feedbackIdFirst(FeedbackNone),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
@@ -117,9 +122,12 @@ namespace datamodel
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
-				fromTrackID(TrackNone),
-				toTrackID(TrackNone),
-				streetID(StreetNone),
+				trackIdFrom(TrackNone),
+				trackIdFirst(TrackNone),
+				trackIdSecond(TrackNone),
+				streetIdFirst(StreetNone),
+				streetIdSecond(StreetNone),
+				feedbackIdFirst(FeedbackNone),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
@@ -147,8 +155,8 @@ namespace datamodel
 
 			bool ToTrack(const trackID_t trackID);
 			bool Release();
-			trackID_t GetTrack() const { return toTrackID; }
-			streetID_t GetStreet() const { return streetID; }
+			trackID_t GetTrack() const { return trackIdFirst; }
+			streetID_t GetStreet() const { return streetIdFirst; }
 			const char* const GetStateText() const;
 			void LocationReached(const feedbackID_t feedbackID);
 
@@ -162,7 +170,7 @@ namespace datamodel
 			void SetDirection(const direction_t direction) { this->direction = direction; }
 			direction_t GetDirection() const { return direction; }
 
-			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->toTrackID != TrackNone || this->streetID != StreetNone; }
+			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackIdFirst != TrackNone || this->streetIdFirst != StreetNone; }
 
 			bool GetCommuter() const { return commuter; }
 			length_t GetLength() const { return length; }
@@ -178,14 +186,17 @@ namespace datamodel
 			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
 
 		private:
-			void AutoMode(Loco* loco);
-			void SearchDestination();
+			void AutoMode();
+			void SearchDestinationFirst();
+			void SearchDestinationSecond();
+			datamodel::Street* SearchDestination(datamodel::Track* oldToTrack);
 
 			enum locoState_t : unsigned char
 			{
 				LocoStateManual = 0,
 				LocoStateOff,
-				LocoStateSearching,
+				LocoStateSearchingFirst,
+				LocoStateSearchingSecond,
 				LocoStateRunning,
 				LocoStateStopping,
 				LocoStateError
@@ -205,14 +216,17 @@ namespace datamodel
 			locoSpeed_t speed;
 			direction_t direction;
 
-			locoState_t state;
-			trackID_t fromTrackID;
-			trackID_t toTrackID;
-			streetID_t streetID;
-			feedbackID_t feedbackIdReduced;
-			feedbackID_t feedbackIdCreep;
-			feedbackID_t feedbackIdStop;
-			feedbackID_t feedbackIdOver;
+			volatile locoState_t state;
+			volatile trackID_t trackIdFrom;
+			volatile trackID_t trackIdFirst;
+			volatile trackID_t trackIdSecond;
+			volatile streetID_t streetIdFirst;
+			volatile streetID_t streetIdSecond;
+			volatile feedbackID_t feedbackIdFirst;
+			volatile feedbackID_t feedbackIdReduced;
+			volatile feedbackID_t feedbackIdCreep;
+			volatile feedbackID_t feedbackIdStop;
+			volatile feedbackID_t feedbackIdOver;
 
 			LocoFunctions functions;
 
