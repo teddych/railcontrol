@@ -89,6 +89,32 @@ namespace datamodel
 		{
 			state = LocoStateOff;
 		}
+
+		Street* street = manager->GetStreet(streetIdFirst);
+		if (street != nullptr)
+		{
+			street->Release(objectID);
+		}
+		street = manager->GetStreet(streetIdSecond);
+		if (street != nullptr)
+		{
+			street->Release(objectID);
+		}
+		Track* track = manager->GetTrack(trackIdFrom);
+		if (track != nullptr)
+		{
+			track->Release(objectID);
+		}
+		track = manager->GetTrack(trackIdFirst);
+		if (track != nullptr)
+		{
+			track->Release(objectID);
+		}
+		track = manager->GetTrack(trackIdSecond);
+		if (track != nullptr)
+		{
+			track->Release(objectID);
+		}
 		trackIdFrom = TrackNone;
 		trackIdFirst = TrackNone;
 		trackIdSecond = TrackNone;

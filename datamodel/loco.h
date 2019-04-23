@@ -156,7 +156,8 @@ namespace datamodel
 			bool ToTrack(const trackID_t trackID);
 			bool Release();
 			trackID_t GetTrack() const { return trackIdFirst; }
-			streetID_t GetStreet() const { return streetIdFirst; }
+			streetID_t GetStreetFirst() const { return streetIdFirst; }
+			streetID_t GetStreetSecond() const { return streetIdSecond; }
 			const char* const GetStateText() const;
 			void LocationReached(const feedbackID_t feedbackID);
 

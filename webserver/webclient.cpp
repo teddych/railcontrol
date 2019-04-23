@@ -1527,7 +1527,7 @@ namespace webserver
 			locoArgument["loco"] = locoIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "locoaskdelete_" + locoIdString, locoArgument)));
-			if (loco.second->GetTrack() != TrackNone || loco.second->GetStreet() != StreetNone)
+			if (loco.second->GetTrack() != TrackNone || loco.second->GetStreetFirst() != StreetNone)
 			{
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "locorelease_" + locoIdString, locoArgument)));
 			}
@@ -2848,7 +2848,7 @@ namespace webserver
 	void WebClient::handleTrackRelease(const map<string, string>& arguments)
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
-		bool ret = manager.TrackReleaseWithLoco(trackID);
+		bool ret = manager.TrackRelease(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Track released" : "Track not released"));
 	}
 

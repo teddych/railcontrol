@@ -2242,28 +2242,19 @@ bool Manager::LocoRelease(const locoID_t locoID)
 	{
 		return false;
 	}
-	trackID_t trackID = loco->GetTrack();
-	streetID_t streetID = loco->GetStreet();
-	bool ret = LocoReleaseInternal(locoID);
-	ret &= StreetRelease(streetID);
-	ret &= TrackRelease(trackID);
-	return ret;
+	return LocoReleaseInternal(loco);
 }
 
-bool Manager::LocoReleaseInternal(const locoID_t locoID)
+bool Manager::LocoReleaseInternal(Loco* loco)
 {
-	LocoSpeed(ControlTypeInternal, locoID, MinSpeed);
+	LocoSpeed(ControlTypeInternal, loco, MinSpeed);
 
-	Loco* loco = GetLoco(locoID);
-	if (loco == nullptr)
-	{
-		return false;
-	}
 	bool ret = loco->Release();
 	if (ret == false)
 	{
 		return false;
 	}
+	locoID_t locoID = loco->GetID();
 	std::lock_guard<std::mutex> Guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -2282,7 +2273,7 @@ bool Manager::TrackRelease(const trackID_t trackID)
 	return TrackReleaseInternal(track);
 }
 
-bool Manager::TrackReleaseWithLoco(const trackID_t trackID)
+bool Manager::LocoReleaseInTrack(const trackID_t trackID)
 {
 	Track* track = GetTrack(trackID);
 	if (track == nullptr)
@@ -2290,9 +2281,12 @@ bool Manager::TrackReleaseWithLoco(const trackID_t trackID)
 		return false;
 	}
 	locoID_t locoID = track->GetLoco();
-	bool ret = LocoReleaseInternal(locoID);
-	ret &= TrackReleaseInternal(track);
-	return ret;
+	Loco* loco = GetLoco(locoID);
+	if (loco == nullptr)
+	{
+		return false;
+	}
+	return LocoReleaseInternal(loco);
 }
 
 bool Manager::TrackReleaseInternal(Track* track)
@@ -2302,7 +2296,6 @@ bool Manager::TrackReleaseInternal(Track* track)
 	{
 		return false;
 	}
-	TrackPublishState(track);
 	return true;
 }
 bool Manager::TrackStartLoco(const trackID_t trackID)

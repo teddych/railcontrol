@@ -781,7 +781,7 @@ namespace console
 	void ConsoleClient::HandleTrackRelease(string& s, size_t& i)
 	{
 		trackID_t trackID = ReadNumber(s, i);
-		if (!manager.TrackReleaseWithLoco(trackID))
+		if (!manager.TrackRelease(trackID))
 		{
 			SendAndPrompt("Track not found or track in use");
 			return;
@@ -1032,13 +1032,13 @@ namespace console
 			status << manager.GetTrackName(loco->GetTrack()) << " (" << loco->GetTrack() << ")";
 		}
 		status << "\nStreet:   ";
-		if (loco->GetStreet() == StreetNone)
+		if (loco->GetStreetFirst() == StreetNone)
 		{
 			status << "-";
 		}
 		else
 		{
-			status << manager.GetStreetName(loco->GetStreet()) << " (" << loco->GetStreet() << ")";
+			status << manager.GetStreetName(loco->GetStreetFirst()) << " (" << loco->GetStreetFirst() << ")";
 		}
 		SendAndPrompt(status.str());
 	}

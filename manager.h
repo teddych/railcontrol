@@ -200,7 +200,7 @@ class Manager
 		bool LocoIntoTrack(const locoID_t locoID, const trackID_t trackID);
 		bool LocoRelease(const locoID_t locoID);
 		bool TrackRelease(const trackID_t trackID);
-		bool TrackReleaseWithLoco(const trackID_t trackID);
+		bool LocoReleaseInTrack(const trackID_t trackID);
 		bool TrackStartLoco(const trackID_t trackID);
 		bool TrackStopLoco(const trackID_t trackID);
 		void TrackBlock(const trackID_t trackID, const bool blocked);
@@ -261,7 +261,7 @@ class Manager
 		bool CheckControlProtocolAddress(const addressType_t type, const controlID_t controlID, const protocol_t protocol, const address_t address, std::string& result);
 		const std::map<std::string,protocol_t> ProtocolsOfControl(const addressType_t type, const controlID_t) const;
 
-		bool LocoReleaseInternal(const locoID_t locoID);
+		bool LocoReleaseInternal(datamodel::Loco* loco);
 		bool TrackReleaseInternal(const trackID_t trackID);
 		bool TrackReleaseInternal(datamodel::Track* track);
 
