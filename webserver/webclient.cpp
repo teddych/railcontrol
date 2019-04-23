@@ -288,6 +288,10 @@ namespace webserver
 			{
 				handleSwitchGet(arguments);
 			}
+			else if (arguments["cmd"].compare("switchrelease") == 0)
+			{
+				handleSwitchRelease(arguments);
+			}
 			else if (arguments["cmd"].compare("signaledit") == 0)
 			{
 				handleSignalEdit(arguments);
@@ -315,6 +319,10 @@ namespace webserver
 			else if (arguments["cmd"].compare("signalget") == 0)
 			{
 				handleSignalGet(arguments);
+			}
+			else if (arguments["cmd"].compare("signalrelease") == 0)
+			{
+				handleSignalRelease(arguments);
 			}
 			else if (arguments["cmd"].compare("streetedit") == 0)
 			{
