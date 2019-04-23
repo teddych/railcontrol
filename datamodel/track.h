@@ -71,7 +71,7 @@ namespace datamodel
 			selectStreetApproach_t GetSelectStreetApproach() const { return selectStreetApproach; }
 			void SetSelectStreetApproach(const selectStreetApproach_t selectStreetApproach) { this->selectStreetApproach = selectStreetApproach; }
 
-			bool GetValidStreets(const datamodel::Loco* loco, std::vector<Street*>& validStreets) const;
+			bool GetValidStreets(const datamodel::Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const;
 			direction_t GetLocoDirection() const { return locoDirection; }
 			void SetLocoDirection(const direction_t direction) { locoDirection = direction; }
 			bool GetBlocked() const { return blocked; }

@@ -103,7 +103,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Street::FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const Loco* loco)
+	bool Street::FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const Loco* loco, const bool allowLocoTurn)
 	{
 		if (automode == false)
 		{
@@ -131,7 +131,7 @@ namespace datamodel
 			return false;
 		}
 
-		if (locoCommuter == true)
+		if (allowLocoTurn == true && locoCommuter == true)
 		{
 			return true;
 		}

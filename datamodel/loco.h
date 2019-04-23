@@ -189,7 +189,7 @@ namespace datamodel
 			void AutoMode();
 			void SearchDestinationFirst();
 			void SearchDestinationSecond();
-			datamodel::Street* SearchDestination(datamodel::Track* oldToTrack);
+			datamodel::Street* SearchDestination(datamodel::Track* oldToTrack, const bool allowLocoTurn);
 
 			enum locoState_t : unsigned char
 			{

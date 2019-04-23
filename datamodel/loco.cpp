@@ -232,7 +232,7 @@ namespace datamodel
 			return;
 		}
 
-		Track* oldTrack = manager->GetTrack(trackIdFrom);
+		Track* oldTrack = manager->GetTrack(trackIdFrom); // FIXME: save trackpointer because of performance
 		if (oldTrack == nullptr)
 		{
 			state = LocoStateOff;
@@ -248,7 +248,7 @@ namespace datamodel
 		}
 		logger->Debug("Looking for new destination starting from {0}.", oldTrack->GetName());
 
-		Street* usedStreet = SearchDestination(oldTrack);
+		Street* usedStreet = SearchDestination(oldTrack, true);
 		if (usedStreet == nullptr)
 		{
 			logger->Debug("No valid street found for {0}", name);
@@ -297,7 +297,7 @@ namespace datamodel
 			return;
 		}
 
-		Track* oldTrack = manager->GetTrack(trackIdFirst);
+		Track* oldTrack = manager->GetTrack(trackIdFirst); // FIXME: save trackpointer because of performance
 		if (oldTrack == nullptr)
 		{
 			state = LocoStateOff;
@@ -313,7 +313,7 @@ namespace datamodel
 		}
 		logger->Debug("Looking for new destination starting from {0}.", oldTrack->GetName());
 
-		Street* usedStreet = SearchDestination(oldTrack);
+		Street* usedStreet = SearchDestination(oldTrack, false);
 		if (usedStreet == nullptr)
 		{
 			logger->Debug("No valid street found for {0}", name);
@@ -349,10 +349,10 @@ namespace datamodel
 		state = LocoStateRunning;
 	}
 
-	Street* Loco::SearchDestination(Track* track)
+	Street* Loco::SearchDestination(Track* track, const bool allowLocoTurn)
 	{
 		vector<Street*> validStreets;
-		track->GetValidStreets(this, validStreets);
+		track->GetValidStreets(this, allowLocoTurn, validStreets);
 		for (auto street : validStreets)
 		{
 			if (street->Reserve(objectID) == false)

@@ -51,7 +51,7 @@ namespace datamodel
 			bool AssignRelations(const std::vector<datamodel::Relation*>& newRelations);
 			const std::vector<datamodel::Relation*>& GetRelations() const { return relations; };
 
-			bool FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const datamodel::Loco* loco);
+			bool FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const datamodel::Loco* loco, const bool allowLocoTurn);
 
 			bool Execute();
 			static bool ExecuteStatic(Street* street) { return street->Execute(); }
