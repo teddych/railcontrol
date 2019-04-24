@@ -1022,24 +1022,6 @@ namespace console
 			<< "\nAddress:  " << loco->GetAddress();
 		const char* const locoStateText = loco->GetStateText();
 		status << "\nStatus:   " << locoStateText;
-		status << "\nTrack:    ";
-		if (loco->GetTrack() == TrackNone)
-		{
-			status << "-";
-		}
-		else
-		{
-			status << manager.GetTrackName(loco->GetTrack()) << " (" << loco->GetTrack() << ")";
-		}
-		status << "\nStreet:   ";
-		if (loco->GetStreetFirst() == StreetNone)
-		{
-			status << "-";
-		}
-		else
-		{
-			status << manager.GetStreetName(loco->GetStreetFirst()) << " (" << loco->GetStreetFirst() << ")";
-		}
 		SendAndPrompt(status.str());
 	}
 

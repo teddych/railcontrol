@@ -102,11 +102,11 @@ namespace datamodel
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
-				trackIdFrom(TrackNone),
-				trackIdFirst(TrackNone),
-				trackIdSecond(TrackNone),
-				streetIdFirst(StreetNone),
-				streetIdSecond(StreetNone),
+				trackFrom(nullptr),
+				trackFirst(nullptr),
+				trackSecond(nullptr),
+				streetFirst(nullptr),
+				streetSecond(nullptr),
 				feedbackIdFirst(FeedbackNone),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
@@ -124,11 +124,11 @@ namespace datamodel
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
-				trackIdFrom(TrackNone),
-				trackIdFirst(TrackNone),
-				trackIdSecond(TrackNone),
-				streetIdFirst(StreetNone),
-				streetIdSecond(StreetNone),
+				trackFrom(nullptr),
+				trackFirst(nullptr),
+				trackSecond(nullptr),
+				streetFirst(nullptr),
+				streetSecond(nullptr),
 				feedbackIdFirst(FeedbackNone),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
@@ -159,9 +159,7 @@ namespace datamodel
 
 			bool ToTrack(const trackID_t trackID);
 			bool Release();
-			trackID_t GetTrack() const { return trackIdFirst; }
-			streetID_t GetStreetFirst() const { return streetIdFirst; }
-			streetID_t GetStreetSecond() const { return streetIdSecond; }
+			bool IsOnTrack() const { return trackFirst != nullptr; }
 			const char* const GetStateText() const;
 			void LocationReached(const feedbackID_t feedbackID);
 
@@ -175,7 +173,7 @@ namespace datamodel
 			void SetDirection(const direction_t direction) { this->direction = direction; }
 			direction_t GetDirection() const { return direction; }
 
-			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackIdFrom != TrackNone || this->streetIdFirst != StreetNone; }
+			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackFrom != nullptr || this->streetFirst != nullptr; }
 
 			bool GetCommuter() const { return commuter; }
 			length_t GetLength() const { return length; }
@@ -225,11 +223,11 @@ namespace datamodel
 			direction_t direction;
 
 			volatile locoState_t state;
-			volatile trackID_t trackIdFrom;
-			volatile trackID_t trackIdFirst;
-			volatile trackID_t trackIdSecond;
-			volatile streetID_t streetIdFirst;
-			volatile streetID_t streetIdSecond;
+			Track* trackFrom;
+			Track* trackFirst;
+			Track* trackSecond;
+			Street* streetFirst;
+			Street* streetSecond;
 			volatile feedbackID_t feedbackIdFirst;
 			volatile feedbackID_t feedbackIdReduced;
 			volatile feedbackID_t feedbackIdCreep;

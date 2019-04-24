@@ -32,6 +32,11 @@ namespace datamodel
 
 	std::string Loco::Serialize() const
 	{
+		trackID_t trackIdFrom = TrackNone;
+		if (trackFrom != nullptr)
+		{
+			trackIdFrom = trackFrom->GetID();
+		}
 		stringstream ss;
 		ss << "objectType=Loco"
 			<< ";" << Object::Serialize()
@@ -58,7 +63,8 @@ namespace datamodel
 			return false;
 		}
 		HardwareHandle::Deserialize(arguments);
-		trackIdFrom = GetIntegerMapEntry(arguments, "trackID", TrackNone);
+		trackID_t trackIdFrom = GetIntegerMapEntry(arguments, "trackID", TrackNone);
+		trackFrom = manager->GetTrack(trackIdFrom);
 		functions.Deserialize(GetStringMapEntry(arguments, "functions", "0"));
 		direction = (GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
 		length = static_cast<length_t>(GetIntegerMapEntry(arguments, "length", 0));
@@ -74,11 +80,11 @@ namespace datamodel
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		// there must not be set a track
-		if (this->trackIdFrom != TrackNone)
+		if (this->trackFrom != nullptr)
 		{
 			return false;
 		}
-		this->trackIdFrom = trackID;
+		this->trackFrom = manager->GetTrack(trackID);
 		return true;
 	}
 
@@ -90,36 +96,31 @@ namespace datamodel
 			state = LocoStateOff;
 		}
 
-		Street* street = manager->GetStreet(streetIdFirst);
-		if (street != nullptr)
+		if (streetFirst != nullptr)
 		{
-			street->Release(objectID);
+			streetFirst->Release(objectID);
+			streetFirst = nullptr;
 		}
-		street = manager->GetStreet(streetIdSecond);
-		if (street != nullptr)
+		if (streetSecond != nullptr)
 		{
-			street->Release(objectID);
+			streetSecond->Release(objectID);
+			streetSecond = nullptr;
 		}
-		Track* track = manager->GetTrack(trackIdFrom);
-		if (track != nullptr)
+		if (trackFrom != nullptr)
 		{
-			track->Release(objectID);
+			trackFrom->Release(objectID);
+			trackFrom = nullptr;
 		}
-		track = manager->GetTrack(trackIdFirst);
-		if (track != nullptr)
+		if (trackFirst != nullptr)
 		{
-			track->Release(objectID);
+			trackFirst->Release(objectID);
+			trackFirst = nullptr;
 		}
-		track = manager->GetTrack(trackIdSecond);
-		if (track != nullptr)
+		if (trackSecond != nullptr)
 		{
-			track->Release(objectID);
+			trackSecond->Release(objectID);
+			trackSecond = nullptr;
 		}
-		trackIdFrom = TrackNone;
-		trackIdFirst = TrackNone;
-		trackIdSecond = TrackNone;
-		streetIdFirst = StreetNone;
-		streetIdSecond = StreetNone;
 		feedbackIdOver = FeedbackNone;
 		feedbackIdStop = FeedbackNone;
 		feedbackIdCreep = FeedbackNone;
@@ -131,7 +132,7 @@ namespace datamodel
 	bool Loco::Start()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (trackIdFrom == TrackNone)
+		if (trackFrom == nullptr)
 		{
 			logger->Warning("Can not start {0} because it is not on a track", name);
 			return false;
@@ -263,30 +264,29 @@ namespace datamodel
 	void Loco::SearchDestinationFirst()
 	{
 		// check if already running
-		if (streetIdFirst != StreetNone || streetIdSecond != StreetNone)
+		if (streetFirst != nullptr || streetSecond != nullptr)
 		{
 			state = LocoStateError;
 			logger->Error("{0} has already a street reserved. Going to error state.", name);
 			return;
 		}
 
-		Track* oldTrack = manager->GetTrack(trackIdFrom); // FIXME: save trackpointer because of performance
-		if (oldTrack == nullptr)
+		if (trackFrom == nullptr)
 		{
 			state = LocoStateOff;
 			logger->Info("{0} is not on a track. Switching to manual mode.", name);
 			return;
 		}
 
-		if (oldTrack->GetID() != trackIdFrom)
+		if (trackFrom->GetLoco() != objectID)
 		{
 			state = LocoStateError;
-			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, oldTrack->GetName(), manager->GetLocoName(oldTrack->GetLoco()));
+			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, trackFrom->GetName(), manager->GetLocoName(trackFrom->GetLoco()));
 			return;
 		}
-		logger->Debug("Looking for new destination starting from {0}.", oldTrack->GetName());
+		logger->Debug("Looking for new destination starting from {0}.", trackFrom->GetName());
 
-		Street* usedStreet = SearchDestination(oldTrack, true);
+		Street* usedStreet = SearchDestination(trackFrom, true);
 		if (usedStreet == nullptr)
 		{
 			logger->Debug("No valid street found for {0}", name);
@@ -301,23 +301,23 @@ namespace datamodel
 			return;
 		}
 
-		trackIdFirst = newTrackIdFirst;
-		streetIdFirst = usedStreet->GetID();
+		trackFirst = newTrack;
+		streetFirst = usedStreet;
 		feedbackIdFirst = FeedbackNone;
-		feedbackIdReduced = usedStreet->GetFeedbackIdReduced();
-		feedbackIdCreep = usedStreet->GetFeedbackIdCreep();
-		feedbackIdStop = usedStreet->GetFeedbackIdStop();
-		feedbackIdOver = usedStreet->GetFeedbackIdOver();
-		bool turnLoco = (oldTrack->GetLocoDirection() != usedStreet->GetFromDirection());
+		feedbackIdReduced = streetFirst->GetFeedbackIdReduced();
+		feedbackIdCreep = streetFirst->GetFeedbackIdCreep();
+		feedbackIdStop = streetFirst->GetFeedbackIdStop();
+		feedbackIdOver = streetFirst->GetFeedbackIdOver();
+		bool turnLoco = (trackFrom->GetLocoDirection() != streetFirst->GetFromDirection());
 		direction_t newLocoDirection = static_cast<direction_t>(direction != turnLoco);
 		if (turnLoco)
 		{
-			oldTrack->SetLocoDirection(usedStreet->GetFromDirection());
-			manager->TrackPublishState(oldTrack);
+			trackFrom->SetLocoDirection(streetFirst->GetFromDirection());
+			manager->TrackPublishState(trackFrom);
 		}
 		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
-		newTrack->SetLocoDirection(static_cast<direction_t>(!usedStreet->GetToDirection()));
-		logger->Info("Heading to {0} via {1}", newTrack->GetName(), usedStreet->GetName());
+		newTrack->SetLocoDirection(static_cast<direction_t>(!streetFirst->GetToDirection()));
+		logger->Info("Heading to {0} via {1}", newTrack->GetName(), streetFirst->GetName());
 
 		// start loco
 		manager->TrackPublishState(newTrack);
@@ -328,37 +328,36 @@ namespace datamodel
 	void Loco::SearchDestinationSecond()
 	{
 		// check if already running
-		if (streetIdSecond != StreetNone)
+		if (streetSecond != nullptr)
 		{
 			state = LocoStateError;
 			logger->Error("{0} has already a street reserved. Going to error state.", name);
 			return;
 		}
 
-		Track* oldTrack = manager->GetTrack(trackIdFirst); // FIXME: save trackpointer because of performance
-		if (oldTrack == nullptr)
+		if (trackFirst == nullptr)
 		{
 			state = LocoStateOff;
 			logger->Info("{0} is not on a track. Switching to manual mode.", name);
 			return;
 		}
 
-		if (oldTrack->GetID() != trackIdFirst)
+		if (trackFirst->GetLoco() != objectID)
 		{
 			state = LocoStateError;
-			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, oldTrack->GetName(), manager->GetLocoName(oldTrack->GetLoco()));
+			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, trackFirst->GetName(), manager->GetLocoName(trackFirst->GetLoco()));
 			return;
 		}
-		logger->Debug("Looking for new destination starting from {0}.", oldTrack->GetName());
+		logger->Debug("Looking for new destination starting from {0}.", trackFirst->GetName());
 
-		Street* usedStreet = SearchDestination(oldTrack, false);
+		Street* usedStreet = SearchDestination(trackFirst, false);
 		if (usedStreet == nullptr)
 		{
 			logger->Debug("No valid street found for {0}", name);
 			return;
 		}
 		// FIXME: replace with code in SearchDestination
-		bool turnLoco = (oldTrack->GetLocoDirection() != usedStreet->GetFromDirection());
+		bool turnLoco = (trackFirst->GetLocoDirection() != usedStreet->GetFromDirection());
 		if (turnLoco)
 		{
 			return;
@@ -371,15 +370,15 @@ namespace datamodel
 			return;
 		}
 
-		trackIdSecond = newTrackIdSecond;
-		streetIdSecond = usedStreet->GetID();
+		trackSecond = newTrack;
+		streetSecond = usedStreet;
 		feedbackIdFirst = feedbackIdStop;
-		feedbackIdOver = usedStreet->GetFeedbackIdOver();
-		feedbackIdStop = usedStreet->GetFeedbackIdStop();
-		feedbackIdCreep = usedStreet->GetFeedbackIdCreep();
-		feedbackIdReduced = usedStreet->GetFeedbackIdReduced();
-		newTrack->SetLocoDirection(static_cast<direction_t>(!usedStreet->GetToDirection()));
-		logger->Info("Heading to {0} via {1}", newTrack->GetName(), usedStreet->GetName());
+		feedbackIdOver = streetSecond->GetFeedbackIdOver();
+		feedbackIdStop = streetSecond->GetFeedbackIdStop();
+		feedbackIdCreep = streetSecond->GetFeedbackIdCreep();
+		feedbackIdReduced = streetSecond->GetFeedbackIdReduced();
+		newTrack->SetLocoDirection(static_cast<direction_t>(!streetSecond->GetToDirection()));
+		logger->Info("Heading to {0} via {1}", newTrack->GetName(), streetSecond->GetName());
 
 		// start loco
 		manager->TrackPublishState(newTrack);
@@ -460,9 +459,7 @@ namespace datamodel
 	{
 		feedbackIdFirstReached = false;
 		// set loco to new track
-		Street* oldStreet = manager->GetStreet(streetIdFirst);
-		Track* oldFromTrack = manager->GetTrack(trackIdFrom);
-		if (oldStreet == nullptr || oldFromTrack == nullptr)
+		if (streetFirst == nullptr || trackFrom == nullptr)
 		{
 			Speed(MinSpeed);
 			state = LocoStateError;
@@ -470,14 +467,14 @@ namespace datamodel
 			return;
 		}
 
-		locoID_t& locoID = objectID;
-		oldStreet->Release(locoID);
-		oldFromTrack->Release(locoID);
-		trackIdFrom = trackIdFirst;
-		trackIdFirst = trackIdSecond;
+		streetFirst->Release(objectID);
+		streetFirst = streetSecond;
+		streetSecond = nullptr;
 
-		streetIdFirst = streetIdSecond;
-		streetIdSecond = StreetNone;
+		trackFrom->Release(objectID);
+		trackFrom = trackFirst;
+		trackFirst = trackSecond;
+		trackSecond = nullptr;
 
 		feedbackIdFirst = FeedbackNone;
 
@@ -503,9 +500,7 @@ namespace datamodel
 	{
 		feedbackIdStopReached = false;
 		// set loco to new track
-		Street* oldStreet = manager->GetStreet(streetIdFirst);
-		Track* fromTrack = manager->GetTrack(trackIdFrom);
-		if (oldStreet == nullptr || fromTrack == nullptr)
+		if (streetFirst == nullptr || trackFrom == nullptr)
 		{
 			Speed(MinSpeed);
 			state = LocoStateError;
@@ -513,13 +508,13 @@ namespace datamodel
 			return;
 		}
 
-		trackIdFrom = oldStreet->GetToTrack();
-		locoID_t& locoID = objectID;
-		manager->LocoDestinationReached(locoID, streetIdFirst, trackIdFrom);
-		oldStreet->Release(locoID);
-		fromTrack->Release(locoID);
+		manager->LocoDestinationReached(objectID, streetFirst->GetID(), trackFrom->GetID());
+		streetFirst->Release(objectID);
+		streetFirst = nullptr;
 
-		streetIdFirst = StreetNone;
+		trackFrom->Release(objectID);
+		trackFrom = trackFirst;
+		trackFirst = nullptr;
 
 		feedbackIdStop = FeedbackNone;
 		feedbackIdCreep = FeedbackNone;

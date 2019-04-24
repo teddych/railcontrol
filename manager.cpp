@@ -563,7 +563,7 @@ const map<string,locoID_t> Manager::LocoListFree() const
 	std::lock_guard<std::mutex> Guard(locoMutex);
 	for(auto loco : locos)
 	{
-		if (loco.second->GetTrack() == TrackNone)
+		if (loco.second->IsInUse() == false)
 		{
 			out[loco.second->GetName()] = loco.second->GetID();
 		}
