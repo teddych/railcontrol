@@ -191,7 +191,7 @@ namespace datamodel
 			void SearchDestinationFirst();
 			void SearchDestinationSecond();
 			datamodel::Street* SearchDestination(datamodel::Track* oldToTrack, const bool allowLocoTurn);
-			void SetMinThreadPriority();
+			static void SetMinThreadPriority();
 
 			enum locoState_t : unsigned char
 			{
