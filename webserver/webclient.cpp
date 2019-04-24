@@ -1536,9 +1536,9 @@ namespace webserver
 			locoArgument["loco"] = locoIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "locoaskdelete_" + locoIdString, locoArgument)));
-			if (loco.second->GetTrack() != TrackNone || loco.second->GetStreetFirst() != StreetNone)
+			if (loco.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "locorelease_" + locoIdString, locoArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "locorelease_" + locoIdString, locoArgument, "hideElement('b_locorelease_" + locoIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
@@ -1809,7 +1809,7 @@ namespace webserver
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
 			if (accessory.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "accessoryrelease_" + accessoryIdString, accessoryArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "accessoryrelease_" + accessoryIdString, accessoryArgument, "hideElement('b_accessiryrelease_" + accessoryIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
@@ -2011,7 +2011,7 @@ namespace webserver
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "switchaskdelete_" + switchIdString, switchArgument)));
 			if (mySwitch.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "switchrelease_" + switchIdString, switchArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "switchrelease_" + switchIdString, switchArgument, "hideElement('b_switchrelease_" + switchIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
@@ -2219,7 +2219,7 @@ namespace webserver
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "signalaskdelete_" + signalIdString, signalArgument)));
 			if (signal.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "signalrelease_" + signalIdString, signalArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "signalrelease_" + signalIdString, signalArgument, "hideElement('b_signalrelease_" + signalIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
@@ -2581,7 +2581,7 @@ namespace webserver
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "streetaskdelete_" + streetIdString, streetArgument)));
 			if (street.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "streetrelease_" + streetIdString, streetArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "streetrelease_" + streetIdString, streetArgument, "hideElement('b_streetrelease_" + streetIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
@@ -2786,10 +2786,14 @@ namespace webserver
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(track.first));
-			string locoIdString = to_string(track.second->GetID());
-			trackArgument["track"] = locoIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "trackedit_list_" + locoIdString, trackArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "trackaskdelete_" + locoIdString, trackArgument)));
+			string trackIdString = to_string(track.second->GetID());
+			trackArgument["track"] = trackIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "trackedit_list_" + trackIdString, trackArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "trackaskdelete_" + trackIdString, trackArgument)));
+			if (track.second->IsInUse())
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "trackrelease_" + trackIdString, trackArgument, "hideElement('b_trackrelease_" + trackIdString + "');")));
+			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));

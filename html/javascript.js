@@ -801,6 +801,16 @@ function hideAllContextMenus()
 	}
 }
 
+function hideElement(name)
+{
+	var element = document.getElementById(name);
+	if (!element)
+	{
+		return;
+	}
+	element.style.display = 'none';
+}
+
 function loadLoco()
 {
 	var loco = document.getElementById('s_loco');

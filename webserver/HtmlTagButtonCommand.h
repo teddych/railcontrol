@@ -11,6 +11,6 @@ namespace webserver
 	class HtmlTagButtonCommand : public HtmlTagButton
 	{
 		public:
-			HtmlTagButtonCommand(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
+			HtmlTagButtonCommand(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(), const std::string& additionalOnClick = "");
 	};
 };

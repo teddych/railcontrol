@@ -6,7 +6,7 @@
 
 namespace webserver
 {
-	HtmlTagButtonCommand::HtmlTagButtonCommand(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments)
+	HtmlTagButtonCommand::HtmlTagButtonCommand(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments, const std::string& additionalOnClick)
 	:	HtmlTagButton(value, command)
 	{
 		std::vector<std::string> parts;
@@ -19,8 +19,9 @@ namespace webserver
 			ss << "&" << argument.first << "=" << argument.second;
 		}
 		ss <<"';"
-			"fireRequestAndForget(theUrl);"
-			"return false;";
+			"fireRequestAndForget(theUrl);";
+		ss << additionalOnClick;
+		ss << "return false;";
 		AddAttribute("onclick", ss.str());
 	}
 };
