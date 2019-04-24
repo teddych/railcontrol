@@ -171,7 +171,7 @@ namespace datamodel
 			void SetDirection(const direction_t direction) { this->direction = direction; }
 			direction_t GetDirection() const { return direction; }
 
-			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackIdFirst != TrackNone || this->streetIdFirst != StreetNone; }
+			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackIdFrom != TrackNone || this->streetIdFirst != StreetNone; }
 
 			bool GetCommuter() const { return commuter; }
 			length_t GetLength() const { return length; }
