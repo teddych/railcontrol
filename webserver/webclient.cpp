@@ -1049,8 +1049,17 @@ namespace webserver
 
 	void WebClient::handleLocoRelease(const map<string, string>& arguments)
 	{
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco");
-		bool ret = manager.LocoRelease(locoID);
+		bool ret;
+		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		if (locoID == LocoNone)
+		{
+			trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+			ret = manager.LocoReleaseInTrack(trackID);
+		}
+		else
+		{
+			ret = manager.LocoRelease(locoID);
+		}
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco released" : "Loco not released"));
 	}
 
