@@ -111,7 +111,9 @@ namespace datamodel
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
-				feedbackIdOver(FeedbackNone)
+				feedbackIdOver(FeedbackNone),
+				feedbackIdFirstReached(false),
+				feedbackIdStopReached(false)
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
 				SetNrOfFunctions(0);
@@ -131,7 +133,9 @@ namespace datamodel
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
-				feedbackIdOver(FeedbackNone)
+				feedbackIdOver(FeedbackNone),
+				feedbackIdFirstReached(false),
+				feedbackIdStopReached(false)
 			{
 				Deserialize(serialized);
 				logger = Logger::Logger::GetLogger("Loco " + name);
@@ -187,11 +191,13 @@ namespace datamodel
 			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
 
 		private:
+			static void SetMinThreadPriority();
 			void AutoMode();
 			void SearchDestinationFirst();
 			void SearchDestinationSecond();
 			datamodel::Street* SearchDestination(datamodel::Track* oldToTrack, const bool allowLocoTurn);
-			static void SetMinThreadPriority();
+			void FeedbackIdFirstReached();
+			void FeedbackIdStopReached();
 
 			enum locoState_t : unsigned char
 			{
@@ -229,6 +235,8 @@ namespace datamodel
 			volatile feedbackID_t feedbackIdCreep;
 			volatile feedbackID_t feedbackIdStop;
 			volatile feedbackID_t feedbackIdOver;
+			volatile bool feedbackIdFirstReached;
+			volatile bool feedbackIdStopReached;
 
 			LocoFunctions functions;
 
