@@ -112,4 +112,6 @@ test:
 	make -C test
 
 Timestamp.h:
-	echo "#pragma once\n#define __COMPILE_TIME__ `date +%s`\ntime_t GetCompileTime();" > Timestamp.h
+	echo "#pragma once" > Timestamp.h
+	echo "#define __COMPILE_TIME__ `date +%s`" >> Timestamp.h
+	echo "time_t GetCompileTime();" >> Timestamp.h
