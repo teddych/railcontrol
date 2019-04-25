@@ -170,12 +170,12 @@ namespace datamodel
 					return true;
 
 				case LocoStateOff:
-				case LocoStateSearchingFirst:
-				case LocoStateSearchingSecond:
 				case LocoStateError:
 					state = LocoStateOff;
 					break;
 
+				case LocoStateSearchingFirst:
+				case LocoStateSearchingSecond:
 				case LocoStateRunning:
 				case LocoStateStopping:
 					logger->Info("{0} is actually running, waiting until reached its destination", name);
