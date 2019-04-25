@@ -41,6 +41,7 @@ Manager::Manager(Config& config)
 	defaultAccessoryDuration(DefaultAccessoryDuration),
 	autoAddFeedback(false),
 	selectStreetApproach(datamodel::Track::SelectStreetRandom),
+	nrOfTracksToReserve(datamodel::Loco::ReserveOne),
 	debounceRun(true),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
@@ -63,6 +64,8 @@ Manager::Manager(Config& config)
 
 	defaultAccessoryDuration = Util::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
 	autoAddFeedback = Util::StringToBool(storage->GetSetting("AutoAddFeedback"));
+	selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Util::StringToInteger(storage->GetSetting("SelectStreetApproach")));
+	nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(Util::StringToInteger(storage->GetSetting("NrOfTracksToReserve")));
 
 
 	controls[ControlIdConsole] = new ConsoleServer(*this, config.getValue("consoleport", 2222));
@@ -2641,11 +2644,13 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 
 bool Manager::SaveSettings(const accessoryDuration_t duration,
 	const bool autoAddFeedback,
-	const datamodel::Track::selectStreetApproach_t selectStreetApproach)
+	const datamodel::Track::selectStreetApproach_t selectStreetApproach,
+	const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
 {
 	this->defaultAccessoryDuration = duration;
 	this->autoAddFeedback = autoAddFeedback;
 	this->selectStreetApproach = selectStreetApproach;
+	this->nrOfTracksToReserve = nrOfTracksToReserve;
 	if (storage == nullptr)
 	{
 		return false;
@@ -2653,6 +2658,7 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 	storage->SaveSetting("DefaultAccessoryDuration", std::to_string(duration));
 	storage->SaveSetting("AutoAddFeedback", std::to_string(autoAddFeedback));
 	storage->SaveSetting("SelectStreetApproach", std::to_string(static_cast<int>(selectStreetApproach)));
+	storage->SaveSetting("NrOfTracksToReserve", std::to_string(static_cast<int>(nrOfTracksToReserve)));
 	return true;
 }
 

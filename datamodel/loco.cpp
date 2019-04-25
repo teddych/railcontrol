@@ -210,6 +210,8 @@ namespace datamodel
 		SetMinThreadPriorityAndThreadName();
 		const string& name = GetName();
 		logger->Info("{0} is now in automode", name);
+		feedbackIdFirstReached = false;
+		feedbackIdStopReached = false;
 
 		while (true)
 		{
@@ -235,7 +237,10 @@ namespace datamodel
 						break;
 
 					case LocoStateSearchingSecond:
-						SearchDestinationSecond();
+						if (manager->GetNrOfTracksToReserve() > 1)
+						{
+							SearchDestinationSecond();
+						}
 						break;
 
 					case LocoStateRunning:

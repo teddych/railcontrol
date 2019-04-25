@@ -1331,6 +1331,14 @@ namespace webserver
 		return HtmlTagSelectWithLabel("selectstreetapproach", "Select street by:", options, to_string(static_cast<int>(selectStreetApproach)));
 	}
 
+	HtmlTag WebClient::HtmlTagNrOfTracksToReserve(const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
+	{
+		map<string,string> options;
+		options[to_string(datamodel::Loco::ReserveOne)] = "1";
+		options[to_string(datamodel::Loco::ReserveTwo)] = "2";
+		return HtmlTagSelectWithLabel("nroftrackstoreserve", "# of Tracks to reserve:", options, to_string(static_cast<int>(nrOfTracksToReserve)));
+	}
+
 	void WebClient::handleProtocolAccessory(const map<string, string>& arguments)
 	{
 		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -3091,6 +3099,7 @@ namespace webserver
 		const accessoryDuration_t defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
 		const datamodel::Track::selectStreetApproach_t selectStreetApproach = manager.GetSelectStreetApproach();
+		const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
 
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit settings"));
@@ -3101,6 +3110,7 @@ namespace webserver
 		formContent.AddChildTag(HtmlTagDuration(defaultAccessoryDuration, "Default duration for accessory/switch (ms):"));
 		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", "Automatically add unknown feedbacks", "autoaddfeedback", autoAddFeedback));
 		formContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, false));
+		formContent.AddChildTag(HtmlTagNrOfTracksToReserve(nrOfTracksToReserve));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -3113,7 +3123,8 @@ namespace webserver
 		const accessoryDuration_t defaultAccessoryDuration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		const bool autoAddFeedback = GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
 		const datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetRandom));
-		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach);
+		const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(GetIntegerMapEntry(arguments, "nroftrackstoreserve", datamodel::Loco::ReserveOne));
+		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve);
 		HtmlReplyWithHeaderAndParagraph("Settings saved.");
 	}
 

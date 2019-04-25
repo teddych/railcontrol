@@ -96,6 +96,12 @@ namespace datamodel
 	class Loco : public Object, public HardwareHandle
 	{
 		public:
+			enum nrOfTracksToReserve_t : unsigned char
+			{
+				ReserveOne = 1,
+				ReserveTwo = 2
+			};
+
 			Loco(Manager* manager, const locoID_t locoID)
 			:	Object(locoID),
 			 	manager(manager),

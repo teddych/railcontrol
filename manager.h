@@ -217,11 +217,13 @@ class Manager
 		accessoryDuration_t GetDefaultAccessoryDuration() const { return defaultAccessoryDuration; }
 		bool GetAutoAddFeedback() const { return autoAddFeedback; }
 		datamodel::Track::selectStreetApproach_t GetSelectStreetApproach() const { return selectStreetApproach; }
+		datamodel::Loco::nrOfTracksToReserve_t GetNrOfTracksToReserve() const { return nrOfTracksToReserve; }
 		bool SaveSettings
 		(
 			const accessoryDuration_t duration,
 			const bool autoAddFeedback,
-			const datamodel::Track::selectStreetApproach_t selectStreetApproach
+			const datamodel::Track::selectStreetApproach_t selectStreetApproach,
+			const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve
 		);
 
 	private:
@@ -420,6 +422,7 @@ class Manager
 		accessoryDuration_t defaultAccessoryDuration;
 		bool autoAddFeedback;
 		datamodel::Track::selectStreetApproach_t selectStreetApproach;
+		datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve;
 
 		volatile bool debounceRun;
 		std::thread debounceThread;
