@@ -24,6 +24,7 @@ namespace console
 {
 	void ConsoleClient::Worker()
 	{
+		pthread_setname_np(pthread_self(), "ConsoleClient");
 		logger->Info("Open connection");
 		WorkerImpl();
 		logger->Info("Close connection");
@@ -31,7 +32,6 @@ namespace console
 
 	void ConsoleClient::WorkerImpl()
 	{
-		run = true;
 		SendAndPrompt("> Welcome to railcontrol! Press H for help.");
 		while (run)
 		{

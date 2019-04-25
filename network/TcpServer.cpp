@@ -9,11 +9,12 @@
 
 namespace Network
 {
-	TcpServer::TcpServer(const unsigned short port)
+	TcpServer::TcpServer(const unsigned short port, const std::string& threadName)
 	:	port(port),
 	 	serverSocket(0),
 	 	run(false),
-	 	error("")
+	 	error(""),
+	 	threadName(threadName)
 	{
 		struct sockaddr_in6 server_addr;
 
@@ -58,7 +59,7 @@ namespace Network
 		run = true;
 
 		// create seperate thread that handles the client requests
-		serverThread = std::thread([this] { Worker(); });
+		serverThread = std::thread(&Network::TcpServer::Worker, this);
 	}
 
 	TcpServer::~TcpServer()
@@ -82,6 +83,7 @@ namespace Network
 
 	void TcpServer::Worker()
 	{
+		pthread_setname_np(pthread_self(), threadName.c_str());
 		fd_set set;
 		struct timeval tv;
 		struct sockaddr_in6 client_addr;

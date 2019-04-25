@@ -6,7 +6,7 @@ DelayedCall::DelayedCall(Manager& manager)
 :	counter(0),
 	manager(manager),
  	run(true),
-	thread(Thread, this)
+ 	thread(&DelayedCall::Worker, this)
 {
 }
 
@@ -16,36 +16,37 @@ DelayedCall::~DelayedCall()
 	thread.join();
 }
 
-void DelayedCall::Thread(DelayedCall* thisClass)
+void DelayedCall::Worker()
 {
-	while(thisClass->run)
+	pthread_setname_np(pthread_self(), "DelayedCall");
+	while(run)
 	{
-		std::this_thread::sleep_for(std::chrono::milliseconds(thisClass->CountStep));
-		std::lock_guard<std::mutex> lock(thisClass->mutex);
-		++thisClass->counter;
-		auto callElement = thisClass->waitingCalls.begin();
-		while (thisClass->run && callElement != thisClass->waitingCalls.end())
+		std::this_thread::sleep_for(std::chrono::milliseconds(CountStep));
+		std::lock_guard<std::mutex> lock(mutex);
+		++counter;
+		auto callElement = waitingCalls.begin();
+		while (run && callElement != waitingCalls.end())
 		{
 			DelayedCallEntry* entry = *callElement;
-			if (entry->waitTime > thisClass->counter)
+			if (entry->waitTime > counter)
 			{
 				++callElement;
 				continue;
 			}
 			entry->Execute();
-			callElement = thisClass->waitingCalls.erase(callElement);
+			callElement = waitingCalls.erase(callElement);
 			delete entry;
 		}
 	}
 
 	// cleanup
-	std::lock_guard<std::mutex> lock(thisClass->mutex);
-	auto callElement = thisClass->waitingCalls.begin();
-	while (callElement != thisClass->waitingCalls.end())
+	std::lock_guard<std::mutex> lock(mutex);
+	auto callElement = waitingCalls.begin();
+	while (callElement != waitingCalls.end())
 	{
 		DelayedCallEntry* entry = *callElement;
 		entry->Execute();
-		callElement = thisClass->waitingCalls.erase(callElement);
+		callElement = waitingCalls.erase(callElement);
 		delete entry;
 	}
 }

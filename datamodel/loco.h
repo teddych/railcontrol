@@ -189,7 +189,7 @@ namespace datamodel
 			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
 
 		private:
-			static void SetMinThreadPriority();
+			void SetMinThreadPriorityAndThreadName();
 			void AutoMode();
 			void SearchDestinationFirst();
 			void SearchDestinationSecond();

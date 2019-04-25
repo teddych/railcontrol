@@ -47,7 +47,7 @@ namespace hardware
 		{
 			logger->Info("CS2 sender socket created");
 		}
-		receiverThread = std::thread([this] {receiver();});
+		receiverThread = std::thread(&hardware::CS2::receiver, this);
 	}
 
 	// stop the thing
@@ -267,6 +267,7 @@ namespace hardware
 	// the receiver thread of the CS2
 	void CS2::receiver()
 	{
+		pthread_setname_np(pthread_self(), "CS2");
 		logger->Info("CS2 receiver started");
 		struct sockaddr_in sockaddr_in;
 		int sock;

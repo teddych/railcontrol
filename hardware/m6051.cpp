@@ -60,7 +60,7 @@ namespace hardware
 			return;
 		}
 		logger->Info("{0} S88 modules configured.", s88Modules);
-		s88Thread = std::thread([this] {S88Worker();});
+		s88Thread = std::thread(&hardware::M6051::S88Worker, this);
 	}
 
 	M6051::~M6051()
@@ -172,6 +172,7 @@ namespace hardware
 
 	void M6051::S88Worker()
 	{
+		pthread_setname_np(pthread_self(), "M6051");
 		const unsigned char s88DoubleModules = ((s88Modules + 1) / 2);
 		const unsigned char command = 128 + s88DoubleModules;
 		const unsigned char s88SingleModules = (s88DoubleModules * 2);

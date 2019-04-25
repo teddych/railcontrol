@@ -22,7 +22,7 @@ namespace webserver
 				connection(connection),
 				run(false),
 				server(webserver),
-				clientThread(std::thread([this] {Worker();})),
+				clientThread(&webserver::WebClient::Worker, this),
 				manager(m),
 				buttonID(0)
 			{}

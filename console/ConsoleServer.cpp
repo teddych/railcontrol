@@ -25,7 +25,7 @@ namespace console
 
 	ConsoleServer::ConsoleServer(Manager& manager, const unsigned short port)
 	:	ControlInterface(ControlTypeConsole),
-		Network::TcpServer(port),
+		Network::TcpServer(port, "ConsoleServer"),
 		logger(Logger::Logger::GetLogger("Console")),
 		run(true),
 		manager(manager)

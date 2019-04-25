@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <thread>
 #include <vector>
 
@@ -10,7 +11,7 @@ namespace Network
 	class TcpServer
 	{
 		public:
-			TcpServer(const unsigned short port);
+			TcpServer(const unsigned short port, const std::string& threadName);
 			~TcpServer();
 
 			virtual void Work(Network::TcpConnection* connection) = 0;
@@ -24,5 +25,6 @@ namespace Network
 			std::thread serverThread;
 			std::vector<TcpConnection*> connections;
 			std::string error;
+			const std::string threadName;
 	};
 }

@@ -83,7 +83,7 @@ class DelayedCall
 		DelayedCall(Manager& manager);
 		~DelayedCall();
 
-		static void Thread(DelayedCall* delayedCall);
+		void Worker();
 		void Accessory(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const unsigned long timeout);
 		void Switch(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const unsigned long timeout);
 		void Signal(const controlType_t controlType, const signalID_t signalID, const switchState_t state, const bool inverted, const unsigned long timeout);

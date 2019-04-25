@@ -194,7 +194,7 @@ namespace datamodel
 		return true;
 	}
 
-	void Loco::SetMinThreadPriority()
+	void Loco::SetMinThreadPriorityAndThreadName()
 	{
 		sched_param param;
 		int policy;
@@ -202,11 +202,12 @@ namespace datamodel
 		pthread_getschedparam(self, &policy, &param);
 		param.__sched_priority = sched_get_priority_min(policy);
 		pthread_setschedparam(self, policy, &param);
+		pthread_setname_np(self, name.c_str());
 	}
 
 	void Loco::AutoMode()
 	{
-		SetMinThreadPriority();
+		SetMinThreadPriorityAndThreadName();
 		const string& name = GetName();
 		logger->Info("{0} is now in automode", name);
 

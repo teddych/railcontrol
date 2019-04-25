@@ -64,6 +64,7 @@ namespace webserver
 	// worker is the thread that handles client requests
 	void WebClient::Worker()
 	{
+		pthread_setname_np(pthread_self(), "WebClient");
 		logger->Info("HTTP connection {0}: open", id);
 		WorkerImpl();
 		logger->Info("HTTP connection {0}: close", id);

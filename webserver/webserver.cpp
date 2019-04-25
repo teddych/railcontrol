@@ -24,7 +24,7 @@ namespace webserver {
 
 	WebServer::WebServer(Manager& manager, const unsigned short port)
 	:	ControlInterface(ControlTypeWebserver),
-		Network::TcpServer(port),
+		Network::TcpServer(port, "WebServer"),
 		run(false),
 		lastClientID(0),
 		manager(manager),

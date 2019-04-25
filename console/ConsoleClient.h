@@ -20,9 +20,9 @@ namespace console
 			ConsoleClient(Network::TcpConnection* connection, ConsoleServer &consoleServer, Manager& manager)
 			:	logger(Logger::Logger::GetLogger("Console")),
 				connection(connection),
-				run(false),
+				run(true),
 				server(consoleServer),
-				clientThread(std::thread([this] {Worker();})),
+				clientThread(&console::ConsoleClient::Worker, this),
 				manager(manager)
 			{}
 

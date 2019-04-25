@@ -42,7 +42,7 @@ namespace hardware
 			return;
 		}
 
-		rm485Thread = std::thread([this] {RM485Worker();});
+		rm485Thread = std::thread(&hardware::RM485::RM485Worker, this);
 	}
 
 	RM485::~RM485()
@@ -131,6 +131,7 @@ namespace hardware
 
 	void RM485::RM485Worker()
 	{
+		pthread_setname_np(pthread_self(), "RM485");
 		ScanBus();
 		while(run)
 		{

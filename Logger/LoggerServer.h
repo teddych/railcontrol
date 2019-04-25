@@ -24,7 +24,7 @@ namespace Logger
 
 		private:
 			LoggerServer(const unsigned short port)
-			:	Network::TcpServer(port),
+			:	Network::TcpServer(port, "Logger"),
 			 	run(true)
 			{}
 

@@ -133,7 +133,7 @@ Manager::Manager(Config& config)
 		logger->Info("Loaded loco {0}: {1}", loco.second->GetID(), loco.second->GetName());
 	}
 
-	debounceThread = std::thread(&Manager::DebounceWorker, this, this);
+	debounceThread = std::thread(&Manager::DebounceWorker, this);
 }
 
 Manager::~Manager()
@@ -2656,8 +2656,9 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 	return true;
 }
 
-void Manager::DebounceWorker(Manager* manager)
+void Manager::DebounceWorker()
 {
+	pthread_setname_np(pthread_self(), "Debouncer");
 	logger->Info("Debounce thread started");
 	while (debounceRun)
 	{

@@ -284,7 +284,7 @@ class Manager
 		}
 
 		const std::vector<feedbackID_t> CleanupAndCheckFeedbacks(trackID_t trackID, std::vector<feedbackID_t>& newFeedbacks);
-		void DebounceWorker(Manager* manager);
+		void DebounceWorker();
 
 		template<class ID, class T>
 		T* CreateAndAddObject(std::map<ID,T*>& objects, std::mutex& mutex)
