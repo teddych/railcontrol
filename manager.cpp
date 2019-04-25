@@ -91,12 +91,6 @@ Manager::Manager(Config& config)
 		}
 	}
 
-	storage->AllLocos(locos);
-	for (auto loco : locos)
-	{
-		logger->Info("Loaded loco {0}: {1}", loco.second->GetID(), loco.second->GetName());
-	}
-
 	storage->AllAccessories(accessories);
 	for (auto accessory : accessories)
 	{
@@ -131,6 +125,12 @@ Manager::Manager(Config& config)
 	for (auto street : streets)
 	{
 		logger->Info("Loaded street {0}: {1}", street.second->GetID(), street.second->GetName());
+	}
+
+	storage->AllLocos(locos);
+	for (auto loco : locos)
+	{
+		logger->Info("Loaded loco {0}: {1}", loco.second->GetID(), loco.second->GetName());
 	}
 
 	debounceThread = std::thread(&Manager::DebounceWorker, this, this);
@@ -179,13 +179,13 @@ Manager::~Manager()
 		storage->StartTransaction();
 	}
 
+	DeleteAllMapEntries(locos, locoMutex);
 	DeleteAllMapEntries(streets, streetMutex);
 	DeleteAllMapEntries(signals, signalMutex);
 	DeleteAllMapEntries(switches, switchMutex);
 	DeleteAllMapEntries(accessories, accessoryMutex);
 	DeleteAllMapEntries(feedbacks, feedbackMutex);
 	DeleteAllMapEntries(tracks, trackMutex);
-	DeleteAllMapEntries(locos, locoMutex);
 	DeleteAllMapEntries(layers, layerMutex);
 
 	delete delayedCall;
