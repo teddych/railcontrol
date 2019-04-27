@@ -166,11 +166,11 @@ namespace datamodel
 			bool ToTrack(const trackID_t trackID);
 			bool Release();
 			bool IsOnTrack() const { return trackFirst != nullptr; }
-			const char* const GetStateText() const;
+			const char* GetStateText() const;
 			void LocationReached(const feedbackID_t feedbackID);
 
 			void Speed(const locoSpeed_t speed) { this->speed = speed; }
-			const locoSpeed_t Speed() const { return speed; }
+			locoSpeed_t Speed() const { return speed; }
 
 			void SetFunction(const function_t nr, const bool state) { functions.SetFunction(nr, state); }
 			bool GetFunction(const function_t nr) const { return functions.GetFunction(nr); }

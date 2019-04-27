@@ -544,7 +544,7 @@ namespace datamodel
 		}
 	}
 
-	const char* const Loco::GetStateText() const
+	const char* Loco::GetStateText() const
 	{
 		switch (state)
 		{

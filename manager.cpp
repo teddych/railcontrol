@@ -734,7 +734,7 @@ bool Manager::LocoSpeed(const controlType_t controlType, Loco* loco, const locoS
 	return true;
 }
 
-const locoSpeed_t Manager::LocoSpeed(const locoID_t locoID) const
+locoSpeed_t Manager::LocoSpeed(const locoID_t locoID) const
 {
 	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
