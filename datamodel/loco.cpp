@@ -129,7 +129,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Loco::Start()
+	bool Loco::GoToAutoMode()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		if (trackFrom == nullptr)
@@ -159,7 +159,7 @@ namespace datamodel
 		return true;
 	}
 
-	bool Loco::Stop()
+	bool Loco::GoToManualMode()
 	{
 		{
 			std::lock_guard<std::mutex> Guard(stateMutex);
@@ -169,12 +169,12 @@ namespace datamodel
 					manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 					return true;
 
+				case LocoStateSearchingFirst:
 				case LocoStateOff:
 				case LocoStateError:
 					state = LocoStateOff;
 					break;
 
-				case LocoStateSearchingFirst:
 				case LocoStateSearchingSecond:
 				case LocoStateRunning:
 				case LocoStateStopping:

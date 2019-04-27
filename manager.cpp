@@ -2377,7 +2377,7 @@ bool Manager::LocoStart(const locoID_t locoID)
 	{
 		return false;
 	}
-	bool ret = loco->Start();
+	bool ret = loco->GoToAutoMode();
 	if (ret == false)
 	{
 		return false;
@@ -2397,7 +2397,7 @@ bool Manager::LocoStop(const locoID_t locoID)
 	{
 		return false;
 	}
-	bool ret = loco->Stop();
+	bool ret = loco->GoToManualMode();
 	if (ret == false)
 	{
 		return false;
@@ -2414,7 +2414,7 @@ bool Manager::LocoStartAll()
 {
 	for (auto loco : locos)
 	{
-		bool ret = loco.second->Start();
+		bool ret = loco.second->GoToAutoMode();
 		if (ret == false)
 		{
 			continue;
@@ -2439,7 +2439,7 @@ bool Manager::LocoStopAll()
 		{
 			continue;
 		}
-		bool ret2 = loco.second->Stop();
+		bool ret2 = loco.second->GoToManualMode();
 		ret1 &= ret2;
 		if (ret2 == false)
 		{

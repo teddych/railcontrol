@@ -160,8 +160,8 @@ namespace datamodel
 				logger = Logger::Logger::GetLogger("Loco " + name);
 			}
 
-			bool Start();
-			bool Stop();
+			bool GoToAutoMode();
+			bool GoToManualMode();
 
 			bool ToTrack(const trackID_t trackID);
 			bool Release();
