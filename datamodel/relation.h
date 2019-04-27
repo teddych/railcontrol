@@ -20,8 +20,7 @@ namespace datamodel
 				const objectType_t objectType2,
 				const objectID_t objectID2,
 				const priority_t priority,
-				const accessoryState_t accessoryState,
-				const lockState_t lockState)
+				const accessoryState_t accessoryState)
 			:	manager(manager),
 				objectType1(objectType1),
 			 	objectID1(objectID1),

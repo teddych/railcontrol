@@ -32,8 +32,8 @@ namespace datamodel
 			bool Deserialize(const std::string& serialized) override;
 			std::string LayoutType() const override { return "feedback"; };
 
-			void Inverted(const bool inverted) { this->inverted = inverted; }
-			bool IsInverted() const { return inverted; }
+			void SetInverted(const bool inverted) { this->inverted = inverted; }
+			bool GetInverted() const { return inverted; }
 
 			void SetState(const feedbackState_t state);
 			feedbackState_t GetState() const { return static_cast<feedbackState_t>(stateCounter > 0); }

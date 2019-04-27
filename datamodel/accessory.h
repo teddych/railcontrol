@@ -14,7 +14,7 @@ namespace datamodel
 	class Accessory : public LayoutItem, public LockableItem, public HardwareHandle
 	{
 		public:
-			Accessory(Manager* manager, const accessoryID_t accessoryID)
+			Accessory(__attribute__((unused)) Manager* manager, const accessoryID_t accessoryID)
 			:	LayoutItem(accessoryID),
 				lastUsed(0),
 				counter(0)

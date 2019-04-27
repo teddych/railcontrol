@@ -159,7 +159,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("layerlist") == 0)
 			{
-				handleLayerList(arguments);
+				handleLayerList();
 			}
 			else if (arguments["cmd"].compare("layeraskdelete") == 0)
 			{
@@ -179,7 +179,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("controllist") == 0)
 			{
-				handleControlList(arguments);
+				handleControlList();
 			}
 			else if (arguments["cmd"].compare("controlaskdelete") == 0)
 			{
@@ -215,7 +215,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("locolist") == 0)
 			{
-				handleLocoList(arguments);
+				handleLocoList();
 			}
 			else if (arguments["cmd"].compare("locoaskdelete") == 0)
 			{
@@ -243,7 +243,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("accessorylist") == 0)
 			{
-				handleAccessoryList(arguments);
+				handleAccessoryList();
 			}
 			else if (arguments["cmd"].compare("accessoryaskdelete") == 0)
 			{
@@ -275,7 +275,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("switchlist") == 0)
 			{
-				handleSwitchList(arguments);
+				handleSwitchList();
 			}
 			else if (arguments["cmd"].compare("switchaskdelete") == 0)
 			{
@@ -307,7 +307,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("signallist") == 0)
 			{
-				handleSignalList(arguments);
+				handleSignalList();
 			}
 			else if (arguments["cmd"].compare("signalaskdelete") == 0)
 			{
@@ -335,7 +335,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("streetlist") == 0)
 			{
-				handleStreetList(arguments);
+				handleStreetList();
 			}
 			else if (arguments["cmd"].compare("streetaskdelete") == 0)
 			{
@@ -367,7 +367,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("tracklist") == 0)
 			{
-				handleTrackList(arguments);
+				handleTrackList();
 			}
 			else if (arguments["cmd"].compare("trackaskdelete") == 0)
 			{
@@ -415,7 +415,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("feedbacklist") == 0)
 			{
-				handleFeedbackList(arguments);
+				handleFeedbackList();
 			}
 			else if (arguments["cmd"].compare("feedbackaskdelete") == 0)
 			{
@@ -463,11 +463,11 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("locoselector") == 0)
 			{
-				handleLocoSelector(arguments);
+				handleLocoSelector();
 			}
 			else if (arguments["cmd"].compare("layerselector") == 0)
 			{
-				handleLayerSelector(arguments);
+				handleLayerSelector();
 			}
 			else if (arguments["cmd"].compare("stopallimmediately") == 0)
 			{
@@ -483,7 +483,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("settingsedit") == 0)
 			{
-				handleSettingsEdit(arguments);
+				handleSettingsEdit();
 			}
 			else if (arguments["cmd"].compare("settingssave") == 0)
 			{
@@ -830,7 +830,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + name + "&quot; deleted."));
 	}
 
-	void WebClient::handleLayerList(const map<string, string>& arguments)
+	void WebClient::handleLayerList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Layers"));
@@ -995,7 +995,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Control &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleControlList(const map<string, string>& arguments)
+	void WebClient::handleControlList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Controls"));
@@ -1537,7 +1537,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Loco &quot;" + name + "&quot; saved."));
 	}
 
-	void WebClient::handleLocoList(const map<string, string>& arguments)
+	void WebClient::handleLocoList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Locos"));
@@ -1809,7 +1809,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleAccessoryList(const map<string, string>& arguments)
+	void WebClient::handleAccessoryList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Accessories"));
@@ -2011,7 +2011,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleSwitchList(const map<string, string>& arguments)
+	void WebClient::handleSwitchList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Switches"));
@@ -2219,7 +2219,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleSignalList(const map<string, string>& arguments)
+	void WebClient::handleSignalList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Signals"));
@@ -2497,7 +2497,7 @@ namespace webserver
 			{
 				continue;
 			}
-			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, switchId, priority, state, LockStateFree));
+			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, switchId, priority, state));
 			++priority;
 		}
 
@@ -2581,7 +2581,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Street &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleStreetList(const map<string, string>& arguments)
+	void WebClient::handleStreetList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Streets"));
@@ -2792,7 +2792,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleTrackList(const map<string, string>& arguments)
+	void WebClient::handleTrackList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Tracks"));
@@ -2922,7 +2922,7 @@ namespace webserver
 			name = feedback->GetName();
 			controlId = feedback->GetControlID();
 			pin = feedback->GetPin();
-			inverted = feedback->IsInverted();
+			inverted = feedback->GetInverted();
 			visible = feedback->GetVisible();
 			posx = feedback->GetPosX();
 			posy = feedback->GetPosY();
@@ -3006,7 +3006,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleFeedbackList(const map<string, string>& arguments)
+	void WebClient::handleFeedbackList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Feedback"));
@@ -3092,17 +3092,17 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagFeedback(feedback));
 	}
 
-	void WebClient::handleLocoSelector(const map<string, string>& arguments)
+	void WebClient::handleLocoSelector()
 	{
 		HtmlReplyWithHeader(HtmlTagLocoSelector());
 	}
 
-	void WebClient::handleLayerSelector(const map<string, string>& arguments)
+	void WebClient::handleLayerSelector()
 	{
 		HtmlReplyWithHeader(HtmlTagLayerSelector());
 	}
 
-	void WebClient::handleSettingsEdit(const map<string, string>& arguments)
+	void WebClient::handleSettingsEdit()
 	{
 		const accessoryDuration_t defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
@@ -3243,7 +3243,7 @@ namespace webserver
 			buttonArguments["loco"] = to_string(locoID);
 
 			string id = "locospeed_" + to_string(locoID);
-			ss << HtmlTagInputSliderLocoSpeed("speed", "locospeed", MinSpeed, loco->GetMaxSpeed(), speed, locoID);
+			ss << HtmlTagInputSliderLocoSpeed("speed", MinSpeed, loco->GetMaxSpeed(), speed, locoID);
 			buttonArguments["speed"] = to_string(MinSpeed);
 			ss << HtmlTagButtonCommand("0", id + "_0", buttonArguments);
 			buttonArguments["speed"] = to_string(loco->GetCreepSpeed());

@@ -39,31 +39,31 @@ namespace hardware
 			virtual void GetLocoProtocols(std::vector<protocol_t>& protocols) const { protocols.push_back(ProtocolNone); }
 
 			// is given loco protocol supported
-			virtual bool LocoProtocolSupported(protocol_t protocol) const { return false; }
+			virtual bool LocoProtocolSupported(__attribute__((unused))  const protocol_t protocol) const { return false; }
 
 			// get available accessory protocols of this control
-			virtual void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const { protocols.push_back(ProtocolNone); }
+			virtual void GetAccessoryProtocols(__attribute__((unused)) std::vector<protocol_t>& protocols) const { protocols.push_back(ProtocolNone); }
 
 			// is given accessory protocol supported
-			virtual bool AccessoryProtocolSupported(protocol_t protocol) const { return false; }
+			virtual bool AccessoryProtocolSupported(__attribute__((unused)) const protocol_t protocol) const { return false; }
 
 			// get types of needed arguments of this control
-			virtual void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const {}
+			virtual void GetArgumentTypes(__attribute__((unused)) std::map<unsigned char,argumentType_t>& argumentTypes) const {}
 
 			// turn booster on or off
-			virtual void Booster(const boosterState_t status) {};
+			virtual void Booster(__attribute__((unused)) const boosterState_t status) {};
 
 			// set loco speed
-			virtual void LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed) {};
+			virtual void LocoSpeed(__attribute__((unused)) const protocol_t& protocol, __attribute__((unused)) const address_t& address, __attribute__((unused)) const locoSpeed_t& speed) {};
 
 			// set loco direction
-			virtual void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) {};
+			virtual void LocoDirection(__attribute__((unused)) const protocol_t& protocol, __attribute__((unused)) const address_t& address, __attribute__((unused)) const direction_t& direction) {};
 
 			// set loco function
-			virtual void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) {};
+			virtual void LocoFunction(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const function_t function, __attribute__((unused)) const bool on) {};
 
 			// accessory command
-			virtual void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) {};
+			virtual void Accessory(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const accessoryState_t state, __attribute__((unused)) const bool on) {};
 
 		protected:
 			Manager* manager;

@@ -1176,6 +1176,7 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 	feedback->SetPosZ(posZ);
 	feedback->SetControlID(controlID);
 	feedback->SetPin(pin);
+	feedback->SetInverted(inverted);
 
 	// save in db
 	if (storage)
@@ -1929,6 +1930,7 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 
 	if (layer == nullptr)
 	{
+		result = "Unable to create layer";
 		return false;
 	}
 

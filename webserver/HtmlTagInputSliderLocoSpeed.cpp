@@ -2,7 +2,7 @@
 
 namespace webserver
 {
-	HtmlTagInputSliderLocoSpeed::HtmlTagInputSliderLocoSpeed(const std::string& name, const std::string& cmd, const unsigned int min, const unsigned int max, const unsigned int value, const locoID_t locoID)
+	HtmlTagInputSliderLocoSpeed::HtmlTagInputSliderLocoSpeed(const std::string& name, const unsigned int min, const unsigned int max, const unsigned int value, const locoID_t locoID)
 	: HtmlTagInputSlider(name, min, max, value)
 	{
 		std::string locoIdString = std::to_string(locoID);

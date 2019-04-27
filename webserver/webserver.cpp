@@ -69,7 +69,7 @@ namespace webserver {
 		clients.push_back(new WebClient(++lastClientID, connection, *this, manager));
 	}
 
-	void WebServer::Booster(const controlType_t controlType, const boosterState_t status)
+	void WebServer::Booster(__attribute__((unused)) const controlType_t controlType, const boosterState_t status)
 	{
 		if (status)
 		{
@@ -81,7 +81,7 @@ namespace webserver {
 		}
 	}
 
-	void WebServer::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
+	void WebServer::LocoSpeed(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 	{
 		stringstream command;
 		stringstream status;
@@ -90,7 +90,7 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
+	void WebServer::LocoDirection(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 	{
 		stringstream command;
 		stringstream status;
@@ -99,7 +99,7 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
+	void WebServer::LocoFunction(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
 	{
 		stringstream command;
 		stringstream status;
@@ -108,7 +108,7 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void WebServer::AccessoryState(__attribute__((unused)) const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
 		if (on == false)
 		{
@@ -213,7 +213,7 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
+	void WebServer::SwitchState(__attribute__((unused)) const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
 		if (on == false)
 		{
@@ -273,7 +273,7 @@ namespace webserver {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on)
+	void WebServer::SignalState(__attribute__((unused)) const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on)
 	{
 		if (on == false)
 		{

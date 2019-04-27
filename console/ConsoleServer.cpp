@@ -65,7 +65,7 @@ namespace console
 		}
 	}
 
-	void ConsoleServer::Booster(const controlType_t controlType, const boosterState_t status)
+	void ConsoleServer::Booster(__attribute__((unused)) const controlType_t controlType, const boosterState_t status)
 	{
 		if (status)
 		{
@@ -77,14 +77,14 @@ namespace console
 		}
 	}
 
-	void ConsoleServer::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
+	void ConsoleServer::LocoSpeed(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 	{
 		std::stringstream status;
 		status << manager.GetLocoName(locoID) << " speed is " << speed;
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
+	void ConsoleServer::LocoDirection(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 	{
 		std::stringstream status;
 		const char* directionText = (direction ? "forward" : "reverse");
@@ -92,14 +92,14 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
+	void ConsoleServer::LocoFunction(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
 	{
 		std::stringstream status;
 		status << manager.GetLocoName(locoID) << " f" << (unsigned int)function << " is " << (state ? "on" : "off");
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void ConsoleServer::AccessoryState(__attribute__((unused)) const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
 		if (on == false)
 		{
@@ -112,14 +112,14 @@ namespace console
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::FeedbackState(const std::string& name, const feedbackID_t feedbackID, const feedbackState_t state)
+	void ConsoleServer::FeedbackState(const std::string& name, __attribute__((unused)) const feedbackID_t feedbackID, const feedbackState_t state)
 	{
 		std::stringstream status;
 		status << "Feedback " << name << " is " << (state ? "on" : "off");
 		AddUpdate(status.str());
 	}
 
-	void ConsoleServer::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
+	void ConsoleServer::SwitchState(__attribute__((unused)) const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
 	{
 		if (on == false)
 		{
