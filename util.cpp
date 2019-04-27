@@ -89,19 +89,23 @@ string toStringWithLeadingZeros(const unsigned int number, const unsigned char c
 int Util::StringToInteger(const std::string&  value, const int defaultValue)
 {
 	size_t valueSize = value.size();
-	if (valueSize == 0 || valueSize > 9)
+	if (valueSize == 0)
 	{
 		return defaultValue;
 	}
 
-	try
-	{
-		return std::stoi(value);
-	}
-	catch (...)
+	char* end;
+	const char* start = value.c_str();
+	long longValue = std::strtol(start, &end, 10);
+	if (errno == ERANGE || start == end)
 	{
 		return defaultValue;
 	}
+	if (longValue > INT_MAX || longValue < INT_MIN)
+	{
+		return defaultValue;
+	}
+	return static_cast<int>(longValue);
 }
 
 int Util::StringToInteger(const std::string&  value, const int min, const int max)
