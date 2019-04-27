@@ -76,7 +76,7 @@ body {
 	display: inline-block;
 }
 
-@media (max-width: 667px) {
+@media (max-width: 735px) {
 	.layer_selector,
 	.layout {
 		display: none;
