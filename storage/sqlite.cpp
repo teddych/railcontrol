@@ -168,7 +168,7 @@ namespace storage
 		destination.close();
 	}
 
-	int SQLite::CallbackListTables(void* v, int argc, char **argv, char **colName)
+	int SQLite::CallbackListTables(void* v, __attribute__((unused)) int argc, char **argv, __attribute__((unused)) char **colName)
 	{
 		map<string, bool>* tablenames = static_cast<map<string, bool>*>(v);
 		(*tablenames)[argv[0]] = true;
@@ -210,7 +210,7 @@ namespace storage
 	}
 
 	// callback read hardwareparams
-	int SQLite::CallbackAllHardwareParams(void* v, int argc, char **argv, char **colName)
+	int SQLite::CallbackAllHardwareParams(void* v, int argc, char **argv, __attribute__((unused)) char **colName)
 	{
 		map<controlID_t,HardwareParams*>* hardwareParams = static_cast<map<controlID_t,HardwareParams*>*>(v);
 		if (argc != 8)
@@ -378,7 +378,7 @@ namespace storage
 	}
 
 	// callback read all datamodelobjects/relations
-	int SQLite::CallbackStringVector(void* v, int argc, char **argv, char **colName)
+	int SQLite::CallbackStringVector(void* v, int argc, char **argv, __attribute__((unused)) char **colName)
 	{
 		vector<string>* objects = static_cast<vector<string>*>(v);
 		if (argc != 1)
