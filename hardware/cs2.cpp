@@ -78,21 +78,21 @@ namespace hardware
 
 	uint32_t CS2::dataToInt(const char* buffer)
 	{
-		uint32_t i = (const unsigned char)buffer[0];
+		uint32_t i = static_cast<unsigned char>(buffer[0]);
 		i <<= 8;
-		i |= (const unsigned char)buffer[1];
+		i |= static_cast<unsigned char>(buffer[1]);
 		i <<= 8;
-		i |= (const unsigned char)buffer[2];
+		i |= static_cast<unsigned char>(buffer[2]);
 		i <<= 8;
-		i |= (const unsigned char)buffer[3];
+		i |= static_cast<unsigned char>(buffer[3]);
 		return i;
 	}
 
 	uint16_t CS2::dataToShort(const char* buffer)
 	{
-		uint16_t i = (const unsigned char)buffer[0];
+		uint16_t i = static_cast<unsigned char>(buffer[0]);
 		i <<= 8;
-		i |= (const unsigned char)buffer[1];
+		i |= static_cast<unsigned char>(buffer[1]);
 		return i;
 	}
 

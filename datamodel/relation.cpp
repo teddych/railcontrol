@@ -53,6 +53,7 @@ namespace datamodel
 
 			case ObjectTypeSignal:
 				manager->SignalState(ControlTypeInternal, objectID2, accessoryState, true);
+				break;
 
 			case ObjectTypeTrack:
 				return true;

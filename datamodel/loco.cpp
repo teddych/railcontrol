@@ -254,7 +254,7 @@ namespace datamodel
 					case LocoStateManual:
 						logger->Error("{0} is in manual state while automode is running. Putting loco into error state", name);
 						state = LocoStateError;
-						// fall through / no break
+						[[fallthrough]];
 
 					case LocoStateError:
 						logger->Error("{0} is in error state.", name);

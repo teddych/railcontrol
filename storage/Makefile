@@ -6,9 +6,9 @@ CPPRASPI=aarch64-linux-g++
 
 CFLAGS=-g -fpic -O2 -Wall -Wextra -Werror
 CFLAGSAMALGAMATION=-g -O2 -Wall -Wextra -Werror
-CFLAGSRASPI=-g -O2 -Wall -Wextra -Werror --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-uclibc/sysroot/
+CFLAGSRASPI=-g -O2 -Wall --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot/
 CPPFLAGS=-g -fpic -O2 -Wall -Wextra -Werror -std=c++11 -I..
-CPPFLAGSRASPI=-g -fpic -O2 -Wall --Wextra -Werror std=c++11 -I.. --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-uclibc/sysroot/
+CPPFLAGSRASPI=-g -fpic -O2 -Wall --Wextra -Werror std=c++11 -I.. --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot/
 LDFLAGS=-g -shared -Wl,-soname,
 CFLAGSSQLITE=-DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
 
