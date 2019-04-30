@@ -362,7 +362,7 @@ namespace datamodel
 			logger->Debug("No valid street found for {0}", name);
 			return;
 		}
-		// FIXME: replace with code in SearchDestination
+
 		bool turnLoco = (trackFirst->GetLocoDirection() != usedStreet->GetFromDirection());
 		if (turnLoco)
 		{
@@ -497,7 +497,7 @@ namespace datamodel
 
 			default:
 				state = LocoStateError;
-				logger->Error("{0} is running in impossible automode state. Putting loco into error state", name);
+				logger->Error("{0} is running in impossible automode state {1} while ID first reached. Putting loco into error state", name, state);
 				return;
 		}
 	}
@@ -539,7 +539,7 @@ namespace datamodel
 
 			default:
 				state = LocoStateError;
-				logger->Error("{0} is running in impossible automode state. Putting loco into error state", name);
+				logger->Error("{0} is running in impossible automode state {1} while ID stop reached. Putting loco into error state", name, state);
 				return;
 		}
 	}
