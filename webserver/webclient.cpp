@@ -1772,6 +1772,11 @@ namespace webserver
 	{
 		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory");
 		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
+		if (accessory == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag());
+			return;
+		}
 		HtmlReplyWithHeader(HtmlTagAccessory(accessory));
 	}
 
@@ -2093,6 +2098,11 @@ namespace webserver
 	{
 		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
 		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
+		if (mySwitch == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag());
+			return;
+		}
 		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
 	}
 
@@ -2301,6 +2311,11 @@ namespace webserver
 	{
 		signalID_t signalID = GetIntegerMapEntry(arguments, "signal");
 		const datamodel::Signal* signal = manager.GetSignal(signalID);
+		if (signal == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag());
+			return;
+		}
 		HtmlReplyWithHeader(HtmlTagSignal(signal));
 	}
 
@@ -2315,7 +2330,7 @@ namespace webserver
 	{
 		streetID_t streetID = GetIntegerMapEntry(arguments, "street");
 		const datamodel::Street* street = manager.GetStreet(streetID);
-		if (street->GetVisible() == VisibleNo)
+		if (street == nullptr || street->GetVisible() == VisibleNo)
 		{
 			HtmlReplyWithHeader(HtmlTag());
 			return;
@@ -2844,6 +2859,11 @@ namespace webserver
 	{
 		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
 		const datamodel::Track* track = manager.GetTrack(trackID);
+		if (track == nullptr)
+		{
+			HtmlReplyWithHeader(HtmlTag());
+			return;
+		}
 		HtmlReplyWithHeader(HtmlTagTrack(manager, track));
 	}
 
@@ -3084,7 +3104,7 @@ namespace webserver
 	{
 		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
-		if (feedback->GetVisible() == VisibleNo)
+		if (feedback == nullptr || feedback->GetVisible() == VisibleNo)
 		{
 			HtmlReplyWithHeader(HtmlTag());
 			return;
