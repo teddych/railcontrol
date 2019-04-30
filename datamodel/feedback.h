@@ -16,6 +16,8 @@ namespace datamodel
 				const feedbackID_t feedbackID)
 			:	LayoutItem(feedbackID),
 			 	manager(manager),
+			 	inverted(false),
+			 	trackID(TrackNone),
 				stateCounter(0)
 			{
 			}
