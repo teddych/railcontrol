@@ -496,8 +496,8 @@ namespace datamodel
 				return;
 
 			default:
-				state = LocoStateError;
 				logger->Error("{0} is running in impossible automode state {1} while ID first reached. Putting loco into error state", name, state);
+				state = LocoStateError;
 				return;
 		}
 	}
@@ -538,8 +538,8 @@ namespace datamodel
 				return;
 
 			default:
-				state = LocoStateError;
 				logger->Error("{0} is running in impossible automode state {1} while ID stop reached. Putting loco into error state", name, state);
+				state = LocoStateError;
 				return;
 		}
 	}
