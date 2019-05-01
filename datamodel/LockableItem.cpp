@@ -15,8 +15,8 @@ namespace datamodel
 
 	bool LockableItem::Deserialize(const map<string, string> arguments)
 	{
-		locoID = GetIntegerMapEntry(arguments, "locoID", LocoNone);
-		lockState = static_cast<lockState_t>(GetIntegerMapEntry(arguments, "lockState", LockStateFree));
+		locoID = Utils::Utils::GetIntegerMapEntry(arguments, "locoID", LocoNone);
+		lockState = static_cast<lockState_t>(Utils::Utils::GetIntegerMapEntry(arguments, "lockState", LockStateFree));
 		return true;
 	}
 

@@ -99,12 +99,12 @@ namespace webserver
 				}
 				pos += ret;
 				s = string(buffer_in);
-				str_replace(s, string("\r\n"), string("\n"));
-				str_replace(s, string("\r"), string("\n"));
+				Utils::Utils::ReplaceString(s, string("\r\n"), string("\n"));
+				Utils::Utils::ReplaceString(s, string("\r"), string("\n"));
 			}
 
 			vector<string> lines;
-			str_split(s, string("\n"), lines);
+			Utils::Utils::SplitString(s, string("\n"), lines);
 
 			if (lines.size() <= 1)
 			{
@@ -117,7 +117,7 @@ namespace webserver
 			map<string, string> arguments;
 			map<string, string> headers;
 			interpretClientRequest(lines, method, uri, protocol, arguments, headers);
-			keepalive = (GetStringMapEntry(headers, "Connection", "close").compare("keep-alive") == 0);
+			keepalive = (Utils::Utils::GetStringMapEntry(headers, "Connection", "close").compare("keep-alive") == 0);
 			logger->Info("HTTP connection {0}: Request {1} {2}", id, method, uri);
 
 			// if method is not implemented
@@ -137,7 +137,7 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("booster") == 0)
 			{
-				bool on = GetBoolMapEntry(arguments, "on");
+				bool on = Utils::Utils::GetBoolMapEntry(arguments, "on");
 				if (on)
 				{
 					HtmlReplyWithHeader(string("Turning booster on"));
@@ -565,7 +565,7 @@ namespace webserver
 			if (line.find("HTTP/1.") == string::npos)
 			{
 				vector<string> list;
-				str_split(line, string(": "), list);
+				Utils::Utils::SplitString(line, string(": "), list);
 				if (list.size() == 2)
 				{
 					headers[list[0]] = list[1];
@@ -574,7 +574,7 @@ namespace webserver
 			}
 
 			vector<string> list;
-			str_split(line, string(" "), list);
+			Utils::Utils::SplitString(line, string(" "), list);
 			if (list.size() != 3)
 			{
 				continue;
@@ -594,14 +594,14 @@ namespace webserver
 
 			// read GET-arguments from uri
 			vector<string> uri_parts;
-			str_split(uri, "?", uri_parts);
+			Utils::Utils::SplitString(uri, "?", uri_parts);
 			if (uri_parts.size() != 2)
 			{
 				continue;
 			}
 
 			vector<string> argumentStrings;
-			str_split(uri_parts[1], "&", argumentStrings);
+			Utils::Utils::SplitString(uri_parts[1], "&", argumentStrings);
 			for (auto argument : argumentStrings)
 			{
 				if (argument.length() == 0)
@@ -609,7 +609,7 @@ namespace webserver
 					continue;
 				}
 				vector<string> argumentParts;
-				str_split(argument, "=", argumentParts);
+				Utils::Utils::SplitString(argument, "=", argumentParts);
 				arguments[argumentParts[0]] = argumentParts[1];
 			}
 		}
@@ -722,7 +722,7 @@ namespace webserver
 	void WebClient::handleLayerEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
+		layerID_t layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
 		string name;
 
 		if (layerID != LayerNone)
@@ -748,8 +748,8 @@ namespace webserver
 
 	void WebClient::handleLayerSave(const map<string, string>& arguments)
 	{
-		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
-		string name = GetStringMapEntry(arguments, "name");
+		layerID_t layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
+		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		string result;
 
 		if (!manager.LayerSave(layerID, name, result))
@@ -763,7 +763,7 @@ namespace webserver
 
 	void WebClient::handleLayerAskDelete(const map<string, string>& arguments)
 	{
-		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
+		layerID_t layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
 
 		if (layerID == LayerNone)
 		{
@@ -798,7 +798,7 @@ namespace webserver
 
 	void WebClient::handleLayerDelete(const map<string, string>& arguments)
 	{
-		layerID_t layerID = GetIntegerMapEntry(arguments, "layer", LayerNone);
+		layerID_t layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
 
 		if (layerID == LayerNone)
 		{
@@ -859,7 +859,7 @@ namespace webserver
 	void WebClient::handleControlEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		hardwareType_t hardwareType = HardwareTypeNone;
 		string name;
 		string arg1;
@@ -926,14 +926,14 @@ namespace webserver
 
 	void WebClient::handleControlSave(const map<string, string>& arguments)
 	{
-		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		string name = GetStringMapEntry(arguments, "name");
-		hardwareType_t hardwareType = static_cast<hardwareType_t>(GetIntegerMapEntry(arguments, "hardwaretype", HardwareTypeNone));
-		string arg1 = GetStringMapEntry(arguments, "arg1");
-		string arg2 = GetStringMapEntry(arguments, "arg2");
-		string arg3 = GetStringMapEntry(arguments, "arg3");
-		string arg4 = GetStringMapEntry(arguments, "arg4");
-		string arg5 = GetStringMapEntry(arguments, "arg5");
+		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		hardwareType_t hardwareType = static_cast<hardwareType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "hardwaretype", HardwareTypeNone));
+		string arg1 = Utils::Utils::GetStringMapEntry(arguments, "arg1");
+		string arg2 = Utils::Utils::GetStringMapEntry(arguments, "arg2");
+		string arg3 = Utils::Utils::GetStringMapEntry(arguments, "arg3");
+		string arg4 = Utils::Utils::GetStringMapEntry(arguments, "arg4");
+		string arg5 = Utils::Utils::GetStringMapEntry(arguments, "arg5");
 		string result;
 
 		if (!manager.ControlSave(controlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
@@ -947,7 +947,7 @@ namespace webserver
 
 	void WebClient::handleControlAskDelete(const map<string, string>& arguments)
 	{
-		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlNone);
+		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
 
 		if (controlID == ControlNone)
 		{
@@ -976,7 +976,7 @@ namespace webserver
 
 	void WebClient::handleControlDelete(const map<string, string>& arguments)
 	{
-		controlID_t controlID = GetIntegerMapEntry(arguments, "control", ControlNone);
+		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
 		const hardware::HardwareParams* control = manager.GetHardware(controlID);
 		if (control == nullptr)
 		{
@@ -1020,8 +1020,8 @@ namespace webserver
 
 	void WebClient::handleLocoSpeed(const map<string, string>& arguments)
 	{
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		locoSpeed_t speed = GetIntegerMapEntry(arguments, "speed", MinSpeed);
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
+		locoSpeed_t speed = Utils::Utils::GetIntegerMapEntry(arguments, "speed", MinSpeed);
 
 		manager.LocoSpeed(ControlTypeWebserver, locoID, speed);
 
@@ -1032,8 +1032,8 @@ namespace webserver
 
 	void WebClient::handleLocoDirection(const map<string, string>& arguments)
 	{
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		direction_t direction = (GetBoolMapEntry(arguments, "on") ? DirectionRight : DirectionLeft);
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
+		direction_t direction = (Utils::Utils::GetBoolMapEntry(arguments, "on") ? DirectionRight : DirectionLeft);
 
 		manager.LocoDirection(ControlTypeWebserver, locoID, direction);
 
@@ -1044,9 +1044,9 @@ namespace webserver
 
 	void WebClient::handleLocoFunction(const map<string, string>& arguments)
 	{
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		function_t function = GetIntegerMapEntry(arguments, "function", 0);
-		bool on = GetBoolMapEntry(arguments, "on");
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
+		function_t function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
+		bool on = Utils::Utils::GetBoolMapEntry(arguments, "on");
 
 		manager.LocoFunction(ControlTypeWebserver, locoID, function, on);
 
@@ -1059,10 +1059,10 @@ namespace webserver
 	void WebClient::handleLocoRelease(const map<string, string>& arguments)
 	{
 		bool ret;
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID == LocoNone)
 		{
-			trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+			trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 			ret = manager.LocoReleaseInTrack(trackID);
 		}
 		else
@@ -1083,13 +1083,13 @@ namespace webserver
 
 	void WebClient::handleProtocolLoco(const map<string, string>& arguments)
 	{
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
 		{
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
 			return;
 		}
-		locoID_t locoId = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		locoID_t locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		Loco* loco = manager.GetLoco(locoId);
 		if (loco == nullptr)
 		{
@@ -1115,7 +1115,7 @@ namespace webserver
 		durationOptions["0100"] = "100";
 		durationOptions["0250"] = "250";
 		durationOptions["1000"] = "1000";
-		return HtmlTagSelectWithLabel("duration", label, durationOptions, toStringWithLeadingZeros(duration, 4));
+		return HtmlTagSelectWithLabel("duration", label, durationOptions, Utils::Utils::ToStringWithLeadingZeros(duration, 4));
 	}
 
 	HtmlTag WebClient::HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz)
@@ -1349,13 +1349,13 @@ namespace webserver
 
 	void WebClient::handleProtocolAccessory(const map<string, string>& arguments)
 	{
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
 		{
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
 			return;
 		}
-		accessoryID_t accessoryId = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		accessoryID_t accessoryId = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		Accessory* accessory = manager.GetAccessory(accessoryId);
 		if (accessory == nullptr)
 		{
@@ -1367,7 +1367,7 @@ namespace webserver
 
 	void WebClient::handleRelationAdd(const map<string, string>& arguments)
 	{
-		string priorityString = GetStringMapEntry(arguments, "priority", "1");
+		string priorityString = Utils::Utils::GetStringMapEntry(arguments, "priority", "1");
 		priority_t priority = Utils::Utils::StringToInteger(priorityString, 1);
 		HtmlTag container;
 		container.AddChildTag(HtmlTagRelation(priorityString));
@@ -1377,20 +1377,20 @@ namespace webserver
 
 	void WebClient::handleFeedbackAdd(const map<string, string>& arguments)
 	{
-		unsigned int counter = GetIntegerMapEntry(arguments, "counter", 1);
-		trackID_t trackID = static_cast<trackID_t>(GetIntegerMapEntry(arguments, "track", TrackNone));
+		unsigned int counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 1);
+		trackID_t trackID = static_cast<trackID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
 		HtmlReplyWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID));
 	}
 
 	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
 	{
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
 		{
 			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
 			return;
 		}
-		switchID_t switchId = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		switchID_t switchId = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		Switch* mySwitch = manager.GetSwitch(switchId);
 		if (mySwitch == nullptr)
 		{
@@ -1402,15 +1402,15 @@ namespace webserver
 
 	void WebClient::handleRelationObject(const map<string, string>& arguments)
 	{
-		const string priority = GetStringMapEntry(arguments, "priority");
-		const objectType_t objectType = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "objecttype"));
+		const string priority = Utils::Utils::GetStringMapEntry(arguments, "priority");
+		const objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objecttype"));
 		HtmlReplyWithHeader(HtmlTagRelationObject(priority, objectType));
 	}
 
 	void WebClient::handleLocoEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = 1;
@@ -1490,26 +1490,26 @@ namespace webserver
 
 	void WebClient::handleLocoSave(const map<string, string>& arguments)
 	{
-		const locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
-		const string name = GetStringMapEntry(arguments, "name");
-		const controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		const protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		const address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
-		const function_t nrOfFunctions = GetIntegerMapEntry(arguments, "function", 0);
-		const length_t length = GetIntegerMapEntry(arguments, "length", 0);
-		const bool commuter = GetBoolMapEntry(arguments, "commuter", false);
-		const locoSpeed_t maxSpeed = GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
-		locoSpeed_t travelSpeed = GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
+		const locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
+		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		const controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		const protocol_t protocol = static_cast<protocol_t>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		const address_t address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
+		const function_t nrOfFunctions = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
+		const length_t length = Utils::Utils::GetIntegerMapEntry(arguments, "length", 0);
+		const bool commuter = Utils::Utils::GetBoolMapEntry(arguments, "commuter", false);
+		const locoSpeed_t maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
+		locoSpeed_t travelSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
 		if (travelSpeed > maxSpeed)
 		{
 			travelSpeed = maxSpeed;
 		}
-		locoSpeed_t reducedSpeed = GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
+		locoSpeed_t reducedSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
 		if (reducedSpeed > travelSpeed)
 		{
 			reducedSpeed = travelSpeed;
 		}
-		locoSpeed_t creepSpeed = GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
+		locoSpeed_t creepSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
 		if (creepSpeed > reducedSpeed)
 		{
 			creepSpeed = reducedSpeed;
@@ -1567,7 +1567,7 @@ namespace webserver
 
 	void WebClient::handleLocoAskDelete(const map<string, string>& arguments)
 	{
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 
 		if (locoID == LocoNone)
 		{
@@ -1597,7 +1597,7 @@ namespace webserver
 
 	void WebClient::handleLocoDelete(const map<string, string>& arguments)
 	{
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		const datamodel::Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
@@ -1624,7 +1624,7 @@ namespace webserver
 
 	void WebClient::handleLayout(const map<string, string>& arguments)
 	{
-		layerID_t layer = static_cast<layerID_t>(GetIntegerMapEntry(arguments, "layer", CHAR_MIN));
+		layerID_t layer = static_cast<layerID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "layer", CHAR_MIN));
 		HtmlTag content;
 
 		if (layer < LayerUndeletable)
@@ -1715,14 +1715,14 @@ namespace webserver
 	void WebClient::handleAccessoryEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name;
-		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (accessoryID > AccessoryNone)
@@ -1770,7 +1770,7 @@ namespace webserver
 
 	void WebClient::handleAccessoryGet(const map<string, string>& arguments)
 	{
-		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory");
+		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory");
 		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
@@ -1782,16 +1782,16 @@ namespace webserver
 
 	void WebClient::handleAccessorySave(const map<string, string>& arguments)
 	{
-		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		string name = GetStringMapEntry(arguments, "name");
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
-		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
-		accessoryDuration_t duration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
-		bool inverted = GetBoolMapEntry(arguments, "inverted");
+		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		protocol_t protocol = static_cast<protocol_t>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address_t address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
+		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
 		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, duration, inverted, result))
 		{
@@ -1804,8 +1804,8 @@ namespace webserver
 
 	void WebClient::handleAccessoryState(const map<string, string>& arguments)
 	{
-		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		accessoryState_t accessoryState = (GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? AccessoryStateOff : AccessoryStateOn);
+		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		accessoryState_t accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? AccessoryStateOff : AccessoryStateOn);
 
 		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState, false);
 
@@ -1843,7 +1843,7 @@ namespace webserver
 
 	void WebClient::handleAccessoryAskDelete(const map<string, string>& arguments)
 	{
-		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 
 		if (accessoryID == AccessoryNone)
 		{
@@ -1873,7 +1873,7 @@ namespace webserver
 
 	void WebClient::handleAccessoryDelete(const map<string, string>& arguments)
 	{
-		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
@@ -1894,7 +1894,7 @@ namespace webserver
 
 	void WebClient::handleAccessoryRelease(const map<string, string>& arguments)
 	{
-		accessoryID_t accessoryID = GetIntegerMapEntry(arguments, "accessory");
+		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory");
 		bool ret = manager.AccessoryRelease(accessoryID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Accessory released" : "Accessory not released"));
 	}
@@ -1902,15 +1902,15 @@ namespace webserver
 	void WebClient::handleSwitchEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name;
-		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		switchType_t type = SwitchTypeLeft;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
@@ -1983,18 +1983,18 @@ namespace webserver
 
 	void WebClient::handleSwitchSave(const map<string, string>& arguments)
 	{
-		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		string name = GetStringMapEntry(arguments, "name");
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
-		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		switchType_t type = GetIntegerMapEntry(arguments, "type", SwitchTypeLeft);
-		accessoryDuration_t duration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
-		bool inverted = GetBoolMapEntry(arguments, "inverted");
+		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		protocol_t protocol = static_cast<protocol_t>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address_t address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
+		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		switchType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", SwitchTypeLeft);
+		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
 		if (!manager.SwitchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
 		{
@@ -2006,8 +2006,8 @@ namespace webserver
 
 	void WebClient::handleSwitchState(const map<string, string>& arguments)
 	{
-		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		switchState_t switchState = (GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SwitchStateTurnout : SwitchStateStraight);
+		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		switchState_t switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SwitchStateTurnout : SwitchStateStraight);
 
 		manager.SwitchState(ControlTypeWebserver, switchID, switchState, false);
 
@@ -2045,7 +2045,7 @@ namespace webserver
 
 	void WebClient::handleSwitchAskDelete(const map<string, string>& arguments)
 	{
-		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 
 		if (switchID == SwitchNone)
 		{
@@ -2075,7 +2075,7 @@ namespace webserver
 
 	void WebClient::handleSwitchDelete(const map<string, string>& arguments)
 	{
-		switchID_t switchID = GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
@@ -2096,7 +2096,7 @@ namespace webserver
 
 	void WebClient::handleSwitchGet(const map<string, string>& arguments)
 	{
-		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
+		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch");
 		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
@@ -2108,7 +2108,7 @@ namespace webserver
 
 	void WebClient::handleSwitchRelease(const map<string, string>& arguments)
 	{
-		switchID_t switchID = GetIntegerMapEntry(arguments, "switch");
+		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch");
 		bool ret = manager.SwitchRelease(switchID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Switch released" : "Switch not released"));
 	}
@@ -2116,15 +2116,15 @@ namespace webserver
 	void WebClient::handleSignalEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
+		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		controlID_t controlID = ControlIdNone;
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name;
-		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		signalType_t type = SignalTypeSimple;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
@@ -2196,18 +2196,18 @@ namespace webserver
 
 	void WebClient::handleSignalSave(const map<string, string>& arguments)
 	{
-		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
-		string name = GetStringMapEntry(arguments, "name");
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		protocol_t protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		address_t address = GetIntegerMapEntry(arguments, "address", AddressNone);
-		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		signalType_t type = GetIntegerMapEntry(arguments, "type", SignalTypeSimple);
-		accessoryDuration_t duration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
-		bool inverted = GetBoolMapEntry(arguments, "inverted");
+		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
+		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		protocol_t protocol = static_cast<protocol_t>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address_t address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
+		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		signalType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", SignalTypeSimple);
+		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
 		if (!manager.SignalSave(signalID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
 		{
@@ -2219,8 +2219,8 @@ namespace webserver
 
 	void WebClient::handleSignalState(const map<string, string>& arguments)
 	{
-		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
-		signalState_t signalState = (GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? SignalStateRed : SignalStateGreen);
+		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
+		signalState_t signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? SignalStateRed : SignalStateGreen);
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
 
@@ -2258,7 +2258,7 @@ namespace webserver
 
 	void WebClient::handleSignalAskDelete(const map<string, string>& arguments)
 	{
-		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
+		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 
 		if (signalID == SignalNone)
 		{
@@ -2288,7 +2288,7 @@ namespace webserver
 
 	void WebClient::handleSignalDelete(const map<string, string>& arguments)
 	{
-		signalID_t signalID = GetIntegerMapEntry(arguments, "signal", SignalNone);
+		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		const datamodel::Signal* signal = manager.GetSignal(signalID);
 		if (signal == nullptr)
 		{
@@ -2309,7 +2309,7 @@ namespace webserver
 
 	void WebClient::handleSignalGet(const map<string, string>& arguments)
 	{
-		signalID_t signalID = GetIntegerMapEntry(arguments, "signal");
+		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal");
 		const datamodel::Signal* signal = manager.GetSignal(signalID);
 		if (signal == nullptr)
 		{
@@ -2321,14 +2321,14 @@ namespace webserver
 
 	void WebClient::handleSignalRelease(const map<string, string>& arguments)
 	{
-		signalID_t signalID = GetIntegerMapEntry(arguments, "signal");
+		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal");
 		bool ret = manager.SignalRelease(signalID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Signal released" : "Signal not released"));
 	}
 
 	void WebClient::handleStreetGet(const map<string, string>& arguments)
 	{
-		streetID_t streetID = GetIntegerMapEntry(arguments, "street");
+		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
 		const datamodel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr || street->GetVisible() == VisibleNo)
 		{
@@ -2341,26 +2341,26 @@ namespace webserver
 	void WebClient::handleStreetEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name;
 		delay_t delay = Street::DefaultDelay;
 		Street::commuterType_t commuter = Street::CommuterTypeBoth;
 		length_t minTrainLength = 0;
 		length_t maxTrainLength = 0;
 		vector<Relation*> relations;
-		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleYes));
-		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		automode_t automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
-		trackID_t fromTrack = GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
-		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
-		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
-		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
-		feedbackID_t feedbackIdReduced = GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
-		feedbackID_t feedbackIdCreep = GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
-		feedbackID_t feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
-		feedbackID_t feedbackIdOver = GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
+		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible", VisibleYes));
+		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		automode_t automode = static_cast<automode_t>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
+		trackID_t fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
+		direction_t fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
+		trackID_t toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "totrack", TrackNone);
+		direction_t toDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		feedbackID_t feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
+		feedbackID_t feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
+		feedbackID_t feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
+		feedbackID_t feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
 		if (streetID > StreetNone)
 		{
 			const datamodel::Street* street = manager.GetStreet(streetID);
@@ -2473,41 +2473,41 @@ namespace webserver
 
 	void WebClient::handleFeedbacksOfTrack(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		HtmlReplyWithHeader(HtmlTagSelectFeedbacksOfTrack(trackID, FeedbackNone, FeedbackNone, FeedbackNone, FeedbackNone));
 	}
 
 	void WebClient::handleStreetSave(const map<string, string>& arguments)
 	{
-		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
-		string name = GetStringMapEntry(arguments, "name");
-		delay_t delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay"));
-		Street::commuterType_t commuter = static_cast<Street::commuterType_t>(GetIntegerMapEntry(arguments, "commuter", Street::CommuterTypeBoth));
-		length_t mintrainlength = static_cast<length_t>(GetIntegerMapEntry(arguments, "mintrainlength", 0));
-		length_t maxtrainlength = static_cast<length_t>(GetIntegerMapEntry(arguments, "maxtrainlength", 0));
-		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible"));
-		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
-		automode_t automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode"));
-		trackID_t fromTrack = GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
-		direction_t fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
-		trackID_t toTrack = GetIntegerMapEntry(arguments, "totrack", TrackNone);
-		direction_t toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "todirection", DirectionLeft));
-		feedbackID_t feedbackIdReduced = GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
-		feedbackID_t feedbackIdCreep = GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
-		feedbackID_t feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
-		feedbackID_t feedbackIdOver = GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
+		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
+		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		delay_t delay = static_cast<delay_t>(Utils::Utils::GetIntegerMapEntry(arguments, "delay"));
+		Street::commuterType_t commuter = static_cast<Street::commuterType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", Street::CommuterTypeBoth));
+		length_t mintrainlength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
+		length_t maxtrainlength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
+		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible"));
+		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		automode_t automode = static_cast<automode_t>(Utils::Utils::GetBoolMapEntry(arguments, "automode"));
+		trackID_t fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
+		direction_t fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
+		trackID_t toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "totrack", TrackNone);
+		direction_t toDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		feedbackID_t feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
+		feedbackID_t feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
+		feedbackID_t feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
+		feedbackID_t feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
 
 		vector<Relation*> relations;
-		priority_t relationCount = GetIntegerMapEntry(arguments, "relationcounter", 0);
+		priority_t relationCount = Utils::Utils::GetIntegerMapEntry(arguments, "relationcounter", 0);
 		priority_t priority = 1;
 		for (priority_t relationId = 1; relationId <= relationCount; ++relationId)
 		{
 			string priorityString = to_string(relationId);
-			objectType_t objectType = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "relation_type_" + priorityString));
-			switchID_t switchId = GetIntegerMapEntry(arguments, "relation_id_" + priorityString, SwitchNone);
-			switchState_t state = GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
+			objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_type_" + priorityString));
+			switchID_t switchId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_id_" + priorityString, SwitchNone);
+			switchState_t state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
 			if (switchId == SwitchNone)
 			{
 				continue;
@@ -2547,7 +2547,7 @@ namespace webserver
 
 	void WebClient::handleStreetAskDelete(const map<string, string>& arguments)
 	{
-		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 
 		if (streetID == StreetNone)
 		{
@@ -2577,7 +2577,7 @@ namespace webserver
 
 	void WebClient::handleStreetDelete(const map<string, string>& arguments)
 	{
-		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		const datamodel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr)
 		{
@@ -2625,14 +2625,14 @@ namespace webserver
 
 	void WebClient::handleStreetExecute(const map<string, string>& arguments)
 	{
-		streetID_t streetID = GetIntegerMapEntry(arguments, "street", StreetNone);
+		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		manager.ExecuteStreetAsync(streetID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Street executed"));
 	}
 
 	void WebClient::handleStreetRelease(const map<string, string>& arguments)
 	{
-		streetID_t streetID = GetIntegerMapEntry(arguments, "street");
+		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
 		bool ret = manager.StreetRelease(streetID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Street released" : "Street not released"));
 	}
@@ -2640,16 +2640,16 @@ namespace webserver
 	void WebClient::handleTrackEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		string name;
-		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", 0);
-		layoutItemSize_t height = GetIntegerMapEntry(arguments, "length", 1);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		layoutItemSize_t height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		trackType_t type = TrackTypeStraight;
 		std::vector<feedbackID_t> feedbacks;
-		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
+		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
 		if (trackID > TrackNone)
 		{
 			const datamodel::Track* track = manager.GetTrack(trackID);
@@ -2744,29 +2744,29 @@ namespace webserver
 
 	void WebClient::handleTrackSave(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
-		string name = GetStringMapEntry(arguments, "name");
-		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
+		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutItemSize_t height = 1;
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		trackType_t type = static_cast<trackType_t>(GetBoolMapEntry(arguments, "type", TrackTypeStraight));
+		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		trackType_t type = static_cast<trackType_t>(Utils::Utils::GetBoolMapEntry(arguments, "type", TrackTypeStraight));
 		if (type == TrackTypeStraight)
 		{
-			height = GetIntegerMapEntry(arguments, "length", 1);
+			height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
 		}
 		vector<feedbackID_t> feedbacks;
-		unsigned int feedbackCounter = GetIntegerMapEntry(arguments, "feedbackcounter", 1);
+		unsigned int feedbackCounter = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcounter", 1);
 		for (unsigned int feedback = 1; feedback <= feedbackCounter; ++feedback)
 		{
-			feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback_" + to_string(feedback), FeedbackNone);
+			feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback_" + to_string(feedback), FeedbackNone);
 			if (feedbackID != FeedbackNone)
 			{
 				feedbacks.push_back(feedbackID);
 			}
 		}
-		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
+		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
 		string result;
 		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, selectStreetApproach, result) == TrackNone)
 		{
@@ -2779,7 +2779,7 @@ namespace webserver
 
 	void WebClient::handleTrackAskDelete(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 
 		if (trackID == TrackNone)
 		{
@@ -2836,7 +2836,7 @@ namespace webserver
 
 	void WebClient::handleTrackDelete(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		const datamodel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
@@ -2857,7 +2857,7 @@ namespace webserver
 
 	void WebClient::handleTrackGet(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		const datamodel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
@@ -2870,8 +2870,8 @@ namespace webserver
 	void WebClient::handleTrackSetLoco(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track", TrackNone);
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID != LocoNone)
 		{
 			bool ok = manager.LocoIntoTrack(locoID, trackID);
@@ -2897,29 +2897,29 @@ namespace webserver
 
 	void WebClient::handleTrackRelease(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackRelease(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Track released" : "Track not released"));
 	}
 
 	void WebClient::handleTrackStartLoco(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackStartLoco(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco started" : "Loco not started"));
 	}
 
 	void WebClient::handleTrackStopLoco(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackStopLoco(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco stopped" : "Loco not stopped"));
 	}
 
 	void WebClient::handleTrackBlock(const map<string, string>& arguments)
 	{
-		trackID_t trackID = GetIntegerMapEntry(arguments, "track");
-		bool blocked = GetBoolMapEntry(arguments, "blocked");
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
+		bool blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked");
 		manager.TrackBlock(trackID, blocked);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Track block/unblock received"));
 	}
@@ -2927,14 +2927,14 @@ namespace webserver
 	void WebClient::handleFeedbackEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		string name;
 		controlID_t controlId = ControlNone;
 		feedbackPin_t pin = FeedbackPinNone;
-		layoutPosition_t posx = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posy = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posz = GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", feedbackID == FeedbackNone && (posx || posy) ? VisibleYes : VisibleNo));
+		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible", feedbackID == FeedbackNone && (posx || posy) ? VisibleYes : VisibleNo));
 		bool inverted = false;
 		if (feedbackID > FeedbackNone)
 		{
@@ -2996,15 +2996,15 @@ namespace webserver
 
 	void WebClient::handleFeedbackSave(const map<string, string>& arguments)
 	{
-		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		string name = GetStringMapEntry(arguments, "name");
-		controlID_t controlId = GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		feedbackPin_t pin = static_cast<feedbackPin_t>(GetIntegerMapEntry(arguments, "pin", FeedbackPinNone));
-		bool inverted = GetBoolMapEntry(arguments, "inverted");
-		visible_t visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible", VisibleNo));
-		layoutPosition_t posX = GetIntegerMapEntry(arguments, "posx", 0);
-		layoutPosition_t posY = GetIntegerMapEntry(arguments, "posy", 0);
-		layoutPosition_t posZ = GetIntegerMapEntry(arguments, "posz", 0);
+		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		feedbackPin_t pin = static_cast<feedbackPin_t>(Utils::Utils::GetIntegerMapEntry(arguments, "pin", FeedbackPinNone));
+		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
+		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible", VisibleNo));
+		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		string result;
 		if (manager.FeedbackSave(feedbackID, name, visible, posX, posY, posZ, controlId, pin, inverted, result) == FeedbackNone)
 		{
@@ -3016,8 +3016,8 @@ namespace webserver
 
 	void WebClient::handleFeedbackState(const map<string, string>& arguments)
 	{
-		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		feedbackState_t state = (GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? FeedbackStateOccupied : FeedbackStateFree);
+		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		feedbackState_t state = (Utils::Utils::GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? FeedbackStateOccupied : FeedbackStateFree);
 
 		manager.FeedbackState(feedbackID, state);
 
@@ -3051,7 +3051,7 @@ namespace webserver
 
 	void WebClient::handleFeedbackAskDelete(const map<string, string>& arguments)
 	{
-		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 
 		if (feedbackID == FeedbackNone)
 		{
@@ -3081,7 +3081,7 @@ namespace webserver
 
 	void WebClient::handleFeedbackDelete(const map<string, string>& arguments)
 	{
-		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
@@ -3102,7 +3102,7 @@ namespace webserver
 
 	void WebClient::handleFeedbackGet(const map<string, string>& arguments)
 	{
-		feedbackID_t feedbackID = GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
+		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr || feedback->GetVisible() == VisibleNo)
 		{
@@ -3148,17 +3148,17 @@ namespace webserver
 
 	void WebClient::handleSettingsSave(const map<string, string>& arguments)
 	{
-		const accessoryDuration_t defaultAccessoryDuration = GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
-		const bool autoAddFeedback = GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
-		const datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetRandom));
-		const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(GetIntegerMapEntry(arguments, "nroftrackstoreserve", datamodel::Loco::ReserveOne));
+		const accessoryDuration_t defaultAccessoryDuration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		const bool autoAddFeedback = Utils::Utils::GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
+		const datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetRandom));
+		const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", datamodel::Loco::ReserveOne));
 		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve);
 		HtmlReplyWithHeaderAndParagraph("Settings saved.");
 	}
 
 	void WebClient::handleTimestamp(const map<string, string>& arguments)
 	{
-		const time_t timestamp = GetIntegerMapEntry(arguments, "timestamp", 0);
+		const time_t timestamp = Utils::Utils::GetIntegerMapEntry(arguments, "timestamp", 0);
 		if (timestamp == 0)
 		{
 			HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp not set"));
@@ -3195,7 +3195,7 @@ namespace webserver
 			return;
 		}
 
-		unsigned int updateID = GetIntegerMapEntry(headers, "Last-Event-ID", 1);
+		unsigned int updateID = Utils::Utils::GetIntegerMapEntry(headers, "Last-Event-ID", 1);
 		while(run)
 		{
 			string s;
@@ -3252,7 +3252,7 @@ namespace webserver
 	void WebClient::printLoco(const map<string, string>& arguments)
 	{
 		string content;
-		locoID_t locoID = GetIntegerMapEntry(arguments, "loco", LocoNone);
+		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID > LocoNone)
 		{
 			stringstream ss;

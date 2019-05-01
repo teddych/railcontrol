@@ -11,7 +11,7 @@ namespace webserver
 	:	HtmlTagButton(value, command)
 	{
 		std::vector<std::string> parts;
-		str_split(command, "_", parts);
+		Utils::Utils::SplitString(command, "_", parts);
 		std::stringstream ss;
 		ss << "var myUrl = '/?cmd=" << parts[0];
 		for (auto argument : arguments) {

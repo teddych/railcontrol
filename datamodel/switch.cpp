@@ -18,7 +18,7 @@ namespace datamodel
 	{
 		map<string,string> arguments;
 		ParseArguments(serialized, arguments);
-		string objectType = GetStringMapEntry(arguments, "objectType");
+		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
 		if (objectType.compare("Switch") != 0)
 		{
 			return false;

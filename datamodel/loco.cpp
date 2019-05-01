@@ -63,16 +63,16 @@ namespace datamodel
 			return false;
 		}
 		HardwareHandle::Deserialize(arguments);
-		trackID_t trackIdFrom = GetIntegerMapEntry(arguments, "trackID", TrackNone);
+		trackID_t trackIdFrom = Utils::Utils::GetIntegerMapEntry(arguments, "trackID", TrackNone);
 		trackFrom = manager->GetTrack(trackIdFrom);
-		functions.Deserialize(GetStringMapEntry(arguments, "functions", "0"));
-		direction = (GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
-		length = static_cast<length_t>(GetIntegerMapEntry(arguments, "length", 0));
-		commuter = GetBoolMapEntry(arguments, "commuter", false);
-		maxSpeed = GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
-		travelSpeed = GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
-		reducedSpeed = GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
-		creepSpeed = GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
+		functions.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "functions", "0"));
+		direction = (Utils::Utils::GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
+		length = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "length", 0));
+		commuter = Utils::Utils::GetBoolMapEntry(arguments, "commuter", false);
+		maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
+		travelSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
+		reducedSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
+		creepSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
 		return true;
 	}
 

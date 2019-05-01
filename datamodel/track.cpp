@@ -48,25 +48,25 @@ namespace datamodel
 		LockableItem::Deserialize(arguments);
 		SetWidth(Width1);
 		SetVisible(VisibleYes);
-		string objectType = GetStringMapEntry(arguments, "objectType");
+		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
 		if (objectType.compare("Track") != 0)
 		{
 			return false;
 		}
-		type = static_cast<trackType_t>(GetBoolMapEntry(arguments, "type", TrackTypeStraight));
-		string feedbackStrings = GetStringMapEntry(arguments, "feedbacks");
+		type = static_cast<trackType_t>(Utils::Utils::GetBoolMapEntry(arguments, "type", TrackTypeStraight));
+		string feedbackStrings = Utils::Utils::GetStringMapEntry(arguments, "feedbacks");
 		vector<string> feedbackStringVector;
-		str_split(feedbackStrings, ",", feedbackStringVector);
+		Utils::Utils::SplitString(feedbackStrings, ",", feedbackStringVector);
 		for (auto feedbackString : feedbackStringVector)
 		{
 			feedbacks.push_back(Utils::Utils::StringToInteger(feedbackString));
 		}
-		selectStreetApproach = static_cast<selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
-		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));
-		stateDelayed = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "statedelayed", state));
-		locoDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
-		blocked = GetBoolMapEntry(arguments, "blocked", false);
-		locoIdDelayed = static_cast<locoID_t>(GetIntegerMapEntry(arguments, "locodelayed", GetLoco()));
+		selectStreetApproach = static_cast<selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
+		state = static_cast<feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree));
+		stateDelayed = static_cast<feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "statedelayed", state));
+		locoDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
+		blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked", false);
+		locoIdDelayed = static_cast<locoID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "locodelayed", GetLoco()));
 		return true;
 	}
 

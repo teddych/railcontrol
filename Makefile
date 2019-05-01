@@ -102,7 +102,7 @@ Timestamp.o: Timestamp.cpp Timestamp.h
 clean:
 	make -C hardware clean
 	make -C storage clean
-	rm -f *.o webserver/*.o datamodel/*.o console/*.o text/*.o
+	rm -f *.o console/*.o datamodel/*.o text/*.o Utils/*.o webserver/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:

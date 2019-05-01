@@ -12,7 +12,7 @@ namespace datamodel
 	void Serializable::ParseArguments(string serialized, map<string, string>& arguments)
 	{
 		vector<string> parts;
-		str_split(serialized, ";", parts);
+		Utils::Utils::SplitString(serialized, ";", parts);
 		for (auto part : parts)
 		{
 			if (part.length() == 0)
@@ -20,7 +20,7 @@ namespace datamodel
 				continue;
 			}
 			vector<string> keyValue;
-			str_split(part, "=", keyValue);
+			Utils::Utils::SplitString(part, "=", keyValue);
 			if (keyValue.size() < 2)
 			{
 				continue;

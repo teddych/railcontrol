@@ -10,7 +10,7 @@ namespace webserver
 	:	HtmlTagButton(value, command)
 	{
 		std::vector<std::string> parts;
-		str_split(command, "_", parts);
+		Utils::Utils::SplitString(command, "_", parts);
 		std::stringstream ss;
 		ss <<
 			"var theUrl = '/?cmd=" << parts[0];

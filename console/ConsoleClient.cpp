@@ -53,8 +53,8 @@ namespace console
 				}
 				pos += ret;
 				s = string(buffer_in);
-				str_replace(s, string("\r\n"), string("\n"));
-				str_replace(s, string("\r"), string("\n"));
+				Utils::Utils::ReplaceString(s, string("\r\n"), string("\n"));
+				Utils::Utils::ReplaceString(s, string("\r"), string("\n"));
 			}
 			HandleCommand(s);
 		}

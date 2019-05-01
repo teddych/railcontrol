@@ -30,12 +30,12 @@ namespace datamodel
 		map<string,string> arguments;
 		ParseArguments(serialized, arguments);
 		LockableItem::Deserialize(arguments);
-		objectType1 = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "objectType1"));
-		objectID1 = GetIntegerMapEntry(arguments, "objectID1");
-		objectType2 = static_cast<objectType_t>(GetIntegerMapEntry(arguments, "objectType2"));
-		objectID2 = GetIntegerMapEntry(arguments, "objectID2");
-		priority = GetIntegerMapEntry(arguments, "priority");
-		accessoryState = GetIntegerMapEntry(arguments, "accessoryState");
+		objectType1 = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType1"));
+		objectID1 = Utils::Utils::GetIntegerMapEntry(arguments, "objectID1");
+		objectType2 = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType2"));
+		objectID2 = Utils::Utils::GetIntegerMapEntry(arguments, "objectID2");
+		priority = Utils::Utils::GetIntegerMapEntry(arguments, "priority");
+		accessoryState = Utils::Utils::GetIntegerMapEntry(arguments, "accessoryState");
 		return true;
 	}
 

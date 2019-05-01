@@ -27,17 +27,17 @@ namespace datamodel
 	{
 		map<string, string> arguments;
 		ParseArguments(serialized, arguments);
-		string objectType = GetStringMapEntry(arguments, "objectType");
+		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
 		if (objectType.compare("Feedback") != 0)
 		{
 			return false;
 		}
 		LayoutItem::Deserialize(arguments);
-		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
-		pin = GetIntegerMapEntry(arguments, "pin");
-		inverted = GetBoolMapEntry(arguments, "inverted", false);
-		stateCounter = GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
-		trackID = static_cast<trackID_t>(GetIntegerMapEntry(arguments, "track", TrackNone));
+		controlID = Utils::Utils::GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
+		pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin");
+		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted", false);
+		stateCounter = Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
+		trackID = static_cast<trackID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
 		return true;
 	}
 

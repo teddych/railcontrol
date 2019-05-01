@@ -101,13 +101,13 @@ namespace datamodel
 	bool LayoutItem::Deserialize(const map<string,string>& arguments)
 	{
 		Object::Deserialize(arguments);
-		visible = static_cast<visible_t>(GetBoolMapEntry(arguments, "visible"));
-		posX = GetIntegerMapEntry(arguments, "posX", 0);
-		posY = GetIntegerMapEntry(arguments, "posY", 0);
-		posZ = GetIntegerMapEntry(arguments, "posZ", 0);
-		width = GetIntegerMapEntry(arguments, "width", Width1);
-		height = GetIntegerMapEntry(arguments, "height", Height1);
-		rotation = static_cast<layoutRotation_t>(GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible"));
+		posX = Utils::Utils::GetIntegerMapEntry(arguments, "posX", 0);
+		posY = Utils::Utils::GetIntegerMapEntry(arguments, "posY", 0);
+		posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posZ", 0);
+		width = Utils::Utils::GetIntegerMapEntry(arguments, "width", Width1);
+		height = Utils::Utils::GetIntegerMapEntry(arguments, "height", Height1);
+		rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		return true;
 	}
 

@@ -36,7 +36,7 @@ namespace datamodel
 	{
 		map<string,string> arguments;
 		ParseArguments(serialized, arguments);
-		string objectType = GetStringMapEntry(arguments, "objectType");
+		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
 		if (objectType.compare("Accessory") != 0)
 		{
 			return false;
@@ -53,13 +53,13 @@ namespace datamodel
 		SetWidth(Width1);
 		SetHeight(Height1);
 		SetVisible(VisibleYes);
-		type = GetIntegerMapEntry(arguments, "type");
-		state = GetIntegerMapEntry(arguments, "state");
-		duration = GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryDuration); // FIXME: remove in later versions, is only here for conversion
-		duration = GetIntegerMapEntry(arguments, "duration", DefaultAccessoryDuration);
-		inverted = GetBoolMapEntry(arguments, "inverted");
-		lastUsed = GetIntegerMapEntry(arguments, "lastused", 0);
-		counter = GetIntegerMapEntry(arguments, "counter", 0);
+		type = Utils::Utils::GetIntegerMapEntry(arguments, "type");
+		state = Utils::Utils::GetIntegerMapEntry(arguments, "state");
+		duration = Utils::Utils::GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryDuration); // FIXME: remove in later versions, is only here for conversion
+		duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", DefaultAccessoryDuration);
+		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
+		lastUsed = Utils::Utils::GetIntegerMapEntry(arguments, "lastused", 0);
+		counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 0);
 		return true;
 	}
 } // namespace datamodel

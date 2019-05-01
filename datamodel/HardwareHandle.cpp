@@ -25,9 +25,9 @@ namespace datamodel
 
 	bool HardwareHandle::Deserialize(const map<string,string>& arguments)
 	{
-		controlID = GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
-		protocol = static_cast<protocol_t>(GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		address = GetIntegerMapEntry(arguments, "address");
+		controlID = Utils::Utils::GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
+		protocol = static_cast<protocol_t>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		address = Utils::Utils::GetIntegerMapEntry(arguments, "address");
 		return true;
 	}
 } // namespace datamodel

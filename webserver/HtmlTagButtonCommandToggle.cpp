@@ -12,7 +12,7 @@ namespace webserver
 		AddClass(on == true ? "button_on" : "button_off");
 
 		std::vector<std::string> parts;
-		str_split(command, "_", parts);
+		Utils::Utils::SplitString(command, "_", parts);
 		std::stringstream ss;
 		ss <<
 			"var on = !document.getElementById('" << commandID << "').classList.contains('button_on');"

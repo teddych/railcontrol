@@ -55,7 +55,7 @@ namespace datamodel
 	{
 		map<string,string> arguments;
 		ParseArguments(serialized, arguments);
-		string objectType = GetStringMapEntry(arguments, "objectType");
+		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
 		if (objectType.compare("Street") != 0)
 		{
 			return false;
@@ -64,21 +64,22 @@ namespace datamodel
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
 
-		delay = static_cast<delay_t>(GetIntegerMapEntry(arguments, "delay", DefaultDelay));
-		commuter = static_cast<commuterType_t>(GetIntegerMapEntry(arguments, "commuter", CommuterTypeBoth));
-		minTrainLength = static_cast<length_t>(GetIntegerMapEntry(arguments, "mintrainlength", 0));
-		maxTrainLength = static_cast<length_t>(GetIntegerMapEntry(arguments, "maxtrainlength", 0));
-		lastUsed = GetIntegerMapEntry(arguments, "lastused", 0);
-		counter = GetIntegerMapEntry(arguments, "counter", 0);
-		automode = static_cast<automode_t>(GetBoolMapEntry(arguments, "automode", AutomodeNo));
-		fromTrack = GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
-		fromDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
-		toTrack = GetIntegerMapEntry(arguments, "toTrack", TrackNone);
-		toDirection = static_cast<direction_t>(GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
-		feedbackIdReduced = GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
-		feedbackIdCreep = GetIntegerMapEntry(arguments, "feedbackIdCreep", FeedbackNone);
-		feedbackIdStop = GetIntegerMapEntry(arguments, "feedbackIdStop", FeedbackNone);
-		feedbackIdOver = GetIntegerMapEntry(arguments, "feedbackIdOver", FeedbackNone);
+		delay = static_cast<delay_t>(Utils::Utils::GetIntegerMapEntry(arguments, "delay", DefaultDelay));
+		commuter = static_cast<commuterType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", CommuterTypeBoth));
+		minTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
+		maxTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
+		lastUsed = Utils::Utils::GetIntegerMapEntry(arguments, "lastused", 0);
+		counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 0);
+		automode = static_cast<automode_t>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
+		fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
+		fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
+		toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "toTrack", TrackNone);
+		toDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
+		feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
+		feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdCreep", FeedbackNone);
+		feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdStop", FeedbackNone);
+		feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdOver", FeedbackNone);
+		waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
 		return true;
 	}
 

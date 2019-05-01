@@ -27,8 +27,8 @@ namespace datamodel
 
 	bool Object::Deserialize(const map<string, string>& arguments)
 	{
-		objectID = GetIntegerMapEntry(arguments, "objectID", ObjectNone);
-		name = GetStringMapEntry(arguments, "name");
+		objectID = Utils::Utils::GetIntegerMapEntry(arguments, "objectID", ObjectNone);
+		name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		return true;
 	}
 
