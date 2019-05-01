@@ -119,7 +119,8 @@ namespace datamodel
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
 				feedbackIdOver(FeedbackNone),
-				feedbackIdsReached()
+				feedbackIdsReached(),
+				wait(0)
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
 				SetNrOfFunctions(0);
@@ -140,7 +141,8 @@ namespace datamodel
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
 				feedbackIdOver(FeedbackNone),
-				feedbackIdsReached()
+				feedbackIdsReached(),
+				wait(0)
 			{
 				Deserialize(serialized);
 				logger = Logger::Logger::GetLogger("Loco " + name);
@@ -239,6 +241,7 @@ namespace datamodel
 			volatile feedbackID_t feedbackIdStop;
 			volatile feedbackID_t feedbackIdOver;
 			Utils::ThreadSafeQueue<feedbackID_t> feedbackIdsReached;
+			wait_t wait;
 
 			LocoFunctions functions;
 

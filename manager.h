@@ -173,6 +173,7 @@ class Manager
 			const feedbackID_t feedbackIdCreep,
 			const feedbackID_t feedbackIdStop,
 			const feedbackID_t feedbackIdOver,
+			const wait_t waitAfterRelease,
 			std::string& result);
 		bool StreetDelete(const streetID_t streetID);
 

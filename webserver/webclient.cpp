@@ -2361,6 +2361,7 @@ namespace webserver
 		feedbackID_t feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
 		feedbackID_t feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
 		feedbackID_t feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
+		wait_t waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
 		if (streetID > StreetNone)
 		{
 			const datamodel::Street* street = manager.GetStreet(streetID);
@@ -2383,6 +2384,7 @@ namespace webserver
 			feedbackIdCreep = street->GetFeedbackIdCreep();
 			feedbackIdStop = street->GetFeedbackIdStop();
 			feedbackIdOver = street->GetFeedbackIdOver();
+			waitAfterRelease = street->GetWaitAfterRelease();
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit street &quot;" + name + "&quot;"));
@@ -2462,6 +2464,7 @@ namespace webserver
 		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("commuter", "Allow trains:", commuterOptions, to_string(commuter)));
 		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("mintrainlength", "Min. train length:", minTrainLength, 0, 99999));
 		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("maxtrainlength", "Max. train length:", maxTrainLength, 0, 99999));
+		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("waitafterrelease", "Wait after release (s):", waitAfterRelease, 0, 300));
 		automodeContent.AddChildTag(tracksDiv);
 		formContent.AddChildTag(automodeContent);
 
@@ -2498,6 +2501,7 @@ namespace webserver
 		feedbackID_t feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
 		feedbackID_t feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
 		feedbackID_t feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
+		wait_t waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
 
 		vector<Relation*> relations;
 		priority_t relationCount = Utils::Utils::GetIntegerMapEntry(arguments, "relationcounter", 0);
@@ -2537,6 +2541,7 @@ namespace webserver
 			feedbackIdCreep,
 			feedbackIdStop,
 			feedbackIdOver,
+			waitAfterRelease,
 			result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);

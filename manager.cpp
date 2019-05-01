@@ -1767,6 +1767,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	const feedbackID_t feedbackIdCreep,
 	const feedbackID_t feedbackIdStop,
 	const feedbackID_t feedbackIdOver,
+	const wait_t waitAfterRelease,
 	string& result)
 {
 
@@ -1820,6 +1821,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	street->SetFeedbackIdCreep(feedbackIdCreep);
 	street->SetFeedbackIdStop(feedbackIdStop);
 	street->SetFeedbackIdOver(feedbackIdOver);
+	street->SetWaitAfterRelease(waitAfterRelease);
 
 	//Add new street
 	track = GetTrack(fromTrack);

@@ -87,6 +87,8 @@ namespace datamodel
 			feedbackID_t GetFeedbackIdStop() const { return feedbackIdStop; }
 			void SetFeedbackIdOver(const feedbackID_t feedbackIdOver) { this->feedbackIdOver = feedbackIdOver; }
 			feedbackID_t GetFeedbackIdOver() const { return feedbackIdOver; }
+			void SetWaitAfterRelease(const wait_t wait) { this->waitAfterRelease = wait; }
+			wait_t GetWaitAfterRelease() const { return waitAfterRelease; }
 
 			static bool CompareShortest(const Street* s1, const Street* s2) { return s1->GetMinTrainLength() < s2->GetMinTrainLength(); }
 			static bool CompareLastUsed(const Street* s1, const Street* s2) { return s1->GetLastUsed() < s2->GetLastUsed(); }
@@ -111,6 +113,7 @@ namespace datamodel
 			feedbackID_t feedbackIdCreep;
 			feedbackID_t feedbackIdStop;
 			feedbackID_t feedbackIdOver;
+			wait_t waitAfterRelease;
 
 			time_t lastUsed;
 			unsigned int counter;

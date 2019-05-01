@@ -239,14 +239,24 @@ namespace datamodel
 						return;
 
 					case LocoStateSearchingFirst:
+						if (wait > 0)
+						{
+							--wait;
+							break;
+						}
 						SearchDestinationFirst();
 						break;
 
 					case LocoStateSearchingSecond:
-						if (manager->GetNrOfTracksToReserve() > 1)
+						if (manager->GetNrOfTracksToReserve() <= 1)
 						{
-							SearchDestinationSecond();
+							break;
 						}
+						if (wait > 0)
+						{
+							break;
+						}
+						SearchDestinationSecond();
 						break;
 
 					case LocoStateRunning:
@@ -260,7 +270,7 @@ namespace datamodel
 					case LocoStateManual:
 						logger->Error("{0} is in manual state while automode is running. Putting loco into error state", name);
 						state = LocoStateError;
-						[[fallthrough]];
+						// [[fallthrough]];
 
 					case LocoStateError:
 						logger->Error("{0} is in error state.", name);
@@ -320,6 +330,7 @@ namespace datamodel
 		feedbackIdCreep = streetFirst->GetFeedbackIdCreep();
 		feedbackIdStop = streetFirst->GetFeedbackIdStop();
 		feedbackIdOver = streetFirst->GetFeedbackIdOver();
+		wait = streetFirst->GetWaitAfterRelease();
 		bool turnLoco = (trackFrom->GetLocoDirection() != streetFirst->GetFromDirection());
 		direction_t newLocoDirection = static_cast<direction_t>(direction != turnLoco);
 		if (turnLoco)
@@ -389,6 +400,7 @@ namespace datamodel
 		feedbackIdStop = streetSecond->GetFeedbackIdStop();
 		feedbackIdCreep = streetSecond->GetFeedbackIdCreep();
 		feedbackIdReduced = streetSecond->GetFeedbackIdReduced();
+		wait = streetSecond->GetWaitAfterRelease();
 		newTrack->SetLocoDirection(static_cast<direction_t>(!streetSecond->GetToDirection()));
 		logger->Info("Heading to {0} via {1}", newTrack->GetName(), streetSecond->GetName());
 
@@ -574,4 +586,3 @@ namespace datamodel
 		}
 	}
 } // namespace datamodel
-

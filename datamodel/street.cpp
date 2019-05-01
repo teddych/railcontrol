@@ -47,7 +47,8 @@ namespace datamodel
 			<< ";feedbackIdReduced=" << static_cast<int>(feedbackIdReduced)
 			<< ";feedbackIdCreep=" << static_cast<int>(feedbackIdCreep)
 			<< ";feedbackIdStop=" << static_cast<int>(feedbackIdStop)
-			<< ";feedbackIdOver=" << static_cast<int>(feedbackIdOver);
+			<< ";feedbackIdOver=" << static_cast<int>(feedbackIdOver)
+			<< ";waitafterrelease=" << static_cast<int>(waitAfterRelease);
 		return ss.str();
 	}
 

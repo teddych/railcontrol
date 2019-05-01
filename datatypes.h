@@ -54,6 +54,8 @@ typedef signed short layerID_t;
 // relations
 typedef unsigned short priority_t;
 
+typedef unsigned char wait_t;
+
 static const address_t AddressNone = 0;
 static const locoID_t LocoNone = 0;
 static const objectID_t ObjectNone = 0;
