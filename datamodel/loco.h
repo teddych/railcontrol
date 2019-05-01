@@ -8,6 +8,7 @@
 #include "Logger/Logger.h"
 #include "datamodel/HardwareHandle.h"
 #include "datamodel/object.h"
+#include "Utils/ThreadSafeQueue.h"
 
 class Manager;
 
@@ -118,8 +119,7 @@ namespace datamodel
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
 				feedbackIdOver(FeedbackNone),
-				feedbackIdFirstReached(false),
-				feedbackIdStopReached(false)
+				feedbackIdsReached()
 			{
 				logger = Logger::Logger::GetLogger("Loco " + name);
 				SetNrOfFunctions(0);
@@ -140,8 +140,7 @@ namespace datamodel
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
 				feedbackIdOver(FeedbackNone),
-				feedbackIdFirstReached(false),
-				feedbackIdStopReached(false)
+				feedbackIdsReached()
 			{
 				Deserialize(serialized);
 				logger = Logger::Logger::GetLogger("Loco " + name);
@@ -239,8 +238,7 @@ namespace datamodel
 			volatile feedbackID_t feedbackIdCreep;
 			volatile feedbackID_t feedbackIdStop;
 			volatile feedbackID_t feedbackIdOver;
-			volatile bool feedbackIdFirstReached;
-			volatile bool feedbackIdStopReached;
+			Utils::ThreadSafeQueue<feedbackID_t> feedbackIdsReached;
 
 			LocoFunctions functions;
 

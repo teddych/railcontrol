@@ -210,20 +210,26 @@ namespace datamodel
 		SetMinThreadPriorityAndThreadName();
 		const string& name = GetName();
 		logger->Info("{0} is now in automode", name);
-		feedbackIdFirstReached = false;
-		feedbackIdStopReached = false;
 
 		while (true)
 		{
 			{ // sleep is outside the lock
 				std::lock_guard<std::mutex> Guard(stateMutex);
-				if (feedbackIdFirstReached == true)
+				feedbackID_t feedbackId = feedbackIdsReached.Dequeue();
+				if (feedbackId != FeedbackNone)
 				{
-					FeedbackIdFirstReached();
-				}
-				if (feedbackIdStopReached == true)
-				{
-					FeedbackIdStopReached();
+					if (feedbackId == feedbackIdFirst)
+					{
+						FeedbackIdFirstReached();
+					}
+					if (feedbackId == feedbackIdStop)
+					{
+						if (feedbackIdFirst != FeedbackNone)
+						{
+							FeedbackIdFirstReached();
+						}
+						FeedbackIdStopReached();
+					}
 				}
 				switch (state)
 				{
@@ -432,7 +438,7 @@ namespace datamodel
 		if (feedbackID == feedbackIdStop)
 		{
 			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
-			feedbackIdStopReached = true;
+			feedbackIdsReached.Enqueue(feedbackIdStop);
 			return;
 		}
 
@@ -456,15 +462,13 @@ namespace datamodel
 
 		if (feedbackID == feedbackIdFirst)
 		{
-			feedbackIdFirstReached = true;
+			feedbackIdsReached.Enqueue(feedbackIdFirst);
 			return;
 		}
 	}
 
 	void Loco::FeedbackIdFirstReached()
 	{
-		feedbackIdFirstReached = false;
-		// set loco to new track
 		if (streetFirst == nullptr || trackFrom == nullptr)
 		{
 			Speed(MinSpeed);
@@ -504,8 +508,6 @@ namespace datamodel
 
 	void Loco::FeedbackIdStopReached()
 	{
-		feedbackIdStopReached = false;
-		// set loco to new track
 		if (streetFirst == nullptr || trackFrom == nullptr)
 		{
 			Speed(MinSpeed);
