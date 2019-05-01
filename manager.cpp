@@ -1401,6 +1401,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	const trackType_t type,
 	std::vector<feedbackID_t> newFeedbacks,
 	const datamodel::Track::selectStreetApproach_t selectStreetApproach,
+	const bool releaseWhenFree,
 	string& result)
 {
 	if (!CheckTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
@@ -1432,6 +1433,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	track->SetType(type);
 	track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
 	track->SetSelectStreetApproach(selectStreetApproach);
+	track->SetReleaseWhenFree(releaseWhenFree);
 
 	// save in db
 	if (storage)

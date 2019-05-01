@@ -131,6 +131,7 @@ class Manager
 			const trackType_t trackType,
 			std::vector<feedbackID_t> feedbacks,
 			const datamodel::Track::selectStreetApproach_t selectStreetApproach,
+			const bool releaseWhenFree,
 			std::string& result);
 		bool TrackDelete(const trackID_t trackID);
 

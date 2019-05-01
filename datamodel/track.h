@@ -35,7 +35,8 @@ namespace datamodel
 				stateDelayed(FeedbackStateFree),
 			 	locoDirection(DirectionRight),
 			 	blocked(false),
-			 	locoIdDelayed(LocoNone)
+			 	locoIdDelayed(LocoNone),
+			 	releaseWhenFree(false)
 			{
 			}
 
@@ -77,6 +78,8 @@ namespace datamodel
 			bool GetBlocked() const { return blocked; }
 			void SetBlocked(const bool blocked) { this->blocked = blocked; }
 			locoID_t GetLocoDelayed() const { return this->locoIdDelayed; }
+			bool GetReleaseWhenFree() const { return releaseWhenFree; }
+			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
 
 		private:
 			bool FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state);
@@ -94,5 +97,6 @@ namespace datamodel
 			direction_t locoDirection;
 			bool blocked;
 			locoID_t locoIdDelayed;
+			bool releaseWhenFree;
 	};
 } // namespace datamodel

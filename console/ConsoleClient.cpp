@@ -768,7 +768,7 @@ namespace console
 		layoutRotation_t rotation = ReadRotation(s, i);
 		vector<feedbackID_t> feedbacks;
 		string result;
-		if (manager.TrackSave(TrackNone, name, posX, posY, posZ, length, rotation, TrackTypeStraight, feedbacks, datamodel::Track::SelectStreetSystemDefault, result) > TrackNone)
+		if (manager.TrackSave(TrackNone, name, posX, posY, posZ, length, rotation, TrackTypeStraight, feedbacks, datamodel::Track::SelectStreetSystemDefault, false, result) > TrackNone)
 		{
 			SendAndPrompt(result);
 			return;

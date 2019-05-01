@@ -2655,6 +2655,7 @@ namespace webserver
 		trackType_t type = TrackTypeStraight;
 		std::vector<feedbackID_t> feedbacks;
 		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
+		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		if (trackID > TrackNone)
 		{
 			const datamodel::Track* track = manager.GetTrack(trackID);
@@ -2667,6 +2668,7 @@ namespace webserver
 			type = track->GetType();
 			feedbacks = track->GetFeedbacks();
 			selectStreetApproach = track->GetSelectStreetApproach();
+			releaseWhenFree = track->GetReleaseWhenFree();
 		}
 		if (type == TrackTypeTurn)
 		{
@@ -2718,6 +2720,7 @@ namespace webserver
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
 		automodeContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, true));
+		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("releasewhenfree", "Release when free:", "trze", releaseWhenFree));
 		formContent.AddChildTag(automodeContent);
 
 		unsigned int feedbackCounter = 0;
@@ -2772,8 +2775,9 @@ namespace webserver
 			}
 		}
 		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
+		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		string result;
-		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, selectStreetApproach, result) == TrackNone)
+		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, selectStreetApproach, releaseWhenFree, result) == TrackNone)
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;

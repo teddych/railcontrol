@@ -36,7 +36,8 @@ namespace datamodel
 			<< ";statedelayed=" << static_cast<int>(stateDelayed)
 			<< ";locoDirection=" << static_cast<int>(locoDirection)
 			<< ";blocked=" << static_cast<int>(blocked)
-			<< ";locodelayed=" << static_cast<int>(locoIdDelayed);
+			<< ";locodelayed=" << static_cast<int>(locoIdDelayed)
+			<< ";releasewhenfree=" << static_cast<int>(releaseWhenFree);
 		return ss.str();
 	}
 
@@ -67,6 +68,7 @@ namespace datamodel
 		locoDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
 		blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked", false);
 		locoIdDelayed = static_cast<locoID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "locodelayed", GetLoco()));
+		releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releaseWhenFree", false);
 		return true;
 	}
 
@@ -171,11 +173,19 @@ namespace datamodel
 			}
 		}
 		this->state = FeedbackStateFree;
-		if (this->GetLoco() == LocoNone)
+
+		if (releaseWhenFree)
 		{
-			this->stateDelayed = FeedbackStateFree;
-			this->locoIdDelayed = LocoNone;
+			return Release(GetLoco());
 		}
+
+		if (this->GetLoco() != LocoNone)
+		{
+			return true;
+		}
+
+		this->stateDelayed = FeedbackStateFree;
+		this->locoIdDelayed = LocoNone;
 		return true;
 	}
 
