@@ -68,7 +68,7 @@ namespace datamodel
 		locoDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
 		blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked", false);
 		locoIdDelayed = static_cast<locoID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "locodelayed", GetLoco()));
-		releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releaseWhenFree", false);
+		releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		return true;
 	}
 
@@ -176,7 +176,12 @@ namespace datamodel
 
 		if (releaseWhenFree)
 		{
-			return Release(GetLoco());
+			locoID_t locoID = GetLoco();
+			Loco* loco = manager->GetLoco(locoID);
+			if (loco != nullptr && loco->IsRunningFromTrack(GetID()))
+			{
+				return Release(GetLoco());
+			}
 		}
 
 		if (this->GetLoco() != LocoNone)

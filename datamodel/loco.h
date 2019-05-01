@@ -166,7 +166,8 @@ namespace datamodel
 
 			bool ToTrack(const trackID_t trackID);
 			bool Release();
-			bool IsOnTrack() const { return trackFirst != nullptr; }
+			bool IsRunningFromTrack(const trackID_t trackID) const;
+
 			const char* GetStateText() const;
 			void LocationReached(const feedbackID_t feedbackID);
 
@@ -216,7 +217,7 @@ namespace datamodel
 			};
 
 			Manager* manager;
-			std::mutex stateMutex;
+			mutable std::mutex stateMutex;
 			std::thread locoThread;
 
 			length_t length;

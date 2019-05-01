@@ -129,6 +129,12 @@ namespace datamodel
 		return true;
 	}
 
+	bool Loco::IsRunningFromTrack(const trackID_t trackID) const
+	{
+		std::lock_guard<std::mutex> Guard(stateMutex);
+		return trackFirst != nullptr && trackFrom != nullptr && trackFrom->GetID() == trackID;
+	}
+
 	bool Loco::GoToAutoMode()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
