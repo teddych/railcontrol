@@ -10,7 +10,7 @@
 
 #include "text/converters.h"
 #include "hardware/cs2.h"
-#include "util.h"
+#include "Utils/Utils.h"
 
 #define CS2_CMD_BUF_LEN 13    // Length of the commandbuffer
 #define CS2_PORT_SEND 15731   // The port on which to send data

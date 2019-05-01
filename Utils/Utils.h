@@ -17,11 +17,14 @@ bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::st
 
 std::string toStringWithLeadingZeros(const unsigned int number, const unsigned char chars);
 
-class Util
+namespace Utils
 {
-	public:
-		static int StringToInteger(const std::string&  value) { return StringToInteger(value, 0, INT_MAX); }
-		static int StringToInteger(const std::string&  value, const int defaultValue);
-		static int StringToInteger(const std::string&  value, const int min, const int max);
-		static bool StringToBool(const std::string&  value);
-};
+	class Utils
+	{
+		public:
+			static int StringToInteger(const std::string& value) { return StringToInteger(value, 0, INT_MAX); }
+			static int StringToInteger(const std::string& value, const int defaultValue);
+			static int StringToInteger(const std::string& value, const int min, const int max);
+			static bool StringToBool(const std::string& value);
+	};
+}

@@ -4,7 +4,7 @@
 
 #include "config.h"
 #include "Logger/Logger.h"
-#include "util.h"
+#include "Utils/Utils.h"
 
 using std::map;
 using std::string;
@@ -66,6 +66,6 @@ int Config::getValue(const string& key, const int& defaultValue)
 	{
 		return defaultValue;
 	}
-	return Util::StringToInteger(config[key], defaultValue);
+	return Utils::Utils::StringToInteger(config[key], defaultValue);
 }
 

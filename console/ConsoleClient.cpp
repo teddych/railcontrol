@@ -11,7 +11,7 @@
 #include "datatypes.h"
 #include "railcontrol.h"
 #include "text/converters.h"
-#include "util.h"
+#include "Utils/Utils.h"
 
 using std::map;
 using std::thread;
@@ -206,7 +206,7 @@ namespace console
 		{
 			try
 			{
-				int in = Util::StringToInteger(s);
+				int in = Utils::Utils::StringToInteger(s);
 				if (in <= HardwareTypeNone || in >= HardwareTypeNumbers)
 				{
 					return HardwareTypeNone;

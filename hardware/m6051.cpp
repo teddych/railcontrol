@@ -6,7 +6,7 @@
 #include "network/Select.h"
 #include "text/converters.h"
 #include "hardware/m6051.h"
-#include "util.h"
+#include "Utils/Utils.h"
 
 namespace hardware
 {
@@ -53,7 +53,7 @@ namespace hardware
 		tcsetattr(ttyFileDescriptor, TCSANOW, &options); // store options
 		tcflush(ttyFileDescriptor, TCIFLUSH); // clear RX buffer
 
-		s88Modules = Util::StringToInteger(params->arg2, 0, 62);
+		s88Modules = Utils::Utils::StringToInteger(params->arg2, 0, 62);
 		if (s88Modules == 0)
 		{
 			logger->Info("No S88 modules configured.");

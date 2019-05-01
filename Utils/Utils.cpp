@@ -10,7 +10,7 @@
 #include <unistd.h>   // close;
 
 #include "network/Select.h"
-#include "util.h"
+#include "Utils/Utils.h"
 
 using std::cout;
 using std::endl;
@@ -63,7 +63,7 @@ int GetIntegerMapEntry(const std::map<std::string,std::string>& map, const std::
 	{
 		return defaultValue;
 	}
-	return Util::StringToInteger(map.at(key), defaultValue);
+	return Utils::Utils::StringToInteger(map.at(key), defaultValue);
 }
 
 bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const bool defaultValue)
@@ -86,48 +86,51 @@ string toStringWithLeadingZeros(const unsigned int number, const unsigned char c
 	return out;
 }
 
-int Util::StringToInteger(const std::string&  value, const int defaultValue)
+namespace Utils
 {
-	size_t valueSize = value.size();
-	if (valueSize == 0)
+	int Utils::StringToInteger(const std::string& value, const int defaultValue)
 	{
-		return defaultValue;
+		size_t valueSize = value.size();
+		if (valueSize == 0)
+		{
+			return defaultValue;
+		}
+
+		char* end;
+		const char* start = value.c_str();
+		long longValue = std::strtol(start, &end, 10);
+		if (errno == ERANGE || start == end)
+		{
+			return defaultValue;
+		}
+		if (longValue > INT_MAX || longValue < INT_MIN)
+		{
+			return defaultValue;
+		}
+		return static_cast<int>(longValue);
 	}
 
-	char* end;
-	const char* start = value.c_str();
-	long longValue = std::strtol(start, &end, 10);
-	if (errno == ERANGE || start == end)
+	int Utils::StringToInteger(const std::string& value, const int min, const int max)
 	{
-		return defaultValue;
-	}
-	if (longValue > INT_MAX || longValue < INT_MIN)
-	{
-		return defaultValue;
-	}
-	return static_cast<int>(longValue);
-}
+		int intValue = StringToInteger(value, min);
 
-int Util::StringToInteger(const std::string&  value, const int min, const int max)
-{
-	int intValue = StringToInteger(value, min);
+		if (intValue < min)
+		{
+			return min;
+		}
 
-	if (intValue < min)
-	{
-		return min;
+		if (intValue > max)
+		{
+			return max;
+		}
+
+		return intValue;
 	}
 
-	if (intValue > max)
+	bool Utils::StringToBool(const std::string& value)
 	{
-		return max;
+
+		int intValue = StringToInteger(value);
+		return intValue != 0;
 	}
-
-	return intValue;
-}
-
-bool Util::StringToBool(const std::string&  value)
-{
-
-	int intValue = StringToInteger(value);
-	return intValue != 0;
 }

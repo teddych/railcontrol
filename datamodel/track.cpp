@@ -6,7 +6,7 @@
 #include "datamodel/feedback.h"
 #include "datamodel/track.h"
 #include "manager.h"
-#include "util.h"
+#include "Utils/Utils.h"
 
 using std::map;
 using std::string;
@@ -59,7 +59,7 @@ namespace datamodel
 		str_split(feedbackStrings, ",", feedbackStringVector);
 		for (auto feedbackString : feedbackStringVector)
 		{
-			feedbacks.push_back(Util::StringToInteger(feedbackString));
+			feedbacks.push_back(Utils::Utils::StringToInteger(feedbackString));
 		}
 		selectStreetApproach = static_cast<selectStreetApproach_t>(GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
 		state = static_cast<feedbackState_t>(GetBoolMapEntry(arguments, "state", FeedbackStateFree));

@@ -39,7 +39,7 @@ OBJ= \
 	storage/StorageHandler.o \
 	text/converters.o \
 	Timestamp.o \
-	util.o \
+	Utils/Utils.o \
 	webserver/HtmlFullResponse.o \
 	webserver/HtmlResponse.o \
 	webserver/HtmlResponseNotFound.o \
@@ -96,7 +96,7 @@ sqlite-shell:
 Timestamp.o: Timestamp.cpp Timestamp.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
-%.o: %.cpp *.h console/*.h datamodel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h text/*.h webserver/*.h
+%.o: %.cpp *.h console/*.h datamodel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h text/*.h Utils/*.h webserver/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:

@@ -10,7 +10,7 @@
 #include "hardware/HardwareParams.h"
 #include "manager.h"
 #include "railcontrol.h"
-#include "util.h"
+#include "Utils/Utils.h"
 #include "webserver/webserver.h"
 
 using console::ConsoleServer;
@@ -62,10 +62,10 @@ Manager::Manager(Config& config)
 		return;
 	}
 
-	defaultAccessoryDuration = Util::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
-	autoAddFeedback = Util::StringToBool(storage->GetSetting("AutoAddFeedback"));
-	selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Util::StringToInteger(storage->GetSetting("SelectStreetApproach")));
-	nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(Util::StringToInteger(storage->GetSetting("NrOfTracksToReserve")));
+	defaultAccessoryDuration = Utils::Utils::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
+	autoAddFeedback = Utils::Utils::StringToBool(storage->GetSetting("AutoAddFeedback"));
+	selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
+	nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve")));
 
 
 	controls[ControlIdConsole] = new ConsoleServer(*this, config.getValue("consoleport", 2222));

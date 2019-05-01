@@ -11,7 +11,7 @@
 #include "datamodel/datamodel.h"
 #include "railcontrol.h"
 #include "Timestamp.h"
-#include "util.h"
+#include "Utils/Utils.h"
 #include "webserver/webclient.h"
 #include "webserver/webserver.h"
 #include "webserver/HtmlFullResponse.h"
@@ -713,7 +713,7 @@ namespace webserver
 
 			case S88Modules:
 				argumentName = "# of S88 Modules (8 port):";
-				const int valueInteger = Util::StringToInteger(value, 0, 62);
+				const int valueInteger = Utils::Utils::StringToInteger(value, 0, 62);
 				return HtmlTagInputIntegerWithLabel("arg" + to_string(argNr), argumentName, valueInteger, 0, 62);
 		}
 		return HtmlTagInputTextWithLabel("arg" + to_string(argNr), argumentName, value);
@@ -1368,7 +1368,7 @@ namespace webserver
 	void WebClient::handleRelationAdd(const map<string, string>& arguments)
 	{
 		string priorityString = GetStringMapEntry(arguments, "priority", "1");
-		priority_t priority = Util::StringToInteger(priorityString, 1);
+		priority_t priority = Utils::Utils::StringToInteger(priorityString, 1);
 		HtmlTag container;
 		container.AddChildTag(HtmlTagRelation(priorityString));
 		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority + 1)));

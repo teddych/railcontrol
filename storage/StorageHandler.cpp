@@ -7,7 +7,7 @@
 
 #include "Logger/Logger.h"
 #include "storage/StorageHandler.h"
-#include "util.h"
+#include "Utils/Utils.h"
 
 using datamodel::Accessory;
 using datamodel::Track;
@@ -22,8 +22,8 @@ using std::map;
 using std::string;
 using std::vector;
 
-namespace storage {
-
+namespace storage
+{
 	StorageHandler::StorageHandler(Manager* manager, const StorageParams& params)
 	:	manager(manager),
 		createStorage(nullptr),

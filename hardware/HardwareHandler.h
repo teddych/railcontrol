@@ -7,7 +7,6 @@
 #include "hardware/HardwareInterface.h"
 #include "hardware/HardwareParams.h"
 #include "manager.h"
-#include "util.h"
 
 namespace hardware {
 
