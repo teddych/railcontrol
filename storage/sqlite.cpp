@@ -168,9 +168,13 @@ namespace storage
 		destination.close();
 	}
 
-	int SQLite::CallbackListTables(void* v, __attribute__((unused)) int argc, char **argv, __attribute__((unused)) char **colName)
+	int SQLite::CallbackListTables(void* v, int argc, char **argv, __attribute__((unused)) char **colName)
 	{
 		map<string, bool>* tablenames = static_cast<map<string, bool>*>(v);
+		if (argc != 1)
+		{
+			return 0;
+		}
 		(*tablenames)[argv[0]] = true;
 		return 0;
 	}
