@@ -645,7 +645,9 @@ window.layoutPosY = 0;
 
 function loadPopup(url)
 {
-	url += '&posx=' + window.layoutPosX + '&posy=' + window.layoutPosY;
+	url += '&posx=' + window.layoutPosX;
+	url += '&posy=' + window.layoutPosY;
+	url += '&posz=' + document.getElementById('s_layer').value;
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() {
 		if (xmlHttp.readyState !== 4 || xmlHttp.status !== 200)
