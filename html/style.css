@@ -183,8 +183,6 @@ body {
 .loco_unknown .track_stop_loco,
 .loco_unknown .track_loco_release,
 .track_free .loconame,
-.track_reserved .trackname,
-.track_reserved_occupied .trackname,
 .track_occupied .loconame,
 .track_blocked .loconame,
 .track_error .loconame {
