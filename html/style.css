@@ -59,6 +59,7 @@ body {
 	top: 90px;
 	background-image: url("/layout_background.png");
 	background-repeat: repeat, repeat;
+	background-attachment: local;
 }
 
 .menu {
