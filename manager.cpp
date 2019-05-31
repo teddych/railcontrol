@@ -2290,6 +2290,7 @@ bool Manager::LocoReleaseInTrack(const trackID_t trackID)
 		return false;
 	}
 	locoID_t locoID = track->GetLoco();
+	track->Release(locoID);
 	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
