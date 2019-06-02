@@ -95,6 +95,7 @@ namespace datamodel
 
 		private:
 			bool ReleaseInternal(const locoID_t locoID);
+			bool ReleaseInternalWithToTrack(const locoID_t locoID);
 
 			Manager* manager;
 			std::mutex updateMutex;

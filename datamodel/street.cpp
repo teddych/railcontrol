@@ -207,7 +207,7 @@ namespace datamodel
 		}
 		if (ret == false)
 		{
-			ReleaseInternal(locoID);
+			ReleaseInternalWithToTrack(locoID);
 			return false;
 		}
 
@@ -227,6 +227,16 @@ namespace datamodel
 			relation->Release(locoID);
 		}
 		return LockableItem::Release(locoID);
+	}
+
+	bool Street::ReleaseInternalWithToTrack(const locoID_t locoID)
+	{
+	Track* track = manager->GetTrack(toTrack);
+	if (track != nullptr)
+	{
+		track->Release(locoID);
+	}
+		ReleaseInternal(locoID);
 	}
 } // namespace datamodel
 
