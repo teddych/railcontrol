@@ -229,13 +229,13 @@ namespace datamodel
 		return LockableItem::Release(locoID);
 	}
 
-	bool Street::ReleaseInternalWithToTrack(const locoID_t locoID)
+	void Street::ReleaseInternalWithToTrack(const locoID_t locoID)
 	{
-	Track* track = manager->GetTrack(toTrack);
-	if (track != nullptr)
-	{
-		track->Release(locoID);
-	}
+		Track* track = manager->GetTrack(toTrack);
+		if (track != nullptr)
+		{
+			track->Release(locoID);
+		}
 		ReleaseInternal(locoID);
 	}
 } // namespace datamodel
