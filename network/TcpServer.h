@@ -10,9 +10,10 @@ namespace Network
 {
 	class TcpServer
 	{
-		public:
+		protected:
 			TcpServer(const unsigned short port, const std::string& threadName);
 			~TcpServer();
+			void TerminateTcpServer();
 
 			virtual void Work(Network::TcpConnection* connection) = 0;
 

@@ -64,12 +64,7 @@ namespace Network
 
 	TcpServer::~TcpServer()
 	{
-		if (run == false)
-		{
-			return;
-		}
-
-		run = false;
+		TerminateTcpServer();
 
 		while (connections.size())
 		{
@@ -77,6 +72,16 @@ namespace Network
 			connections.pop_back();
 			delete client;
 		}
+	}
+
+	void TcpServer::TerminateTcpServer()
+	{
+		if (run == false)
+		{
+			return;
+		}
+
+		run = false;
 
 		serverThread.join();
 	}

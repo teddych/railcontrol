@@ -46,6 +46,7 @@ namespace webserver {
 			std::lock_guard<std::mutex> lock(updateMutex);
 			updates[++updateID] = "data: status=Stopping Railcontrol";
 		}
+		TerminateTcpServer();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
 		run = false;
 

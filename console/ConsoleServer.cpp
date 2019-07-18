@@ -41,6 +41,7 @@ namespace console
 		}
 		logger->Info("Stopping server");
 
+		TerminateTcpServer();
 		run = false;
 
 		// delete all client memory
