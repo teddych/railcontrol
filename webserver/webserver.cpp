@@ -53,7 +53,7 @@ namespace webserver {
 		// stopping all clients
 		for (auto client : clients)
 		{
-			client->stop();
+			client->Stop();
 		}
 
 		// delete all client memory

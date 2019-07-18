@@ -116,7 +116,7 @@ namespace webserver
 			string protocol;
 			map<string, string> arguments;
 			map<string, string> headers;
-			interpretClientRequest(lines, method, uri, protocol, arguments, headers);
+			InterpretClientRequest(lines, method, uri, protocol, arguments, headers);
 			keepalive = (Utils::Utils::GetStringMapEntry(headers, "Connection", "close").compare("keep-alive") == 0);
 			logger->Info("HTTP connection {0}: Request {1} {2}", id, method, uri);
 
@@ -151,323 +151,323 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("layeredit") == 0)
 			{
-				handleLayerEdit(arguments);
+				HandleLayerEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("layersave") == 0)
 			{
-				handleLayerSave(arguments);
+				HandleLayerSave(arguments);
 			}
 			else if (arguments["cmd"].compare("layerlist") == 0)
 			{
-				handleLayerList();
+				HandleLayerList();
 			}
 			else if (arguments["cmd"].compare("layeraskdelete") == 0)
 			{
-				handleLayerAskDelete(arguments);
+				HandleLayerAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("layerdelete") == 0)
 			{
-				handleLayerDelete(arguments);
+				HandleLayerDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("controledit") == 0)
 			{
-				handleControlEdit(arguments);
+				HandleControlEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("controlsave") == 0)
 			{
-				handleControlSave(arguments);
+				HandleControlSave(arguments);
 			}
 			else if (arguments["cmd"].compare("controllist") == 0)
 			{
-				handleControlList();
+				HandleControlList();
 			}
 			else if (arguments["cmd"].compare("controlaskdelete") == 0)
 			{
-				handleControlAskDelete(arguments);
+				HandleControlAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("controldelete") == 0)
 			{
-				handleControlDelete(arguments);
+				HandleControlDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("loco") == 0)
 			{
-				printLoco(arguments);
+				PrintLoco(arguments);
 			}
 			else if (arguments["cmd"].compare("locospeed") == 0)
 			{
-				handleLocoSpeed(arguments);
+				HandleLocoSpeed(arguments);
 			}
 			else if (arguments["cmd"].compare("locodirection") == 0)
 			{
-				handleLocoDirection(arguments);
+				HandleLocoDirection(arguments);
 			}
 			else if (arguments["cmd"].compare("locofunction") == 0)
 			{
-				handleLocoFunction(arguments);
+				HandleLocoFunction(arguments);
 			}
 			else if (arguments["cmd"].compare("locoedit") == 0)
 			{
-				handleLocoEdit(arguments);
+				HandleLocoEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("locosave") == 0)
 			{
-				handleLocoSave(arguments);
+				HandleLocoSave(arguments);
 			}
 			else if (arguments["cmd"].compare("locolist") == 0)
 			{
-				handleLocoList();
+				HandleLocoList();
 			}
 			else if (arguments["cmd"].compare("locoaskdelete") == 0)
 			{
-				handleLocoAskDelete(arguments);
+				HandleLocoAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("locodelete") == 0)
 			{
-				handleLocoDelete(arguments);
+				HandleLocoDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("locorelease") == 0)
 			{
-				handleLocoRelease(arguments);
+				HandleLocoRelease(arguments);
 			}
 			else if (arguments["cmd"].compare("accessoryedit") == 0)
 			{
-				handleAccessoryEdit(arguments);
+				HandleAccessoryEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("accessorysave") == 0)
 			{
-				handleAccessorySave(arguments);
+				HandleAccessorySave(arguments);
 			}
 			else if (arguments["cmd"].compare("accessorystate") == 0)
 			{
-				handleAccessoryState(arguments);
+				HandleAccessoryState(arguments);
 			}
 			else if (arguments["cmd"].compare("accessorylist") == 0)
 			{
-				handleAccessoryList();
+				HandleAccessoryList();
 			}
 			else if (arguments["cmd"].compare("accessoryaskdelete") == 0)
 			{
-				handleAccessoryAskDelete(arguments);
+				HandleAccessoryAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("accessorydelete") == 0)
 			{
-				handleAccessoryDelete(arguments);
+				HandleAccessoryDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("accessoryget") == 0)
 			{
-				handleAccessoryGet(arguments);
+				HandleAccessoryGet(arguments);
 			}
 			else if (arguments["cmd"].compare("accessoryrelease") == 0)
 			{
-				handleAccessoryRelease(arguments);
+				HandleAccessoryRelease(arguments);
 			}
 			else if (arguments["cmd"].compare("switchedit") == 0)
 			{
-				handleSwitchEdit(arguments);
+				HandleSwitchEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("switchsave") == 0)
 			{
-				handleSwitchSave(arguments);
+				HandleSwitchSave(arguments);
 			}
 			else if (arguments["cmd"].compare("switchstate") == 0)
 			{
-				handleSwitchState(arguments);
+				HandleSwitchState(arguments);
 			}
 			else if (arguments["cmd"].compare("switchlist") == 0)
 			{
-				handleSwitchList();
+				HandleSwitchList();
 			}
 			else if (arguments["cmd"].compare("switchaskdelete") == 0)
 			{
-				handleSwitchAskDelete(arguments);
+				HandleSwitchAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("switchdelete") == 0)
 			{
-				handleSwitchDelete(arguments);
+				HandleSwitchDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("switchget") == 0)
 			{
-				handleSwitchGet(arguments);
+				HandleSwitchGet(arguments);
 			}
 			else if (arguments["cmd"].compare("switchrelease") == 0)
 			{
-				handleSwitchRelease(arguments);
+				HandleSwitchRelease(arguments);
 			}
 			else if (arguments["cmd"].compare("signaledit") == 0)
 			{
-				handleSignalEdit(arguments);
+				HandleSignalEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("signalsave") == 0)
 			{
-				handleSignalSave(arguments);
+				HandleSignalSave(arguments);
 			}
 			else if (arguments["cmd"].compare("signalstate") == 0)
 			{
-				handleSignalState(arguments);
+				HandleSignalState(arguments);
 			}
 			else if (arguments["cmd"].compare("signallist") == 0)
 			{
-				handleSignalList();
+				HandleSignalList();
 			}
 			else if (arguments["cmd"].compare("signalaskdelete") == 0)
 			{
-				handleSignalAskDelete(arguments);
+				HandleSignalAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("signaldelete") == 0)
 			{
-				handleSignalDelete(arguments);
+				HandleSignalDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("signalget") == 0)
 			{
-				handleSignalGet(arguments);
+				HandleSignalGet(arguments);
 			}
 			else if (arguments["cmd"].compare("signalrelease") == 0)
 			{
-				handleSignalRelease(arguments);
+				HandleSignalRelease(arguments);
 			}
 			else if (arguments["cmd"].compare("streetedit") == 0)
 			{
-				handleStreetEdit(arguments);
+				HandleStreetEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("streetsave") == 0)
 			{
-				handleStreetSave(arguments);
+				HandleStreetSave(arguments);
 			}
 			else if (arguments["cmd"].compare("streetlist") == 0)
 			{
-				handleStreetList();
+				HandleStreetList();
 			}
 			else if (arguments["cmd"].compare("streetaskdelete") == 0)
 			{
-				handleStreetAskDelete(arguments);
+				HandleStreetAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("streetdelete") == 0)
 			{
-				handleStreetDelete(arguments);
+				HandleStreetDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("streetget") == 0)
 			{
-				handleStreetGet(arguments);
+				HandleStreetGet(arguments);
 			}
 			else if (arguments["cmd"].compare("streetexecute") == 0)
 			{
-				handleStreetExecute(arguments);
+				HandleStreetExecute(arguments);
 			}
 			else if (arguments["cmd"].compare("streetrelease") == 0)
 			{
-				handleStreetRelease(arguments);
+				HandleStreetRelease(arguments);
 			}
 			else if (arguments["cmd"].compare("trackedit") == 0)
 			{
-				handleTrackEdit(arguments);
+				HandleTrackEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("tracksave") == 0)
 			{
-				handleTrackSave(arguments);
+				HandleTrackSave(arguments);
 			}
 			else if (arguments["cmd"].compare("tracklist") == 0)
 			{
-				handleTrackList();
+				HandleTrackList();
 			}
 			else if (arguments["cmd"].compare("trackaskdelete") == 0)
 			{
-				handleTrackAskDelete(arguments);
+				HandleTrackAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("trackdelete") == 0)
 			{
-				handleTrackDelete(arguments);
+				HandleTrackDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("trackget") == 0)
 			{
-				handleTrackGet(arguments);
+				HandleTrackGet(arguments);
 			}
 			else if (arguments["cmd"].compare("tracksetloco") == 0)
 			{
-				handleTrackSetLoco(arguments);
+				HandleTrackSetLoco(arguments);
 			}
 			else if (arguments["cmd"].compare("trackrelease") == 0)
 			{
-				handleTrackRelease(arguments);
+				HandleTrackRelease(arguments);
 			}
 			else if (arguments["cmd"].compare("trackstartloco") == 0)
 			{
-				handleTrackStartLoco(arguments);
+				HandleTrackStartLoco(arguments);
 			}
 			else if (arguments["cmd"].compare("trackstoploco") == 0)
 			{
-				handleTrackStopLoco(arguments);
+				HandleTrackStopLoco(arguments);
 			}
 			else if (arguments["cmd"].compare("trackblock") == 0)
 			{
-				handleTrackBlock(arguments);
+				HandleTrackBlock(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbackedit") == 0)
 			{
-				handleFeedbackEdit(arguments);
+				HandleFeedbackEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbacksave") == 0)
 			{
-				handleFeedbackSave(arguments);
+				HandleFeedbackSave(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbackstate") == 0)
 			{
-				handleFeedbackState(arguments);
+				HandleFeedbackState(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbacklist") == 0)
 			{
-				handleFeedbackList();
+				HandleFeedbackList();
 			}
 			else if (arguments["cmd"].compare("feedbackaskdelete") == 0)
 			{
-				handleFeedbackAskDelete(arguments);
+				HandleFeedbackAskDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbackdelete") == 0)
 			{
-				handleFeedbackDelete(arguments);
+				HandleFeedbackDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbackget") == 0)
 			{
-				handleFeedbackGet(arguments);
+				HandleFeedbackGet(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbacksoftrack") == 0)
 			{
-				handleFeedbacksOfTrack(arguments);
+				HandleFeedbacksOfTrack(arguments);
 			}
 			else if (arguments["cmd"].compare("protocolloco") == 0)
 			{
-				handleProtocolLoco(arguments);
+				HandleProtocolLoco(arguments);
 			}
 			else if (arguments["cmd"].compare("protocolaccessory") == 0)
 			{
-				handleProtocolAccessory(arguments);
+				HandleProtocolAccessory(arguments);
 			}
 			else if (arguments["cmd"].compare("protocolswitch") == 0)
 			{
-				handleProtocolSwitch(arguments);
+				HandleProtocolSwitch(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbackadd") == 0)
 			{
-				handleFeedbackAdd(arguments);
+				HandleFeedbackAdd(arguments);
 			}
 			else if (arguments["cmd"].compare("relationadd") == 0)
 			{
-				handleRelationAdd(arguments);
+				HandleRelationAdd(arguments);
 			}
 			else if (arguments["cmd"].compare("relationobject") == 0)
 			{
-				handleRelationObject(arguments);
+				HandleRelationObject(arguments);
 			}
 			else if (arguments["cmd"].compare("layout") == 0)
 			{
-				handleLayout(arguments);
+				HandleLayout(arguments);
 			}
 			else if (arguments["cmd"].compare("locoselector") == 0)
 			{
-				handleLocoSelector();
+				HandleLocoSelector();
 			}
 			else if (arguments["cmd"].compare("layerselector") == 0)
 			{
-				handleLayerSelector();
+				HandleLayerSelector();
 			}
 			else if (arguments["cmd"].compare("stopallimmediately") == 0)
 			{
@@ -483,32 +483,32 @@ namespace webserver
 			}
 			else if (arguments["cmd"].compare("settingsedit") == 0)
 			{
-				handleSettingsEdit();
+				HandleSettingsEdit();
 			}
 			else if (arguments["cmd"].compare("settingssave") == 0)
 			{
-				handleSettingsSave(arguments);
+				HandleSettingsSave(arguments);
 			}
 			else if (arguments["cmd"].compare("timestamp") == 0)
 			{
-				handleTimestamp(arguments);
+				HandleTimestamp(arguments);
 			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
-				handleUpdater(headers);
+				HandleUpdater(headers);
 			}
 			else if (uri.compare("/") == 0)
 			{
-				printMainHTML();
+				PrintMainHTML();
 			}
 			else
 			{
-				deliverFile(uri);
+				DeliverFile(uri);
 			}
 		}
 	}
 
-	int WebClient::stop()
+	int WebClient::Stop()
 	{
 		// inform working thread to stop
 		run = false;
@@ -553,7 +553,7 @@ namespace webserver
 		}
 	}
 
-	void WebClient::interpretClientRequest(const vector<string>& lines, string& method, string& uri, string& protocol, map<string,string>& arguments, map<string,string>& headers)
+	void WebClient::InterpretClientRequest(const vector<string>& lines, string& method, string& uri, string& protocol, map<string,string>& arguments, map<string,string>& headers)
 	{
 		if (lines.size() == 0)
 		{
@@ -615,7 +615,7 @@ namespace webserver
 		}
 	}
 
-	void WebClient::deliverFile(const string& virtualFile)
+	void WebClient::DeliverFile(const string& virtualFile)
 	{
 		stringstream ss;
 		char workingDir[128];
@@ -634,11 +634,11 @@ namespace webserver
 			return;
 		}
 
-		deliverFileInternal(f, realFile, virtualFile);
+		DeliverFileInternal(f, realFile, virtualFile);
 		fclose(f);
 	}
 
-	void WebClient::deliverFileInternal(FILE* f, const char* realFile, const string& virtualFile)
+	void WebClient::DeliverFileInternal(FILE* f, const char* realFile, const string& virtualFile)
 	{
 		struct stat s;
 		int rc = stat(realFile, &s);
@@ -719,7 +719,7 @@ namespace webserver
 		return HtmlTagInputTextWithLabel("arg" + to_string(argNr), argumentName, value);
 	}
 
-	void WebClient::handleLayerEdit(const map<string, string>& arguments)
+	void WebClient::HandleLayerEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		layerID_t layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
@@ -746,7 +746,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleLayerSave(const map<string, string>& arguments)
+	void WebClient::HandleLayerSave(const map<string, string>& arguments)
 	{
 		layerID_t layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -761,7 +761,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + name + "&quot; saved."));
 	}
 
-	void WebClient::handleLayerAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleLayerAskDelete(const map<string, string>& arguments)
 	{
 		layerID_t layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
 
@@ -796,7 +796,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleLayerDelete(const map<string, string>& arguments)
+	void WebClient::HandleLayerDelete(const map<string, string>& arguments)
 	{
 		layerID_t layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
 
@@ -830,7 +830,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + name + "&quot; deleted."));
 	}
 
-	void WebClient::handleLayerList()
+	void WebClient::HandleLayerList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Layers"));
@@ -856,7 +856,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleControlEdit(const map<string, string>& arguments)
+	void WebClient::HandleControlEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -924,7 +924,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleControlSave(const map<string, string>& arguments)
+	void WebClient::HandleControlSave(const map<string, string>& arguments)
 	{
 		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -945,7 +945,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Control &quot;" + name + "&quot; saved.");
 	}
 
-	void WebClient::handleControlAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleControlAskDelete(const map<string, string>& arguments)
 	{
 		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
 
@@ -974,7 +974,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleControlDelete(const map<string, string>& arguments)
+	void WebClient::HandleControlDelete(const map<string, string>& arguments)
 	{
 		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
 		const hardware::HardwareParams* control = manager.GetHardware(controlID);
@@ -995,7 +995,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Control &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleControlList()
+	void WebClient::HandleControlList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Controls"));
@@ -1018,7 +1018,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleLocoSpeed(const map<string, string>& arguments)
+	void WebClient::HandleLocoSpeed(const map<string, string>& arguments)
 	{
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		locoSpeed_t speed = Utils::Utils::GetIntegerMapEntry(arguments, "speed", MinSpeed);
@@ -1030,7 +1030,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleLocoDirection(const map<string, string>& arguments)
+	void WebClient::HandleLocoDirection(const map<string, string>& arguments)
 	{
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		direction_t direction = (Utils::Utils::GetBoolMapEntry(arguments, "on") ? DirectionRight : DirectionLeft);
@@ -1042,7 +1042,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleLocoFunction(const map<string, string>& arguments)
+	void WebClient::HandleLocoFunction(const map<string, string>& arguments)
 	{
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		function_t function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
@@ -1056,7 +1056,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleLocoRelease(const map<string, string>& arguments)
+	void WebClient::HandleLocoRelease(const map<string, string>& arguments)
 	{
 		bool ret;
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
@@ -1081,7 +1081,7 @@ namespace webserver
 		return content;
 	}
 
-	void WebClient::handleProtocolLoco(const map<string, string>& arguments)
+	void WebClient::HandleProtocolLoco(const map<string, string>& arguments)
 	{
 		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
@@ -1347,7 +1347,7 @@ namespace webserver
 		return HtmlTagSelectWithLabel("nroftrackstoreserve", "# of Tracks to reserve:", options, to_string(static_cast<int>(nrOfTracksToReserve)));
 	}
 
-	void WebClient::handleProtocolAccessory(const map<string, string>& arguments)
+	void WebClient::HandleProtocolAccessory(const map<string, string>& arguments)
 	{
 		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
@@ -1365,7 +1365,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, accessory->GetProtocol()));
 	}
 
-	void WebClient::handleRelationAdd(const map<string, string>& arguments)
+	void WebClient::HandleRelationAdd(const map<string, string>& arguments)
 	{
 		string priorityString = Utils::Utils::GetStringMapEntry(arguments, "priority", "1");
 		priority_t priority = Utils::Utils::StringToInteger(priorityString, 1);
@@ -1375,14 +1375,14 @@ namespace webserver
 		HtmlReplyWithHeader(container);
 	}
 
-	void WebClient::handleFeedbackAdd(const map<string, string>& arguments)
+	void WebClient::HandleFeedbackAdd(const map<string, string>& arguments)
 	{
 		unsigned int counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 1);
 		trackID_t trackID = static_cast<trackID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
 		HtmlReplyWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID));
 	}
 
-	void WebClient::handleProtocolSwitch(const map<string, string>& arguments)
+	void WebClient::HandleProtocolSwitch(const map<string, string>& arguments)
 	{
 		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
@@ -1400,14 +1400,14 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch->GetProtocol()));
 	}
 
-	void WebClient::handleRelationObject(const map<string, string>& arguments)
+	void WebClient::HandleRelationObject(const map<string, string>& arguments)
 	{
 		const string priority = Utils::Utils::GetStringMapEntry(arguments, "priority");
 		const objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objecttype"));
 		HtmlReplyWithHeader(HtmlTagRelationObject(priority, objectType));
 	}
 
-	void WebClient::handleLocoEdit(const map<string, string>& arguments)
+	void WebClient::HandleLocoEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
@@ -1488,7 +1488,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleLocoSave(const map<string, string>& arguments)
+	void WebClient::HandleLocoSave(const map<string, string>& arguments)
 	{
 		const locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -1537,7 +1537,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Loco &quot;" + name + "&quot; saved."));
 	}
 
-	void WebClient::handleLocoList()
+	void WebClient::HandleLocoList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Locos"));
@@ -1565,7 +1565,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleLocoAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleLocoAskDelete(const map<string, string>& arguments)
 	{
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 
@@ -1595,7 +1595,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleLocoDelete(const map<string, string>& arguments)
+	void WebClient::HandleLocoDelete(const map<string, string>& arguments)
 	{
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		const datamodel::Loco* loco = manager.GetLoco(locoID);
@@ -1622,7 +1622,7 @@ namespace webserver
 		return HtmlTagSelect("layer", options).AddAttribute("onchange", "loadLayout();");
 	}
 
-	void WebClient::handleLayout(const map<string, string>& arguments)
+	void WebClient::HandleLayout(const map<string, string>& arguments)
 	{
 		layerID_t layer = static_cast<layerID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "layer", CHAR_MIN));
 		HtmlTag content;
@@ -1712,7 +1712,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleAccessoryEdit(const map<string, string>& arguments)
+	void WebClient::HandleAccessoryEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
@@ -1768,7 +1768,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleAccessoryGet(const map<string, string>& arguments)
+	void WebClient::HandleAccessoryGet(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory");
 		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
@@ -1780,7 +1780,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagAccessory(accessory));
 	}
 
-	void WebClient::handleAccessorySave(const map<string, string>& arguments)
+	void WebClient::HandleAccessorySave(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -1802,7 +1802,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + name + "&quot; saved.");
 	}
 
-	void WebClient::handleAccessoryState(const map<string, string>& arguments)
+	void WebClient::HandleAccessoryState(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		accessoryState_t accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? AccessoryStateOff : AccessoryStateOn);
@@ -1814,7 +1814,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleAccessoryList()
+	void WebClient::HandleAccessoryList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Accessories"));
@@ -1841,7 +1841,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleAccessoryAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleAccessoryAskDelete(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 
@@ -1871,7 +1871,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleAccessoryDelete(const map<string, string>& arguments)
+	void WebClient::HandleAccessoryDelete(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
@@ -1892,14 +1892,14 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleAccessoryRelease(const map<string, string>& arguments)
+	void WebClient::HandleAccessoryRelease(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory");
 		bool ret = manager.AccessoryRelease(accessoryID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Accessory released" : "Accessory not released"));
 	}
 
-	void WebClient::handleSwitchEdit(const map<string, string>& arguments)
+	void WebClient::HandleSwitchEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
@@ -1981,7 +1981,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleSwitchSave(const map<string, string>& arguments)
+	void WebClient::HandleSwitchSave(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -2004,7 +2004,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Switch &quot;" + name + "&quot; saved.");
 	}
 
-	void WebClient::handleSwitchState(const map<string, string>& arguments)
+	void WebClient::HandleSwitchState(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		switchState_t switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SwitchStateTurnout : SwitchStateStraight);
@@ -2016,7 +2016,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleSwitchList()
+	void WebClient::HandleSwitchList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Switches"));
@@ -2043,7 +2043,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleSwitchAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleSwitchAskDelete(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 
@@ -2073,7 +2073,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleSwitchDelete(const map<string, string>& arguments)
+	void WebClient::HandleSwitchDelete(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
@@ -2094,7 +2094,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Switch &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleSwitchGet(const map<string, string>& arguments)
+	void WebClient::HandleSwitchGet(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch");
 		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
@@ -2106,14 +2106,14 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
 	}
 
-	void WebClient::handleSwitchRelease(const map<string, string>& arguments)
+	void WebClient::HandleSwitchRelease(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch");
 		bool ret = manager.SwitchRelease(switchID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Switch released" : "Switch not released"));
 	}
 
-	void WebClient::handleSignalEdit(const map<string, string>& arguments)
+	void WebClient::HandleSignalEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
@@ -2194,7 +2194,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleSignalSave(const map<string, string>& arguments)
+	void WebClient::HandleSignalSave(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -2217,7 +2217,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Signal &quot;" + name + "&quot; saved.");
 	}
 
-	void WebClient::handleSignalState(const map<string, string>& arguments)
+	void WebClient::HandleSignalState(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		signalState_t signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? SignalStateRed : SignalStateGreen);
@@ -2229,7 +2229,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleSignalList()
+	void WebClient::HandleSignalList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Signals"));
@@ -2256,7 +2256,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleSignalAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleSignalAskDelete(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 
@@ -2286,7 +2286,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleSignalDelete(const map<string, string>& arguments)
+	void WebClient::HandleSignalDelete(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		const datamodel::Signal* signal = manager.GetSignal(signalID);
@@ -2307,7 +2307,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Signal &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleSignalGet(const map<string, string>& arguments)
+	void WebClient::HandleSignalGet(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal");
 		const datamodel::Signal* signal = manager.GetSignal(signalID);
@@ -2319,14 +2319,14 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagSignal(signal));
 	}
 
-	void WebClient::handleSignalRelease(const map<string, string>& arguments)
+	void WebClient::HandleSignalRelease(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal");
 		bool ret = manager.SignalRelease(signalID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Signal released" : "Signal not released"));
 	}
 
-	void WebClient::handleStreetGet(const map<string, string>& arguments)
+	void WebClient::HandleStreetGet(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
 		const datamodel::Street* street = manager.GetStreet(streetID);
@@ -2338,7 +2338,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagStreet(street));
 	}
 
-	void WebClient::handleStreetEdit(const map<string, string>& arguments)
+	void WebClient::HandleStreetEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
@@ -2474,13 +2474,13 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleFeedbacksOfTrack(const map<string, string>& arguments)
+	void WebClient::HandleFeedbacksOfTrack(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		HtmlReplyWithHeader(HtmlTagSelectFeedbacksOfTrack(trackID, FeedbackNone, FeedbackNone, FeedbackNone, FeedbackNone));
 	}
 
-	void WebClient::handleStreetSave(const map<string, string>& arguments)
+	void WebClient::HandleStreetSave(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -2550,7 +2550,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Street &quot;" + name + "&quot; saved.");
 	}
 
-	void WebClient::handleStreetAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleStreetAskDelete(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 
@@ -2580,7 +2580,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleStreetDelete(const map<string, string>& arguments)
+	void WebClient::HandleStreetDelete(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		const datamodel::Street* street = manager.GetStreet(streetID);
@@ -2601,7 +2601,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Street &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleStreetList()
+	void WebClient::HandleStreetList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Streets"));
@@ -2628,21 +2628,21 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleStreetExecute(const map<string, string>& arguments)
+	void WebClient::HandleStreetExecute(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		manager.ExecuteStreetAsync(streetID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Street executed"));
 	}
 
-	void WebClient::handleStreetRelease(const map<string, string>& arguments)
+	void WebClient::HandleStreetRelease(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
 		bool ret = manager.StreetRelease(streetID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Street released" : "Street not released"));
 	}
 
-	void WebClient::handleTrackEdit(const map<string, string>& arguments)
+	void WebClient::HandleTrackEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
@@ -2766,7 +2766,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleTrackSave(const map<string, string>& arguments)
+	void WebClient::HandleTrackSave(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -2808,7 +2808,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Track &quot;" + name + "&quot; saved.");
 	}
 
-	void WebClient::handleTrackAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleTrackAskDelete(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 
@@ -2838,7 +2838,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleTrackList()
+	void WebClient::HandleTrackList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Tracks"));
@@ -2865,7 +2865,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleTrackDelete(const map<string, string>& arguments)
+	void WebClient::HandleTrackDelete(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		const datamodel::Track* track = manager.GetTrack(trackID);
@@ -2886,7 +2886,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Track &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleTrackGet(const map<string, string>& arguments)
+	void WebClient::HandleTrackGet(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		const datamodel::Track* track = manager.GetTrack(trackID);
@@ -2898,7 +2898,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagTrack(manager, track));
 	}
 
-	void WebClient::handleTrackSetLoco(const map<string, string>& arguments)
+	void WebClient::HandleTrackSetLoco(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
@@ -2926,28 +2926,28 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(content));
 	}
 
-	void WebClient::handleTrackRelease(const map<string, string>& arguments)
+	void WebClient::HandleTrackRelease(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackRelease(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Track released" : "Track not released"));
 	}
 
-	void WebClient::handleTrackStartLoco(const map<string, string>& arguments)
+	void WebClient::HandleTrackStartLoco(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackStartLoco(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco started" : "Loco not started"));
 	}
 
-	void WebClient::handleTrackStopLoco(const map<string, string>& arguments)
+	void WebClient::HandleTrackStopLoco(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackStopLoco(trackID);
 		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco stopped" : "Loco not stopped"));
 	}
 
-	void WebClient::handleTrackBlock(const map<string, string>& arguments)
+	void WebClient::HandleTrackBlock(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked");
@@ -2955,7 +2955,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Track block/unblock received"));
 	}
 
-	void WebClient::handleFeedbackEdit(const map<string, string>& arguments)
+	void WebClient::HandleFeedbackEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
@@ -3025,7 +3025,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleFeedbackSave(const map<string, string>& arguments)
+	void WebClient::HandleFeedbackSave(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
@@ -3045,7 +3045,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + name + "&quot; saved.");
 	}
 
-	void WebClient::handleFeedbackState(const map<string, string>& arguments)
+	void WebClient::HandleFeedbackState(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		feedbackState_t state = (Utils::Utils::GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? FeedbackStateOccupied : FeedbackStateFree);
@@ -3057,7 +3057,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
 	}
 
-	void WebClient::handleFeedbackList()
+	void WebClient::HandleFeedbackList()
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Feedback"));
@@ -3080,7 +3080,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleFeedbackAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleFeedbackAskDelete(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 
@@ -3110,7 +3110,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleFeedbackDelete(const map<string, string>& arguments)
+	void WebClient::HandleFeedbackDelete(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
@@ -3131,7 +3131,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + name + "&quot; deleted.");
 	}
 
-	void WebClient::handleFeedbackGet(const map<string, string>& arguments)
+	void WebClient::HandleFeedbackGet(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
@@ -3143,17 +3143,17 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTagFeedback(feedback));
 	}
 
-	void WebClient::handleLocoSelector()
+	void WebClient::HandleLocoSelector()
 	{
 		HtmlReplyWithHeader(HtmlTagLocoSelector());
 	}
 
-	void WebClient::handleLayerSelector()
+	void WebClient::HandleLayerSelector()
 	{
 		HtmlReplyWithHeader(HtmlTagLayerSelector());
 	}
 
-	void WebClient::handleSettingsEdit()
+	void WebClient::HandleSettingsEdit()
 	{
 		const accessoryDuration_t defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
@@ -3177,7 +3177,7 @@ namespace webserver
 		HtmlReplyWithHeader(content);
 	}
 
-	void WebClient::handleSettingsSave(const map<string, string>& arguments)
+	void WebClient::HandleSettingsSave(const map<string, string>& arguments)
 	{
 		const accessoryDuration_t defaultAccessoryDuration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		const bool autoAddFeedback = Utils::Utils::GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
@@ -3187,7 +3187,7 @@ namespace webserver
 		HtmlReplyWithHeaderAndParagraph("Settings saved.");
 	}
 
-	void WebClient::handleTimestamp(const map<string, string>& arguments)
+	void WebClient::HandleTimestamp(const map<string, string>& arguments)
 	{
 		const time_t timestamp = Utils::Utils::GetIntegerMapEntry(arguments, "timestamp", 0);
 		if (timestamp == 0)
@@ -3213,7 +3213,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp set"));
 	}
 
-	void WebClient::handleUpdater(const map<string, string>& headers)
+	void WebClient::HandleUpdater(const map<string, string>& headers)
 	{
 		Response response(Response::OK);
 		response.AddHeader("Cache-Control", "no-cache, must-revalidate");
@@ -3280,7 +3280,7 @@ namespace webserver
 		return HtmlTagSelect("loco", options).AddAttribute("onchange", "loadLoco();");
 	}
 
-	void WebClient::printLoco(const map<string, string>& arguments)
+	void WebClient::PrintLoco(const map<string, string>& arguments)
 	{
 		string content;
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
@@ -3331,7 +3331,7 @@ namespace webserver
 		HtmlReplyWithHeader(HtmlTag().AddContent(content));
 	}
 
-	void WebClient::printMainHTML() {
+	void WebClient::PrintMainHTML() {
 		// handle base request
 		HtmlTag body("body");
 		body.AddAttribute("onload","startUp();");
