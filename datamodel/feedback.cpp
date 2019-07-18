@@ -33,6 +33,9 @@ namespace datamodel
 			return false;
 		}
 		LayoutItem::Deserialize(arguments);
+		SetRotation(Rotation0);
+		SetHeight(Height1);
+		SetWidth(Width1);
 		controlID = Utils::Utils::GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 		pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin");
 		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted", false);
