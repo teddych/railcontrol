@@ -128,7 +128,7 @@ class Manager
 			const layoutPosition_t posZ,
 			const layoutItemSize_t width,
 			const layoutRotation_t rotation,
-			const trackType_t trackType,
+			const datamodel::Track::type_t trackType,
 			std::vector<feedbackID_t> feedbacks,
 			const datamodel::Track::selectStreetApproach_t selectStreetApproach,
 			const bool releaseWhenFree,

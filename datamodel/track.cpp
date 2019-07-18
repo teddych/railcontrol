@@ -54,7 +54,17 @@ namespace datamodel
 		{
 			return false;
 		}
-		type = static_cast<trackType_t>(Utils::Utils::GetBoolMapEntry(arguments, "type", TrackTypeStraight));
+		type = static_cast<type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TrackTypeStraight));
+		switch (type)
+		{
+			case TrackTypeTurn:
+			case TrackTypeTunnelEnd:
+				SetHeight(Height1);
+				break;
+
+			default:
+				break;
+		}
 		string feedbackStrings = Utils::Utils::GetStringMapEntry(arguments, "feedbacks");
 		vector<string> feedbackStringVector;
 		Utils::Utils::SplitString(feedbackStrings, ",", feedbackStringVector);

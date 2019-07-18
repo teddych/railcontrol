@@ -27,6 +27,16 @@ namespace datamodel
 				SelectStreetLongestUnused = 4
 			};
 
+			enum type_t : unsigned char
+			{
+				TrackTypeStraight = 0,
+				TrackTypeTurn = 1,
+				TrackTypeEnd = 2,
+				TrackTypeBridge = 3,
+				TrackTypeTunnel = 4,
+				TrackTypeTunnelEnd = 5
+			};
+
 			Track(Manager* manager, const trackID_t trackID)
 			:	LayoutItem(trackID),
 			 	LockableItem(),
@@ -57,8 +67,8 @@ namespace datamodel
 			bool Release(const locoID_t locoID) override;
 
 			std::string LayoutType() const override { return "track"; };
-			trackType_t GetType() const { return type; }
-			void SetType(const trackType_t type) { this->type = type; }
+			type_t GetType() const { return type; }
+			void SetType(const type_t type) { this->type = type; }
 			std::vector<feedbackID_t> GetFeedbacks() const { return feedbacks; }
 			void Feedbacks(const std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
 
@@ -88,7 +98,7 @@ namespace datamodel
 
 			Manager* manager;
 			mutable std::mutex updateMutex;
-			trackType_t type;
+			type_t type;
 			std::vector<feedbackID_t> feedbacks;
 			selectStreetApproach_t selectStreetApproach;
 			feedbackState_t state;

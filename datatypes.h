@@ -228,12 +228,6 @@ enum switchState : switchState_t
 	SwitchStateStraight = true
 };
 
-enum trackType_t : bool
-{
-	TrackTypeStraight = false,
-	TrackTypeTurn = true
-};
-
 enum signalType : signalType_t
 {
 	SignalTypeSimple = 0

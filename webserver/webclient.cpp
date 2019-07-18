@@ -2652,7 +2652,7 @@ namespace webserver
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutItemSize_t height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		trackType_t type = TrackTypeStraight;
+		datamodel::Track::type_t type = datamodel::Track::TrackTypeStraight;
 		std::vector<feedbackID_t> feedbacks;
 		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
@@ -2670,14 +2670,24 @@ namespace webserver
 			selectStreetApproach = track->GetSelectStreetApproach();
 			releaseWhenFree = track->GetReleaseWhenFree();
 		}
-		if (type == TrackTypeTurn)
+		switch (type)
 		{
-			height = 1;
+			case datamodel::Track::TrackTypeTurn:
+			case datamodel::Track::TrackTypeTunnelEnd:
+				height = 1;
+				break;
+
+			default:
+				break;
 		}
 
 		std::map<string, string> typeOptions;
-		typeOptions[to_string(static_cast<int>(TrackTypeStraight))] = "Straight";
-		typeOptions[to_string(static_cast<int>(TrackTypeTurn))] = "Turn";
+		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeStraight))] = "Straight";
+		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTurn))] = "Turn";
+		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeEnd))] = "End/BufferStop";
+		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeBridge))] = "Bridge";
+		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTunnel))] = "Tunnel";
+		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTunnelEnd))] = "Tunnel (one side)";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit track &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
@@ -2700,9 +2710,15 @@ namespace webserver
 		HtmlTag i_length("div");
 		i_length.AddAttribute("id", "i_length");
 		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100));
-		if (type == TrackTypeTurn)
+		switch (type)
 		{
-			i_length.AddAttribute("hidden");
+			case datamodel::Track::TrackTypeTurn:
+			case datamodel::Track::TrackTypeTunnelEnd:
+				i_length.AddAttribute("hidden");
+				break;
+
+			default:
+				break;
 		}
 		mainContent.AddChildTag(i_length);
 		formContent.AddChildTag(mainContent);
@@ -2759,10 +2775,16 @@ namespace webserver
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutItemSize_t height = 1;
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		trackType_t type = static_cast<trackType_t>(Utils::Utils::GetBoolMapEntry(arguments, "type", TrackTypeStraight));
-		if (type == TrackTypeStraight)
+		datamodel::Track::type_t type = static_cast<datamodel::Track::type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Track::TrackTypeStraight));
+		switch (type)
 		{
-			height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
+			case datamodel::Track::TrackTypeTurn:
+			case datamodel::Track::TrackTypeTunnelEnd:
+				break;
+
+			default:
+				height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
+				break;
 		}
 		vector<feedbackID_t> feedbacks;
 		unsigned int feedbackCounter = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcounter", 1);

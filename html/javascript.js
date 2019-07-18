@@ -222,7 +222,7 @@ function onChangeTrackType()
 		return;
 	}
 	var typeValue = typeSelect.value;
-	length.hidden =  (typeValue == 1)
+	length.hidden = (typeValue == 1 || typeValue == 5)
 }
 
 function updateLayoutItem(elementName, data)
