@@ -48,6 +48,11 @@ namespace datamodel
 			signalState_t GetState() const { return static_cast<signalState_t>(state); }
 			signalType_t GetType() const { return static_cast<signalType_t>(type); }
 
+			static void Status(const signalState_t state, std::string& stateText)
+			{
+				stateText.assign(state == datamodel::Signal::SignalStateGreen ? "green" : "red");
+			}
+
 		private:
 			Manager* manager;
 	};

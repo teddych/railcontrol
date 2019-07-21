@@ -8,7 +8,6 @@
 #include <thread>
 #include <unistd.h>   //close;
 
-#include "text/converters.h"
 #include "hardware/cs2.h"
 #include "Utils/Utils.h"
 
@@ -244,7 +243,7 @@ namespace hardware
 	void CS2::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		std::string stateText;
-		text::Converters::accessoryStatus(state, stateText);
+		datamodel::Accessory::Status(state, stateText);
 		logger->Info("Setting state of cs2 accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header

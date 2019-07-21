@@ -4,7 +4,6 @@
 #include <termios.h>
 
 #include "network/Select.h"
-#include "text/converters.h"
 #include "hardware/m6051.h"
 #include "Utils/Utils.h"
 
@@ -163,7 +162,7 @@ namespace hardware
 		}
 
 		std::string stateText;
-		text::Converters::accessoryStatus(state, stateText);
+		datamodel::Accessory::Status(state, stateText);
 		logger->Info("Setting state of accessory {0}/{1} to \"{2}\"", address, stateText, on ? "on" : "off");
 		const unsigned char stateMM = (state == datamodel::Accessory::AccessoryStateOn ? 33 : 34);
 		const unsigned char addressMM = static_cast<unsigned char>(address);

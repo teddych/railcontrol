@@ -35,7 +35,6 @@ OBJ= \
 	network/TcpServer.o \
 	railcontrol.o \
 	storage/StorageHandler.o \
-	text/converters.o \
 	Timestamp.o \
 	Utils/Utils.o \
 	webserver/HtmlFullResponse.o \

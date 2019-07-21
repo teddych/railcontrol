@@ -10,7 +10,6 @@
 #include "datatypes.h"
 #include "Logger/Logger.h"
 #include "railcontrol.h"
-#include "text/converters.h"
 #include "webserver/webclient.h"
 #include "webserver/webserver.h"
 
@@ -118,7 +117,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		string stateText;
-		text::Converters::accessoryStatus(state, stateText);
+		datamodel::Accessory::Status(state, stateText);
 		command << "accessory;accessory=" << accessoryID << ";state=" << stateText;
 		status << manager.GetAccessoryName(accessoryID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());
@@ -223,7 +222,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		string stateText;
-		text::Converters::switchStatus(state, stateText);
+		datamodel::Switch::Status(state, stateText);
 		command << "switch;switch=" << switchID << ";state=" << stateText;
 		status << manager.GetSwitchName(switchID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());
@@ -283,7 +282,7 @@ namespace webserver {
 		stringstream command;
 		stringstream status;
 		string stateText;
-		text::Converters::signalStatus(state, stateText);
+		datamodel::Signal::Status(state, stateText);
 		command << "signal;signal=" << signalID << ";state=" << stateText;
 		status << manager.GetSignalName(signalID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());

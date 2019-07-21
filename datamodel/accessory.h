@@ -57,6 +57,12 @@ namespace datamodel
 
 			time_t GetLastUsed() const { return lastUsed; }
 
+			static void Status(const accessoryState_t state, std::string& onText)
+			{
+				onText.assign(state == datamodel::Accessory::AccessoryStateOn ? "green" : "red");
+			}
+
+
 		protected:
 			std::string SerializeWithoutType() const;
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
