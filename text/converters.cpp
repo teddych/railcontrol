@@ -1,5 +1,6 @@
 #include "text/converters.h"
 #include "datamodel/signal.h"
+#include "datamodel/switch.h"
 
 using std::string;
 
@@ -44,7 +45,7 @@ namespace text
 
 	void Converters::switchStatus(const switchState_t state, string& stateText)
 	{
-		stateText.assign(state == SwitchStateStraight ? "straight" : "turnout");
+		stateText.assign(state == datamodel::Switch::SwitchStateStraight ? "straight" : "turnout");
 	}
 
 	void Converters::signalStatus(const signalState_t state, string& stateText)

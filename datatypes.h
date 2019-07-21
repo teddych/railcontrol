@@ -215,15 +215,3 @@ enum direction_t : bool
 	DirectionLeft = false,
 	DirectionRight = true
 };
-
-enum switchType : switchType_t
-{
-	SwitchTypeLeft = 0,
-	SwitchTypeRight
-};
-
-enum switchState : switchState_t
-{
-	SwitchStateTurnout = false,
-	SwitchStateStraight = true
-};

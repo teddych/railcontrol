@@ -23,10 +23,10 @@ namespace webserver
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("switch_item");
-		div1.AddClass(state == SwitchStateStraight ? "switch_straight" : "switch_turnout");
+		div1.AddClass(state == datamodel::Switch::SwitchStateStraight ? "switch_straight" : "switch_turnout");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		string image;
-		if (type == SwitchTypeLeft)
+		if (type == datamodel::Switch::SwitchTypeLeft)
 		{
 			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(mySwitch->GetRotation()) + "deg);\"><polygon points=\"14,27 22,36 14,36\" fill=\"black\" /><polygon points=\"0,14 14,27 14,36 0,22\" fill=\"gray\" class=\"turnout\"/><polygon points=\"14,0 22,0 22,36 14,27\" fill=\"gray\" class=\"straight\"/></svg>";
 		}

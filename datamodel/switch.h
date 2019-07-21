@@ -12,6 +12,18 @@ namespace datamodel
 	class Switch : public Accessory
 	{
 		public:
+			enum switchType : switchType_t
+			{
+				SwitchTypeLeft = 0,
+				SwitchTypeRight
+			};
+
+			enum switchState : switchState_t
+			{
+				SwitchStateTurnout = false,
+				SwitchStateStraight = true
+			};
+
 			Switch(Manager* manager, const switchID_t switchID)
 			:	Accessory(manager, switchID)
 			{

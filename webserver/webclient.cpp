@@ -1161,8 +1161,8 @@ namespace webserver
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, switchOptions, objectId).AddClass("select_relation_id"));
 
 				map<string, switchState_t> stateOptions;
-				stateOptions["Straight"] = SwitchStateStraight;
-				stateOptions["Turnout"] = SwitchStateTurnout;
+				stateOptions["Straight"] = datamodel::Switch::SwitchStateStraight;
+				stateOptions["Turnout"] = datamodel::Switch::SwitchStateTurnout;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -1911,7 +1911,7 @@ namespace webserver
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		switchType_t type = SwitchTypeLeft;
+		switchType_t type = datamodel::Switch::SwitchTypeLeft;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (switchID > SwitchNone)
@@ -1942,8 +1942,8 @@ namespace webserver
 		}
 
 		std::map<string, string> typeOptions;
-		typeOptions[to_string(SwitchTypeLeft)] = "Left";
-		typeOptions[to_string(SwitchTypeRight)] = "Right";
+		typeOptions[to_string(datamodel::Switch::SwitchTypeLeft)] = "Left";
+		typeOptions[to_string(datamodel::Switch::SwitchTypeRight)] = "Right";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
@@ -1992,7 +1992,7 @@ namespace webserver
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		switchType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", SwitchTypeLeft);
+		switchType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Switch::SwitchTypeLeft);
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
@@ -2007,7 +2007,7 @@ namespace webserver
 	void WebClient::HandleSwitchState(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		switchState_t switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? SwitchStateTurnout : SwitchStateStraight);
+		switchState_t switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? datamodel::Switch::SwitchStateTurnout : datamodel::Switch::SwitchStateStraight);
 
 		manager.SwitchState(ControlTypeWebserver, switchID, switchState, false);
 
