@@ -16,8 +16,6 @@ OBJ= \
 	Logger/Logger.o \
 	Logger/LoggerServer.o \
 	config.o \
-	console/ConsoleClient.o \
-	console/ConsoleServer.o \
 	datamodel/accessory.o \
 	datamodel/feedback.o \
 	datamodel/HardwareHandle.o \
