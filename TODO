@@ -15,6 +15,5 @@
 - Lokbilder
 - Fahren nach Fahrplan bzw. Vorgabe des Zielortes
 - Mehrsprachigkeit
-- Reconnect bei restart des Servers/disconnect des Clients
 - Senden aller Lokfunktionen bei Neustart
 - Schalten von Weichen/Signalen/Fahrstrassen nur wenn Booster ON

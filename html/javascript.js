@@ -639,6 +639,11 @@ var updater = new EventSource('/?cmd=updater');
 updater.onmessage = function(event) {
 	dataUpdate(event);
 };
+updater.onerror = function(event) {
+	setTimeout(function() {
+		location.reload();
+	}, 1000);
+};
 
 window.layoutPosX = 0;
 window.layoutPosY = 0;
