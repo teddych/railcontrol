@@ -1195,8 +1195,8 @@ namespace webserver
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, accessoryOptions, objectId).AddClass("select_relation_id"));
 
 				map<string, accessoryState_t> stateOptions;
-				stateOptions["on"] = AccessoryStateOn;
-				stateOptions["off"] = AccessoryStateOff;
+				stateOptions["on"] = datamodel::Accessory::AccessoryStateOn;
+				stateOptions["off"] = datamodel::Accessory::AccessoryStateOff;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -1793,7 +1793,7 @@ namespace webserver
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, AccessoryTypeDefault, duration, inverted, result))
+		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, datamodel::Accessory::AccessoryTypeDefault, duration, inverted, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -1805,7 +1805,7 @@ namespace webserver
 	void WebClient::HandleAccessoryState(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		accessoryState_t accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? AccessoryStateOff : AccessoryStateOn);
+		accessoryState_t accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? datamodel::Accessory::AccessoryStateOff : datamodel::Accessory::AccessoryStateOn);
 
 		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState, false);
 

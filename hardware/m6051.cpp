@@ -165,8 +165,8 @@ namespace hardware
 		std::string stateText;
 		text::Converters::accessoryStatus(state, stateText);
 		logger->Info("Setting state of accessory {0}/{1} to \"{2}\"", address, stateText, on ? "on" : "off");
-		unsigned char stateMM = (state == AccessoryStateOn ? 33 : 34);
-		unsigned char addressMM = static_cast<unsigned char>(address);
+		const unsigned char stateMM = (state == datamodel::Accessory::AccessoryStateOn ? 33 : 34);
+		const unsigned char addressMM = static_cast<unsigned char>(address);
 		SendTwoBytes(stateMM, addressMM);
 	}
 

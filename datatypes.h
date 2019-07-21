@@ -185,17 +185,6 @@ enum objectType_t : unsigned char
 	ObjectTypeSignal = 8
 };
 
-enum accessoryType : accessoryType_t
-{
-	AccessoryTypeDefault = 0
-};
-
-enum accessoryState : accessoryState_t
-{
-	AccessoryStateOff = false,
-	AccessoryStateOn = true
-};
-
 enum feedbackState_t : bool
 {
 	FeedbackStateFree = false,

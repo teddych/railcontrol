@@ -52,8 +52,8 @@ namespace webserver
 			HtmlTag HtmlTagRotation(const layoutRotation_t rotation) const;
 			HtmlTag HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction, const std::string& onchange = "") const;
 			HtmlTag HtmlTagSelectFeedbacksOfTrack(const trackID_t trackId, const feedbackID_t feedbackIdReduced, const feedbackID_t feedbackIdCreep, const feedbackID_t feedbackIdStop, const feedbackID_t feedbackIdOver) const;
-			HtmlTag HtmlTagRelation(const std::string& priority, const objectType_t objectType = ObjectTypeSwitch, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
-			HtmlTag HtmlTagRelationObject(const std::string& priority, const objectType_t objectType, const objectID_t objectId = ObjectNone, const accessoryState_t state = AccessoryStateOff);
+			HtmlTag HtmlTagRelation(const std::string& priority, const objectType_t objectType = ObjectTypeSwitch, const objectID_t objectId = ObjectNone, const accessoryState_t state = datamodel::Accessory::AccessoryStateOff);
+			HtmlTag HtmlTagRelationObject(const std::string& priority, const objectType_t objectType, const objectID_t objectId = ObjectNone, const accessoryState_t state = datamodel::Accessory::AccessoryStateOff);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected = false) const;
 			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID = FeedbackNone);
 			static HtmlTag HtmlTagSelectSelectStreetApproach(const datamodel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault);

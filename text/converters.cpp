@@ -1,4 +1,5 @@
 #include "text/converters.h"
+#include "datamodel/accessory.h"
 #include "datamodel/signal.h"
 #include "datamodel/switch.h"
 
@@ -27,7 +28,7 @@ namespace text
 
 	void Converters::accessoryStatus(const accessoryState_t state, string& onText)
 	{
-		onText.assign(state == AccessoryStateOn ? "green" : "red");
+		onText.assign(state == datamodel::Accessory::AccessoryStateOn ? "green" : "red");
 	}
 
 	void Converters::feedbackStatus(const feedbackState_t state, string& stateText) {

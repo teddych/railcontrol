@@ -3,6 +3,7 @@
 #include <map>
 #include <string>
 
+#include "datamodel/accessory.h"
 #include "datatypes.h"
 #include "LockableItem.h"
 #include "serializable.h"
@@ -33,7 +34,7 @@ namespace datamodel
 			Relation(Manager* manager,
 				const std::string& serialized)
 			:	manager(manager),
-				accessoryState(AccessoryStateOff)
+				accessoryState(datamodel::Accessory::AccessoryStateOff)
 			{
 				Deserialize(serialized);
 			}

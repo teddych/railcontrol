@@ -14,6 +14,17 @@ namespace datamodel
 	class Accessory : public LayoutItem, public LockableItem, public HardwareHandle
 	{
 		public:
+			enum accessoryType : accessoryType_t
+			{
+				AccessoryTypeDefault = 0
+			};
+
+			enum accessoryState : accessoryState_t
+			{
+				AccessoryStateOff = false,
+				AccessoryStateOn = true
+			};
+
 			Accessory(__attribute__((unused)) Manager* manager, const accessoryID_t accessoryID)
 			:	LayoutItem(accessoryID),
 				lastUsed(0),
