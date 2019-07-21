@@ -144,6 +144,11 @@ namespace datamodel
 
 	bool Street::Execute()
 	{
+		if (manager->Booster() == BoosterStop)
+		{
+			return false;
+		}
+
 		bool ret = true;
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto relation : relations)
@@ -157,6 +162,11 @@ namespace datamodel
 
 	bool Street::Reserve(const locoID_t locoID)
 	{
+		if (manager->Booster() == BoosterStop)
+		{
+			return false;
+		}
+
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		bool ret = LockableItem::Reserve(locoID);
 		if (ret == false)
@@ -186,6 +196,11 @@ namespace datamodel
 
 	bool Street::Lock(const locoID_t locoID)
 	{
+		if (manager->Booster() == BoosterStop)
+		{
+			return false;
+		}
+
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		bool ret = LockableItem::Lock(locoID);
 		if (ret == false)

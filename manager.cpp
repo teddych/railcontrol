@@ -829,10 +829,15 @@ void Manager::AccessoryState(const controlType_t controlType, const controlID_t 
 	// FIXME: add code for signals
 }
 
-void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool force)
+bool Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool force)
 {
+	if (boosterState == BoosterStop)
+	{
+		return false;
+	}
 	Accessory* accessory = GetAccessory(accessoryID);
 	AccessoryState(controlType, accessory, state, force);
+	return true;
 }
 
 void Manager::AccessoryState(const controlType_t controlType, Accessory* accessory, const accessoryState_t state, const bool force)
@@ -1483,10 +1488,16 @@ bool Manager::TrackDelete(const trackID_t trackID)
 * Switch                   *
 ***************************/
 
-void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool force)
+bool Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool force)
 {
+	if (boosterState == BoosterStop)
+	{
+		return false;
+	}
+
 	Switch* mySwitch = GetSwitch(switchID);
 	SwitchState(controlType, mySwitch, state, force);
+	return true;
 }
 
 void Manager::SwitchState(const controlType_t controlType, Switch* mySwitch, const switchState_t state, const bool force)
@@ -1990,10 +2001,15 @@ bool Manager::LayerDelete(const layerID_t layerID)
 * Signal                   *
 ***************************/
 
-void Manager::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool force)
+bool Manager::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool force)
 {
+	if (boosterState == BoosterStop)
+	{
+		return false;
+	}
 	Signal* signal = GetSignal(signalID);
 	SignalState(controlType, signal, state, force);
+	return true;
 }
 
 void Manager::SignalState(const controlType_t controlType, Signal* signal, const signalState_t state, const bool force)

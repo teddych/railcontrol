@@ -44,16 +44,34 @@ namespace datamodel
 		switch (objectType2)
 		{
 			case ObjectTypeAccessory:
-				manager->AccessoryState(ControlTypeInternal, objectID2, accessoryState, true);
+			{
+				bool ret = manager->AccessoryState(ControlTypeInternal, objectID2, accessoryState, true);
+				if (ret == false)
+				{
+					return false;
+				}
 				break;
+			}
 
 			case ObjectTypeSwitch:
-				manager->SwitchState(ControlTypeInternal, objectID2, accessoryState, true);
+			{
+				bool ret = manager->SwitchState(ControlTypeInternal, objectID2, accessoryState, true);
+				if (ret == false)
+				{
+					return false;
+				}
 				break;
+			}
 
 			case ObjectTypeSignal:
-				manager->SignalState(ControlTypeInternal, objectID2, accessoryState, true);
+			{
+				bool ret = manager->SignalState(ControlTypeInternal, objectID2, accessoryState, true);
+				if (ret == false)
+				{
+					return false;
+				}
 				break;
+			}
 
 			case ObjectTypeTrack:
 				return true;
