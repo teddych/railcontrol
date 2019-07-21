@@ -34,7 +34,8 @@ namespace datamodel
 				TrackTypeEnd = 2,
 				TrackTypeBridge = 3,
 				TrackTypeTunnel = 4,
-				TrackTypeTunnelEnd = 5
+				TrackTypeTunnelEnd = 5,
+				TrackTypeLink = 6
 			};
 
 			Track(Manager* manager, const trackID_t trackID)

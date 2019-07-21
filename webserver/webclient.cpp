@@ -2686,8 +2686,9 @@ namespace webserver
 		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTurn))] = "Turn";
 		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeEnd))] = "End/BufferStop";
 		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeBridge))] = "Bridge";
-		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTunnel))] = "Tunnel";
+		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTunnel))] = "Tunnel (two sides)";
 		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTunnelEnd))] = "Tunnel (one side)";
+		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeLink))] = "Link";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit track &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");

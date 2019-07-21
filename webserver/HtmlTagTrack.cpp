@@ -102,6 +102,11 @@ namespace webserver
 				break;
 			}
 
+			case datamodel::Track::TrackTypeLink:
+				image = "<polygon class=\"track\" points=\"14,22 22,22 22," + layoutHeight + " 14," + layoutHeight + "\"/>";
+				image += "<polygon class=\"track\" points=\"18,1 4,22 32,22\"/>";
+				break;
+
 			case datamodel::Track::TrackTypeStraight:
 			default:
 				const string& directionSign = track->GetLocoDirection() == DirectionRight ? "&rarr; " : "&larr; ";
