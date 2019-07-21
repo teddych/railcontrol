@@ -227,14 +227,3 @@ enum switchState : switchState_t
 	SwitchStateTurnout = false,
 	SwitchStateStraight = true
 };
-
-enum signalType : signalType_t
-{
-	SignalTypeSimple = 0
-};
-
-enum signalState : signalState_t
-{
-	SignalStateRed = false,
-	SignalStateGreen = true
-};

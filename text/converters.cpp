@@ -1,4 +1,5 @@
 #include "text/converters.h"
+#include "datamodel/signal.h"
 
 using std::string;
 
@@ -48,6 +49,6 @@ namespace text
 
 	void Converters::signalStatus(const signalState_t state, string& stateText)
 	{
-		stateText.assign(state == SignalStateGreen ? "green" : "red");
+		stateText.assign(state == datamodel::Signal::SignalStateGreen ? "green" : "red");
 	}
 }

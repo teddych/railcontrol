@@ -14,6 +14,17 @@ namespace datamodel
 	class Signal : public Accessory
 	{
 		public:
+			enum signalType : signalType_t
+			{
+				SignalTypeSimple = 0
+			};
+
+			enum signalState : signalState_t
+			{
+				SignalStateRed = false,
+				SignalStateGreen = true
+			};
+
 			Signal(Manager* manager, const signalID_t signalID)
 			:	Accessory(manager, signalID),
 			 	manager(manager)

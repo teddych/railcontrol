@@ -1178,8 +1178,8 @@ namespace webserver
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, signalOptions, objectId).AddClass("select_relation_id"));
 
 				map<string, signalState_t> stateOptions;
-				stateOptions["Green"] = SignalStateGreen;
-				stateOptions["Red"] = SignalStateRed;
+				stateOptions["Green"] = datamodel::Signal::SignalStateGreen;
+				stateOptions["Red"] = datamodel::Signal::SignalStateRed;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -2125,7 +2125,7 @@ namespace webserver
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		signalType_t type = SignalTypeSimple;
+		signalType_t type = datamodel::Signal::SignalTypeSimple;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (signalID > SignalNone)
@@ -2156,7 +2156,7 @@ namespace webserver
 		}
 
 		std::map<string, string> typeOptions;
-		typeOptions[to_string(SignalTypeSimple)] = "Simple";
+		typeOptions[to_string(datamodel::Signal::SignalTypeSimple)] = "Simple";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit signal &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
@@ -2205,7 +2205,7 @@ namespace webserver
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
-		signalType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", SignalTypeSimple);
+		signalType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Signal::SignalTypeSimple);
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
@@ -2220,7 +2220,7 @@ namespace webserver
 	void WebClient::HandleSignalState(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		signalState_t signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? SignalStateRed : SignalStateGreen);
+		signalState_t signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? datamodel::Signal::SignalStateRed : datamodel::Signal::SignalStateGreen);
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
 
