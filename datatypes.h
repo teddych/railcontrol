@@ -191,14 +191,6 @@ enum feedbackState_t : bool
 	FeedbackStateOccupied = true
 };
 
-enum lockState_t : unsigned char
-{
-	LockStateFree = 0,
-	LockStateReserved,
-	LockStateSoftLocked,
-	LockStateHardLocked
-};
-
 enum direction_t : bool
 {
 	DirectionLeft = false,

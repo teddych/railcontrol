@@ -10,6 +10,14 @@ namespace datamodel
 	class LockableItem
 	{
 		public:
+			enum lockState_t : unsigned char
+			{
+				LockStateFree = 0,
+				LockStateReserved,
+				LockStateSoftLocked,
+				LockStateHardLocked
+			};
+
 			LockableItem()
 			:	lockState(LockStateFree),
 			 	locoID(LocoNone)
