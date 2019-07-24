@@ -1270,13 +1270,13 @@ namespace webserver
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagRotation(const layoutRotation_t rotation) const
+	HtmlTag WebClient::HtmlTagRotation(const datamodel::LayoutItem::layoutRotation_t rotation) const
 	{
 		std::map<string, string> rotationOptions;
-		rotationOptions[to_string(Rotation0)] = "none";
-		rotationOptions[to_string(Rotation90)] = "90 deg clockwise";
-		rotationOptions[to_string(Rotation180)] = "180 deg";
-		rotationOptions[to_string(Rotation270)] = "90 deg anti-clockwise";
+		rotationOptions[to_string(datamodel::LayoutItem::Rotation0)] = "none";
+		rotationOptions[to_string(datamodel::LayoutItem::Rotation90)] = "90 deg clockwise";
+		rotationOptions[to_string(datamodel::LayoutItem::Rotation180)] = "180 deg";
+		rotationOptions[to_string(datamodel::LayoutItem::Rotation270)] = "90 deg anti-clockwise";
 		return HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation));
 	}
 
@@ -1910,7 +1910,7 @@ namespace webserver
 		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
 		switchType_t type = datamodel::Switch::SwitchTypeLeft;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
@@ -1991,7 +1991,7 @@ namespace webserver
 		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
 		switchType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Switch::SwitchTypeLeft);
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
@@ -2124,7 +2124,7 @@ namespace webserver
 		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
 		signalType_t type = datamodel::Signal::SignalTypeSimple;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
@@ -2204,7 +2204,7 @@ namespace webserver
 		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
 		signalType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Signal::SignalTypeSimple);
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
@@ -2651,7 +2651,7 @@ namespace webserver
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutItemSize_t height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
 		datamodel::Track::type_t type = datamodel::Track::TrackTypeStraight;
 		std::vector<feedbackID_t> feedbacks;
 		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
@@ -2775,7 +2775,7 @@ namespace webserver
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutItemSize_t height = 1;
-		layoutRotation_t rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
 		datamodel::Track::type_t type = static_cast<datamodel::Track::type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Track::TrackTypeStraight));
 		switch (type)
 		{

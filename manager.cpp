@@ -926,7 +926,8 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 		return false;
 	}
 
-	if (!CheckAccessoryPosition(accessoryID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
+	if (!CheckAccessoryPosition(accessoryID, posX, posY, posZ)
+		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, datamodel::LayoutItem::Rotation0, result))
 	{
 		result.append("Unable to ");
 		result.append(accessoryID == AccessoryNone ? "add" : "move");
@@ -1152,7 +1153,8 @@ bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutP
 
 feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result)
 {
-	if (visible && !CheckFeedbackPosition(feedbackID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
+	if (visible && !CheckFeedbackPosition(feedbackID, posX, posY, posZ)
+		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, datamodel::LayoutItem::Rotation0, result))
 	{
 		result.append(" Unable to ");
 		result.append(feedbackID == FeedbackNone ? "add" : "move");
@@ -1304,7 +1306,13 @@ const map<string,trackID_t> Manager::TrackListIdByName() const
 	return out;
 }
 
-bool Manager::CheckTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
+bool Manager::CheckTrackPosition(const trackID_t trackID,
+	const layoutPosition_t posX,
+	const layoutPosition_t posY,
+	const layoutPosition_t posZ,
+	const layoutItemSize_t height,
+	const datamodel::LayoutItem::layoutRotation_t rotation,
+	string& result) const
 {
 	layoutPosition_t x1;
 	layoutPosition_t y1;
@@ -1399,7 +1407,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	const layoutPosition_t posY,
 	const layoutPosition_t posZ,
 	const layoutItemSize_t height,
-	const layoutRotation_t rotation,
+	const datamodel::LayoutItem::layoutRotation_t rotation,
 	const datamodel::Track::type_t type,
 	std::vector<feedbackID_t> newFeedbacks,
 	const datamodel::Track::selectStreetApproach_t selectStreetApproach,
@@ -1577,7 +1585,18 @@ bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPositio
 	return mySwitch->HasPosition(posX, posY, posZ);
 }
 
-bool Manager::SwitchSave(const switchID_t switchID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t duration, const bool inverted, string& result)
+bool Manager::SwitchSave(const switchID_t switchID,
+	const string& name,
+	const layoutPosition_t posX,
+	const layoutPosition_t posY,
+	const layoutPosition_t posZ,
+	const datamodel::LayoutItem::layoutRotation_t rotation,
+	const controlID_t controlID,
+	const protocol_t protocol,
+	const address_t address,
+	const switchType_t type,
+	const switchDuration_t duration,
+	const bool inverted, string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
@@ -1781,7 +1800,8 @@ bool Manager::StreetSave(const streetID_t streetID,
 	string& result)
 {
 
-	if (visible && !CheckStreetPosition(streetID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, Rotation0, result))
+	if (visible && !CheckStreetPosition(streetID, posX, posY, posZ)
+		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, datamodel::LayoutItem::Rotation0, result))
 	{
 		result.append("Unable to ");
 		result.append(streetID == StreetNone ? "add" : "move");
@@ -2089,7 +2109,19 @@ bool Manager::CheckSignalPosition(const signalID_t signalID, const layoutPositio
 	return signal->HasPosition(posX, posY, posZ);
 }
 
-bool Manager::SignalSave(const signalID_t signalID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const signalType_t type, const signalDuration_t duration, const bool inverted, string& result)
+bool Manager::SignalSave(const signalID_t signalID,
+	const string& name,
+	const layoutPosition_t posX,
+	const layoutPosition_t posY,
+	const layoutPosition_t posZ,
+	const datamodel::LayoutItem::layoutRotation_t rotation,
+	const controlID_t controlID,
+	const protocol_t protocol,
+	const address_t address,
+	const signalType_t type,
+	const signalDuration_t duration,
+	const bool inverted,
+	string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
@@ -2499,7 +2531,13 @@ bool Manager::CheckPositionFree(const layoutPosition_t posX, const layoutPositio
 		&& CheckLayoutPositionFree(posX, posY, posZ, result, signals, signalMutex);
 }
 
-bool Manager::CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, string& result) const
+bool Manager::CheckPositionFree(const layoutPosition_t posX,
+	const layoutPosition_t posY,
+	const layoutPosition_t posZ,
+	const layoutItemSize_t width,
+	const layoutItemSize_t height,
+	const datamodel::LayoutItem::layoutRotation_t rotation,
+	string& result) const
 {
 	if (width == 0 || height == 0)
 	{

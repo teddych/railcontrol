@@ -153,14 +153,6 @@ enum hardwareType_t : unsigned char
 	HardwareTypeNumbers
 };
 
-enum layoutRotation_t : unsigned char
-{
-	Rotation0 = 0,
-	Rotation90,
-	Rotation180,
-	Rotation270
-};
-
 enum visible_t : bool
 {
 	VisibleNo = false,

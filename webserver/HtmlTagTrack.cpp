@@ -15,7 +15,7 @@ namespace webserver
 		layoutPosition_t posZ;
 		layoutItemSize_t w;
 		layoutItemSize_t h;
-		layoutRotation_t r;
+		datamodel::LayoutItem::layoutRotation_t r;
 		track->Position(posX, posY, posZ, w, h, r);
 		datamodel::Track::type_t type = track->GetType();
 		unsigned int layoutPosX = posX * EdgeLength;
@@ -121,12 +121,12 @@ namespace webserver
 		int translate = 0;
 		if (trackHeight > Height1)
 		{
-			layoutRotation_t trackRotation = track->GetRotation();
-			if (trackRotation == Rotation90 || trackRotation == Rotation270)
+			datamodel::LayoutItem::layoutRotation_t trackRotation = track->GetRotation();
+			if (trackRotation == datamodel::LayoutItem::Rotation90 || trackRotation == datamodel::LayoutItem::Rotation270)
 			{
 				translate = (((trackHeight - 1) * EdgeLength) / 2);
 			}
-			if (trackRotation == Rotation90)
+			if (trackRotation == datamodel::LayoutItem::Rotation90)
 			{
 				translate = -translate;
 			}

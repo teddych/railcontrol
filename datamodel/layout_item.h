@@ -11,6 +11,14 @@ namespace datamodel
 	class LayoutItem : public Object
 	{
 		public:
+			enum layoutRotation_t : unsigned char
+			{
+				Rotation0 = 0,
+				Rotation90,
+				Rotation180,
+				Rotation270
+			};
+
 			LayoutItem(const objectID_t objectID)
 			:	Object(objectID),
 			 	visible(VisibleYes),

@@ -127,7 +127,7 @@ class Manager
 			const layoutPosition_t posY,
 			const layoutPosition_t posZ,
 			const layoutItemSize_t width,
-			const layoutRotation_t rotation,
+			const datamodel::LayoutItem::layoutRotation_t rotation,
 			const datamodel::Track::type_t trackType,
 			std::vector<feedbackID_t> feedbacks,
 			const datamodel::Track::selectStreetApproach_t selectStreetApproach,
@@ -142,7 +142,7 @@ class Manager
 		const std::string& GetSwitchName(const switchID_t switchID) const;
 		const std::map<switchID_t,datamodel::Switch*>& SwitchList() const { return switches; }
 		const std::map<std::string,datamodel::Switch*> SwitchListByName() const;
-		bool SwitchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t timeout, const bool inverted, std::string& result);
+		bool SwitchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const datamodel::LayoutItem::layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t timeout, const bool inverted, std::string& result);
 		bool SwitchDelete(const switchID_t switchID);
 		bool SwitchRelease(const switchID_t switchID);
 		bool SwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
@@ -193,7 +193,19 @@ class Manager
 		const std::string& GetSignalName(const signalID_t signalID) const;
 		const std::map<signalID_t,datamodel::Signal*>& SignalList() const { return signals; }
 		const std::map<std::string,datamodel::Signal*> SignalListByName() const;
-		bool SignalSave(const signalID_t signalID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const signalType_t type, const signalDuration_t timeout, const bool inverted, std::string& result);
+		bool SignalSave(const signalID_t signalID,
+			const std::string& name,
+			const layoutPosition_t x,
+			const layoutPosition_t y,
+			const layoutPosition_t z,
+			const datamodel::LayoutItem::layoutRotation_t rotation,
+			const controlID_t controlID,
+			const protocol_t protocol,
+			const address_t address,
+			const signalType_t type,
+			const signalDuration_t timeout,
+			const bool inverted,
+			std::string& result);
 		bool SignalDelete(const signalID_t signalID);
 		bool SignalRelease(const signalID_t signalID);
 		bool SignalProtocolAddress(const signalID_t signalID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
@@ -243,12 +255,24 @@ class Manager
 
 		// layout
 		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result) const;
-		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result) const;
+		bool CheckPositionFree(const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			const layoutItemSize_t width,
+			const layoutItemSize_t height,
+			const datamodel::LayoutItem::layoutRotation_t rotation,
+			std::string& result) const;
 		template<class Type> bool CheckLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result, const std::map<objectID_t, Type*>& layoutVector, std::mutex& mutex) const;
 		bool CheckAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 		bool CheckSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 		bool CheckStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
-		bool CheckTrackPosition(const trackID_t trackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const layoutItemSize_t height, const layoutRotation_t rotation, std::string& result) const;
+		bool CheckTrackPosition(const trackID_t trackID,
+			const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			const layoutItemSize_t height,
+			const datamodel::LayoutItem::layoutRotation_t rotation,
+			std::string& result) const;
 		bool CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 		bool CheckSignalPosition(const signalID_t signalID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
 
