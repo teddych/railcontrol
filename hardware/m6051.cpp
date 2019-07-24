@@ -219,16 +219,16 @@ namespace hardware
 						}
 
 						std::string text;
-						feedbackState_t state;
+						datamodel::Feedback::feedbackState_t state;
 						if ((byte >> shift) & 0x01)
 						{
 							text = "on";
-							state = FeedbackStateOccupied;
+							state = datamodel::Feedback::FeedbackStateOccupied;
 						}
 						else
 						{
 							text = "off";
-							state = FeedbackStateFree;
+							state = datamodel::Feedback::FeedbackStateFree;
 						}
 						address_t address = (module * 8) + pin;
 						logger->Info("S88 Pin {0} set to {1}", address, text);

@@ -4,9 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "datatypes.h"
+#include "datamodel/feedback.h"
 #include "datamodel/layout_item.h"
 #include "datamodel/LockableItem.h"
+#include "datatypes.h"
 
 class Manager;
 
@@ -42,8 +43,8 @@ namespace datamodel
 			:	LayoutItem(trackID),
 			 	LockableItem(),
 			 	manager(manager),
-				state(FeedbackStateFree),
-				stateDelayed(FeedbackStateFree),
+				state(datamodel::Feedback::FeedbackStateFree),
+				stateDelayed(datamodel::Feedback::FeedbackStateFree),
 			 	locoDirection(DirectionRight),
 			 	blocked(false),
 			 	locoIdDelayed(LocoNone),
@@ -73,9 +74,9 @@ namespace datamodel
 			std::vector<feedbackID_t> GetFeedbacks() const { return feedbacks; }
 			void Feedbacks(const std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
 
-			bool SetFeedbackState(const feedbackID_t feedbackID, const feedbackState_t state);
-			feedbackState_t GetFeedbackState() const { return state; };
-			feedbackState_t GetFeedbackStateDelayed() const { return stateDelayed; };
+			bool SetFeedbackState(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state);
+			datamodel::Feedback::feedbackState_t GetFeedbackState() const { return state; };
+			datamodel::Feedback::feedbackState_t GetFeedbackStateDelayed() const { return stateDelayed; };
 
 			bool AddStreet(Street* street);
 			bool RemoveStreet(Street* street);
@@ -93,7 +94,7 @@ namespace datamodel
 			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
 
 		private:
-			bool FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state);
+			bool FeedbackStateInternal(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state);
 			void OrderValidStreets(std::vector<datamodel::Street*>& validStreets) const;
 			selectStreetApproach_t GetSelectStreetApproachCalculated() const;
 
@@ -102,8 +103,8 @@ namespace datamodel
 			type_t type;
 			std::vector<feedbackID_t> feedbacks;
 			selectStreetApproach_t selectStreetApproach;
-			feedbackState_t state;
-			feedbackState_t stateDelayed;
+			datamodel::Feedback::feedbackState_t state;
+			datamodel::Feedback::feedbackState_t stateDelayed;
 			std::vector<Street*> streets;
 			direction_t locoDirection;
 			bool blocked;

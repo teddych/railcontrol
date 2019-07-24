@@ -185,12 +185,6 @@ enum objectType_t : unsigned char
 	ObjectTypeSignal = 8
 };
 
-enum feedbackState_t : bool
-{
-	FeedbackStateFree = false,
-	FeedbackStateOccupied = true
-};
-
 enum direction_t : bool
 {
 	DirectionLeft = false,

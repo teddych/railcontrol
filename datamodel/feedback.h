@@ -12,6 +12,12 @@ namespace datamodel
 	class Feedback : public LayoutItem
 	{
 		public:
+			enum feedbackState_t : bool
+			{
+				FeedbackStateFree = false,
+				FeedbackStateOccupied = true
+			};
+
 			Feedback(Manager* manager,
 				const feedbackID_t feedbackID)
 			:	LayoutItem(feedbackID),

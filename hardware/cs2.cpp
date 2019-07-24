@@ -324,16 +324,16 @@ namespace hardware
 			{
 				// s88 event
 				std::string text;
-				feedbackState_t state;
+				datamodel::Feedback::feedbackState_t state;
 				if (buffer[10])
 				{
 					text = "on";
-					state = FeedbackStateOccupied;
+					state = datamodel::Feedback::FeedbackStateOccupied;
 				}
 				else
 				{
 					text = "off";
-					state = FeedbackStateFree;
+					state = datamodel::Feedback::FeedbackStateFree;
 				}
 				logger->Info("S88 Pin {0} set to {1}", address, text);
 				manager->FeedbackState(controlID, address, state);

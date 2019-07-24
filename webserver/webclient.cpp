@@ -3049,7 +3049,7 @@ namespace webserver
 	void WebClient::HandleFeedbackState(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		feedbackState_t state = (Utils::Utils::GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? FeedbackStateOccupied : FeedbackStateFree);
+		datamodel::Feedback::feedbackState_t state = (Utils::Utils::GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? datamodel::Feedback::FeedbackStateOccupied : datamodel::Feedback::FeedbackStateFree);
 
 		manager.FeedbackState(feedbackID, state);
 

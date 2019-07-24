@@ -73,8 +73,8 @@ namespace datamodel
 			feedbacks.push_back(Utils::Utils::StringToInteger(feedbackString));
 		}
 		selectStreetApproach = static_cast<selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
-		state = static_cast<feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree));
-		stateDelayed = static_cast<feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "statedelayed", state));
+		state = static_cast<datamodel::Feedback::feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "state", datamodel::Feedback::FeedbackStateFree));
+		stateDelayed = static_cast<datamodel::Feedback::feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "statedelayed", state));
 		locoDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
 		blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked", false);
 		locoIdDelayed = static_cast<locoID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "locodelayed", GetLoco()));
@@ -92,7 +92,7 @@ namespace datamodel
 		{
 			return false;
 		}
-		if (state != FeedbackStateFree)
+		if (state != datamodel::Feedback::FeedbackStateFree)
 		{
 			return false;
 		}
@@ -124,19 +124,19 @@ namespace datamodel
 		{
 			return false;
 		}
-		if (state != FeedbackStateFree)
+		if (state != datamodel::Feedback::FeedbackStateFree)
 		{
 			return true;
 		}
 		this->locoIdDelayed = LocoNone;
-		this->stateDelayed = FeedbackStateFree;
+		this->stateDelayed = datamodel::Feedback::FeedbackStateFree;
 		manager->TrackPublishState(this);
 		return true;
 	}
 
-	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
+	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state)
 	{
-		feedbackState_t oldState = this->state;
+		datamodel::Feedback::feedbackState_t oldState = this->state;
 		bool ret = FeedbackStateInternal(feedbackID, state);
 		if (ret == false)
 		{
@@ -150,10 +150,10 @@ namespace datamodel
 		return true;
 	}
 
-	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const feedbackState_t state)
+	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (state == FeedbackStateOccupied)
+		if (state == datamodel::Feedback::FeedbackStateOccupied)
 		{
 			Loco* loco = manager->GetLoco(GetLocoDelayed());
 			if (loco == nullptr)
@@ -177,12 +177,12 @@ namespace datamodel
 			{
 				continue;
 			}
-			if (feedback->GetState() != FeedbackStateFree)
+			if (feedback->GetState() != datamodel::Feedback::FeedbackStateFree)
 			{
 				return false;
 			}
 		}
-		this->state = FeedbackStateFree;
+		this->state = datamodel::Feedback::FeedbackStateFree;
 
 		if (releaseWhenFree)
 		{
@@ -199,7 +199,7 @@ namespace datamodel
 			return true;
 		}
 
-		this->stateDelayed = FeedbackStateFree;
+		this->stateDelayed = datamodel::Feedback::FeedbackStateFree;
 		this->locoIdDelayed = LocoNone;
 		return true;
 	}

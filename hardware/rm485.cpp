@@ -76,8 +76,8 @@ namespace hardware
 			uint8_t dataByte = data[a];
 			for (uint16_t pin = baseAddress * 8 + 1; pin <= (baseAddress + 1) * 8; ++pin)
 			{
-				feedbackState_t state = ((dataByte & 0x01) == 0 ? FeedbackStateFree : FeedbackStateOccupied);
-				if (state == FeedbackStateOccupied)
+				datamodel::Feedback::feedbackState_t state = ((dataByte & 0x01) == 0 ? datamodel::Feedback::FeedbackStateFree : datamodel::Feedback::FeedbackStateOccupied);
+				if (state == datamodel::Feedback::FeedbackStateOccupied)
 				{
 					logger->Info("Pin {0}, {1}", pin, state);
 					manager->FeedbackState(controlID, pin, state);
@@ -117,7 +117,7 @@ namespace hardware
 				{
 					if ((diff >> shift) & 0x01)
 					{
-						feedbackState_t state = (((newData[pos] >> shift) & 0x01) == 0 ? FeedbackStateFree : FeedbackStateOccupied);
+						datamodel::Feedback::feedbackState_t state = (((newData[pos] >> shift) & 0x01) == 0 ? datamodel::Feedback::FeedbackStateFree : datamodel::Feedback::FeedbackStateOccupied);
 						uint16_t pin = (byteAddress * 8) + shift + 1;
 						logger->Info("Pin {0}, {1}", pin, state);
 						manager->FeedbackState(controlID, pin, state);

@@ -1040,7 +1040,7 @@ bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 * Feedback                 *
 ***************************/
 
-void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state)
+void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const datamodel::Feedback::feedbackState_t state)
 {
 	Feedback* feedback = GetFeedback(controlID, pin);
 	if (feedback != nullptr)
@@ -1061,13 +1061,13 @@ void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin
 	FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
 }
 
-void Manager::FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state)
+void Manager::FeedbackState(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
 	FeedbackState(feedback, state);
 }
 
-void Manager::FeedbackState(Feedback* feedback, const feedbackState_t state)
+void Manager::FeedbackState(Feedback* feedback, const datamodel::Feedback::feedbackState_t state)
 {
 	if (feedback == nullptr)
 	{
@@ -1082,7 +1082,7 @@ void Manager::FeedbackState(Feedback* feedback)
 	{
 		return;
 	}
-	feedbackState_t state = feedback->GetState();
+	datamodel::Feedback::feedbackState_t state = feedback->GetState();
 	logger->Info("Feedback {0} is now {1}", feedback->GetName(), (state ? "on" : "off"));
 	{
 		const string& name = feedback->GetName();
@@ -2359,7 +2359,7 @@ void Manager::TrackPublishState(const datamodel::Track* track)
 	const string& locoName = hasLoco ? loco->GetName() : "";
 	const string& trackName = track->GetName();
 	const trackID_t trackID = track->GetID();
-	const bool occupied = track->GetFeedbackStateDelayed() == FeedbackStateOccupied;
+	const bool occupied = track->GetFeedbackStateDelayed() == datamodel::Feedback::FeedbackStateOccupied;
 	const bool blocked = track->GetBlocked();
 	const direction_t direction = track->GetLocoDirection();
 	std::lock_guard<std::mutex> Guard(controlMutex);

@@ -103,8 +103,8 @@ class Manager
 		bool AccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
-		void FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const feedbackState_t state);
-		void FeedbackState(const feedbackID_t feedbackID, const feedbackState_t state);
+		void FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const datamodel::Feedback::feedbackState_t state);
+		void FeedbackState(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state);
 		void FeedbackState(datamodel::Feedback* feedback);
 		datamodel::Feedback* GetFeedback(const feedbackID_t feedbackID) const;
 		datamodel::Feedback* GetFeedbackUnlocked(const feedbackID_t feedbackID) const;
@@ -239,7 +239,7 @@ class Manager
 		void LocoFunction(const controlType_t controlType, datamodel::Loco* loco, const function_t function, const bool on);
 		void AccessoryState(const controlType_t controlType, datamodel::Accessory* accessory, const accessoryState_t state, const bool force);
 		void SwitchState(const controlType_t controlType, datamodel::Switch* mySwitch, const accessoryState_t state, const bool force);
-		void FeedbackState(datamodel::Feedback* feedback, const feedbackState_t state);
+		void FeedbackState(datamodel::Feedback* feedback, const datamodel::Feedback::feedbackState_t state);
 
 		// layout
 		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result) const;

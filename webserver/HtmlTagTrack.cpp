@@ -22,7 +22,7 @@ namespace webserver
 		unsigned int layoutPosY = posY * EdgeLength;
 
 		const string& trackName = track->GetName();
-		bool occupied = track->GetFeedbackStateDelayed() == FeedbackStateOccupied;
+		bool occupied = track->GetFeedbackStateDelayed() == datamodel::Feedback::FeedbackStateOccupied;
 
 		locoID_t locoID = track->GetLocoDelayed();
 		bool reserved = locoID != LocoNone;

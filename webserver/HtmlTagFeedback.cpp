@@ -10,7 +10,7 @@ namespace webserver
 {
 	HtmlTagFeedback::HtmlTagFeedback(const datamodel::Feedback* feedback, layoutPosition_t posX, layoutPosition_t posY)
 	{
-		feedbackState_t state = feedback->GetState();
+		datamodel::Feedback::feedbackState_t state = feedback->GetState();
 
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
@@ -22,7 +22,7 @@ namespace webserver
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("feedback_item");
-		div1.AddClass(state == FeedbackStateOccupied ? "feedback_occupied" : "feedback_free");
+		div1.AddClass(state == datamodel::Feedback::FeedbackStateOccupied ? "feedback_occupied" : "feedback_free");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		string image;
 		image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\"><circle r=\"12\" cx=\"18\" cy=\"18\" stroke=\"black\" stroke-width=\"2\" class=\"feedback\"/></svg>";
