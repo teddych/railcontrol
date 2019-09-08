@@ -2,7 +2,7 @@
 #include <map>
 #include <sstream>
 
-#include "datamodel/loco.h"
+#include "datamodel/Loco.h"
 #include "datamodel/relation.h"
 #include "datamodel/street.h"
 #include "manager.h"
