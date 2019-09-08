@@ -16,6 +16,75 @@ namespace datamodel
 {
 	class Street;
 	class Track;
+
+	class LocoMasterSlave
+	{
+		public:
+			enum speedRelation_t : unsigned char
+			{
+				SpeedRelationDecoder,
+				SpeedRelationRailControl
+			};
+			LocoMasterSlave(Manager* manager, locoID_t masterID, locoID_t slaveID, speedRelation_t speedRelation)
+			:	manager(manager),
+			 	masterID(masterID),
+			 	masterLoco(nullptr),
+			 	slaveID(slaveID),
+			 	slaveLoco(nullptr),
+			 	speedRelation(speedRelation)
+			{}
+
+			bool LoadAndCheckLocos()
+			{
+				if (masterLoco == nullptr)
+				{
+					GetMasterLoco();
+				}
+				if (masterLoco == nullptr)
+				{
+					return false;
+				}
+				if (slaveLoco == nullptr)
+				{
+					GetSlaveLoco();
+				}
+				if (slaveLoco == nullptr)
+				{
+					return false;
+				}
+			}
+
+			locoSpeed_t CalculateSlaveSpeed()
+			{
+				if (!LoadAndCheckLocos())
+				{
+					return MinSpeed;
+				}
+
+				locoSpeed_t masterSpeed = masterLoco->Speed();
+				if (speedRelation == SpeedRelationDecoder)
+				{
+					return masterSpeed;
+				}
+
+				locoSpeed_t masterMax = masterLoco->GetMaxSpeed();
+				locoSpeed_t masterTravel = masterLoco->GetTravelSpeed();
+				locoSpeed_t masterReduced = masterLoco->GetReducedSpeed();
+				locoSpeed_t masterCreep = masterLoco->GetCreepSpeed();
+			}
+
+		private:
+			void GetMasterLoco() { masterLoco = manager->GetLoco(masterID); }
+			void GetSlaveLoco() { slaveLoco = manager->GetLoco(slaveID); }
+
+			Manager* manager;
+			locoID_t masterID;
+			Loco* masterLoco;
+			locoID_t slaveID;
+			Loco* slaveLoco;
+			speedRelation_t speedRelation;
+	};
+
 	class LocoFunctions
 	{
 		public:
