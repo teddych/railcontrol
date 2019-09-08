@@ -49,7 +49,8 @@ namespace datamodel
 			<< ";maxspeed=" << maxSpeed
 			<< ";travelspeed=" << travelSpeed
 			<< ";reducedspeed=" << reducedSpeed
-			<< ";creepspeed=" << creepSpeed;
+			<< ";creepspeed=" << creepSpeed
+			<< ";slaves=" << slaves.Serialize();
 		return ss.str();
 	}
 
@@ -73,6 +74,8 @@ namespace datamodel
 		travelSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
 		reducedSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
 		creepSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
+		slaves.SetMasterID(GetID());
+		slaves.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "slaves"));
 		return true;
 	}
 
@@ -483,6 +486,11 @@ namespace datamodel
 			feedbackIdsReached.Enqueue(feedbackIdFirst);
 			return;
 		}
+	}
+
+	void Loco::Speed(const locoSpeed_t speed)
+	{
+		this->speed = speed;
 	}
 
 	void Loco::FeedbackIdFirstReached()

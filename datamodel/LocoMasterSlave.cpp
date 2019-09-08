@@ -1,8 +1,40 @@
 #include "datamodel/Loco.h"
 #include "datamodel/LocoMasterSlave.h"
+#include "manager.h"
 
 namespace datamodel
 {
+	std::string LocoMasterSlave::Serialize() const
+	{
+		std::string out(std::to_string(slaveID));
+		out.append("-");
+		out.append(speedRelation == SpeedRelationRailControl ? "R" : "D");
+		return out;
+	}
+
+	bool LocoMasterSlave::Deserialize(const std::string& serialized)
+	{
+		std::vector<std::string> parts;
+		Utils::Utils::SplitString(serialized, "-", parts);
+		switch (parts.size())
+		{
+			case 2:
+				slaveID = Utils::Utils::StringToInteger(parts[0]);
+				speedRelation = parts[1].compare("R") == 0 ? SpeedRelationRailControl : SpeedRelationDecoder;
+				return true;
+
+			case 1:
+				slaveID = Utils::Utils::StringToInteger(parts[0]);
+				speedRelation = SpeedRelationDecoder;
+				return true;
+
+			default:
+				slaveID = LocoNone;
+				speedRelation = SpeedRelationDecoder;
+				return false;
+		}
+	}
+
 	bool LocoMasterSlave::LoadAndCheckLocos()
 	{
 		if (masterLoco == nullptr)
@@ -80,4 +112,15 @@ namespace datamodel
 		unsigned int slaveActual = masterActual * slaveDiff / masterDiff;
 		return slaveActual;
 	}
+
+	void LocoMasterSlave::GetMasterLoco()
+	{
+		masterLoco = manager->GetLoco(masterID);
+	}
+
+	void LocoMasterSlave::GetSlaveLoco()
+	{
+		slaveLoco = manager->GetLoco(slaveID);
+	}
+
 } // namespace datamodel

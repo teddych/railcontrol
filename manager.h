@@ -232,13 +232,10 @@ class Manager
 		bool GetAutoAddFeedback() const { return autoAddFeedback; }
 		datamodel::Track::selectStreetApproach_t GetSelectStreetApproach() const { return selectStreetApproach; }
 		datamodel::Loco::nrOfTracksToReserve_t GetNrOfTracksToReserve() const { return nrOfTracksToReserve; }
-		bool SaveSettings
-		(
-			const accessoryDuration_t duration,
+		bool SaveSettings(const accessoryDuration_t duration,
 			const bool autoAddFeedback,
 			const datamodel::Track::selectStreetApproach_t selectStreetApproach,
-			const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve
-		);
+			const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve);
 
 	private:
 		const ControlInterface* GetControl(const controlID_t controlID) const;

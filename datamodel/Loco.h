@@ -3,11 +3,13 @@
 #include <mutex>
 #include <string>
 #include <thread>
+#include <vector>
 
 #include "datatypes.h"
 #include "Logger/Logger.h"
 #include "datamodel/HardwareHandle.h"
 #include "datamodel/LocoFunctions.h"
+#include "datamodel/LocoSlaves.h"
 #include "datamodel/object.h"
 #include "Utils/ThreadSafeQueue.h"
 
@@ -32,6 +34,7 @@ namespace datamodel
 			 	manager(manager),
 				speed(MinSpeed),
 				direction(DirectionRight),
+				slaves(manager, locoID),
 				state(LocoStateManual),
 				trackFrom(nullptr),
 				trackFirst(nullptr),
@@ -54,6 +57,7 @@ namespace datamodel
 			:	manager(manager),
 				speed(MinSpeed),
 				direction(DirectionRight),
+				slaves(manager),
 				state(LocoStateManual),
 				trackFrom(nullptr),
 				trackFirst(nullptr),
@@ -95,7 +99,7 @@ namespace datamodel
 			const char* GetStateText() const;
 			void LocationReached(const feedbackID_t feedbackID);
 
-			void Speed(const locoSpeed_t speed) { this->speed = speed; }
+			void Speed(const locoSpeed_t speed);
 			locoSpeed_t Speed() const { return speed; }
 
 			void SetFunction(const function_t nr, const bool state) { functions.SetFunction(nr, state); }
@@ -119,6 +123,10 @@ namespace datamodel
 			void SetTravelSpeed(locoSpeed_t speed) { travelSpeed = speed; }
 			void SetReducedSpeed(locoSpeed_t speed) { reducedSpeed = speed; }
 			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
+
+			void SetSlave(const locoID_t slaveID, const LocoMasterSlave::speedRelation_t speedRelation);
+			void DeleteSlave(const locoID_t slaveID);
+			void GetSlaveSpeedRelation(const locoID_t slaveID);
 
 		private:
 			void SetMinThreadPriorityAndThreadName();
@@ -153,6 +161,8 @@ namespace datamodel
 
 			locoSpeed_t speed;
 			direction_t direction;
+
+			LocoSlaves slaves;
 
 			volatile locoState_t state;
 			Track* trackFrom;

@@ -9,7 +9,7 @@ using std::vector;
 
 namespace datamodel
 {
-	void Serializable::ParseArguments(string serialized, map<string, string>& arguments)
+	void Serializable::ParseArguments(const string& serialized, map<string, string>& arguments)
 	{
 		vector<string> parts;
 		Utils::Utils::SplitString(serialized, ";", parts);

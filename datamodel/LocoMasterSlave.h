@@ -2,7 +2,9 @@
 
 #include "datamodel/serializable.h"
 #include "datatypes.h"
-#include "manager.h"
+#include "Utils/Utils.h"
+
+class Manager;
 
 namespace datamodel
 {
@@ -37,25 +39,16 @@ namespace datamodel
 			 	speedRelation(speedRelation)
 			{}
 
-			std::string Serialize() const override
-			{
-				std::string out(std::to_string(slaveID));
-				out.append(speedRelation == SpeedRelationRailControl ? "R" : "D");
-				return out;
-			}
-
-			bool Deserialize(const std::string& serialized) override
-			{
-				return true;
-			}
+			std::string Serialize() const override;
+			bool Deserialize(const std::string& serialized) override;
 
 			bool LoadAndCheckLocos();
 
 			locoSpeed_t CalculateSlaveSpeed();
 
 		private:
-			void GetMasterLoco() { masterLoco = manager->GetLoco(masterID); }
-			void GetSlaveLoco() { slaveLoco = manager->GetLoco(slaveID); }
+			void GetMasterLoco();
+			void GetSlaveLoco();
 
 			Manager* manager;
 			locoID_t masterID;
