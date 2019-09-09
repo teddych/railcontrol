@@ -19,6 +19,7 @@ namespace datamodel
 				SpeedRelationRailControl
 			};
 
+			LocoMasterSlave() = delete;
 			LocoMasterSlave(Manager* manager, locoID_t masterID, std::string& serialized)
 			:	manager(manager),
 			 	masterID(masterID),
@@ -42,19 +43,23 @@ namespace datamodel
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 
-			bool LoadAndCheckLocos();
+			bool LoadAndCheckLocos() const;
 
-			locoSpeed_t CalculateSlaveSpeed();
+			locoSpeed_t CalculateSlaveSpeed() const;
+			locoID_t GetSlaveID() const { return slaveID; }
+			Loco* GetSlave() const { return slaveLoco; }
+			speedRelation_t GetSpeedRelation() const { return speedRelation; }
+			void SetSpeed();
 
 		private:
-			void GetMasterLoco();
-			void GetSlaveLoco();
+			void LoadMasterLoco() const;
+			void LoadSlaveLoco() const;
 
 			Manager* manager;
 			locoID_t masterID;
-			Loco* masterLoco;
+			mutable Loco* masterLoco;
 			locoID_t slaveID;
-			Loco* slaveLoco;
+			mutable Loco* slaveLoco;
 			speedRelation_t speedRelation;
 	};
 } // namespace datamodel

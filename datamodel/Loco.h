@@ -124,9 +124,8 @@ namespace datamodel
 			void SetReducedSpeed(locoSpeed_t speed) { reducedSpeed = speed; }
 			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
 
-			void SetSlave(const locoID_t slaveID, const LocoMasterSlave::speedRelation_t speedRelation);
-			void DeleteSlave(const locoID_t slaveID);
-			void GetSlaveSpeedRelation(const locoID_t slaveID);
+			void SetSlave(const locoID_t slaveID, const LocoMasterSlave::speedRelation_t speedRelation) { slaves.Set(slaveID, speedRelation); }
+			void DeleteSlave(const locoID_t slaveID) { slaves.Delete(slaveID); }
 
 		private:
 			void SetMinThreadPriorityAndThreadName();

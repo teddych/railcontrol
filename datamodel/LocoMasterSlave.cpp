@@ -35,11 +35,11 @@ namespace datamodel
 		}
 	}
 
-	bool LocoMasterSlave::LoadAndCheckLocos()
+	bool LocoMasterSlave::LoadAndCheckLocos() const
 	{
 		if (masterLoco == nullptr)
 		{
-			GetMasterLoco();
+			LoadMasterLoco();
 		}
 		if (masterLoco == nullptr)
 		{
@@ -47,12 +47,12 @@ namespace datamodel
 		}
 		if (slaveLoco == nullptr)
 		{
-			GetSlaveLoco();
+			LoadSlaveLoco();
 		}
 		return slaveLoco != nullptr;
 	}
 
-	locoSpeed_t LocoMasterSlave::CalculateSlaveSpeed()
+	locoSpeed_t LocoMasterSlave::CalculateSlaveSpeed() const
 	{
 		// we calculate with unsigned int, because unsigned short of locoSpeed_t is too small
 		if (!LoadAndCheckLocos())
@@ -113,14 +113,18 @@ namespace datamodel
 		return slaveActual;
 	}
 
-	void LocoMasterSlave::GetMasterLoco()
+	void LocoMasterSlave::LoadMasterLoco() const
 	{
 		masterLoco = manager->GetLoco(masterID);
 	}
 
-	void LocoMasterSlave::GetSlaveLoco()
+	void LocoMasterSlave::LoadSlaveLoco() const
 	{
 		slaveLoco = manager->GetLoco(slaveID);
 	}
 
+	void LocoMasterSlave::SetSpeed()
+	{
+		manager->LocoSpeed(ControlTypeInternal, slaveLoco, CalculateSlaveSpeed());
+	}
 } // namespace datamodel

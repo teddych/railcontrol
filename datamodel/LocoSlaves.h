@@ -30,7 +30,14 @@ namespace datamodel
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 
+			void Set(const locoID_t slaveID, const LocoMasterSlave::speedRelation_t speedRelation);
+			void Delete(const locoID_t slaveID);
+			void SetSpeeds();
+			std::vector<LocoMasterSlave> GetAll() const { return slaves; }
+
 		private:
+			void CheckAndSolveLoops();
+
 			Manager* manager;
 			locoID_t masterID;
 			std::vector<LocoMasterSlave> slaves;
