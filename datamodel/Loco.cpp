@@ -49,8 +49,7 @@ namespace datamodel
 			<< ";maxspeed=" << maxSpeed
 			<< ";travelspeed=" << travelSpeed
 			<< ";reducedspeed=" << reducedSpeed
-			<< ";creepspeed=" << creepSpeed
-			<< ";slaves=" << slaves.Serialize();
+			<< ";creepspeed=" << creepSpeed;
 		return ss.str();
 	}
 
@@ -74,8 +73,6 @@ namespace datamodel
 		travelSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
 		reducedSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
 		creepSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
-		slaves.SetMasterID(GetID());
-		slaves.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "slaves"));
 		return true;
 	}
 
@@ -491,6 +488,19 @@ namespace datamodel
 	void Loco::Speed(const locoSpeed_t speed)
 	{
 		this->speed = speed;
+		for (auto slave : slaves)
+		{
+			manager->LocoSpeed(ControlTypeInternal, slave->ObjectID2(), speed);
+		}
+	}
+
+	void Loco::SetDirection(const direction_t direction)
+	{
+		this->direction = direction;
+		for (auto slave : slaves)
+		{
+			manager->LocoDirection(ControlTypeInternal, slave->ObjectID2(), direction);
+		}
 	}
 
 	void Loco::FeedbackIdFirstReached()
@@ -599,4 +609,22 @@ namespace datamodel
 				return "unknown";
 		}
 	}
+
+	void Loco::DeleteSlaves()
+	{
+		while (!slaves.empty())
+		{
+			delete slaves.back();
+			slaves.pop_back();
+		}
+	}
+
+	bool Loco::AssignSlaves(const std::vector<datamodel::Relation*>& newslaves)
+	{
+		DeleteSlaves();
+		slaves = newslaves;
+		return true;
+	}
+
+
 } // namespace datamodel

@@ -489,6 +489,10 @@ namespace webserver
 			{
 				HandleSettingsSave(arguments);
 			}
+			else if (arguments["cmd"].compare("slaveadd") == 0)
+			{
+				HandleSlaveAdd(arguments);
+			}
 			else if (arguments["cmd"].compare("timestamp") == 0)
 			{
 				HandleTimestamp(arguments);
@@ -1246,6 +1250,29 @@ namespace webserver
 		return content;
 	}
 
+	HtmlTag WebClient::HtmlTagSlave(const string& priority, const objectID_t objectId)
+	{
+		HtmlTag content("div");
+		content.AddAttribute("id", "priority_" + priority);
+		HtmlTagButton deleteButton("Del", "delete_slave_" + priority);
+		deleteButton.AddAttribute("onclick", "deleteElement('priority_" + priority + "');return false;");
+		content.AddChildTag(deleteButton);
+
+		HtmlTag contentObject("div");
+		contentObject.AddAttribute("id", "slave_object_" + priority);
+		contentObject.AddClass("inline-block");
+
+		std::map<string, Loco*> locos = manager.LocoListByName();
+		map<string, switchID_t> locoOptions;
+		for (auto loco : locos)
+		{
+			locoOptions[loco.first] = loco.second->GetID();
+		}
+		contentObject.AddChildTag(HtmlTagSelect("slave_id_" + priority, locoOptions, objectId).AddClass("select_slave_id"));
+		content.AddChildTag(contentObject);
+		return content;
+	}
+
 	HtmlTag WebClient::HtmlTagSelectFeedbackForTrack(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID)
 	{
 		string counterString = to_string(counter);
@@ -1375,6 +1402,16 @@ namespace webserver
 		HtmlReplyWithHeader(container);
 	}
 
+	void WebClient::HandleSlaveAdd(const map<string, string>& arguments)
+	{
+		string priorityString = Utils::Utils::GetStringMapEntry(arguments, "priority", "1");
+		priority_t priority = Utils::Utils::StringToInteger(priorityString, 1);
+		HtmlTag container;
+		container.AddChildTag(HtmlTagSlave(priorityString));
+		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_slave_" + to_string(priority + 1)));
+		HtmlReplyWithHeader(container);
+	}
+
 	void WebClient::HandleFeedbackAdd(const map<string, string>& arguments)
 	{
 		unsigned int counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 1);
@@ -1422,6 +1459,7 @@ namespace webserver
 		locoSpeed_t travelSpeed = DefaultTravelSpeed;
 		locoSpeed_t reducedSpeed = DefaultReducedSpeed;
 		locoSpeed_t creepSpeed = DefaultCreepSpeed;
+		vector<Relation*> slaves;
 
 		if (locoID > LocoNone)
 		{
@@ -1437,6 +1475,7 @@ namespace webserver
 			travelSpeed = loco->GetTravelSpeed();
 			reducedSpeed = loco->GetReducedSpeed();
 			creepSpeed = loco->GetCreepSpeed();
+			slaves = loco->GetSlaves();
 		}
 
 		std::map<controlID_t,string> controls = manager.LocoControlListNames();
@@ -1453,6 +1492,7 @@ namespace webserver
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit loco &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", "Basic", true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("slaves", "Slaves"));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", "Automode"));
 		content.AddChildTag(tabMenu);
 
@@ -1470,6 +1510,32 @@ namespace webserver
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Train length:", length, 0, 99999));
 		formContent.AddChildTag(basicContent);
+
+		HtmlTag slavesDiv("div");
+		slavesDiv.AddChildTag(HtmlTagInputHidden("slavecounter", to_string(slaves.size())));
+		slavesDiv.AddAttribute("id", "slaves");
+		unsigned int slavecounter = 1;
+		for (auto slave : slaves)
+		{
+			locoID_t slaveID = slave->ObjectID2();
+			if (locoID == slaveID)
+			{
+				continue;
+			}
+			slavesDiv.AddChildTag(HtmlTagSlave(to_string(slavecounter), slaveID));
+			++slavecounter;
+		}
+		slavesDiv.AddChildTag(HtmlTag("div").AddAttribute("id", "new_slave_" + to_string(slavecounter)));
+		HtmlTag relationContent("div");
+		relationContent.AddAttribute("id", "tab_slaves");
+		relationContent.AddClass("tab_content");
+		relationContent.AddClass("hidden");
+		relationContent.AddChildTag(slavesDiv);
+		HtmlTagButton newButton("New", "newslave");
+		newButton.AddAttribute("onclick", "addSlave();return false;");
+		relationContent.AddChildTag(newButton);
+		relationContent.AddChildTag(HtmlTag("br"));
+		formContent.AddChildTag(relationContent);
 
 		HtmlTag automodeContent("div");
 		automodeContent.AddAttribute("id", "tab_automode");
@@ -1514,6 +1580,19 @@ namespace webserver
 		{
 			creepSpeed = reducedSpeed;
 		}
+		vector<Relation*> slaves;
+		unsigned int slaveCount = Utils::Utils::GetIntegerMapEntry(arguments, "slavecounter", 0);
+		for (unsigned int index = 1; index <= slaveCount; ++index)
+		{
+			string slaveString = to_string(index);
+			locoID_t slaveId = Utils::Utils::GetIntegerMapEntry(arguments, "slave_id_" + slaveString, LocoNone);
+			if (slaveId == LocoNone)
+			{
+				continue;
+			}
+			slaves.push_back(new Relation(&manager, ObjectTypeLoco, locoID, ObjectTypeLoco, slaveId, 0, false));
+		}
+
 		string result;
 
 		if (!manager.LocoSave(locoID,
@@ -1528,6 +1607,7 @@ namespace webserver
 			travelSpeed,
 			reducedSpeed,
 			creepSpeed,
+			slaves,
 			result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);

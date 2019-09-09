@@ -10,6 +10,25 @@ function updateFeedbacksOfTrack()
 	return false;
 }
 
+function addSlave()
+{
+	var slaveCounter = document.getElementById('slavecounter');
+	if (!slaveCounter)
+	{
+		return false;
+	}
+	var slavesDiv = document.getElementById('slaves');
+	if (!slavesDiv)
+	{
+		return false;
+	}
+
+	slaveCounter.value++;
+	var url = '/?cmd=slaveadd&priority=' + slaveCounter.value;
+	requestAddItem('new_slave_' + slaveCounter.value, url);
+	return false;
+}
+
 function addRelation()
 {
 	var relationCounter = document.getElementById('relationcounter');

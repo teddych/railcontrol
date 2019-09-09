@@ -22,8 +22,6 @@ OBJ= \
 	datamodel/layout_item.o \
 	datamodel/LockableItem.o \
 	datamodel/Loco.o \
-	datamodel/LocoMasterSlave.o \
-	datamodel/LocoSlaves.o \
 	datamodel/object.o \
 	datamodel/relation.o \
 	datamodel/serializable.o \

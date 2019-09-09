@@ -9,8 +9,8 @@
 #include "Logger/Logger.h"
 #include "datamodel/HardwareHandle.h"
 #include "datamodel/LocoFunctions.h"
-#include "datamodel/LocoSlaves.h"
 #include "datamodel/object.h"
+#include "datamodel/relation.h"
 #include "Utils/ThreadSafeQueue.h"
 
 class Manager;
@@ -34,7 +34,6 @@ namespace datamodel
 			 	manager(manager),
 				speed(MinSpeed),
 				direction(DirectionRight),
-				slaves(manager, locoID),
 				state(LocoStateManual),
 				trackFrom(nullptr),
 				trackFirst(nullptr),
@@ -57,7 +56,6 @@ namespace datamodel
 			:	manager(manager),
 				speed(MinSpeed),
 				direction(DirectionRight),
-				slaves(manager),
 				state(LocoStateManual),
 				trackFrom(nullptr),
 				trackFirst(nullptr),
@@ -106,7 +104,7 @@ namespace datamodel
 			bool GetFunction(const function_t nr) const { return functions.GetFunction(nr); }
 			void SetNrOfFunctions(const function_t nr) { functions.SetNrOfFunctions(nr); }
 			function_t GetNrOfFunctions() const { return functions.GetNrOfFunctions(); }
-			void SetDirection(const direction_t direction) { this->direction = direction; }
+			void SetDirection(const direction_t direction);
 			direction_t GetDirection() const { return direction; }
 
 			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackFrom != nullptr || this->streetFirst != nullptr; }
@@ -124,8 +122,8 @@ namespace datamodel
 			void SetReducedSpeed(locoSpeed_t speed) { reducedSpeed = speed; }
 			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
 
-			void SetSlave(const locoID_t slaveID, const LocoMasterSlave::speedRelation_t speedRelation) { slaves.Set(slaveID, speedRelation); }
-			void DeleteSlave(const locoID_t slaveID) { slaves.Delete(slaveID); }
+			bool AssignSlaves(const std::vector<datamodel::Relation*>& newslaves);
+			const std::vector<datamodel::Relation*>& GetSlaves() const { return slaves; };
 
 		private:
 			void SetMinThreadPriorityAndThreadName();
@@ -135,6 +133,7 @@ namespace datamodel
 			datamodel::Street* SearchDestination(datamodel::Track* oldToTrack, const bool allowLocoTurn);
 			void FeedbackIdFirstReached();
 			void FeedbackIdStopReached();
+			void DeleteSlaves();
 
 			enum locoState_t : unsigned char
 			{
@@ -161,7 +160,7 @@ namespace datamodel
 			locoSpeed_t speed;
 			direction_t direction;
 
-			LocoSlaves slaves;
+			std::vector<datamodel::Relation*> slaves;
 
 			volatile locoState_t state;
 			Track* trackFrom;

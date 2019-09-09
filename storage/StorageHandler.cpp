@@ -143,9 +143,19 @@ namespace storage
 		}
 		vector<string> objects;
 		instance->ObjectsOfType(ObjectTypeLoco, objects);
-		for(auto object : objects) {
+		for(auto object : objects)
+		{
 			Loco* loco = new Loco(manager, object);
-			locos[loco->GetID()] = loco;
+			vector<string> slavesString;
+			const streetID_t locoID = loco->GetID();
+			instance->RelationsFrom(ObjectTypeLoco, locoID, slavesString);
+			vector<Relation*> slaves;
+			for (auto slaveString : slavesString)
+			{
+				slaves.push_back(new Relation(manager, slaveString));
+			}
+			loco->AssignSlaves(slaves);
+			locos[locoID] = loco;
 		}
 	}
 
@@ -280,6 +290,26 @@ namespace storage
 		{
 			string serializedRelation = relation->Serialize();
 			instance->SaveRelation(ObjectTypeStreet, streetID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
+		}
+		CommitTransactionInternal();
+	}
+
+	void StorageHandler::Save(const datamodel::Loco& loco)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		string serialized = loco.Serialize();
+		StartTransactionInternal();
+		const locoID_t locoID = loco.GetID();
+		instance->SaveObject(ObjectTypeLoco, locoID, loco.GetName(), serialized);
+		instance->DeleteRelationFrom(ObjectTypeLoco, locoID);
+		const vector<datamodel::Relation*> slaves = loco.GetSlaves();
+		for (auto slave : slaves)
+		{
+			string serializedRelation = slave->Serialize();
+			instance->SaveRelation(ObjectTypeLoco, locoID, ObjectTypeLoco, slave->ObjectID2(), slave->Priority(), serializedRelation);
 		}
 		CommitTransactionInternal();
 	}

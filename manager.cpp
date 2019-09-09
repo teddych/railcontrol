@@ -594,6 +594,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 	const locoSpeed_t travelSpeed,
 	const locoSpeed_t reducedSpeed,
 	const locoSpeed_t creepSpeed,
+	const std::vector<datamodel::Relation*>& slaves,
 	string& result)
 {
 	if (!CheckControlLocoProtocolAddress(controlID, protocol, address, result))
@@ -612,7 +613,6 @@ bool Manager::LocoSave(const locoID_t locoID,
 		return false;
 	}
 
-	// update existing loco
 	loco->SetName(CheckObjectName(locos, locoMutex, locoID, name.size() == 0 ? "L" : name));
 	loco->SetControlID(controlID);
 	loco->SetProtocol(protocol);
@@ -624,6 +624,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 	loco->SetTravelSpeed(travelSpeed);
 	loco->SetReducedSpeed(reducedSpeed);
 	loco->SetCreepSpeed(creepSpeed);
+	loco->AssignSlaves(slaves);
 
 	// save in db
 	if (storage)

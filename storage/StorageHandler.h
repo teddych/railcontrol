@@ -39,6 +39,7 @@ namespace storage
 			void DeleteSignal(signalID_t signalID);
 			void Save(const hardware::HardwareParams& hardwareParams);
 			void Save(const datamodel::Street& street);
+			void Save(const datamodel::Loco& loco);
 			template<class T> void Save(const T& t)
 			{
 				if (instance == nullptr)

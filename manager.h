@@ -75,6 +75,7 @@ class Manager
 			const locoSpeed_t travelSpeed,
 			const locoSpeed_t reducedSpeed,
 			const locoSpeed_t creepSpeed,
+			const std::vector<datamodel::Relation*>& slaves,
 			std::string& result
 		);
 		bool LocoDelete(const locoID_t locoID);
