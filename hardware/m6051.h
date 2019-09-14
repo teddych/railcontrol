@@ -1,13 +1,11 @@
 #pragma once
 
-#include <mutex>
 #include <string>
-#include <unistd.h>   //close & write;
 
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Logger/Logger.h"
-#include "manager.h"
+#include "network/Serial.h"
 
 namespace hardware
 {
@@ -17,9 +15,9 @@ namespace hardware
 			M6051(const HardwareParams* params);
 			~M6051();
 
-			bool CanHandleLocos() const { return true; }
-			bool CanHandleAccessories() const { return true; }
-			bool CanHandleFeedback() const { return true; }
+			bool CanHandleLocos() const override { return true; }
+			bool CanHandleAccessories() const override { return true; }
+			bool CanHandleFeedback() const override { return true; }
 
 			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override { protocols.push_back(ProtocolMM2); }
 
@@ -44,10 +42,7 @@ namespace hardware
 		private:
 			Logger::Logger* logger;
 			static const unsigned char MaxS88Modules = 62;
-			std::string name;
-			Manager* manager;
-			int ttyFileDescriptor;
-			mutable std::mutex ttyMutex;
+			Network::Serial serialLine;
 			volatile bool run;
 			unsigned char s88Modules;
 			std::thread s88Thread;
@@ -67,15 +62,17 @@ namespace hardware
 
 			void SendOneByte(unsigned char byte)
 			{
-				std::lock_guard<std::mutex> Guard(ttyMutex);
-				__attribute__((unused)) int ret = write(ttyFileDescriptor, &byte, 1);
+				std::string data(1, byte);
+				serialLine.Send(data);
 			}
 
 			void SendTwoBytes(unsigned char byte1, unsigned char byte2)
 			{
-				std::lock_guard<std::mutex> Guard(ttyMutex);
-				__attribute__((unused)) int ret = write(ttyFileDescriptor, &byte1, 1);
-				ret = write(ttyFileDescriptor, &byte2, 1);
+				char dataArray[2];
+				dataArray[0] = byte1;
+				dataArray[1] = byte2;
+				std::string data(dataArray, 2);
+				serialLine.Send(data);
 			}
 
 			void S88Worker();
