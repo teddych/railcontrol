@@ -24,7 +24,8 @@ namespace hardware
 		"virtual",
 		"cs2",
 		"m6051",
-		"rm485"
+		"rm485",
+		"OpenDcc"
 	};
 
 	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params)
@@ -59,6 +60,11 @@ namespace hardware
 			case HardwareTypeRM485:
 				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_rm485);
 				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_rm485);
+				break;
+
+			case HardwareTypeOpenDcc:
+				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_opendcc);
+				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_opendcc);
 				break;
 
 			default:

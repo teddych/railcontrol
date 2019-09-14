@@ -14,9 +14,9 @@ namespace hardware
 		public:
 			Virtual(const HardwareParams* params);
 
-			bool CanHandleLocos() const { return true; }
-			bool CanHandleAccessories() const { return true; }
-			bool CanHandleFeedback() const { return true; }
+			bool CanHandleLocos() const override { return true; }
+			bool CanHandleAccessories() const override { return true; }
+			bool CanHandleFeedback() const override { return true; }
 
 			void Booster(const boosterState_t status) override;
 
@@ -30,7 +30,6 @@ namespace hardware
 
 		private:
 			Logger::Logger* logger;
-			std::string name;
 	};
 
 	extern "C" Virtual* create_virtual(const HardwareParams* params);
