@@ -17,9 +17,14 @@ namespace Network
 
 		struct termios options;
 		tcgetattr(fileHandle, &options);
+		options.c_cflag = 0;
+		options.c_cc[VMIN] = 1;     // read one byte at least
+		options.c_cc[VTIME] = 0;    // timeout disabled
+		options.c_lflag = 0;
+		options.c_iflag = 0;
+		options.c_oflag = 0;
 		cfsetispeed(&options, dataSpeed);
 		cfsetospeed(&options, dataSpeed);
-		options.c_cflag = 0;
 		switch (dataBits)
 		{
 			case 5:
@@ -66,8 +71,6 @@ namespace Network
 		options.c_cflag |= CRTSCTS;  // hardware flow control
 		options.c_cflag |= CLOCAL;  // ignore control lines
 		options.c_cflag |= CREAD;   // enable receiver
-		options.c_cc[VMIN] = 1;     // read one byte at least
-		options.c_cc[VTIME] = 10;    // timeout = 0.1s
 		tcsetattr(fileHandle, TCSANOW, &options); // store options
 
 		ClearBuffers();
