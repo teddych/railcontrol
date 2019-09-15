@@ -77,6 +77,8 @@ namespace Logger
 				Log("Debug", args...);
 			}
 
+			void Hex(std::string& input);
+
 			LoggerServer& server;
 			const std::string component;
 
