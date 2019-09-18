@@ -46,6 +46,16 @@ namespace hardware
 			*/
 
 		private:
+			enum Commands : unsigned char
+			{
+				XNop = 0xC4,
+				XPwrOn = 0xA7,
+				XPwrOff = 0xA6
+			};
+			enum Answers : unsigned char
+			{
+				OK = 0x00
+			};
 			Logger::Logger* logger;
 			static const unsigned char MaxS88Modules = 128;
 			static const unsigned char MaxLocoFunctions = 28;
@@ -71,9 +81,11 @@ namespace hardware
 				return functionMap.count(address) == 0 ? 0 : functionMap[address];
 			}
 
-			void SendP50XOnly();
-			void SendBoosterOn() { serialLine.Send(0xA7); }
-			void SendBoosterOff() { serialLine.Send(0xA6); }
+			bool SendP50XOnly();
+			bool SendOneByteCommand(const unsigned char data);
+			bool SendNop();
+			bool SendPowerOn();
+			bool SendPowerOff();
 
 			void S88Worker();
 	};

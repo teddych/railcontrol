@@ -76,12 +76,23 @@ namespace Network
 		ClearBuffers();
 	}
 
-	bool Serial::Receive(std::string& data, const unsigned int maxData, const unsigned int timeout)
+	bool Serial::Receive(std::string& data, const size_t maxData, const unsigned int timeout)
+	{
+		char dataBuffer[maxData];
+		int ret = Receive(dataBuffer, maxData, timeout);
+		if (ret < 0)
+		{
+			return false;
+		}
+		data.append(dataBuffer, ret);
+		return true;
+	}
+
+	size_t Serial::Receive(char* data, const size_t maxData, const unsigned int timeout)
 	{
 		if (!IsConnected())
 		{
-			logger->Error("Unable to receive from serial line. Not connected.");
-			return false;
+			return -1;
 		}
 		std::lock_guard<std::mutex> Guard(fileHandleMutex);
 		fd_set set;
@@ -91,27 +102,47 @@ namespace Network
 		tvTimeout.tv_sec = timeout;
 		tvTimeout.tv_usec = 0;
 
-		int ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tvTimeout));
-		if (ret < 0)
-		{
-			logger->Error("Unable to receive from serial line (select).");
-			ReInit();
-			return false;
-		}
-		if (ret == 0)
-		{
-			logger->Error("Unable to receive from serial line. Timeout.");
-			return false;
-		}
-		char dataBuffer[maxData];
-		ret = read(fileHandle, &dataBuffer, maxData);
+		size_t ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tvTimeout));
 		if (ret <= 0)
 		{
-			logger->Error("Unable to receive from serial line (read).");
-			ReInit();
-			return false;
+			return -1;
 		}
-		data.append(dataBuffer, ret);
+		ret = read(fileHandle, data, maxData);
+		if (ret <= 0)
+		{
+			return -1;
+		}
+		return ret;
+	}
+
+	bool Serial::ReceiveExact(std::string& data, const size_t length, const unsigned int timeout)
+	{
+		size_t startSize = data.length();
+		size_t endSize = startSize + length;
+		while (endSize > data.length())
+		{
+			bool ret = Receive(data, endSize - data.length(), timeout);
+			if (ret == false)
+			{
+				return false;
+			}
+		}
 		return true;
+	}
+
+	size_t Serial::ReceiveExact(char* data, const size_t length, const unsigned int timeout)
+	{
+		size_t actualSize = 0;
+		size_t endSize = length;
+		while (actualSize < endSize)
+		{
+			size_t ret = Receive(data + actualSize, endSize - actualSize, timeout);
+			if (ret <= 0)
+			{
+				return actualSize;
+			}
+			actualSize += ret;
+		}
+		return actualSize;
 	}
 }
