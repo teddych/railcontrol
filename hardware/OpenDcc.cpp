@@ -89,15 +89,51 @@ namespace hardware
 		}
 	}
 
-	/*
 	void OpenDcc::LocoSpeed(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
 	{
 		if (!serialLine.IsConnected())
 		{
 			return;
 		}
+		if (address > 10239 || address == 0)
+		{
+			return;
+		}
+
+		unsigned char speedOpenDcc;
+		if (speed == 0)
+		{
+			speedOpenDcc = 0;
+		}
+		if (speed > 1000)
+		{
+			speedOpenDcc = 127;
+		}
+		else
+		{
+			speedOpenDcc = speed >> 3;
+			speedOpenDcc += 2;
+		}
+
+		unsigned char addressLSB = address & 0x00;
+		unsigned char addressMSB = (address >> 8);
+
+		const unsigned char data[5] = { 0x80, addressLSB, addressMSB, speedOpenDcc, 0 };
+		serialLine.Send(data, sizeof(data));
+		char input;
+		bool ret = serialLine.ReceiveExact(&input, 1);
+		if (ret != 1)
+		{
+			logger->Warning("No answer to locospeed command");
+			return;
+		}
+		if (input != OK)
+		{
+			logger->Warning("Locospeed command was not successful: {0}", static_cast<int>(input));
+		}
 	}
 
+	/*
 	void OpenDcc::LocoDirection(__attribute__((unused)) const protocol_t& protocol, const address_t& address, __attribute__((unused)) const direction_t& direction)
 	{
 		if (!serialLine.IsConnected())
@@ -156,20 +192,5 @@ namespace hardware
 		char input[1];
 		int ret = serialLine.Receive(input, sizeof(input));
 		return ret > 0 && input[0] == OK;
-	}
-
-	bool OpenDcc::SendNop()
-	{
-		return SendOneByteCommand(XNop);
-	}
-
-	bool OpenDcc::SendPowerOn()
-	{
-		return SendOneByteCommand(XPwrOn);
-	}
-
-	bool OpenDcc::SendPowerOff()
-	{
-		return SendOneByteCommand(XPwrOff);
 	}
 } // namespace
