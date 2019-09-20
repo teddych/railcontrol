@@ -33,24 +33,24 @@ namespace Logger
 		workString.replace(pos, needle.size(), value);
 	}
 
-	void Logger::Hex(string& input)
+	void Logger::Hex(const unsigned char* input, const size_t size)
 	{
 		std::stringstream output;
-		for (size_t index = 0; index < input.size(); ++index)
+		for (size_t index = 0; index < size; ++index)
 		{
 			if ((index & 0x0F) == 0)
 			{
 				output << "0x" << std::setfill('0') << std::setw(4) << std::hex << index << "   ";
 			}
 
-			output << std::setfill('0') << std::setw(2) << std::hex << static_cast<int>(input[index]);
+			output << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(input[index]);
 
 			size_t next = index + 1;
 			if ((next & 0x0F) == 0)
 			{
 				Debug(output.str());
 				output = std::stringstream(); // clear output
-				if (next == input.size())
+				if (next == size)
 				{
 					return;
 				}

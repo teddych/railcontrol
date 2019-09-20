@@ -77,7 +77,8 @@ namespace Logger
 				Log("Debug", args...);
 			}
 
-			void Hex(std::string& input);
+			void Hex(const std::string& input) { Hex(reinterpret_cast<const unsigned char*>(input.c_str()), input.size()); }
+			void Hex(const unsigned char* input, const size_t size);
 
 			LoggerServer& server;
 			const std::string component;
