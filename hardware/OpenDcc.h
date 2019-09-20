@@ -39,9 +39,9 @@ namespace hardware
 
 			void Booster(const boosterState_t status) override;
 			void LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed) override;
-			/*
 			void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
+			/*
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 			*/
 
@@ -50,15 +50,25 @@ namespace hardware
 			{
 				XNop = 0xC4,
 				XPwrOn = 0xA7,
-				XPwrOff = 0xA6
+				XPwrOff = 0xA6,
+				XLok = 0x80
 			};
 			enum Answers : unsigned char
 			{
-				OK = 0x00
+				OK = 0x00,
+				XBADPRM = 0x02,
+				XPWOFF = 0x06,
+				XNODATA = 0x0A,
+				XNOSLOT = 0x0B,
+				XLOWTSP = 0x40,
+				XLKHALT = 0x41,
+				XLKPOFF = 0x42
 			};
-			Logger::Logger* logger;
 			static const unsigned char MaxS88Modules = 128;
 			static const unsigned char MaxLocoFunctions = 28;
+			static const unsigned short MaxAddress = 10239;
+
+			Logger::Logger* logger;
 			Network::Serial serialLine;
 			volatile bool run;
 			unsigned char s88Modules1;
@@ -68,24 +78,17 @@ namespace hardware
 
 			std::thread s88Thread;
 			unsigned char s88Memory[MaxS88Modules];
-			std::map<address_t, unsigned char> speedMap;
-			std::map<address_t, unsigned char> functionMap;
+			std::map<address_t, uint16_t> cacheBasic;
 
-			unsigned char GetSpeedMapEntry(address_t address)
-			{
-				return speedMap.count(address) == 0 ? 0 : speedMap[address];
-			}
-
-			unsigned char GetFunctionMapEntry(address_t address)
-			{
-				return functionMap.count(address) == 0 ? 0 : functionMap[address];
-			}
+			uint16_t GetCacheBasicEntry(const address_t address) { return cacheBasic.count(address) == 0 ? 0 : cacheBasic[address]; }
+			bool CheckLocoAddress(const address_t address) { return 0 < address && address <= MaxAddress; }
 
 			bool SendP50XOnly();
 			bool SendOneByteCommand(const unsigned char data);
 			bool SendNop() { return SendOneByteCommand(XNop); }
 			bool SendPowerOn() { return SendOneByteCommand(XPwrOn); }
 			bool SendPowerOff() { return SendOneByteCommand(XPwrOff); }
+			bool SendLocoSpeedDirection(const address_t& address, const unsigned char speed, const unsigned char direction);
 
 			void S88Worker();
 	};

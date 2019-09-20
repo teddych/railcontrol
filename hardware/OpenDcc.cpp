@@ -91,11 +91,7 @@ namespace hardware
 
 	void OpenDcc::LocoSpeed(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
 	{
-		if (!serialLine.IsConnected())
-		{
-			return;
-		}
-		if (address > 10239 || address == 0)
+		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
 		{
 			return;
 		}
@@ -105,7 +101,7 @@ namespace hardware
 		{
 			speedOpenDcc = 0;
 		}
-		if (speed > 1000)
+		else if (speed > 1000)
 		{
 			speedOpenDcc = 127;
 		}
@@ -115,47 +111,97 @@ namespace hardware
 			speedOpenDcc += 2;
 		}
 
-		unsigned char addressLSB = address & 0x00;
-		unsigned char addressMSB = (address >> 8);
+		unsigned char data[2];
+		uint16_t* dataPointer = reinterpret_cast<uint16_t*>(data);
+		*dataPointer = GetCacheBasicEntry(address);
+		data[0] = speedOpenDcc;
+		cacheBasic[address] = *dataPointer;
 
-		const unsigned char data[5] = { 0x80, addressLSB, addressMSB, speedOpenDcc, 0 };
+		SendLocoSpeedDirection(address, data[0], data[1]);
+	}
+
+
+	void OpenDcc::LocoDirection(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const direction_t& direction)
+	{
+		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
+		{
+			return;
+		}
+
+		unsigned char data[2];
+		uint16_t* dataPointer = reinterpret_cast<uint16_t*>(data);
+		*dataPointer = GetCacheBasicEntry(address);
+		data[1] &= 0xDF;
+		data[1] |= static_cast<unsigned char>(direction) << 5;
+		cacheBasic[address] = *dataPointer;
+
+		SendLocoSpeedDirection(address, data[0], data[1]);
+	}
+
+	void OpenDcc::LocoFunction(__attribute__((unused)) const protocol_t protocol, const address_t address, const function_t function, const bool on)
+	{
+		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
+		{
+			return;
+		}
+
+		if (function > MaxLocoFunctions)
+		{
+			return;
+		}
+		if (function == 0)
+		{
+			unsigned char data[2];
+			uint16_t* dataPointer = reinterpret_cast<uint16_t*>(data);
+			*dataPointer = GetCacheBasicEntry(address);
+			data[1] &= 0xEF;
+			data[1] |= static_cast<unsigned char>(on) << 4;
+			cacheBasic[address] = *dataPointer;
+
+			SendLocoSpeedDirection(address, data[0], data[1]);
+			return;
+		}
+	}
+
+	bool OpenDcc::SendLocoSpeedDirection(const address_t& address, const unsigned char speed, const unsigned char functions)
+	{
+		logger->Info("Setting speed of OpenDCC loco {0} to speed {1} and direction {2} and light {3}", address, speed, (functions >> 5) & 0x01, (functions >> 4) & 0x01);
+		const unsigned char addressLSB = (address & 0xFF);
+		const unsigned char addressMSB = (address >> 8);
+		const unsigned char data[5] = { XLok, addressLSB, addressMSB, speed, functions };
+
 		serialLine.Send(data, sizeof(data));
 		char input;
 		bool ret = serialLine.ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
 			logger->Warning("No answer to locospeed command");
-			return;
+			return false;
 		}
-		if (input != OK)
+		switch (input)
 		{
-			logger->Warning("Locospeed command was not successful: {0}", static_cast<int>(input));
+			case OK:
+				return true;
+
+			case XBADPRM:
+				logger->Warning("XLok returned bad parameter");
+				return false;
+
+			case XLKHALT:
+				logger->Warning("XLok returned OpenDCC on HALT");
+				return false;
+
+			case XLKPOFF:
+				logger->Warning("XLok returned Power OFF");
+				return false;
+
+			default:
+				logger->Warning("XLok returned unknown error code: {0}", static_cast<int>(input));
+				return false;
 		}
 	}
 
 	/*
-	void OpenDcc::LocoDirection(__attribute__((unused)) const protocol_t& protocol, const address_t& address, __attribute__((unused)) const direction_t& direction)
-	{
-		if (!serialLine.IsConnected())
-		{
-			return;
-		}
-	}
-
-	void OpenDcc::LocoFunction(__attribute__((unused)) const protocol_t protocol, const address_t address, const function_t function, const bool on)
-	{
-		if (function > MaxLocoFunctions)
-		{
-			return;
-		}
-
-		if (!serialLine.IsConnected())
-		{
-			return;
-		}
-
-	}
-
 	void OpenDcc::Accessory(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		if (!serialLine.IsConnected())
