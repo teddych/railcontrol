@@ -60,13 +60,7 @@ namespace hardware
 				return functionMap.count(address) == 0 ? 0 : functionMap[address];
 			}
 
-			void SendOneByte(unsigned char byte)
-			{
-				std::string data(1, byte);
-				serialLine.Send(data);
-			}
-
-			void SendTwoBytes(unsigned char byte1, unsigned char byte2)
+			void SendTwoBytes(const unsigned char byte1, const unsigned char byte2)
 			{
 				char dataArray[2];
 				dataArray[0] = byte1;

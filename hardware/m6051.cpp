@@ -69,7 +69,7 @@ namespace hardware
 			logger->Info("Turning booster off");
 			c = 97;
 		}
-		SendOneByte(c);
+		serialLine.Send(c);
 	}
 
 	void M6051::LocoSpeed(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
@@ -152,7 +152,7 @@ namespace hardware
 		while(run && serialLine.IsConnected())
 		{
 			serialLine.ClearBuffers();
-			SendOneByte(command);
+			serialLine.Send(command);
 			for (unsigned char module = 0; module < s88SingleModules; ++module)
 			{
 				string data;
