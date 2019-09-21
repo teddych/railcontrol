@@ -117,7 +117,7 @@ namespace hardware
 		data[0] = speedOpenDcc;
 		cacheBasic[address] = *dataPointer;
 
-		SendLocoSpeedDirection(address, data[0], data[1]);
+		SendXLok(address, data[0], data[1]);
 	}
 
 
@@ -131,11 +131,11 @@ namespace hardware
 		unsigned char data[2];
 		uint16_t* dataPointer = reinterpret_cast<uint16_t*>(data);
 		*dataPointer = GetCacheBasicEntry(address);
-		data[1] &= 0xDF;
+		data[1] &= ~(1 << 5);
 		data[1] |= static_cast<unsigned char>(direction) << 5;
 		cacheBasic[address] = *dataPointer;
 
-		SendLocoSpeedDirection(address, data[0], data[1]);
+		SendXLok(address, data[0], data[1]);
 	}
 
 	void OpenDcc::LocoFunction(__attribute__((unused)) const protocol_t protocol, const address_t address, const function_t function, const bool on)
@@ -154,16 +154,36 @@ namespace hardware
 			unsigned char data[2];
 			uint16_t* dataPointer = reinterpret_cast<uint16_t*>(data);
 			*dataPointer = GetCacheBasicEntry(address);
-			data[1] &= 0xEF;
+			data[1] &= ~(1 << 4);
 			data[1] |= static_cast<unsigned char>(on) << 4;
 			cacheBasic[address] = *dataPointer;
-
-			SendLocoSpeedDirection(address, data[0], data[1]);
+			SendXLok(address, data[0], data[1]);
 			return;
 		}
+
+		uint32_t functions = GetCacheFunctionsEntry(address);
+		unsigned char shift = function - 1;
+		functions &= ~(1 << shift);
+		functions |= static_cast<uint32_t>(on) << shift;
+		cacheFunctions[address] = functions;
+		unsigned char* functionsPointer = reinterpret_cast<unsigned char*>(&functions);
+
+		if (function <= 8)
+		{
+			SendXFunc(address, functionsPointer[0]);
+			return;
+		}
+
+		if (function <= 16)
+		{
+			SendXFunc2(address, functionsPointer[1]);
+			return;
+		}
+
+		SendXFunc34(address, functionsPointer[2], functionsPointer[3]);
 	}
 
-	bool OpenDcc::SendLocoSpeedDirection(const address_t& address, const unsigned char speed, const unsigned char functions)
+	bool OpenDcc::SendXLok(const address_t address, const unsigned char speed, const unsigned char functions)
 	{
 		logger->Info("Setting speed of OpenDCC loco {0} to speed {1} and direction {2} and light {3}", address, speed, (functions >> 5) & 0x01, (functions >> 4) & 0x01);
 		const unsigned char addressLSB = (address & 0xFF);
@@ -175,7 +195,7 @@ namespace hardware
 		bool ret = serialLine.ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
-			logger->Warning("No answer to locospeed command");
+			logger->Warning("No answer to XLok command");
 			return false;
 		}
 		switch (input)
@@ -197,6 +217,64 @@ namespace hardware
 
 			default:
 				logger->Warning("XLok returned unknown error code: {0}", static_cast<int>(input));
+				return false;
+		}
+	}
+
+	bool OpenDcc::SendXFunc(const address_t address, const unsigned char functions)
+	{
+		logger->Info("Setting functions 1-8 of OpenDCC loco {0} to {1}", address, functions);
+		const unsigned char addressLSB = (address & 0xFF);
+		const unsigned char addressMSB = (address >> 8);
+		const unsigned char data[4] = { XFunc, addressLSB, addressMSB, functions };
+		serialLine.Send(data, sizeof(data));
+		return ReceiveFunctionCommandAnswer();
+	}
+
+	bool OpenDcc::SendXFunc2(const address_t address, const unsigned char functions)
+	{
+		logger->Info("Setting functions 9-16 of OpenDCC loco {0} to {1}", address, functions);
+		const unsigned char addressLSB = (address & 0xFF);
+		const unsigned char addressMSB = (address >> 8);
+		const unsigned char data[4] = { XFunc2, addressLSB, addressMSB, functions };
+		serialLine.Send(data, sizeof(data));
+		return ReceiveFunctionCommandAnswer();
+	}
+
+	bool OpenDcc::SendXFunc34(const address_t address, const unsigned char functions3, const unsigned char functions4)
+	{
+		logger->Info("Setting functions 17-28 of OpenDCC loco {0} to {1} and {2}", address, functions3, functions4);
+		const unsigned char addressLSB = (address & 0xFF);
+		const unsigned char addressMSB = (address >> 8);
+		const unsigned char data[5] = { XFunc34, addressLSB, addressMSB, functions3, functions4 };
+		serialLine.Send(data, sizeof(data));
+		return ReceiveFunctionCommandAnswer();
+	}
+
+	bool OpenDcc::ReceiveFunctionCommandAnswer()
+	{
+		char input;
+		bool ret = serialLine.ReceiveExact(&input, 1);
+		if (ret != 1)
+		{
+			logger->Warning("No answer to XFunc command");
+			return false;
+		}
+		switch (input)
+		{
+			case OK:
+				return true;
+
+			case XBADPRM:
+				logger->Warning("XFunc returned bad parameter");
+				return false;
+
+			case XNOSLOT:
+				logger->Warning("XFunc returned queue full");
+				return false;
+
+			default:
+				logger->Warning("XFunc returned unknown error code: {0}", static_cast<int>(input));
 				return false;
 		}
 	}

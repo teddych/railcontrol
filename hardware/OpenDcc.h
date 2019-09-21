@@ -51,7 +51,10 @@ namespace hardware
 				XNop = 0xC4,
 				XPwrOn = 0xA7,
 				XPwrOff = 0xA6,
-				XLok = 0x80
+				XLok = 0x80,
+				XFunc = 0x88,
+				XFunc2 = 0x89,
+				XFunc34 = 0x8A
 			};
 			enum Answers : unsigned char
 			{
@@ -79,8 +82,11 @@ namespace hardware
 			std::thread s88Thread;
 			unsigned char s88Memory[MaxS88Modules];
 			std::map<address_t, uint16_t> cacheBasic;
+			std::map<address_t, uint32_t> cacheFunctions;
 
 			uint16_t GetCacheBasicEntry(const address_t address) { return cacheBasic.count(address) == 0 ? 0 : cacheBasic[address]; }
+			uint32_t GetCacheFunctionsEntry(const address_t address) { return cacheFunctions.count(address) == 0 ? 0 : cacheFunctions[address]; }
+
 			bool CheckLocoAddress(const address_t address) { return 0 < address && address <= MaxAddress; }
 
 			bool SendP50XOnly();
@@ -88,7 +94,11 @@ namespace hardware
 			bool SendNop() { return SendOneByteCommand(XNop); }
 			bool SendPowerOn() { return SendOneByteCommand(XPwrOn); }
 			bool SendPowerOff() { return SendOneByteCommand(XPwrOff); }
-			bool SendLocoSpeedDirection(const address_t& address, const unsigned char speed, const unsigned char direction);
+			bool SendXLok(const address_t address, const unsigned char speed, const unsigned char direction);
+			bool SendXFunc(const address_t address, const unsigned char functions);
+			bool SendXFunc2(const address_t address, const unsigned char functions);
+			bool SendXFunc34(const address_t address, const unsigned char functions3, const unsigned char functions4);
+			bool ReceiveFunctionCommandAnswer();
 
 			void S88Worker();
 	};
