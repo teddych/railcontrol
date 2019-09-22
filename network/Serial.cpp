@@ -76,10 +76,10 @@ namespace Network
 		ClearBuffers();
 	}
 
-	bool Serial::Receive(std::string& data, const size_t maxData, const unsigned int timeout)
+	bool Serial::Receive(std::string& data, const size_t maxData, const unsigned int timeoutS, const unsigned int timeoutUS)
 	{
 		char dataBuffer[maxData];
-		int ret = Receive(dataBuffer, maxData, timeout);
+		int ret = Receive(dataBuffer, maxData, timeoutS, timeoutUS);
 		if (ret < 0)
 		{
 			return false;
@@ -88,7 +88,7 @@ namespace Network
 		return true;
 	}
 
-	size_t Serial::Receive(char* data, const size_t maxData, const unsigned int timeout)
+	size_t Serial::Receive(char* data, const size_t maxData, const unsigned int timeoutS, const unsigned int timeoutUS)
 	{
 		if (!IsConnected())
 		{
@@ -99,8 +99,8 @@ namespace Network
 		FD_ZERO(&set);
 		FD_SET(fileHandle, &set);
 		struct timeval tvTimeout;
-		tvTimeout.tv_sec = timeout;
-		tvTimeout.tv_usec = 0;
+		tvTimeout.tv_sec = timeoutS;
+		tvTimeout.tv_usec = timeoutUS;
 
 		size_t ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tvTimeout));
 		if (ret <= 0)
@@ -115,13 +115,13 @@ namespace Network
 		return ret;
 	}
 
-	bool Serial::ReceiveExact(std::string& data, const size_t length, const unsigned int timeout)
+	bool Serial::ReceiveExact(std::string& data, const size_t length, const unsigned int timeoutS, const unsigned int timeoutUS)
 	{
 		size_t startSize = data.length();
 		size_t endSize = startSize + length;
 		while (endSize > data.length())
 		{
-			bool ret = Receive(data, endSize - data.length(), timeout);
+			bool ret = Receive(data, endSize - data.length(), timeoutS, timeoutUS);
 			if (ret == false)
 			{
 				return false;
@@ -130,13 +130,13 @@ namespace Network
 		return true;
 	}
 
-	size_t Serial::ReceiveExact(char* data, const size_t length, const unsigned int timeout)
+	size_t Serial::ReceiveExact(char* data, const size_t length, const unsigned int timeoutS, const unsigned int timeoutUS)
 	{
 		size_t actualSize = 0;
 		size_t endSize = length;
 		while (actualSize < endSize)
 		{
-			size_t ret = Receive(data + actualSize, endSize - actualSize, timeout);
+			size_t ret = Receive(data + actualSize, endSize - actualSize, timeoutS, timeoutUS);
 			if (ret <= 0)
 			{
 				return actualSize;

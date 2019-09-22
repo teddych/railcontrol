@@ -57,10 +57,10 @@ namespace Network
 				return write(fileHandle, data, size);
 			}
 
-			bool Receive(std::string& data, const size_t maxData = 1024, const unsigned int timeout = 1);
-			size_t Receive(char* data, const size_t maxData = 1024, const unsigned int timeout = 1);
-			bool ReceiveExact(std::string& data, const size_t length, const unsigned int timeout = 1);
-			size_t ReceiveExact(char* data, const size_t length, const unsigned int timeout = 1);
+			bool Receive(std::string& data, const size_t maxData = 1024, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
+			size_t Receive(char* data, const size_t maxData = 1024, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
+			bool ReceiveExact(std::string& data, const size_t length, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
+			size_t ReceiveExact(char* data, const size_t length, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
 
 		private:
 			void Init();
