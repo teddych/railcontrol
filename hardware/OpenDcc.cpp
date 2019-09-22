@@ -279,15 +279,44 @@ namespace hardware
 		}
 	}
 
-	/*
 	void OpenDcc::Accessory(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
-		if (!serialLine.IsConnected())
+		if (!serialLine.IsConnected() || !CheckAccessoryAddress(address))
 		{
 			return;
 		}
+		logger->Info("Setting OpenDCC accessory {0} to {1}/{2}", address, state, on);
+		const unsigned char addressLSB = (address & 0xFF);
+		const unsigned char addressMSB = (address >> 8);
+		const unsigned char statusBits = (state << 7) | (on << 6);
+		const unsigned char addressStatus = addressMSB | statusBits;
+		const unsigned char data[3] = { XTrnt, addressLSB, addressStatus };
+		serialLine.Send(data, sizeof(data));
+		char input;
+		bool ret = serialLine.ReceiveExact(&input, 1);
+		if (ret != 1)
+		{
+			logger->Warning("No answer to XTrnt command");
+			return;
+		}
+		switch (input)
+		{
+			case OK:
+				return;
+
+			case XBADPRM:
+				logger->Warning("XTrnt returned bad parameter");
+				return;
+
+			case XLOWTSP:
+				logger->Warning("XTrnt returned queue nearly full");
+				return;
+
+			default:
+				logger->Warning("XTrnt returned unknown error code: {0}", static_cast<int>(input));
+				return;
+		}
 	}
-	*/
 
 	void OpenDcc::S88Worker()
 	{

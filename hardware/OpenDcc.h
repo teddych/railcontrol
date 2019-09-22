@@ -41,9 +41,7 @@ namespace hardware
 			void LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed) override;
 			void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
-			/*
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
-			*/
 
 		private:
 			enum Commands : unsigned char
@@ -54,7 +52,8 @@ namespace hardware
 				XLok = 0x80,
 				XFunc = 0x88,
 				XFunc2 = 0x89,
-				XFunc34 = 0x8A
+				XFunc34 = 0x8A,
+				XTrnt = 0x90
 			};
 			enum Answers : unsigned char
 			{
@@ -69,7 +68,8 @@ namespace hardware
 			};
 			static const unsigned char MaxS88Modules = 128;
 			static const unsigned char MaxLocoFunctions = 28;
-			static const unsigned short MaxAddress = 10239;
+			static const unsigned short MaxLocoAddress = 10239;
+			static const unsigned short MaxAccessoryAddress = 2043;
 
 			Logger::Logger* logger;
 			Network::Serial serialLine;
@@ -87,7 +87,8 @@ namespace hardware
 			uint16_t GetCacheBasicEntry(const address_t address) { return cacheBasic.count(address) == 0 ? 0 : cacheBasic[address]; }
 			uint32_t GetCacheFunctionsEntry(const address_t address) { return cacheFunctions.count(address) == 0 ? 0 : cacheFunctions[address]; }
 
-			bool CheckLocoAddress(const address_t address) { return 0 < address && address <= MaxAddress; }
+			bool CheckLocoAddress(const address_t address) { return 0 < address && address <= MaxLocoAddress; }
+			bool CheckAccessoryAddress(const address_t address) { return 0 < address && address <= MaxAccessoryAddress; }
 
 			bool SendP50XOnly();
 			bool SendOneByteCommand(const unsigned char data);
