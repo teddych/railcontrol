@@ -53,7 +53,9 @@ namespace hardware
 				XFunc = 0x88,
 				XFunc2 = 0x89,
 				XFunc34 = 0x8A,
-				XTrnt = 0x90
+				XTrnt = 0x90,
+				XP88Get = 0x9C,
+				XP88Set = 0x9D
 			};
 			enum Answers : unsigned char
 			{
@@ -100,6 +102,9 @@ namespace hardware
 			bool SendXFunc2(const address_t address, const unsigned char functions);
 			bool SendXFunc34(const address_t address, const unsigned char functions3, const unsigned char functions4);
 			bool ReceiveFunctionCommandAnswer();
+			bool SendRestart();
+			unsigned char SendXP88Get(unsigned char param);
+			bool SendXP88Set(unsigned char param, unsigned char value);
 
 			void S88Worker();
 	};

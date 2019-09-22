@@ -56,6 +56,52 @@ namespace hardware
 			logger->Error("Control does not answer");
 			return;
 		}
+		bool restart = false;
+		unsigned char modules = SendXP88Get(0);
+		if (modules != s88Modules)
+		{
+			logger->Info("Configuring {0} modules in total", s88Modules);
+			SendXP88Set(0, s88Modules);
+			restart = true;;
+		}
+
+		modules = SendXP88Get(1);
+		if (modules != s88Modules1)
+		{
+			logger->Info("Configuring bus 1 with {0} modules", s88Modules1);
+			SendXP88Set(1, s88Modules1);
+			restart = true;;
+		}
+
+		modules = SendXP88Get(2);
+		if (modules != s88Modules2)
+		{
+			logger->Info("Configuring bus 2 with {0} modules", s88Modules2);
+			SendXP88Set(2, s88Modules2);
+			restart = true;;
+		}
+
+		modules = SendXP88Get(3);
+		if (modules != s88Modules3)
+		{
+			logger->Info("Configuring bus 3 with {0} modules", s88Modules3);
+			SendXP88Set(3, s88Modules3);
+			restart = true;;
+		}
+
+		if (restart)
+		{
+			SendXP88Set(4, 0);
+			SendRestart();
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			SendP50XOnly();
+			ok = SendNop();
+			if (!ok)
+			{
+				logger->Error("Control does not answer");
+				return;
+			}
+		}
 
 		s88Thread = std::thread(&hardware::OpenDcc::S88Worker, this);
 	}
@@ -332,7 +378,6 @@ namespace hardware
 	{
 		unsigned char data[6] = { 'X', 'Z', 'Z', 'A', '1', 0x0D };
 		std::string output(reinterpret_cast<char*>(data), sizeof(data));
-		logger->Info("Setting control to P50X only mode");
 		serialLine.Send(data, sizeof(data));
 		std::string input;
 		serialLine.ReceiveExact(input, 34);
@@ -345,5 +390,47 @@ namespace hardware
 		char input[1];
 		int ret = serialLine.Receive(input, sizeof(input));
 		return ret > 0 && input[0] == OK;
+	}
+
+	bool OpenDcc::SendRestart()
+	{
+		unsigned char data[3] = { '@', '@', 0x0D };
+		std::string output(reinterpret_cast<char*>(data), sizeof(data));
+		logger->Info("Restarting OpenDCC");
+		serialLine.Send(data, sizeof(data));
+		return true;
+	}
+
+	unsigned char OpenDcc::SendXP88Get(unsigned char param)
+	{
+		unsigned char data[2] = { XP88Get, param };
+		std::string output(reinterpret_cast<char*>(data), sizeof(data));
+		serialLine.Send(data, sizeof(data));
+		unsigned char input;
+		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+		if (ret == 0 || input != OK)
+		{
+			return 0xFF;
+		}
+		ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+		if (ret == 0)
+		{
+			return 0xFF;
+		}
+		return input;
+	}
+
+	bool OpenDcc::SendXP88Set(unsigned char param, unsigned char value)
+	{
+		unsigned char data[3] = { XP88Set, param, value };
+		std::string output(reinterpret_cast<char*>(data), sizeof(data));
+		serialLine.Send(data, sizeof(data));
+		unsigned char input;
+		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+		if (ret == 0)
+		{
+			return false;
+		}
+		return (input == OK);
 	}
 } // namespace
