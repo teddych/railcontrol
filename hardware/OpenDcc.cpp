@@ -103,7 +103,7 @@ namespace hardware
 			}
 		}
 
-		s88Thread = std::thread(&hardware::OpenDcc::S88Worker, this);
+		checkEventsThread = std::thread(&hardware::OpenDcc::CheckEventsWorker, this);
 	}
 
 	OpenDcc::~OpenDcc()
@@ -113,7 +113,7 @@ namespace hardware
 			return;
 		}
 		run = false;
-		s88Thread.join();
+		checkEventsThread.join();
 	}
 
 	void OpenDcc::Booster(const boosterState_t status)
@@ -364,16 +364,6 @@ namespace hardware
 		}
 	}
 
-	void OpenDcc::S88Worker()
-	{
-		pthread_setname_np(pthread_self(), "OpenDcc");
-		run = true;
-		while (run)
-		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
-		}
-	}
-
 	bool OpenDcc::SendP50XOnly()
 	{
 		unsigned char data[6] = { 'X', 'Z', 'Z', 'A', '1', 0x0D };
@@ -432,5 +422,68 @@ namespace hardware
 			return false;
 		}
 		return (input == OK);
+	}
+
+	void OpenDcc::SendXEvent()
+	{
+		unsigned char data[1] = { XEvent };
+		std::string output(reinterpret_cast<char*>(data), sizeof(data));
+		serialLine.Send(data, sizeof(data));
+		unsigned char input;
+		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+		if (ret == 0)
+		{
+			return;
+		}
+		bool locoEvent = input & 0x01;
+		bool sensorEvent = (input >> 1) & 0x01;
+		bool powerEvent = (input >> 3) & 0x01;
+		bool switchEvent = (input >> 5) & 0x01;
+
+		while (true)
+		{
+			bool moreData = (input >> 7) & 0x01;
+			if (!moreData)
+			{
+				break;
+			}
+			ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+			if (ret == 0)
+			{
+				break;
+			}
+		}
+
+		if (sensorEvent)
+		{
+			logger->Debug("Sensor Event");
+		}
+
+		if (locoEvent)
+		{
+			logger->Debug("Loco Event");
+		}
+
+		if (powerEvent)
+		{
+			logger->Info("Power off detected");
+			manager->Booster(ControlTypeHardware, BoosterStop);
+		}
+
+		if (switchEvent)
+		{
+			logger->Debug("Switch Event");
+		}
+	}
+
+	void OpenDcc::CheckEventsWorker()
+	{
+		pthread_setname_np(pthread_self(), "OpenDcc");
+		run = true;
+		while (run)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			SendXEvent();
+		}
 	}
 } // namespace

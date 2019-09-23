@@ -55,7 +55,11 @@ namespace hardware
 				XFunc34 = 0x8A,
 				XTrnt = 0x90,
 				XP88Get = 0x9C,
-				XP88Set = 0x9D
+				XP88Set = 0x9D,
+				XEvent = 0xC8,
+				XEvtLok = 0xC9,
+				XEvtTrnt = 0xCA,
+				XEvtSen = 0xCB
 			};
 			enum Answers : unsigned char
 			{
@@ -81,7 +85,7 @@ namespace hardware
 			unsigned char s88Modules3;
 			unsigned short s88Modules;
 
-			std::thread s88Thread;
+			std::thread checkEventsThread;
 			unsigned char s88Memory[MaxS88Modules];
 			std::map<address_t, uint16_t> cacheBasic;
 			std::map<address_t, uint32_t> cacheFunctions;
@@ -105,8 +109,9 @@ namespace hardware
 			bool SendRestart();
 			unsigned char SendXP88Get(unsigned char param);
 			bool SendXP88Set(unsigned char param, unsigned char value);
+			void SendXEvent();
 
-			void S88Worker();
+			void CheckEventsWorker();
 	};
 
 	extern "C" OpenDcc* create_opendcc(const HardwareParams* params);
