@@ -9,6 +9,7 @@ LDFLAGS=-g -shared -Wl,-soname,
 LIBS= \
 	cs2.so \
 	m6051.so \
+	OpenDcc.so \
 	rm485.so \
 	virtual.so
 

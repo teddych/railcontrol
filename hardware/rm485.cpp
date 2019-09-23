@@ -26,7 +26,6 @@ namespace hardware
 	RM485::RM485(const HardwareParams* params)
 	:	HardwareInterface(params->manager, params->controlID, "RM485 / " + params->name + " at serial port " + params->arg1),
 		logger(Logger::Logger::GetLogger("RM485 " + params->name + " " + params->arg1)),
-		manager(params->manager),
 		communication(params->arg1),
 		run(true),
 		rescanAddress(0),

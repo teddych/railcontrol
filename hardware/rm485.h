@@ -79,7 +79,7 @@ namespace hardware
 			RM485(const HardwareParams* params);
 			~RM485();
 
-			bool CanHandleFeedback() const { return true; }
+			bool CanHandleFeedback() const override { return true; }
 
 			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override
 			{
@@ -88,8 +88,6 @@ namespace hardware
 
 		private:
 			Logger::Logger* logger;
-			std::string name;
-			Manager* manager;
 			int ttyFileDescriptor;
 			Communication communication;
 			volatile bool run;

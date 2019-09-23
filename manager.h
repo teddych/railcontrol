@@ -448,6 +448,7 @@ class Manager
 		datamodel::Track::selectStreetApproach_t selectStreetApproach;
 		datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve;
 
+		volatile bool run;
 		volatile bool debounceRun;
 		std::thread debounceThread;
 

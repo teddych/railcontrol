@@ -8,7 +8,6 @@
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Logger/Logger.h"
-#include "manager.h"
 
 // CAN protocol specification at http://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
 
@@ -20,9 +19,9 @@ namespace hardware
 			CS2(const HardwareParams* params);
 			~CS2();
 
-			bool CanHandleLocos() const { return true; }
-			bool CanHandleAccessories() const { return true; }
-			bool CanHandleFeedback() const { return true; }
+			bool CanHandleLocos() const override { return true; }
+			bool CanHandleAccessories() const override { return true; }
+			bool CanHandleFeedback() const override { return true; }
 
 			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override
 			{
@@ -61,7 +60,6 @@ namespace hardware
 		private:
 			Logger::Logger* logger;
 			volatile unsigned char run;
-			std::string name;
 			struct sockaddr_in sockaddr_inSender;
 			int senderSocket;
 			std::thread receiverThread;

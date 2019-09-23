@@ -31,6 +31,7 @@ OBJ= \
 	datamodel/track.o \
 	hardware/HardwareHandler.o \
 	manager.o \
+	network/Serial.o \
 	network/TcpConnection.o \
 	network/TcpServer.o \
 	railcontrol.o \
