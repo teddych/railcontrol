@@ -109,6 +109,8 @@ namespace hardware
 			bool SendRestart();
 			unsigned char SendXP88Get(unsigned char param);
 			bool SendXP88Set(unsigned char param, unsigned char value);
+			void CheckSensorData(const unsigned char module, const unsigned char data);
+			void SendXEvtSen();
 			void SendXEvent();
 
 			void CheckEventsWorker();

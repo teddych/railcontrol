@@ -367,7 +367,6 @@ namespace hardware
 	bool OpenDcc::SendP50XOnly()
 	{
 		unsigned char data[6] = { 'X', 'Z', 'Z', 'A', '1', 0x0D };
-		std::string output(reinterpret_cast<char*>(data), sizeof(data));
 		serialLine.Send(data, sizeof(data));
 		std::string input;
 		serialLine.ReceiveExact(input, 34);
@@ -385,7 +384,6 @@ namespace hardware
 	bool OpenDcc::SendRestart()
 	{
 		unsigned char data[3] = { '@', '@', 0x0D };
-		std::string output(reinterpret_cast<char*>(data), sizeof(data));
 		logger->Info("Restarting OpenDCC");
 		serialLine.Send(data, sizeof(data));
 		return true;
@@ -394,7 +392,6 @@ namespace hardware
 	unsigned char OpenDcc::SendXP88Get(unsigned char param)
 	{
 		unsigned char data[2] = { XP88Get, param };
-		std::string output(reinterpret_cast<char*>(data), sizeof(data));
 		serialLine.Send(data, sizeof(data));
 		unsigned char input;
 		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
@@ -413,7 +410,6 @@ namespace hardware
 	bool OpenDcc::SendXP88Set(unsigned char param, unsigned char value)
 	{
 		unsigned char data[3] = { XP88Set, param, value };
-		std::string output(reinterpret_cast<char*>(data), sizeof(data));
 		serialLine.Send(data, sizeof(data));
 		unsigned char input;
 		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
@@ -424,10 +420,63 @@ namespace hardware
 		return (input == OK);
 	}
 
+	void OpenDcc::CheckSensorData(const unsigned char module, const unsigned char data)
+	{
+		unsigned char diff = s88Memory[module] ^ data;
+		s88Memory[module] = data;
+		feedbackPin_t pinOverAll = module;
+		pinOverAll <<= 3;
+		for (unsigned char pinOnModule = 1; pinOnModule <= 8; ++pinOnModule)
+		{
+			if ((diff >> (8 - pinOnModule)) & 0x01)
+			{
+				datamodel::Feedback::feedbackState_t state = static_cast<datamodel::Feedback::feedbackState_t>((data >> (8 - pinOnModule)) & 0x01);
+				logger->Info("state of pin {0} on module {1} is {2}", pinOnModule, module, state);
+				manager->FeedbackState(controlID, pinOverAll + pinOnModule, state);
+			}
+		}
+	}
+
+	void OpenDcc::SendXEvtSen()
+	{
+		unsigned char data[1] = { XEvtSen };
+		serialLine.Send(data, sizeof(data));
+		while (true)
+		{
+			unsigned char module;
+			size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&module), 1);
+			if (ret == 0 || module == 0)
+			{
+				return;
+			}
+
+			--module;
+			module <<= 1;
+
+			unsigned char data[2];
+			ret = serialLine.ReceiveExact(reinterpret_cast<char*>(data), sizeof(data));
+			if (ret == 0)
+			{
+				return;
+			}
+
+			if (s88Memory[module] != data[0])
+			{
+				CheckSensorData(module, data[0]);
+			}
+
+			++module;
+
+			if (s88Memory[module] != data[1])
+			{
+				CheckSensorData(module, data[1]);
+			}
+		}
+	}
+
 	void OpenDcc::SendXEvent()
 	{
 		unsigned char data[1] = { XEvent };
-		std::string output(reinterpret_cast<char*>(data), sizeof(data));
 		serialLine.Send(data, sizeof(data));
 		unsigned char input;
 		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
@@ -436,7 +485,7 @@ namespace hardware
 			return;
 		}
 		bool locoEvent = input & 0x01;
-		bool sensorEvent = (input >> 1) & 0x01;
+		bool sensorEvent = (input >> 2) & 0x01;
 		bool powerEvent = (input >> 3) & 0x01;
 		bool switchEvent = (input >> 5) & 0x01;
 
@@ -456,23 +505,22 @@ namespace hardware
 
 		if (sensorEvent)
 		{
-			logger->Debug("Sensor Event");
+			SendXEvtSen();
 		}
 
 		if (locoEvent)
 		{
-			logger->Debug("Loco Event");
+			logger->Debug("Loco Event detected");
 		}
 
 		if (powerEvent)
 		{
-			logger->Info("Power off detected");
 			manager->Booster(ControlTypeHardware, BoosterStop);
 		}
 
 		if (switchEvent)
 		{
-			logger->Debug("Switch Event");
+			logger->Debug("Switch Event detected");
 		}
 	}
 
@@ -482,8 +530,8 @@ namespace hardware
 		run = true;
 		while (run)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
 			SendXEvent();
+			std::this_thread::yield();
 		}
 	}
 } // namespace
