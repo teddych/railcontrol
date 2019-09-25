@@ -206,7 +206,7 @@ namespace datamodel
 		int policy;
 		pthread_t self = pthread_self();
 		pthread_getschedparam(self, &policy, &param);
-		param.__sched_priority = sched_get_priority_min(policy);
+		param.sched_priority = sched_get_priority_min(policy);
 		pthread_setschedparam(self, policy, &param);
 		Utils::Utils::SetThreadName(name);
 	}
