@@ -88,7 +88,7 @@ namespace Network
 
 	void TcpServer::Worker()
 	{
-		pthread_setname_np(pthread_self(), threadName.c_str());
+		Utils::Utils::SetThreadName(threadName);
 		fd_set set;
 		struct timeval tv;
 		struct sockaddr_in6 client_addr;

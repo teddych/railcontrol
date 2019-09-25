@@ -1,6 +1,7 @@
 #include <unistd.h>
 
 #include "DelayedCall.h"
+#include "Utils/Utils.h"
 
 DelayedCall::DelayedCall(Manager& manager)
 :	counter(0),
@@ -18,7 +19,7 @@ DelayedCall::~DelayedCall()
 
 void DelayedCall::Worker()
 {
-	pthread_setname_np(pthread_self(), "DelayedCall");
+	Utils::Utils::SetThreadName("DelayedCall");
 	while(run)
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(CountStep));

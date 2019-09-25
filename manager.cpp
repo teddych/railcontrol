@@ -2732,7 +2732,7 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 
 void Manager::DebounceWorker()
 {
-	pthread_setname_np(pthread_self(), "Debouncer");
+	Utils::Utils::SetThreadName("Debouncer");
 	logger->Info("Debounce thread started");
 	while (debounceRun)
 	{

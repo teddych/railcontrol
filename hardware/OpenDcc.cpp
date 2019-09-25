@@ -526,7 +526,7 @@ namespace hardware
 
 	void OpenDcc::CheckEventsWorker()
 	{
-		pthread_setname_np(pthread_self(), "OpenDcc");
+		Utils::Utils::SetThreadName("OpenDcc");
 		run = true;
 		while (run)
 		{

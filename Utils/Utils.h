@@ -20,5 +20,12 @@ namespace Utils
 			static int StringToInteger(const std::string& value, const int defaultValue);
 			static int StringToInteger(const std::string& value, const int min, const int max);
 			static bool StringToBool(const std::string& value);
+			static void SetThreadName(const std::string& name) { SetThreadName(name.c_str()); }
+			static void SetThreadName(__attribute__((unused)) const char* name)
+			{
+#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 12)
+				pthread_setname_np(pthread_self(), name);
+#endif
+			}
 	};
 }

@@ -6,6 +6,7 @@
 
 #include "network/Select.h"
 #include "hardware/rm485.h"
+#include "Utils/Utils.h"
 
 using std::string;
 
@@ -130,7 +131,7 @@ namespace hardware
 
 	void RM485::RM485Worker()
 	{
-		pthread_setname_np(pthread_self(), "RM485");
+		Utils::Utils::SetThreadName("RM485");
 		ScanBus();
 		while(run)
 		{

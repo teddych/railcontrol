@@ -145,7 +145,7 @@ namespace hardware
 
 	void M6051::S88Worker()
 	{
-		pthread_setname_np(pthread_self(), "M6051");
+		Utils::Utils::SetThreadName("M6051");
 		const unsigned char s88DoubleModules = ((s88Modules + 1) / 2);
 		const unsigned char command = 128 + s88DoubleModules;
 		const unsigned char s88SingleModules = (s88DoubleModules * 2);

@@ -266,7 +266,7 @@ namespace hardware
 	// the receiver thread of the CS2
 	void CS2::receiver()
 	{
-		pthread_setname_np(pthread_self(), "CS2");
+		Utils::Utils::SetThreadName("CS2");
 		logger->Info("CS2 receiver started");
 		struct sockaddr_in sockaddr_in;
 		int sock;

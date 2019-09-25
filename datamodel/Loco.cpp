@@ -208,7 +208,7 @@ namespace datamodel
 		pthread_getschedparam(self, &policy, &param);
 		param.__sched_priority = sched_get_priority_min(policy);
 		pthread_setschedparam(self, policy, &param);
-		pthread_setname_np(self, name.c_str());
+		Utils::Utils::SetThreadName(name);
 	}
 
 	void Loco::AutoMode()
