@@ -38,31 +38,31 @@ OBJ= \
 	storage/StorageHandler.o \
 	Timestamp.o \
 	Utils/Utils.o \
-	webserver/HtmlFullResponse.o \
-	webserver/HtmlResponse.o \
-	webserver/HtmlResponseNotFound.o \
-	webserver/HtmlResponseNotImplemented.o \
-	webserver/HtmlTag.o \
-	webserver/HtmlTagAccessory.o \
-	webserver/HtmlTagButton.o \
-	webserver/HtmlTagButtonCancel.o \
-	webserver/HtmlTagButtonCommand.o \
-	webserver/HtmlTagButtonCommandToggle.o \
-	webserver/HtmlTagButtonOK.o \
-	webserver/HtmlTagButtonPopup.o \
-	webserver/HtmlTagFeedback.o \
-	webserver/HtmlTagInput.o \
-	webserver/HtmlTagInputInteger.o \
-	webserver/HtmlTagInputSlider.o \
-	webserver/HtmlTagInputSliderLocoSpeed.o \
-	webserver/HtmlTagSelect.o \
-	webserver/HtmlTagSignal.o \
-	webserver/HtmlTagStreet.o \
-	webserver/HtmlTagSwitch.o \
-	webserver/HtmlTagTrack.o \
-	webserver/Response.o \
-	webserver/webclient.o \
-	webserver/webserver.o
+	WebServer/HtmlFullResponse.o \
+	WebServer/HtmlResponse.o \
+	WebServer/HtmlResponseNotFound.o \
+	WebServer/HtmlResponseNotImplemented.o \
+	WebServer/HtmlTag.o \
+	WebServer/HtmlTagAccessory.o \
+	WebServer/HtmlTagButton.o \
+	WebServer/HtmlTagButtonCancel.o \
+	WebServer/HtmlTagButtonCommand.o \
+	WebServer/HtmlTagButtonCommandToggle.o \
+	WebServer/HtmlTagButtonOK.o \
+	WebServer/HtmlTagButtonPopup.o \
+	WebServer/HtmlTagFeedback.o \
+	WebServer/HtmlTagInput.o \
+	WebServer/HtmlTagInputInteger.o \
+	WebServer/HtmlTagInputSlider.o \
+	WebServer/HtmlTagInputSliderLocoSpeed.o \
+	WebServer/HtmlTagSelect.o \
+	WebServer/HtmlTagSignal.o \
+	WebServer/HtmlTagStreet.o \
+	WebServer/HtmlTagSwitch.o \
+	WebServer/HtmlTagTrack.o \
+	WebServer/Response.o \
+	WebServer/WebClient.o \
+	WebServer/WebServer.o
 
 all: $(OBJ)
 	make -C hardware
@@ -94,13 +94,13 @@ sqlite-shell:
 Timestamp.o: Timestamp.cpp Timestamp.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
-%.o: %.cpp *.h console/*.h datamodel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h text/*.h Utils/*.h webserver/*.h
+%.o: %.cpp *.h console/*.h datamodel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h text/*.h Utils/*.h WebServer/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
 	make -C hardware clean
 	make -C storage clean
-	rm -f *.o console/*.o datamodel/*.o text/*.o Utils/*.o webserver/*.o
+	rm -f *.o console/*.o datamodel/*.o text/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:

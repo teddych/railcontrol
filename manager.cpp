@@ -10,7 +10,7 @@
 #include "manager.h"
 #include "railcontrol.h"
 #include "Utils/Utils.h"
-#include "webserver/webserver.h"
+#include "WebServer/WebServer.h"
 
 using datamodel::Accessory;
 using datamodel::Track;
@@ -29,7 +29,7 @@ using std::stringstream;
 using std::vector;
 using storage::StorageHandler;
 using storage::StorageParams;
-using webserver::WebServer;
+//using WebServer::WebServer;
 
 Manager::Manager(Config& config)
 :	logger(Logger::Logger::GetLogger("Manager")),
@@ -67,7 +67,7 @@ Manager::Manager(Config& config)
 	nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve")));
 
 
-	controls[ControlIdWebserver] = new WebServer(*this, config.getValue("webserverport", 80));
+	controls[ControlIdWebserver] = new WebServer::WebServer(*this, config.getValue("webserverport", 80));
 
 	storage->AllHardwareParams(hardwareParams);
 	for (auto hardwareParam : hardwareParams)
