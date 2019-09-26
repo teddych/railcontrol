@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "datamodel/Loco.h"
+#include "DataModel/Loco.h"
 #include "WebServer/HtmlTagTrack.h"
 
 using std::string;
@@ -8,21 +8,21 @@ using std::to_string;
 
 namespace WebServer
 {
-	HtmlTagTrack::HtmlTagTrack(const Manager& manager, const datamodel::Track* track)
+	HtmlTagTrack::HtmlTagTrack(const Manager& manager, const DataModel::Track* track)
 	{
 		layoutPosition_t posX;
 		layoutPosition_t posY;
 		layoutPosition_t posZ;
 		layoutItemSize_t w;
 		layoutItemSize_t h;
-		datamodel::LayoutItem::layoutRotation_t r;
+		DataModel::LayoutItem::layoutRotation_t r;
 		track->Position(posX, posY, posZ, w, h, r);
-		datamodel::Track::type_t type = track->GetType();
+		DataModel::Track::type_t type = track->GetType();
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
 
 		const string& trackName = track->GetName();
-		bool occupied = track->GetFeedbackStateDelayed() == datamodel::Feedback::FeedbackStateOccupied;
+		bool occupied = track->GetFeedbackStateDelayed() == DataModel::Feedback::FeedbackStateOccupied;
 
 		locoID_t locoID = track->GetLocoDelayed();
 		bool reserved = locoID != LocoNone;
@@ -65,16 +65,16 @@ namespace WebServer
 
 		switch (type)
 		{
-			case datamodel::Track::TrackTypeTurn:
+			case DataModel::Track::TrackTypeTurn:
 				image = "<polygon class=\"track\" points=\"0,22 0,14 22,36 14,36\"/>";
 				break;
 
-			case datamodel::Track::TrackTypeEnd:
+			case DataModel::Track::TrackTypeEnd:
 				image = "<polygon class=\"track\" points=\"14,5 22,5 22," + layoutHeight + " 14," + layoutHeight + "\"/>";
 				image += "<polygon class=\"track\" points=\"4,10 4,5 32,5 32,10\"/>";
 				break;
 
-			case datamodel::Track::TrackTypeBridge:
+			case DataModel::Track::TrackTypeBridge:
 			{
 				const string l1 = to_string(EdgeLength * trackHeight - 5);
 				const string l2 = to_string(EdgeLength * trackHeight - 3);
@@ -84,11 +84,11 @@ namespace WebServer
 				break;
 			}
 
-			case datamodel::Track::TrackTypeTunnel:
+			case DataModel::Track::TrackTypeTunnel:
 				image = "<polygon class=\"track\" points=\"14,0 22,0 22,12 14,12\"/>";
 				image += "<polygon class=\"track\" points=\"5,1 10,1 10,10 12,12 24,12 26,10 26,1 31,1 31,3 28,3 28,11 25,14 11,14 8,11 8,3 5,3 \"/>";
 
-			case datamodel::Track::TrackTypeTunnelEnd:
+			case DataModel::Track::TrackTypeTunnelEnd:
 			{
 				const string l0 = to_string(EdgeLength * trackHeight - 14);
 				const string l1 = to_string(EdgeLength * trackHeight - 12);
@@ -102,12 +102,12 @@ namespace WebServer
 				break;
 			}
 
-			case datamodel::Track::TrackTypeLink:
+			case DataModel::Track::TrackTypeLink:
 				image = "<polygon class=\"track\" points=\"14,22 22,22 22," + layoutHeight + " 14," + layoutHeight + "\"/>";
 				image += "<polygon class=\"track\" points=\"18,1 4,22 32,22\"/>";
 				break;
 
-			case datamodel::Track::TrackTypeStraight:
+			case DataModel::Track::TrackTypeStraight:
 			default:
 				const string& directionSign = track->GetLocoDirection() == DirectionRight ? "&rarr; " : "&larr; ";
 				const string& locoName = reserved ? directionSign + manager.GetLocoName(locoID) : "";
@@ -121,18 +121,18 @@ namespace WebServer
 		int translate = 0;
 		if (trackHeight > Height1)
 		{
-			datamodel::LayoutItem::layoutRotation_t trackRotation = track->GetRotation();
-			if (trackRotation == datamodel::LayoutItem::Rotation90 || trackRotation == datamodel::LayoutItem::Rotation270)
+			DataModel::LayoutItem::layoutRotation_t trackRotation = track->GetRotation();
+			if (trackRotation == DataModel::LayoutItem::Rotation90 || trackRotation == DataModel::LayoutItem::Rotation270)
 			{
 				translate = (((trackHeight - 1) * EdgeLength) / 2);
 			}
-			if (trackRotation == datamodel::LayoutItem::Rotation90)
+			if (trackRotation == DataModel::LayoutItem::Rotation90)
 			{
 				translate = -translate;
 			}
 		}
 
-		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(track->GetRotation()) + "deg) translate(" + to_string(translate) + "px," + to_string(translate) + "px);\">" + image + "</svg>"));
+		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(track->GetRotation()) + "deg) translate(" + to_string(translate) + "px," + to_string(translate) + "px);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(trackName));
 		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);

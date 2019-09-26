@@ -1,9 +1,9 @@
 #pragma once
 
 #include "datatypes.h"
-#include "datamodel/serializable.h"
+#include "DataModel/Serializable.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class LocoFunctions : Serializable
 	{
@@ -82,4 +82,4 @@ namespace datamodel
 			function_t count;
 			bool states[maxCount];
 	};
-} // namespace datamodel
+} // namespace DataModel

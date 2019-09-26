@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "datamodel/accessory.h"
+#include "DataModel/Accessory.h"
 #include "WebServer/HtmlTagAccessory.h"
 
 using std::string;
@@ -8,7 +8,7 @@ using std::to_string;
 
 namespace WebServer
 {
-	HtmlTagAccessory::HtmlTagAccessory(const datamodel::Accessory* accessory)
+	HtmlTagAccessory::HtmlTagAccessory(const DataModel::Accessory* accessory)
 	{
 		accessoryState_t state = accessory->GetState();
 
@@ -22,7 +22,7 @@ namespace WebServer
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("accessory_item");
-		div1.AddClass(state == datamodel::Accessory::AccessoryStateOn ? "accessory_on" : "accessory_off");
+		div1.AddClass(state == DataModel::Accessory::AccessoryStateOn ? "accessory_on" : "accessory_off");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		div1.AddChildTag(HtmlTag("span").AddClass("symbola").AddContent("&#9209;"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(accessoryName + " (addr=" + to_string(accessory->GetAddress()) + ")"));

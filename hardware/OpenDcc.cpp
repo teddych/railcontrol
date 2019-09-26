@@ -430,7 +430,7 @@ namespace hardware
 		{
 			if ((diff >> (8 - pinOnModule)) & 0x01)
 			{
-				datamodel::Feedback::feedbackState_t state = static_cast<datamodel::Feedback::feedbackState_t>((data >> (8 - pinOnModule)) & 0x01);
+				DataModel::Feedback::feedbackState_t state = static_cast<DataModel::Feedback::feedbackState_t>((data >> (8 - pinOnModule)) & 0x01);
 				logger->Info("state of pin {0} on module {1} is {2}", pinOnModule, module, state);
 				manager->FeedbackState(controlID, pinOverAll + pinOnModule, state);
 			}

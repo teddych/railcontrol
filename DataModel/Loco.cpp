@@ -2,8 +2,8 @@
 #include <map>
 #include <sstream>
 
-#include "datamodel/Loco.h"
-#include "datamodel/track.h"
+#include "DataModel/Loco.h"
+#include "DataModel/Track.h"
 #include "manager.h"
 #include "Utils/Utils.h"
 
@@ -12,7 +12,7 @@ using std::stringstream;
 using std::string;
 using std::vector;
 
-namespace datamodel
+namespace DataModel
 {
 	Loco::~Loco()
 	{
@@ -160,7 +160,7 @@ namespace datamodel
 		}
 
 		state = LocoStateSearchingFirst;
-		locoThread = std::thread(&datamodel::Loco::AutoMode, this);
+		locoThread = std::thread(&DataModel::Loco::AutoMode, this);
 
 		return true;
 	}
@@ -619,7 +619,7 @@ namespace datamodel
 		}
 	}
 
-	bool Loco::AssignSlaves(const std::vector<datamodel::Relation*>& newslaves)
+	bool Loco::AssignSlaves(const std::vector<DataModel::Relation*>& newslaves)
 	{
 		DeleteSlaves();
 		slaves = newslaves;
@@ -627,4 +627,4 @@ namespace datamodel
 	}
 
 
-} // namespace datamodel
+} // namespace DataModel

@@ -1,13 +1,13 @@
 #include <vector>
 
-#include "datamodel/serializable.h"
+#include "DataModel/Serializable.h"
 #include "Utils/Utils.h"
 
 using std::string;
 using std::map;
 using std::vector;
 
-namespace datamodel
+namespace DataModel
 {
 	void Serializable::ParseArguments(const string& serialized, map<string, string>& arguments)
 	{

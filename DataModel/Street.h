@@ -5,12 +5,12 @@
 #include <vector>
 
 #include "datatypes.h"
-#include "datamodel/layout_item.h"
-#include "datamodel/LockableItem.h"
+#include "DataModel/LayoutItem.h"
+#include "DataModel/LockableItem.h"
 
 class Manager;
 
-namespace datamodel
+namespace DataModel
 {
 	class Loco;
 	class Relation;
@@ -48,10 +48,10 @@ namespace datamodel
 			std::string LayoutType() const override { return "street"; };
 
 			void DeleteRelations();
-			bool AssignRelations(const std::vector<datamodel::Relation*>& newRelations);
-			const std::vector<datamodel::Relation*>& GetRelations() const { return relations; };
+			bool AssignRelations(const std::vector<DataModel::Relation*>& newRelations);
+			const std::vector<DataModel::Relation*>& GetRelations() const { return relations; };
 
-			bool FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const datamodel::Loco* loco, const bool allowLocoTurn);
+			bool FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const DataModel::Loco* loco, const bool allowLocoTurn);
 
 			bool Execute();
 			static bool ExecuteStatic(Street* street) { return street->Execute(); }
@@ -101,7 +101,7 @@ namespace datamodel
 			std::mutex updateMutex;
 
 			delay_t delay;
-			std::vector<datamodel::Relation*> relations;
+			std::vector<DataModel::Relation*> relations;
 			commuterType_t commuter;
 			length_t minTrainLength;
 			length_t maxTrainLength;
@@ -119,5 +119,5 @@ namespace datamodel
 			time_t lastUsed;
 			unsigned int counter;
 	};
-} // namespace datamodel
+} // namespace DataModel
 

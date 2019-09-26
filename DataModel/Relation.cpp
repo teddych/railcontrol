@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 
-#include "datamodel/relation.h"
+#include "DataModel/Relation.h"
 #include "manager.h"
 #include "Utils/Utils.h"
 
@@ -10,7 +10,7 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	std::string Relation::Serialize() const
 	{
@@ -149,5 +149,5 @@ namespace datamodel
 		}
 		return LockableItem::Release(locoID);
 	}
-} // namespace datamodel
+} // namespace DataModel
 

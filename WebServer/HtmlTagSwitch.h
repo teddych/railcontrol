@@ -4,7 +4,7 @@
 
 #include "WebServer/HtmlTagLayoutItem.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class Switch;
 }
@@ -14,7 +14,7 @@ namespace WebServer
 	class HtmlTagSwitch : public HtmlTagLayoutItem
 	{
 		public:
-			HtmlTagSwitch(const datamodel::Switch* mySwitch);
+			HtmlTagSwitch(const DataModel::Switch* mySwitch);
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

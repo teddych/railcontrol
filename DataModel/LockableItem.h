@@ -5,7 +5,7 @@
 
 #include "datatypes.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class LockableItem
 	{
@@ -42,5 +42,5 @@ namespace datamodel
 			lockState_t lockState;
 			locoID_t locoID;
 	};
-} // namespace datamodel
+} // namespace DataModel
 

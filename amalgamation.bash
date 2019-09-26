@@ -18,7 +18,7 @@ chmod u+x $EXEC
 
 cat $EXEC
 
-for dir in . console datamodel hardware Logger network storage text Utils webserver ; do
+for dir in . DataModel hardware Logger network storage Utils WebServer ; do
 	find $dir -maxdepth 1 -type f -name "*.cpp" -exec $EXEC {} \;
 done
 

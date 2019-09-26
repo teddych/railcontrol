@@ -4,9 +4,9 @@
 #include <string>
 
 #include "datatypes.h"
-#include "serializable.h"
+#include "DataModel/Serializable.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class Object : protected Serializable
 	{
@@ -27,5 +27,5 @@ namespace datamodel
 			objectID_t objectID;
 			std::string name;
 	};
-} // namespace datamodel
+} // namespace DataModel
 

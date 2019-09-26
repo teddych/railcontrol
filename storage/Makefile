@@ -17,7 +17,7 @@ LIBS= \
 
 all: $(LIBS)
 
-sqlite.so: sqlite.o sqlite/sqlite3.o *.h ../Logger/*.h ../hardware/HardwareParams.h ../datamodel/*.h
+sqlite.so: sqlite.o sqlite/sqlite3.o *.h ../Logger/*.h ../hardware/HardwareParams.h ../DataModel/*.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<  sqlite/sqlite3.o
 
 sqlite/sqlite3.o: sqlite/sqlite3.c sqlite/sqlite3.h
@@ -29,10 +29,10 @@ amalgamation: sqlite/sqlite3.c sqlite/sqlite3.h
 raspi: sqlite/sqlite3.c sqlite/sqlite3.h
 	$(CCRASPI) $(CFLAGSRASPI) $(CFLAGSSQLITE) -c -o sqlite/sqlite3.o sqlite/sqlite3.c
 
-%.so: %.cpp *.h ../*.h ../datamodel/*.h
+%.so: %.cpp *.h ../*.h ../DataModel/*.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
-%.so: %.o *.h ../*.h ../datamodel/*.h
+%.so: %.o *.h ../*.h ../DataModel/*.h
 	$(CPP) -o $@ $< $(LDFLAGS)$@
 
 clean:

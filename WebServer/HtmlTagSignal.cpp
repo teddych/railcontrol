@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "datamodel/signal.h"
+#include "DataModel/Signal.h"
 #include "WebServer/HtmlTagSignal.h"
 
 using std::string;
@@ -8,7 +8,7 @@ using std::to_string;
 
 namespace WebServer
 {
-	HtmlTagSignal::HtmlTagSignal(const datamodel::Signal* signal)
+	HtmlTagSignal::HtmlTagSignal(const DataModel::Signal* signal)
 	{
 		signalState_t state = signal->GetState();
 		signalType_t type = signal->GetType();
@@ -23,12 +23,12 @@ namespace WebServer
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
 		div1.AddClass("signal_item");
-		div1.AddClass(state == datamodel::Signal::SignalStateRed ? "signal_red" : "signal_green");
+		div1.AddClass(state == DataModel::Signal::SignalStateRed ? "signal_red" : "signal_green");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		string image;
-		if (type == datamodel::Signal::SignalTypeSimple)
+		if (type == DataModel::Signal::SignalTypeSimple)
 		{
-			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + datamodel::LayoutItem::Rotation(signal->GetRotation()) + "deg);\"><polygon points=\"14,0 22,0 22,36 14,36\" fill=\"black\" /><polygon points=\"1,5 5,1 9,1 13,5 13,18 9,22 5,22 1,18\" fill=\"black\"/><polyline points=\"7,7 7,30\" style=\"stroke:black;stroke-width:2\"/><circle class=\"red\" cx=\"7\" cy=\"7\" r=\"4\" fill=\"darkgray\"/><circle class=\"green\" cx=\"7\" cy=\"16\" r=\"4\" fill=\"darkgray\"/></svg>";
+			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(signal->GetRotation()) + "deg);\"><polygon points=\"14,0 22,0 22,36 14,36\" fill=\"black\" /><polygon points=\"1,5 5,1 9,1 13,5 13,18 9,22 5,22 1,18\" fill=\"black\"/><polyline points=\"7,7 7,30\" style=\"stroke:black;stroke-width:2\"/><circle class=\"red\" cx=\"7\" cy=\"7\" r=\"4\" fill=\"darkgray\"/><circle class=\"green\" cx=\"7\" cy=\"16\" r=\"4\" fill=\"darkgray\"/></svg>";
 		}
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(signalName + " (addr=" + to_string(signal->GetAddress()) + ")"));

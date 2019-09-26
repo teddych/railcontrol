@@ -1,14 +1,14 @@
 #include <map>
 #include <sstream>
 
-#include "datamodel/accessory.h"
+#include "DataModel/Accessory.h"
 #include "Utils/Utils.h"
 
 using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	std::string Accessory::Serialize() const
 	{
@@ -62,4 +62,4 @@ namespace datamodel
 		counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 0);
 		return true;
 	}
-} // namespace datamodel
+} // namespace DataModel

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "datamodel/feedback.h"
+#include "DataModel/Feedback.h"
 #include "datatypes.h"
 
 class ControlInterface
@@ -26,7 +26,7 @@ class ControlInterface
 		virtual bool CanHandleLocos() const { return false; }
 		virtual void FeedbackDelete(__attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const std::string& name) {}
 		virtual void FeedbackSettings(__attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const std::string& name) {}
-		virtual void FeedbackState(__attribute__((unused)) const std::string& name, __attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const datamodel::Feedback::feedbackState_t state) {};
+		virtual void FeedbackState(__attribute__((unused)) const std::string& name, __attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const DataModel::Feedback::feedbackState_t state) {};
 		virtual void LayerDelete(__attribute__((unused)) const layerID_t layerID, __attribute__((unused)) const std::string& name) {};
 		virtual void LayerSettings(__attribute__((unused)) const layerID_t layerID, __attribute__((unused)) const std::string& name) {};
 		virtual void LocoDelete(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const std::string& name) {};

@@ -1,11 +1,11 @@
-#include "datamodel/HardwareHandle.h"
+#include "DataModel/HardwareHandle.h"
 #include "Utils/Utils.h"
 
 using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	std::string HardwareHandle::Serialize() const
 	{
@@ -30,4 +30,4 @@ namespace datamodel
 		address = Utils::Utils::GetIntegerMapEntry(arguments, "address");
 		return true;
 	}
-} // namespace datamodel
+} // namespace DataModel

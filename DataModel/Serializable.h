@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-namespace datamodel {
+namespace DataModel {
 
 	class Serializable {
 		public:
@@ -15,5 +15,5 @@ namespace datamodel {
 			static void ParseArguments(const std::string& serialized, std::map<std::string,std::string>& arguments);
 	};
 
-} // namespace datamodel
+} // namespace DataModel
 

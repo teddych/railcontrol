@@ -3,13 +3,13 @@
 #include <string>
 
 #include "datatypes.h"
-#include "datamodel/HardwareHandle.h"
-#include "datamodel/layout_item.h"
-#include "datamodel/LockableItem.h"
+#include "DataModel/HardwareHandle.h"
+#include "DataModel/LayoutItem.h"
+#include "DataModel/LockableItem.h"
 
 class Manager;
 
-namespace datamodel
+namespace DataModel
 {
 	class Accessory : public LayoutItem, public LockableItem, public HardwareHandle
 	{
@@ -59,7 +59,7 @@ namespace datamodel
 
 			static void Status(const accessoryState_t state, std::string& onText)
 			{
-				onText.assign(state == datamodel::Accessory::AccessoryStateOn ? "green" : "red");
+				onText.assign(state == DataModel::Accessory::AccessoryStateOn ? "green" : "red");
 			}
 
 
@@ -75,5 +75,5 @@ namespace datamodel
 			time_t lastUsed;
 			unsigned int counter;
 	};
-} // namespace datamodel
+} // namespace DataModel
 

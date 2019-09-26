@@ -3,11 +3,11 @@
 #include <string>
 
 #include "datatypes.h"
-#include "datamodel/layout_item.h"
+#include "DataModel/LayoutItem.h"
 
 class Manager;
 
-namespace datamodel
+namespace DataModel
 {
 	class Feedback : public LayoutItem
 	{
@@ -66,5 +66,5 @@ namespace datamodel
 			const unsigned char MaxStateCounter = 10;
 	};
 
-} // namespace datamodel
+} // namespace DataModel
 

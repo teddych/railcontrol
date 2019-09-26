@@ -243,7 +243,7 @@ namespace hardware
 	void CS2::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		std::string stateText;
-		datamodel::Accessory::Status(state, stateText);
+		DataModel::Accessory::Status(state, stateText);
 		logger->Info("Setting state of cs2 accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
 		char buffer[CS2_CMD_BUF_LEN];
 		// set header
@@ -324,16 +324,16 @@ namespace hardware
 			{
 				// s88 event
 				std::string text;
-				datamodel::Feedback::feedbackState_t state;
+				DataModel::Feedback::feedbackState_t state;
 				if (buffer[10])
 				{
 					text = "on";
-					state = datamodel::Feedback::FeedbackStateOccupied;
+					state = DataModel::Feedback::FeedbackStateOccupied;
 				}
 				else
 				{
 					text = "off";
-					state = datamodel::Feedback::FeedbackStateFree;
+					state = DataModel::Feedback::FeedbackStateFree;
 				}
 				logger->Info("S88 Pin {0} set to {1}", address, text);
 				manager->FeedbackState(controlID, address, state);

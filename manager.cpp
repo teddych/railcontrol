@@ -3,7 +3,7 @@
 #include <sstream>
 #include <unistd.h>
 
-#include "datamodel/layout_item.h"
+#include "DataModel/LayoutItem.h"
 #include "DelayedCall.h"
 #include "hardware/HardwareHandler.h"
 #include "hardware/HardwareParams.h"
@@ -12,15 +12,15 @@
 #include "Utils/Utils.h"
 #include "WebServer/WebServer.h"
 
-using datamodel::Accessory;
-using datamodel::Track;
-using datamodel::Feedback;
-using datamodel::Layer;
-using datamodel::LayoutItem;
-using datamodel::Loco;
-using datamodel::Signal;
-using datamodel::Street;
-using datamodel::Switch;
+using DataModel::Accessory;
+using DataModel::Track;
+using DataModel::Feedback;
+using DataModel::Layer;
+using DataModel::LayoutItem;
+using DataModel::Loco;
+using DataModel::Signal;
+using DataModel::Street;
+using DataModel::Switch;
 using hardware::HardwareHandler;
 using hardware::HardwareParams;
 using std::map;
@@ -38,8 +38,8 @@ Manager::Manager(Config& config)
  	delayedCall(new DelayedCall(*this)),
 	defaultAccessoryDuration(DefaultAccessoryDuration),
 	autoAddFeedback(false),
-	selectStreetApproach(datamodel::Track::SelectStreetRandom),
-	nrOfTracksToReserve(datamodel::Loco::ReserveOne),
+	selectStreetApproach(DataModel::Track::SelectStreetRandom),
+	nrOfTracksToReserve(DataModel::Loco::ReserveOne),
 	run(false),
 	debounceRun(false),
 	unknownControl("Unknown Control"),
@@ -63,8 +63,8 @@ Manager::Manager(Config& config)
 
 	defaultAccessoryDuration = Utils::Utils::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
 	autoAddFeedback = Utils::Utils::StringToBool(storage->GetSetting("AutoAddFeedback"));
-	selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
-	nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve")));
+	selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
+	nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve")));
 
 
 	controls[ControlIdWebserver] = new WebServer::WebServer(*this, config.getValue("webserverport", 80));
@@ -531,7 +531,7 @@ const std::map<unsigned char,argumentType_t> Manager::ArgumentTypesOfControl(con
 * Loco                     *
 ***************************/
 
-datamodel::Loco* Manager::GetLoco(const locoID_t locoID) const
+DataModel::Loco* Manager::GetLoco(const locoID_t locoID) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
 	if (locos.count(locoID) != 1)
@@ -580,9 +580,9 @@ const map<string,locoID_t> Manager::LocoListFree() const
 	return out;
 }
 
-const map<string,datamodel::Loco*> Manager::LocoListByName() const
+const map<string,DataModel::Loco*> Manager::LocoListByName() const
 {
-	map<string,datamodel::Loco*> out;
+	map<string,DataModel::Loco*> out;
 	std::lock_guard<std::mutex> guard(locoMutex);
 	for(auto loco : locos)
 	{
@@ -603,7 +603,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 	const locoSpeed_t travelSpeed,
 	const locoSpeed_t reducedSpeed,
 	const locoSpeed_t creepSpeed,
-	const std::vector<datamodel::Relation*>& slaves,
+	const std::vector<DataModel::Relation*>& slaves,
 	string& result)
 {
 	if (!CheckControlLocoProtocolAddress(controlID, protocol, address, result))
@@ -937,7 +937,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	}
 
 	if (!CheckAccessoryPosition(accessoryID, posX, posY, posZ)
-		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, datamodel::LayoutItem::Rotation0, result))
+		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
 	{
 		result.append("Unable to ");
 		result.append(accessoryID == AccessoryNone ? "add" : "move");
@@ -982,9 +982,9 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	return true;
 }
 
-const map<string,datamodel::Accessory*> Manager::AccessoryListByName() const
+const map<string,DataModel::Accessory*> Manager::AccessoryListByName() const
 {
-	map<string,datamodel::Accessory*> out;
+	map<string,DataModel::Accessory*> out;
 	std::lock_guard<std::mutex> guard(accessoryMutex);
 	for(auto accessory : accessories)
 	{
@@ -1051,7 +1051,7 @@ bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlI
 * Feedback                 *
 ***************************/
 
-void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const datamodel::Feedback::feedbackState_t state)
+void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const DataModel::Feedback::feedbackState_t state)
 {
 	Feedback* feedback = GetFeedback(controlID, pin);
 	if (feedback != nullptr)
@@ -1072,13 +1072,13 @@ void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin
 	FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
 }
 
-void Manager::FeedbackState(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state)
+void Manager::FeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
 	FeedbackState(feedback, state);
 }
 
-void Manager::FeedbackState(Feedback* feedback, const datamodel::Feedback::feedbackState_t state)
+void Manager::FeedbackState(Feedback* feedback, const DataModel::Feedback::feedbackState_t state)
 {
 	if (feedback == nullptr)
 	{
@@ -1093,7 +1093,7 @@ void Manager::FeedbackState(Feedback* feedback)
 	{
 		return;
 	}
-	datamodel::Feedback::feedbackState_t state = feedback->GetState();
+	DataModel::Feedback::feedbackState_t state = feedback->GetState();
 	logger->Info("Feedback {0} is now {1}", feedback->GetName(), (state ? "on" : "off"));
 	{
 		const string& name = feedback->GetName();
@@ -1164,7 +1164,7 @@ bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutP
 feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result)
 {
 	if (visible && !CheckFeedbackPosition(feedbackID, posX, posY, posZ)
-		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, datamodel::LayoutItem::Rotation0, result))
+		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
 	{
 		result.append(" Unable to ");
 		result.append(feedbackID == FeedbackNone ? "add" : "move");
@@ -1206,9 +1206,9 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 	return feedbackIdSave;
 }
 
-const map<string,datamodel::Feedback*> Manager::FeedbackListByName() const
+const map<string,DataModel::Feedback*> Manager::FeedbackListByName() const
 {
-	map<string,datamodel::Feedback*> out;
+	map<string,DataModel::Feedback*> out;
 	std::lock_guard<std::mutex> guard(feedbackMutex);
 	for(auto feedback : feedbacks)
 	{
@@ -1294,9 +1294,9 @@ const std::string& Manager::GetTrackName(const trackID_t trackID) const
 	return tracks.at(trackID)->GetName();
 }
 
-const map<string,datamodel::Track*> Manager::TrackListByName() const
+const map<string,DataModel::Track*> Manager::TrackListByName() const
 {
-	map<string,datamodel::Track*> out;
+	map<string,DataModel::Track*> out;
 	std::lock_guard<std::mutex> guard(trackMutex);
 	for(auto track : tracks)
 	{
@@ -1321,7 +1321,7 @@ bool Manager::CheckTrackPosition(const trackID_t trackID,
 	const layoutPosition_t posY,
 	const layoutPosition_t posZ,
 	const layoutItemSize_t height,
-	const datamodel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::LayoutItem::layoutRotation_t rotation,
 	string& result) const
 {
 	layoutPosition_t x1;
@@ -1329,7 +1329,7 @@ bool Manager::CheckTrackPosition(const trackID_t trackID,
 	layoutPosition_t z1 = posZ;
 	layoutItemSize_t w1;
 	layoutItemSize_t h1;
-	bool ret = datamodel::LayoutItem::MapPosition(posX, posY, Width1, height, rotation, x1, y1, w1, h1);
+	bool ret = DataModel::LayoutItem::MapPosition(posX, posY, Width1, height, rotation, x1, y1, w1, h1);
 	if (ret == false)
 	{
 		result = "Unable to calculate position";
@@ -1346,7 +1346,7 @@ bool Manager::CheckTrackPosition(const trackID_t trackID,
 	if (track != nullptr)
 	{
 		z2 = track->GetPosZ();
-		ret = datamodel::LayoutItem::MapPosition(track->GetPosX(), track->GetPosY(), Width1, track->GetHeight(), track->GetRotation(), x2, y2, w2, h2);
+		ret = DataModel::LayoutItem::MapPosition(track->GetPosX(), track->GetPosY(), Width1, track->GetHeight(), track->GetRotation(), x2, y2, w2, h2);
 		if (ret == false)
 		{
 			result = "Unable to calculate position";
@@ -1417,10 +1417,10 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	const layoutPosition_t posY,
 	const layoutPosition_t posZ,
 	const layoutItemSize_t height,
-	const datamodel::LayoutItem::layoutRotation_t rotation,
-	const datamodel::Track::type_t type,
+	const DataModel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::Track::type_t type,
 	std::vector<feedbackID_t> newFeedbacks,
-	const datamodel::Track::selectStreetApproach_t selectStreetApproach,
+	const DataModel::Track::selectStreetApproach_t selectStreetApproach,
 	const bool releaseWhenFree,
 	string& result)
 {
@@ -1600,7 +1600,7 @@ bool Manager::SwitchSave(const switchID_t switchID,
 	const layoutPosition_t posX,
 	const layoutPosition_t posY,
 	const layoutPosition_t posZ,
-	const datamodel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::LayoutItem::layoutRotation_t rotation,
 	const controlID_t controlID,
 	const protocol_t protocol,
 	const address_t address,
@@ -1688,9 +1688,9 @@ bool Manager::SwitchDelete(const switchID_t switchID)
 	return true;
 }
 
-const map<string,datamodel::Switch*> Manager::SwitchListByName() const
+const map<string,DataModel::Switch*> Manager::SwitchListByName() const
 {
-	map<string,datamodel::Switch*> out;
+	map<string,DataModel::Switch*> out;
 	std::lock_guard<std::mutex> guard(switchMutex);
 	for(auto mySwitch : switches)
 	{
@@ -1792,7 +1792,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	const Street::commuterType_t commuter,
 	const length_t minTrainLength,
 	const length_t maxTrainLength,
-	const std::vector<datamodel::Relation*>& relations,
+	const std::vector<DataModel::Relation*>& relations,
 	const visible_t visible,
 	const layoutPosition_t posX,
 	const layoutPosition_t posY,
@@ -1811,7 +1811,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 {
 
 	if (visible && !CheckStreetPosition(streetID, posX, posY, posZ)
-		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, datamodel::LayoutItem::Rotation0, result))
+		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
 	{
 		result.append("Unable to ");
 		result.append(streetID == StreetNone ? "add" : "move");
@@ -1886,9 +1886,9 @@ bool Manager::StreetSave(const streetID_t streetID,
 	return true;
 }
 
-const map<string,datamodel::Street*> Manager::StreetListByName() const
+const map<string,DataModel::Street*> Manager::StreetListByName() const
 {
-	map<string,datamodel::Street*> out;
+	map<string,DataModel::Street*> out;
 	std::lock_guard<std::mutex> guard(streetMutex);
 	for(auto street : streets)
 	{
@@ -2124,7 +2124,7 @@ bool Manager::SignalSave(const signalID_t signalID,
 	const layoutPosition_t posX,
 	const layoutPosition_t posY,
 	const layoutPosition_t posZ,
-	const datamodel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::LayoutItem::layoutRotation_t rotation,
 	const controlID_t controlID,
 	const protocol_t protocol,
 	const address_t address,
@@ -2212,9 +2212,9 @@ bool Manager::SignalDelete(const signalID_t signalID)
 	return true;
 }
 
-const map<string,datamodel::Signal*> Manager::SignalListByName() const
+const map<string,DataModel::Signal*> Manager::SignalListByName() const
 {
-	map<string,datamodel::Signal*> out;
+	map<string,DataModel::Signal*> out;
 	std::lock_guard<std::mutex> guard(signalMutex);
 	for(auto signal : signals)
 	{
@@ -2394,14 +2394,14 @@ void Manager::TrackBlock(const trackID_t trackID, const bool blocked)
 	TrackPublishState(track);
 }
 
-void Manager::TrackPublishState(const datamodel::Track* track)
+void Manager::TrackPublishState(const DataModel::Track* track)
 {
 	const Loco* loco = GetLoco(track->GetLocoDelayed());
 	const bool hasLoco = loco != nullptr;
 	const string& locoName = hasLoco ? loco->GetName() : "";
 	const string& trackName = track->GetName();
 	const trackID_t trackID = track->GetID();
-	const bool occupied = track->GetFeedbackStateDelayed() == datamodel::Feedback::FeedbackStateOccupied;
+	const bool occupied = track->GetFeedbackStateDelayed() == DataModel::Feedback::FeedbackStateOccupied;
 	const bool blocked = track->GetBlocked();
 	const direction_t direction = track->GetLocoDirection();
 	std::lock_guard<std::mutex> guard(controlMutex);
@@ -2546,7 +2546,7 @@ bool Manager::CheckPositionFree(const layoutPosition_t posX,
 	const layoutPosition_t posZ,
 	const layoutItemSize_t width,
 	const layoutItemSize_t height,
-	const datamodel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::LayoutItem::layoutRotation_t rotation,
 	string& result) const
 {
 	if (width == 0 || height == 0)
@@ -2559,7 +2559,7 @@ bool Manager::CheckPositionFree(const layoutPosition_t posX,
 	layoutPosition_t z = posZ;
 	layoutItemSize_t w;
 	layoutItemSize_t h;
-	bool ret = datamodel::LayoutItem::MapPosition(posX, posY, width, height, rotation, x, y, w, h);
+	bool ret = DataModel::LayoutItem::MapPosition(posX, posY, width, height, rotation, x, y, w, h);
 	if (ret == false)
 	{
 		return false;
@@ -2712,8 +2712,8 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 
 bool Manager::SaveSettings(const accessoryDuration_t duration,
 	const bool autoAddFeedback,
-	const datamodel::Track::selectStreetApproach_t selectStreetApproach,
-	const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
+	const DataModel::Track::selectStreetApproach_t selectStreetApproach,
+	const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
 {
 	this->defaultAccessoryDuration = duration;
 	this->autoAddFeedback = autoAddFeedback;

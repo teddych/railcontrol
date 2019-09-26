@@ -4,11 +4,11 @@
 #include <string>
 
 #include "datatypes.h"
-#include "serializable.h"
+#include "DataModel/Serializable.h"
 
 class Manager;
 
-namespace datamodel
+namespace DataModel
 {
 	class Layer : public Object
 	{
@@ -18,5 +18,5 @@ namespace datamodel
 
 			objectType_t GetObjectType() const { return ObjectTypeLayer; }
 	};
-} // namespace datamodel
+} // namespace DataModel
 

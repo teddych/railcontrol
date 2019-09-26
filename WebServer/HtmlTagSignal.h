@@ -4,7 +4,7 @@
 
 #include "WebServer/HtmlTagLayoutItem.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class Signal;
 }
@@ -14,7 +14,7 @@ namespace WebServer
 	class HtmlTagSignal : public HtmlTagLayoutItem
 	{
 		public:
-			HtmlTagSignal(const datamodel::Signal* signal);
+			HtmlTagSignal(const DataModel::Signal* signal);
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

@@ -9,15 +9,15 @@
 #include "storage/StorageHandler.h"
 #include "Utils/Utils.h"
 
-using datamodel::Accessory;
-using datamodel::Track;
-using datamodel::Feedback;
-using datamodel::Layer;
-using datamodel::Loco;
-using datamodel::Relation;
-using datamodel::Signal;
-using datamodel::Street;
-using datamodel::Switch;
+using DataModel::Accessory;
+using DataModel::Track;
+using DataModel::Feedback;
+using DataModel::Layer;
+using DataModel::Loco;
+using DataModel::Relation;
+using DataModel::Signal;
+using DataModel::Street;
+using DataModel::Switch;
 using std::map;
 using std::string;
 using std::vector;
@@ -135,7 +135,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllLocos(map<locoID_t,datamodel::Loco*>& locos)
+	void StorageHandler::AllLocos(map<locoID_t,DataModel::Loco*>& locos)
 	{
 		if (instance == nullptr)
 		{
@@ -170,7 +170,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories)
+	void StorageHandler::AllAccessories(std::map<accessoryID_t,DataModel::Accessory*>& accessories)
 	{
 		if (instance == nullptr)
 		{
@@ -196,7 +196,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks)
+	void StorageHandler::AllFeedbacks(std::map<feedbackID_t,DataModel::Feedback*>& feedbacks)
 	{
 		if (instance == nullptr)
 		{
@@ -222,7 +222,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllTracks(std::map<trackID_t,datamodel::Track*>& tracks)
+	void StorageHandler::AllTracks(std::map<trackID_t,DataModel::Track*>& tracks)
 	{
 		if (instance == nullptr)
 		{
@@ -248,7 +248,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllSwitches(std::map<switchID_t,datamodel::Switch*>& switches)
+	void StorageHandler::AllSwitches(std::map<switchID_t,DataModel::Switch*>& switches)
 	{
 		if (instance == nullptr)
 		{
@@ -274,7 +274,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::Save(const datamodel::Street& street)
+	void StorageHandler::Save(const DataModel::Street& street)
 	{
 		if (instance == nullptr)
 		{
@@ -285,7 +285,7 @@ namespace storage
 		const streetID_t streetID = street.GetID();
 		instance->SaveObject(ObjectTypeStreet, streetID, street.GetName(), serialized);
 		instance->DeleteRelationFrom(ObjectTypeStreet, streetID);
-		const vector<datamodel::Relation*> relations = street.GetRelations();
+		const vector<DataModel::Relation*> relations = street.GetRelations();
 		for (auto relation : relations)
 		{
 			string serializedRelation = relation->Serialize();
@@ -294,7 +294,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::Save(const datamodel::Loco& loco)
+	void StorageHandler::Save(const DataModel::Loco& loco)
 	{
 		if (instance == nullptr)
 		{
@@ -305,7 +305,7 @@ namespace storage
 		const locoID_t locoID = loco.GetID();
 		instance->SaveObject(ObjectTypeLoco, locoID, loco.GetName(), serialized);
 		instance->DeleteRelationFrom(ObjectTypeLoco, locoID);
-		const vector<datamodel::Relation*> slaves = loco.GetSlaves();
+		const vector<DataModel::Relation*> slaves = loco.GetSlaves();
 		for (auto slave : slaves)
 		{
 			string serializedRelation = slave->Serialize();
@@ -314,7 +314,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllStreets(std::map<streetID_t,datamodel::Street*>& streets)
+	void StorageHandler::AllStreets(std::map<streetID_t,DataModel::Street*>& streets)
 	{
 		if (instance == nullptr)
 		{
@@ -348,7 +348,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllLayers(std::map<layerID_t,datamodel::Layer*>& layers)
+	void StorageHandler::AllLayers(std::map<layerID_t,DataModel::Layer*>& layers)
 	{
 		if (instance == nullptr)
 		{
@@ -373,7 +373,7 @@ namespace storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllSignals(std::map<signalID_t,datamodel::Signal*>& signals)
+	void StorageHandler::AllSignals(std::map<signalID_t,DataModel::Signal*>& signals)
 	{
 		if (instance == nullptr)
 		{

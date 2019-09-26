@@ -117,7 +117,7 @@ namespace WebServer {
 		stringstream command;
 		stringstream status;
 		string stateText;
-		datamodel::Accessory::Status(state, stateText);
+		DataModel::Accessory::Status(state, stateText);
 		command << "accessory;accessory=" << accessoryID << ";state=" << stateText;
 		status << manager.GetAccessoryName(accessoryID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());
@@ -141,7 +141,7 @@ namespace WebServer {
 		AddUpdate(command.str(), status.str());
 	}
 
-	void WebServer::FeedbackState(const std::string& name, const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state)
+	void WebServer::FeedbackState(const std::string& name, const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 	{
 		stringstream command;
 		stringstream status;
@@ -222,7 +222,7 @@ namespace WebServer {
 		stringstream command;
 		stringstream status;
 		string stateText;
-		datamodel::Switch::Status(state, stateText);
+		DataModel::Switch::Status(state, stateText);
 		command << "switch;switch=" << switchID << ";state=" << stateText;
 		status << manager.GetSwitchName(switchID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());
@@ -282,7 +282,7 @@ namespace WebServer {
 		stringstream command;
 		stringstream status;
 		string stateText;
-		datamodel::Signal::Status(state, stateText);
+		DataModel::Signal::Status(state, stateText);
 		command << "signal;signal=" << signalID << ";state=" << stateText;
 		status << manager.GetSignalName(signalID) << " is " << stateText;
 		AddUpdate(command.str(), status.str());

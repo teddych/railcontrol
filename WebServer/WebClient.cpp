@@ -8,7 +8,7 @@
 #include <sys/time.h>
 #include <unistd.h>
 
-#include "datamodel/datamodel.h"
+#include "DataModel/DataModel.h"
 #include "railcontrol.h"
 #include "Timestamp.h"
 #include "Utils/Utils.h"
@@ -36,15 +36,15 @@
 #include "WebServer/WebClient.h"
 #include "WebServer/WebServer.h"
 
-using datamodel::Accessory;
-using datamodel::Feedback;
-using datamodel::Layer;
-using datamodel::Loco;
-using datamodel::Relation;
-using datamodel::Signal;
-using datamodel::Street;
-using datamodel::Switch;
-using datamodel::Track;
+using DataModel::Accessory;
+using DataModel::Feedback;
+using DataModel::Layer;
+using DataModel::Loco;
+using DataModel::Relation;
+using DataModel::Signal;
+using DataModel::Street;
+using DataModel::Switch;
+using DataModel::Track;
 using std::map;
 using std::string;
 using std::stringstream;
@@ -1165,8 +1165,8 @@ namespace WebServer
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, switchOptions, objectId).AddClass("select_relation_id"));
 
 				map<string, switchState_t> stateOptions;
-				stateOptions["Straight"] = datamodel::Switch::SwitchStateStraight;
-				stateOptions["Turnout"] = datamodel::Switch::SwitchStateTurnout;
+				stateOptions["Straight"] = DataModel::Switch::SwitchStateStraight;
+				stateOptions["Turnout"] = DataModel::Switch::SwitchStateTurnout;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -1182,8 +1182,8 @@ namespace WebServer
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, signalOptions, objectId).AddClass("select_relation_id"));
 
 				map<string, signalState_t> stateOptions;
-				stateOptions["Green"] = datamodel::Signal::SignalStateGreen;
-				stateOptions["Red"] = datamodel::Signal::SignalStateRed;
+				stateOptions["Green"] = DataModel::Signal::SignalStateGreen;
+				stateOptions["Red"] = DataModel::Signal::SignalStateRed;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -1199,8 +1199,8 @@ namespace WebServer
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, accessoryOptions, objectId).AddClass("select_relation_id"));
 
 				map<string, accessoryState_t> stateOptions;
-				stateOptions["on"] = datamodel::Accessory::AccessoryStateOn;
-				stateOptions["off"] = datamodel::Accessory::AccessoryStateOff;
+				stateOptions["on"] = DataModel::Accessory::AccessoryStateOn;
+				stateOptions["off"] = DataModel::Accessory::AccessoryStateOff;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -1297,13 +1297,13 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagRotation(const datamodel::LayoutItem::layoutRotation_t rotation) const
+	HtmlTag WebClient::HtmlTagRotation(const DataModel::LayoutItem::layoutRotation_t rotation) const
 	{
 		std::map<string, string> rotationOptions;
-		rotationOptions[to_string(datamodel::LayoutItem::Rotation0)] = "none";
-		rotationOptions[to_string(datamodel::LayoutItem::Rotation90)] = "90 deg clockwise";
-		rotationOptions[to_string(datamodel::LayoutItem::Rotation180)] = "180 deg";
-		rotationOptions[to_string(datamodel::LayoutItem::Rotation270)] = "90 deg anti-clockwise";
+		rotationOptions[to_string(DataModel::LayoutItem::Rotation0)] = "none";
+		rotationOptions[to_string(DataModel::LayoutItem::Rotation90)] = "90 deg clockwise";
+		rotationOptions[to_string(DataModel::LayoutItem::Rotation180)] = "180 deg";
+		rotationOptions[to_string(DataModel::LayoutItem::Rotation270)] = "90 deg anti-clockwise";
 		return HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation));
 	}
 
@@ -1352,25 +1352,25 @@ namespace WebServer
 		return button;
 	}
 
-	HtmlTag WebClient::HtmlTagSelectSelectStreetApproach(const datamodel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault)
+	HtmlTag WebClient::HtmlTagSelectSelectStreetApproach(const DataModel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault)
 	{
 		map<string,string> options;
 		if (addDefault)
 		{
-			options[to_string(datamodel::Track::SelectStreetSystemDefault)] = "Use system default";
+			options[to_string(DataModel::Track::SelectStreetSystemDefault)] = "Use system default";
 		}
-		options[to_string(datamodel::Track::SelectStreetDoNotCare)] = "Do not care";
-		options[to_string(datamodel::Track::SelectStreetRandom)] = "Random";
-		options[to_string(datamodel::Track::SelectStreetMinTrackLength)] = "Minimal destination track length";
-		options[to_string(datamodel::Track::SelectStreetLongestUnused)] = "Longest unused";
+		options[to_string(DataModel::Track::SelectStreetDoNotCare)] = "Do not care";
+		options[to_string(DataModel::Track::SelectStreetRandom)] = "Random";
+		options[to_string(DataModel::Track::SelectStreetMinTrackLength)] = "Minimal destination track length";
+		options[to_string(DataModel::Track::SelectStreetLongestUnused)] = "Longest unused";
 		return HtmlTagSelectWithLabel("selectstreetapproach", "Select street by:", options, to_string(static_cast<int>(selectStreetApproach)));
 	}
 
-	HtmlTag WebClient::HtmlTagNrOfTracksToReserve(const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
+	HtmlTag WebClient::HtmlTagNrOfTracksToReserve(const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
 	{
 		map<string,string> options;
-		options[to_string(datamodel::Loco::ReserveOne)] = "1";
-		options[to_string(datamodel::Loco::ReserveTwo)] = "2";
+		options[to_string(DataModel::Loco::ReserveOne)] = "1";
+		options[to_string(DataModel::Loco::ReserveTwo)] = "2";
 		return HtmlTagSelectWithLabel("nroftrackstoreserve", "# of Tracks to reserve:", options, to_string(static_cast<int>(nrOfTracksToReserve)));
 	}
 
@@ -1463,7 +1463,7 @@ namespace WebServer
 
 		if (locoID > LocoNone)
 		{
-			const datamodel::Loco* loco = manager.GetLoco(locoID);
+			const DataModel::Loco* loco = manager.GetLoco(locoID);
 			controlID = loco->GetControlID();
 			protocol = loco->GetProtocol();
 			address = loco->GetAddress();
@@ -1507,7 +1507,7 @@ namespace WebServer
 		basicContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('loco', " + to_string(locoID) + ")"));
 		basicContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, datamodel::LocoFunctions::maxFunctions));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, DataModel::LocoFunctions::maxFunctions));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Train length:", length, 0, 99999));
 		formContent.AddChildTag(basicContent);
 
@@ -1622,7 +1622,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Locos"));
 		HtmlTag table("table");
-		const map<string,datamodel::Loco*> locoList = manager.LocoListByName();
+		const map<string,DataModel::Loco*> locoList = manager.LocoListByName();
 		map<string,string> locoArgument;
 		for (auto loco : locoList)
 		{
@@ -1655,7 +1655,7 @@ namespace WebServer
 			return;
 		}
 
-		const datamodel::Loco* loco = manager.GetLoco(locoID);
+		const DataModel::Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown loco");
@@ -1678,7 +1678,7 @@ namespace WebServer
 	void WebClient::HandleLocoDelete(const map<string, string>& arguments)
 	{
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		const datamodel::Loco* loco = manager.GetLoco(locoID);
+		const DataModel::Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete loco");
@@ -1729,7 +1729,7 @@ namespace WebServer
 			return;
 		}
 
-		const map<accessoryID_t,datamodel::Accessory*>& accessories = manager.AccessoryList();
+		const map<accessoryID_t,DataModel::Accessory*>& accessories = manager.AccessoryList();
 		for (auto accessory : accessories)
 		{
 			if (accessory.second->IsVisibleOnLayer(layer) == false)
@@ -1739,7 +1739,7 @@ namespace WebServer
 			content.AddChildTag(HtmlTagAccessory(accessory.second));
 		}
 
-		const map<switchID_t,datamodel::Switch*>& switches = manager.SwitchList();
+		const map<switchID_t,DataModel::Switch*>& switches = manager.SwitchList();
 		for (auto mySwitch : switches)
 		{
 			if (mySwitch.second->IsVisibleOnLayer(layer) == false)
@@ -1749,7 +1749,7 @@ namespace WebServer
 			content.AddChildTag(HtmlTagSwitch(mySwitch.second));
 		}
 
-		const map<switchID_t,datamodel::Track*>& tracks = manager.TrackList();
+		const map<switchID_t,DataModel::Track*>& tracks = manager.TrackList();
 		for (auto track : tracks)
 		{
 			if (track.second->IsVisibleOnLayer(layer) == false)
@@ -1759,7 +1759,7 @@ namespace WebServer
 			content.AddChildTag(HtmlTagTrack(manager, track.second));
 		}
 
-		const map<streetID_t,datamodel::Street*>& streets = manager.StreetList();
+		const map<streetID_t,DataModel::Street*>& streets = manager.StreetList();
 		for (auto street : streets)
 		{
 			if (street.second->IsVisibleOnLayer(layer) == false)
@@ -1779,7 +1779,7 @@ namespace WebServer
 			content.AddChildTag(HtmlTagFeedback(feedback.second));
 		}
 
-		const map<signalID_t,datamodel::Signal*>& signals = manager.SignalList();
+		const map<signalID_t,DataModel::Signal*>& signals = manager.SignalList();
 		for (auto signal : signals)
 		{
 			if (signal.second->IsVisibleOnLayer(layer) == false)
@@ -1807,7 +1807,7 @@ namespace WebServer
 		bool inverted = false;
 		if (accessoryID > AccessoryNone)
 		{
-			const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
+			const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
 			controlID = accessory->GetControlID();
 			protocol = accessory->GetProtocol();
 			address = accessory->GetAddress();
@@ -1851,7 +1851,7 @@ namespace WebServer
 	void WebClient::HandleAccessoryGet(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory");
-		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
+		const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			HtmlReplyWithHeader(HtmlTag());
@@ -1873,7 +1873,7 @@ namespace WebServer
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, datamodel::Accessory::AccessoryTypeDefault, duration, inverted, result))
+		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, DataModel::Accessory::AccessoryTypeDefault, duration, inverted, result))
 		{
 			HtmlReplyWithHeaderAndParagraph(result);
 			return;
@@ -1885,7 +1885,7 @@ namespace WebServer
 	void WebClient::HandleAccessoryState(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		accessoryState_t accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? datamodel::Accessory::AccessoryStateOff : datamodel::Accessory::AccessoryStateOn);
+		accessoryState_t accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? DataModel::Accessory::AccessoryStateOff : DataModel::Accessory::AccessoryStateOn);
 
 		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState, false);
 
@@ -1899,7 +1899,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Accessories"));
 		HtmlTag table("table");
-		const map<string,datamodel::Accessory*> accessoryList = manager.AccessoryListByName();
+		const map<string,DataModel::Accessory*> accessoryList = manager.AccessoryListByName();
 		map<string,string> accessoryArgument;
 		for (auto accessory : accessoryList)
 		{
@@ -1931,7 +1931,7 @@ namespace WebServer
 			return;
 		}
 
-		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
+		const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown accessory");
@@ -1954,7 +1954,7 @@ namespace WebServer
 	void WebClient::HandleAccessoryDelete(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		const datamodel::Accessory* accessory = manager.GetAccessory(accessoryID);
+		const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete accessory");
@@ -1990,13 +1990,13 @@ namespace WebServer
 		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
-		switchType_t type = datamodel::Switch::SwitchTypeLeft;
+		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		switchType_t type = DataModel::Switch::SwitchTypeLeft;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (switchID > SwitchNone)
 		{
-			const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
+			const DataModel::Switch* mySwitch = manager.GetSwitch(switchID);
 			controlID = mySwitch->GetControlID();
 			protocol = mySwitch->GetProtocol();
 			address = mySwitch->GetAddress();
@@ -2022,8 +2022,8 @@ namespace WebServer
 		}
 
 		std::map<string, string> typeOptions;
-		typeOptions[to_string(datamodel::Switch::SwitchTypeLeft)] = "Left";
-		typeOptions[to_string(datamodel::Switch::SwitchTypeRight)] = "Right";
+		typeOptions[to_string(DataModel::Switch::SwitchTypeLeft)] = "Left";
+		typeOptions[to_string(DataModel::Switch::SwitchTypeRight)] = "Right";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
@@ -2071,8 +2071,8 @@ namespace WebServer
 		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
-		switchType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Switch::SwitchTypeLeft);
+		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		switchType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Switch::SwitchTypeLeft);
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
@@ -2087,7 +2087,7 @@ namespace WebServer
 	void WebClient::HandleSwitchState(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		switchState_t switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? datamodel::Switch::SwitchStateTurnout : datamodel::Switch::SwitchStateStraight);
+		switchState_t switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? DataModel::Switch::SwitchStateTurnout : DataModel::Switch::SwitchStateStraight);
 
 		manager.SwitchState(ControlTypeWebserver, switchID, switchState, false);
 
@@ -2101,7 +2101,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Switches"));
 		HtmlTag table("table");
-		const map<string,datamodel::Switch*> switchList = manager.SwitchListByName();
+		const map<string,DataModel::Switch*> switchList = manager.SwitchListByName();
 		map<string,string> switchArgument;
 		for (auto mySwitch : switchList)
 		{
@@ -2133,7 +2133,7 @@ namespace WebServer
 			return;
 		}
 
-		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
+		const DataModel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown switch");
@@ -2156,7 +2156,7 @@ namespace WebServer
 	void WebClient::HandleSwitchDelete(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
+		const DataModel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete switch");
@@ -2177,7 +2177,7 @@ namespace WebServer
 	void WebClient::HandleSwitchGet(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch");
-		const datamodel::Switch* mySwitch = manager.GetSwitch(switchID);
+		const DataModel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
 			HtmlReplyWithHeader(HtmlTag());
@@ -2204,13 +2204,13 @@ namespace WebServer
 		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
-		signalType_t type = datamodel::Signal::SignalTypeSimple;
+		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		signalType_t type = DataModel::Signal::SignalTypeSimple;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (signalID > SignalNone)
 		{
-			const datamodel::Signal* signal = manager.GetSignal(signalID);
+			const DataModel::Signal* signal = manager.GetSignal(signalID);
 			controlID = signal->GetControlID();
 			protocol = signal->GetProtocol();
 			address = signal->GetAddress();
@@ -2236,7 +2236,7 @@ namespace WebServer
 		}
 
 		std::map<string, string> typeOptions;
-		typeOptions[to_string(datamodel::Signal::SignalTypeSimple)] = "Simple";
+		typeOptions[to_string(DataModel::Signal::SignalTypeSimple)] = "Simple";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit signal &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
@@ -2284,8 +2284,8 @@ namespace WebServer
 		layoutPosition_t posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
-		signalType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Signal::SignalTypeSimple);
+		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		signalType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Signal::SignalTypeSimple);
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
@@ -2300,7 +2300,7 @@ namespace WebServer
 	void WebClient::HandleSignalState(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		signalState_t signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? datamodel::Signal::SignalStateRed : datamodel::Signal::SignalStateGreen);
+		signalState_t signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? DataModel::Signal::SignalStateRed : DataModel::Signal::SignalStateGreen);
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
 
@@ -2314,7 +2314,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Signals"));
 		HtmlTag table("table");
-		const map<string,datamodel::Signal*> signalList = manager.SignalListByName();
+		const map<string,DataModel::Signal*> signalList = manager.SignalListByName();
 		map<string,string> signalArgument;
 		for (auto signal : signalList)
 		{
@@ -2346,7 +2346,7 @@ namespace WebServer
 			return;
 		}
 
-		const datamodel::Signal* signal = manager.GetSignal(signalID);
+		const DataModel::Signal* signal = manager.GetSignal(signalID);
 		if (signal == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown signal");
@@ -2369,7 +2369,7 @@ namespace WebServer
 	void WebClient::HandleSignalDelete(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		const datamodel::Signal* signal = manager.GetSignal(signalID);
+		const DataModel::Signal* signal = manager.GetSignal(signalID);
 		if (signal == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete signal");
@@ -2390,7 +2390,7 @@ namespace WebServer
 	void WebClient::HandleSignalGet(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal");
-		const datamodel::Signal* signal = manager.GetSignal(signalID);
+		const DataModel::Signal* signal = manager.GetSignal(signalID);
 		if (signal == nullptr)
 		{
 			HtmlReplyWithHeader(HtmlTag());
@@ -2409,7 +2409,7 @@ namespace WebServer
 	void WebClient::HandleStreetGet(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
-		const datamodel::Street* street = manager.GetStreet(streetID);
+		const DataModel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr || street->GetVisible() == VisibleNo)
 		{
 			HtmlReplyWithHeader(HtmlTag());
@@ -2444,7 +2444,7 @@ namespace WebServer
 		wait_t waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
 		if (streetID > StreetNone)
 		{
-			const datamodel::Street* street = manager.GetStreet(streetID);
+			const DataModel::Street* street = manager.GetStreet(streetID);
 			name = street->GetName();
 			delay = street->GetDelay();
 			commuter = street->GetCommuter();
@@ -2640,7 +2640,7 @@ namespace WebServer
 			return;
 		}
 
-		const datamodel::Street* street = manager.GetStreet(streetID);
+		const DataModel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown street");
@@ -2663,7 +2663,7 @@ namespace WebServer
 	void WebClient::HandleStreetDelete(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
-		const datamodel::Street* street = manager.GetStreet(streetID);
+		const DataModel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete street");
@@ -2686,7 +2686,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Streets"));
 		HtmlTag table("table");
-		const map<string,datamodel::Street*> streetList = manager.StreetListByName();
+		const map<string,DataModel::Street*> streetList = manager.StreetListByName();
 		map<string,string> streetArgument;
 		for (auto street : streetList)
 		{
@@ -2731,14 +2731,14 @@ namespace WebServer
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutItemSize_t height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
-		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
-		datamodel::Track::type_t type = datamodel::Track::TrackTypeStraight;
+		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		DataModel::Track::type_t type = DataModel::Track::TrackTypeStraight;
 		std::vector<feedbackID_t> feedbacks;
-		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
+		DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		if (trackID > TrackNone)
 		{
-			const datamodel::Track* track = manager.GetTrack(trackID);
+			const DataModel::Track* track = manager.GetTrack(trackID);
 			name = track->GetName();
 			posx = track->GetPosX();
 			posy = track->GetPosY();
@@ -2752,8 +2752,8 @@ namespace WebServer
 		}
 		switch (type)
 		{
-			case datamodel::Track::TrackTypeTurn:
-			case datamodel::Track::TrackTypeTunnelEnd:
+			case DataModel::Track::TrackTypeTurn:
+			case DataModel::Track::TrackTypeTunnelEnd:
 				height = 1;
 				break;
 
@@ -2762,13 +2762,13 @@ namespace WebServer
 		}
 
 		std::map<string, string> typeOptions;
-		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeStraight))] = "Straight";
-		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTurn))] = "Turn";
-		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeEnd))] = "End/BufferStop";
-		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeBridge))] = "Bridge";
-		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTunnel))] = "Tunnel (two sides)";
-		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeTunnelEnd))] = "Tunnel (one side)";
-		typeOptions[to_string(static_cast<int>(datamodel::Track::TrackTypeLink))] = "Link";
+		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeStraight))] = "Straight";
+		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeTurn))] = "Turn";
+		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeEnd))] = "End/BufferStop";
+		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeBridge))] = "Bridge";
+		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeTunnel))] = "Tunnel (two sides)";
+		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeTunnelEnd))] = "Tunnel (one side)";
+		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeLink))] = "Link";
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit track &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
@@ -2793,8 +2793,8 @@ namespace WebServer
 		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100));
 		switch (type)
 		{
-			case datamodel::Track::TrackTypeTurn:
-			case datamodel::Track::TrackTypeTunnelEnd:
+			case DataModel::Track::TrackTypeTurn:
+			case DataModel::Track::TrackTypeTunnelEnd:
 				i_length.AddAttribute("hidden");
 				break;
 
@@ -2855,12 +2855,12 @@ namespace WebServer
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		layoutItemSize_t height = 1;
-		datamodel::LayoutItem::layoutRotation_t rotation = static_cast<datamodel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", datamodel::LayoutItem::Rotation0));
-		datamodel::Track::type_t type = static_cast<datamodel::Track::type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", datamodel::Track::TrackTypeStraight));
+		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		DataModel::Track::type_t type = static_cast<DataModel::Track::type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Track::TrackTypeStraight));
 		switch (type)
 		{
-			case datamodel::Track::TrackTypeTurn:
-			case datamodel::Track::TrackTypeTunnelEnd:
+			case DataModel::Track::TrackTypeTurn:
+			case DataModel::Track::TrackTypeTunnelEnd:
 				break;
 
 			default:
@@ -2877,7 +2877,7 @@ namespace WebServer
 				feedbacks.push_back(feedbackID);
 			}
 		}
-		datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetSystemDefault));
+		DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		string result;
 		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, selectStreetApproach, releaseWhenFree, result) == TrackNone)
@@ -2899,7 +2899,7 @@ namespace WebServer
 			return;
 		}
 
-		const datamodel::Track* track = manager.GetTrack(trackID);
+		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown track");
@@ -2924,7 +2924,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Tracks"));
 		HtmlTag table("table");
-		const map<string,datamodel::Track*> trackList = manager.TrackListByName();
+		const map<string,DataModel::Track*> trackList = manager.TrackListByName();
 		map<string,string> trackArgument;
 		for (auto track : trackList)
 		{
@@ -2949,7 +2949,7 @@ namespace WebServer
 	void WebClient::HandleTrackDelete(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		const datamodel::Track* track = manager.GetTrack(trackID);
+		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete track");
@@ -2970,7 +2970,7 @@ namespace WebServer
 	void WebClient::HandleTrackGet(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
-		const datamodel::Track* track = manager.GetTrack(trackID);
+		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
 			HtmlReplyWithHeader(HtmlTag());
@@ -2990,7 +2990,7 @@ namespace WebServer
 			HtmlReplyWithHeaderAndParagraph(ok ? "Loco added to track." : "Unable to add loco to track.");
 			return;
 		}
-		const datamodel::Track* track = manager.GetTrack(trackID);
+		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track->IsInUse())
 		{
 			HtmlReplyErrorWithHeader("Track " + track->GetName() + " is in use.");
@@ -3050,7 +3050,7 @@ namespace WebServer
 		bool inverted = false;
 		if (feedbackID > FeedbackNone)
 		{
-			const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
+			const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
 			name = feedback->GetName();
 			controlId = feedback->GetControlID();
 			pin = feedback->GetPin();
@@ -3129,7 +3129,7 @@ namespace WebServer
 	void WebClient::HandleFeedbackState(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		datamodel::Feedback::feedbackState_t state = (Utils::Utils::GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? datamodel::Feedback::FeedbackStateOccupied : datamodel::Feedback::FeedbackStateFree);
+		DataModel::Feedback::feedbackState_t state = (Utils::Utils::GetStringMapEntry(arguments, "state", "occupied").compare("occupied") == 0 ? DataModel::Feedback::FeedbackStateOccupied : DataModel::Feedback::FeedbackStateFree);
 
 		manager.FeedbackState(feedbackID, state);
 
@@ -3143,7 +3143,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Feedback"));
 		HtmlTag table("table");
-		const map<string,datamodel::Feedback*> feedbackList = manager.FeedbackListByName();
+		const map<string,DataModel::Feedback*> feedbackList = manager.FeedbackListByName();
 		map<string,string> feedbackArgument;
 		for (auto feedback : feedbackList)
 		{
@@ -3171,7 +3171,7 @@ namespace WebServer
 			return;
 		}
 
-		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
+		const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown feedback");
@@ -3194,7 +3194,7 @@ namespace WebServer
 	void WebClient::HandleFeedbackDelete(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
+		const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete feedback");
@@ -3215,7 +3215,7 @@ namespace WebServer
 	void WebClient::HandleFeedbackGet(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
-		const datamodel::Feedback* feedback = manager.GetFeedback(feedbackID);
+		const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr || feedback->GetVisible() == VisibleNo)
 		{
 			HtmlReplyWithHeader(HtmlTag());
@@ -3238,8 +3238,8 @@ namespace WebServer
 	{
 		const accessoryDuration_t defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
-		const datamodel::Track::selectStreetApproach_t selectStreetApproach = manager.GetSelectStreetApproach();
-		const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
+		const DataModel::Track::selectStreetApproach_t selectStreetApproach = manager.GetSelectStreetApproach();
+		const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
 
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit settings"));
@@ -3262,8 +3262,8 @@ namespace WebServer
 	{
 		const accessoryDuration_t defaultAccessoryDuration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		const bool autoAddFeedback = Utils::Utils::GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
-		const datamodel::Track::selectStreetApproach_t selectStreetApproach = static_cast<datamodel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", datamodel::Track::SelectStreetRandom));
-		const datamodel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<datamodel::Loco::nrOfTracksToReserve_t>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", datamodel::Loco::ReserveOne));
+		const DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetRandom));
+		const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
 		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve);
 		HtmlReplyWithHeaderAndParagraph("Settings saved.");
 	}

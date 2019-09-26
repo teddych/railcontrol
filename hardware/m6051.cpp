@@ -136,9 +136,9 @@ namespace hardware
 		}
 
 		std::string stateText;
-		datamodel::Accessory::Status(state, stateText);
+		DataModel::Accessory::Status(state, stateText);
 		logger->Info("Setting state of accessory {0}/{1} to \"{2}\"", address, stateText, on ? "on" : "off");
-		const unsigned char stateMM = (state == datamodel::Accessory::AccessoryStateOn ? 33 : 34);
+		const unsigned char stateMM = (state == DataModel::Accessory::AccessoryStateOn ? 33 : 34);
 		const unsigned char addressMM = static_cast<unsigned char>(address);
 		SendTwoBytes(stateMM, addressMM);
 	}
@@ -176,16 +176,16 @@ namespace hardware
 						}
 
 						std::string text;
-						datamodel::Feedback::feedbackState_t state;
+						DataModel::Feedback::feedbackState_t state;
 						if ((byte >> shift) & 0x01)
 						{
 							text = "on";
-							state = datamodel::Feedback::FeedbackStateOccupied;
+							state = DataModel::Feedback::FeedbackStateOccupied;
 						}
 						else
 						{
 							text = "off";
-							state = datamodel::Feedback::FeedbackStateFree;
+							state = DataModel::Feedback::FeedbackStateFree;
 						}
 						address_t address = (module * 8) + pin;
 						logger->Info("S88 Pin {0} set to {1}", address, text);

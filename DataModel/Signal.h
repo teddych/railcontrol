@@ -4,12 +4,12 @@
 #include <string>
 #include <vector>
 
-#include "datamodel/accessory.h"
+#include "DataModel/Accessory.h"
 #include "datatypes.h"
 
 class Manager;
 
-namespace datamodel
+namespace DataModel
 {
 	class Signal : public Accessory
 	{
@@ -50,11 +50,11 @@ namespace datamodel
 
 			static void Status(const signalState_t state, std::string& stateText)
 			{
-				stateText.assign(state == datamodel::Signal::SignalStateGreen ? "green" : "red");
+				stateText.assign(state == DataModel::Signal::SignalStateGreen ? "green" : "red");
 			}
 
 		private:
 			Manager* manager;
 	};
-} // namespace datamodel
+} // namespace DataModel
 

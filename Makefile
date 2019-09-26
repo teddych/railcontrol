@@ -16,19 +16,19 @@ OBJ= \
 	Logger/Logger.o \
 	Logger/LoggerServer.o \
 	config.o \
-	datamodel/accessory.o \
-	datamodel/feedback.o \
-	datamodel/HardwareHandle.o \
-	datamodel/layout_item.o \
-	datamodel/LockableItem.o \
-	datamodel/Loco.o \
-	datamodel/object.o \
-	datamodel/relation.o \
-	datamodel/serializable.o \
-	datamodel/signal.o \
-	datamodel/street.o \
-	datamodel/switch.o \
-	datamodel/track.o \
+	DataModel/Accessory.o \
+	DataModel/Feedback.o \
+	DataModel/HardwareHandle.o \
+	DataModel/LayoutItem.o \
+	DataModel/LockableItem.o \
+	DataModel/Loco.o \
+	DataModel/Object.o \
+	DataModel/Relation.o \
+	DataModel/Serializable.o \
+	DataModel/Signal.o \
+	DataModel/Street.o \
+	DataModel/Switch.o \
+	DataModel/Track.o \
 	hardware/HardwareHandler.o \
 	manager.o \
 	network/Serial.o \
@@ -94,13 +94,13 @@ sqlite-shell:
 Timestamp.o: Timestamp.cpp Timestamp.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
-%.o: %.cpp *.h console/*.h datamodel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h text/*.h Utils/*.h WebServer/*.h
+%.o: %.cpp *.h DataModel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h Utils/*.h WebServer/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
 	make -C hardware clean
 	make -C storage clean
-	rm -f *.o console/*.o datamodel/*.o text/*.o Utils/*.o WebServer/*.o
+	rm -f *.o DataModel/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:

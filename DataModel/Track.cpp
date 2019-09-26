@@ -3,8 +3,8 @@
 #include <sstream>
 #include <string>
 
-#include "datamodel/feedback.h"
-#include "datamodel/track.h"
+#include "DataModel/Feedback.h"
+#include "DataModel/Track.h"
 #include "manager.h"
 #include "Utils/Utils.h"
 
@@ -12,7 +12,7 @@ using std::map;
 using std::string;
 using std::vector;
 
-namespace datamodel
+namespace DataModel
 {
 	std::string Track::Serialize() const
 	{
@@ -73,8 +73,8 @@ namespace datamodel
 			feedbacks.push_back(Utils::Utils::StringToInteger(feedbackString));
 		}
 		selectStreetApproach = static_cast<selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
-		state = static_cast<datamodel::Feedback::feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "state", datamodel::Feedback::FeedbackStateFree));
-		stateDelayed = static_cast<datamodel::Feedback::feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "statedelayed", state));
+		state = static_cast<DataModel::Feedback::feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "state", DataModel::Feedback::FeedbackStateFree));
+		stateDelayed = static_cast<DataModel::Feedback::feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "statedelayed", state));
 		locoDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
 		blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked", false);
 		locoIdDelayed = static_cast<locoID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "locodelayed", GetLoco()));
@@ -92,7 +92,7 @@ namespace datamodel
 		{
 			return false;
 		}
-		if (state != datamodel::Feedback::FeedbackStateFree)
+		if (state != DataModel::Feedback::FeedbackStateFree)
 		{
 			return false;
 		}
@@ -124,19 +124,19 @@ namespace datamodel
 		{
 			return false;
 		}
-		if (state != datamodel::Feedback::FeedbackStateFree)
+		if (state != DataModel::Feedback::FeedbackStateFree)
 		{
 			return true;
 		}
 		this->locoIdDelayed = LocoNone;
-		this->stateDelayed = datamodel::Feedback::FeedbackStateFree;
+		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
 		manager->TrackPublishState(this);
 		return true;
 	}
 
-	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state)
+	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 	{
-		datamodel::Feedback::feedbackState_t oldState = this->state;
+		DataModel::Feedback::feedbackState_t oldState = this->state;
 		bool ret = FeedbackStateInternal(feedbackID, state);
 		if (ret == false)
 		{
@@ -150,10 +150,10 @@ namespace datamodel
 		return true;
 	}
 
-	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const datamodel::Feedback::feedbackState_t state)
+	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		if (state == datamodel::Feedback::FeedbackStateOccupied)
+		if (state == DataModel::Feedback::FeedbackStateOccupied)
 		{
 			Loco* loco = manager->GetLoco(GetLocoDelayed());
 			if (loco == nullptr)
@@ -172,17 +172,17 @@ namespace datamodel
 
 		for (auto f : feedbacks)
 		{
-			datamodel::Feedback* feedback = manager->GetFeedbackUnlocked(f);
+			DataModel::Feedback* feedback = manager->GetFeedbackUnlocked(f);
 			if (feedback == nullptr)
 			{
 				continue;
 			}
-			if (feedback->GetState() != datamodel::Feedback::FeedbackStateFree)
+			if (feedback->GetState() != DataModel::Feedback::FeedbackStateFree)
 			{
 				return false;
 			}
 		}
-		this->state = datamodel::Feedback::FeedbackStateFree;
+		this->state = DataModel::Feedback::FeedbackStateFree;
 
 		if (releaseWhenFree)
 		{
@@ -199,7 +199,7 @@ namespace datamodel
 			return true;
 		}
 
-		this->stateDelayed = datamodel::Feedback::FeedbackStateFree;
+		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
 		this->locoIdDelayed = LocoNone;
 		return true;
 	}
@@ -273,4 +273,4 @@ namespace datamodel
 				break;
 		}
 	}
-} // namespace datamodel
+} // namespace DataModel

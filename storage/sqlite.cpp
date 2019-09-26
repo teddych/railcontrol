@@ -5,11 +5,11 @@
 
 #include "storage/sqlite.h"
 
-using datamodel::Accessory;
-using datamodel::Track;
-using datamodel::Feedback;
-using datamodel::Loco;
-using datamodel::Switch;
+using DataModel::Accessory;
+using DataModel::Track;
+using DataModel::Feedback;
+using DataModel::Loco;
+using DataModel::Switch;
 using hardware::HardwareParams;
 using std::map;
 using std::string;
@@ -236,7 +236,7 @@ namespace storage
 		Execute(ss.str());
 	}
 
-	// save datamodelobject
+	// save DataModelobject
 	void SQLite::SaveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object)
 	{
 		stringstream ss;
@@ -245,7 +245,7 @@ namespace storage
 		Execute(ss.str());
 	}
 
-	// delete datamodelobject
+	// delete DataModelobject
 	void SQLite::DeleteObject(const objectType_t objectType, const objectID_t objectID)
 	{
 		stringstream ss;
@@ -253,7 +253,7 @@ namespace storage
 		Execute(ss.str());
 	}
 
-	// read datamodelobjects
+	// read DataModelobjects
 	void SQLite::ObjectsOfType(const objectType_t objectType, vector<string>& objects)
 	{
 		if (db == nullptr)
@@ -275,7 +275,7 @@ namespace storage
 		sqlite3_free(dbError);
 	}
 
-	// save datamodelrelation
+	// save DataModelrelation
 	void SQLite::SaveRelation(const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation)
 	{
 		stringstream ss;
@@ -290,7 +290,7 @@ namespace storage
 		Execute(ss.str());
 	}
 
-	// delete datamodelrelaton
+	// delete DataModelrelaton
 	void SQLite::DeleteRelationFrom(const objectType_t objectType, const objectID_t objectID)
 	{
 		stringstream ss;
@@ -298,7 +298,7 @@ namespace storage
 		Execute(ss.str());
 	}
 
-	// delete datamodelrelaton
+	// delete DataModelrelaton
 	void SQLite::DeleteRelationTo(const objectType_t objectType, const objectID_t objectID)
 	{
 		stringstream ss;
@@ -306,7 +306,7 @@ namespace storage
 		Execute(ss.str());
 	}
 
-	// read datamodelrelations
+	// read DataModelrelations
 	void SQLite::RelationsFrom(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
 	{
 		if (db == nullptr)
@@ -329,7 +329,7 @@ namespace storage
 		sqlite3_free(dbError);
 	}
 
-	// read datamodelrelations
+	// read DataModelrelations
 	void SQLite::RelationsTo(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
 	{
 		if (db == nullptr)
@@ -381,7 +381,7 @@ namespace storage
 		return values[0];
 	}
 
-	// callback read all datamodelobjects/relations
+	// callback read all DataModel objects/relations
 	int SQLite::CallbackStringVector(void* v, int argc, char **argv, __attribute__((unused)) char **colName)
 	{
 		vector<string>* objects = static_cast<vector<string>*>(v);

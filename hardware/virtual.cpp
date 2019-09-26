@@ -57,7 +57,7 @@ namespace hardware
 	void Virtual::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		std::string stateText;
-		datamodel::Accessory::Status(state, stateText);
+		DataModel::Accessory::Status(state, stateText);
 		logger->Info("Setting state of virtual accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
 	}
 

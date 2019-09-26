@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "datamodel/datamodel.h"
+#include "DataModel/DataModel.h"
 #include "datatypes.h"
 #include "hardware/HardwareParams.h"
 #include "storage/StorageInterface.h"
@@ -21,25 +21,25 @@ namespace storage
 			~StorageHandler();
 			void AllHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
 			void DeleteHardwareParams(const controlID_t controlID);
-			void AllLocos(std::map<locoID_t,datamodel::Loco*>& locos);
+			void AllLocos(std::map<locoID_t,DataModel::Loco*>& locos);
 			void DeleteLoco(locoID_t locoID);
-			void AllAccessories(std::map<accessoryID_t,datamodel::Accessory*>& accessories);
+			void AllAccessories(std::map<accessoryID_t,DataModel::Accessory*>& accessories);
 			void DeleteAccessory(accessoryID_t accessoryID);
-			void AllFeedbacks(std::map<feedbackID_t,datamodel::Feedback*>& feedbacks);
+			void AllFeedbacks(std::map<feedbackID_t,DataModel::Feedback*>& feedbacks);
 			void DeleteFeedback(feedbackID_t feedbackID);
-			void AllTracks(std::map<trackID_t,datamodel::Track*>& tracks);
+			void AllTracks(std::map<trackID_t,DataModel::Track*>& tracks);
 			void DeleteTrack(trackID_t trackID);
-			void AllSwitches(std::map<switchID_t,datamodel::Switch*>& switches);
+			void AllSwitches(std::map<switchID_t,DataModel::Switch*>& switches);
 			void DeleteSwitch(switchID_t switchID);
-			void AllStreets(std::map<streetID_t,datamodel::Street*>& streets);
+			void AllStreets(std::map<streetID_t,DataModel::Street*>& streets);
 			void DeleteStreet(streetID_t streetID);
-			void AllLayers(std::map<layerID_t,datamodel::Layer*>& layers);
+			void AllLayers(std::map<layerID_t,DataModel::Layer*>& layers);
 			void DeleteLayer(layerID_t layerID);
-			void AllSignals(std::map<signalID_t,datamodel::Signal*>& signals);
+			void AllSignals(std::map<signalID_t,DataModel::Signal*>& signals);
 			void DeleteSignal(signalID_t signalID);
 			void Save(const hardware::HardwareParams& hardwareParams);
-			void Save(const datamodel::Street& street);
-			void Save(const datamodel::Loco& loco);
+			void Save(const DataModel::Street& street);
+			void Save(const DataModel::Loco& loco);
 			template<class T> void Save(const T& t)
 			{
 				if (instance == nullptr)

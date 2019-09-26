@@ -42,12 +42,6 @@ void stopRailControlWebserver()
 	runRailcontrol = false;
 }
 
-void stopRailControlConsole()
-{
-	Logger::Logger::GetLogger("Main")->Info("Stopping railcontrol requested by console client");
-	runRailcontrol = false;
-}
-
 int main (int argc, char* argv[])
 {
 	stopSignalCounter = 0;

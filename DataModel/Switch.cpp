@@ -1,13 +1,13 @@
 #include <map>
 
-#include "datamodel/switch.h"
+#include "DataModel/Switch.h"
 #include "Utils/Utils.h"
 
 using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	std::string Switch::Serialize() const
 	{
@@ -26,5 +26,5 @@ namespace datamodel
 
 		return Accessory::Deserialize(arguments);
 	}
-} // namespace datamodel
+} // namespace DataModel
 

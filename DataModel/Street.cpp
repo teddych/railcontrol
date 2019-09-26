@@ -2,9 +2,9 @@
 #include <map>
 #include <sstream>
 
-#include "datamodel/Loco.h"
-#include "datamodel/relation.h"
-#include "datamodel/street.h"
+#include "DataModel/Loco.h"
+#include "DataModel/Relation.h"
+#include "DataModel/Street.h"
 #include "manager.h"
 #include "Utils/Utils.h"
 
@@ -12,7 +12,7 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	Street::Street(Manager* manager, const std::string& serialized)
 	:	LockableItem(),
@@ -93,7 +93,7 @@ namespace datamodel
 		}
 	}
 
-	bool Street::AssignRelations(const std::vector<datamodel::Relation*>& newRelations)
+	bool Street::AssignRelations(const std::vector<DataModel::Relation*>& newRelations)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (GetLockState() != LockStateFree)
@@ -253,5 +253,5 @@ namespace datamodel
 		}
 		ReleaseInternal(locoID);
 	}
-} // namespace datamodel
+} // namespace DataModel
 

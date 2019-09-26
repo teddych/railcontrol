@@ -2,7 +2,7 @@
 
 #include <map>
 
-#include "datamodel/datamodel.h"
+#include "DataModel/DataModel.h"
 #include "Logger/Logger.h"
 #include "storage/sqlite/sqlite3.h"
 #include "storage/StorageInterface.h"

@@ -1,6 +1,6 @@
 #include <map>
 
-#include "datamodel/signal.h"
+#include "DataModel/Signal.h"
 #include "manager.h"
 #include "Utils/Utils.h"
 
@@ -8,7 +8,7 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	std::string Signal::Serialize() const
 	{
@@ -38,5 +38,5 @@ namespace datamodel
 		manager->SignalState(ControlTypeInternal, this, SignalStateRed, true);
 		return true;
 	}
-} // namespace datamodel
+} // namespace DataModel
 

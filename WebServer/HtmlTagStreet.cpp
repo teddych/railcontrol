@@ -1,6 +1,6 @@
 #include <sstream>
 
-#include "datamodel/street.h"
+#include "DataModel/Street.h"
 #include "WebServer/HtmlTagStreet.h"
 
 using std::string;
@@ -8,7 +8,7 @@ using std::to_string;
 
 namespace WebServer
 {
-	HtmlTagStreet::HtmlTagStreet(const datamodel::Street* street)
+	HtmlTagStreet::HtmlTagStreet(const DataModel::Street* street)
 	{
 		unsigned int layoutPosX = street->GetPosX() * EdgeLength;
 		unsigned int layoutPosY = street->GetPosY() * EdgeLength;

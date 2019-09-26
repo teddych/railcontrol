@@ -4,9 +4,9 @@
 #include <sstream>
 
 #include "datatypes.h"
-#include "datamodel/serializable.h"
+#include "DataModel/Serializable.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class HardwareHandle : protected Serializable
 	{
@@ -45,5 +45,5 @@ namespace datamodel
 			protocol_t protocol;
 			address_t address;
 	};
-} // namespace datamodel
+} // namespace DataModel
 

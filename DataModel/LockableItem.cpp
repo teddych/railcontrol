@@ -1,11 +1,11 @@
-#include "datamodel/LockableItem.h"
+#include "DataModel/LockableItem.h"
 #include "Utils/Utils.h"
 
 using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	string LockableItem::Serialize() const
 	{
@@ -63,5 +63,5 @@ namespace datamodel
 		return true;
 	}
 
-} // namespace datamodel
+} // namespace DataModel
 

@@ -85,14 +85,12 @@ enum controlType_t : unsigned char
 {
 	ControlTypeHardware = 0,
 	ControlTypeInternal,
-	ControlTypeConsole,
 	ControlTypeWebserver
 };
 
 enum controlIDs : controlID_t
 {
 	ControlIdNone = 0,
-	ControlIdConsole,
 	ControlIdWebserver,
 	ControlIdFirstHardware = 10
 };

@@ -1,7 +1,7 @@
 #include <map>
 #include <sstream>
 
-#include "datamodel/feedback.h"
+#include "DataModel/Feedback.h"
 #include "manager.h"
 #include "Utils/Utils.h"
 
@@ -9,7 +9,7 @@ using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	std::string Feedback::Serialize() const
 	{
@@ -92,5 +92,5 @@ namespace datamodel
 		manager->FeedbackState(this);
 		UpdateTrackState(FeedbackStateFree);
 	}
-} // namespace datamodel
+} // namespace DataModel
 

@@ -2,14 +2,14 @@
 #include <sstream>
 #include <string>
 
-#include "datamodel/layout_item.h"
+#include "DataModel/LayoutItem.h"
 #include "Utils/Utils.h"
 
 using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	bool LayoutItem::MapPosition(const layoutPosition_t posX,
 			const layoutPosition_t posY,
@@ -130,5 +130,5 @@ namespace datamodel
 				return "0";
 		}
 	}
-} // namespace datamodel
+} // namespace DataModel
 

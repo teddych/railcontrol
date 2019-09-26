@@ -4,9 +4,9 @@
 #include <string>
 
 #include "datatypes.h"
-#include "object.h"
+#include "DataModel/Object.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class LayoutItem : public Object
 	{
@@ -76,5 +76,5 @@ namespace datamodel
 			layoutItemSize_t height;
 			layoutRotation_t rotation;
 	};
-} // namespace datamodel
+} // namespace DataModel
 

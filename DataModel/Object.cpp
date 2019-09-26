@@ -2,14 +2,14 @@
 #include <sstream>
 #include <string>
 
-#include "datamodel/object.h"
+#include "DataModel/Object.h"
 #include "Utils/Utils.h"
 
 using std::map;
 using std::stringstream;
 using std::string;
 
-namespace datamodel
+namespace DataModel
 {
 	std::string Object::Serialize() const
 	{
@@ -32,5 +32,5 @@ namespace datamodel
 		return true;
 	}
 
-} // namespace datamodel
+} // namespace DataModel
 

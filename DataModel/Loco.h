@@ -7,15 +7,15 @@
 
 #include "datatypes.h"
 #include "Logger/Logger.h"
-#include "datamodel/HardwareHandle.h"
-#include "datamodel/LocoFunctions.h"
-#include "datamodel/object.h"
-#include "datamodel/relation.h"
+#include "DataModel/HardwareHandle.h"
+#include "DataModel/LocoFunctions.h"
+#include "DataModel/Object.h"
+#include "DataModel/Relation.h"
 #include "Utils/ThreadSafeQueue.h"
 
 class Manager;
 
-namespace datamodel
+namespace DataModel
 {
 	class Street;
 	class Track;
@@ -122,15 +122,15 @@ namespace datamodel
 			void SetReducedSpeed(locoSpeed_t speed) { reducedSpeed = speed; }
 			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
 
-			bool AssignSlaves(const std::vector<datamodel::Relation*>& newslaves);
-			const std::vector<datamodel::Relation*>& GetSlaves() const { return slaves; };
+			bool AssignSlaves(const std::vector<DataModel::Relation*>& newslaves);
+			const std::vector<DataModel::Relation*>& GetSlaves() const { return slaves; };
 
 		private:
 			void SetMinThreadPriorityAndThreadName();
 			void AutoMode();
 			void SearchDestinationFirst();
 			void SearchDestinationSecond();
-			datamodel::Street* SearchDestination(datamodel::Track* oldToTrack, const bool allowLocoTurn);
+			DataModel::Street* SearchDestination(DataModel::Track* oldToTrack, const bool allowLocoTurn);
 			void FeedbackIdFirstReached();
 			void FeedbackIdStopReached();
 			void DeleteSlaves();
@@ -160,7 +160,7 @@ namespace datamodel
 			locoSpeed_t speed;
 			direction_t direction;
 
-			std::vector<datamodel::Relation*> slaves;
+			std::vector<DataModel::Relation*> slaves;
 
 			volatile locoState_t state;
 			Track* trackFrom;
@@ -180,4 +180,4 @@ namespace datamodel
 
 			Logger::Logger* logger;
 	};
-} // namespace datamodel
+} // namespace DataModel

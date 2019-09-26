@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "datamodel/accessory.h"
+#include "DataModel/Accessory.h"
 #include "datatypes.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class Switch : public Accessory
 	{
@@ -45,9 +45,9 @@ namespace datamodel
 
 			static void Status(const switchState_t state, std::string& stateText)
 			{
-				stateText.assign(state == datamodel::Switch::SwitchStateStraight ? "straight" : "turnout");
+				stateText.assign(state == DataModel::Switch::SwitchStateStraight ? "straight" : "turnout");
 			}
 	};
 
-} // namespace datamodel
+} // namespace DataModel
 

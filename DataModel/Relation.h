@@ -3,14 +3,14 @@
 #include <map>
 #include <string>
 
-#include "datamodel/accessory.h"
+#include "DataModel/Accessory.h"
+#include "DataModel/LockableItem.h"
+#include "DataModel/Serializable.h"
 #include "datatypes.h"
-#include "LockableItem.h"
-#include "serializable.h"
 
 class Manager;
 
-namespace datamodel
+namespace DataModel
 {
 	class Relation : protected Serializable, public LockableItem
 	{
@@ -34,7 +34,7 @@ namespace datamodel
 			Relation(Manager* manager,
 				const std::string& serialized)
 			:	manager(manager),
-				accessoryState(datamodel::Accessory::AccessoryStateOff)
+				accessoryState(DataModel::Accessory::AccessoryStateOff)
 			{
 				Deserialize(serialized);
 			}
@@ -62,5 +62,5 @@ namespace datamodel
 			priority_t priority;
 			accessoryState_t accessoryState;
 	};
-} // namespace datamodel
+} // namespace DataModel
 

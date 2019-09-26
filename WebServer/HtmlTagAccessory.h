@@ -4,7 +4,7 @@
 
 #include "WebServer/HtmlTagLayoutItem.h"
 
-namespace datamodel
+namespace DataModel
 {
 	class Accessory;
 }
@@ -14,7 +14,7 @@ namespace WebServer
 	class HtmlTagAccessory : public HtmlTagLayoutItem
 	{
 		public:
-			HtmlTagAccessory(const datamodel::Accessory* accessory);
+			HtmlTagAccessory(const DataModel::Accessory* accessory);
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{
