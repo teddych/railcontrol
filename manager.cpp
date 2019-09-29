@@ -27,9 +27,8 @@ using std::map;
 using std::string;
 using std::stringstream;
 using std::vector;
-using storage::StorageHandler;
-using storage::StorageParams;
-//using WebServer::WebServer;
+using Storage::StorageHandler;
+using Storage::StorageParams;
 
 Manager::Manager(Config& config)
 :	logger(Logger::Logger::GetLogger("Manager")),

@@ -12,7 +12,7 @@
 #include "DataModel/DataModel.h"
 #include "hardware/HardwareParams.h"
 #include "Logger/Logger.h"
-#include "storage/StorageHandler.h"
+#include "Storage/StorageHandler.h"
 
 class DelayedCall;
 
@@ -440,7 +440,7 @@ class Manager
 		mutable std::mutex signalMutex;
 
 		// storage
-		storage::StorageHandler* storage;
+		Storage::StorageHandler* storage;
 		DelayedCall* delayedCall;
 
 		accessoryDuration_t defaultAccessoryDuration;

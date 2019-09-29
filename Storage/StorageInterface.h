@@ -6,7 +6,7 @@
 #include "datatypes.h"
 #include "hardware/HardwareParams.h"
 
-namespace storage
+namespace Storage
 {
 	class StorageInterface
 	{

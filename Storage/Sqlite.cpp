@@ -3,7 +3,7 @@
 #include <fstream>
 #include <string>
 
-#include "storage/sqlite.h"
+#include "Storage/Sqlite.h"
 
 using DataModel::Accessory;
 using DataModel::Track;
@@ -16,17 +16,17 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-namespace storage
+namespace Storage
 {
 
 	// create instance of sqlite
-	extern "C" SQLite* create_sqlite(const StorageParams& params)
+	extern "C" SQLite* create_Sqlite(const StorageParams& params)
 	{
 		return new SQLite(params);
 	}
 
 	// delete instance of sqlite
-	extern "C" void destroy_sqlite(SQLite* sqlite)
+	extern "C" void destroy_Sqlite(SQLite* sqlite)
 	{
 		delete (sqlite);
 	}
@@ -420,4 +420,4 @@ namespace storage
 		logger->Error("SQLite error: {0} Query: {1}", dbError, s);
 		sqlite3_free(dbError);
 	}
-} // namespace storage
+} // namespace Storage

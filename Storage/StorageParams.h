@@ -2,12 +2,12 @@
 
 #include <string>
 
-namespace storage {
+namespace Storage {
 
 	struct StorageParams {
 		std::string module;
 		std::string filename;
 	};
 
-} // namespace storage
+} // namespace Storage
 

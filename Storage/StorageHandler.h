@@ -5,14 +5,14 @@
 #include "DataModel/DataModel.h"
 #include "datatypes.h"
 #include "hardware/HardwareParams.h"
-#include "storage/StorageInterface.h"
-#include "storage/StorageParams.h"
+#include "Storage/StorageInterface.h"
+#include "Storage/StorageParams.h"
 
-namespace storage
+namespace Storage
 {
 	// the types of the class factories
-	typedef storage::StorageInterface* createStorage_t(struct StorageParams params);
-	typedef void destroyStorage_t(storage::StorageInterface*);
+	typedef Storage::StorageInterface* createStorage_t(struct StorageParams params);
+	typedef void destroyStorage_t(Storage::StorageInterface*);
 
 	class StorageHandler
 	{
@@ -65,10 +65,10 @@ namespace storage
 			Manager* manager;
 			createStorage_t* createStorage;
 			destroyStorage_t* destroyStorage;
-			storage::StorageInterface* instance;
+			Storage::StorageInterface* instance;
 			void* dlhandle;
 			bool transactionRunning;
 	};
 
-} // namespace storage
+} // namespace Storage
 

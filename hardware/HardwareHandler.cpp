@@ -63,8 +63,8 @@ namespace hardware
 				break;
 
 			case HardwareTypeOpenDcc:
-				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_opendcc);
-				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_opendcc);
+				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_OpenDcc);
+				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_OpenDcc);
 				break;
 
 			default:

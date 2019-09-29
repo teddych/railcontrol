@@ -13,11 +13,11 @@ LDFLAGS=-g -shared -Wl,-soname,
 CFLAGSSQLITE=-DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
 
 LIBS= \
-	sqlite.so
+	Sqlite.so
 
 all: $(LIBS)
 
-sqlite.so: sqlite.o sqlite/sqlite3.o *.h ../Logger/*.h ../hardware/HardwareParams.h ../DataModel/*.h
+Sqlite.so: Sqlite.o sqlite/sqlite3.o *.h ../Logger/*.h ../hardware/HardwareParams.h ../DataModel/*.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<  sqlite/sqlite3.o
 
 sqlite/sqlite3.o: sqlite/sqlite3.c sqlite/sqlite3.h

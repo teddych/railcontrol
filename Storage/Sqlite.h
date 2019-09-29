@@ -4,11 +4,11 @@
 
 #include "DataModel/DataModel.h"
 #include "Logger/Logger.h"
-#include "storage/sqlite/sqlite3.h"
-#include "storage/StorageInterface.h"
-#include "storage/StorageParams.h"
+#include "Storage/sqlite/sqlite3.h"
+#include "Storage/StorageInterface.h"
+#include "Storage/StorageParams.h"
 
-namespace storage
+namespace Storage
 {
 	class SQLite : public StorageInterface
 	{
@@ -44,8 +44,8 @@ namespace storage
 			static int CallbackStringVector(void* v, int argc, char **argv, char **colName);
 	};
 
-	extern "C" SQLite* create_sqlite(const StorageParams& params);
-	extern "C" void destroy_sqlite(SQLite* sqlite);
+	extern "C" SQLite* create_Sqlite(const StorageParams& params);
+	extern "C" void destroy_Sqlite(SQLite* sqlite);
 
-} // namespace storage
+} // namespace Storage
 

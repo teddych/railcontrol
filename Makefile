@@ -35,7 +35,7 @@ OBJ= \
 	network/TcpConnection.o \
 	network/TcpServer.o \
 	railcontrol.o \
-	storage/StorageHandler.o \
+	Storage/StorageHandler.o \
 	Timestamp.o \
 	Utils/Utils.o \
 	WebServer/HtmlFullResponse.o \
@@ -66,15 +66,15 @@ OBJ= \
 
 all: $(OBJ)
 	make -C hardware
-	make -C storage
+	make -C Storage
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 	rm Timestamp.h
 
 amalgamation: Timestamp.h
 	./amalgamation.bash
 	$(CPP) $(CPPFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
-	make -C storage amalgamation
-	$(CPP) -g amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
+	make -C Storage amalgamation
+	$(CPP) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 	rm Timestamp.h
@@ -82,29 +82,29 @@ amalgamation: Timestamp.h
 raspi: Timestamp.h
 	./amalgamation.bash
 	$(CPPRASPI) $(CPPFLAGSRASPI) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
-	make -C storage raspi
-	$(CPPRASPI) -g amalgamation.o storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
+	make -C Storage raspi
+	$(CPPRASPI) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 	rm Timestamp.h
 
 sqlite-shell:
-	make -C storage/sqlite
+	make -C Storage/sqlite
 
 Timestamp.o: Timestamp.cpp Timestamp.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
-%.o: %.cpp *.h DataModel/*.h hardware/HardwareHandler.h Logger/*.h storage/StorageHandler.h Utils/*.h WebServer/*.h
+%.o: %.cpp *.h DataModel/*.h hardware/HardwareHandler.h Logger/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
 	make -C hardware clean
-	make -C storage clean
+	make -C Storage clean
 	rm -f *.o DataModel/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:
-	make -C storage/sqlite clean
+	make -C Storage/sqlite clean
 
 test:
 	make -C test

@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "Logger/Logger.h"
-#include "storage/StorageHandler.h"
+#include "Storage/StorageHandler.h"
 #include "Utils/Utils.h"
 
 using DataModel::Accessory;
@@ -22,7 +22,7 @@ using std::map;
 using std::string;
 using std::vector;
 
-namespace storage
+namespace Storage
 {
 	StorageHandler::StorageHandler(Manager* manager, const StorageParams& params)
 	:	manager(manager),
@@ -33,8 +33,8 @@ namespace storage
 		transactionRunning(false)
 	{
 #ifdef AMALGAMATION
-		createStorage = (storage::StorageInterface* (*)(storage::StorageParams))(&create_sqlite);
-		destroyStorage = (void (*)(storage::StorageInterface*))(&destroy_sqlite);
+		createStorage = (Storage::StorageInterface* (*)(Storage::StorageParams))(&create_Sqlite);
+		destroyStorage = (void (*)(Storage::StorageInterface*))(&destroy_Sqlite);
 #else
 		// generate symbol and library names
 		char* error;
@@ -456,5 +456,5 @@ namespace storage
 		}
 		instance->CommitTransaction();
 	}
-} // namespace storage
+} // namespace Storage
 
