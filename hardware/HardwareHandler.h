@@ -6,7 +6,7 @@
 #include "datatypes.h"
 #include "hardware/HardwareInterface.h"
 #include "hardware/HardwareParams.h"
-#include "manager.h"
+#include "Manager.h"
 
 namespace hardware {
 

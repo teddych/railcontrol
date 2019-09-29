@@ -5,7 +5,7 @@
 #include "DataModel/Loco.h"
 #include "DataModel/Relation.h"
 #include "DataModel/Street.h"
-#include "manager.h"
+#include "Manager.h"
 #include "Utils/Utils.h"
 
 using std::map;

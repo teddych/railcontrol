@@ -9,7 +9,7 @@
 
 #include "datatypes.h"
 #include "Logger/Logger.h"
-#include "railcontrol.h"
+#include "RailControl.h"
 #include "WebServer/WebClient.h"
 #include "WebServer/WebServer.h"
 

@@ -9,7 +9,7 @@
 #include <unistd.h>
 
 #include "DataModel/DataModel.h"
-#include "railcontrol.h"
+#include "RailControl.h"
 #include "Timestamp.h"
 #include "Utils/Utils.h"
 #include "WebServer/HtmlFullResponse.h"

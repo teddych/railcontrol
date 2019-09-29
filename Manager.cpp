@@ -7,8 +7,8 @@
 #include "DelayedCall.h"
 #include "hardware/HardwareHandler.h"
 #include "hardware/HardwareParams.h"
-#include "manager.h"
-#include "railcontrol.h"
+#include "Manager.h"
+#include "RailControl.h"
 #include "Utils/Utils.h"
 #include "WebServer/WebServer.h"
 

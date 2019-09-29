@@ -10,9 +10,9 @@
 
 #include "hardware/HardwareHandler.h"
 #include "Logger/Logger.h"
-#include "manager.h"
+#include "Manager.h"
 #include "network/Select.h"
-#include "railcontrol.h"
+#include "RailControl.h"
 #include "Utils/Utils.h"
 
 using std::vector;

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "datatypes.h"
-#include "manager.h"
+#include "Manager.h"
 
 namespace hardware
 {

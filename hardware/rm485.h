@@ -9,7 +9,7 @@
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Logger/Logger.h"
-#include "manager.h"
+#include "Manager.h"
 
 namespace hardware
 {

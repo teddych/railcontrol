@@ -15,7 +15,7 @@ OBJ= \
 	DelayedCall.o \
 	Logger/Logger.o \
 	Logger/LoggerServer.o \
-	config.o \
+	Config.o \
 	DataModel/Accessory.o \
 	DataModel/Feedback.o \
 	DataModel/HardwareHandle.o \
@@ -30,11 +30,11 @@ OBJ= \
 	DataModel/Switch.o \
 	DataModel/Track.o \
 	hardware/HardwareHandler.o \
-	manager.o \
+	Manager.o \
 	network/Serial.o \
 	network/TcpConnection.o \
 	network/TcpServer.o \
-	railcontrol.o \
+	RailControl.o \
 	Storage/StorageHandler.o \
 	Timestamp.o \
 	Utils/Utils.o \

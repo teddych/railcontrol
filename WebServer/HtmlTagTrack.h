@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "manager.h"
+#include "Manager.h"
 #include "WebServer/HtmlTagLayoutItem.h"
 
 namespace DataModel

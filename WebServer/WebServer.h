@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "ControlInterface.h"
-#include "manager.h"
+#include "Manager.h"
 #include "network/TcpServer.h"
 
 namespace WebServer

@@ -5,7 +5,7 @@
 #include <thread>
 #include <vector>
 
-#include "manager.h"
+#include "Manager.h"
 #include "network/TcpConnection.h"
 #include "WebServer/Response.h"
 

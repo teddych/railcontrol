@@ -5,7 +5,7 @@
 
 #include "DataModel/Feedback.h"
 #include "DataModel/Track.h"
-#include "manager.h"
+#include "Manager.h"
 #include "Utils/Utils.h"
 
 using std::map;

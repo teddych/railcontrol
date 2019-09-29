@@ -2,7 +2,7 @@
 #include <string>
 
 #include "hardware/virtual.h"
-#include "manager.h"
+#include "Manager.h"
 #include "Utils/Utils.h"
 
 namespace hardware

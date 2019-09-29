@@ -2,7 +2,7 @@
 #include <istream> // std::ws
 #include <sstream>
 
-#include "config.h"
+#include "Config.h"
 #include "Logger/Logger.h"
 #include "Utils/Utils.h"
 

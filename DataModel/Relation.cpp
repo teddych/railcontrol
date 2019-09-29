@@ -3,7 +3,7 @@
 #include <string>
 
 #include "DataModel/Relation.h"
-#include "manager.h"
+#include "Manager.h"
 #include "Utils/Utils.h"
 
 using std::map;

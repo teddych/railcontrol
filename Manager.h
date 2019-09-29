@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <vector>
 
-#include "config.h"
+#include "Config.h"
 #include "ControlInterface.h"
 #include "DataModel/DataModel.h"
 #include "hardware/HardwareParams.h"
