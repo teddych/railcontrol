@@ -4,7 +4,7 @@
 #include <thread>
 #include <vector>
 
-#include "network/TcpConnection.h"
+#include "Network/TcpConnection.h"
 
 namespace Network
 {

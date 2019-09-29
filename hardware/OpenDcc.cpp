@@ -3,7 +3,7 @@
 #include <sstream>
 #include <termios.h>
 
-#include "network/Select.h"
+#include "Network/Select.h"
 #include "hardware/OpenDcc.h"
 #include "Utils/Utils.h"
 

@@ -4,7 +4,7 @@
 #include <termios.h>
 #include <unistd.h>
 
-#include "network/Select.h"
+#include "Network/Select.h"
 #include "hardware/rm485.h"
 #include "Utils/Utils.h"
 

@@ -13,7 +13,7 @@ LIBS= \
 	rm485.so \
 	virtual.so
 
-%.so: %.cpp *.h ../manager.h
+%.so: %.cpp *.h ../Manager.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
 all: $(LIBS)

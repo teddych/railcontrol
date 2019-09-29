@@ -31,9 +31,9 @@ OBJ= \
 	DataModel/Track.o \
 	hardware/HardwareHandler.o \
 	Manager.o \
-	network/Serial.o \
-	network/TcpConnection.o \
-	network/TcpServer.o \
+	Network/Serial.o \
+	Network/TcpConnection.o \
+	Network/TcpServer.o \
 	RailControl.o \
 	Storage/StorageHandler.o \
 	Timestamp.o \

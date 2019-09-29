@@ -1,10 +1,10 @@
 #include <cstring>		//memset
 #include <netinet/in.h>
-#include <network/TcpServer.h>
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "network/Select.h"
+#include "Network/Select.h"
+#include "Network/TcpServer.h"
 #include "Utils/Utils.h"
 
 namespace Network

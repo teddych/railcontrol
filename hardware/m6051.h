@@ -5,7 +5,7 @@
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Logger/Logger.h"
-#include "network/Serial.h"
+#include "Network/Serial.h"
 
 namespace hardware
 {

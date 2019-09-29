@@ -2,7 +2,7 @@
 #include <sstream>
 #include <string>
 
-#include "network/Select.h"
+#include "Network/Select.h"
 #include "hardware/m6051.h"
 #include "Utils/Utils.h"
 

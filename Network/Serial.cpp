@@ -1,8 +1,8 @@
 #include <fcntl.h>
 #include <termios.h>
 
-#include "network/Select.h"
-#include "network/Serial.h"
+#include "Network/Select.h"
+#include "Network/Serial.h"
 
 namespace Network
 {

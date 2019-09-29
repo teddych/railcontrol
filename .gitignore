@@ -12,3 +12,4 @@ gmon.out
 amalgamation.cpp
 .*.swp
 svg/*
+Timestamp.h

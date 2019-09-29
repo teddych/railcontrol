@@ -3,7 +3,7 @@
 #include <string>
 
 #include "Logger/LoggerServer.h"
-#include "network/TcpServer.h"
+#include "Network/TcpServer.h"
 
 namespace Logger
 {
