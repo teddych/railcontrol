@@ -7,7 +7,7 @@
 #include "Logger/Logger.h"
 #include "Network/Serial.h"
 
-namespace hardware
+namespace Hardware
 {
 	class M6051 : HardwareInterface
 	{

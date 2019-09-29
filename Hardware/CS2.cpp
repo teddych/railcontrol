@@ -8,14 +8,14 @@
 #include <thread>
 #include <unistd.h>   //close;
 
-#include "hardware/cs2.h"
+#include "Hardware/CS2.h"
 #include "Utils/Utils.h"
 
 #define CS2_CMD_BUF_LEN 13    // Length of the commandbuffer
 #define CS2_PORT_SEND 15731   // The port on which to send data
 #define CS2_PORT_RECV 15730   // The port on which to receive data
 
-namespace hardware
+namespace Hardware
 {
 
 	// create instance of cs2
@@ -46,7 +46,7 @@ namespace hardware
 		{
 			logger->Info("CS2 sender socket created");
 		}
-		receiverThread = std::thread(&hardware::CS2::receiver, this);
+		receiverThread = std::thread(&Hardware::CS2::receiver, this);
 	}
 
 	// stop the thing

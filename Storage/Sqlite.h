@@ -16,8 +16,8 @@ namespace Storage
 			SQLite(const StorageParams& params);
 			~SQLite();
 
-			void SaveHardwareParams(const hardware::HardwareParams& params) override;
-			void AllHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) override;
+			void SaveHardwareParams(const Hardware::HardwareParams& params) override;
+			void AllHardwareParams(std::map<controlID_t,Hardware::HardwareParams*>& hardwareParams) override;
 			void DeleteHardwareParams(const controlID_t controlID) override;
 			void SaveObject(const objectType_t objectType, const objectID_t objectID, const std::string& name, const std::string& object) override;
 			void DeleteObject(const objectType_t objectType, const objectID_t objectID) override;

@@ -4,7 +4,7 @@
 
 #include "DataModel/DataModel.h"
 #include "datatypes.h"
-#include "hardware/HardwareParams.h"
+#include "Hardware/HardwareParams.h"
 #include "Storage/StorageInterface.h"
 #include "Storage/StorageParams.h"
 
@@ -19,7 +19,7 @@ namespace Storage
 		public:
 			StorageHandler(Manager* manager, const StorageParams& params);
 			~StorageHandler();
-			void AllHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams);
+			void AllHardwareParams(std::map<controlID_t,Hardware::HardwareParams*>& hardwareParams);
 			void DeleteHardwareParams(const controlID_t controlID);
 			void AllLocos(std::map<locoID_t,DataModel::Loco*>& locos);
 			void DeleteLoco(locoID_t locoID);
@@ -37,7 +37,7 @@ namespace Storage
 			void DeleteLayer(layerID_t layerID);
 			void AllSignals(std::map<signalID_t,DataModel::Signal*>& signals);
 			void DeleteSignal(signalID_t signalID);
-			void Save(const hardware::HardwareParams& hardwareParams);
+			void Save(const Hardware::HardwareParams& hardwareParams);
 			void Save(const DataModel::Street& street);
 			void Save(const DataModel::Loco& loco);
 			template<class T> void Save(const T& t)

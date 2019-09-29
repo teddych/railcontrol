@@ -4,7 +4,7 @@
 
 class Manager;
 
-namespace hardware
+namespace Hardware
 {
 
 	class HardwareParams
@@ -61,5 +61,5 @@ namespace hardware
 			std::string arg5;
 	};
 
-} // namespace hardware
+} // namespace Hardware
 

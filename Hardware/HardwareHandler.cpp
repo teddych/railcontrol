@@ -7,24 +7,24 @@
 
 #include "datatypes.h"
 #include "Logger/Logger.h"
-#include "hardware/HardwareHandler.h"
-#include "hardware/cs2.h"
-#include "hardware/m6051.h"
-#include "hardware/rm485.h"
-#include "hardware/virtual.h"
+#include "Hardware/HardwareHandler.h"
+#include "Hardware/CS2.h"
+#include "Hardware/M6051.h"
+#include "Hardware/RM485.h"
+#include "Hardware/Virtual.h"
 #include "Utils/Utils.h"
 
 using std::string;
 
-namespace hardware
+namespace Hardware
 {
 	const std::string HardwareHandler::hardwareSymbols[] =
 	{
 		"none",
-		"virtual",
-		"cs2",
-		"m6051",
-		"rm485",
+		"Virtual",
+		"CS2",
+		"M6051",
+		"RM485",
 		"OpenDcc"
 	};
 
@@ -42,29 +42,29 @@ namespace hardware
 		switch(type)
 		{
 			case HardwareTypeCS2:
-				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_cs2);
-				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_cs2);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_cs2);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_cs2);
 				break;
 
 			case HardwareTypeVirtual:
-				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_virtual);
-				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_virtual);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_virtual);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_virtual);
 				break;
 
 
 			case HardwareTypeM6051:
-				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_m6051);
-				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_m6051);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_m6051);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_m6051);
 				break;
 
 			case HardwareTypeRM485:
-				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_rm485);
-				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_rm485);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_rm485);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_rm485);
 				break;
 
 			case HardwareTypeOpenDcc:
-				createHardware = (hardware::HardwareInterface* (*)(const hardware::HardwareParams*))(&create_OpenDcc);
-				destroyHardware = (void (*)(hardware::HardwareInterface*))(&destroy_OpenDcc);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_OpenDcc);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_OpenDcc);
 				break;
 
 			default:
@@ -366,4 +366,4 @@ namespace hardware
 		}
 		instance->Accessory(protocol, address, state, on);
 	}
-} // namespace hardware
+} // namespace Hardware

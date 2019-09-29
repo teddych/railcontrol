@@ -4,10 +4,10 @@
 #include <termios.h>
 
 #include "Network/Select.h"
-#include "hardware/OpenDcc.h"
+#include "Hardware/OpenDcc.h"
 #include "Utils/Utils.h"
 
-namespace hardware
+namespace Hardware
 {
 
 	// create instance of OpenDcc
@@ -103,7 +103,7 @@ namespace hardware
 			}
 		}
 
-		checkEventsThread = std::thread(&hardware::OpenDcc::CheckEventsWorker, this);
+		checkEventsThread = std::thread(&Hardware::OpenDcc::CheckEventsWorker, this);
 	}
 
 	OpenDcc::~OpenDcc()

@@ -11,7 +11,7 @@
 
 // CAN protocol specification at http://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
 
-namespace hardware
+namespace Hardware
 {
 	class CS2 : HardwareInterface
 	{

@@ -1,11 +1,11 @@
 #include <sstream>
 #include <string>
 
-#include "hardware/virtual.h"
+#include "Hardware/Virtual.h"
 #include "Manager.h"
 #include "Utils/Utils.h"
 
-namespace hardware
+namespace Hardware
 {
 
 	// create_virt and destroy_virt are used to instantiate

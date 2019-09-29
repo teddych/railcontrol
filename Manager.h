@@ -10,7 +10,7 @@
 #include "Config.h"
 #include "ControlInterface.h"
 #include "DataModel/DataModel.h"
-#include "hardware/HardwareParams.h"
+#include "Hardware/HardwareParams.h"
 #include "Logger/Logger.h"
 #include "Storage/StorageHandler.h"
 
@@ -38,7 +38,7 @@ class Manager
 			const std::string& arg5,
 			std::string& result);
 		bool ControlDelete(controlID_t controlID);
-		hardware::HardwareParams* GetHardware(controlID_t controlID);
+		Hardware::HardwareParams* GetHardware(controlID_t controlID);
 		unsigned int ControlsOfHardwareType(const hardwareType_t hardwareType);
 		bool HardwareLibraryAdd(const hardwareType_t hardwareType, void* libraryHandle);
 		void* HardwareLibraryGet(const hardwareType_t hardwareType) const;
@@ -46,8 +46,8 @@ class Manager
 
 		// control (console, web, ...)
 		const std::string GetControlName(const controlID_t controlID); // FIXME: => string& (reference)
-		const std::map<controlID_t,hardware::HardwareParams*> controlList() const { return hardwareParams; }
-		const std::map<std::string,hardware::HardwareParams*> ControlListByName() const;
+		const std::map<controlID_t,Hardware::HardwareParams*> controlList() const { return hardwareParams; }
+		const std::map<std::string,Hardware::HardwareParams*> ControlListByName() const;
 		const std::map<controlID_t,std::string> LocoControlListNames() const;
 		const std::map<controlID_t,std::string> AccessoryControlListNames() const;
 		const std::map<controlID_t,std::string> FeedbackControlListNames() const;
@@ -401,7 +401,7 @@ class Manager
 		mutable std::mutex controlMutex;
 
 		// hardware (virt, CS2, ...)
-		std::map<controlID_t,hardware::HardwareParams*> hardwareParams;
+		std::map<controlID_t,Hardware::HardwareParams*> hardwareParams;
 		mutable std::mutex hardwareMutex;
 
 		std::map<hardwareType_t,void*> hardwareLibraries;

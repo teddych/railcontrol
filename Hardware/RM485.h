@@ -11,7 +11,7 @@
 #include "Logger/Logger.h"
 #include "Manager.h"
 
-namespace hardware
+namespace Hardware
 {
 	class RM485 : HardwareInterface
 	{

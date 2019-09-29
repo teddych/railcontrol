@@ -5,12 +5,12 @@
 #include <unistd.h>
 
 #include "Network/Select.h"
-#include "hardware/rm485.h"
+#include "Hardware/RM485.h"
 #include "Utils/Utils.h"
 
 using std::string;
 
-namespace hardware
+namespace Hardware
 {
 	// create instance of RM485
 	extern "C" RM485* create_rm485(const HardwareParams* params)
@@ -42,7 +42,7 @@ namespace hardware
 			return;
 		}
 
-		rm485Thread = std::thread(&hardware::RM485::RM485Worker, this);
+		rm485Thread = std::thread(&Hardware::RM485::RM485Worker, this);
 	}
 
 	RM485::~RM485()

@@ -874,7 +874,7 @@ namespace WebServer
 
 		if (controlID != ControlIdNone)
 		{
-			hardware::HardwareParams* params = manager.GetHardware(controlID);
+			Hardware::HardwareParams* params = manager.GetHardware(controlID);
 			if (params != nullptr)
 			{
 				hardwareType = params->hardwareType;
@@ -959,7 +959,7 @@ namespace WebServer
 			return;
 		}
 
-		const hardware::HardwareParams* control = manager.GetHardware(controlID);
+		const Hardware::HardwareParams* control = manager.GetHardware(controlID);
 		if (control == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unknown control");
@@ -981,7 +981,7 @@ namespace WebServer
 	void WebClient::HandleControlDelete(const map<string, string>& arguments)
 	{
 		controlID_t controlID = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
-		const hardware::HardwareParams* control = manager.GetHardware(controlID);
+		const Hardware::HardwareParams* control = manager.GetHardware(controlID);
 		if (control == nullptr)
 		{
 			HtmlReplyWithHeaderAndParagraph("Unable to delete control");
@@ -1004,7 +1004,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Controls"));
 		HtmlTag table("table");
-		const map<string,hardware::HardwareParams*> hardwareList = manager.ControlListByName();
+		const map<string,Hardware::HardwareParams*> hardwareList = manager.ControlListByName();
 		map<string,string> hardwareArgument;
 		for (auto hardware : hardwareList)
 		{

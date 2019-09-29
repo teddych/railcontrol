@@ -5,8 +5,8 @@
 
 #include "DataModel/LayoutItem.h"
 #include "DelayedCall.h"
-#include "hardware/HardwareHandler.h"
-#include "hardware/HardwareParams.h"
+#include "Hardware/HardwareHandler.h"
+#include "Hardware/HardwareParams.h"
 #include "Manager.h"
 #include "RailControl.h"
 #include "Utils/Utils.h"
@@ -21,8 +21,8 @@ using DataModel::Loco;
 using DataModel::Signal;
 using DataModel::Street;
 using DataModel::Switch;
-using hardware::HardwareHandler;
-using hardware::HardwareParams;
+using Hardware::HardwareHandler;
+using Hardware::HardwareParams;
 using std::map;
 using std::string;
 using std::stringstream;
@@ -466,9 +466,9 @@ const std::map<controlID_t,std::string> Manager::FeedbackControlListNames() cons
 	return ret;
 }
 
-const map<string,hardware::HardwareParams*> Manager::ControlListByName() const
+const map<string,Hardware::HardwareParams*> Manager::ControlListByName() const
 {
-	map<string,hardware::HardwareParams*> out;
+	map<string,Hardware::HardwareParams*> out;
 	std::lock_guard<std::mutex> guard(hardwareMutex);
 	for(auto hardware : hardwareParams)
 	{

@@ -2,11 +2,11 @@
 
 #include <cstring>
 
-#include "hardware/HardwareInterface.h"
-#include "hardware/HardwareParams.h"
+#include "Hardware/HardwareInterface.h"
+#include "Hardware/HardwareParams.h"
 #include "Logger/Logger.h"
 
-namespace hardware
+namespace Hardware
 {
 
 	class Virtual : HardwareInterface

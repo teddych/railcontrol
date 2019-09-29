@@ -3,12 +3,12 @@
 #include <string>
 
 #include "Network/Select.h"
-#include "hardware/m6051.h"
+#include "Hardware/M6051.h"
 #include "Utils/Utils.h"
 
 using std::string;
 
-namespace hardware
+namespace Hardware
 {
 
 	// create instance of m6051
@@ -38,7 +38,7 @@ namespace hardware
 			return;
 		}
 		logger->Info("{0} S88 modules configured.", s88Modules);
-		s88Thread = std::thread(&hardware::M6051::S88Worker, this);
+		s88Thread = std::thread(&Hardware::M6051::S88Worker, this);
 	}
 
 	M6051::~M6051()

@@ -7,7 +7,7 @@
 #include "datatypes.h"
 #include "Manager.h"
 
-namespace hardware
+namespace Hardware
 {
 
 	class HardwareInterface

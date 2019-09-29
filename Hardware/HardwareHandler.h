@@ -4,15 +4,15 @@
 
 #include "ControlInterface.h"
 #include "datatypes.h"
-#include "hardware/HardwareInterface.h"
-#include "hardware/HardwareParams.h"
+#include "Hardware/HardwareInterface.h"
+#include "Hardware/HardwareParams.h"
 #include "Manager.h"
 
-namespace hardware {
+namespace Hardware {
 
 	// the types of the class factories
-	typedef hardware::HardwareInterface* createHardware_t(const hardware::HardwareParams* params);
-	typedef void destroyHardware_t(hardware::HardwareInterface*);
+	typedef Hardware::HardwareInterface* createHardware_t(const Hardware::HardwareParams* params);
+	typedef void destroyHardware_t(Hardware::HardwareInterface*);
 
 	class HardwareHandler: public ControlInterface {
 		public:
@@ -41,11 +41,11 @@ namespace hardware {
 			Manager& manager;
 			createHardware_t* createHardware;
 			destroyHardware_t* destroyHardware;
-			hardware::HardwareInterface* instance;
+			Hardware::HardwareInterface* instance;
 			const HardwareParams* params;
 
 			static const std::string hardwareSymbols[];
 	};
 
-}; // namespace hardware
+}; // namespace Hardware
 

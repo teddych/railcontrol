@@ -7,11 +7,11 @@ CPPFLAGS=-I. -I.. -g -fpic -O2 -Wall -Wextra -Werror -std=c++11
 LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \
-	cs2.so \
-	m6051.so \
+	CS2.so \
+	M6051.so \
 	OpenDcc.so \
-	rm485.so \
-	virtual.so
+	RM485.so \
+	Virtual.so
 
 %.so: %.cpp *.h ../Manager.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<

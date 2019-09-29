@@ -4,7 +4,7 @@
 #include <string>
 
 #include "datatypes.h"
-#include "hardware/HardwareParams.h"
+#include "Hardware/HardwareParams.h"
 
 namespace Storage
 {
@@ -18,10 +18,10 @@ namespace Storage
 			virtual ~StorageInterface() {};
 
 			// save control
-			virtual void SaveHardwareParams(const hardware::HardwareParams& hardwareParams) = 0;
+			virtual void SaveHardwareParams(const Hardware::HardwareParams& hardwareParams) = 0;
 
 			// read controls
-			virtual void AllHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams) = 0;
+			virtual void AllHardwareParams(std::map<controlID_t,Hardware::HardwareParams*>& hardwareParams) = 0;
 
 			// delete control
 			virtual void DeleteHardwareParams(const controlID_t controlID) = 0;

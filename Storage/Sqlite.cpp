@@ -10,7 +10,7 @@ using DataModel::Track;
 using DataModel::Feedback;
 using DataModel::Loco;
 using DataModel::Switch;
-using hardware::HardwareParams;
+using Hardware::HardwareParams;
 using std::map;
 using std::string;
 using std::stringstream;
@@ -179,7 +179,7 @@ namespace Storage
 		return 0;
 	}
 
-	void SQLite::SaveHardwareParams(const hardware::HardwareParams& hardwareParams)
+	void SQLite::SaveHardwareParams(const Hardware::HardwareParams& hardwareParams)
 	{
 		stringstream ss;
 		ss << "INSERT OR REPLACE INTO hardware VALUES ("
@@ -195,7 +195,7 @@ namespace Storage
 		Execute(ss.str());
 	}
 
-	void SQLite::AllHardwareParams(std::map<controlID_t, hardware::HardwareParams*>& hardwareParams)
+	void SQLite::AllHardwareParams(std::map<controlID_t, Hardware::HardwareParams*>& hardwareParams)
 	{
 		if (db == nullptr)
 		{

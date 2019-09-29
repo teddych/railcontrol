@@ -104,7 +104,7 @@ namespace Storage
 #endif
 	}
 
-	void StorageHandler::Save(const hardware::HardwareParams& hardwareParams)
+	void StorageHandler::Save(const Hardware::HardwareParams& hardwareParams)
 	{
 		if (instance == nullptr)
 		{
@@ -115,7 +115,7 @@ namespace Storage
 		CommitTransactionInternal();
 	}
 
-	void StorageHandler::AllHardwareParams(std::map<controlID_t,hardware::HardwareParams*>& hardwareParams)
+	void StorageHandler::AllHardwareParams(std::map<controlID_t,Hardware::HardwareParams*>& hardwareParams)
 	{
 		if (instance == nullptr)
 		{

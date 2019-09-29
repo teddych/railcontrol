@@ -8,7 +8,7 @@
 #include <unistd.h>		//close;
 #include <vector>
 
-#include "hardware/HardwareHandler.h"
+#include "Hardware/HardwareHandler.h"
 #include "Logger/Logger.h"
 #include "Manager.h"
 #include "Network/Select.h"

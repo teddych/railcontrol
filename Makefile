@@ -29,7 +29,7 @@ OBJ= \
 	DataModel/Street.o \
 	DataModel/Switch.o \
 	DataModel/Track.o \
-	hardware/HardwareHandler.o \
+	Hardware/HardwareHandler.o \
 	Manager.o \
 	Network/Serial.o \
 	Network/TcpConnection.o \
@@ -65,7 +65,7 @@ OBJ= \
 	WebServer/WebServer.o
 
 all: $(OBJ)
-	make -C hardware
+	make -C Hardware
 	make -C Storage
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 	rm Timestamp.h
@@ -94,11 +94,11 @@ sqlite-shell:
 Timestamp.o: Timestamp.cpp Timestamp.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
-%.o: %.cpp *.h DataModel/*.h hardware/HardwareHandler.h Logger/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
+%.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
-	make -C hardware clean
+	make -C Hardware clean
 	make -C Storage clean
 	rm -f *.o DataModel/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
