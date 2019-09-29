@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "DataModel/LayoutItem.h"
 #include "DataModel/LockableItem.h"
 

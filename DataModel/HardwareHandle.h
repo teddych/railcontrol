@@ -3,7 +3,7 @@
 #include <map>
 #include <sstream>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "DataModel/Serializable.h"
 
 namespace DataModel

@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "DataModel/Feedback.h"
-#include "datatypes.h"
+#include "DataTypes.h"
 
 class ControlInterface
 {

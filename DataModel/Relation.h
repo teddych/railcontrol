@@ -6,7 +6,7 @@
 #include "DataModel/Accessory.h"
 #include "DataModel/LockableItem.h"
 #include "DataModel/Serializable.h"
-#include "datatypes.h"
+#include "DataTypes.h"
 
 class Manager;
 

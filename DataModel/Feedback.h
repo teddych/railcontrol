@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "DataModel/LayoutItem.h"
 
 class Manager;

@@ -3,7 +3,7 @@
 #include <map>
 #include <mutex>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 
 namespace DataModel
 {

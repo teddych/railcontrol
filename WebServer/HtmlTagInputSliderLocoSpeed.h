@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "WebServer/HtmlTagInputSlider.h"
 
 namespace WebServer

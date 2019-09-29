@@ -7,7 +7,7 @@
 #include <thread>
 #include <unistd.h>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "Logger/Logger.h"
 #include "RailControl.h"
 #include "WebServer/WebClient.h"

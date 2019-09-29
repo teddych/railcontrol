@@ -1,6 +1,6 @@
 #pragma once
 
-#include "datatypes.h"
+#include "DataTypes.h"
 
 class Manager;
 

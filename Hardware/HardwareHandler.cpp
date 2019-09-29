@@ -5,7 +5,7 @@
 
 #include <sstream>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "Logger/Logger.h"
 #include "Hardware/HardwareHandler.h"
 #include "Hardware/CS2.h"

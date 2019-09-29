@@ -3,7 +3,7 @@
 #include <map>
 #include <string>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "DataModel/Serializable.h"
 
 class Manager;

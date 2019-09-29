@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "Manager.h"
 
 namespace Hardware

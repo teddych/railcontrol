@@ -3,7 +3,7 @@
 #include <string>
 
 #include "ControlInterface.h"
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "Hardware/HardwareInterface.h"
 #include "Hardware/HardwareParams.h"
 #include "Manager.h"

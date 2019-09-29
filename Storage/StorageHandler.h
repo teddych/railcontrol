@@ -3,7 +3,7 @@
 #include <map>
 
 #include "DataModel/DataModel.h"
-#include "datatypes.h"
+#include "DataTypes.h"
 #include "Hardware/HardwareParams.h"
 #include "Storage/StorageInterface.h"
 #include "Storage/StorageParams.h"
