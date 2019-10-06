@@ -335,7 +335,7 @@ class Manager
 		}
 
 		Logger::Logger* logger;
-		boosterState_t boosterState;
+		volatile boosterState_t boosterState;
 
 		template<class ID, class T>
 		bool CheckObjectName(std::map<ID,T*>& objects, const std::string& name)
@@ -394,6 +394,8 @@ class Manager
 			}
 		}
 
+		void InitLocos();
+
 		// FIXME: check usage of all mutexes
 
 		// controls (Webserver, console & hardwareHandler. So each hardware is also added here).
@@ -451,6 +453,8 @@ class Manager
 		volatile bool run;
 		volatile bool debounceRun;
 		std::thread debounceThread;
+
+		volatile bool initLocosDone;
 
 		const std::string unknownControl;
 		const std::string unknownLoco;

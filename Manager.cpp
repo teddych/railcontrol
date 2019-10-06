@@ -41,6 +41,7 @@ Manager::Manager(Config& config)
 	nrOfTracksToReserve(DataModel::Loco::ReserveOne),
 	run(false),
 	debounceRun(false),
+	initLocosDone(false),
 	unknownControl("Unknown Control"),
 	unknownLoco("Unknown Loco"),
 	unknownAccessory("Unknown Accessory"),
@@ -215,11 +216,41 @@ void Manager::Booster(const controlType_t controlType, const boosterState_t stat
 		return;
 	}
 	boosterState = state;
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto control : controls)
 	{
-		control.second->Booster(controlType, state);
+		std::lock_guard<std::mutex> guard(controlMutex);
+		for (auto control : controls)
+		{
+			control.second->Booster(controlType, state);
+		}
 	}
+	if (boosterState == BoosterStop)
+	{
+		return;
+	}
+	if (!initLocosDone)
+	{
+		InitLocos();
+	}
+}
+
+void Manager::InitLocos()
+{
+	for (auto loco : locos)
+	{
+		if (boosterState == BoosterStop)
+		{
+			return;
+		}
+		LocoSpeed(ControlTypeInternal, loco.second, loco.second->Speed());
+		function_t nrOfFunctions = loco.second->GetNrOfFunctions();
+		for (function_t functionNr = 0; functionNr <= nrOfFunctions; ++functionNr)
+		{
+			LocoFunction(ControlTypeInternal, loco.second, functionNr, loco.second->GetFunction(functionNr));
+			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+		}
+		std::this_thread::sleep_for(std::chrono::milliseconds(250));
+	}
+	initLocosDone = true;
 }
 
 /***************************
