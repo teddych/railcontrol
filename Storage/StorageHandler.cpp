@@ -39,7 +39,7 @@ namespace Storage
 		// generate symbol and library names
 		char* error;
 		std::stringstream ss;
-		ss << "storage/" << params.module << ".so";
+		ss << "Storage/" << params.module << ".so";
 
 		Logger::Logger* logger = Logger::Logger::GetLogger("StorageHandler");
 		dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
