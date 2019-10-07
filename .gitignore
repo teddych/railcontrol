@@ -3,6 +3,7 @@ railcontrol.exe
 railcontrol.sqlite
 railcontrol.sqlite-journal
 railcontrol.sqlite.*
+railcontrol.tar.xz
 Storage/sqlite/sqlite3
 *.o
 *.so

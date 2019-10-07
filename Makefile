@@ -70,6 +70,10 @@ all: $(OBJ)
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 	rm Timestamp.h
 
+dist: all
+	strip railcontrol
+	tar cvJf railcontrol.tar.xz railcontrol Storage/*.so Hardware/*.so railcontrol.conf.dist html/*
+
 amalgamation: Timestamp.h
 	./amalgamation.bash
 	$(CPP) $(CPPFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp

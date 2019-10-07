@@ -1,0 +1,8 @@
+# This is the config file of RailControl
+# Lines starting with # are comments
+# before and after the = has to be placed a space
+
+dbengine   = Sqlite
+dbfilename = railcontrol.sqlite
+
+webserverport = 8080
