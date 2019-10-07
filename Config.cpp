@@ -19,7 +19,7 @@ Config::Config(std::string fileName)
 	configFile.open(fileName);
 	if (!configFile.is_open())
 	{
-		logger->Warning("Unable to open configfile");
+		logger->Warning("Unable to open configfile {0}", fileName);
 		return;
 	}
 

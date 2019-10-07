@@ -52,8 +52,8 @@ Manager::Manager(Config& config)
 	unknownSignal("Unknown Signal")
 {
 	StorageParams storageParams;
-	storageParams.module = config.getValue("dbengine", "sqlite");
-	storageParams.filename = config.getValue("dbfilename", "/tmp/railcontrol.db");
+	storageParams.module = config.getValue("dbengine", "Sqlite");
+	storageParams.filename = config.getValue("dbfilename", "railcontrol.sqlite");
 	storage = new StorageHandler(this, storageParams);
 	if (storage == nullptr)
 	{
