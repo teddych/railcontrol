@@ -61,24 +61,24 @@ namespace Hardware
 		switch(type)
 		{
 			case HardwareTypeCS2:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_cs2);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_cs2);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_CS2);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_CS2);
 				break;
 
 			case HardwareTypeVirtual:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_virtual);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_virtual);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_Virtual);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_Virtual);
 				break;
 
 
 			case HardwareTypeM6051:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_m6051);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_m6051);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_M6051);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_M6051);
 				break;
 
 			case HardwareTypeRM485:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_rm485);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_rm485);
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_RM485);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_RM485);
 				break;
 
 			case HardwareTypeOpenDcc:
@@ -100,7 +100,7 @@ namespace Hardware
 		char* error;
 		const string& symbol = hardwareSymbols[type];
 		std::stringstream ss;
-		ss << "hardware/" << symbol << ".so";
+		ss << "Hardware/" << symbol << ".so";
 
 		Logger::Logger* logger = Logger::Logger::GetLogger("HardwareHandler");
 		void* dlhandle = manager.HardwareLibraryGet(type);

@@ -33,13 +33,13 @@ using std::string;
 namespace Hardware
 {
 	// create instance of RM485
-	extern "C" RM485* create_rm485(const HardwareParams* params)
+	extern "C" RM485* create_RM485(const HardwareParams* params)
 	{
 		return new RM485(params);
 	}
 
 	// delete instance of RM485
-	extern "C" void destroy_rm485(RM485* RM485)
+	extern "C" void destroy_RM485(RM485* RM485)
 	{
 		delete(RM485);
 	}

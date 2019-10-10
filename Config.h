@@ -26,7 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 class Config
 {
 	public:
-		Config(std::string fileName);
+		Config(const std::string& fileName);
 		const std::string& getValue(const std::string& key, const std::string& defaultValue);
 		int getValue(const std::string& key, const int& defaultValue);
 

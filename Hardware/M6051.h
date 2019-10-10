@@ -92,8 +92,8 @@ namespace Hardware
 			void S88Worker();
 	};
 
-	extern "C" M6051* create_m6051(const HardwareParams* params);
-	extern "C" void destroy_m6051(M6051* m6051);
+	extern "C" M6051* create_M6051(const HardwareParams* params);
+	extern "C" void destroy_M6051(M6051* m6051);
 
 } // namespace
 

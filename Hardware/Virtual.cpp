@@ -32,13 +32,13 @@ namespace Hardware
 	// and delete the command station in main program
 
 	// create instance of virtual
-	extern "C" Virtual* create_virtual(const HardwareParams* params)
+	extern "C" Virtual* create_Virtual(const HardwareParams* params)
 	{
 		return new Virtual(params);
 	}
 
 	// delete instance of virtual
-	extern "C" void destroy_virtual(Virtual* virt)
+	extern "C" void destroy_Virtual(Virtual* virt)
 	{
 		delete(virt);
 	}

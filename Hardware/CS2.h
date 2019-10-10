@@ -102,8 +102,8 @@ namespace Hardware
 			int CreateUdpConnection(const struct sockaddr* sockaddr, const unsigned int sockaddr_len, const char* server, const unsigned short port);
 	};
 
-	extern "C" CS2* create_cs2(const HardwareParams* params);
-	extern "C" void destroy_cs2(CS2* cs2);
+	extern "C" CS2* create_CS2(const HardwareParams* params);
+	extern "C" void destroy_CS2(CS2* cs2);
 
 } // namespace
 

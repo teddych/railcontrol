@@ -32,13 +32,13 @@ namespace Hardware
 {
 
 	// create instance of m6051
-	extern "C" M6051* create_m6051(const HardwareParams* params)
+	extern "C" M6051* create_M6051(const HardwareParams* params)
 	{
 		return new M6051(params);
 	}
 
 	// delete instance of m6051
-	extern "C" void destroy_m6051(M6051* m6051)
+	extern "C" void destroy_M6051(M6051* m6051)
 	{
 		delete(m6051);
 	}

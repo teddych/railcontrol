@@ -52,8 +52,8 @@ namespace Hardware
 			Logger::Logger* logger;
 	};
 
-	extern "C" Virtual* create_virtual(const HardwareParams* params);
-	extern "C" void destroy_virtual(Virtual* virt);
+	extern "C" Virtual* create_Virtual(const HardwareParams* params);
+	extern "C" void destroy_Virtual(Virtual* virt);
 
 } // namespace
 

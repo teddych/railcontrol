@@ -29,7 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 using std::map;
 using std::string;
 
-Config::Config(std::string fileName)
+Config::Config(const std::string& fileName)
 {
 	Logger::Logger* logger = Logger::LoggerServer::Instance().GetLogger("Main");
 	// read config values

@@ -12,9 +12,6 @@ LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
 OBJ= \
-	DelayedCall.o \
-	Logger/Logger.o \
-	Logger/LoggerServer.o \
 	Config.o \
 	DataModel/Accessory.o \
 	DataModel/Feedback.o \
@@ -29,7 +26,10 @@ OBJ= \
 	DataModel/Street.o \
 	DataModel/Switch.o \
 	DataModel/Track.o \
+	DelayedCall.o \
 	Hardware/HardwareHandler.o \
+	Logger/Logger.o \
+	Logger/LoggerServer.o \
 	Manager.o \
 	Network/Serial.o \
 	Network/TcpConnection.o \
@@ -104,7 +104,7 @@ Timestamp.o: Timestamp.cpp Timestamp.h
 clean:
 	make -C Hardware clean
 	make -C Storage clean
-	rm -f *.o DataModel/*.o Utils/*.o WebServer/*.o
+	rm -f *.o DataModel/*.o Logger/*.o Network/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:

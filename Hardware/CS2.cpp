@@ -39,13 +39,13 @@ namespace Hardware
 {
 
 	// create instance of cs2
-	extern "C" CS2* create_cs2(const HardwareParams* params)
+	extern "C" CS2* create_CS2(const HardwareParams* params)
 	{
 		return new CS2(params);
 	}
 
 	// delete instance of cs2
-	extern "C" void destroy_cs2(CS2* cs2)
+	extern "C" void destroy_CS2(CS2* cs2)
 	{
 		delete(cs2);
 	}
