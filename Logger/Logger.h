@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <string>
 
+#include "Languages.h"
 #include "Logger/LoggerServer.h"
 #include "Network/TcpServer.h"
 
@@ -77,24 +78,44 @@ namespace Logger
 				return Format(std::string(input), args...);
 			}
 
-			template<typename... Args> void Error(Args... args)
+			template<typename... Args> void Error(const Languages::textSelector_t text, Args... args)
 			{
-				Log("Error", args...);
+				Log(std::string("Error"), Languages::GetText(text), args...);
 			}
 
-			template<typename... Args> void Warning(Args... args)
+			template<typename... Args> void Error(const std::string& text, Args... args)
 			{
-				Log("Warning", args...);
+				Log("Error", text, args...);
 			}
 
-			template<typename... Args> void Info(Args... args)
+			template<typename... Args> void Warning(const Languages::textSelector_t text, Args... args)
 			{
-				Log(std::string("Info"), args...);
+				Log(std::string("Warning"), Languages::GetText(text), args...);
 			}
 
-			template<typename... Args> void Debug(Args... args)
+			template<typename... Args> void Warning(const std::string& text, Args... args)
 			{
-				Log("Debug", args...);
+				Log("Warning", text, args...);
+			}
+
+			template<typename... Args> void Info(const Languages::textSelector_t text, Args... args)
+			{
+				Log("Info", Languages::GetText(text), args...);
+			}
+
+			template<typename... Args> void Info(const std::string& text, Args... args)
+			{
+				Log("Info", text, args...);
+			}
+
+			template<typename... Args> void Debug(const Languages::textSelector_t text, Args... args)
+			{
+				Log(std::string("Debug"), Languages::GetText(text), args...);
+			}
+
+			template<typename... Args> void Debug(const std::string& text, Args... args)
+			{
+				Log("Debug", text, args...);
 			}
 
 			void Hex(const std::string& input) { Hex(reinterpret_cast<const unsigned char*>(input.c_str()), input.size()); }
@@ -140,9 +161,9 @@ namespace Logger
 				FormatInternal(workString, argument + 1, args...);
 			}
 
-			template<typename... Args> void Log(const std::string& type, Args... args)
+			template<typename... Args> void Log(const std::string& type, const std::string& text, Args... args)
 			{
-				server.Send(DateTime() + ": " + type + ": " + component + ": " + Format(args...) + "\n");
+				server.Send(DateTime() + ": " + type + ": " + component + ": " + Format(text, args...) + "\n");
 			}
 	};
 }

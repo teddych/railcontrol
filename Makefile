@@ -28,6 +28,7 @@ OBJ= \
 	DataModel/Track.o \
 	DelayedCall.o \
 	Hardware/HardwareHandler.o \
+	Languages.o \
 	Logger/Logger.o \
 	Logger/LoggerServer.o \
 	Manager.o \

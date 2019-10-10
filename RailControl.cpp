@@ -29,6 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <vector>
 
 #include "Hardware/HardwareHandler.h"
+#include "Languages.h"
 #include "Logger/Logger.h"
 #include "Manager.h"
 #include "Network/Select.h"
@@ -46,19 +47,19 @@ static const unsigned char maxStopSignalCounter = 3;
 void stopRailControlSignal(int signo)
 {
 	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
-	logger->Info("Stopping railcontrol requested by signal {0}", signo);
+	logger->Info(Languages::TextStoppingRequestedBySignal, signo);
 	runRailcontrol = false;
 	if (++stopSignalCounter < maxStopSignalCounter)
 	{
 		return;
 	}
-	logger->Info("Received a signal kill {0} times. Exiting without saving.", maxStopSignalCounter);
+	logger->Info(Languages::TextReceivedSignalKill, maxStopSignalCounter);
 	exit(1);
 }
 
 void stopRailControlWebserver()
 {
-	Logger::Logger::GetLogger("Main")->Info("Stopping railcontrol requested by webclient");
+	Logger::Logger::GetLogger("Main")->Info(Languages::TextStoppingRequestedByWebClient);
 	runRailcontrol = false;
 }
 
@@ -73,6 +74,9 @@ int main (int argc, char* argv[])
 	logger->Info(string("Starting railcontrol"));
 
 	Config config(argc == 2 ? argv[1] : "railcontrol.conf");
+
+	string language = config.getValue("language", "EN");
+	Languages::SetDefaultLanguage(language);
 
 	// init manager that does all the stuff in a seperate thread
 	Manager m(config);
@@ -106,7 +110,7 @@ int main (int argc, char* argv[])
 		}
 	} while (input != 'q' && runRailcontrol);
 
-	logger->Info("Stopping railcontrol");
+	logger->Info(Languages::TextStoppingRailControl);
 
 	// manager is cleaned up implicitly while leaving scope
 

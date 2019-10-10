@@ -2,7 +2,11 @@
 # Lines starting with # are comments
 # before and after the = has to be placed a space
 
+# available dbengines: Sqlite. Default: Sqlite
 dbengine   = Sqlite
 dbfilename = railcontrol.sqlite
 
 webserverport = 8080
+
+# available languages: de, en, es. Default: en
+language = en

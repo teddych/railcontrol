@@ -47,5 +47,6 @@ namespace Utils
 				pthread_setname_np(pthread_self(), name);
 #endif
 			}
+			static void StringToUpper(std::string& s) { for (auto& c : s) c = toupper(c); }
 	};
 }
