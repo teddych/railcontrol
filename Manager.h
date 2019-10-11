@@ -322,7 +322,7 @@ class Manager
 				m.erase(it);
 				if (storage != nullptr)
 				{
-					logger->Info("Saving {0}", content->GetName());
+					logger->Info(Languages::TextSaving, content->GetName());
 					storage->Save(*content);
 				}
 				delete content;

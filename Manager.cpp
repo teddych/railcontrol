@@ -25,6 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataModel/LayoutItem.h"
 #include "DelayedCall.h"
+#include "Languages.h"
 #include "Hardware/HardwareHandler.h"
 #include "Hardware/HardwareParams.h"
 #include "Manager.h"
@@ -51,7 +52,7 @@ using Storage::StorageHandler;
 using Storage::StorageParams;
 
 Manager::Manager(Config& config)
-:	logger(Logger::Logger::GetLogger("Manager")),
+:	logger(Logger::Logger::GetLogger(Languages::GetText(Languages::TextManager))),
  	boosterState(BoosterStop),
 	storage(nullptr),
  	delayedCall(new DelayedCall(*this)),
@@ -62,14 +63,14 @@ Manager::Manager(Config& config)
 	run(false),
 	debounceRun(false),
 	initLocosDone(false),
-	unknownControl("Unknown Control"),
-	unknownLoco("Unknown Loco"),
-	unknownAccessory("Unknown Accessory"),
-	unknownFeedback("Unknown Feedback"),
-	unknownTrack("Unknown Track"),
-	unknownSwitch("Unknown Switch"),
-	unknownStreet("Unknown Street"),
-	unknownSignal("Unknown Signal")
+	unknownControl(Languages::GetText(Languages::TextUnknownControl)),
+	unknownLoco(Languages::GetText(Languages::TextUnknownLoco)),
+	unknownAccessory(Languages::GetText(Languages::TextUnknownAccessory)),
+	unknownFeedback(Languages::GetText(Languages::TextUnknownFeedback)),
+	unknownTrack(Languages::GetText(Languages::TextUnknownTrack)),
+	unknownSwitch(Languages::GetText(Languages::TextUnknownSwitch)),
+	unknownStreet(Languages::GetText(Languages::TextUnknownStreet)),
+	unknownSignal(Languages::GetText(Languages::TextUnknownSignal))
 {
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "Sqlite");
@@ -77,7 +78,7 @@ Manager::Manager(Config& config)
 	storage = new StorageHandler(this, storageParams);
 	if (storage == nullptr)
 	{
-		logger->Info("Unable to create storage handler");
+		logger->Info(Languages::TextUnableCreateStorageHandler);
 		return;
 	}
 
@@ -94,64 +95,64 @@ Manager::Manager(Config& config)
 	{
 		hardwareParam.second->manager = this;
 		controls[hardwareParam.second->controlID] = new HardwareHandler(*this, hardwareParam.second);
-		logger->Info("Loaded control {0}: {1}", hardwareParam.first, hardwareParam.second->name);
+		logger->Info(Languages::TextLoadedControl, hardwareParam.first, hardwareParam.second->name);
 	}
 
 	storage->AllLayers(layers);
 	for (auto layer : layers)
 	{
-		logger->Info("Loaded layer {0}: {1}", layer.second->GetID(), layer.second->GetName());
+		logger->Info(Languages::TextLoadedLayer, layer.second->GetID(), layer.second->GetName());
 	}
 	if (layers.count(LayerUndeletable) != 1)
 	{
 		string result;
-		bool initLayer0 = LayerSave(0, "Layer 1", result);
+		bool initLayer0 = LayerSave(0, Languages::GetText(Languages::TextLayer1), result);
 		if (initLayer0 == false)
 		{
-			logger->Error("Unable to add initial layer 1");
+			logger->Error(Languages::TextUnableAddLayer1);
 		}
 	}
 
 	storage->AllAccessories(accessories);
 	for (auto accessory : accessories)
 	{
-		logger->Info("Loaded accessory {0}: {1}", accessory.second->GetID(), accessory.second->GetName());
+		logger->Info(Languages::TextLoadedAccessory, accessory.second->GetID(), accessory.second->GetName());
 	}
 
 	storage->AllFeedbacks(feedbacks);
 	for (auto feedback : feedbacks)
 	{
-		logger->Info("Loaded feedback {0}: {1}", feedback.second->GetID(), feedback.second->GetName());
+		logger->Info(Languages::TextLoadedFeedback, feedback.second->GetID(), feedback.second->GetName());
 	}
 
 	storage->AllTracks(tracks);
 	for (auto track : tracks)
 	{
-		logger->Info("Loaded track {0}: {1}", track.second->GetID(), track.second->GetName());
+		logger->Info(Languages::TextLoadedTrack, track.second->GetID(), track.second->GetName());
 	}
 
 	storage->AllSwitches(switches);
 	for (auto mySwitch : switches)
 	{
-		logger->Info("Loaded switch {0}: {1}", mySwitch.second->GetID(), mySwitch.second->GetName());
+		logger->Info(Languages::TextLoadedSwitch, mySwitch.second->GetID(), mySwitch.second->GetName());
 	}
 
 	storage->AllSignals(signals);
 	for (auto signal : signals)
 	{
-		logger->Info("Loaded signal {0}: {1}", signal.second->GetID(), signal.second->GetName());
+		logger->Info(Languages::TextLoadedSignal, signal.second->GetID(), signal.second->GetName());
 	}
 
 	storage->AllStreets(streets);
 	for (auto street : streets)
 	{
-		logger->Info("Loaded street {0}: {1}", street.second->GetID(), street.second->GetName());
+		logger->Info(Languages::TextLoadedStreet, street.second->GetID(), street.second->GetName());
 	}
 
 	storage->AllLocos(locos);
 	for (auto loco : locos)
 	{
-		logger->Info("Loaded loco {0}: {1}", loco.second->GetID(), loco.second->GetName());
+		logger->Info(Languages::TextLoadedLoco, loco.second->GetID(), loco.second->GetName());
 	}
 
 	run = true;

@@ -23,10 +23,33 @@ along with RailControl; see the file LICENCE. If not see
 
 const char* Languages::languages[MaxTexts][MaxLanguages] =
 {
+/* TextLayer1 */ { "Layer 1", "Schicht 1", "Capa 1" },
+/* TextLoadedAccessory */ { "Loaded accessory {0}: {1}", "Zubehörartikel {0} geladen: {1}", "Cargado accesorio {0}: {1}" },
+/* TextLoadedControl */ { "Loaded control {0}: {1}", "Zentrale {0} geladen: {1}", "Cargado control {0}: {1}" },
+/* TextLoadedFeedback */ { "Loaded feedback {0}: {1}", "Rückmelder {0} geladen: {1}", "Cargado retroseñal {0}: {1}" },
+/* TextLoadedLayer */ { "Loaded layer {0}: {1}", "Schicht {0} geladen: {1}", "Cargado capa {0}: {1}" },
+/* TextLoadedLoco */ { "Loaded locomotive {0}: {1}", "Lokomotive {0} geladen: {1}", "Cargado locomotora {0}: {1}" },
+/* TextLoadedSignal */ { "Loaded signal {0}: {1}", "Signal {0} geladen: {1}", "Cargado señal {0}: {1}" },
+/* TextLoadedStreet */ { "Loaded street {0}: {1}", "Fahrstrasse {0} geladen: {1}", "Cargado itinerario {0}: {1}" },
+/* TextLoadedSwitch */ { "Loaded switch {0}: {1}", "Weiche {0} geladen: {1}", "Cargado desvío {0}: {1}" },
+/* TextLoadedTrack */ { "Loaded track {0}: {1}", "Gleis {0} geladen: {1}", "Cargado vía {0}: {1}" },
+/* TextManager */ { "Manager", "Manager", "Manager" },
 /* TextReceivedSignalKill */ { "Received a signal kill {0} times. Exiting without saving.", "Signal Kill {0} mal erhalten. Beende RailControl ohne zu speichern.", "Apago RailControl sin guardar." },
+/* TextSaving */ { "Saving {0}", "Speichere {0}", "Guardando {0}" },
 /* TextStoppingRailControl */ { "Stopping RailControl", "Beende RailControl", "Apaga RailControl" },
-/* TextStoppingRequestedBySignal */ { "Stopping RailControl requested by signal {0}", "Beenden von RailControl angefordert mit Signal {0}", "Apagar RailControl pedido con signal {0}" },
+/* TextStoppingRequestedBySignal */ { "Stopping RailControl requested by signal {0}", "Beenden von RailControl angefordert mit Signal {0}", "Apagar RailControl pedido con señal {0}" },
 /* TextStoppingRequestedByWebClient */ { "Stopping RailControl requested by webclient", "Beenden von RailControl angefordert von Webclient", "Apagar RailControl pedido del webclient" },
+/* TextUnableAddLayer1 */ { "Unable to add initial layer 1", "Unmöglich die Schicht 1 hinzuzufügen", "Imposible de añadir capa 1" },
+/* TextUnableCreateStorageHandler */ { "Unable to create storage handler", "Unmöglich den Speicher Handler zu erstellen", "Imposible de crear manipulador de almacenamiento" },
+/* TextUnknownAccessory */ { "Unknown accessory", "Unbekannter Zubehörartikel", "Accesorio desconocido" },
+/* TextUnknownControl */ { "Unknown control", "Unbekannte Zentrale", "Control desconocido" },
+/* TextUnknownFeedback */ { "Unknown feedback", "Unbekannter Rückmelder", "Retroseñal desconocida" },
+/* TextUnknownLoco */ { "Unknown locomotive", "Unbekannte Lokomotive", "Locomotora desconocida" },
+/* TextUnknownSignal */ { "Unknown signal", "Unbekanntes Signal", "Señal desconocida" },
+/* TextUnknownStreet */ { "Unknown street", "Unbekannte Fahrstrasse", "Itinerario desconocido" },
+/* TextUnknownSwitch */ { "Unknown switch", "Unbekannte Weiche", "Desvío desconocido" },
+/* TextUnknownTrack */ { "Unknown track", "Unbekanntes Gleis", "Vía desconocida" },
+///*  */ { "", "", "" },
 };
 
 Languages::language_t Languages::defaultLanguage = Languages::EN;
