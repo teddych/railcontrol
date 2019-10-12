@@ -23,12 +23,16 @@ along with RailControl; see the file LICENCE. If not see
 
 const char* Languages::languages[MaxTexts][MaxLanguages] =
 {
+/* TextAccessoryAddressDccTooHigh */ { "Address higher then 2044 is not supported by DCC", "Adressen grösser als 2044 werden nicht unterstützt von DCC", "Direcciones más grandes que 2044 no estan compatibles con DCC" },
+/* TextAccessoryAddressMmTooHigh */ { "Address higher then 320 is not supported by MM1/MM2", "Adressen grösser als 320 werden nicht unterstützt von MM1/MM2", "Direcciones más grandes que 320 no estan compatibles con MM1/MM2" },
 /* TextAddingFeedback */ { "Adding feedback {0}", "Rückmelder {0} hinzugefügt", "Retroseñal añadido" },
 /* TextAddressMustBeHigherThen0 */ { "Address must be higher then 0", "Adresse muss grösser sein als 0", "Dirección tiene que ser mas que 0" },
 /* TextControlDoesNotExist */ { "Control does not exist", "Zentrale existiert nicht", "Control no existe" },
-/* TextDebounceThreadStarted */ { "Debounce thread started", "Entprellthread gestartet", "Antirrebote thread encendido" },
-/* TextDebounceThreadTerminated */ { "Debounce thread terminated", "Entprellthread beedet", "Antirrebote thread apagado" },
+/* TextDebounceThreadStarted */ { "Debounce thread started", "Entprellthread gestartet", "Antirebote thread encendido" },
+/* TextDebounceThreadTerminated */ { "Debounce thread terminated", "Entprellthread beedet", "Antirebote thread apagado" },
+/* TextDebouncer */ { "Debouncer", "Entpreller", "Antirebote" },
 /* TextFeedbackState */ { "Feedback {0} is {1}", "Rückmelder {0} ist {1}", "Retroseñal está {1}" },
+/* TextHeightIs0 */ { "Height is zero", "Höhe ist null", "Altura está zero" },
 /* TextIsLocked */ { "{0} is locked", "{0} ist gesperrt", "{0} está bloqueado" },
 /* TextLayer1 */ { "Layer 1", "Schicht 1", "Capa 1" },
 /* TextLoadedAccessory */ { "Loaded accessory {0}: {1}", "Zubehörartikel {0} geladen: {1}", "Cargado accesorio {0}: {1}" },
@@ -40,10 +44,13 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLoadedStreet */ { "Loaded street {0}: {1}", "Fahrstrasse {0} geladen: {1}", "Cargado itinerario {0}: {1}" },
 /* TextLoadedSwitch */ { "Loaded switch {0}: {1}", "Weiche {0} geladen: {1}", "Cargado desvío {0}: {1}" },
 /* TextLoadedTrack */ { "Loaded track {0}: {1}", "Gleis {0} geladen: {1}", "Cargado vía {0}: {1}" },
+/* TextLocoAddressDccTooHigh */ { "Address higher then 10239 is not supported by DCC", "Adressen grösser als 10239 werden nicht unterstützt von DCC", "Direcciones más grandes que 10239 no estan compatibles con DCC" },
+/* TextLocoAddressMmTooHigh */ { "Address higher then 80 is not supported by MM1/MM2", "Adressen grösser als 80 werden nicht unterstützt von MM1/MM2", "Direcciones más grandes que 80 no estan compatibles con MM1/MM2" },
 /* TextLocoDirection */ { "{0} ({1}) direction is {2}", "{0} ({1}) Richtung ist {2}", "{0} ({1}) dirección está {2}" },
 /* TextLocoFunction */ { "{0} ({1}) function {2} is {3}", "{0} ({1}) Function {2} ist {3}", "{0} ({1}) functión {2} está {3}" },
 /* TextLocoSpeed */ { "{0} ({1}) speed is {2}", "{0} ({1}) fährt mit Geschwindigkeit {2}", "{0} ({1}) corre con velocidad {2}" },
 /* TextManager */ { "Manager", "Manager", "Manager" },
+/* TextPositionAlreadyInUse */ { "Position {0}/{1}/{2} is already used by {3} \"{4}\".", "Position {0}/{1}/{2} ist bereits verwendet von {3} \"{4}\".", "Positión {0}/{1}/{2} está usado de {3} \"{4}\"." },
 /* TextProtocolNotSupported */ { "Protocol {0}is not supported by control. Please use one of: {1}", "Protokoll {0} wird nicht unterstützt von der Zentrale. Verwende eines aus {1}", "Protocolo {0}no compatible con esa control. Utilisa uno de {1}" },
 /* TextReceivedSignalKill */ { "Received a signal kill {0} times. Exiting without saving.", "Signal Kill {0} mal erhalten. Beende RailControl ohne zu speichern.", "Apago RailControl sin guardar." },
 /* TextSaving */ { "Saving {0}", "Speichere {0}", "Guardando {0}" },
@@ -61,6 +68,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextUnknownSwitch */ { "Unknown switch", "Unbekannte Weiche", "Desvío desconocido" },
 /* TextUnknownTrack */ { "Unknown track", "Unbekanntes Gleis", "Vía desconocida" },
 /* TextUnloadingControl */ { "Unloading control {0}: {1}", "Entlade Zentrale {0}: {1}", "Descargando control {0}: {1}" },
+/* TextWidthIs0 */ { "Width is zero", "Breite ist null", "Anchura está zero" },
 ///*  */ { "", "", "" },
 };
 

@@ -37,12 +37,16 @@ class Languages
 
 		enum textSelector_t : unsigned int
 		{
+			TextAccessoryAddressDccTooHigh,
+			TextAccessoryAddressMmTooHigh,
 			TextAddingFeedback,
 			TextAddressMustBeHigherThen0,
 			TextControlDoesNotExist,
 			TextDebounceThreadStarted,
 			TextDebounceThreadTerminated,
+			TextDebouncer,
 			TextFeedbackState,
+			TextHeightIs0,
 			TextIsLocked,
 			TextLayer1,
 			TextLoadedAccessory,
@@ -54,10 +58,13 @@ class Languages
 			TextLoadedStreet,
 			TextLoadedSwitch,
 			TextLoadedTrack,
+			TextLocoAddressDccTooHigh,
+			TextLocoAddressMmTooHigh,
 			TextLocoDirection,
 			TextLocoFunction,
 			TextLocoSpeed,
 			TextManager,
+			TextPositionAlreadyInUse,
 			TextProtocolNotSupported,
 			TextReceivedSignalKill,
 			TextSaving,
@@ -75,6 +82,7 @@ class Languages
 			TextUnknownSwitch,
 			TextUnknownTrack,
 			TextUnloadingControl,
+			TextWidthIs0,
 			MaxTexts
 		};
 

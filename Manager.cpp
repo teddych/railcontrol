@@ -2600,9 +2600,14 @@ bool Manager::CheckPositionFree(const layoutPosition_t posX,
 	const DataModel::LayoutItem::layoutRotation_t rotation,
 	string& result) const
 {
-	if (width == 0 || height == 0)
+	if (width == 0)
 	{
-		result.assign("Width or height is zero.");
+		result.assign(Languages::GetText(Languages::TextWidthIs0));
+		return false;
+	}
+	if (height == 0)
+	{
+		result.assign(Languages::GetText(Languages::TextHeightIs0));
 		return false;
 	}
 	layoutPosition_t x;
@@ -2639,9 +2644,7 @@ bool Manager::CheckLayoutPositionFree(const layoutPosition_t posX, const layoutP
 		{
 			continue;
 		}
-		stringstream status;
-		status << "Position " << static_cast<int>(posX) << "/" << static_cast<int>(posY) << "/" << static_cast<int>(posZ) << " is already used by " << layout.second->LayoutType() << " \"" << layout.second->GetName() << "\".";
-		result.assign(status.str());
+		result.assign(Logger::Logger::Format(Languages::GetText(Languages::TextPositionAlreadyInUse), static_cast<int>(posX), static_cast<int>(posY), static_cast<int>(posZ), layout.second->LayoutType(), layout.second->GetName()));
 		return false;
 	}
 	return true;
@@ -2654,7 +2657,7 @@ bool Manager::CheckAddressLoco(const protocol_t protocol, const address_t addres
 		case ProtocolDCC:
 			if (address > 10239)
 			{
-				result.assign("Address higher then 10239 is not supported by DCC");
+				result.assign(Languages::GetText(Languages::TextLocoAddressDccTooHigh));
 				return false;
 			}
 			return true;
@@ -2663,7 +2666,7 @@ bool Manager::CheckAddressLoco(const protocol_t protocol, const address_t addres
 		case ProtocolMM2:
 			if (address > 80)
 			{
-				result.assign("Address higher then 80 is not supported by MM1/MM2");
+				result.assign(Languages::GetText(Languages::TextLocoAddressMmTooHigh));
 				return false;
 			}
 			return true;
@@ -2680,7 +2683,7 @@ bool Manager::CheckAddressAccessory(const protocol_t protocol, const address_t a
 		case ProtocolDCC:
 			if (address > 2044)
 			{
-				result.assign("Address higher then 2044 is not supported by DCC");
+				result.assign(Languages::GetText(Languages::TextAccessoryAddressDccTooHigh));
 				return false;
 			}
 			return true;
@@ -2688,7 +2691,7 @@ bool Manager::CheckAddressAccessory(const protocol_t protocol, const address_t a
 		case ProtocolMM1:
 		case ProtocolMM2:
 			if (address > 320) {
-				result.assign("Address higher then 320 is not supported by MM1/MM2");
+				result.assign(Languages::GetText(Languages::TextAccessoryAddressMmTooHigh));
 				return false;
 			}
 			return true;
@@ -2786,7 +2789,7 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 
 void Manager::DebounceWorker()
 {
-	Utils::Utils::SetThreadName("Debouncer");
+	Utils::Utils::SetThreadName(Languages::GetText(Languages::TextDebouncer));
 	logger->Info(Languages::TextDebounceThreadStarted);
 	while (debounceRun)
 	{
