@@ -192,7 +192,7 @@ Manager::~Manager()
 			{
 				continue;
 			}
-			logger->Info("Unloading control {0}: {1}", controlID, params->name);
+			logger->Info(Languages::TextUnloadingControl, controlID, params->name);
 			delete control.second;
 			hardwareParams.erase(controlID);
 			delete params;
@@ -782,7 +782,7 @@ bool Manager::LocoSpeed(const controlType_t controlType, Loco* loco, const locoS
 		s = MaxSpeed;
 	}
 	const locoID_t locoID = loco->GetID();
-	logger->Info("{0} ({1}) speed is now {2}", loco->GetName(), locoID, s);
+	logger->Info(Languages::TextLocoSpeed, loco->GetName(), locoID, s);
 	loco->Speed(s);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
@@ -826,7 +826,7 @@ void Manager::LocoDirection(const controlType_t controlType, Loco* loco, const d
 	}
 	loco->SetDirection(direction);
 	const locoID_t locoID = loco->GetID();
-	logger->Info("{0} ({1}) direction is now {2}", loco->GetName(), locoID, direction);
+	logger->Info(Languages::TextLocoDirection, loco->GetName(), locoID, direction);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -859,7 +859,7 @@ void Manager::LocoFunction(const controlType_t controlType, Loco* loco, const fu
 
 	loco->SetFunction(function, on);
 	const locoID_t locoID = loco->GetID();
-	logger->Info("{0} ({1}) function {2} is now {3}", loco->GetName(), locoID, function, (on ? "on" : "off"));
+	logger->Info(Languages::TextLocoFunction, loco->GetName(), locoID, function, on);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -910,7 +910,7 @@ void Manager::AccessoryState(const controlType_t controlType, Accessory* accesso
 
 	if (force == false && accessory->IsInUse())
 	{
-		logger->Warning("{0} is locked", accessory->GetName());
+		logger->Warning(Languages::TextIsLocked, accessory->GetName());
 		return;
 	}
 
@@ -1117,7 +1117,7 @@ void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin
 	}
 
 	string name = "Feedback auto added " + std::to_string(controlID) + "/" + std::to_string(pin);
-	logger->Info("Adding feedback {0}", name);
+	logger->Info(Languages::TextAddingFeedback, name);
 	string result;
 
 	FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
@@ -1145,7 +1145,7 @@ void Manager::FeedbackState(Feedback* feedback)
 		return;
 	}
 	DataModel::Feedback::feedbackState_t state = feedback->GetState();
-	logger->Info("Feedback {0} is now {1}", feedback->GetName(), (state ? "on" : "off"));
+	logger->Info(Languages::TextFeedbackState, feedback->GetName(), state);
 	{
 		const string& name = feedback->GetName();
 		const feedbackID_t feedbackID = feedback->GetID();
@@ -2704,7 +2704,7 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 		std::lock_guard<std::mutex> guard(controlMutex);
 		if (controlID < ControlIdFirstHardware || controls.count(controlID) != 1)
 		{
-			result.assign("Control does not exist");
+			result.assign(Languages::GetText(Languages::TextControlDoesNotExist));
 			return false;
 		}
 		ControlInterface* control = controls.at(controlID);
@@ -2719,14 +2719,13 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 		}
 		if (!ret)
 		{
-			stringstream status;
-			status << "Protocol " << static_cast<int>(protocol);
+			string protocolText;
 			if (protocol > ProtocolNone && protocol <= ProtocolEnd)
 			{
-				status << "/" << protocolSymbols[protocol];
+				protocolText = protocolSymbols[protocol] + " ";
 			}
-			status << " is not supported by control. Please use one of: ";
 			std::vector<protocol_t> protocols;
+			string protocolsText;
 			if (type == AddressTypeLoco)
 			{
 				control->LocoProtocols(protocols);
@@ -2737,15 +2736,19 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 			}
 			for (auto p : protocols)
 			{
-				status << static_cast<int>(p) << "/" << protocolSymbols[p] << " ";
+				if (protocolsText.size() > 0)
+				{
+					protocolsText.append(", ");
+				}
+				protocolsText.append(protocolSymbols[p]);
 			}
-			result.assign(status.str());
+			result.assign(Logger::Logger::Format(Languages::GetText(Languages::TextProtocolNotSupported), protocolText, protocolsText));
 			return false;
 		}
 	}
 	if (address == 0)
 	{
-		result.assign("Address must be higher then 0");
+		result.assign(Logger::Logger::Format(Languages::GetText(Languages::TextAddressMustBeHigherThen0)));
 		return false;
 	}
 	switch (type)
@@ -2784,7 +2787,7 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 void Manager::DebounceWorker()
 {
 	Utils::Utils::SetThreadName("Debouncer");
-	logger->Info("Debounce thread started");
+	logger->Info(Languages::TextDebounceThreadStarted);
 	while (debounceRun)
 	{
 		{
@@ -2796,5 +2799,5 @@ void Manager::DebounceWorker()
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
-	logger->Info("Debounce thread terminated");
+	logger->Info(Languages::TextDebounceThreadTerminated);
 }
