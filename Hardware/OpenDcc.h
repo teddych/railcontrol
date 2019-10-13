@@ -22,7 +22,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <mutex>
 #include <string>
-#include <unistd.h>   //close & write;
 
 #include "HardwareInterface.h"
 #include "HardwareParams.h"

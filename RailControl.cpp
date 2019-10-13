@@ -69,9 +69,11 @@ int main (int argc, char* argv[])
 	signal(SIGINT, stopRailControlSignal);
 	signal(SIGTERM, stopRailControlSignal);
 
+	Utils::Utils::SetThreadName("RailControl");
+
 	runRailcontrol = true;
 	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
-	logger->Info(string("Starting railcontrol"));
+	logger->Info(string("Starting RailControl"));
 
 	Config config(argc == 2 ? argv[1] : "railcontrol.conf");
 

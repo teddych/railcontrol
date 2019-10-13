@@ -8,6 +8,7 @@ LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \
 	CS2.so \
+	Hsi88.so \
 	M6051.so \
 	OpenDcc.so \
 	RM485.so \
