@@ -77,6 +77,7 @@ namespace Hardware
 		if (s88Modules != modulesConfigured)
 		{
 			logger->Error(Languages::TextHsi88ErrorConfiguring, modulesConfigured);
+			return;
 		}
 
 		logger->Info(Languages::TextHsi88Configured, s88Modules, s88Modules1, s88Modules2, s88Modules3);
@@ -121,7 +122,7 @@ namespace Hardware
 		const unsigned char command [5] = { 's', static_cast<unsigned char>(s88Modules1 >> 1), static_cast<unsigned char>(s88Modules2 >> 1), static_cast<unsigned char>(s88Modules3 >> 1), '\r' };
 		serialLine.Send(command, sizeof(command));
 		char input[3];
-		int ret = serialLine.Receive(input, sizeof(input));
+		int ret = serialLine.ReceiveExact(input, sizeof(input));
 		if (ret <= 0)
 		{
 			return 0;
