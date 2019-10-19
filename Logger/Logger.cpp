@@ -69,7 +69,7 @@ namespace Logger
 			if ((next & 0x0F) == 0)
 			{
 				Debug(output.str());
-				output = std::stringstream(); // clear output
+				output.str(std::string());
 				if (next == size)
 				{
 					return;
