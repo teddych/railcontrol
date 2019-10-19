@@ -100,7 +100,7 @@ namespace Hardware
 		char input = 0;
 		while (true)
 		{
-			int ret = serialLine.Receive(&input,sizeof(input));
+			int ret = serialLine.Receive(&input, sizeof(input));
 			if (ret < 0 || input == '\r')
 			{
 				return data;
@@ -135,12 +135,10 @@ namespace Hardware
 
 	void Hsi88::ReadData()
 	{
-		std::string data = ReadUntilCR();
-		if (data.size() <= 0)
-		{
-			return;
-		}
-		if (data.size() <= 2)
+		std::string data;
+		const unsigned char headerDataSize = 3;
+		serialLine.ReceiveExact(data, headerDataSize);
+		if (data.size() != headerDataSize)
 		{
 			return;
 		}
@@ -148,12 +146,19 @@ namespace Hardware
 		{
 			return;
 		}
-		unsigned char modules = data[1];
+		const unsigned char modules = data[1];
+		const unsigned char moduleDataSize = modules * 3;
+		const unsigned char commandSize = moduleDataSize + headerDataSize;
+		serialLine.ReceiveExact(data, moduleDataSize);
+		if (data.size() != commandSize)
+		{
+			return;
+		}
 		for (unsigned char module = 0; module < modules; ++module)
 		{
-			unsigned char modulePosition = module * 3 + 2;
-			unsigned char dataPosition = modulePosition + 1;
-			unsigned char memoryPosition = (data[modulePosition] - 1) * 2;
+			const unsigned char modulePosition = module * 3 + 2;
+			const unsigned char dataPosition = modulePosition + 1;
+			const unsigned char memoryPosition = (data[modulePosition] - 1) * 2;
 			const unsigned char* dataByte = reinterpret_cast<const unsigned char*>(data.c_str()) + dataPosition;
 			CheckFeedbackByte(dataByte + 1, s88Memory + memoryPosition, memoryPosition);
 			CheckFeedbackByte(dataByte, s88Memory + memoryPosition + 1, memoryPosition + 1);
