@@ -107,6 +107,7 @@ namespace WebServer
 			case DataModel::Track::TrackTypeTunnel:
 				image = "<polygon class=\"track\" points=\"14,0 22,0 22,12 14,12\"/>";
 				image += "<polygon class=\"track\" points=\"5,1 10,1 10,10 12,12 24,12 26,10 26,1 31,1 31,3 28,3 28,11 25,14 11,14 8,11 8,3 5,3 \"/>";
+				#include "Fallthrough.h"
 
 			case DataModel::Track::TrackTypeTunnelEnd:
 			{

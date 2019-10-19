@@ -10,7 +10,7 @@ CFLAGSRASPI=-g -O2 -Wall --sysroot=/home/teddy/buildroot-2018.11/output/host/aar
 CPPFLAGS=-g -fpic -O2 -Wall -Wextra -Werror -std=c++11 -I..
 CPPFLAGSRASPI=-g -fpic -O2 -Wall --Wextra -Werror std=c++11 -I.. --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot/
 LDFLAGS=-g -shared -Wl,-soname,
-CFLAGSSQLITE=-DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
+CFLAGSSQLITE=-g -fpic -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
 
 LIBS= \
 	Sqlite.so
@@ -21,7 +21,7 @@ Sqlite.so: Sqlite.o sqlite/sqlite3.o *.h ../Logger/*.h ../Hardware/HardwareParam
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<  sqlite/sqlite3.o
 
 sqlite/sqlite3.o: sqlite/sqlite3.c sqlite/sqlite3.h
-	$(CC) $(CFLAGS) $(CFLAGSSQLITE) -c -o $@ $<
+	$(CC) $(CFLAGSSQLITE) -c -o $@ $<
 
 amalgamation: sqlite/sqlite3.c sqlite/sqlite3.h
 	$(CC) $(CFLAGSAMALGAMATION) $(CFLAGSSQLITE) -c -o sqlite/sqlite3.o sqlite/sqlite3.c
