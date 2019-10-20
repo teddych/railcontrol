@@ -110,6 +110,7 @@ namespace DataModel
 
 	bool Loco::Release()
 	{
+		manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		if (state != LocoStateManual)
 		{
@@ -262,6 +263,7 @@ namespace DataModel
 					case LocoStateOff:
 						// automode is turned off, terminate thread
 						logger->Info("{0} is now in manual mode", name);
+						state = LocoStateManual;
 						return;
 
 					case LocoStateSearchingFirst:
