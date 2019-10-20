@@ -154,10 +154,12 @@ namespace DataModel
 			void FeedbackIdFirstReached();
 			void FeedbackIdStopReached();
 			void DeleteSlaves();
+			void ForceManualMode();
 
 			enum locoState_t : unsigned char
 			{
 				LocoStateManual = 0,
+				LocoStateTerminated,
 				LocoStateOff,
 				LocoStateSearchingFirst,
 				LocoStateSearchingSecond,

@@ -111,11 +111,8 @@ namespace DataModel
 	bool Loco::Release()
 	{
 		manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
+		ForceManualMode();
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (state != LocoStateManual)
-		{
-			state = LocoStateOff;
-		}
 
 		if (streetFirst != nullptr)
 		{
@@ -169,7 +166,7 @@ namespace DataModel
 			logger->Warning("Can not start {0} because it is in error state", name);
 			return false;
 		}
-		if (state == LocoStateOff)
+		if (state == LocoStateTerminated)
 		{
 			locoThread.join();
 			state = LocoStateManual;
@@ -202,6 +199,9 @@ namespace DataModel
 					state = LocoStateOff;
 					break;
 
+				case LocoStateTerminated:
+					break;
+
 				case LocoStateSearchingSecond:
 				case LocoStateRunning:
 				case LocoStateStopping:
@@ -219,6 +219,27 @@ namespace DataModel
 		locoThread.join();
 		state = LocoStateManual;
 		return true;
+	}
+
+	void Loco::ForceManualMode()
+	{
+		{
+			std::lock_guard<std::mutex> Guard(stateMutex);
+			switch (state)
+			{
+				case LocoStateManual:
+					return;
+
+				case LocoStateTerminated:
+					break;
+
+				default:
+					state = LocoStateOff;
+					break;
+			}
+		}
+		locoThread.join();
+		state = LocoStateManual;
 	}
 
 	void Loco::SetMinThreadPriorityAndThreadName()
@@ -263,7 +284,7 @@ namespace DataModel
 					case LocoStateOff:
 						// automode is turned off, terminate thread
 						logger->Info("{0} is now in manual mode", name);
-						state = LocoStateManual;
+						state = LocoStateTerminated;
 						return;
 
 					case LocoStateSearchingFirst:
@@ -293,6 +314,11 @@ namespace DataModel
 
 					case LocoStateStopping:
 						logger->Info("{0} has not yet reached its destination. Going to manual mode when it reached its destination.", name);
+						break;
+
+					case LocoStateTerminated:
+						logger->Error("{0} is in terminated state while automode is running. Putting loco into error state", name);
+						state = LocoStateError;
 						break;
 
 					case LocoStateManual:
