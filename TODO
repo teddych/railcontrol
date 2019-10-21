@@ -15,4 +15,8 @@
 - Lokbilder
 - Fahren nach Fahrplan bzw. Vorgabe des Zielortes
 - Mehrsprachigkeit
-- Senden aller Lokfunktionen bei Neustart
+- Auto-/Manual Mode: Im Manual-Mode darf der Strom wegen Feedbacks nicht abstellen
+- Fahrstrassen mit unverschlossenen Objekten
+- Bug: Bei den Gleisen hat es immer ein Feedback configuriert, welches nicht gelöscht werden kann.
+- Bug: Name von betätigtem Rückmelder wird nicht angezeigt.
+- Bug: Positionierung der Rückmelder im Layout ist teilweise fehlerhaft.
