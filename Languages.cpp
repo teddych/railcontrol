@@ -32,7 +32,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextDebounceThreadTerminated */ { "Debounce thread terminated", "Entprellthread beedet", "Antirebote thread apagado" },
 /* TextDebouncer */ { "Debouncer", "Entpreller", "Antirebote" },
 /* TextFeedbackChange */ { "State of pin {0} on module {1} is {2}", "Status von Pin {0} an Modul {1} ist {2}", "Estado de contacto {0} del módulo {1} está {2}" },
-/* TextFeedbackState */ { "Feedback {0} is {1}", "Rückmelder {0} ist {1}", "Retroseñal está {1}" },
+/* TextFeedbackState */ { "Feedback {0} is {1}", "Rückmelder {0} ist {1}", "Retroseñal {0} está {1}" },
 /* TextHeightIs0 */ { "Height is zero", "Höhe ist null", "Altura está zero" },
 /* TextHsi88Configured */ { "{0} ({1}/{2}/{3}) S88 modules configured.", "{0} ({1}/{2}/{3}) S88 Module konfiguriert", "{0} ({1}/{2}/{3}) S88 módulos configurado" },
 /* TextHsi88ErrorConfiguring */ { "Unable to configure HSI-88. HSI-88 returned {0} configured modules", "HSI-88 kann nicht konfiguriert werden. HSI-88 meldet {0} module", "Imposible configurar HSI-88. HSI-88 denuncia {0} módulos" },
