@@ -90,7 +90,12 @@ namespace DataModel
 		Utils::Utils::SplitString(feedbackStrings, ",", feedbackStringVector);
 		for (auto feedbackString : feedbackStringVector)
 		{
-			feedbacks.push_back(Utils::Utils::StringToInteger(feedbackString));
+			feedbackID_t feedbackID = Utils::Utils::StringToInteger(feedbackString);
+			if (!manager->FeedbackExists(feedbackID))
+			{
+				continue;
+			}
+			feedbacks.push_back(feedbackID);
 		}
 		selectStreetApproach = static_cast<selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
 		state = static_cast<DataModel::Feedback::feedbackState_t>(Utils::Utils::GetBoolMapEntry(arguments, "state", DataModel::Feedback::FeedbackStateFree));
