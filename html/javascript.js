@@ -633,9 +633,11 @@ function dataUpdate(event)
 	else if (command == 'feedbacksettings')
 	{
 		var feedbackID = argumentMap.get('feedback');
+		var layerID = document.getElementById('s_layer').value;
 		elementName = 'f_' + feedbackID;
 		var url = '/?cmd=feedbackget';
 		url += '&feedback=' + feedbackID;
+		url += '&layer=' + layerID;
 		requestUpdateLayoutItem(elementName, url);
 	}
 	else if (command == 'feedbackdelete')

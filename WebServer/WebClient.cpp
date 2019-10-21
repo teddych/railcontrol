@@ -1736,14 +1736,8 @@ namespace WebServer
 				{
 					continue;
 				}
-				feedbackPin_t pin = feedback.second->GetPin() - 1;
-				layoutPosition_t x = pin & 0x0F; // => % 16;
-				layoutPosition_t y = pin >> 4;   // => / 16;
-				if (x >= 8)
-				{
-					++x;
-				}
-				content.AddChildTag(HtmlTagFeedback(feedback.second, x, y));
+
+				content.AddChildTag(HtmlTagFeedbackOnControlLayer(feedback.second));
 			}
 			HtmlReplyWithHeader(content);
 			return;
@@ -3232,15 +3226,38 @@ namespace WebServer
 		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + name + "&quot; deleted.");
 	}
 
+	HtmlTag WebClient::HtmlTagFeedbackOnControlLayer(const Feedback* feedback)
+	{
+		feedbackPin_t pin = feedback->GetPin() - 1;
+		layoutPosition_t x = pin & 0x0F; // => % 16;
+		layoutPosition_t y = pin >> 4;   // => / 16;
+		x += x >> 3; // => if (x >= 8) ++x;
+		return HtmlTagFeedback(feedback, x, y);
+	}
+
 	void WebClient::HandleFeedbackGet(const map<string, string>& arguments)
 	{
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
-		if (feedback == nullptr || feedback->GetVisible() == VisibleNo)
+		if (feedback == nullptr)
 		{
 			HtmlReplyWithHeader(HtmlTag());
 			return;
 		}
+
+		layerID_t layer = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
+		if (feedback->GetControlID() == -layer)
+		{
+			HtmlReplyWithHeader(HtmlTagFeedbackOnControlLayer(feedback));
+			return;
+		}
+
+		if (layer < LayerNone || feedback->GetVisible() == VisibleNo)
+		{
+			HtmlReplyWithHeader(HtmlTag());
+			return;
+		}
+
 		HtmlReplyWithHeader(HtmlTagFeedback(feedback));
 	}
 

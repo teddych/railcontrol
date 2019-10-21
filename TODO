@@ -18,5 +18,3 @@
 - Auto-/Manual Mode: Im Manual-Mode darf der Strom wegen Feedbacks nicht abstellen
 - Fahrstrassen mit unverschlossenen Objekten
 - Bug: Bei den Gleisen hat es immer ein Feedback configuriert, welches nicht gelöscht werden kann.
-- Bug: Positionierung der Rückmelder im Layout ist teilweise fehlerhaft.
-
