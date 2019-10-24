@@ -128,12 +128,15 @@ namespace DataModel
 		width = Utils::Utils::GetIntegerMapEntry(arguments, "width", Width1);
 		height = Utils::Utils::GetIntegerMapEntry(arguments, "height", Height1);
 		rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		if (rotation > Rotation270)
+		{
+			rotation = Rotation0;
+		}
 		return true;
 	}
 
 	std::string LayoutItem::Rotation(layoutRotation_t rotation)
 	{
-		std::string rotationText;
 		switch (rotation)
 		{
 			case Rotation90:

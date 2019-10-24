@@ -41,9 +41,13 @@ namespace DataModel
 
 			LayoutItem(const objectID_t objectID)
 			:	Object(objectID),
-			 	visible(VisibleYes),
-			 	width(Width1),
-			 	height(Height1)
+				visible(VisibleYes),
+				posX(0),
+				posY(0),
+				posZ(0),
+				width(Width1),
+				height(Height1),
+				rotation(Rotation0)
 			{
 			}
 
