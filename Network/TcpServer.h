@@ -30,6 +30,8 @@ namespace Network
 {
 	class TcpServer
 	{
+		public:
+			TcpServer() = delete;
 		protected:
 			TcpServer(const unsigned short port, const std::string& threadName);
 			~TcpServer();

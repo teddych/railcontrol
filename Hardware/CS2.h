@@ -28,6 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Logger/Logger.h"
+#include "Network/UdpConnection.h"
 
 // CAN protocol specification at http://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
 
@@ -79,9 +80,9 @@ namespace Hardware
 
 		private:
 			Logger::Logger* logger;
-			volatile unsigned char run;
-			struct sockaddr_in sockaddr_inSender;
-			int senderSocket;
+			volatile bool run;
+			Network::UdpConnection senderConnection;
+			Network::UdpConnection receiverConnection;
 			std::thread receiverThread;
 			static const unsigned short hash = 0x7337;
 
@@ -91,15 +92,18 @@ namespace Hardware
 			typedef unsigned char cs2Length_t;
 			typedef uint32_t cs2Address_t;
 
-			void intToData(const uint32_t i, char* buffer);
-			uint32_t dataToInt(const char* buffer);
-			uint16_t dataToShort(const char* buffer);
-			void createCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
-			void readCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol);
-			void createLocID(char* buffer, const protocol_t& protocol, const address_t& address);
-			void createAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address);
-			void receiver();
-			int CreateUdpConnection(const struct sockaddr* sockaddr, const unsigned int sockaddr_len, const char* server, const unsigned short port);
+			void IntToData(const uint32_t i, char* buffer);
+			uint32_t DataToInt(const char* buffer);
+			uint16_t DataToShort(const char* buffer);
+			void CreateCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
+			void ReadCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol);
+			void CreateLocID(char* buffer, const protocol_t& protocol, const address_t& address);
+			void CreateAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address);
+			void Receiver();
+
+			static const unsigned char CS2CommandBufferLength = 13;
+			static const unsigned short CS2SenderPort = 15731;
+			static const unsigned short CS2ReceiverPort = 15730;
 	};
 
 	extern "C" CS2* create_CS2(const HardwareParams* params);

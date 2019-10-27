@@ -27,6 +27,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextAccessoryAddressMmTooHigh */ { "Address higher then 320 is not supported by MM1/MM2", "Adressen grösser als 320 werden nicht unterstützt von MM1/MM2", "Direcciones más grandes que 320 no estan compatibles con MM1/MM2" },
 /* TextAddingFeedback */ { "Adding feedback {0}", "Rückmelder {0} hinzugefügt", "Retroseñal añadido" },
 /* TextAddressMustBeHigherThen0 */ { "Address must be higher then 0", "Adresse muss grösser sein als 0", "Dirección tiene que ser mas que 0" },
+/* TextConnectionReset */ { "Connection reset", "Verbindung zurückgesetzt", "Conexión reajustado" },
 /* TextControlDoesNotExist */ { "Control does not exist", "Zentrale existiert nicht", "Control no existe" },
 /* TextDebounceThreadStarted */ { "Debounce thread started", "Entprellthread gestartet", "Antirebote thread encendido" },
 /* TextDebounceThreadTerminated */ { "Debounce thread terminated", "Entprellthread beedet", "Antirebote thread apagado" },
@@ -64,6 +65,9 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextTooManyS88Modules */ { "Too many S88 modules configured: {0}. Max is {1}", "Zu viele S88 Module konfiguriert: {0}. Maximum ist {1}", "Demasiado módulos S88 configurado: {0}. El maximo es {1}" },
 /* TextUnableAddLayer1 */ { "Unable to add initial layer 1", "Unmöglich die Schicht 1 hinzuzufügen", "Imposible de añadir capa 1" },
 /* TextUnableCreateStorageHandler */ { "Unable to create storage handler", "Unmöglich den Speicher Handler zu erstellen", "Imposible de crear manipulador de almacenamiento" },
+/* TextUnableToBindSocketToPort */ { "Unable to bind connection to port {0}", "Binden der Verbindung an Port {0} fehlgeschlagen", "Vincular la conexión al puerto {0} imposible" },
+/* TextUnableToCreateSocket */ { "Unable to create socket", "Socket erstellen fehlgeschlagen", "Crear socket imposible" },
+/* TextUnableToResolveAddress */ { "Unable to resolve address", "Adresse auflösen fehlgeschalgen", "Resolver la dirección imposible" },
 /* TextUnknownAccessory */ { "Unknown accessory", "Unbekannter Zubehörartikel", "Accesorio desconocido" },
 /* TextUnknownControl */ { "Unknown control", "Unbekannte Zentrale", "Control desconocido" },
 /* TextUnknownFeedback */ { "Unknown feedback", "Unbekannter Rückmelder", "Retroseñal desconocida" },
@@ -74,6 +78,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextUnknownTrack */ { "Unknown track", "Unbekanntes Gleis", "Vía desconocida" },
 /* TextUnloadingControl */ { "Unloading control {0}: {1}", "Entlade Zentrale {0}: {1}", "Descargando control {0}: {1}" },
 /* TextWidthIs0 */ { "Width is zero", "Breite ist null", "Anchura está zero" },
+
 ///*  */ { "", "", "" },
 };
 

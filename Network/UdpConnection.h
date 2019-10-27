@@ -22,38 +22,35 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <string>
 
+#include "Logger/Logger.h"
+
 namespace Network
 {
-	class TcpConnection
+	class UdpConnection
 	{
 		public:
-			TcpConnection() = delete;
-			TcpConnection(int socket)
-			:	connectionSocket(socket),
-				connected(true)
-			{}
+			UdpConnection() = delete;
+			UdpConnection(Logger::Logger* logger, const std::string& server, const unsigned short port);
 
-			~TcpConnection()
-			{
-				Terminate();
-			}
+			~UdpConnection() { Terminate(); }
 
 			void Terminate();
-			int Send(const char* buf, const size_t buflen, const int flags);
-			int Send(const std::string& string, const int flags)
-			{
-				return Send(string.c_str(), string.size(), flags);
-			}
 
-			int Send(const std::string& string)
-			{
-				return Send(string, 0);
-			}
+			bool Bind();
 
-			int Receive(char* buf, const size_t buflen, const int flags);
+			bool IsConnected() { return connected; }
+
+			int Send(const char* buffer, const size_t buffferLength);
+			int Send(const std::string& string) { return Send(string.c_str(), string.size()); }
+
+			int Receive(char* buffer, const size_t bufferLength);
 
 		private:
+			Logger::Logger* logger;
 			int connectionSocket;
 			volatile bool connected;
+			struct sockaddr sockaddr;
+			volatile bool run;
+			const unsigned short port;
 	};
 }

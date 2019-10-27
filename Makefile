@@ -35,6 +35,7 @@ OBJ= \
 	Network/Serial.o \
 	Network/TcpConnection.o \
 	Network/TcpServer.o \
+	Network/UdpConnection.o \
 	RailControl.o \
 	Storage/StorageHandler.o \
 	Timestamp.o \
@@ -99,7 +100,7 @@ sqlite-shell:
 Timestamp.o: Timestamp.cpp Timestamp.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
-%.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
+%.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
