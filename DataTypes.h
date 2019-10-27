@@ -170,6 +170,7 @@ enum hardwareType_t : unsigned char
 	HardwareTypeRM485 = 4,
 	HardwareTypeOpenDcc = 5,
 	HardwareTypeHsi88 = 6,
+	HardwareTypeZ21 = 7,
 	HardwareTypeNumbers
 };
 

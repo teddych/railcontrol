@@ -45,7 +45,8 @@ namespace Hardware
 		"M6051",
 		"RM485",
 		"OpenDcc",
-		"Hsi88"
+		"Hsi88",
+		"Z21"
 	};
 
 	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params)
@@ -90,6 +91,11 @@ namespace Hardware
 			case HardwareTypeHsi88:
 				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_Hsi88);
 				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_Hsi88);
+				break;
+
+			case HardwareTypeZ21:
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_Z21);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_Z21);
 				break;
 
 			default:

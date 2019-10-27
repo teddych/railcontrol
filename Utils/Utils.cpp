@@ -187,4 +187,46 @@ namespace Utils
 		i |= static_cast<const unsigned char>(buffer[1]);
 		return i;
 	}
+
+	void Utils::IntToDataLittleEndian(const uint32_t i, unsigned char* buffer)
+	{
+		buffer[0] = (i & 0xFF);
+		buffer[1] = ((i >> 8) & 0xFF);
+		buffer[2] = ((i >> 16) & 0xFF);
+		buffer[3] = (i >> 24);
+	}
+
+	uint32_t Utils::DataLittleEndianToInt(const unsigned char* buffer)
+	{
+		return static_cast<const unsigned char>(buffer[0])
+			+ (static_cast<const unsigned char>(buffer[1]) << 8)
+			+ (static_cast<const unsigned char>(buffer[2]) << 16)
+			+ (static_cast<const unsigned char>(buffer[3]) << 24);
+	}
+
+	void Utils::ShortToDataLittleEndian(const uint16_t i, unsigned char* buffer)
+	{
+		buffer[0] = (i & 0xFF);
+		buffer[1] = (i >> 8);
+	}
+
+	uint16_t Utils::DataLittleEndianToShort(const unsigned char* buffer)
+	{
+		return static_cast<const unsigned char>(buffer[0])
+			+ (static_cast<const unsigned char>(buffer[1]) << 8);
+	}
+
+	std::string IntegerToBCD(const unsigned int input)
+	{
+		unsigned char zero = (input >> 4);
+		zero &= 0x0000000F;
+		zero += '0';
+		unsigned char one = input;
+		one &= 0x0000000F;
+		one += '0';
+		std::string output;
+		output.append(1, zero);
+		output.append(1, one);
+		return output;
+	}
 }

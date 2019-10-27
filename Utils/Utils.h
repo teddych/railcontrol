@@ -52,5 +52,10 @@ namespace Utils
 			static uint32_t DataBigEndianToInt(const char* buffer);
 			static void ShortToDataBigEndian(const uint16_t i, char* buffer);
 			static uint16_t DataBigEndianToShort(const char* buffer);
+			static void IntToDataLittleEndian(const uint32_t i, unsigned char* buffer);
+			static uint32_t DataLittleEndianToInt(const unsigned char* buffer);
+			static void ShortToDataLittleEndian(const uint16_t i, unsigned char* buffer);
+			static uint16_t DataLittleEndianToShort(const unsigned char* buffer);
+			static std::string IntegerToBCD(const unsigned int input);
 	};
 }

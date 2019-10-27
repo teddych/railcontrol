@@ -73,6 +73,7 @@ class Languages
 			TextProtocolNotSupported,
 			TextReceivedSignalKill,
 			TextSaving,
+			TextSerialNumberIs,
 			TextStoppingRailControl,
 			TextStoppingRequestedBySignal,
 			TextStoppingRequestedByWebClient,
@@ -92,6 +93,14 @@ class Languages
 			TextUnknownTrack,
 			TextUnloadingControl,
 			TextWidthIs0,
+			TextZ21Black2012,
+			TextZ21Black2013,
+			TextZ21DoesNotUnderstand,
+			TextZ21SmartRail2012,
+			TextZ21Start2016,
+			TextZ21Type,
+			TextZ21Unknown,
+			TextZ21White2013,
 			MaxTexts
 		};
 
@@ -102,21 +111,21 @@ class Languages
 
 		static language_t ParseLanguage(std::string& languageString);
 
-		static const std::string GetText(const textSelector_t selector)
+		static const char* GetText(const textSelector_t selector)
 		{
 			return GetText(defaultLanguage, selector);
 		}
 
-		static const std::string GetText(const language_t language, const textSelector_t selector)
+		static const char* GetText(const language_t language, const textSelector_t selector)
 		{
 			static const char* unknownText = "Unknown Text";
 
 			if (language >= MaxLanguages || selector >= MaxTexts)
 			{
-				return std::string(unknownText);
+				return unknownText;
 			}
 
-			return std::string(languages[selector][language]);
+			return languages[selector][language];
 		}
 
 		static const char* languages[MaxTexts][MaxLanguages];

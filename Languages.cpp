@@ -59,6 +59,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextProtocolNotSupported */ { "Protocol {0}is not supported by control. Please use one of: {1}", "Protokoll {0} wird nicht unterstützt von der Zentrale. Verwende eines aus {1}", "Protocolo {0}no compatible con esa control. Utilisa uno de {1}" },
 /* TextReceivedSignalKill */ { "Received a signal kill {0} times. Exiting without saving.", "Signal Kill {0} mal erhalten. Beende RailControl ohne zu speichern.", "Apago RailControl sin guardar." },
 /* TextSaving */ { "Saving {0}", "Speichere {0}", "Guardando {0}" },
+/* TextSerialNumberIs */ { "Serialnumber is {0}", "Seriennummer ist {0}", "Número de serie es {0}" },
 /* TextStoppingRailControl */ { "Stopping RailControl", "Beende RailControl", "Apaga RailControl" },
 /* TextStoppingRequestedBySignal */ { "Stopping RailControl requested by signal {0}", "Beenden von RailControl angefordert mit Signal {0}", "Apagar RailControl pedido con señal {0}" },
 /* TextStoppingRequestedByWebClient */ { "Stopping RailControl requested by webclient", "Beenden von RailControl angefordert von Webclient", "Apagar RailControl pedido del webclient" },
@@ -78,8 +79,14 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextUnknownTrack */ { "Unknown track", "Unbekanntes Gleis", "Vía desconocida" },
 /* TextUnloadingControl */ { "Unloading control {0}: {1}", "Entlade Zentrale {0}: {1}", "Descargando control {0}: {1}" },
 /* TextWidthIs0 */ { "Width is zero", "Breite ist null", "Anchura está zero" },
-
-///*  */ { "", "", "" },
+/* TextZ21Black2012 */ { "black Z21, hardware 2012", "schwarze Z21, Hardware 2012", "Z21 negro, hardware 2012" },
+/* TextZ21Black2013 */ { "black Z21, hardware 2013", "schwarze Z21, Hardware 2013", "Z21 negro, hardware 2013" },
+/* TextZ21DoesNotUnderstand */ { "Z21 does not understand our command", "Z21 versteht under Kommando nicht", "Z21 no ha endendido nuestro comando" },
+/* TextZ21SmartRail2012 */ { "SmartRail", "SmartRail", "SmartRail" },
+/* TextZ21Start2016 */ { "z21 start", "z21 start", "z21 start" },
+/* TextZ21Type */ { "Connected to a {0} with firmware version {1}", "Verbunden mit einer {0} mit firmware version", "Conectado a {0} con firmware versión {1}" },
+/* TextZ21Unknown */ { "unknown Z21", "unbekannte Z21", "Z21 desconosido" },
+/* TextZ21White2013 */ { "white z21", "weisse z21", "z21 blanco" },
 };
 
 Languages::language_t Languages::defaultLanguage = Languages::EN;

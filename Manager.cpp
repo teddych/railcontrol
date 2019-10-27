@@ -287,6 +287,7 @@ const std::map<hardwareType_t,string> Manager::HardwareListNames()
 	hardwareList[HardwareTypeRM485] = "RM485";
 	hardwareList[HardwareTypeHsi88] = "HSI-88";
 	hardwareList[HardwareTypeVirtual] = "Virtual Command Station (no Hardware)";
+	hardwareList[HardwareTypeZ21] = "Z21 (Power On/Off only, untested)";
 	return hardwareList;
 }
 

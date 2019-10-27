@@ -12,7 +12,8 @@ LIBS= \
 	M6051.so \
 	OpenDcc.so \
 	RM485.so \
-	Virtual.so
+	Virtual.so \
+	Z21.so
 
 %.so: %.cpp *.h ../Manager.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
