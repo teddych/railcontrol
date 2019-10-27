@@ -26,7 +26,6 @@ class Manager;
 
 namespace Hardware
 {
-
 	class HardwareParams
 	{
 		public:

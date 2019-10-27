@@ -28,13 +28,14 @@ along with RailControl; see the file LICENCE. If not see
 #include "Hardware/HardwareParams.h"
 #include "Manager.h"
 
-namespace Hardware {
-
+namespace Hardware
+{
 	// the types of the class factories
 	typedef Hardware::HardwareInterface* createHardware_t(const Hardware::HardwareParams* params);
 	typedef void destroyHardware_t(Hardware::HardwareInterface*);
 
-	class HardwareHandler: public ControlInterface {
+	class HardwareHandler: public ControlInterface
+	{
 		public:
 			HardwareHandler(Manager& manager, const HardwareParams* params);
 			~HardwareHandler();
@@ -66,6 +67,5 @@ namespace Hardware {
 
 			static const std::string hardwareSymbols[];
 	};
-
 }; // namespace Hardware
 

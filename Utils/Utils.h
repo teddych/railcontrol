@@ -48,5 +48,9 @@ namespace Utils
 #endif
 			}
 			static void StringToUpper(std::string& s) { for (auto& c : s) c = toupper(c); }
+			static void IntToDataBigEndian(const uint32_t i, char* buffer);
+			static uint32_t DataBigEndianToInt(const char* buffer);
+			static void ShortToDataBigEndian(const uint16_t i, char* buffer);
+			static uint16_t DataBigEndianToShort(const char* buffer);
 	};
 }

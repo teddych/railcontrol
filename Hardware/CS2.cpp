@@ -50,11 +50,11 @@ namespace Hardware
 	CS2::CS2(const HardwareParams* params)
 	:	HardwareInterface(params->manager, params->controlID, "Maerklin Central Station 2 (CS2) / " + params->name + " at IP " + params->arg1),
 	 	logger(Logger::Logger::GetLogger("CS2 " + params->name + " " + params->arg1)),
+	 	run(true),
 	 	senderConnection(logger, params->arg1, CS2SenderPort),
 	 	receiverConnection(logger, "0.0.0.0", CS2ReceiverPort)
 	{
 		logger->Info(name);
-		run = true;
 		if (senderConnection.IsConnected())
 		{
 			logger->Info("CS2 sender socket created");
@@ -84,41 +84,13 @@ namespace Hardware
 		buffer[4] = length;
 	}
 
-	void CS2::IntToData(const uint32_t i, char* buffer)
-	{
-		buffer[0] = (i >> 24);
-		buffer[1] = ((i >> 16) & 0xFF);
-		buffer[2] = ((i >> 8) & 0xFF);
-		buffer[3] = (i & 0xFF);
-	}
-
-	uint32_t CS2::DataToInt(const char* buffer)
-	{
-		uint32_t i = static_cast<unsigned char>(buffer[0]);
-		i <<= 8;
-		i |= static_cast<unsigned char>(buffer[1]);
-		i <<= 8;
-		i |= static_cast<unsigned char>(buffer[2]);
-		i <<= 8;
-		i |= static_cast<unsigned char>(buffer[3]);
-		return i;
-	}
-
-	uint16_t CS2::DataToShort(const char* buffer)
-	{
-		uint16_t i = static_cast<unsigned char>(buffer[0]);
-		i <<= 8;
-		i |= static_cast<unsigned char>(buffer[1]);
-		return i;
-	}
-
 	void CS2::ReadCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol)
 	{
 		prio = buffer[0] >> 1;
 		command = (cs2Command_t)(buffer[0]) << 7 | (cs2Command_t)(buffer[1]) >> 1;
 		response = buffer[1] & 0x01;
 		length = buffer[4];
-		address = DataToInt(buffer + 5);
+		address = Utils::Utils::DataBigEndianToInt(buffer + 5);
 		cs2Address_t maskedAddress = address & 0x0000FC00;
 		address &= 0x03FF;
 
@@ -152,7 +124,7 @@ namespace Hardware
 			locID |= 0x4000;
 		}
 		// else expect PROTOCOL_MM2: do nothing
-		IntToData(locID, buffer);
+		Utils::Utils::IntToDataBigEndian(locID, buffer);
 	}
 
 	void CS2::CreateAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address)
@@ -166,7 +138,7 @@ namespace Hardware
 		{
 			locID |= 0x3000;
 		}
-		IntToData(locID, buffer);
+		Utils::Utils::IntToDataBigEndian(locID, buffer);
 	}
 
 	// turn booster on or off
@@ -365,7 +337,7 @@ namespace Hardware
 			else if (command == 0x04 && !response && length == 6)
 			{
 				// speed event
-				locoSpeed_t speed = DataToShort(buffer + 9);
+				locoSpeed_t speed = Utils::Utils::DataBigEndianToShort(buffer + 9);
 				logger->Info("Received loco speed command for protocol {0} address {1} and speed {2}", protocol, address, speed);
 				manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), speed);
 			}
