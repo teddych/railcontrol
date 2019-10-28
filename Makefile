@@ -6,8 +6,8 @@ CPPRASPI=aarch64-linux-g++
 
 CPPFLAGS=-I. -g -O0 -Wall -Wextra -Werror -std=c++11
 # -O2 does not work
-CPPFLAGSAMALGAMATION=-I. -g -O0 -Wall -Wextra -Werror -std=c++11
-CPPFLAGSRASPI=-I. -g -O0 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
+CPPFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
+CPPFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
@@ -75,6 +75,10 @@ all: $(OBJ)
 dist: all
 	strip railcontrol
 	tar cvJf railcontrol.tar.xz railcontrol Storage/*.so Hardware/*.so railcontrol.conf.dist html/*
+
+dist-cygwin: amalgamation
+	strip railcontrol.exe
+	zip railcontrol.zip railcontrol.exe railcontrol.conf.dist html/*
 
 amalgamation: Timestamp.h
 	./amalgamation.bash

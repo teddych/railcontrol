@@ -3305,8 +3305,11 @@ namespace WebServer
 		HtmlReplyWithHeaderAndParagraph("Settings saved.");
 	}
 
-	void WebClient::HandleTimestamp(const map<string, string>& arguments)
+	void WebClient::HandleTimestamp(__attribute__((unused)) const map<string, string>& arguments)
 	{
+#ifdef __CYGWIN__
+		HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp not set"));
+#else
 		const time_t timestamp = Utils::Utils::GetIntegerMapEntry(arguments, "timestamp", 0);
 		if (timestamp == 0)
 		{
@@ -3329,6 +3332,7 @@ namespace WebServer
 			return;
 		}
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp set"));
+#endif
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)

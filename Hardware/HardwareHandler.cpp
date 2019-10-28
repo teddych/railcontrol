@@ -26,11 +26,14 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataTypes.h"
 #include "Logger/Logger.h"
-#include "Hardware/HardwareHandler.h"
 #include "Hardware/CS2.h"
+#include "Hardware/HardwareHandler.h"
+#include "Hardware/Hsi88.h"
 #include "Hardware/M6051.h"
+#include "Hardware/OpenDcc.h"
 #include "Hardware/RM485.h"
 #include "Hardware/Virtual.h"
+#include "Hardware/Z21.h"
 #include "Utils/Utils.h"
 
 using std::string;

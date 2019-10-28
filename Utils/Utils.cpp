@@ -216,7 +216,7 @@ namespace Utils
 			+ (static_cast<const unsigned char>(buffer[1]) << 8);
 	}
 
-	std::string IntegerToBCD(const unsigned int input)
+	std::string Utils::IntegerToBCD(const unsigned int input)
 	{
 		unsigned char zero = (input >> 4);
 		zero &= 0x0000000F;

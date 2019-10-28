@@ -99,7 +99,7 @@ namespace Hardware
 	};
 
 	extern "C" Z21* create_Z21(const HardwareParams* params);
-	extern "C" void destroy_Z21(Z21* Z21);
+	extern "C" void destroy_Z21(Z21* z21);
 
 } // namespace
 
