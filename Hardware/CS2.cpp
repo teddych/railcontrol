@@ -46,7 +46,6 @@ namespace Hardware
 		delete(cs2);
 	}
 
-	// start the thing
 	CS2::CS2(const HardwareParams* params)
 	:	HardwareInterface(params->manager, params->controlID, "Maerklin Central Station 2 (CS2) / " + params->name + " at IP " + params->arg1),
 	 	logger(Logger::Logger::GetLogger("CS2 " + params->name + " " + params->arg1)),
@@ -66,7 +65,6 @@ namespace Hardware
 		receiverThread = std::thread(&Hardware::CS2::Receiver, this);
 	}
 
-	// stop the thing
 	CS2::~CS2()
 	{
 		run = false;
@@ -75,7 +73,7 @@ namespace Hardware
 		logger->Info("Terminating CS2 sender");
 	}
 
-	void CS2::CreateCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length)
+	void CS2::CreateCommandHeader(unsigned char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length)
 	{
 		buffer[0] = (prio << 1) | (command >> 7);
 		buffer[1] = (command << 1) | (response & 0x01);
@@ -84,7 +82,7 @@ namespace Hardware
 		buffer[4] = length;
 	}
 
-	void CS2::ReadCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol)
+	void CS2::ReadCommandHeader(unsigned char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol)
 	{
 		prio = buffer[0] >> 1;
 		command = (cs2Command_t)(buffer[0]) << 7 | (cs2Command_t)(buffer[1]) >> 1;
@@ -112,7 +110,7 @@ namespace Hardware
 		}
 	}
 
-	void CS2::CreateLocID(char* buffer, const protocol_t& protocol, const address_t& address)
+	void CS2::CreateLocID(unsigned char* buffer, const protocol_t& protocol, const address_t& address)
 	{
 		uint32_t locID = address;
 		if (protocol == ProtocolDCC)
@@ -127,7 +125,7 @@ namespace Hardware
 		Utils::Utils::IntToDataBigEndian(locID, buffer);
 	}
 
-	void CS2::CreateAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address)
+	void CS2::CreateAccessoryID(unsigned char* buffer, const protocol_t& protocol, const address_t& address)
 	{
 		uint32_t locID = address;
 		if (protocol == ProtocolDCC)
@@ -145,7 +143,7 @@ namespace Hardware
 	void CS2::Booster(const boosterState_t status)
 	{
 		logger->Info("Turning CS2 booster {0}", status ? "on" : "off");
-		char buffer[CS2CommandBufferLength];
+		unsigned char buffer[CS2CommandBufferLength];
 		// fill up header & locid
 		CreateCommandHeader(buffer, 0, 0x00, 0, 5);
 		// set data buffer (8 bytes) to 0
@@ -166,7 +164,7 @@ namespace Hardware
 	void CS2::LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
 	{
 		logger->Info("Setting speed of cs2 loco {0}/{1} to speed {2}", protocol, address, speed);
-		char buffer[CS2CommandBufferLength];
+		unsigned char buffer[CS2CommandBufferLength];
 		// set header
 		CreateCommandHeader(buffer, 0, 0x04, 0, 6);
 		// set data buffer (8 bytes) to 0
@@ -189,7 +187,7 @@ namespace Hardware
 	void CS2::LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction)
 	{
 		logger->Info("Setting direction of cs2 loco {0}/{1} to {2}", protocol, address, direction == DirectionRight ? "forward" : "reverse");
-		char buffer[CS2CommandBufferLength];
+		unsigned char buffer[CS2CommandBufferLength];
 		// set header
 		CreateCommandHeader(buffer, 0, 0x05, 0, 5);
 		// set data buffer (8 bytes) to 0
@@ -211,7 +209,7 @@ namespace Hardware
 	void CS2::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
 		logger->Info("Setting f{0} of cs2 loco {1}/{2} to \"{3}\"", static_cast<int>(function), static_cast<int>(protocol), static_cast<int>(address), on ? "on" : "off");
-		char buffer[CS2CommandBufferLength];
+		unsigned char buffer[CS2CommandBufferLength];
 		// set header
 		CreateCommandHeader(buffer, 0, 0x06, 0, 6);
 		// set data buffer (8 bytes) to 0
@@ -234,7 +232,7 @@ namespace Hardware
 		std::string stateText;
 		DataModel::Accessory::Status(state, stateText);
 		logger->Info("Setting state of cs2 accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
-		char buffer[CS2CommandBufferLength];
+		unsigned char buffer[CS2CommandBufferLength];
 		// set header
 		CreateCommandHeader(buffer, 0, 0x0B, 0, 6);
 		// set data buffer (8 bytes) to 0
@@ -269,7 +267,7 @@ namespace Hardware
 			logger->Error("Unable to bind the socket for CS2 receiver, Closing socket.");
 			return;
 		}
-		char buffer[CS2CommandBufferLength];
+		unsigned char buffer[CS2CommandBufferLength];
 		while(run)
 		{
 			ssize_t datalen = receiverConnection.Receive(buffer, sizeof(buffer));

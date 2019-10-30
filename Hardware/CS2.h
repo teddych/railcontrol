@@ -92,10 +92,10 @@ namespace Hardware
 			typedef unsigned char cs2Length_t;
 			typedef uint32_t cs2Address_t;
 
-			void CreateCommandHeader(char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
-			void ReadCommandHeader(char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol);
-			void CreateLocID(char* buffer, const protocol_t& protocol, const address_t& address);
-			void CreateAccessoryID(char* buffer, const protocol_t& protocol, const address_t& address);
+			void CreateCommandHeader(unsigned char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
+			void ReadCommandHeader(unsigned char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol);
+			void CreateLocID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
+			void CreateAccessoryID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
 			void Receiver();
 
 			static const unsigned char CS2CommandBufferLength = 13;

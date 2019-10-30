@@ -40,10 +40,12 @@ namespace Network
 
 			bool IsConnected() { return connected; }
 
-			int Send(const char* buffer, const size_t buffferLength);
+			int Send(const char* buffer, const size_t bufferLength);
+			int Send(unsigned const char* buffer, const size_t bufferLength) { return Send(reinterpret_cast<const char*>(buffer), bufferLength); }
 			int Send(const std::string& string) { return Send(string.c_str(), string.size()); }
 
 			int Receive(char* buffer, const size_t bufferLength);
+			int Receive(unsigned char* buffer, const size_t bufferLength) { return Receive(reinterpret_cast<char*>(buffer), bufferLength); }
 
 		private:
 			Logger::Logger* logger;

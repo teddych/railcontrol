@@ -154,7 +154,7 @@ namespace Utils
 		return intValue != 0;
 	}
 
-	void Utils::IntToDataBigEndian(const uint32_t i, char* buffer)
+	void Utils::IntToDataBigEndian(const uint32_t i, unsigned char* buffer)
 	{
 		buffer[0] = (i >> 24);
 		buffer[1] = ((i >> 16) & 0xFF);
@@ -162,29 +162,29 @@ namespace Utils
 		buffer[3] = (i & 0xFF);
 	}
 
-	uint32_t Utils::DataBigEndianToInt(const char* buffer)
+	uint32_t Utils::DataBigEndianToInt(const unsigned char* buffer)
 	{
-		uint32_t i = static_cast<const unsigned char>(buffer[0]);
+		uint32_t i = buffer[0];
 		i <<= 8;
-		i |= static_cast<const unsigned char>(buffer[1]);
+		i |= buffer[1];
 		i <<= 8;
-		i |= static_cast<const unsigned char>(buffer[2]);
+		i |= buffer[2];
 		i <<= 8;
-		i |= static_cast<const unsigned char>(buffer[3]);
+		i |= buffer[3];
 		return i;
 	}
 
-	void Utils::ShortToDataBigEndian(const uint16_t i, char* buffer)
+	void Utils::ShortToDataBigEndian(const uint16_t i, unsigned char* buffer)
 	{
 		buffer[0] = (i >> 8);
 		buffer[1] = (i & 0xFF);
 	}
 
-	uint16_t Utils::DataBigEndianToShort(const char* buffer)
+	uint16_t Utils::DataBigEndianToShort(const unsigned char* buffer)
 	{
-		uint16_t i = static_cast<const unsigned char>(buffer[0]);
+		uint16_t i = buffer[0];
 		i <<= 8;
-		i |= static_cast<const unsigned char>(buffer[1]);
+		i |= buffer[1];
 		return i;
 	}
 

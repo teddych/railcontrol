@@ -126,7 +126,7 @@ namespace Hardware
 		unsigned char buffer[Z21CommandBufferLength];
 		while(run)
 		{
-			ssize_t dataLength = receiverConnection.Receive(reinterpret_cast<char*>(buffer), sizeof(buffer));
+			ssize_t dataLength = receiverConnection.Receive(buffer, sizeof(buffer));
 
 			if (!run)
 			{
@@ -343,19 +343,19 @@ namespace Hardware
 	void Z21::SendPowerOff()
 	{
 		unsigned char buffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x21, 0x80, 0xA1 };
-		senderConnection.Send(reinterpret_cast<char*>(buffer), sizeof(buffer));
+		senderConnection.Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::SendPowerOn()
 	{
 		unsigned char buffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x21, 0x81, 0xA0 };
-		senderConnection.Send(reinterpret_cast<char*>(buffer), sizeof(buffer));
+		senderConnection.Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::SendBroadcastFlags(const unsigned int flags)
 	{
 		unsigned char buffer[8] = { 0x08, 0x00, 0x50, 0x00 };
 		Utils::Utils::IntToDataLittleEndian(flags, buffer + 4);
-		senderConnection.Send(reinterpret_cast<char*>(buffer), sizeof(buffer));
+		senderConnection.Send(buffer, sizeof(buffer));
 	}
 } // namespace
