@@ -93,8 +93,6 @@ namespace Hardware
 			void SendGetSerialNumber();
 			void SendGetHardwareInfo();
 			void SendLogOff();
-			void SendPowerOff();
-			void SendPowerOn();
 			void SendBroadcastFlags(const unsigned int flags);
 	};
 

@@ -64,6 +64,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextStoppingRequestedBySignal */ { "Stopping RailControl requested by signal {0}", "Beenden von RailControl angefordert mit Signal {0}", "Apagar RailControl pedido con señal {0}" },
 /* TextStoppingRequestedByWebClient */ { "Stopping RailControl requested by webclient", "Beenden von RailControl angefordert von Webclient", "Apagar RailControl pedido del webclient" },
 /* TextTooManyS88Modules */ { "Too many S88 modules configured: {0}. Max is {1}", "Zu viele S88 Module konfiguriert: {0}. Maximum ist {1}", "Demasiado módulos S88 configurado: {0}. El maximo es {1}" },
+/* TextTurningBoosterOn */ { "Turning booster off", "Dektiviere booster", "Apagando booster" },
+/* TextTurningBoosterOn */ { "Turning booster on", "Aktiviere booster", "Encendiendo booster" },
 /* TextUnableAddLayer1 */ { "Unable to add initial layer 1", "Unmöglich die Schicht 1 hinzuzufügen", "Imposible de añadir capa 1" },
 /* TextUnableCreateStorageHandler */ { "Unable to create storage handler", "Unmöglich den Speicher Handler zu erstellen", "Imposible de crear manipulador de almacenamiento" },
 /* TextUnableToBindSocketToPort */ { "Unable to bind connection to port {0}", "Binden der Verbindung an Port {0} fehlgeschlagen", "Vincular la conexión al puerto {0} imposible" },

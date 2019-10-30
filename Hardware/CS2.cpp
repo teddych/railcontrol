@@ -142,7 +142,7 @@ namespace Hardware
 	// turn booster on or off
 	void CS2::Booster(const boosterState_t status)
 	{
-		logger->Info("Turning CS2 booster {0}", status ? "on" : "off");
+		logger->Info(status ? Languages::TextTurningBoosterOn : Languages::TextTurningBoosterOff);
 		unsigned char buffer[CS2CommandBufferLength];
 		// fill up header & locid
 		CreateCommandHeader(buffer, 0, 0x00, 0, 5);

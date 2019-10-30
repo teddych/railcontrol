@@ -76,7 +76,10 @@ namespace Hardware
 
 	void Z21::Booster(const boosterState_t status)
 	{
-		logger->Info("Turning Z21 booster {0}", status ? "on" : "off");
+		logger->Info(status ? Languages::TextTurningBoosterOn : Languages::TextTurningBoosterOff);
+		unsigned char buffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x21, 0x80, 0xA1 };
+		buffer[5] |= status;
+		senderConnection.Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
@@ -337,18 +340,6 @@ namespace Hardware
 	void Z21::SendLogOff()
 	{
 		char buffer[4] = { 0x04, 0x00, 0x30, 0x00 };
-		senderConnection.Send(buffer, sizeof(buffer));
-	}
-
-	void Z21::SendPowerOff()
-	{
-		unsigned char buffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x21, 0x80, 0xA1 };
-		senderConnection.Send(buffer, sizeof(buffer));
-	}
-
-	void Z21::SendPowerOn()
-	{
-		unsigned char buffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x21, 0x81, 0xA0 };
 		senderConnection.Send(buffer, sizeof(buffer));
 	}
 

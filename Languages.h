@@ -78,6 +78,8 @@ class Languages
 			TextStoppingRequestedBySignal,
 			TextStoppingRequestedByWebClient,
 			TextTooManyS88Modules,
+			TextTurningBoosterOff,
+			TextTurningBoosterOn,
 			TextUnableAddLayer1,
 			TextUnableCreateStorageHandler,
 			TextUnableToBindSocketToPort,
