@@ -11,6 +11,8 @@ CPPFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++1
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 
+TMPDIR=/RailControl
+
 OBJ= \
 	Config.o \
 	DataModel/Accessory.o \
@@ -78,9 +80,23 @@ dist: all
 	strip Storage/*.so
 	tar cvJf railcontrol.tar.xz Hardware/*.so Storage/*.so railcontrol railcontrol.conf.dist html/*
 
-dist-cygwin: amalgamation
+#dist-cygwin: amalgamation
+dist-cygwin:
 	strip railcontrol.exe
-	zip railcontrol.zip railcontrol.exe railcontrol.conf.dist html/*
+	mkdir $(TMPDIR)
+	cp -r \
+		/cygdrive/c/Windows/SYSTEM32/ntdll.dll \
+		/cygdrive/c/Windows/system32/KERNELBASE.dll \
+		/cygdrive/c/Windows/system32/kernel32.dll \
+		/usr/bin/cyggcc_s-seh-1.dll \
+		/usr/bin/cygstdc++-6.dll \
+		/usr/bin/cygwin1.dll \
+		html \
+		railcontrol.conf.dist \
+		railcontrol.exe \
+		$(TMPDIR)
+	zip -9 railcontrol.windows.`date +"%Y%m%d"`.zip $(TMPDIR)/* $(TMPDIR)/html/*
+	rm -r $(TMPDIR)
 
 amalgamation: Timestamp.h
 	./amalgamation.bash
