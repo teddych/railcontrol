@@ -74,7 +74,9 @@ all: $(OBJ)
 
 dist: all
 	strip railcontrol
-	tar cvJf railcontrol.tar.xz railcontrol Storage/*.so Hardware/*.so railcontrol.conf.dist html/*
+	strip Hardware/*.so
+	strip Storage/*.so
+	tar cvJf railcontrol.tar.xz Hardware/*.so Storage/*.so railcontrol railcontrol.conf.dist html/*
 
 dist-cygwin: amalgamation
 	strip railcontrol.exe
