@@ -630,34 +630,6 @@ namespace DataModel
 		}
 	}
 
-	const char* Loco::GetStateText() const
-	{
-		switch (state)
-		{
-			case LocoStateManual:
-				return "manual";
-
-			case LocoStateOff:
-				return "off";
-
-			case LocoStateSearchingFirst:
-			case LocoStateSearchingSecond:
-				return "searching";
-
-			case LocoStateRunning:
-				return "running";
-
-			case LocoStateStopping:
-				return "stopping";
-
-			case LocoStateError:
-				return "error";
-
-			default:
-				return "unknown";
-		}
-	}
-
 	void Loco::DeleteSlaves()
 	{
 		while (!slaves.empty())

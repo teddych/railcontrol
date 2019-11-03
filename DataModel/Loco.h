@@ -114,7 +114,6 @@ namespace DataModel
 			bool Release();
 			bool IsRunningFromTrack(const trackID_t trackID) const;
 
-			const char* GetStateText() const;
 			void LocationReached(const feedbackID_t feedbackID);
 
 			void Speed(const locoSpeed_t speed);
