@@ -1234,6 +1234,11 @@ namespace WebServer
 					trackOptions[track.first] = track.second->GetID();
 				}
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, trackOptions, objectId).AddClass("select_relation_id"));
+
+				map<string, direction_t> stateOptions;
+				stateOptions["Left"] = DirectionLeft;
+				stateOptions["Right"] = DirectionRight;
+				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -2604,13 +2609,13 @@ namespace WebServer
 		{
 			string priorityString = to_string(relationId);
 			objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_type_" + priorityString));
-			switchID_t switchId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_id_" + priorityString, SwitchNone);
-			switchState_t state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
-			if (switchId == SwitchNone)
+			objectID_t objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_id_" + priorityString, SwitchNone);
+			accessoryState_t state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
+			if (objectId == SwitchNone)
 			{
 				continue;
 			}
-			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, switchId, priority, state));
+			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, priority, state));
 			++priority;
 		}
 

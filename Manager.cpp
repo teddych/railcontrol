@@ -2447,6 +2447,16 @@ void Manager::TrackBlock(const trackID_t trackID, const bool blocked)
 	TrackPublishState(track);
 }
 
+void Manager::TrackSetLocoDirection(const trackID_t trackID, const direction_t direction)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return;
+	}
+	track->SetLocoDirection(direction);
+}
+
 void Manager::TrackPublishState(const DataModel::Track* track)
 {
 	const Loco* loco = GetLoco(track->GetLocoDelayed());

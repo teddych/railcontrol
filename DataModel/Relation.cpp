@@ -55,7 +55,7 @@ namespace DataModel
 		objectType2 = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType2"));
 		objectID2 = Utils::Utils::GetIntegerMapEntry(arguments, "objectID2");
 		priority = Utils::Utils::GetIntegerMapEntry(arguments, "priority");
-		accessoryState = Utils::Utils::GetIntegerMapEntry(arguments, "accessoryState");
+		accessoryState = Utils::Utils::GetBoolMapEntry(arguments, "accessoryState");
 		return true;
 	}
 
@@ -94,6 +94,7 @@ namespace DataModel
 			}
 
 			case ObjectTypeTrack:
+				manager->TrackSetLocoDirection(objectID2, static_cast<direction_t>(accessoryState));
 				return true;
 
 			default:
