@@ -124,7 +124,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const Loco* loco, const bool allowLocoTurn)
+	bool Street::FromTrackDirection(Logger::Logger* logger, const trackID_t trackID, const direction_t trackDirection, const Loco* loco, const bool allowLocoTurn)
 	{
 		if (automode == false)
 		{
@@ -139,16 +139,19 @@ namespace DataModel
 		const length_t locoLength = loco->GetLength();
 		if (locoLength < minTrainLength)
 		{
+			logger->Debug(Languages::TextTrainIsToShort, GetName());
 			return false;
 		}
 		if (maxTrainLength > 0 && locoLength > maxTrainLength)
 		{
+			logger->Debug(Languages::TextTrainIsToLong, GetName());
 			return false;
 		}
 
 		const bool locoCommuter = loco->GetCommuter();
 		if (commuter != locoCommuter && commuter != CommuterTypeBoth)
 		{
+			logger->Debug(Languages::TextDifferentCommuterTypes, GetName());
 			return false;
 		}
 
@@ -157,7 +160,16 @@ namespace DataModel
 			return true;
 		}
 
-		return fromDirection == trackDirection;
+		bool equalDirection = (fromDirection == trackDirection);
+		if (equalDirection)
+		{
+			return true;
+		}
+		else
+		{
+			logger->Debug(Languages::TextDifferentDirections, GetName());
+			return false;
+		}
 	}
 
 

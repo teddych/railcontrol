@@ -28,6 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/LayoutItem.h"
 #include "DataModel/LockableItem.h"
 #include "DataTypes.h"
+#include "Logger/Logger.h"
 
 class Manager;
 
@@ -104,7 +105,7 @@ namespace DataModel
 			selectStreetApproach_t GetSelectStreetApproach() const { return selectStreetApproach; }
 			void SetSelectStreetApproach(const selectStreetApproach_t selectStreetApproach) { this->selectStreetApproach = selectStreetApproach; }
 
-			bool GetValidStreets(const DataModel::Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const;
+			bool GetValidStreets(Logger::Logger* logger, const DataModel::Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const;
 			direction_t GetLocoDirection() const { return locoDirection; }
 			void SetLocoDirection(const direction_t direction) { locoDirection = direction; }
 			bool GetBlocked() const { return blocked; }

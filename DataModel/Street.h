@@ -27,6 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataTypes.h"
 #include "DataModel/LayoutItem.h"
 #include "DataModel/LockableItem.h"
+#include "Logger/Logger.h"
 
 class Manager;
 
@@ -71,7 +72,7 @@ namespace DataModel
 			bool AssignRelations(const std::vector<DataModel::Relation*>& newRelations);
 			const std::vector<DataModel::Relation*>& GetRelations() const { return relations; };
 
-			bool FromTrackDirection(const trackID_t trackID, const direction_t trackDirection, const DataModel::Loco* loco, const bool allowLocoTurn);
+			bool FromTrackDirection(Logger::Logger* logger, const trackID_t trackID, const direction_t trackDirection, const DataModel::Loco* loco, const bool allowLocoTurn);
 
 			bool Execute();
 			static bool ExecuteStatic(Street* street) { return street->Execute(); }

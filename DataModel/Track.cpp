@@ -261,12 +261,12 @@ namespace DataModel
 		return selectStreetApproach;
 	}
 
-	bool Track::GetValidStreets(const Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const
+	bool Track::GetValidStreets(Logger::Logger* logger, const Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto street : streets)
 		{
-			if (street->FromTrackDirection(objectID, locoDirection, loco, allowLocoTurn))
+			if (street->FromTrackDirection(logger, objectID, locoDirection, loco, allowLocoTurn))
 			{
 				validStreets.push_back(street);
 			}

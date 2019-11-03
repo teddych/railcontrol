@@ -467,22 +467,25 @@ namespace DataModel
 	Street* Loco::SearchDestination(Track* track, const bool allowLocoTurn)
 	{
 		vector<Street*> validStreets;
-		track->GetValidStreets(this, allowLocoTurn, validStreets);
+		track->GetValidStreets(logger, this, allowLocoTurn, validStreets);
 		for (auto street : validStreets)
 		{
 			if (street->Reserve(objectID) == false)
 			{
+				logger->Debug(Languages::TextUnableToReserveStreet, street->GetName());
 				continue;
 			}
 
 			if (street->Lock(objectID) == false)
 			{
+				logger->Debug(Languages::TextUnableToLockStreet, street->GetName());
 				street->Release(objectID);
 				continue;
 			}
 
 			if (street->Execute() == false)
 			{
+				logger->Debug(Languages::TextUnableToExecuteStreet, street->GetName());
 				street->Release(objectID);
 				continue;
 			}
