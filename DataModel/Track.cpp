@@ -109,7 +109,7 @@ namespace DataModel
 
 	bool Track::Reserve(const locoID_t locoID)
 	{
-		if (this->locoIdDelayed != LocoNone)
+		if (this->locoIdDelayed != LocoNone && this->locoIdDelayed != locoID)
 		{
 			return false;
 		}
@@ -149,11 +149,11 @@ namespace DataModel
 		{
 			return false;
 		}
+		this->locoIdDelayed = LocoNone;
 		if (state != DataModel::Feedback::FeedbackStateFree)
 		{
 			return true;
 		}
-		this->locoIdDelayed = LocoNone;
 		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
 		manager->TrackPublishState(this);
 		return true;
