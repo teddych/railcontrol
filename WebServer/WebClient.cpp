@@ -1242,6 +1242,18 @@ namespace WebServer
 				return content;
 			}
 
+			case ObjectTypeStreet:
+			{
+				std::map<string, Street*> streets = manager.StreetListByName();
+				map<string, streetID_t> streetOptions;
+				for (auto track : streets)
+				{
+					streetOptions[track.first] = track.second->GetID();
+				}
+				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, streetOptions, objectId).AddClass("select_relation_id"));
+				return content;
+			}
+
 			default:
 			{
 				content.AddContent("Unknown objecttype");
@@ -1263,6 +1275,7 @@ namespace WebServer
 		objectTypeOptions["Signal"] = ObjectTypeSignal;
 		objectTypeOptions["Switch"] = ObjectTypeSwitch;
 		objectTypeOptions["Track"] = ObjectTypeTrack;
+		objectTypeOptions["Street"] = ObjectTypeStreet;
 		HtmlTagSelect select("relation_type_" + priority, objectTypeOptions, objectType);
 		select.AddClass("select_relation_objecttype");
 		select.AddAttribute("onchange", "loadRelationObject(" + priority + ");return false;");

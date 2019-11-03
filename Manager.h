@@ -199,6 +199,7 @@ class Manager
 			const wait_t waitAfterRelease,
 			std::string& result);
 		bool StreetDelete(const streetID_t streetID);
+		bool StreetExecute(const streetID_t streetID);
 
 		// layer
 		DataModel::Layer* GetLayer(const layerID_t layerID) const;

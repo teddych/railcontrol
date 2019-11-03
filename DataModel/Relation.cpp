@@ -97,6 +97,10 @@ namespace DataModel
 				manager->TrackSetLocoDirection(objectID2, static_cast<direction_t>(accessoryState));
 				return true;
 
+
+			case ObjectTypeStreet:
+				return manager->StreetExecute(objectID2);
+
 			default:
 				return false;
 		}
@@ -119,6 +123,9 @@ namespace DataModel
 
 			case ObjectTypeSignal:
 				return manager->GetSignal(objectID2);
+
+			case ObjectTypeStreet:
+				return manager->GetStreet(objectID2);
 
 			default:
 				return nullptr;

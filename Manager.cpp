@@ -1979,6 +1979,16 @@ bool Manager::StreetDelete(const streetID_t streetID)
 	return true;
 }
 
+bool Manager::StreetExecute(const streetID_t streetID)
+{
+	Street* street = GetStreet(streetID);
+	if (street == nullptr)
+	{
+		return false;
+	}
+	return street->Execute();
+}
+
 Layer* Manager::GetLayer(const layerID_t layerID) const
 {
 	std::lock_guard<std::mutex> guard(layerMutex);
