@@ -149,11 +149,11 @@ namespace DataModel
 		{
 			return false;
 		}
-		this->locoIdDelayed = LocoNone;
 		if (state != DataModel::Feedback::FeedbackStateFree)
 		{
 			return true;
 		}
+		this->locoIdDelayed = LocoNone;
 		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
 		manager->TrackPublishState(this);
 		return true;
