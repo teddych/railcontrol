@@ -23,8 +23,9 @@ along with RailControl; see the file LICENCE. If not see
 #include <mutex>
 #include <string>
 
-#include "HardwareInterface.h"
-#include "HardwareParams.h"
+#include "Hardware/HardwareInterface.h"
+#include "Hardware/HardwareParams.h"
+#include "Hardware/OpenDccCache.h"
 #include "Logger/Logger.h"
 #include "Network/Serial.h"
 
@@ -97,7 +98,7 @@ namespace Hardware
 			static const unsigned short MaxAccessoryAddress = 2043;
 
 			Logger::Logger* logger;
-			Network::Serial serialLine;
+			mutable Network::Serial serialLine;
 			volatile bool run;
 			unsigned char s88Modules1;
 			unsigned char s88Modules2;
@@ -105,32 +106,29 @@ namespace Hardware
 			unsigned short s88Modules;
 
 			std::thread checkEventsThread;
-			unsigned char s88Memory[MaxS88Modules];
-			std::map<address_t, uint16_t> cacheBasic;
-			std::map<address_t, uint32_t> cacheFunctions;
+			mutable unsigned char s88Memory[MaxS88Modules];
 
-			uint16_t GetCacheBasicEntry(const address_t address) { return cacheBasic.count(address) == 0 ? 0 : cacheBasic[address]; }
-			uint32_t GetCacheFunctionsEntry(const address_t address) { return cacheFunctions.count(address) == 0 ? 0 : cacheFunctions[address]; }
+			Hardware::OpenDccCache cache;
 
-			bool CheckLocoAddress(const address_t address) { return 0 < address && address <= MaxLocoAddress; }
-			bool CheckAccessoryAddress(const address_t address) { return 0 < address && address <= MaxAccessoryAddress; }
+			static bool CheckLocoAddress(const address_t address) { return 0 < address && address <= MaxLocoAddress; }
+			static bool CheckAccessoryAddress(const address_t address) { return 0 < address && address <= MaxAccessoryAddress; }
 
-			bool SendP50XOnly();
-			bool SendOneByteCommand(const unsigned char data);
-			bool SendNop() { return SendOneByteCommand(XNop); }
-			bool SendPowerOn() { return SendOneByteCommand(XPwrOn); }
-			bool SendPowerOff() { return SendOneByteCommand(XPwrOff); }
-			bool SendXLok(const address_t address, const unsigned char speed, const unsigned char direction);
-			bool SendXFunc(const address_t address, const unsigned char functions);
-			bool SendXFunc2(const address_t address, const unsigned char functions);
-			bool SendXFunc34(const address_t address, const unsigned char functions3, const unsigned char functions4);
-			bool ReceiveFunctionCommandAnswer();
-			bool SendRestart();
-			unsigned char SendXP88Get(unsigned char param);
-			bool SendXP88Set(unsigned char param, unsigned char value);
-			void CheckSensorData(const unsigned char module, const unsigned char data);
-			void SendXEvtSen();
-			void SendXEvent();
+			bool SendP50XOnly() const;
+			bool SendOneByteCommand(const unsigned char data) const;
+			bool SendNop() const { return SendOneByteCommand(XNop); }
+			bool SendPowerOn() const { return SendOneByteCommand(XPwrOn); }
+			bool SendPowerOff() const { return SendOneByteCommand(XPwrOff); }
+			bool SendXLok(const address_t address) const;
+			bool SendXFunc(const address_t address) const;
+			bool SendXFunc2(const address_t address) const;
+			bool SendXFunc34(const address_t address) const;
+			bool ReceiveFunctionCommandAnswer() const;
+			bool SendRestart() const;
+			unsigned char SendXP88Get(unsigned char param) const;
+			bool SendXP88Set(unsigned char param, unsigned char value) const;
+			void CheckSensorData(const unsigned char module, const unsigned char data) const;
+			void SendXEvtSen() const;
+			void SendXEvent() const;
 
 			void CheckEventsWorker();
 	};

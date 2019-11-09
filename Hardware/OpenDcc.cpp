@@ -162,28 +162,8 @@ namespace Hardware
 			return;
 		}
 
-		unsigned char speedOpenDcc;
-		if (speed == 0)
-		{
-			speedOpenDcc = 0;
-		}
-		else if (speed > 1000)
-		{
-			speedOpenDcc = 127;
-		}
-		else
-		{
-			speedOpenDcc = speed >> 3;
-			speedOpenDcc += 2;
-		}
-
-		unsigned char data[2];
-		uint16_t* dataPointer = reinterpret_cast<uint16_t*>(data);
-		*dataPointer = GetCacheBasicEntry(address);
-		data[0] = speedOpenDcc;
-		cacheBasic[address] = *dataPointer;
-
-		SendXLok(address, data[0], data[1]);
+		cache.SetSpeed(address, speed);
+		SendXLok(address);
 	}
 
 
@@ -194,14 +174,8 @@ namespace Hardware
 			return;
 		}
 
-		unsigned char data[2];
-		uint16_t* dataPointer = reinterpret_cast<uint16_t*>(data);
-		*dataPointer = GetCacheBasicEntry(address);
-		data[1] &= ~(1 << 5);
-		data[1] |= static_cast<unsigned char>(direction) << 5;
-		cacheBasic[address] = *dataPointer;
-
-		SendXLok(address, data[0], data[1]);
+		cache.SetDirection(address, direction);
+		SendXLok(address);
 	}
 
 	void OpenDcc::LocoFunction(__attribute__((unused)) const protocol_t protocol, const address_t address, const function_t function, const bool on)
@@ -215,46 +189,35 @@ namespace Hardware
 		{
 			return;
 		}
+		cache.SetFunction(address, function, on);
 		if (function == 0)
 		{
-			unsigned char data[2];
-			uint16_t* dataPointer = reinterpret_cast<uint16_t*>(data);
-			*dataPointer = GetCacheBasicEntry(address);
-			data[1] &= ~(1 << 4);
-			data[1] |= static_cast<unsigned char>(on) << 4;
-			cacheBasic[address] = *dataPointer;
-			SendXLok(address, data[0], data[1]);
+			SendXLok(address);
 			return;
 		}
 
-		uint32_t functions = GetCacheFunctionsEntry(address);
-		unsigned char shift = function - 1;
-		functions &= ~(1 << shift);
-		functions |= static_cast<uint32_t>(on) << shift;
-		cacheFunctions[address] = functions;
-		unsigned char* functionsPointer = reinterpret_cast<unsigned char*>(&functions);
-
 		if (function <= 8)
 		{
-			SendXFunc(address, functionsPointer[0]);
+			SendXFunc(address);
 			return;
 		}
 
 		if (function <= 16)
 		{
-			SendXFunc2(address, functionsPointer[1]);
+			SendXFunc2(address);
 			return;
 		}
 
-		SendXFunc34(address, functionsPointer[2], functionsPointer[3]);
+		SendXFunc34(address);
 	}
 
-	bool OpenDcc::SendXLok(const address_t address, const unsigned char speed, const unsigned char functions)
+	bool OpenDcc::SendXLok(const address_t address) const
 	{
-		logger->Info("Setting speed of OpenDCC loco {0} to speed {1} and direction {2} and light {3}", address, speed, (functions >> 5) & 0x01, (functions >> 4) & 0x01);
+		OpenDccCacheEntry entry = cache.GetData(address);
+		logger->Info("Setting speed of OpenDCC loco {0} to speed {1} and direction {2} and light {3}", address, entry.speed, (entry.directionF0 >> 5) & 0x01, (entry.directionF0 >> 4) & 0x01);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
-		const unsigned char data[5] = { XLok, addressLSB, addressMSB, speed, functions };
+		const unsigned char data[5] = { XLok, addressLSB, addressMSB, entry.speed, entry.directionF0 };
 
 		serialLine.Send(data, sizeof(data));
 		char input;
@@ -287,37 +250,40 @@ namespace Hardware
 		}
 	}
 
-	bool OpenDcc::SendXFunc(const address_t address, const unsigned char functions)
+	bool OpenDcc::SendXFunc(const address_t address) const
 	{
-		logger->Info("Setting functions 1-8 of OpenDCC loco {0} to {1}", address, functions);
+		OpenDccCacheEntry entry = cache.GetData(address);
+		logger->Info("Setting functions 1-8 of OpenDCC loco {0} to {1}", address, entry.function[0]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
-		const unsigned char data[4] = { XFunc, addressLSB, addressMSB, functions };
+		const unsigned char data[4] = { XFunc, addressLSB, addressMSB, entry.function[0] };
 		serialLine.Send(data, sizeof(data));
 		return ReceiveFunctionCommandAnswer();
 	}
 
-	bool OpenDcc::SendXFunc2(const address_t address, const unsigned char functions)
+	bool OpenDcc::SendXFunc2(const address_t address) const
 	{
-		logger->Info("Setting functions 9-16 of OpenDCC loco {0} to {1}", address, functions);
+		OpenDccCacheEntry entry = cache.GetData(address);
+		logger->Info("Setting functions 9-16 of OpenDCC loco {0} to {1}", address, entry.function[1]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
-		const unsigned char data[4] = { XFunc2, addressLSB, addressMSB, functions };
+		const unsigned char data[4] = { XFunc2, addressLSB, addressMSB, entry.function[1] };
 		serialLine.Send(data, sizeof(data));
 		return ReceiveFunctionCommandAnswer();
 	}
 
-	bool OpenDcc::SendXFunc34(const address_t address, const unsigned char functions3, const unsigned char functions4)
+	bool OpenDcc::SendXFunc34(const address_t address) const
 	{
-		logger->Info("Setting functions 17-28 of OpenDCC loco {0} to {1} and {2}", address, functions3, functions4);
+		OpenDccCacheEntry entry = cache.GetData(address);
+		logger->Info("Setting functions 17-28 of OpenDCC loco {0} to {1} and {2}", address, entry.function[2], entry.function[3]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
-		const unsigned char data[5] = { XFunc34, addressLSB, addressMSB, functions3, functions4 };
+		const unsigned char data[5] = { XFunc34, addressLSB, addressMSB, entry.function[2], entry.function[3] };
 		serialLine.Send(data, sizeof(data));
 		return ReceiveFunctionCommandAnswer();
 	}
 
-	bool OpenDcc::ReceiveFunctionCommandAnswer()
+	bool OpenDcc::ReceiveFunctionCommandAnswer() const
 	{
 		char input;
 		bool ret = serialLine.ReceiveExact(&input, 1);
@@ -384,7 +350,7 @@ namespace Hardware
 		}
 	}
 
-	bool OpenDcc::SendP50XOnly()
+	bool OpenDcc::SendP50XOnly() const
 	{
 		unsigned char data[6] = { 'X', 'Z', 'Z', 'A', '1', 0x0D };
 		serialLine.Send(data, sizeof(data));
@@ -393,7 +359,7 @@ namespace Hardware
 		return true;
 	}
 
-	bool OpenDcc::SendOneByteCommand(const unsigned char data)
+	bool OpenDcc::SendOneByteCommand(const unsigned char data) const
 	{
 		serialLine.Send(data);
 		char input[1];
@@ -401,7 +367,7 @@ namespace Hardware
 		return ret > 0 && input[0] == OK;
 	}
 
-	bool OpenDcc::SendRestart()
+	bool OpenDcc::SendRestart() const
 	{
 		unsigned char data[3] = { '@', '@', 0x0D };
 		logger->Info("Restarting OpenDCC");
@@ -409,7 +375,7 @@ namespace Hardware
 		return true;
 	}
 
-	unsigned char OpenDcc::SendXP88Get(unsigned char param)
+	unsigned char OpenDcc::SendXP88Get(unsigned char param) const
 	{
 		unsigned char data[2] = { XP88Get, param };
 		serialLine.Send(data, sizeof(data));
@@ -427,7 +393,7 @@ namespace Hardware
 		return input;
 	}
 
-	bool OpenDcc::SendXP88Set(unsigned char param, unsigned char value)
+	bool OpenDcc::SendXP88Set(unsigned char param, unsigned char value) const
 	{
 		unsigned char data[3] = { XP88Set, param, value };
 		serialLine.Send(data, sizeof(data));
@@ -440,7 +406,7 @@ namespace Hardware
 		return (input == OK);
 	}
 
-	void OpenDcc::CheckSensorData(const unsigned char module, const unsigned char data)
+	void OpenDcc::CheckSensorData(const unsigned char module, const unsigned char data) const
 	{
 		unsigned char diff = s88Memory[module] ^ data;
 		s88Memory[module] = data;
@@ -457,7 +423,7 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::SendXEvtSen()
+	void OpenDcc::SendXEvtSen() const
 	{
 		unsigned char data[1] = { XEvtSen };
 		serialLine.Send(data, sizeof(data));
@@ -494,7 +460,7 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::SendXEvent()
+	void OpenDcc::SendXEvent() const
 	{
 		unsigned char data[1] = { XEvent };
 		serialLine.Send(data, sizeof(data));
