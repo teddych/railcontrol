@@ -121,6 +121,7 @@ namespace DataModel
 
 			void SetFunction(const function_t nr, const bool state) { functions.SetFunction(nr, state); }
 			bool GetFunction(const function_t nr) const { return functions.GetFunction(nr); }
+			std::vector<bool> GetFunctions() const { return functions.GetFunctions(); }
 			void SetNrOfFunctions(const function_t nr) { functions.SetNrOfFunctions(nr); }
 			function_t GetNrOfFunctions() const { return functions.GetNrOfFunctions(); }
 			void SetDirection(const direction_t direction);

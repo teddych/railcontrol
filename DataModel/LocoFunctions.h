@@ -59,6 +59,16 @@ namespace DataModel
 				return out;
 			}
 
+			std::vector<bool> GetFunctions() const
+			{
+				std::vector<bool> out;
+				for (function_t i = 0; i < count; ++i)
+				{
+					out.push_back(states[i]);
+				}
+				return out;
+			}
+
 			void SetNrOfFunctions(const function_t nr)
 			{
 				// externally we count the functions additional to F0
@@ -98,7 +108,7 @@ namespace DataModel
 			static const function_t maxFunctions = 32;
 
 		private:
-			static const function_t maxCount = maxFunctions - 1; // f0 - f32 = 33
+			static const function_t maxCount = maxFunctions + 1; // f0 - f32 = 33
 			function_t count;
 			bool states[maxCount];
 	};

@@ -82,6 +82,17 @@ namespace Hardware
 			// set loco function
 			virtual void LocoFunction(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const function_t function, __attribute__((unused)) const bool on) {};
 
+			// set loco
+			virtual void LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool> functions)
+			{
+				LocoSpeed(protocol, address, speed);
+				LocoDirection(protocol, address, direction);
+				for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
+				{
+					LocoFunction(protocol, address, functionNr, functions[functionNr]);
+				}
+			}
+
 			// accessory command
 			virtual void Accessory(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const accessoryState_t state, __attribute__((unused)) const bool on) {};
 

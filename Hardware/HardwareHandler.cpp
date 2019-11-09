@@ -350,6 +350,23 @@ namespace Hardware
 		instance->LocoFunction(protocol, address, function, on);
 	}
 
+	void HardwareHandler::LocoSpeedDirectionFunctions(const locoID_t locoID, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool>& functions)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		controlID_t controlID = 0;
+		protocol_t protocol = ProtocolNone;
+		address_t address = AddressNone;
+		manager.LocoProtocolAddress(locoID, controlID, protocol, address);
+		if (controlID != ControlID())
+		{
+			return;
+		}
+		instance->LocoSpeedDirectionFunctions(protocol, address, speed, direction, functions);
+	}
+
 	void HardwareHandler::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr)

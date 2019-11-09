@@ -55,6 +55,7 @@ namespace Hardware
 			void LocoProtocols(std::vector<protocol_t>& protocols) const override;
 			bool LocoProtocolSupported(protocol_t protocol) const override;
 			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;
+			void LocoSpeedDirectionFunctions(const locoID_t locoID, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool>& functions) override;
 			void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) override;
 			void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on) override;
 

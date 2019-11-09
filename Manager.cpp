@@ -262,12 +262,11 @@ void Manager::InitLocos()
 		{
 			return;
 		}
-		LocoSpeed(ControlTypeInternal, loco.second, loco.second->Speed());
-		function_t nrOfFunctions = loco.second->GetNrOfFunctions();
-		for (function_t functionNr = 0; functionNr <= nrOfFunctions; ++functionNr)
+		std::lock_guard<std::mutex> guard(controlMutex);
+		for (auto control : controls)
 		{
-			LocoFunction(ControlTypeInternal, loco.second, functionNr, loco.second->GetFunction(functionNr));
-			std::this_thread::sleep_for(std::chrono::milliseconds(50));
+			std::vector<bool> functions = loco.second->GetFunctions();
+			control.second->LocoSpeedDirectionFunctions(loco.first, loco.second->Speed(), loco.second->GetDirection(), functions);
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
