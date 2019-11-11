@@ -50,6 +50,14 @@ namespace Hardware
 	{
 		logger->Info(name);
 
+		SendP50XOnly();
+		bool ok = SendNop();
+		if (!ok)
+		{
+			logger->Error("OpenDCC does not answer");
+			return;
+		}
+
 		s88Modules1 = Utils::Utils::StringToInteger(params->arg2, 0);
 		s88Modules2 = Utils::Utils::StringToInteger(params->arg3, 0);
 		s88Modules3 = Utils::Utils::StringToInteger(params->arg4, 0);
@@ -57,7 +65,7 @@ namespace Hardware
 
 		if (s88Modules > MaxS88Modules)
 		{
-			logger->Info("Too many S88 modules configured.");
+			logger->Error("Too many S88 modules configured.");
 			return;
 		}
 
@@ -68,14 +76,6 @@ namespace Hardware
 		}
 
 		logger->Info("{0} ({1}/{2}/{3}) S88 modules configured.", s88Modules, s88Modules1, s88Modules2, s88Modules3);
-
-		SendP50XOnly();
-		bool ok = SendNop();
-		if (!ok)
-		{
-			logger->Error("Control does not answer");
-			return;
-		}
 		bool restart = false;
 		unsigned char modules = SendXP88Get(0);
 		if (modules != s88Modules)
