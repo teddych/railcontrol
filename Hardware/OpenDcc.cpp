@@ -211,6 +211,35 @@ namespace Hardware
 		SendXFunc34(address);
 	}
 
+	void OpenDcc::LocoSpeedDirectionFunctions(__attribute__((unused)) const protocol_t protocol, const address_t address, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool> functions)
+	{
+		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
+		{
+			return;
+		}
+
+		cache.SetSpeed(address, speed);
+		cache.SetDirection(address, direction);
+		unsigned char nrFunctions = functions.size();
+		for (unsigned char functionNr = 0; functionNr < nrFunctions; ++functionNr)
+		{
+			cache.SetFunction(address, functionNr, functions[functionNr]);
+		}
+		SendXLok(address);
+		if (nrFunctions > 1)
+		{
+			SendXFunc(address);
+			if (nrFunctions > 8)
+			{
+				SendXFunc2(address);
+				if (nrFunctions > 16)
+				{
+					SendXFunc34(address);
+				}
+			}
+		}
+	}
+
 	bool OpenDcc::SendXLok(const address_t address) const
 	{
 		OpenDccCacheEntry entry = cache.GetData(address);
