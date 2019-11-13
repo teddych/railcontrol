@@ -38,7 +38,7 @@ namespace Hardware
 
 			bool CanHandleFeedback() const override { return true; }
 
-			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override
+			static void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes)
 			{
 				argumentTypes[1] = SerialPort;
 				argumentTypes[2] = S88Modules;

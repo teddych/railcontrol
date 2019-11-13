@@ -1,3 +1,15 @@
+function getArgumentsOfHardwareType()
+{
+	var hardwareType = document.getElementById('s_hardwaretype');
+	if (!hardwareType)
+	{
+		return false;
+	}
+	var url = '?cmd=controlarguments&hardwaretype=' + hardwareType.value;
+	requestUpdateItem('controlarguments', url);
+	return false;
+}
+
 function updateFeedbacksOfTrack()
 {
 	var track = document.getElementById('s_totrack');

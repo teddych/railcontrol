@@ -67,9 +67,6 @@ namespace Hardware
 			// is given accessory protocol supported
 			virtual bool AccessoryProtocolSupported(__attribute__((unused)) const protocol_t protocol) const { return false; }
 
-			// get types of needed arguments of this control
-			virtual void GetArgumentTypes(__attribute__((unused)) std::map<unsigned char,argumentType_t>& argumentTypes) const {}
-
 			// turn booster on or off
 			virtual void Booster(__attribute__((unused)) const boosterState_t status) {};
 

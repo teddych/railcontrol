@@ -29,6 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <unistd.h>
 
 #include "DataModel/DataModel.h"
+#include "Hardware/HardwareHandler.h"
 #include "RailControl.h"
 #include "Timestamp.h"
 #include "Utils/Utils.h"
@@ -517,6 +518,10 @@ namespace WebServer
 			{
 				HandleTimestamp(arguments);
 			}
+			else if (arguments["cmd"].compare("controlarguments") == 0)
+			{
+				HandleControlArguments(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				HandleUpdater(headers);
@@ -880,6 +885,33 @@ namespace WebServer
 		HtmlReplyWithHeader(content);
 	}
 
+	HtmlTag WebClient::HtmlTagControlArguments(const hardwareType_t hardwareType, const string& arg1, const string& arg2, const string& arg3, const string& arg4, const string& arg5)
+	{
+		HtmlTag div;
+		std::map<unsigned char,argumentType_t> argumentTypes;
+		Hardware::HardwareHandler::ArgumentTypesOfHardwareType(hardwareType, argumentTypes);
+		if (argumentTypes.count(1) == 1)
+		{
+			div.AddChildTag(HtmlTagControlArgument(1, argumentTypes.at(1), arg1));
+		}
+		if (argumentTypes.count(2) == 1)
+		{
+			div.AddChildTag(HtmlTagControlArgument(2, argumentTypes.at(2), arg2));
+		}
+		if (argumentTypes.count(3) == 1)
+		{
+			div.AddChildTag(HtmlTagControlArgument(3, argumentTypes.at(3), arg3));
+		}
+		if (argumentTypes.count(4) == 1)
+		{
+			div.AddChildTag(HtmlTagControlArgument(4, argumentTypes.at(4), arg4));
+		}
+		if (argumentTypes.count(5) == 1)
+		{
+			div.AddChildTag(HtmlTagControlArgument(5, argumentTypes.at(5), arg5));
+		}
+		return div;
+	}
 	void WebClient::HandleControlEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
@@ -920,28 +952,16 @@ namespace WebServer
 		form.AddChildTag(HtmlTagInputHidden("cmd", "controlsave"));
 		form.AddChildTag(HtmlTagInputHidden("control", to_string(controlID)));
 		form.AddChildTag(HtmlTagInputTextWithLabel("name", "Control Name:", name));
-		form.AddChildTag(HtmlTagSelectWithLabel("hardwaretype", "Hardware type:", hardwareOptions, to_string(hardwareType)));
-		std::map<unsigned char,argumentType_t> argumentTypes = manager.ArgumentTypesOfControl(controlID);
-		if (argumentTypes.count(1) == 1)
-		{
-			form.AddChildTag(HtmlTagControlArgument(1, argumentTypes.at(1), arg1));
-		}
-		if (argumentTypes.count(2) == 1)
-		{
-			form.AddChildTag(HtmlTagControlArgument(2, argumentTypes.at(2), arg2));
-		}
-		if (argumentTypes.count(3) == 1)
-		{
-			form.AddChildTag(HtmlTagControlArgument(3, argumentTypes.at(3), arg3));
-		}
-		if (argumentTypes.count(4) == 1)
-		{
-			form.AddChildTag(HtmlTagControlArgument(4, argumentTypes.at(4), arg4));
-		}
-		if (argumentTypes.count(5) == 1)
-		{
-			form.AddChildTag(HtmlTagControlArgument(5, argumentTypes.at(5), arg5));
-		}
+
+		HtmlTagSelectWithLabel selectHardwareType("hardwaretype", "Hardware type:", hardwareOptions, to_string(hardwareType));
+		selectHardwareType.AddAttribute("onchange", "getArgumentsOfHardwareType();");
+		form.AddChildTag(selectHardwareType);
+
+		HtmlTag controlArguments("div");
+		controlArguments.AddAttribute("id", "controlarguments");
+		controlArguments.AddChildTag(HtmlTagControlArguments(hardwareType, arg1, arg2, arg3, arg4, arg5));
+		form.AddChildTag(controlArguments);
+
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
@@ -3346,6 +3366,12 @@ namespace WebServer
 		}
 		HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp set"));
 #endif
+	}
+
+	void WebClient::HandleControlArguments(const map<string, string>& arguments)
+	{
+		hardwareType_t hardwareType = static_cast<hardwareType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "hardwaretype"));
+		HtmlReplyWithHeader(HtmlTagControlArguments(hardwareType));
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)

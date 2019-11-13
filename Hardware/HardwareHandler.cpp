@@ -114,6 +114,7 @@ namespace Hardware
 		// generate symbol and library names
 		char* error;
 		const string& symbol = hardwareSymbols[type];
+
 		std::stringstream ss;
 		ss << "Hardware/" << symbol << ".so";
 
@@ -281,15 +282,6 @@ namespace Hardware
 		return instance->AccessoryProtocolSupported(protocol);
 	}
 
-	void HardwareHandler::ArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const
-	{
-		if (instance == nullptr)
-		{
-			return;
-		}
-		instance->GetArgumentTypes(argumentTypes);
-	}
-
 	void HardwareHandler::Booster(const controlType_t controlType, const boosterState_t status)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr)
@@ -416,5 +408,38 @@ namespace Hardware
 			return;
 		}
 		instance->Accessory(protocol, address, state, on);
+	}
+
+	void HardwareHandler::ArgumentTypesOfHardwareType(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments)
+	{
+		switch (hardwareType)
+		{
+			case HardwareTypeCS2:
+				Hardware::CS2::GetArgumentTypes(arguments);
+				return;
+
+			case HardwareTypeM6051:
+				Hardware::M6051::GetArgumentTypes(arguments);
+				return;
+
+			case HardwareTypeRM485:
+				Hardware::RM485::GetArgumentTypes(arguments);
+				return;
+
+			case HardwareTypeOpenDcc:
+				Hardware::OpenDcc::GetArgumentTypes(arguments);
+				return;
+
+			case HardwareTypeHsi88:
+				Hardware::Hsi88::GetArgumentTypes(arguments);
+				return;
+
+			case HardwareTypeZ21:
+				Hardware::Z21::GetArgumentTypes(arguments);
+				return;
+
+			default:
+				return;
+		}
 	}
 } // namespace Hardware

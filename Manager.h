@@ -73,7 +73,6 @@ class Manager
 		const std::map<controlID_t,std::string> FeedbackControlListNames() const;
 		const std::map<std::string,protocol_t> LocoProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeLoco, controlID); }
 		const std::map<std::string,protocol_t> AccessoryProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeAccessory, controlID); }
-		const std::map<unsigned char,argumentType_t> ArgumentTypesOfControl(const controlID_t controlID) const;
 
 		// loco
 		DataModel::Loco* GetLoco(const locoID_t locoID) const;

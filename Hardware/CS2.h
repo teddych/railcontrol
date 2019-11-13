@@ -67,7 +67,7 @@ namespace Hardware
 				return (protocol == ProtocolMM2 || protocol == ProtocolDCC);
 			}
 
-			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override
+			static void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes)
 			{
 				argumentTypes[1] = IpAddress;
 			}

@@ -565,20 +565,6 @@ const std::map<std::string, protocol_t> Manager::ProtocolsOfControl(const addres
 	return ret;
 }
 
-const std::map<unsigned char,argumentType_t> Manager::ArgumentTypesOfControl(const controlID_t controlID) const
-{
-	std::map<unsigned char,argumentType_t> ret;
-	std::lock_guard<std::mutex> guard(controlMutex);
-	if (controls.count(controlID) != 1)
-	{
-		return ret;
-	}
-
-	const ControlInterface* control = controls.at(controlID);
-	control->ArgumentTypes(ret);
-	return ret;
-}
-
 /***************************
 * Loco                     *
 ***************************/

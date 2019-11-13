@@ -63,7 +63,7 @@ namespace WebServer
 			void DeliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			HtmlTag HtmlTagLocoSelector() const;
 			HtmlTag HtmlTagLayerSelector() const;
-			HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
+			static HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagDuration(const accessoryDuration_t duration, const std::string& label = "Duration (ms):") const;
@@ -80,6 +80,7 @@ namespace WebServer
 			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault);
 			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve);
 			static HtmlTag HtmlTagFeedbackOnControlLayer(const DataModel::Feedback* feedback);
+			static HtmlTag HtmlTagControlArguments(const hardwareType_t hardwareType, const std::string& arg1 = "", const std::string& arg2 = "", const std::string& arg3 = "", const std::string& arg4 = "", const std::string& arg5 = "");
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void HandleLayerSave(const std::map<std::string, std::string>& arguments);
@@ -164,6 +165,7 @@ namespace WebServer
 			void HandleSettingsSave(const std::map<std::string, std::string>& arguments);
 			void HandleSlaveAdd(const std::map<std::string,std::string>& arguments);
 			void HandleTimestamp(const std::map<std::string,std::string>& arguments);
+			void HandleControlArguments(const std::map<std::string,std::string>& arguments);
 			void HandleUpdater(const std::map<std::string,std::string>& headers);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

@@ -49,7 +49,7 @@ namespace Hardware
 
 			bool AccessoryProtocolSupported(protocol_t protocol) const override { return (protocol == ProtocolDCC); }
 
-			void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes) const override
+			static void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes)
 			{
 				argumentTypes[1] = SerialPort;
 				argumentTypes[2] = S88Modules;
