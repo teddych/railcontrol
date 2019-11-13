@@ -1115,12 +1115,7 @@ namespace WebServer
 		}
 		locoID_t locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		Loco* loco = manager.GetLoco(locoId);
-		if (loco == nullptr)
-		{
-			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown loco"));
-			return;
-		}
-		HtmlReplyWithHeader(HtmlTagProtocolLoco(controlId, loco->GetProtocol()));
+		HtmlReplyWithHeader(HtmlTagProtocolLoco(controlId, loco == nullptr ? ProtocolNone : loco->GetProtocol()));
 	}
 
 	HtmlTag WebClient::HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol)
