@@ -56,11 +56,11 @@ namespace Hardware
 		logger->Info(name);
 		if (senderConnection.IsConnected())
 		{
-			logger->Info("CS2 sender socket created");
+			logger->Info(Languages::TextSenderSocketCreated);
 		}
 		else
 		{
-			logger->Error("Unable to create UDP socket for sending data to CS2");
+			logger->Error(Languages::TextUnableToCreatUdpSocketForSendingData);
 		}
 		receiverThread = std::thread(&Hardware::CS2::Receiver, this);
 	}
@@ -70,7 +70,7 @@ namespace Hardware
 		run = false;
 		receiverConnection.Terminate();
 		receiverThread.join();
-		logger->Info("Terminating CS2 sender");
+		logger->Info(Languages::TextTerminatingSenderSocket);
 	}
 
 	void CS2::CreateCommandHeader(unsigned char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length)
@@ -156,7 +156,7 @@ namespace Hardware
 		// send data
 		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
 		{
-			logger->Error("Unable to send data to CS2");
+			logger->Error(Languages::TextUnableToSendDataToControl);
 		}
 	}
 
@@ -179,7 +179,7 @@ namespace Hardware
 		// send data
 		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
 		{
-			logger->Error("Unable to send data to CS2");
+			logger->Error(Languages::TextUnableToSendDataToControl);
 		}
 	}
 
@@ -201,7 +201,7 @@ namespace Hardware
 		// send data
 		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
 		{
-			logger->Error("Unable to send data to CS2");
+			logger->Error(Languages::TextUnableToSendDataToControl);
 		}
 	}
 
@@ -223,7 +223,7 @@ namespace Hardware
 		// send data
 		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
 		{
-			logger->Error("Unable to send data to CS2");
+			logger->Error(Languages::TextUnableToSendDataToControl);
 		}
 	}
 
@@ -246,7 +246,7 @@ namespace Hardware
 		// send data
 		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
 		{
-			logger->Error("Unable to send data to CS2");
+			logger->Error(Languages::TextUnableToSendDataToControl);
 		}
 	}
 
@@ -254,17 +254,17 @@ namespace Hardware
 	void CS2::Receiver()
 	{
 		Utils::Utils::SetThreadName("CS2");
-		logger->Info("CS2 receiver started");
+		logger->Info(Languages::TextReceiverThreadStarted);
 		if (!receiverConnection.IsConnected())
 		{
-			logger->Error("Unable to create UDP connection for receiving data from CS2");
+			logger->Error(Languages::TextUnableToCreatUdpSocketForReceivingData);
 			return;
 		}
 
 		bool ret = receiverConnection.Bind();
 		if (!ret)
 		{
-			logger->Error("Unable to bind the socket for CS2 receiver, Closing socket.");
+			logger->Error(Languages::TextUnableToBindUdpSocket);
 			return;
 		}
 		unsigned char buffer[CS2CommandBufferLength];
@@ -279,13 +279,13 @@ namespace Hardware
 
 			if (datalen < 0)
 			{
-				logger->Error("Unable to receive data from CS2. Closing socket.");
+				logger->Error(Languages::TextUnableToReceiveData);
 				break;
 			}
 
 			if (datalen != 13)
 			{
-				logger->Error("Unable to receive valid data from CS2. Continuing with next packet.");
+				logger->Error(Languages::TextInvalidDataReceived);
 				continue;
 			}
 
@@ -322,7 +322,7 @@ namespace Hardware
 				switch (subcmd)
 				{
 					case 0x00:
-						// system stopp
+						// system stop
 						manager->Booster(ControlTypeHardware, BoosterStop);
 						break;
 
@@ -366,6 +366,6 @@ namespace Hardware
 			}
 		}
 		receiverConnection.Terminate();
-		logger->Info("Terminating CS2 receiver");
+		logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 } // namespace

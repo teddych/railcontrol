@@ -41,9 +41,9 @@ namespace Hardware
 	}
 
 	// delete instance of Z21
-	extern "C" void destroy_Z21(Z21* cs2)
+	extern "C" void destroy_Z21(Z21* z21)
 	{
-		delete(cs2);
+		delete(z21);
 	}
 
 	Z21::Z21(const HardwareParams* params)
@@ -56,11 +56,11 @@ namespace Hardware
 		logger->Info(name);
 		if (senderConnection.IsConnected())
 		{
-			logger->Info("Z21 sender socket created");
+			logger->Info(Languages::TextSenderSocketCreated);
 		}
 		else
 		{
-			logger->Error("Unable to create UDP socket for sending data to Z21");
+			logger->Error(Languages::TextUnableToCreatUdpSocketForSendingData);
 		}
 		receiverThread = std::thread(&Hardware::Z21::Receiver, this);
 	}
@@ -71,7 +71,7 @@ namespace Hardware
 		SendLogOff();
 		receiverConnection.Terminate();
 		receiverThread.join();
-		logger->Info("Terminating Z21 sender");
+		logger->Info(Languages::TextTerminatingSenderSocket);
 	}
 
 	void Z21::Booster(const boosterState_t status)
@@ -108,17 +108,17 @@ namespace Hardware
 	void Z21::Receiver()
 	{
 		Utils::Utils::SetThreadName("Z21");
-		logger->Info("Z21 Receiver started");
+		logger->Info(Languages::TextReceiverThreadStarted);
 		if (!receiverConnection.IsConnected())
 		{
-			logger->Error("Unable to create UDP connection for receiving data from Z21");
+			logger->Error(Languages::TextUnableToCreatUdpSocketForReceivingData);
 			return;
 		}
 
 		bool ret = receiverConnection.Bind();
 		if (!ret)
 		{
-			logger->Error("Unable to bind the socket for Z21 Receiver, Closing socket.");
+			logger->Error(Languages::TextUnableToBindUdpSocket);
 			return;
 		}
 
@@ -138,7 +138,7 @@ namespace Hardware
 
 			if (dataLength < 0)
 			{
-				logger->Error("Unable to receive data from Z21. Closing socket.");
+				logger->Error(Languages::TextUnableToReceiveData);
 				break;
 			}
 
@@ -162,7 +162,7 @@ namespace Hardware
 			}
 		}
 		receiverConnection.Terminate();
-		logger->Info("Terminating Z21 receiver");
+		logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 
 	ssize_t Z21::InterpretData(unsigned char* buffer, size_t bufferLength)
