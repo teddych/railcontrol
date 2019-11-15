@@ -145,12 +145,12 @@ namespace Hardware
 
 		if (status)
 		{
-			logger->Info("Turning booster on");
+			logger->Info(Languages::TextTurningBoosterOn);
 			SendPowerOn();
 		}
 		else
 		{
-			logger->Info("Turning booster off");
+			logger->Info(Languages::TextTurningBoosterOff);
 			SendPowerOff();
 		}
 	}
@@ -243,7 +243,7 @@ namespace Hardware
 	bool OpenDcc::SendXLok(const address_t address) const
 	{
 		OpenDccCacheEntry entry = cache.GetData(address);
-		logger->Info("Setting speed of OpenDCC loco {0} to speed {1} and direction {2} and light {3}", address, entry.speed, (entry.directionF0 >> 5) & 0x01, (entry.directionF0 >> 4) & 0x01);
+		logger->Info(Languages::TextSettingSpeedDirectionLight, address, entry.speed, Languages::GetLeftRight(static_cast<direction_t>((entry.directionF0 >> 5) & 0x01)), Languages::GetOnOff((entry.directionF0 >> 4) & 0x01));
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char data[5] = { XLok, addressLSB, addressMSB, entry.speed, entry.directionF0 };
@@ -446,7 +446,7 @@ namespace Hardware
 			if ((diff >> (8 - pinOnModule)) & 0x01)
 			{
 				DataModel::Feedback::feedbackState_t state = static_cast<DataModel::Feedback::feedbackState_t>((data >> (8 - pinOnModule)) & 0x01);
-				logger->Info("state of pin {0} on module {1} is {2}", pinOnModule, module, state);
+				logger->Info(Languages::TextFeedbackChange, pinOnModule, module, Languages::GetText(state ? Languages::TextOn : Languages::TextOff));
 				manager->FeedbackState(controlID, pinOverAll + pinOnModule, state);
 			}
 		}

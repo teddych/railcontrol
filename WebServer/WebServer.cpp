@@ -136,10 +136,8 @@ namespace WebServer {
 		}
 		stringstream command;
 		stringstream status;
-		string stateText;
-		DataModel::Accessory::Status(state, stateText);
-		command << "accessory;accessory=" << accessoryID << ";state=" << stateText;
-		status << manager.GetAccessoryName(accessoryID) << " is " << stateText;
+		command << "accessory;accessory=" << accessoryID << ";state=" << (state == DataModel::Accessory::AccessoryStateOn ? "green" : "red");
+		status << manager.GetAccessoryName(accessoryID) << " is " << Languages::GetGreenRed(state);
 		AddUpdate(command.str(), status.str());
 	}
 

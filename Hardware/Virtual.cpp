@@ -52,33 +52,31 @@ namespace Hardware
 	// turn booster on or off
 	void Virtual::Booster(const boosterState_t status)
 	{
-		logger->Info("Turning booster {0}", status ? "on" : "off");
+		logger->Info(status ? Languages::TextTurningBoosterOn : Languages::TextTurningBoosterOff);
 	}
 
 	// set loco speed
 	void Virtual::LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
 	{
-		logger->Info("Setting speed of loco {0}/{1} to speed {2}", protocol, address, speed);
+		logger->Info(Languages::TextSettingSpeedWithProtocol, protocol, address, speed);
 	}
 
 	// set the direction of a loco
 	void Virtual::LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction)
 	{
-		logger->Info("Setting direction of loco {0}/{1} to {2}", protocol, address, direction == DirectionRight ? "forward" : "reverse");
+		logger->Info(Languages::TextSettingDirectionWithProtocol, protocol, address, Languages::GetLeftRight(direction));
 	}
 
 	// set loco function
 	void Virtual::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
-		logger->Info("Setting f%i of loco {0}/{1} to \"{2}\"", static_cast<int>(function), static_cast<int>(protocol), static_cast<int>(address), on ? "on" : "off");
+		logger->Info(Languages::TextSettingFunctionWithProtocol, static_cast<int>(function), static_cast<int>(protocol), address, Languages::GetOnOff(on));
 	}
 
 	// accessory command
 	void Virtual::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
-		std::string stateText;
-		DataModel::Accessory::Status(state, stateText);
-		logger->Info("Setting state of virtual accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
+		logger->Info(Languages::TextSettingAccessoryWithProtocol, static_cast<int>(protocol), address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 	}
 
 } // namespace

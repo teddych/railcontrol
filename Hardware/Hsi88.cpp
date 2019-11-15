@@ -180,7 +180,7 @@ namespace Hardware
 			if (diff & 0x01)
 			{
 				DataModel::Feedback::feedbackState_t state = static_cast<DataModel::Feedback::feedbackState_t>((*dataByte >> pin) & 0x01);
-				logger->Info(Languages::TextFeedbackChange, pin + 1, module, state);
+				logger->Info(Languages::TextFeedbackChange, pin + 1, module, Languages::GetOnOff(state));
 				manager->FeedbackState(controlID, module * 8 + pin + 1, state);
 			}
 			diff >>= 1;

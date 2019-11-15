@@ -23,18 +23,12 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
+#include "DataModel/Accessory.h"
+#include "DataTypes.h"
+
 class Languages
 {
 	public:
-		enum language_t : unsigned char
-		{
-			FirstLanguage = 0,
-			EN = 0,
-			DE,
-			ES,
-			MaxLanguages
-		};
-
 		enum textSelector_t : unsigned int
 		{
 			TextAccessoryAddressDccTooHigh,
@@ -50,12 +44,14 @@ class Languages
 			TextDifferentDirections,
 			TextFeedbackChange,
 			TextFeedbackState,
+			TextGreen,
 			TextHeightIs0,
 			TextHsi88Configured,
 			TextHsi88ErrorConfiguring,
 			TextInvalidDataReceived,
 			TextIsLocked,
 			TextLayer1,
+			TextLeft,
 			TextLoadedAccessory,
 			TextLoadedControl,
 			TextLoadedFeedback,
@@ -72,13 +68,26 @@ class Languages
 			TextLocoSpeed,
 			TextManager,
 			TextNoS88Modules,
+			TextOff,
+			TextOn,
 			TextPositionAlreadyInUse,
 			TextProtocolNotSupported,
 			TextReceivedSignalKill,
 			TextReceiverThreadStarted,
+			TextRed,
+			TextRight,
 			TextSaving,
 			TextSenderSocketCreated,
 			TextSerialNumberIs,
+			TextSettingAccessory,
+			TextSettingAccessoryWithProtocol,
+			TextSettingDirection,
+			TextSettingDirectionWithProtocol,
+			TextSettingFunction,
+			TextSettingFunctionWithProtocol,
+			TextSettingSpeed,
+			TextSettingSpeedDirectionLight,
+			TextSettingSpeedWithProtocol,
 			TextStoppingRailControl,
 			TextStoppingRequestedBySignal,
 			TextStoppingRequestedByWebClient,
@@ -123,6 +132,15 @@ class Languages
 			MaxTexts
 		};
 
+		enum language_t : unsigned char
+		{
+			FirstLanguage = 0,
+			EN = 0,
+			DE,
+			ES,
+			MaxLanguages
+		};
+
 		static void SetDefaultLanguage(std::string& languageString)
 		{
 			defaultLanguage = ParseLanguage(languageString);
@@ -145,6 +163,21 @@ class Languages
 			}
 
 			return languages[selector][language];
+		}
+
+		static const char* GetOnOff(const bool on)
+		{
+			return GetText(on ? TextOn : TextOff);
+		}
+
+		static const char* GetLeftRight(const direction_t direction)
+		{
+			return GetText(direction == DirectionRight ? TextRight : TextLeft);
+		}
+
+		static const char* GetGreenRed(const accessoryState_t state)
+		{
+			return GetText(state == DataModel::Accessory::AccessoryStateOn ? TextGreen : TextRed);
 		}
 
 		static const char* languages[MaxTexts][MaxLanguages];

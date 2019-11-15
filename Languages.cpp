@@ -21,6 +21,14 @@ along with RailControl; see the file LICENCE. If not see
 #include "Languages.h"
 #include "Utils/Utils.h"
 
+
+
+
+
+
+
+
+
 const char* Languages::languages[MaxTexts][MaxLanguages] =
 {
 /* TextAccessoryAddressDccTooHigh */ { "Address higher then 2044 is not supported by DCC", "Adressen grösser als 2044 werden nicht unterstützt von DCC", "Direcciones más grandes que 2044 no estan compatibles con DCC" },
@@ -34,14 +42,16 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextDebouncer */ { "Debouncer", "Entpreller", "Antirebote" },
 /* TextDifferentCommuterTypes */ { "Loco and street {0} have different commuter types", "Lok und Fahrstrasse {0} haben verschiedene Pendelzugeinstellungen", "Tren e itinerario tienen ajustes de viavén differentes" },
 /* TextDifferentDirections */ { "Loco and street {0} have different running directions", "Lok und Fahrstrasse {0} haben verschiedene Fahrtrichtungen", "Tren e itinerario tienen sentidos de la marcha differentes" },
-/* TextFeedbackChange */ { "State of pin {0} on module {1} is {2}", "Status von Pin {0} an Modul {1} ist {2}", "Estado de contacto {0} del módulo {1} está {2}" },
+/* TextFeedbackChange */ { "State of pin {0} on S88 module {1} is {2}", "Status von Pin {0} an S88 Modul {1} ist {2}", "Estado de contacto {0} del S88 módulo {1} está {2}" },
 /* TextFeedbackState */ { "Feedback {0} is {1}", "Rückmelder {0} ist {1}", "Retroseñal {0} está {1}" },
+/* TextGreen */ { "green", "grün", "verde" },
 /* TextHeightIs0 */ { "Height is zero", "Höhe ist null", "Altura está zero" },
 /* TextHsi88Configured */ { "{0} ({1}/{2}/{3}) S88 modules configured.", "{0} ({1}/{2}/{3}) S88 Module konfiguriert", "{0} ({1}/{2}/{3}) S88 módulos configurado" },
 /* TextHsi88ErrorConfiguring */ { "Unable to configure HSI-88. HSI-88 returned {0} configured modules", "HSI-88 kann nicht konfiguriert werden. HSI-88 meldet {0} module", "Imposible configurar HSI-88. HSI-88 denuncia {0} módulos" },
 /* TextInvalidDataReceived */ { "Invalid data received", "Ungültige Daten empfangen", "Recibido datos non validos" },
 /* TextIsLocked */ { "{0} is locked", "{0} ist gesperrt", "{0} está bloqueado" },
 /* TextLayer1 */ { "Layer 1", "Schicht 1", "Capa 1" },
+/* TextLeft */ { "left", "links", "izquierda" },
 /* TextLoadedAccessory */ { "Loaded accessory {0}: {1}", "Zubehörartikel {0} geladen: {1}", "Cargado accesorio {0}: {1}" },
 /* TextLoadedControl */ { "Loaded control {0}: {1}", "Zentrale {0} geladen: {1}", "Cargado control {0}: {1}" },
 /* TextLoadedFeedback */ { "Loaded feedback {0}: {1}", "Rückmelder {0} geladen: {1}", "Cargado retroseñal {0}: {1}" },
@@ -58,13 +68,26 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLocoSpeed */ { "{0} ({1}) speed is {2}", "{0} ({1}) fährt mit Geschwindigkeit {2}", "{0} ({1}) corre con velocidad {2}" },
 /* TextManager */ { "Manager", "Manager", "Manager" },
 /* TextNoS88Modules */ { "No S88 modules configured", "Keine S88 Module konfiguriert", "No hay módulos S88 configurado" },
+/* TextOff */ { "off", "aus", "apagado" },
+/* TextOn */ { "on", "ein", "encendido" },
 /* TextPositionAlreadyInUse */ { "Position {0}/{1}/{2} is already used by {3} \"{4}\".", "Position {0}/{1}/{2} ist bereits verwendet von {3} \"{4}\".", "Positión {0}/{1}/{2} está usado de {3} \"{4}\"." },
 /* TextProtocolNotSupported */ { "Protocol {0}is not supported by control. Please use one of: {1}", "Protokoll {0} wird nicht unterstützt von der Zentrale. Verwende eines aus {1}", "Protocolo {0}no compatible con esa control. Utilisa uno de {1}" },
 /* TextReceivedSignalKill */ { "Received a signal kill {0} times. Exiting without saving.", "Signal Kill {0} mal erhalten. Beende RailControl ohne zu speichern.", "Apago RailControl sin guardar." },
 /* TextReceiverThreadStarted */ { "Receiver thread started", "Empfangs-Thread gestartet", "Thread recibiendo creado" },
+/* TextRed */ { "red", "rot", "rojo" },
+/* TextRight */ { "right", "rechts", "derecho" },
 /* TextSaving */ { "Saving {0}", "Speichere {0}", "Guardando {0}" },
 /* TextSenderSocketCreated */ {"Sender socket created", "Sender socket erstellt", "Socket para enviar datos creado" },
 /* TextSerialNumberIs */ { "Serialnumber is {0}", "Seriennummer ist {0}", "Número de serie es {0}" },
+/* TextSettingAccessory */ { "Setting accessory {0}/{1} to {2}", "Setze Zubehörartikel {0}/{1} auf {2}", "Ajusto accesorio {0}/{1} a {2}" },
+/* TextSettingAccessoryWithProtocol */ { "Setting accessory {0}/{1}/{2} to {3}", "Setze Zubehörartikel {0}/{1}/{2} auf {3}", "Ajusto accesorio {0}/{1}/{2} a {3}" },
+/* TextSettingDirection */ { "Changing loco {0} direction", "Wechsle die Richtung der Lok {0}", "Cambio la direccion de la locomotora {0}" },
+/* TextSettingDirectionWithProtocol */ { "Setting loco {0}/{1} to direction {2}", "Setze Lok {0}/{1} in Richtung {2}", "Ajusto la direccion de la locomotora {0}/{1} a {2}" },
+/* TextSettingFunction */ { "Setting function {0} of loco {1} to {2}", "Setze Funktion {0} der Lok {1} auf {2}", "Ajusto la function {0} de la locomotora {1} a {2}" },
+/* TextSettingFunctionWithProtocol */ { "Setting function {0} of loco {1}/{2} to {3}", "Setze Funktion {0} der Lok {1}/{2} auf {3}", "Ajusto la function {0} de la locomotora {1}/{2} a {3}" },
+/* TextSettingSpeed */ { "Setting loco {0} to speed {1}", "Setze Lok {0} auf Geschwindigkeit {1}", "Ajusto la velocidad de la locomotora {0} a {1}" },
+/* TextSettingSpeedDirectionLight */ { "Setting loco {0} to speed {1} and direction {2} and light {3}", "Setze Geschwindigkeit {1}, Richtung {2} und Licht {3} der Lok {0}", "Ajusto velocidad a {1}, direccion {2} y luz {3} de la locomotora {0}" },
+/* TextSettingSpeedWithProtocol */ { "Setting loco {0}/{1} to speed {2}", "Setze Lok {0}/{1} auf Geschwindigkeit {2}", "Ajusto la velocidad de la locomotora {0}/{1} a {2}" },
 /* TextStoppingRailControl */ { "Stopping RailControl", "Beende RailControl", "Apaga RailControl" },
 /* TextStoppingRequestedBySignal */ { "Stopping RailControl requested by signal {0}", "Beenden von RailControl angefordert mit Signal {0}", "Apagar RailControl pedido con señal {0}" },
 /* TextStoppingRequestedByWebClient */ { "Stopping RailControl requested by webclient", "Beenden von RailControl angefordert von Webclient", "Apagar RailControl pedido del webclient" },

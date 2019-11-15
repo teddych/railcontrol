@@ -82,26 +82,24 @@ namespace Hardware
 		senderConnection.Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
+	void Z21::LocoSpeed(__attribute__ ((unused)) const protocol_t& protocol, __attribute__ ((unused)) const address_t& address, __attribute__ ((unused)) const locoSpeed_t& speed)
 	{
-		logger->Info("Setting speed of cs2 loco {0}/{1} to speed {2}", protocol, address, speed);
+		logger->Warning("Setting speed not implemented");
 	}
 
-	void Z21::LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction)
+	void Z21::LocoDirection(__attribute__ ((unused)) const protocol_t& protocol, __attribute__ ((unused)) const address_t& address, __attribute__ ((unused)) const direction_t& direction)
 	{
-		logger->Info("Setting direction of cs2 loco {0}/{1} to {2}", protocol, address, direction == DirectionRight ? "forward" : "reverse");
+		logger->Warning("Setting direction not implemented");
 	}
 
-	void Z21::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
+	void Z21::LocoFunction(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const function_t function, __attribute__ ((unused)) const bool on)
 	{
-		logger->Info("Setting f{0} of cs2 loco {1}/{2} to \"{3}\"", static_cast<int>(function), static_cast<int>(protocol), static_cast<int>(address), on ? "on" : "off");
+		logger->Warning("Setting loco function not implemented");
 	}
 
-	void Z21::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void Z21::Accessory(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const accessoryState_t state, __attribute__ ((unused)) const bool on)
 	{
-		std::string stateText;
-		DataModel::Accessory::Status(state, stateText);
-		logger->Info("Setting state of cs2 accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
+		logger->Warning("Setting accessory not implemented");
 	}
 
 	// the Receiver thread of the Z21

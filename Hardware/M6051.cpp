@@ -101,7 +101,7 @@ namespace Hardware
 		unsigned char speedMM = (speed / 69) + (GetSpeedMapEntry(address) & 16);
 		speedMap[address] = speedMM;
 		unsigned char addressMM = static_cast<unsigned char>(address);
-		logger->Info("Setting speed of loco {0} to speed {1}", address, speedMM);
+		logger->Info(Languages::TextSettingSpeed, address, speedMM);
 		SendTwoBytes(speedMM, addressMM);
 	}
 
@@ -111,7 +111,7 @@ namespace Hardware
 		{
 			return;
 		}
-		logger->Info("Changing direction of loco {0}", address);
+		logger->Info(Languages::TextSettingDirection, address);
 		unsigned char speedMM = 15 + (GetSpeedMapEntry(address) & 16);
 		unsigned char addressMM = static_cast<unsigned char>(address);
 		SendTwoBytes(speedMM, addressMM);
@@ -129,7 +129,7 @@ namespace Hardware
 			return;
 		}
 
-		logger->Info("Setting f{0} of loco {1} to \"{2}\"", function, address, on ? "on" : "off");
+		logger->Info(Languages::TextSettingFunction, static_cast<int>(function), address, Languages::GetOnOff(on));
 		unsigned char addressMM = static_cast<unsigned char>(address);
 		if (function == 0)
 		{
@@ -155,9 +155,7 @@ namespace Hardware
 			return;
 		}
 
-		std::string stateText;
-		DataModel::Accessory::Status(state, stateText);
-		logger->Info("Setting state of accessory {0}/{1} to \"{2}\"", address, stateText, on ? "on" : "off");
+		logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 		const unsigned char stateMM = (state == DataModel::Accessory::AccessoryStateOn ? 33 : 34);
 		const unsigned char addressMM = static_cast<unsigned char>(address);
 		SendTwoBytes(stateMM, addressMM);
@@ -179,7 +177,7 @@ namespace Hardware
 				bool ret = serialLine.Receive(data, 1);
 				if (ret <= 0)
 				{
-					logger->Error("Error while reading data from interface");
+					logger->Error(Languages::TextUnableToReceiveData);
 					break;
 				}
 				unsigned char byte = data[0];
@@ -195,20 +193,20 @@ namespace Hardware
 							continue;
 						}
 
-						std::string text;
+						const char* onOff;
 						DataModel::Feedback::feedbackState_t state;
 						if ((byte >> shift) & 0x01)
 						{
-							text = "on";
+							onOff = Languages::GetText(Languages::TextOn);
 							state = DataModel::Feedback::FeedbackStateOccupied;
 						}
 						else
 						{
-							text = "off";
+							onOff = Languages::GetText(Languages::TextOff);
 							state = DataModel::Feedback::FeedbackStateFree;
 						}
+						logger->Info(Languages::TextFeedbackChange, pin, module, onOff);
 						address_t address = (module * 8) + pin;
-						logger->Info("S88 Pin {0} set to {1}", address, text);
 						manager->FeedbackState(controlID, address, state);
 					}
 					s88Memory[module] = byte;

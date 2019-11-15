@@ -163,7 +163,7 @@ namespace Hardware
 	// set the speed of a loco
 	void CS2::LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
 	{
-		logger->Info("Setting speed of cs2 loco {0}/{1} to speed {2}", protocol, address, speed);
+		logger->Info(Languages::TextSettingSpeedWithProtocol, protocol, address, speed);
 		unsigned char buffer[CS2CommandBufferLength];
 		// set header
 		CreateCommandHeader(buffer, 0, 0x04, 0, 6);
@@ -186,7 +186,7 @@ namespace Hardware
 	// set the direction of a loco
 	void CS2::LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction)
 	{
-		logger->Info("Setting direction of cs2 loco {0}/{1} to {2}", protocol, address, direction == DirectionRight ? "forward" : "reverse");
+		logger->Info(Languages::TextSettingDirectionWithProtocol, protocol, address, Languages::GetLeftRight(direction));
 		unsigned char buffer[CS2CommandBufferLength];
 		// set header
 		CreateCommandHeader(buffer, 0, 0x05, 0, 5);
@@ -208,7 +208,7 @@ namespace Hardware
 	// set loco function
 	void CS2::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
-		logger->Info("Setting f{0} of cs2 loco {1}/{2} to \"{3}\"", static_cast<int>(function), static_cast<int>(protocol), static_cast<int>(address), on ? "on" : "off");
+		logger->Info(Languages::TextSettingFunctionWithProtocol, static_cast<int>(function), static_cast<int>(protocol), address, Languages::GetOnOff(on));
 		unsigned char buffer[CS2CommandBufferLength];
 		// set header
 		CreateCommandHeader(buffer, 0, 0x06, 0, 6);
@@ -229,9 +229,7 @@ namespace Hardware
 
 	void CS2::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
-		std::string stateText;
-		DataModel::Accessory::Status(state, stateText);
-		logger->Info("Setting state of cs2 accessory {0}/{1}/{2} to \"{3}\"", static_cast<int>(protocol), static_cast<int>(address), stateText, on ? "on" : "off");
+		logger->Info(Languages::TextSettingAccessoryWithProtocol, static_cast<int>(protocol), address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 		unsigned char buffer[CS2CommandBufferLength];
 		// set header
 		CreateCommandHeader(buffer, 0, 0x0B, 0, 6);
@@ -301,19 +299,19 @@ namespace Hardware
 			if (command == 0x11 && response)
 			{
 				// s88 event
-				std::string text;
+				const char* onOff;
 				DataModel::Feedback::feedbackState_t state;
 				if (buffer[10])
 				{
-					text = "on";
+					onOff = Languages::GetText(Languages::TextOn);
 					state = DataModel::Feedback::FeedbackStateOccupied;
 				}
 				else
 				{
-					text = "off";
+					onOff = Languages::GetText(Languages::TextOff);
 					state = DataModel::Feedback::FeedbackStateFree;
 				}
-				logger->Info("S88 Pin {0} set to {1}", address, text);
+				logger->Info(Languages::TextFeedbackChange, address & 0x000F, address >> 4, onOff);
 				manager->FeedbackState(controlID, address, state);
 			}
 			else if (command == 0x00 && !response && length == 5)
