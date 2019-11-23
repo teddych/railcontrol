@@ -119,10 +119,7 @@ raspi: Timestamp.h
 sqlite-shell:
 	make -C Storage/sqlite
 
-Timestamp.o: Timestamp.cpp Timestamp.h
-	$(CPP) $(CPPFLAGS) -c -o $@ $<
-
-%.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
+%.o: %.cpp Timestamp.h *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
