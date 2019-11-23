@@ -25,6 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <vector>
 
 #include "ControlInterface.h"
+#include "Logger/Logger.h"
 #include "Manager.h"
 #include "Network/TcpServer.h"
 
@@ -76,7 +77,12 @@ namespace WebServer
 			void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on) override;
 
 		private:
+			template<typename... Args> void AddUpdate(const std::string& command, const Languages::textSelector_t text, Args... args)
+			{
+				AddUpdate(command, Logger::Logger::Format(Languages::GetText(text), args...));
+			}
 			void AddUpdate(const std::string& command, const std::string& status);
+			std::string GetStatus(Languages::textSelector_t status) { return updateStatus + Languages::GetText(status); }
 
 			volatile bool run;
 			unsigned int lastClientID;
@@ -87,6 +93,7 @@ namespace WebServer
 			std::mutex updateMutex;
 			unsigned int updateID;
 			const unsigned int MaxUpdates = 10;
+			const std::string updateStatus = "data: status=";
 	};
 }; // namespace webserver
 

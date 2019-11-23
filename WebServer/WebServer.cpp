@@ -28,7 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <unistd.h>
 
 #include "DataTypes.h"
-#include "Logger/Logger.h"
+#include "Languages.h"
 #include "RailControl.h"
 #include "WebServer/WebClient.h"
 #include "WebServer/WebServer.h"
@@ -49,8 +49,11 @@ namespace WebServer {
 		manager(manager),
 		updateID(1)
 	{
-		Logger::Logger::GetLogger("Webserver")->Info("Starting server");
-		updates[updateID] = "data: status=Railcontrol started";
+		Logger::Logger::GetLogger("Webserver")->Info(Languages::TextWebServerStarted);
+		{
+			std::lock_guard<std::mutex> lock(updateMutex);
+			updates[updateID] = GetStatus(Languages::TextRailControlStarted);
+		}
 		run = true;
 	}
 
@@ -60,10 +63,9 @@ namespace WebServer {
 		{
 			return;
 		}
-		Logger::Logger::GetLogger("Webserver")->Info("Stopping server");
 		{
 			std::lock_guard<std::mutex> lock(updateMutex);
-			updates[++updateID] = "data: status=Stopping Railcontrol";
+			updates[++updateID] = GetStatus(Languages::TextStoppingRailControl);
 		}
 		TerminateTcpServer();
 		std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -82,6 +84,7 @@ namespace WebServer {
 			clients.pop_back();
 			delete client;
 		}
+		Logger::Logger::GetLogger("Webserver")->Info(Languages::TextWebServerStopped);
 	}
 
 	void WebServer::Work(Network::TcpConnection* connection)
@@ -93,21 +96,19 @@ namespace WebServer {
 	{
 		if (status)
 		{
-			AddUpdate("booster;on=true", "Booster is on");
+			AddUpdate("booster;on=true", Languages::TextTurningBoosterOn);
 		}
 		else
 		{
-			AddUpdate("booster;on=false", "Booster is off");
+			AddUpdate("booster;on=false", Languages::TextTurningBoosterOff);
 		}
 	}
 
 	void WebServer::LocoSpeed(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
 	{
 		stringstream command;
-		stringstream status;
 		command << "locospeed;loco=" << locoID << ";speed=" << speed;
-		status << manager.GetLocoName(locoID) << " speed is " << speed;
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLocoSpeedIs, manager.GetLocoName(locoID), speed);
 	}
 
 	void WebServer::LocoDirection(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const direction_t direction)
