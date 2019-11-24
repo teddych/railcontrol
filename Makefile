@@ -73,6 +73,7 @@ all: $(OBJ)
 	make -C Storage
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 	rm Timestamp.h
+	rm Timestamp.o
 
 dist: all
 	strip railcontrol
@@ -119,7 +120,10 @@ raspi: Timestamp.h
 sqlite-shell:
 	make -C Storage/sqlite
 
-%.o: %.cpp Timestamp.h *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
+Timestamp.o: Timestamp.cpp Timestamp.h
+	$(CPP) $(CPPFLAGS) -c -o $@ $<
+
+%.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 clean:
