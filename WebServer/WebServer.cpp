@@ -114,19 +114,15 @@ namespace WebServer {
 	void WebServer::LocoDirection(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const direction_t direction)
 	{
 		stringstream command;
-		stringstream status;
 		command << "locodirection;loco=" << locoID << ";direction=" << (direction ? "true" : "false");
-		status << manager.GetLocoName(locoID) << " direction is " << (direction ? "right" : "left");
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), direction ? Languages::TextLocoDirectionIsRight : Languages::TextLocoDirectionIsLeft, manager.GetLocoName(locoID));
 	}
 
 	void WebServer::LocoFunction(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
 	{
 		stringstream command;
-		stringstream status;
-		command << "locofunction;loco=" << locoID << ";function=" << (unsigned int) function << ";on=" << (state ? "true" : "false");
-		status << manager.GetLocoName(locoID) << " f" << (unsigned int) function << " is " << (state ? "on" : "off");
-		AddUpdate(command.str(), status.str());
+		command << "locofunction;loco=" << locoID << ";function=" << static_cast<unsigned int>(function) << ";on=" << (state ? "true" : "false");
+		AddUpdate(command.str(), state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, manager.GetLocoName(locoID), function);
 	}
 
 	void WebServer::AccessoryState(__attribute__((unused)) const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
@@ -136,28 +132,22 @@ namespace WebServer {
 			return;
 		}
 		stringstream command;
-		stringstream status;
 		command << "accessory;accessory=" << accessoryID << ";state=" << (state == DataModel::Accessory::AccessoryStateOn ? "green" : "red");
-		status << manager.GetAccessoryName(accessoryID) << " is " << Languages::GetGreenRed(state);
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), state ? Languages::TextAccessoryStateIsGreen : Languages::TextAccessoryStateIsRed, manager.GetAccessoryName(accessoryID));
 	}
 
 	void WebServer::AccessorySettings(const accessoryID_t accessoryID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "accessorysettings;accessory=" << accessoryID;
-		status << name << " updated";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextAccessoryUpdated, name);
 	}
 
 	void WebServer::AccessoryDelete(const accessoryID_t accessoryID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "accessorydelete;accessory=" << accessoryID;
-		status << name << " deleted";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextAccessoryDeleted, name);
 	}
 
 	void WebServer::FeedbackState(const std::string& name, const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
@@ -166,7 +156,7 @@ namespace WebServer {
 		stringstream status;
 		command << "feedback;feedback=" << feedbackID << ";state=" << (state ? "on" : "off");
 		status << name << " is " << (state ? "on" : "off");
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), state ? Languages::TextFeedbackStateIsOn : Languages::TextFeedbackStateIsOff, name);
 	}
 
 	void WebServer::FeedbackSettings(const feedbackID_t feedbackID, const std::string& name)

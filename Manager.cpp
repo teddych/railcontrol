@@ -769,7 +769,7 @@ bool Manager::LocoSpeed(const controlType_t controlType, Loco* loco, const locoS
 		s = MaxSpeed;
 	}
 	const locoID_t locoID = loco->GetID();
-	logger->Info(Languages::TextLocoSpeed, loco->GetName(), locoID, s);
+	logger->Info(Languages::TextLocoSpeedIs, loco->GetName(), s);
 	loco->Speed(s);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
@@ -813,7 +813,7 @@ void Manager::LocoDirection(const controlType_t controlType, Loco* loco, const d
 	}
 	loco->SetDirection(direction);
 	const locoID_t locoID = loco->GetID();
-	logger->Info(Languages::TextLocoDirection, loco->GetName(), locoID, direction);
+	logger->Info(direction ? Languages::TextLocoDirectionIsRight : Languages::TextLocoDirectionIsLeft, loco->GetName());
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -846,7 +846,7 @@ void Manager::LocoFunction(const controlType_t controlType, Loco* loco, const fu
 
 	loco->SetFunction(function, on);
 	const locoID_t locoID = loco->GetID();
-	logger->Info(Languages::TextLocoFunction, loco->GetName(), locoID, function, on);
+	logger->Info(on ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -1132,7 +1132,7 @@ void Manager::FeedbackState(Feedback* feedback)
 		return;
 	}
 	DataModel::Feedback::feedbackState_t state = feedback->GetState();
-	logger->Info(Languages::TextFeedbackState, feedback->GetName(), state);
+	logger->Info(state ? Languages::TextFeedbackStateIsOn : Languages::TextFeedbackStateIsOff, feedback->GetName());
 	{
 		const string& name = feedback->GetName();
 		const feedbackID_t feedbackID = feedback->GetID();
