@@ -53,7 +53,7 @@ class ControlInterface
 		virtual void LocoDestinationReached(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const streetID_t streetID, __attribute__((unused)) const trackID_t trackID) {};
 		virtual void LocoDirection(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const direction_t direction) {};
 		virtual void LocoFunction(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const function_t function, __attribute__((unused)) const bool on) {};
-		virtual void LocoIntoTrack(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const trackID_t trackID) {};
+		virtual void LocoIntoTrack(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const trackID_t trackID, __attribute__((unused)) const std::string& locoName, __attribute__((unused)) const std::string& trackName) {};
 		virtual void LocoProtocols(__attribute__((unused)) std::vector<protocol_t>& protocols) const {};
 		virtual bool LocoProtocolSupported(__attribute__((unused)) protocol_t protocol) const { return false; };
 		virtual void LocoRelease(__attribute__((unused)) const locoID_t locoID) {};

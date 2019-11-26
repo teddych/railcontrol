@@ -57,7 +57,7 @@ namespace WebServer
 			void LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID) override;
 			void LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction) override;
 			void LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on) override;
-			void LocoIntoTrack(const locoID_t locoID, const trackID_t trackID) override;
+			void LocoIntoTrack(const locoID_t locoID, const trackID_t trackID, const std::string& locoName, const std::string& trackName) override;
 			void LocoRelease(const locoID_t locoID) override;
 			void LocoSettings(const locoID_t locoID, const std::string& name) override;
 			void LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed) override;

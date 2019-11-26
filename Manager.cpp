@@ -897,7 +897,7 @@ void Manager::AccessoryState(const controlType_t controlType, Accessory* accesso
 
 	if (force == false && accessory->IsInUse())
 	{
-		logger->Warning(Languages::TextIsLocked, accessory->GetName());
+		logger->Warning(Languages::TextAccessoryIsLocked, accessory->GetName());
 		return;
 	}
 
@@ -977,9 +977,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 	if (!CheckAccessoryPosition(accessoryID, posX, posY, posZ)
 		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
 	{
-		result.append("Unable to ");
-		result.append(accessoryID == AccessoryNone ? "add" : "move");
-		result.append(" accessory.");
+		result.append(Languages::GetText(accessoryID == AccessoryNone ? Languages::TextUnableToAddAccessory : Languages::TextUnableToMoveAccessory));
 		return false;
 	}
 
@@ -1204,9 +1202,7 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 	if (visible && !CheckFeedbackPosition(feedbackID, posX, posY, posZ)
 		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
 	{
-		result.append(" Unable to ");
-		result.append(feedbackID == FeedbackNone ? "add" : "move");
-		result.append(" feedback.");
+		result.append(Languages::GetText(feedbackID == FeedbackNone ? Languages::TextUnableToAddFeedback : Languages::TextUnableToMoveFeedback));
 		return FeedbackNone;
 	}
 
@@ -1464,9 +1460,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 {
 	if (!CheckTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
 	{
-		result.append(" Unable to ");
-		result.append(trackID == TrackNone ? "add" : "move");
-		result.append(" track.");
+		result.append(Languages::GetText(trackID == TrackNone ? Languages::TextUnableToAddTrack : Languages::TextUnableToMoveTrack));
 		return TrackNone;
 	}
 
@@ -1565,7 +1559,7 @@ void Manager::SwitchState(const controlType_t controlType, Switch* mySwitch, con
 
 	if (force == false && mySwitch->IsInUse())
 	{
-		logger->Warning("{0} is locked", mySwitch->GetName());
+		logger->Warning(Languages::TextSwitchIsLocked, mySwitch->GetName());
 		return;
 	}
 
@@ -1653,9 +1647,7 @@ bool Manager::SwitchSave(const switchID_t switchID,
 
 	if (!CheckSwitchPosition(switchID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
 	{
-		result.append("Unable to ");
-		result.append(switchID == SwitchNone ? "add" : "move");
-		result.append(" switch.");
+		result.append(Languages::GetText(switchID == SwitchNone ? Languages::TextUnableToAddSwitch : Languages::TextUnableToMoveSwitch));
 		return false;
 	}
 
@@ -1851,9 +1843,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	if (visible && !CheckStreetPosition(streetID, posX, posY, posZ)
 		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
 	{
-		result.append("Unable to ");
-		result.append(streetID == StreetNone ? "add" : "move");
-		result.append(" street.");
+		result.append(Languages::GetText(streetID == StreetNone ? Languages::TextUnableToAddStreet : Languages::TextUnableToMoveStreet));
 		return false;
 	}
 
@@ -2020,7 +2010,7 @@ bool Manager::LayerSave(const layerID_t layerID, const std::string&name, std::st
 
 	if (layer == nullptr)
 	{
-		result = "Unable to create layer";
+		result = Languages::GetText(Languages::TextUnableToAddLayer);
 		return false;
 	}
 
@@ -2099,7 +2089,7 @@ void Manager::SignalState(const controlType_t controlType, Signal* signal, const
 
 	if (force == false && signal->IsInUse())
 	{
-		logger->Warning("{0} is locked", signal->GetName());
+		logger->Warning(Languages::TextSignalIsLocked, signal->GetName());
 		return;
 	}
 
@@ -2188,9 +2178,7 @@ bool Manager::SignalSave(const signalID_t signalID,
 
 	if (!CheckSignalPosition(signalID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
 	{
-		result.append("Unable to ");
-		result.append(signalID == SignalNone ? "add" : "move");
-		result.append(" signal.");
+		result.append(Languages::GetText(signalID == SignalNone ? Languages::TextUnableToAddSignal : Languages::TextUnableToMoveSignal));
 		return false;
 	}
 
@@ -2337,12 +2325,14 @@ bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 		return false;
 	}
 
-	logger->Info("{0} ({1}) is now on track {2} ({3})", loco->GetName(), loco->GetID(), track->GetName(), track->GetID());
+	string locoName = GetLocoName(locoID);
+	string trackName = GetTrackName(trackID);
+	logger->Info(Languages::TextLocoIsOnTrack, locoName, trackName);
 
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoIntoTrack(locoID, trackID);
+		control.second->LocoIntoTrack(locoID, trackID, locoName, trackName);
 	}
 	return true;
 }
