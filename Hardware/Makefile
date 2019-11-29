@@ -15,7 +15,7 @@ LIBS= \
 	Virtual.so \
 	Z21.so
 
-%.so: %.cpp *.h ../Manager.h
+%.so: %.cpp *.h ../Manager.h ../Languages.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
 all: $(LIBS)

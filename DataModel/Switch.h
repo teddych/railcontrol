@@ -62,11 +62,6 @@ namespace DataModel
 
 			switchState_t GetState() const { return static_cast<switchState_t>(state); }
 			switchType_t GetType() const { return static_cast<switchType_t>(type); }
-
-			static void Status(const switchState_t state, std::string& stateText)
-			{
-				stateText.assign(state == DataModel::Switch::SwitchStateStraight ? "straight" : "turnout");
-			}
 	};
 
 } // namespace DataModel

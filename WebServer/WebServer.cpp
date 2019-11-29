@@ -174,19 +174,15 @@ namespace WebServer {
 	void WebServer::StreetSettings(const streetID_t streetID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "streetsettings;street=" << streetID;
-		status << name << " updated";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextStreetUpdated, name);
 	}
 
 	void WebServer::StreetDelete(const streetID_t streetID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "streetdelete;street=" << streetID;
-		status << name << " deleted";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextStreetDeleted, name);
 	}
 
 	void WebServer::SwitchState(__attribute__((unused)) const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
@@ -196,30 +192,22 @@ namespace WebServer {
 			return;
 		}
 		stringstream command;
-		stringstream status;
-		string stateText;
-		DataModel::Switch::Status(state, stateText);
-		command << "switch;switch=" << switchID << ";state=" << stateText;
-		status << manager.GetSwitchName(switchID) << " is " << stateText;
-		AddUpdate(command.str(), status.str());
+		command << "switch;switch=" << switchID << ";state=" << (state ? "straight" : "turnout");
+		AddUpdate(command.str(), state ? Languages::TextSwitchStateIsStraight : Languages::TextSwitchStateIsTurnout, manager.GetSwitchName(switchID));
 	}
 
 	void WebServer::SwitchSettings(const switchID_t switchID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "switchsettings;switch=" << switchID;
-		status << name << " updated";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextSwitchUpdated, name);
 	}
 
 	void WebServer::SwitchDelete(const switchID_t switchID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "switchdelete;switch=" << switchID;
-		status << name << " deleted";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextSwitchDeleted, name);
 	}
 
 	void WebServer::TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const direction_t direction, const std::string& locoName)
@@ -297,48 +285,36 @@ namespace WebServer {
 			return;
 		}
 		stringstream command;
-		stringstream status;
-		string stateText;
-		DataModel::Signal::Status(state, stateText);
-		command << "signal;signal=" << signalID << ";state=" << stateText;
-		status << manager.GetSignalName(signalID) << " is " << stateText;
-		AddUpdate(command.str(), status.str());
+		command << "signal;signal=" << signalID << ";state=" << (state ? "green" : "red");
+		AddUpdate(command.str(), state ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, manager.GetSignalName(signalID));
 	}
 
 	void WebServer::SignalSettings(const signalID_t signalID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "signalsettings;signal=" << signalID;
-		status << name << " updated";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextSignalUpdated, name);
 	}
 
 	void WebServer::SignalDelete(const signalID_t signalID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "signaldelete;signal=" << signalID;
-		status << name << " deleted";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextSignalDeleted, name);
 	}
 
 	void WebServer::LocoRelease(const locoID_t locoID)
 	{
 		stringstream command;
-		stringstream status;
 		command << "locorelease;loco=" << locoID;
-		status << manager.GetLocoName(locoID) << " is not on a track anymore";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLocoIsReleased, manager.GetLocoName(locoID));
 	}
 
 	void WebServer::StreetRelease(const streetID_t streetID)
 	{
 		stringstream command;
-		stringstream status;
 		command << "streetRelease;street=" << streetID;
-		status << manager.GetStreetName(streetID) << " is  released";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextStreetIsReleased, manager.GetStreetName(streetID));
 	}
 
 	void WebServer::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
