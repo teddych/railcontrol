@@ -320,64 +320,50 @@ namespace WebServer {
 	void WebServer::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)
 	{
 		stringstream command;
-		stringstream status;
 		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		status << manager.GetLocoName(locoID) << " has reached the destination track " << manager.GetTrackName(trackID) << " on street " << manager.GetStreetName(streetID);
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLocoHasReachedDestination, manager.GetLocoName(locoID), manager.GetTrackName(trackID), manager.GetStreetName(streetID));
 	}
 
 	void WebServer::LocoStart(const locoID_t locoID)
 	{
 		stringstream command;
-		stringstream status;
 		command << "locoStart;loco=" << locoID;
-		status << manager.GetLocoName(locoID) << " is in auto mode";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLocoIsInAutoMode, manager.GetLocoName(locoID));
 	}
 
 	void WebServer::LocoStop(const locoID_t locoID)
 	{
 		stringstream command;
-		stringstream status;
 		command << "locoStop;loco=" << locoID;
-		status << manager.GetLocoName(locoID) << " is in manual mode";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLocoIsInManualMode, manager.GetLocoName(locoID));
 	}
 
 	void WebServer::LocoSettings(const locoID_t locoID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "locosettings;loco=" << locoID;
-		status << name << " updated";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLocoUpdated, name);
 	}
 
 	void WebServer::LocoDelete(const locoID_t locoID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "locodelete;loco=" << locoID;
-		status << name << " updated";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLocoDeleted, name);
 	}
 
 	void WebServer::LayerSettings(const layerID_t layerID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "layersettings;layer=" << layerID;
-		status << name << " updated";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLayerUpdated, name);
 	}
 
 	void WebServer::LayerDelete(const layerID_t layerID, const std::string& name)
 	{
 		stringstream command;
-		stringstream status;
 		command << "layerdelete;layer=" << layerID;
-		status << name << " updated";
-		AddUpdate(command.str(), status.str());
+		AddUpdate(command.str(), Languages::TextLayerDeleted, name);
 	}
 
 	void WebServer::AddUpdate(const string& command, const string& status)
