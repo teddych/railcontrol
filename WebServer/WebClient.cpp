@@ -153,7 +153,7 @@ namespace WebServer
 			// handle requests
 			if (arguments["cmd"].compare("quit") == 0)
 			{
-				HtmlReplyWithHeader(string("Stopping Railcontrol"));
+				ReplyHtmlWithHeader(string("Stopping Railcontrol"));
 				stopRailControlWebserver();
 			}
 			else if (arguments["cmd"].compare("booster") == 0)
@@ -161,12 +161,12 @@ namespace WebServer
 				bool on = Utils::Utils::GetBoolMapEntry(arguments, "on");
 				if (on)
 				{
-					HtmlReplyWithHeader(string("Turning booster on"));
+					ReplyHtmlWithHeader(string("Turning booster on"));
 					manager.Booster(ControlTypeWebserver, BoosterGo);
 				}
 				else
 				{
-					HtmlReplyWithHeader(string("Turning booster off"));
+					ReplyHtmlWithHeader(string("Turning booster off"));
 					manager.Booster(ControlTypeWebserver, BoosterStop);
 				}
 			}
@@ -702,7 +702,7 @@ namespace WebServer
 			contentType = "application/javascript";
 		}
 
-		Response response(Response::OK, HtmlTag());
+		Response response;
 		response.AddHeader("Cache-Control", "max-age=3600");
 		response.AddHeader("Content-Length", to_string(s.st_size));
 		if (contentType != nullptr)
@@ -772,7 +772,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleLayerSave(const map<string, string>& arguments)
@@ -783,11 +783,11 @@ namespace WebServer
 
 		if (!manager.LayerSave(layerID, name, result))
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + name + "&quot; saved."));
+		ReplyResponse(ResponseInfo, Languages::TextLayerSaved, name);
 	}
 
 	void WebClient::HandleLayerAskDelete(const map<string, string>& arguments)
@@ -796,20 +796,20 @@ namespace WebServer
 
 		if (layerID == LayerNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextLayerDoesNotExist);
 			return;
 		}
 
 		if (layerID == LayerUndeletable)
 		{
-			HtmlReplyWithHeaderAndParagraph("Not allowed to delete this layer");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextLayer1IsUndeletable);
 			return;
 		}
 
 		const Layer* layer = manager.GetLayer(layerID);
 		if (layer == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			ReplyHtmlWithHeaderAndParagraph(Languages::GetText(Languages::TextLayerDoesNotExist));
 			return;
 		}
 
@@ -822,7 +822,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleLayerDelete(const map<string, string>& arguments)
@@ -831,20 +831,20 @@ namespace WebServer
 
 		if (layerID == LayerNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			ReplyResponse(ResponseError, Languages::TextLayerDoesNotExist);
 			return;
 		}
 
 		if (layerID == LayerUndeletable)
 		{
-			HtmlReplyWithHeaderAndParagraph("Not allowed to delete this layer");
+			ReplyResponse(ResponseError, Languages::TextLayer1IsUndeletable);
 			return;
 		}
 
 		const Layer* layer = manager.GetLayer(layerID);
 		if (layer == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown layer");
+			ReplyResponse(ResponseError, Languages::TextLayerDoesNotExist);
 			return;
 		}
 
@@ -852,11 +852,11 @@ namespace WebServer
 
 		if (!manager.LayerDelete(layerID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete layer");
+			ReplyResponse(ResponseError, Languages::TextLayerDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Layer &quot;" + name + "&quot; deleted."));
+		ReplyResponse(ResponseInfo, Languages::TextLayerDeleted);
 	}
 
 	void WebClient::HandleLayerList()
@@ -882,7 +882,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "layeredit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	HtmlTag WebClient::HtmlTagControlArguments(const hardwareType_t hardwareType, const string& arg1, const string& arg2, const string& arg3, const string& arg4, const string& arg5)
@@ -965,7 +965,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(form));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleControlSave(const map<string, string>& arguments)
@@ -982,11 +982,11 @@ namespace WebServer
 
 		if (!manager.ControlSave(controlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5, result))
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Control &quot;" + name + "&quot; saved.");
+		ReplyResponse(ResponseInfo, Languages::TextControlSaved, name);
 	}
 
 	void WebClient::HandleControlAskDelete(const map<string, string>& arguments)
@@ -995,14 +995,14 @@ namespace WebServer
 
 		if (controlID == ControlNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown control");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
 			return;
 		}
 
 		const Hardware::HardwareParams* control = manager.GetHardware(controlID);
 		if (control == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown control");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
 			return;
 		}
 
@@ -1015,7 +1015,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleControlDelete(const map<string, string>& arguments)
@@ -1024,7 +1024,7 @@ namespace WebServer
 		const Hardware::HardwareParams* control = manager.GetHardware(controlID);
 		if (control == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete control");
+			ReplyResponse(ResponseError, Languages::TextControlDoesNotExist);
 			return;
 		}
 
@@ -1032,11 +1032,11 @@ namespace WebServer
 
 		if (!manager.ControlDelete(controlID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete control");
+			ReplyResponse(ResponseError, Languages::TextControlDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Control &quot;" + name + "&quot; deleted.");
+		ReplyResponse(ResponseInfo, Languages::TextControlDeleted, name);
 	}
 
 	void WebClient::HandleControlList()
@@ -1059,7 +1059,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "controledit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleLocoSpeed(const map<string, string>& arguments)
@@ -1069,9 +1069,7 @@ namespace WebServer
 
 		manager.LocoSpeed(ControlTypeWebserver, locoID, speed);
 
-		stringstream ss;
-		ss << "Loco &quot;" << manager.GetLocoName(locoID) << "&quot; is now set to speed " << speed;
-		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextLocoSpeedIs, manager.GetLocoName(locoID), speed);
 	}
 
 	void WebClient::HandleLocoDirection(const map<string, string>& arguments)
@@ -1081,9 +1079,7 @@ namespace WebServer
 
 		manager.LocoDirection(ControlTypeWebserver, locoID, direction);
 
-		stringstream ss;
-		ss << "Loco &quot;" << manager.GetLocoName(locoID) << "&quot; is now set to " << direction;
-		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+		ReplyHtmlWithHeaderAndParagraph(direction == DirectionLeft ? Languages::TextLocoDirectionIsLeft : Languages::TextLocoDirectionIsRight, manager.GetLocoName(locoID));
 	}
 
 	void WebClient::HandleLocoFunction(const map<string, string>& arguments)
@@ -1094,10 +1090,7 @@ namespace WebServer
 
 		manager.LocoFunction(ControlTypeWebserver, locoID, function, on);
 
-		stringstream ss;
-		ss << "Loco &quot;" << manager.GetLocoName(locoID) << "&quot; has now f";
-		ss << function << " set to " << (on ? "on" : "off");
-		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+		ReplyHtmlWithHeaderAndParagraph(on ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, manager.GetLocoName(locoID), function);
 	}
 
 	void WebClient::HandleLocoRelease(const map<string, string>& arguments)
@@ -1113,7 +1106,7 @@ namespace WebServer
 		{
 			ret = manager.LocoRelease(locoID);
 		}
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco released" : "Loco not released"));
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Loco released" : "Loco not released");
 	}
 
 	HtmlTag WebClient::HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol)
@@ -1130,12 +1123,12 @@ namespace WebServer
 		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
 		{
-			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
 			return;
 		}
 		locoID_t locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		Loco* loco = manager.GetLoco(locoId);
-		HtmlReplyWithHeader(HtmlTagProtocolLoco(controlId, loco == nullptr ? ProtocolNone : loco->GetProtocol()));
+		ReplyHtmlWithHeader(HtmlTagProtocolLoco(controlId, loco == nullptr ? ProtocolNone : loco->GetProtocol()));
 	}
 
 	HtmlTag WebClient::HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol)
@@ -1432,17 +1425,17 @@ namespace WebServer
 		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
 		{
-			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
 			return;
 		}
 		accessoryID_t accessoryId = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		Accessory* accessory = manager.GetAccessory(accessoryId);
 		if (accessory == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown accessory"));
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextAccessoryDoesNotExist);
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, accessory->GetProtocol()));
+		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, accessory->GetProtocol()));
 	}
 
 	void WebClient::HandleRelationAdd(const map<string, string>& arguments)
@@ -1452,7 +1445,7 @@ namespace WebServer
 		HtmlTag container;
 		container.AddChildTag(HtmlTagRelation(priorityString));
 		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority + 1)));
-		HtmlReplyWithHeader(container);
+		ReplyHtmlWithHeader(container);
 	}
 
 	void WebClient::HandleSlaveAdd(const map<string, string>& arguments)
@@ -1462,14 +1455,14 @@ namespace WebServer
 		HtmlTag container;
 		container.AddChildTag(HtmlTagSlave(priorityString));
 		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_slave_" + to_string(priority + 1)));
-		HtmlReplyWithHeader(container);
+		ReplyHtmlWithHeader(container);
 	}
 
 	void WebClient::HandleFeedbackAdd(const map<string, string>& arguments)
 	{
 		unsigned int counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 1);
 		trackID_t trackID = static_cast<trackID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
-		HtmlReplyWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID));
+		ReplyHtmlWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID));
 	}
 
 	void WebClient::HandleProtocolSwitch(const map<string, string>& arguments)
@@ -1477,24 +1470,24 @@ namespace WebServer
 		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
 		{
-			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown control"));
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
 			return;
 		}
 		switchID_t switchId = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		Switch* mySwitch = manager.GetSwitch(switchId);
 		if (mySwitch == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag().AddContent("Unknown switch"));
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextSwitchDoesNotExist);
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch->GetProtocol()));
+		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch->GetProtocol()));
 	}
 
 	void WebClient::HandleRelationObject(const map<string, string>& arguments)
 	{
 		const string priority = Utils::Utils::GetStringMapEntry(arguments, "priority");
 		const objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objecttype"));
-		HtmlReplyWithHeader(HtmlTagRelationObject(priority, objectType));
+		ReplyHtmlWithHeader(HtmlTagRelationObject(priority, objectType));
 	}
 
 	void WebClient::HandleLocoEdit(const map<string, string>& arguments)
@@ -1604,7 +1597,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleLocoSave(const map<string, string>& arguments)
@@ -1663,11 +1656,11 @@ namespace WebServer
 			slaves,
 			result))
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Loco &quot;" + name + "&quot; saved."));
+		ReplyResponse(ResponseInfo, Languages::TextLocoSaved, name);
 	}
 
 	void WebClient::HandleLocoList()
@@ -1695,7 +1688,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "locoedit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleLocoAskDelete(const map<string, string>& arguments)
@@ -1704,14 +1697,14 @@ namespace WebServer
 
 		if (locoID == LocoNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown loco");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextLocoDoesNotExist);
 			return;
 		}
 
 		const DataModel::Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown loco");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextLocoDoesNotExist);
 			return;
 		}
 
@@ -1725,7 +1718,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleLocoDelete(const map<string, string>& arguments)
@@ -1734,7 +1727,7 @@ namespace WebServer
 		const DataModel::Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete loco");
+			ReplyResponse(ResponseError, Languages::TextLocoDoesNotExist);
 			return;
 		}
 
@@ -1742,11 +1735,11 @@ namespace WebServer
 
 		if (!manager.LocoDelete(locoID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete loco");
+			ReplyResponse(ResponseError, Languages::TextLocoDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Loco &quot;" + name + "&quot; deleted."));
+		ReplyResponse(ResponseInfo, Languages::TextLocoDeleted, name);
 	}
 
 	HtmlTag WebClient::HtmlTagLayerSelector() const
@@ -1772,7 +1765,7 @@ namespace WebServer
 
 				content.AddChildTag(HtmlTagFeedbackOnControlLayer(feedback.second));
 			}
-			HtmlReplyWithHeader(content);
+			ReplyHtmlWithHeader(content);
 			return;
 		}
 
@@ -1836,7 +1829,7 @@ namespace WebServer
 			content.AddChildTag(HtmlTagSignal(signal.second));
 		}
 
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleAccessoryEdit(const map<string, string>& arguments)
@@ -1892,7 +1885,7 @@ namespace WebServer
 		));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleAccessoryGet(const map<string, string>& arguments)
@@ -1901,10 +1894,10 @@ namespace WebServer
 		const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag());
+			ReplyHtmlWithHeader(HtmlTag());
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagAccessory(accessory));
+		ReplyHtmlWithHeader(HtmlTagAccessory(accessory));
 	}
 
 	void WebClient::HandleAccessorySave(const map<string, string>& arguments)
@@ -1922,11 +1915,11 @@ namespace WebServer
 		string result;
 		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, DataModel::Accessory::AccessoryTypeDefault, duration, inverted, result))
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + name + "&quot; saved.");
+		ReplyResponse(ResponseInfo, Languages::TextAccessorySaved, name);
 	}
 
 	void WebClient::HandleAccessoryState(const map<string, string>& arguments)
@@ -1938,7 +1931,7 @@ namespace WebServer
 
 		stringstream ss;
 		ss << "Accessory &quot;" << manager.GetAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
-		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+		ReplyHtmlWithHeaderAndParagraph(ss.str());
 	}
 
 	void WebClient::HandleAccessoryList()
@@ -1965,7 +1958,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "accessoryedit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleAccessoryAskDelete(const map<string, string>& arguments)
@@ -1974,14 +1967,14 @@ namespace WebServer
 
 		if (accessoryID == AccessoryNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown accessory");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextAccessoryDoesNotExist);
 			return;
 		}
 
 		const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown accessory");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextAccessoryDoesNotExist);
 			return;
 		}
 
@@ -1995,7 +1988,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleAccessoryDelete(const map<string, string>& arguments)
@@ -2004,7 +1997,7 @@ namespace WebServer
 		const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
 		if (accessory == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete accessory");
+			ReplyResponse(ResponseError, Languages::TextAccessoryDoesNotExist);
 			return;
 		}
 
@@ -2012,18 +2005,18 @@ namespace WebServer
 
 		if (!manager.AccessoryDelete(accessoryID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete accessory");
+			ReplyResponse(ResponseError, Languages::TextAccessoryDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Accessory &quot;" + name + "&quot; deleted.");
+		ReplyResponse(ResponseInfo, Languages::TextAccessoryDeleted, name);
 	}
 
 	void WebClient::HandleAccessoryRelease(const map<string, string>& arguments)
 	{
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory");
 		bool ret = manager.AccessoryRelease(accessoryID);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Accessory released" : "Accessory not released"));
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Accessory released" : "Accessory not released");
 	}
 
 	void WebClient::HandleSwitchEdit(const map<string, string>& arguments)
@@ -2105,7 +2098,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleSwitchSave(const map<string, string>& arguments)
@@ -2125,10 +2118,11 @@ namespace WebServer
 		string result;
 		if (!manager.SwitchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
-		HtmlReplyWithHeaderAndParagraph("Switch &quot;" + name + "&quot; saved.");
+
+		ReplyResponse(ResponseInfo, Languages::TextSwitchSaved, name);
 	}
 
 	void WebClient::HandleSwitchState(const map<string, string>& arguments)
@@ -2140,7 +2134,7 @@ namespace WebServer
 
 		stringstream ss;
 		ss << "Switch &quot;" << manager.GetSwitchName(switchID) << "&quot; is now set to " << switchState;
-		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+		ReplyHtmlWithHeaderAndParagraph(ss.str());
 	}
 
 	void WebClient::HandleSwitchList()
@@ -2167,7 +2161,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "switchedit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleSwitchAskDelete(const map<string, string>& arguments)
@@ -2176,14 +2170,14 @@ namespace WebServer
 
 		if (switchID == SwitchNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown switch");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextSwitchDoesNotExist);
 			return;
 		}
 
 		const DataModel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown switch");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextSwitchDoesNotExist);
 			return;
 		}
 
@@ -2197,7 +2191,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleSwitchDelete(const map<string, string>& arguments)
@@ -2206,7 +2200,7 @@ namespace WebServer
 		const DataModel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete switch");
+			ReplyResponse(ResponseError, Languages::TextSwitchDoesNotExist);
 			return;
 		}
 
@@ -2214,11 +2208,11 @@ namespace WebServer
 
 		if (!manager.SwitchDelete(switchID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete switch");
+			ReplyResponse(ResponseError, Languages::TextSwitchDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Switch &quot;" + name + "&quot; deleted.");
+		ReplyResponse(ResponseInfo, Languages::TextSwitchDeleted, name);
 	}
 
 	void WebClient::HandleSwitchGet(const map<string, string>& arguments)
@@ -2227,17 +2221,17 @@ namespace WebServer
 		const DataModel::Switch* mySwitch = manager.GetSwitch(switchID);
 		if (mySwitch == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag());
+			ReplyHtmlWithHeader(HtmlTag());
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagSwitch(mySwitch));
+		ReplyHtmlWithHeader(HtmlTagSwitch(mySwitch));
 	}
 
 	void WebClient::HandleSwitchRelease(const map<string, string>& arguments)
 	{
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch");
 		bool ret = manager.SwitchRelease(switchID);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Switch released" : "Switch not released"));
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Switch released" : "Switch not released");
 	}
 
 	void WebClient::HandleSignalEdit(const map<string, string>& arguments)
@@ -2318,7 +2312,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleSignalSave(const map<string, string>& arguments)
@@ -2338,10 +2332,11 @@ namespace WebServer
 		string result;
 		if (!manager.SignalSave(signalID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
-		HtmlReplyWithHeaderAndParagraph("Signal &quot;" + name + "&quot; saved.");
+
+		ReplyResponse(ResponseInfo, Languages::TextSignalSaved, name);
 	}
 
 	void WebClient::HandleSignalState(const map<string, string>& arguments)
@@ -2353,7 +2348,7 @@ namespace WebServer
 
 		stringstream ss;
 		ss << "Signal &quot;" << manager.GetSignalName(signalID) << "&quot; is now set to " << signalState;
-		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+		ReplyHtmlWithHeaderAndParagraph(ss.str());
 	}
 
 	void WebClient::HandleSignalList()
@@ -2380,7 +2375,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "signaledit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleSignalAskDelete(const map<string, string>& arguments)
@@ -2389,14 +2384,14 @@ namespace WebServer
 
 		if (signalID == SignalNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown signal");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextSignalDoesNotExist);
 			return;
 		}
 
 		const DataModel::Signal* signal = manager.GetSignal(signalID);
 		if (signal == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown signal");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextSignalDoesNotExist);
 			return;
 		}
 
@@ -2410,7 +2405,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleSignalDelete(const map<string, string>& arguments)
@@ -2419,7 +2414,7 @@ namespace WebServer
 		const DataModel::Signal* signal = manager.GetSignal(signalID);
 		if (signal == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete signal");
+			ReplyResponse(ResponseError, Languages::TextSignalDoesNotExist);
 			return;
 		}
 
@@ -2427,11 +2422,11 @@ namespace WebServer
 
 		if (!manager.SignalDelete(signalID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete signal");
+			ReplyResponse(ResponseError, Languages::TextSignalDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Signal &quot;" + name + "&quot; deleted.");
+		ReplyResponse(ResponseInfo, Languages::TextSignalDeleted, name);
 	}
 
 	void WebClient::HandleSignalGet(const map<string, string>& arguments)
@@ -2440,17 +2435,17 @@ namespace WebServer
 		const DataModel::Signal* signal = manager.GetSignal(signalID);
 		if (signal == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag());
+			ReplyHtmlWithHeader(HtmlTag());
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagSignal(signal));
+		ReplyHtmlWithHeader(HtmlTagSignal(signal));
 	}
 
 	void WebClient::HandleSignalRelease(const map<string, string>& arguments)
 	{
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal");
 		bool ret = manager.SignalRelease(signalID);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Signal released" : "Signal not released"));
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Signal released" : "Signal not released");
 	}
 
 	void WebClient::HandleStreetGet(const map<string, string>& arguments)
@@ -2459,10 +2454,10 @@ namespace WebServer
 		const DataModel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr || street->GetVisible() == VisibleNo)
 		{
-			HtmlReplyWithHeader(HtmlTag());
+			ReplyHtmlWithHeader(HtmlTag());
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagStreet(street));
+		ReplyHtmlWithHeader(HtmlTagStreet(street));
 	}
 
 	void WebClient::HandleStreetEdit(const map<string, string>& arguments)
@@ -2598,13 +2593,13 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleFeedbacksOfTrack(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		HtmlReplyWithHeader(HtmlTagSelectFeedbacksOfTrack(trackID, FeedbackNone, FeedbackNone, FeedbackNone, FeedbackNone));
+		ReplyHtmlWithHeader(HtmlTagSelectFeedbacksOfTrack(trackID, FeedbackNone, FeedbackNone, FeedbackNone, FeedbackNone));
 	}
 
 	void WebClient::HandleStreetSave(const map<string, string>& arguments)
@@ -2671,10 +2666,10 @@ namespace WebServer
 			waitAfterRelease,
 			result))
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
-		HtmlReplyWithHeaderAndParagraph("Street &quot;" + name + "&quot; saved.");
+		ReplyResponse(ResponseInfo, Languages::TextStreetSaved, name);
 	}
 
 	void WebClient::HandleStreetAskDelete(const map<string, string>& arguments)
@@ -2683,14 +2678,14 @@ namespace WebServer
 
 		if (streetID == StreetNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown street");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextStreetDoesNotExist);
 			return;
 		}
 
 		const DataModel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown street");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextStreetDoesNotExist);
 			return;
 		}
 
@@ -2704,7 +2699,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleStreetDelete(const map<string, string>& arguments)
@@ -2713,7 +2708,7 @@ namespace WebServer
 		const DataModel::Street* street = manager.GetStreet(streetID);
 		if (street == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete street");
+			ReplyResponse(ResponseError, Languages::TextStreetDoesNotExist);
 			return;
 		}
 
@@ -2721,11 +2716,11 @@ namespace WebServer
 
 		if (!manager.StreetDelete(streetID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete street");
+			ReplyResponse(ResponseError, Languages::TextStreetDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Street &quot;" + name + "&quot; deleted.");
+		ReplyResponse(ResponseInfo, Languages::TextStreetDeleted, name);
 	}
 
 	void WebClient::HandleStreetList()
@@ -2752,21 +2747,21 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "streetedit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleStreetExecute(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		manager.ExecuteStreetAsync(streetID);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Street executed"));
+		ReplyHtmlWithHeaderAndParagraph("Street executed");
 	}
 
 	void WebClient::HandleStreetRelease(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
 		bool ret = manager.StreetRelease(streetID);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Street released" : "Street not released"));
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Street released" : "Street not released");
 	}
 
 	void WebClient::HandleTrackEdit(const map<string, string>& arguments)
@@ -2891,7 +2886,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleTrackSave(const map<string, string>& arguments)
@@ -2929,11 +2924,11 @@ namespace WebServer
 		string result;
 		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, selectStreetApproach, releaseWhenFree, result) == TrackNone)
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Track &quot;" + name + "&quot; saved.");
+		ReplyResponse(ResponseInfo, Languages::TextTrackSaved, name);
 	}
 
 	void WebClient::HandleTrackAskDelete(const map<string, string>& arguments)
@@ -2942,14 +2937,14 @@ namespace WebServer
 
 		if (trackID == TrackNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown track");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextTrackDoesNotExist);
 			return;
 		}
 
 		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown track");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextTrackDoesNotExist);
 			return;
 		}
 
@@ -2963,7 +2958,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleTrackList()
@@ -2990,7 +2985,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "trackedit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleTrackDelete(const map<string, string>& arguments)
@@ -2999,7 +2994,7 @@ namespace WebServer
 		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete track");
+			ReplyResponse(ResponseError, Languages::TextTrackDoesNotExist);
 			return;
 		}
 
@@ -3007,11 +3002,11 @@ namespace WebServer
 
 		if (!manager.TrackDelete(trackID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete track");
+			ReplyResponse(ResponseError, Languages::TextTrackDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Track &quot;" + name + "&quot; deleted.");
+		ReplyResponse(ResponseInfo, Languages::TextTrackDeleted, name);
 	}
 
 	void WebClient::HandleTrackGet(const map<string, string>& arguments)
@@ -3020,10 +3015,10 @@ namespace WebServer
 		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag());
+			ReplyHtmlWithHeader(HtmlTag());
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTagTrack(manager, track));
+		ReplyHtmlWithHeader(HtmlTagTrack(manager, track));
 	}
 
 	void WebClient::HandleTrackSetLoco(const map<string, string>& arguments)
@@ -3034,13 +3029,13 @@ namespace WebServer
 		if (locoID != LocoNone)
 		{
 			bool ok = manager.LocoIntoTrack(locoID, trackID);
-			HtmlReplyWithHeaderAndParagraph(ok ? "Loco added to track." : "Unable to add loco to track.");
+			ReplyHtmlWithHeaderAndParagraph(ok ? "Loco added to track." : "Unable to add loco to track.");
 			return;
 		}
 		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track->IsInUse())
 		{
-			HtmlReplyErrorWithHeader("Track " + track->GetName() + " is in use.");
+			ReplyHtmlErrorWithHeader("Track " + track->GetName() + " is in use.");
 			return;
 		}
 		map<string,locoID_t> locos = manager.LocoListFree();
@@ -3051,28 +3046,28 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("br"));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(content));
+		ReplyHtmlWithHeader(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(content));
 	}
 
 	void WebClient::HandleTrackRelease(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackRelease(trackID);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Track released" : "Track not released"));
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Track released" : "Track not released");
 	}
 
 	void WebClient::HandleTrackStartLoco(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackStartLoco(trackID);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco started" : "Loco not started"));
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Loco started" : "Loco not started");
 	}
 
 	void WebClient::HandleTrackStopLoco(const map<string, string>& arguments)
 	{
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool ret = manager.TrackStopLoco(trackID);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent(ret ? "Loco stopped" : "Loco not stopped"));
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Loco stopped" : "Loco not stopped");
 	}
 
 	void WebClient::HandleTrackBlock(const map<string, string>& arguments)
@@ -3080,7 +3075,7 @@ namespace WebServer
 		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
 		bool blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked");
 		manager.TrackBlock(trackID, blocked);
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Track block/unblock received"));
+		ReplyHtmlWithHeaderAndParagraph("Track block/unblock received");
 	}
 
 	void WebClient::HandleFeedbackEdit(const map<string, string>& arguments)
@@ -3150,7 +3145,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleFeedbackSave(const map<string, string>& arguments)
@@ -3167,10 +3162,11 @@ namespace WebServer
 		string result;
 		if (manager.FeedbackSave(feedbackID, name, visible, posX, posY, posZ, controlId, pin, inverted, result) == FeedbackNone)
 		{
-			HtmlReplyWithHeaderAndParagraph(result);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
-		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + name + "&quot; saved.");
+
+		ReplyResponse(ResponseInfo, Languages::TextFeedbackSaved, name);
 	}
 
 	void WebClient::HandleFeedbackState(const map<string, string>& arguments)
@@ -3182,7 +3178,7 @@ namespace WebServer
 
 		stringstream ss;
 		ss << "Feedback &quot;" << manager.GetFeedbackName(feedbackID) << "&quot; is now set to " << state;
-		HtmlReplyWithHeader(HtmlTag().AddContent(ss.str()));
+		ReplyHtmlWithHeaderAndParagraph(ss.str());
 	}
 
 	void WebClient::HandleFeedbackList()
@@ -3205,7 +3201,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonPopup("New", "feedbackedit_0"));
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleFeedbackAskDelete(const map<string, string>& arguments)
@@ -3214,14 +3210,14 @@ namespace WebServer
 
 		if (feedbackID == FeedbackNone)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown feedback");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextFeedbackDoesNotExist);
 			return;
 		}
 
 		const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unknown feedback");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextFeedbackDoesNotExist);
 			return;
 		}
 
@@ -3235,7 +3231,7 @@ namespace WebServer
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleFeedbackDelete(const map<string, string>& arguments)
@@ -3244,7 +3240,7 @@ namespace WebServer
 		const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete feedback");
+			ReplyResponse(ResponseError, Languages::TextFeedbackDoesNotExist);
 			return;
 		}
 
@@ -3252,11 +3248,11 @@ namespace WebServer
 
 		if (!manager.FeedbackDelete(feedbackID))
 		{
-			HtmlReplyWithHeaderAndParagraph("Unable to delete feedback");
+			ReplyResponse(ResponseError, Languages::TextFeedbackDoesNotExist);
 			return;
 		}
 
-		HtmlReplyWithHeaderAndParagraph("Feedback &quot;" + name + "&quot; deleted.");
+		ReplyResponse(ResponseInfo, Languages::TextFeedbackDeleted, name);
 	}
 
 	HtmlTag WebClient::HtmlTagFeedbackOnControlLayer(const Feedback* feedback)
@@ -3274,34 +3270,34 @@ namespace WebServer
 		const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
-			HtmlReplyWithHeader(HtmlTag());
+			ReplyHtmlWithHeader(HtmlTag());
 			return;
 		}
 
 		layerID_t layer = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
 		if (feedback->GetControlID() == -layer)
 		{
-			HtmlReplyWithHeader(HtmlTagFeedbackOnControlLayer(feedback));
+			ReplyHtmlWithHeader(HtmlTagFeedbackOnControlLayer(feedback));
 			return;
 		}
 
 		if (layer < LayerNone || feedback->GetVisible() == VisibleNo)
 		{
-			HtmlReplyWithHeader(HtmlTag());
+			ReplyHtmlWithHeader(HtmlTag());
 			return;
 		}
 
-		HtmlReplyWithHeader(HtmlTagFeedback(feedback));
+		ReplyHtmlWithHeader(HtmlTagFeedback(feedback));
 	}
 
 	void WebClient::HandleLocoSelector()
 	{
-		HtmlReplyWithHeader(HtmlTagLocoSelector());
+		ReplyHtmlWithHeader(HtmlTagLocoSelector());
 	}
 
 	void WebClient::HandleLayerSelector()
 	{
-		HtmlReplyWithHeader(HtmlTagLayerSelector());
+		ReplyHtmlWithHeader(HtmlTagLayerSelector());
 	}
 
 	void WebClient::HandleSettingsEdit()
@@ -3325,7 +3321,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleSettingsSave(const map<string, string>& arguments)
@@ -3335,25 +3331,25 @@ namespace WebServer
 		const DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetRandom));
 		const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
 		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve);
-		HtmlReplyWithHeaderAndParagraph("Settings saved.");
+		ReplyResponse(ResponseInfo, Languages::TextSettingsSaved);
 	}
 
 	void WebClient::HandleTimestamp(__attribute__((unused)) const map<string, string>& arguments)
 	{
 #ifdef __CYGWIN__
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp not set"));
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextTimestampNotSet);
 #else
 		const time_t timestamp = Utils::Utils::GetIntegerMapEntry(arguments, "timestamp", 0);
 		if (timestamp == 0)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp not set"));
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextTimestampNotSet);
 			return;
 		}
 		struct timeval tv;
 		int ret = gettimeofday(&tv, nullptr);
 		if (ret != 0 || tv.tv_sec > GetCompileTime())
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp already set"));
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextTimestampAlreadySet);
 			return;
 		}
 
@@ -3361,22 +3357,22 @@ namespace WebServer
 		ret = settimeofday(&tv, nullptr);
 		if (ret != 0)
 		{
-			HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp not set"));
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextTimestampNotSet);
 			return;
 		}
-		HtmlReplyWithHeader(HtmlTag("p").AddContent("Timestamp set"));
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextTimestampSet);
 #endif
 	}
 
 	void WebClient::HandleControlArguments(const map<string, string>& arguments)
 	{
 		hardwareType_t hardwareType = static_cast<hardwareType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "hardwaretype"));
-		HtmlReplyWithHeader(HtmlTagControlArguments(hardwareType));
+		ReplyHtmlWithHeader(HtmlTagControlArguments(hardwareType));
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)
 	{
-		Response response(Response::OK);
+		Response response;
 		response.AddHeader("Cache-Control", "no-cache, must-revalidate");
 		response.AddHeader("Pragma", "no-cache");
 		response.AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
@@ -3415,16 +3411,16 @@ namespace WebServer
 		}
 	}
 
-	void WebClient::HtmlReplyErrorWithHeader(const string& errorText)
+	void WebClient::ReplyHtmlErrorWithHeader(const string& errorText)
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent("Error"));
 		content.AddChildTag(HtmlTag("p").AddContent(errorText));
 		content.AddChildTag(HtmlTagButtonCancel());
-		HtmlReplyWithHeader(content);
+		ReplyHtmlWithHeader(content);
 	}
 
-	void WebClient::HtmlReplyWithHeader(const HtmlTag& tag)
+	void WebClient::ReplyHtmlWithHeader(const HtmlTag& tag)
 	{
 		connection->Send(HtmlResponse(tag));
 	}
@@ -3489,7 +3485,7 @@ namespace WebServer
 		{
 			content = "No locoID provided";
 		}
-		HtmlReplyWithHeader(HtmlTag().AddContent(content));
+		ReplyHtmlWithHeaderAndParagraph(content);
 	}
 
 	void WebClient::PrintMainHTML() {
@@ -3534,6 +3530,7 @@ namespace WebServer
 		body.AddChildTag(HtmlTag("div").AddClass("layout").AddAttribute("id", "layout").AddAttribute("oncontextmenu", "return loadLayoutContext(event);"));
 		body.AddChildTag(HtmlTag("div").AddClass("popup").AddAttribute("id", "popup"));
 		body.AddChildTag(HtmlTag("div").AddClass("status").AddAttribute("id", "status"));
+		body.AddChildTag(HtmlTag("div").AddClass("responses").AddAttribute("id", "responses"));
 
 		body.AddChildTag(HtmlTag("div").AddClass("contextmenu").AddAttribute("id", "layout_context")
 			.AddChildTag(HtmlTag("ul").AddClass("contextentries")

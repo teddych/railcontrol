@@ -37,9 +37,8 @@ namespace WebServer
 				NotFound = 404,
 				NotImplemented = 501
 			};
-			Response(const responseCode_t responseCode) : responseCode(responseCode) {}
+			Response() : responseCode(OK) {}
 			Response(const responseCode_t responseCode, const HtmlTag& content) : responseCode(responseCode), content(content) {}
-			Response(const responseCode_t responseCode, const std::string& content) : responseCode(responseCode) { this->content.AddContent(content); }
 			virtual ~Response() {};
 			void AddHeader(const std::string& key, const std::string& value);
 			operator std::string();

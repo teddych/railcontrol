@@ -937,6 +937,49 @@ function ShowTab(tabName)
 	tabButton.classList.add('tab_button_selected');
 }
 
+function hidePopup()
+{
+	var popup = document.getElementById('popup');
+	popup.style.display = 'none';
+}
+
+var responseID = 0;
+
+function addResponse(response)
+{
+	var id = 'res_' + ++responseID;
+
+	var className;
+
+	switch (response[21])
+	{
+		case 'i': // info
+			hidePopup();
+			className = 'responseinfo';
+			setTimeout(function()
+			{
+				deleteElement(id);
+			}, 2000);
+			break;
+
+		case 'w': // warning
+			hidePopup();
+			className = 'responsewarning';
+			break;
+
+		case 'e': // error
+			className = 'responseerror';
+			break;
+
+		default:
+			className  = 'responseunknown';
+	}
+
+	var preparedResponse = '<div id="' + id + '" class="' + className + '" onClick="deleteElement(\'' + id + '\');">' + response.substring(22, response.length - 7) + '</div>';
+	var responses = document.getElementById('responses');
+	responses.innerHTML += preparedResponse;
+}
+
 function submitEditForm()
 {
 	var url = '/?';
@@ -971,9 +1014,7 @@ function submitEditForm()
 		{
 			return;
 		}
-		var popup = document.getElementById('popup');
-		popup.innerHTML = xmlHttp.responseText;
-		setTimeout(function() { popup.style.display = 'none'; }, 1500);
+		addResponse(xmlHttp.responseText);
 	}
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);

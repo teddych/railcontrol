@@ -62,6 +62,37 @@ body {
 	background-attachment: local;
 }
 
+.responses {
+	top: 0px;
+	right: 0px;
+	z-index: 3;
+	position: fixed;
+	border: 0px;
+	margin: 0px;
+	text-align: right;
+}
+
+.responseinfo,
+.responsewarning,
+.responseerror {
+	margin: 5px;
+	padding: 10px;
+	border: solid 2px black;
+	border-radius: 5px;
+}
+
+.responseinfo {
+	background-color: lightgreen;
+}
+
+.responsewarning {
+	background-color: orange;
+}
+
+.responseerror {
+	background-color: red;
+}
+
 .menu {
 	height: 50px;
 	width: 100%;

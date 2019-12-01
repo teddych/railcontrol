@@ -78,7 +78,7 @@ Manager::Manager(Config& config)
 	storage = new StorageHandler(this, storageParams);
 	if (storage == nullptr)
 	{
-		logger->Info(Languages::TextUnableCreateStorageHandler);
+		logger->Info(Languages::TextUnableToCreateStorageHandler);
 		return;
 	}
 
@@ -109,7 +109,7 @@ Manager::Manager(Config& config)
 		bool initLayer0 = LayerSave(0, Languages::GetText(Languages::TextLayer1), result);
 		if (initLayer0 == false)
 		{
-			logger->Error(Languages::TextUnableAddLayer1);
+			logger->Error(Languages::TextUnableToAddLayer1);
 		}
 	}
 

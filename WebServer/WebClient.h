@@ -27,7 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Manager.h"
 #include "Network/TcpConnection.h"
-#include "WebServer/Response.h"
+#include "WebServer/HtmlResponse.h"
 
 namespace WebServer
 {
@@ -52,13 +52,46 @@ namespace WebServer
 			int Stop();
 
 		private:
+			enum responseType_t : unsigned char
+			{
+				ResponseInfo = 'i',
+				ResponseWarning = 'w',
+				ResponseError = 'e'
+			};
+
+			void ReplyResponse(std::string& text)
+			{
+				connection->Send(HtmlResponse(HtmlTag().AddContent(text)));
+			}
+
+			void ReplyResponse(responseType_t type, std::string& text)
+			{
+				std::string s(1, static_cast<unsigned char>(type));
+				s.append(text);
+				ReplyResponse(s);
+			}
+
+			template<typename... Args>
+			void ReplyResponse(responseType_t type, Languages::textSelector_t text, Args... args)
+			{
+				std::string s(1, static_cast<unsigned char>(type));
+				s.append(Logger::Logger::Format(Languages::GetText(text), args...));
+				ReplyResponse(s);
+			}
+
 			void InterpretClientRequest(const std::vector<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
 			void PrintLoco(const std::map<std::string, std::string>& arguments);
 			void PrintMainHTML();
-			void HtmlReplyErrorWithHeader(const std::string& erroText);
-			void HtmlReplyWithHeader(const HtmlTag& tag);
-			void HtmlReplyWithHeaderAndParagraph(const std::string& content) { HtmlReplyWithHeader(HtmlTag("p").AddContent(content)); }
-			void HtmlReplyWithHeaderAndParagraph(const char* content) { HtmlReplyWithHeaderAndParagraph(std::string(content)); }
+			void ReplyHtmlErrorWithHeader(const std::string& errorText);
+			void ReplyHtmlWithHeader(const HtmlTag& tag);
+			void ReplyHtmlWithHeaderAndParagraph(const std::string& content) { ReplyHtmlWithHeader(HtmlTag("p").AddContent(content)); }
+			void ReplyHtmlWithHeaderAndParagraph(const char* content) { ReplyHtmlWithHeaderAndParagraph(std::string(content)); }
+
+			template<typename... Args>
+			void ReplyHtmlWithHeaderAndParagraph(const Languages::textSelector_t text, Args... args)
+			{
+				ReplyHtmlWithHeaderAndParagraph(Logger::Logger::Format(Languages::GetText(text), args...));
+			}
 			void DeliverFile(const std::string& file);
 			void DeliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			HtmlTag HtmlTagLocoSelector() const;
