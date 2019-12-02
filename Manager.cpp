@@ -63,14 +63,14 @@ Manager::Manager(Config& config)
 	run(false),
 	debounceRun(false),
 	initLocosDone(false),
-	unknownControl(Languages::GetText(Languages::TextUnknownControl)),
-	unknownLoco(Languages::GetText(Languages::TextUnknownLoco)),
-	unknownAccessory(Languages::GetText(Languages::TextUnknownAccessory)),
-	unknownFeedback(Languages::GetText(Languages::TextUnknownFeedback)),
-	unknownTrack(Languages::GetText(Languages::TextUnknownTrack)),
-	unknownSwitch(Languages::GetText(Languages::TextUnknownSwitch)),
-	unknownStreet(Languages::GetText(Languages::TextUnknownStreet)),
-	unknownSignal(Languages::GetText(Languages::TextUnknownSignal))
+	unknownControl(Languages::GetText(Languages::TextControlDoesNotExist)),
+	unknownLoco(Languages::GetText(Languages::TextLocoDoesNotExist)),
+	unknownAccessory(Languages::GetText(Languages::TextAccessoryDoesNotExist)),
+	unknownFeedback(Languages::GetText(Languages::TextFeedbackDoesNotExist)),
+	unknownTrack(Languages::GetText(Languages::TextTrackDoesNotExist)),
+	unknownSwitch(Languages::GetText(Languages::TextSwitchDoesNotExist)),
+	unknownStreet(Languages::GetText(Languages::TextStreetDoesNotExist)),
+	unknownSignal(Languages::GetText(Languages::TextSignalDoesNotExist))
 {
 	StorageParams storageParams;
 	storageParams.module = config.getValue("dbengine", "Sqlite");

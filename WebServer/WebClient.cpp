@@ -1140,14 +1140,19 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagDuration(const accessoryDuration_t duration, const string& label) const
+	HtmlTag WebClient::HtmlTagDuration(const accessoryDuration_t duration, const Languages::textSelector_t label) const
 	{
 		std::map<string,string> durationOptions;
 		durationOptions["0000"] = "0";
 		durationOptions["0100"] = "100";
 		durationOptions["0250"] = "250";
 		durationOptions["1000"] = "1000";
-		return HtmlTagSelectWithLabel("duration", label, durationOptions, Utils::Utils::ToStringWithLeadingZeros(duration, 4));
+		return HtmlTagSelectWithLabel("duration", Languages::GetText(label), durationOptions, Utils::Utils::ToStringWithLeadingZeros(duration, 4));
+	}
+
+	HtmlTag WebClient::HtmlTagDuration(const accessoryDuration_t duration) const
+	{
+		return HtmlTagDuration(duration, Languages::TextDuration);
 	}
 
 	HtmlTag WebClient::HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz)
@@ -3035,7 +3040,7 @@ namespace WebServer
 		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track->IsInUse())
 		{
-			ReplyHtmlErrorWithHeader("Track " + track->GetName() + " is in use.");
+			ReplyHtmlWithHeaderAndParagraph("Track " + track->GetName() + " is in use.");
 			return;
 		}
 		map<string,locoID_t> locos = manager.LocoListFree();
@@ -3308,13 +3313,13 @@ namespace WebServer
 		const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
 
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Edit settings"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSettings));
 
 		HtmlTag formContent("form");
 		formContent.AddAttribute("id", "editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "settingssave"));
-		formContent.AddChildTag(HtmlTagDuration(defaultAccessoryDuration, "Default duration for accessory/switch (ms):"));
-		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", "Automatically add unknown feedbacks", "autoaddfeedback", autoAddFeedback));
+		formContent.AddChildTag(HtmlTagDuration(defaultAccessoryDuration, Languages::TextDefaultSwitchingDuration));
+		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", Languages::TextAutomaticallyAddUnknownFeedbacks, "autoaddfeedback", autoAddFeedback));
 		formContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, false));
 		formContent.AddChildTag(HtmlTagNrOfTracksToReserve(nrOfTracksToReserve));
 
@@ -3411,15 +3416,6 @@ namespace WebServer
 		}
 	}
 
-	void WebClient::ReplyHtmlErrorWithHeader(const string& errorText)
-	{
-		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Error"));
-		content.AddChildTag(HtmlTag("p").AddContent(errorText));
-		content.AddChildTag(HtmlTagButtonCancel());
-		ReplyHtmlWithHeader(content);
-	}
-
 	void WebClient::ReplyHtmlWithHeader(const HtmlTag& tag)
 	{
 		connection->Send(HtmlResponse(tag));
@@ -3441,57 +3437,55 @@ namespace WebServer
 	{
 		string content;
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		if (locoID > LocoNone)
+		Loco* loco = manager.GetLoco(locoID);
+		if (loco == nullptr)
 		{
-			stringstream ss;
-			Loco* loco = manager.GetLoco(locoID);
-			ss << HtmlTag("p").AddContent(loco->GetName());
-			unsigned int speed = loco->Speed();
-			map<string,string> buttonArguments;
-			buttonArguments["loco"] = to_string(locoID);
-
-			string id = "locospeed_" + to_string(locoID);
-			ss << HtmlTagInputSliderLocoSpeed("speed", MinSpeed, loco->GetMaxSpeed(), speed, locoID);
-			buttonArguments["speed"] = to_string(MinSpeed);
-			ss << HtmlTagButtonCommand("0", id + "_0", buttonArguments);
-			buttonArguments["speed"] = to_string(loco->GetCreepSpeed());
-			ss << HtmlTagButtonCommand("I", id + "_1", buttonArguments);
-			buttonArguments["speed"] = to_string(loco->GetReducedSpeed());
-			ss << HtmlTagButtonCommand("II", id + "_2", buttonArguments);
-			buttonArguments["speed"] = to_string(loco->GetTravelSpeed());
-			ss << HtmlTagButtonCommand("III", id + "_3", buttonArguments);
-			buttonArguments["speed"] = to_string(loco->GetMaxSpeed());
-			ss << HtmlTagButtonCommand("IV", id + "_4", buttonArguments);
-			buttonArguments.erase("speed");
-
-			id = "locoedit_" + to_string(locoID);
-			ss << HtmlTagButtonPopup(HtmlTag("span").AddClass("symbola").AddContent("&#x270D;"), id, buttonArguments);
-
-			id = "locodirection_" + to_string(locoID);
-			ss << HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9193;"), id, loco->GetDirection(), buttonArguments).AddClass("button_direction");
-
-			id = "locofunction_" + to_string(locoID);
-			function_t nrOfFunctions = loco->GetNrOfFunctions();
-			for (function_t nr = 0; nr <= nrOfFunctions; ++nr)
-			{
-				string nrText(to_string(nr));
-				buttonArguments["function"] = nrText;
-				ss << HtmlTagButtonCommandToggle("f" + nrText, id + "_" + nrText, loco->GetFunction(nr), buttonArguments);
-			}
-			buttonArguments.erase("function");
-			content = ss.str();
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextLocoDoesNotExist);
+			return;
 		}
-		else
+
+		stringstream ss;
+		ss << HtmlTag("p").AddContent(loco->GetName());
+		unsigned int speed = loco->Speed();
+		map<string, string> buttonArguments;
+		buttonArguments["loco"] = to_string(locoID);
+
+		string id = "locospeed_" + to_string(locoID);
+		ss << HtmlTagInputSliderLocoSpeed("speed", MinSpeed, loco->GetMaxSpeed(), speed, locoID);
+		buttonArguments["speed"] = to_string(MinSpeed);
+		ss << HtmlTagButtonCommand("0", id + "_0", buttonArguments);
+		buttonArguments["speed"] = to_string(loco->GetCreepSpeed());
+		ss << HtmlTagButtonCommand("I", id + "_1", buttonArguments);
+		buttonArguments["speed"] = to_string(loco->GetReducedSpeed());
+		ss << HtmlTagButtonCommand("II", id + "_2", buttonArguments);
+		buttonArguments["speed"] = to_string(loco->GetTravelSpeed());
+		ss << HtmlTagButtonCommand("III", id + "_3", buttonArguments);
+		buttonArguments["speed"] = to_string(loco->GetMaxSpeed());
+		ss << HtmlTagButtonCommand("IV", id + "_4", buttonArguments);
+		buttonArguments.erase("speed");
+
+		id = "locoedit_" + to_string(locoID);
+		ss << HtmlTagButtonPopup(HtmlTag("span").AddClass("symbola").AddContent("&#x270D;"), id, buttonArguments);
+
+		id = "locodirection_" + to_string(locoID);
+		ss << HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9193;"), id, loco->GetDirection(), buttonArguments).AddClass("button_direction");
+
+		id = "locofunction_" + to_string(locoID);
+		function_t nrOfFunctions = loco->GetNrOfFunctions();
+		for (function_t nr = 0; nr <= nrOfFunctions; ++nr)
 		{
-			content = "No locoID provided";
+			string nrText(to_string(nr));
+			buttonArguments["function"] = nrText;
+			ss << HtmlTagButtonCommandToggle("f" + nrText, id + "_" + nrText, loco->GetFunction(nr), buttonArguments);
 		}
-		ReplyHtmlWithHeaderAndParagraph(content);
+		buttonArguments.erase("function");
+		ReplyHtmlWithHeaderAndParagraph(ss.str());
 	}
 
 	void WebClient::PrintMainHTML() {
 		// handle base request
 		HtmlTag body("body");
-		body.AddAttribute("onload","startUp();");
+		body.AddAttribute("onload", "startUp();");
 		body.AddAttribute("id", "body");
 
 		map<string,string> buttonArguments;
@@ -3534,12 +3528,12 @@ namespace WebServer
 
 		body.AddChildTag(HtmlTag("div").AddClass("contextmenu").AddAttribute("id", "layout_context")
 			.AddChildTag(HtmlTag("ul").AddClass("contextentries")
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add track").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=0');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add switch").AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add signal").AddAttribute("onClick", "loadPopup('/?cmd=signaledit&signal=0');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add accessory").AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add street").AddAttribute("onClick", "loadPopup('/?cmd=streetedit&street=0');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Add feedback").AddAttribute("onClick", "loadPopup('/?cmd=feedbackedit&feedback=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::GetText(Languages::TextAddTrack)).AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::GetText(Languages::TextAddSwitch)).AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::GetText(Languages::TextAddSignal)).AddAttribute("onClick", "loadPopup('/?cmd=signaledit&signal=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::GetText(Languages::TextAddAccessory)).AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::GetText(Languages::TextAddStreet)).AddAttribute("onClick", "loadPopup('/?cmd=streetedit&street=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::GetText(Languages::TextAddFeedback)).AddAttribute("onClick", "loadPopup('/?cmd=feedbackedit&feedback=0');"))
 			));
 
 		connection->Send(HtmlFullResponse("Railcontrol", body));

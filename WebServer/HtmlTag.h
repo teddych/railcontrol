@@ -25,6 +25,8 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 #include <vector>
 
+#include "Languages.h"
+
 namespace WebServer
 {
 	class HtmlTag
@@ -44,6 +46,7 @@ namespace WebServer
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value = "");
 			virtual HtmlTag AddChildTag(const HtmlTag& child);
 			virtual HtmlTag AddContent(const std::string& content);
+			virtual HtmlTag AddContent(const Languages::textSelector_t text);
 			virtual HtmlTag AddClass(const std::string& _class);
 			virtual size_t ContentSize() const { return content.size(); }
 			operator std::string () const;

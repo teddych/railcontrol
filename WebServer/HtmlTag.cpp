@@ -46,6 +46,11 @@ namespace WebServer
 		return *this;
 	}
 
+	HtmlTag HtmlTag::AddContent(const Languages::textSelector_t text)
+	{
+		return AddContent(Languages::GetText(text));
+	}
+
 	HtmlTag HtmlTag::AddClass(const std::string& _class)
 	{
 		classes.push_back(_class);

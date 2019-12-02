@@ -82,7 +82,6 @@ namespace WebServer
 			void InterpretClientRequest(const std::vector<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
 			void PrintLoco(const std::map<std::string, std::string>& arguments);
 			void PrintMainHTML();
-			void ReplyHtmlErrorWithHeader(const std::string& errorText);
 			void ReplyHtmlWithHeader(const HtmlTag& tag);
 			void ReplyHtmlWithHeaderAndParagraph(const std::string& content) { ReplyHtmlWithHeader(HtmlTag("p").AddContent(content)); }
 			void ReplyHtmlWithHeaderAndParagraph(const char* content) { ReplyHtmlWithHeaderAndParagraph(std::string(content)); }
@@ -99,7 +98,8 @@ namespace WebServer
 			static HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
-			HtmlTag HtmlTagDuration(const accessoryDuration_t duration, const std::string& label = "Duration (ms):") const;
+			HtmlTag HtmlTagDuration(const accessoryDuration_t duration, const Languages::textSelector_t label) const;
+			HtmlTag HtmlTagDuration(const accessoryDuration_t duration) const;
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz);
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible);
 			HtmlTag HtmlTagRotation(const DataModel::LayoutItem::layoutRotation_t rotation) const;

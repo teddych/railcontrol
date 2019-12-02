@@ -31,6 +31,11 @@ namespace WebServer
 	class HtmlTagInputCheckboxWithLabel : public HtmlTag
 	{
 		public:
+			HtmlTagInputCheckboxWithLabel(const std::string& name, const Languages::textSelector_t label, const std::string& value, const bool checked)
+			:	HtmlTagInputCheckboxWithLabel(name, Languages::GetText(label), value, checked)
+			{
+			}
+
 			HtmlTagInputCheckboxWithLabel(const std::string& name, const std::string& label, const std::string& value, const bool checked)
 			:	HtmlTag()
 			{
