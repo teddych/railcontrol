@@ -73,7 +73,8 @@ namespace DataModel
 			}
 
 			Loco(Manager* manager, const std::string& serialized)
-			:	manager(manager),
+			:	Object(LocoNone),
+			 	manager(manager),
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
@@ -94,7 +95,7 @@ namespace DataModel
 				logger = Logger::Logger::GetLogger("Loco " + name);
 			}
 
-			~Loco();
+			virtual ~Loco();
 
 			objectType_t GetObjectType() const { return ObjectTypeLoco; }
 

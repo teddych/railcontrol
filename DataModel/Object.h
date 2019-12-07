@@ -31,8 +31,10 @@ namespace DataModel
 	class Object : protected Serializable
 	{
 		public:
-			Object() {}
+			Object() : objectID(ObjectNone) {}
 			Object(const objectID_t objectID) : objectID(objectID) {}
+
+			virtual ~Object() {}
 
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;

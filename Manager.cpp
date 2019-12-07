@@ -332,7 +332,7 @@ bool Manager::ControlSave(const controlID_t& controlID,
 		}
 		++newControlID;
 		// create new control
-		params = new HardwareParams(newControlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5);
+		params = new HardwareParams(this, newControlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5);
 		if (params == nullptr)
 		{
 			result.assign("Unable to allocate memory for control");

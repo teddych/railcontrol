@@ -63,7 +63,7 @@ namespace DataModel
 			bool Deserialize(const std::string& serialized) override;
 			std::string LayoutType() const override { return "signal"; };
 
-			virtual bool Release(const locoID_t locoID) override;
+			bool Release(const locoID_t locoID) override;
 
 			signalState_t GetState() const { return static_cast<signalState_t>(state); }
 			signalType_t GetType() const { return static_cast<signalType_t>(type); }

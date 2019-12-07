@@ -37,7 +37,8 @@ namespace Hardware
 				std::string arg3,
 				std::string arg4,
 				std::string arg5)
-			:	controlID(controlID),
+			:	manager(nullptr),
+			 	controlID(controlID),
 				hardwareType(hardwareType),
 				name(name),
 				arg1(arg1),

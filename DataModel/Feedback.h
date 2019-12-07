@@ -41,6 +41,8 @@ namespace DataModel
 			Feedback(Manager* manager,
 				const feedbackID_t feedbackID)
 			:	LayoutItem(feedbackID),
+			 	controlID(ControlIdNone),
+			 	pin(0),
 			 	manager(manager),
 			 	inverted(false),
 			 	trackID(TrackNone),

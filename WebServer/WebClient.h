@@ -44,6 +44,7 @@ namespace WebServer
 				server(webserver),
 				clientThread(&WebClient::Worker, this),
 				manager(m),
+				headOnly(false),
 				buttonID(0)
 			{}
 

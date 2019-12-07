@@ -45,10 +45,19 @@ namespace DataModel
 				AccessoryStateOn = true
 			};
 
-			Accessory(__attribute__((unused)) Manager* manager, const accessoryID_t accessoryID)
+			Accessory(const accessoryID_t accessoryID)
 			:	LayoutItem(accessoryID),
-				lastUsed(0),
+			 	type(AccessoryTypeDefault),
+			 	state(AccessoryStateOff),
+			 	duration(0),
+			 	inverted(false),
+			 	lastUsed(0),
 				counter(0)
+			{
+			}
+
+			Accessory(__attribute__((unused)) Manager* manager, const accessoryID_t accessoryID)
+			:	Accessory(accessoryID)
 			{
 			}
 
@@ -57,7 +66,9 @@ namespace DataModel
 				Deserialize(serialized);
 			}
 
-			Accessory() {}
+			Accessory() : Accessory(AccessoryNone) {}
+
+			virtual ~Accessory() {}
 
 			virtual objectType_t GetObjectType() const { return ObjectTypeAccessory; }
 

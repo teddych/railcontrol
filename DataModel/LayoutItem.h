@@ -51,7 +51,9 @@ namespace DataModel
 			{
 			}
 
-			LayoutItem() {};
+			LayoutItem() : LayoutItem(0) {};
+
+			virtual ~LayoutItem() {}
 
 			static bool MapPosition(const layoutPosition_t posX, const layoutPosition_t posY, const layoutItemSize_t width, const layoutItemSize_t height, const layoutRotation_t rotation, layoutPosition_t& x, layoutPosition_t& y, layoutItemSize_t& w, layoutItemSize_t& h);
 

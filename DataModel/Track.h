@@ -64,6 +64,8 @@ namespace DataModel
 			:	LayoutItem(trackID),
 			 	LockableItem(),
 			 	manager(manager),
+			 	type(TrackTypeStraight),
+			 	selectStreetApproach(SelectStreetSystemDefault),
 				state(DataModel::Feedback::FeedbackStateFree),
 				stateDelayed(DataModel::Feedback::FeedbackStateFree),
 			 	locoDirection(DirectionRight),

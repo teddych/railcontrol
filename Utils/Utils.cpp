@@ -198,10 +198,10 @@ namespace Utils
 
 	uint32_t Utils::DataLittleEndianToInt(const unsigned char* buffer)
 	{
-		return static_cast<const unsigned char>(buffer[0])
-			+ (static_cast<const unsigned char>(buffer[1]) << 8)
-			+ (static_cast<const unsigned char>(buffer[2]) << 16)
-			+ (static_cast<const unsigned char>(buffer[3]) << 24);
+		return buffer[0]
+			+ (buffer[1] << 8)
+			+ (buffer[2] << 16)
+			+ (buffer[3] << 24);
 	}
 
 	void Utils::ShortToDataLittleEndian(const uint16_t i, unsigned char* buffer)
@@ -212,8 +212,8 @@ namespace Utils
 
 	uint16_t Utils::DataLittleEndianToShort(const unsigned char* buffer)
 	{
-		return static_cast<const unsigned char>(buffer[0])
-			+ (static_cast<const unsigned char>(buffer[1]) << 8);
+		return buffer[0]
+			+ (buffer[1] << 8);
 	}
 
 	std::string Utils::IntegerToBCD(const unsigned int input)

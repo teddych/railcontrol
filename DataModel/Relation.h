@@ -59,6 +59,8 @@ namespace DataModel
 				Deserialize(serialized);
 			}
 
+			virtual ~Relation() {}
+
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
 
