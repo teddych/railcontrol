@@ -18,12 +18,7 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include <ctime>
+#pragma once
 
-#include "Timestamp.h"
-
-time_t GetCompileTime()
-{
-	return __COMPILE_TIME__;
-}
+time_t GetCompileTime();
 

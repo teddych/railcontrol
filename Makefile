@@ -72,7 +72,7 @@ all: $(OBJ)
 	make -C Hardware
 	make -C Storage
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
-	rm Timestamp.h
+	rm Timestamp.cpp
 	rm Timestamp.o
 
 dist: all
@@ -99,31 +99,28 @@ dist-cygwin:
 	zip -9 railcontrol.windows.`date +"%Y%m%d"`.zip $(TMPDIR)/* $(TMPDIR)/html/*
 	rm -r $(TMPDIR)
 
-amalgamation: Timestamp.h
+amalgamation: Timestamp.cpp
 	./amalgamation.bash
 	$(CPP) $(CPPFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C Storage amalgamation
 	$(CPP) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
-	rm Timestamp.h
+	rm Timestamp.cpp
 
-raspi: Timestamp.h
+raspi: Timestamp.cpp
 	./amalgamation.bash
 	$(CPPRASPI) $(CPPFLAGSRASPI) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C Storage raspi
 	$(CPPRASPI) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
-	rm Timestamp.h
+	rm Timestamp.cpp
 
 sqlite-shell:
 	make -C Storage/sqlite
 
 Timestamp.o: Timestamp.cpp Timestamp.h
-	$(CPP) $(CPPFLAGS) -c -o $@ $<
-
-WebServer/WebClient.o: WebServer/WebClient.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h Timestamp.h
 	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 %.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
@@ -141,7 +138,8 @@ clean-sqlite-shell:
 test:
 	make -C test
 
-Timestamp.h:
-	echo "#pragma once" > Timestamp.h
-	echo "#define __COMPILE_TIME__ `date +%s`" >> Timestamp.h
-	echo "time_t GetCompileTime();" >> Timestamp.h
+Timestamp.cpp:
+	echo "#include <ctime>" > Timestamp.cpp
+	echo "#include \"Timestamp.h\"" >> Timestamp.cpp
+	echo "time_t GetCompileTime() { return `date +%s`; }" >> Timestamp.cpp
+
