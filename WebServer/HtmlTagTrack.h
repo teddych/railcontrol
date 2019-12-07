@@ -35,7 +35,10 @@ namespace WebServer
 	class HtmlTagTrack : public HtmlTagLayoutItem
 	{
 		public:
+			HtmlTagTrack() = delete;
 			HtmlTagTrack(const Manager& manager, const DataModel::Track* track);
+
+			virtual ~HtmlTagTrack() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

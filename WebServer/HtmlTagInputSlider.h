@@ -30,7 +30,10 @@ namespace WebServer
 	class HtmlTagInputSlider : public HtmlTag
 	{
 		public:
+			HtmlTagInputSlider() = delete;
 			HtmlTagInputSlider(const std::string& name, const unsigned int min, const unsigned int max, const unsigned int value = 0);
+
+			virtual ~HtmlTagInputSlider() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value)
 			{

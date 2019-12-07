@@ -29,6 +29,7 @@ namespace WebServer
 	class HtmlTagLabel : public HtmlTag
 	{
 		public:
+			HtmlTagLabel() = delete;
 			HtmlTagLabel(const std::string& label, const std::string& reference)
 			: HtmlTag("label")
 			{

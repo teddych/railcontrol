@@ -36,6 +36,7 @@ namespace WebServer
 	class WebClient
 	{
 		public:
+			WebClient() = delete;
 			WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer &webserver, Manager& m)
 			:	logger(Logger::Logger::GetLogger("Webserver")),
 				id(id),

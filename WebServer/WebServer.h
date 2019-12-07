@@ -36,6 +36,7 @@ namespace WebServer
 	class WebServer : public ControlInterface, private Network::TcpServer
 	{
 		public:
+			WebServer() = delete;
 			WebServer(Manager& manager, const unsigned short port);
 			~WebServer();
 

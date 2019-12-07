@@ -30,6 +30,7 @@ namespace WebServer
 	class HtmlFullResponse : public HtmlResponse
 	{
 		public:
+			HtmlFullResponse() = delete;
 			HtmlFullResponse(const responseCode_t responseCode);
 			HtmlFullResponse(const std::string& title, const HtmlTag body);
 			HtmlFullResponse(const responseCode_t responseCode, const std::string& title, const HtmlTag body);

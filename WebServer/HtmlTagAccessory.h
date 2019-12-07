@@ -34,7 +34,9 @@ namespace WebServer
 	class HtmlTagAccessory : public HtmlTagLayoutItem
 	{
 		public:
+			HtmlTagAccessory() = delete;
 			HtmlTagAccessory(const DataModel::Accessory* accessory);
+			virtual ~HtmlTagAccessory() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

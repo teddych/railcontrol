@@ -29,6 +29,7 @@ namespace WebServer
 	class HtmlTagJavascript : public HtmlTag
 	{
 		public:
+			HtmlTagJavascript() = delete;
 			HtmlTagJavascript(const std::string& javascript)
 			: HtmlTag("script")
 			{

@@ -34,7 +34,10 @@ namespace WebServer
 	class HtmlTagSignal : public HtmlTagLayoutItem
 	{
 		public:
+			HtmlTagSignal() = delete;
 			HtmlTagSignal(const DataModel::Signal* signal);
+
+			virtual ~HtmlTagSignal() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

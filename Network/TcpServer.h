@@ -34,7 +34,7 @@ namespace Network
 			TcpServer() = delete;
 		protected:
 			TcpServer(const unsigned short port, const std::string& threadName);
-			~TcpServer();
+			virtual ~TcpServer();
 			void TerminateTcpServer();
 
 			virtual void Work(Network::TcpConnection* connection) = 0;

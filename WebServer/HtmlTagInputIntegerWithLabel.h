@@ -31,6 +31,7 @@ namespace WebServer
 	class HtmlTagInputIntegerWithLabel : public HtmlTag
 	{
 		public:
+			HtmlTagInputIntegerWithLabel() = delete;
 			HtmlTagInputIntegerWithLabel(const std::string& name, const std::string& label, const int min, const int max)
 			:	HtmlTagInputIntegerWithLabel(name, label, 0, min, max)
 			{}
@@ -41,6 +42,8 @@ namespace WebServer
 				AddChildTag(HtmlTagLabel(label, name));
 				AddChildTag(HtmlTagInputInteger(name, value, min, max));
 			}
+
+			virtual ~HtmlTagInputIntegerWithLabel() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

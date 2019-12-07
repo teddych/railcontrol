@@ -32,6 +32,7 @@ namespace WebServer
 	class HtmlTagInputSliderLocoSpeed : public HtmlTagInputSlider
 	{
 		public:
+			HtmlTagInputSliderLocoSpeed() = delete;
 			HtmlTagInputSliderLocoSpeed(const std::string& name, const unsigned int min, const unsigned int max, const unsigned int value, const locoID_t locoID);
 
 			void AddJavaScript(const std::string& content)

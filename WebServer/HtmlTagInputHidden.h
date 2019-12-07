@@ -29,6 +29,7 @@ namespace WebServer
 	class HtmlTagInputHidden : public HtmlTagInput
 	{
 		public:
+			HtmlTagInputHidden() = delete;
 			HtmlTagInputHidden(const std::string& name, const std::string& value)
 			: HtmlTagInput("hidden", name, value) {};
 	};

@@ -31,6 +31,7 @@ namespace WebServer
 	class HtmlTagInputCheckboxWithLabel : public HtmlTag
 	{
 		public:
+			HtmlTagInputCheckboxWithLabel() = delete;
 			HtmlTagInputCheckboxWithLabel(const std::string& name, const Languages::textSelector_t label, const std::string& value, const bool checked)
 			:	HtmlTagInputCheckboxWithLabel(name, Languages::GetText(label), value, checked)
 			{
@@ -43,6 +44,8 @@ namespace WebServer
 				AddChildTag(HtmlTagInputCheckbox(name, value, checked));
 				AddChildTag(HtmlTag("br"));
 			}
+
+			virtual ~HtmlTagInputCheckboxWithLabel() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

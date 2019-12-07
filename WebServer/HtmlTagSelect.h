@@ -34,6 +34,7 @@ namespace WebServer
 			const std::string commandID;
 
 		public:
+			HtmlTagSelect() = delete;
 			HtmlTagSelect(const std::string& name, const std::map<std::string,std::string>& options, const std::string& defaultValue = "");
 			template<typename T> HtmlTagSelect(const std::string& name, const std::map<std::string,T>& options, const int defaultValue = 0)
 			:	HtmlTag("select"),

@@ -29,6 +29,7 @@ namespace WebServer
 	class HtmlTagInputText : public HtmlTagInput
 	{
 		public:
+			HtmlTagInputText() = delete;
 			HtmlTagInputText(const std::string& name, const std::string& value)
 			: HtmlTagInput("text", name, value) {};
 	};

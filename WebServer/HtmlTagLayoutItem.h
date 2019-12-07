@@ -29,7 +29,7 @@ namespace WebServer
 	class HtmlTagLayoutItem : public HtmlTag
 	{
 		public:
-			HtmlTagLayoutItem() {}
+			HtmlTagLayoutItem() = delete;
 			HtmlTagLayoutItem(const std::string& name) : HtmlTag(name) {}
 			virtual ~HtmlTagLayoutItem() {};
 

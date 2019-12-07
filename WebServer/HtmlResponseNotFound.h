@@ -30,6 +30,7 @@ namespace WebServer
 	class HtmlResponseNotFound : public HtmlResponse
 	{
 		public:
+			HtmlResponseNotFound() = delete;
 			HtmlResponseNotFound(const std::string& file);
 			~HtmlResponseNotFound() {};
 	};

@@ -31,7 +31,9 @@ namespace WebServer
 	class HtmlTagButton : public HtmlTag
 	{
 		public:
+			HtmlTagButton() = delete;
 			HtmlTagButton(const std::string& value, const std::string& command);
+			virtual ~HtmlTagButton() {}
 
 			HtmlTag AddJavaScript(const std::string& content)
 			{

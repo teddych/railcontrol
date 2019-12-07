@@ -30,6 +30,7 @@ namespace WebServer
 	class HtmlResponse : public Response
 	{
 		public:
+			HtmlResponse() = delete;
 			HtmlResponse(const responseCode_t responseCode)
 			:	HtmlResponse(responseCode, std::to_string(responseCode) + " " + HtmlResponse::responseTexts.at(responseCode), HtmlTag("body"))
 			{}

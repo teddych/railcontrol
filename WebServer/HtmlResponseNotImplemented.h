@@ -30,6 +30,7 @@ namespace WebServer
 	class HtmlResponseNotImplemented : public HtmlResponse
 	{
 		public:
+			HtmlResponseNotImplemented() = delete;
 			HtmlResponseNotImplemented(const std::string& method);
 			~HtmlResponseNotImplemented() {};
 	};

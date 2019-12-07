@@ -31,6 +31,7 @@ namespace WebServer
 	class HtmlTagSelectWithLabel : public HtmlTag
 	{
 		public:
+			HtmlTagSelectWithLabel() = delete;
 			HtmlTagSelectWithLabel(const std::string& name, const std::string& label, const std::map<std::string,std::string>& options, const std::string& defaultValue = "")
 			:	HtmlTag()
 			{
@@ -44,6 +45,8 @@ namespace WebServer
 				AddChildTag(HtmlTagLabel(label, "s_" + name));
 				AddChildTag(HtmlTagSelect(name, options, defaultValue));
 			}
+
+			virtual ~HtmlTagSelectWithLabel() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

@@ -34,7 +34,10 @@ namespace WebServer
 	class HtmlTagStreet : public HtmlTagLayoutItem
 	{
 		public:
+			HtmlTagStreet() = delete;
 			HtmlTagStreet(const DataModel::Street* street);
+
+			virtual ~HtmlTagStreet() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

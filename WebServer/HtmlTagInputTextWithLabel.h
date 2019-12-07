@@ -31,12 +31,15 @@ namespace WebServer
 	class HtmlTagInputTextWithLabel : public HtmlTag
 	{
 		public:
+			HtmlTagInputTextWithLabel() = delete;
 			HtmlTagInputTextWithLabel(const std::string& name, const std::string& label, const std::string& value = "")
 			:	HtmlTag()
 			{
 				AddChildTag(HtmlTagLabel(label, name));
 				AddChildTag(HtmlTagInputText(name, value));
 			}
+
+			virtual ~HtmlTagInputTextWithLabel() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{

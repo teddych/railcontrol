@@ -34,7 +34,10 @@ namespace WebServer
 	class HtmlTagSwitch : public HtmlTagLayoutItem
 	{
 		public:
+			HtmlTagSwitch() = delete;
 			HtmlTagSwitch(const DataModel::Switch* mySwitch);
+
+			virtual ~HtmlTagSwitch() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{
