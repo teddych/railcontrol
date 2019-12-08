@@ -1,3 +1,26 @@
+function updateName()
+{
+	var nameField = document.getElementById('name');
+	if (!nameField)
+	{
+		return false;
+	}
+	var title = document.getElementById('popup_title');
+	if (!title)
+	{
+		return false;
+	}
+	if (nameField.value.length > 0)
+	{
+		title.innerHTML = nameField.value;
+	}
+	else
+	{
+		title.innerHTML = 'NN';
+	}
+	return true;
+}
+
 function getArgumentsOfHardwareType()
 {
 	var hardwareType = document.getElementById('s_hardwaretype');

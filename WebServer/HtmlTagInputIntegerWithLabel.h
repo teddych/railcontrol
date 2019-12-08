@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <string>
 
+#include "Languages.h"
 #include "WebServer/HtmlTag.h"
 #include "WebServer/HtmlTagLabel.h"
 #include "WebServer/HtmlTagInputInteger.h"
@@ -36,7 +37,18 @@ namespace WebServer
 			:	HtmlTagInputIntegerWithLabel(name, label, 0, min, max)
 			{}
 
+			HtmlTagInputIntegerWithLabel(const std::string& name, const Languages::textSelector_t label, const int min, const int max)
+			:	HtmlTagInputIntegerWithLabel(name, label, 0, min, max)
+			{}
+
 			HtmlTagInputIntegerWithLabel(const std::string& name, const std::string& label, const int value, const int min, const int max)
+			:	HtmlTag()
+			{
+				AddChildTag(HtmlTagLabel(label, name));
+				AddChildTag(HtmlTagInputInteger(name, value, min, max));
+			}
+
+			HtmlTagInputIntegerWithLabel(const std::string& name, const Languages::textSelector_t label, const int value, const int min, const int max)
 			:	HtmlTag()
 			{
 				AddChildTag(HtmlTagLabel(label, name));
