@@ -32,6 +32,7 @@ namespace WebServer
 	{
 		public:
 			HtmlTagSelectWithLabel() = delete;
+
 			HtmlTagSelectWithLabel(const std::string& name, const std::string& label, const std::map<std::string,std::string>& options, const std::string& defaultValue = "")
 			:	HtmlTag()
 			{
@@ -39,7 +40,39 @@ namespace WebServer
 				AddChildTag(HtmlTagSelect(name, options, defaultValue));
 			}
 
-			template<typename T> HtmlTagSelectWithLabel(const std::string& name, const std::string& label, const std::map<std::string,T>& options, const int defaultValue = 0)
+			HtmlTagSelectWithLabel(const std::string& name, const Languages::textSelector_t label, const std::map<std::string,Languages::textSelector_t>& options, const std::string& defaultValue = "")
+			:	HtmlTag()
+			{
+				AddChildTag(HtmlTagLabel(label, "s_" + name));
+				AddChildTag(HtmlTagSelect(name, options, defaultValue));
+			}
+
+			template<typename T>
+			HtmlTagSelectWithLabel(const std::string& name, const std::string& label, const std::map<std::string,T>& options, const int defaultValue = 0)
+			:	HtmlTag()
+			{
+				AddChildTag(HtmlTagLabel(label, "s_" + name));
+				AddChildTag(HtmlTagSelect(name, options, defaultValue));
+			}
+
+			template<typename T>
+			HtmlTagSelectWithLabel(const std::string& name, const Languages::textSelector_t label, const std::map<std::string,T>& options, const int defaultValue = 0)
+			:	HtmlTag()
+			{
+				AddChildTag(HtmlTagLabel(label, "s_" + name));
+				AddChildTag(HtmlTagSelect(name, options, defaultValue));
+			}
+
+			template<typename T>
+			HtmlTagSelectWithLabel(const std::string& name, const Languages::textSelector_t label, const std::map<T,Languages::textSelector_t>& options, const T defaultValue = 0)
+			:	HtmlTag()
+			{
+				AddChildTag(HtmlTagLabel(label, "s_" + name));
+				AddChildTag(HtmlTagSelect(name, options, defaultValue));
+			}
+
+			template<typename T>
+			HtmlTagSelectWithLabel(const std::string& name, const Languages::textSelector_t label, const std::map<T,std::string>& options, T defaultValue = 0)
 			:	HtmlTag()
 			{
 				AddChildTag(HtmlTagLabel(label, "s_" + name));

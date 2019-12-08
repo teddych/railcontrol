@@ -1405,24 +1405,24 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagSelectSelectStreetApproach(const DataModel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault)
 	{
-		map<string,string> options;
+		map<DataModel::Track::selectStreetApproach_t,Languages::textSelector_t> options;
 		if (addDefault)
 		{
-			options[to_string(DataModel::Track::SelectStreetSystemDefault)] = "Use system default";
+			options[DataModel::Track::SelectStreetSystemDefault] = Languages::TextSystemDefault;
 		}
-		options[to_string(DataModel::Track::SelectStreetDoNotCare)] = "Do not care";
-		options[to_string(DataModel::Track::SelectStreetRandom)] = "Random";
-		options[to_string(DataModel::Track::SelectStreetMinTrackLength)] = "Minimal destination track length";
-		options[to_string(DataModel::Track::SelectStreetLongestUnused)] = "Longest unused";
-		return HtmlTagSelectWithLabel("selectstreetapproach", "Select street by:", options, to_string(static_cast<int>(selectStreetApproach)));
+		options[DataModel::Track::SelectStreetDoNotCare] = Languages::TextDoNotCare;
+		options[DataModel::Track::SelectStreetRandom] = Languages::TextRandom;
+		options[DataModel::Track::SelectStreetMinTrackLength] = Languages::TextMinTrackLength;
+		options[DataModel::Track::SelectStreetLongestUnused] = Languages::TextLongestUnused;
+		return HtmlTagSelectWithLabel("selectstreetapproach", Languages::TextSelectStreetBy, options, selectStreetApproach);
 	}
 
 	HtmlTag WebClient::HtmlTagNrOfTracksToReserve(const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
 	{
-		map<string,string> options;
-		options[to_string(DataModel::Loco::ReserveOne)] = "1";
-		options[to_string(DataModel::Loco::ReserveTwo)] = "2";
-		return HtmlTagSelectWithLabel("nroftrackstoreserve", "# of Tracks to reserve:", options, to_string(static_cast<int>(nrOfTracksToReserve)));
+		map<DataModel::Loco::nrOfTracksToReserve_t,string> options;
+		options[DataModel::Loco::ReserveOne] = "1";
+		options[DataModel::Loco::ReserveTwo] = "2";
+		return HtmlTagSelectWithLabel("nroftrackstoreserve", Languages::TextNrOfTracksToReserve, options, nrOfTracksToReserve);
 	}
 
 	void WebClient::HandleProtocolAccessory(const map<string, string>& arguments)
@@ -2066,9 +2066,9 @@ namespace WebServer
 			}
 		}
 
-		std::map<string, string> typeOptions;
-		typeOptions[to_string(DataModel::Switch::SwitchTypeLeft)] = "Left";
-		typeOptions[to_string(DataModel::Switch::SwitchTypeRight)] = "Right";
+		std::map<switchType_t,Languages::textSelector_t> typeOptions;
+		typeOptions[DataModel::Switch::SwitchTypeLeft] = Languages::TextLeft;
+		typeOptions[DataModel::Switch::SwitchTypeRight] = Languages::TextRight;
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit switch &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
@@ -2084,7 +2084,7 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Switch Name:", name));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('switch', " + to_string(switchID) + ")"));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044));
@@ -2281,8 +2281,8 @@ namespace WebServer
 			}
 		}
 
-		std::map<string, string> typeOptions;
-		typeOptions[to_string(DataModel::Signal::SignalTypeSimple)] = "Simple";
+		std::map<signalType_t, Languages::textSelector_t> typeOptions;
+		typeOptions[DataModel::Signal::SignalTypeSimple] = Languages::TextSimple;
 
 		content.AddChildTag(HtmlTag("h1").AddContent("Edit signal &quot;" + name + "&quot;"));
 		HtmlTag tabMenu("div");
@@ -2298,7 +2298,7 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", "Signal Name:", name));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('signal', " + to_string(signalID) + ")"));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044));

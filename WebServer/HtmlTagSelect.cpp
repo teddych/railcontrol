@@ -41,4 +41,24 @@ namespace WebServer
 			AddChildTag(optionTag);
 		}
 	}
+
+	HtmlTagSelect::HtmlTagSelect(const std::string& name, const std::map<std::string,Languages::textSelector_t>& options, const std::string& defaultValue)
+	:	HtmlTag("select"),
+	 	commandID("s_" + name)
+	{
+		AddAttribute("name", name);
+		AddAttribute("id", commandID);
+
+		for (auto option : options)
+		{
+			HtmlTag optionTag("option");
+			optionTag.AddAttribute("value", option.first);
+			optionTag.AddContent(Languages::GetText(option.second));
+			if (option.first.compare(defaultValue) == 0)
+			{
+				optionTag.AddAttribute("selected");
+			}
+			AddChildTag(optionTag);
+		}
+	}
 };

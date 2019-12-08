@@ -30,7 +30,15 @@ namespace WebServer
 	{
 		public:
 			HtmlTagLabel() = delete;
+
 			HtmlTagLabel(const std::string& label, const std::string& reference)
+			: HtmlTag("label")
+			{
+				AddContent(label);
+				AddAttribute("for", reference);
+			};
+
+			HtmlTagLabel(const Languages::textSelector_t label, const std::string& reference)
 			: HtmlTag("label")
 			{
 				AddContent(label);
