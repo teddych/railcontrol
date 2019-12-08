@@ -20,7 +20,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <atomic>
 #include <map>
 #include <string>
 
@@ -31,6 +30,10 @@ namespace WebServer
 	class HtmlTagButtonCommand : public HtmlTagButton
 	{
 		public:
+			HtmlTagButtonCommand() = delete;
 			HtmlTagButtonCommand(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(), const std::string& additionalOnClick = "");
+			HtmlTagButtonCommand(const Languages::textSelector_t value, const std::string& command, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(), const std::string& additionalOnClick = "")
+			:	HtmlTagButtonCommand(Languages::GetText(value), command, arguments, additionalOnClick)
+			{}
 	};
 };

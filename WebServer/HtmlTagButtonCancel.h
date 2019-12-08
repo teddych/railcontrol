@@ -20,7 +20,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <atomic>
 #include <map>
 #include <string>
 

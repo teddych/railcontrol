@@ -69,8 +69,8 @@ OBJ= \
 	WebServer/WebServer.o
 
 all: $(OBJ)
-	make -C Hardware
-	make -C Storage
+	+make -C Hardware
+	+make -C Storage
 	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 	rm Timestamp.cpp
 	rm Timestamp.o

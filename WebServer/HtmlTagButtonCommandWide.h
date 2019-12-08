@@ -23,13 +23,18 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
-#include "WebServer/HtmlTagButton.h"
+#include "WebServer/HtmlTagButtonCommand.h"
 
 namespace WebServer
 {
-	class HtmlTagButtonOK : public HtmlTagButton
+	class HtmlTagButtonCommandWide : public HtmlTagButtonCommand
 	{
 		public:
-			HtmlTagButtonOK();
+			HtmlTagButtonCommandWide() = delete;
+			HtmlTagButtonCommandWide(const Languages::textSelector_t value, const std::string& command, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(), const std::string& additionalOnClick = "")
+			:	HtmlTagButtonCommand(value, command, arguments, additionalOnClick)
+			{
+				AddClass("wide_button");
+			}
 	};
 };

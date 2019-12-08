@@ -20,10 +20,10 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <atomic>
 #include <map>
 #include <string>
 
+#include "Languages.h"
 #include "WebServer/HtmlTagButton.h"
 
 namespace WebServer
@@ -33,5 +33,8 @@ namespace WebServer
 		public:
 			HtmlTagButtonPopup() = delete;
 			HtmlTagButtonPopup(const std::string& value, const std::string& command, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>());
+			HtmlTagButtonPopup(const Languages::textSelector_t value, const std::string& command, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>())
+			:	HtmlTagButtonPopup(Languages::GetText(value), command, arguments)
+			{}
 	};
 };

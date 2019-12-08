@@ -28,5 +28,6 @@ namespace WebServer
 	:	HtmlTagButton(HtmlTag("span").AddClass("symbola").AddContent("&#x2714;"), "popup_ok")
 	{
 		AddAttribute("onclick", "submitEditForm(); return false;");
+		AddClass("wide_button");
 	}
 };

@@ -29,7 +29,6 @@ namespace WebServer
 		HtmlTag buttonTag("button");
 		buttonTag.AddAttribute("name", commandID);
 		buttonTag.AddAttribute("id", commandID);
-		buttonTag.AddClass("button");
 		buttonTag.AddContent(value);
 		AddChildTag(buttonTag);
 	}

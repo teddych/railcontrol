@@ -41,8 +41,10 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagButtonCancel.h"
 #include "WebServer/HtmlTagButtonCommand.h"
 #include "WebServer/HtmlTagButtonCommandToggle.h"
+#include "WebServer/HtmlTagButtonCommandWide.h"
 #include "WebServer/HtmlTagButtonOK.h"
 #include "WebServer/HtmlTagButtonPopup.h"
+#include "WebServer/HtmlTagButtonPopupWide.h"
 #include "WebServer/HtmlTagFeedback.h"
 #include "WebServer/HtmlTagInputCheckboxWithLabel.h"
 #include "WebServer/HtmlTagInputHidden.h"
@@ -872,16 +874,16 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(layer.first));
 			string layerIdString = to_string(layer.second);
 			layerArgument["layer"] = layerIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "layeredit_list_" + layerIdString, layerArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "layeredit_list_" + layerIdString, layerArgument)));
 			if (layer.second != LayerUndeletable)
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "layeraskdelete_" + layerIdString, layerArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "layeraskdelete_" + layerIdString, layerArgument)));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "layeredit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "layeredit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -1052,13 +1054,13 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(hardware.first));
 			string controlIdString = to_string(hardware.second->controlID);
 			hardwareArgument["control"] = controlIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "controledit_list_" + controlIdString, hardwareArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "controlaskdelete_" + controlIdString, hardwareArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "controledit_list_" + controlIdString, hardwareArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "controlaskdelete_" + controlIdString, hardwareArgument)));
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "controledit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "controledit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -1682,17 +1684,17 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(to_string(loco.second->GetAddress())));
 			string locoIdString = to_string(loco.second->GetID());
 			locoArgument["loco"] = locoIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "locoedit_list_" + locoIdString, locoArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "locoaskdelete_" + locoIdString, locoArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "locoedit_list_" + locoIdString, locoArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "locoaskdelete_" + locoIdString, locoArgument)));
 			if (loco.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "locorelease_" + locoIdString, locoArgument, "hideElement('b_locorelease_" + locoIdString + "');")));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "locorelease_" + locoIdString, locoArgument, "hideElement('b_locorelease_" + locoIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "locoedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "locoedit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -1952,17 +1954,17 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(accessory.first));
 			string accessoryIdString = to_string(accessory.second->GetID());
 			accessoryArgument["accessory"] = accessoryIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
 			if (accessory.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "accessoryrelease_" + accessoryIdString, accessoryArgument, "hideElement('b_accessiryrelease_" + accessoryIdString + "');")));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "accessoryrelease_" + accessoryIdString, accessoryArgument, "hideElement('b_accessiryrelease_" + accessoryIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "accessoryedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "accessoryedit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -2155,17 +2157,17 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(mySwitch.first));
 			string switchIdString = to_string(mySwitch.second->GetID());
 			switchArgument["switch"] = switchIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "switchedit_list_" + switchIdString, switchArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "switchaskdelete_" + switchIdString, switchArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "switchedit_list_" + switchIdString, switchArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "switchaskdelete_" + switchIdString, switchArgument)));
 			if (mySwitch.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "switchrelease_" + switchIdString, switchArgument, "hideElement('b_switchrelease_" + switchIdString + "');")));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "switchrelease_" + switchIdString, switchArgument, "hideElement('b_switchrelease_" + switchIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "switchedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "switchedit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -2369,17 +2371,17 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(signal.first));
 			string signalIdString = to_string(signal.second->GetID());
 			signalArgument["signal"] = signalIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "signaledit_list_" + signalIdString, signalArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "signalaskdelete_" + signalIdString, signalArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "signaledit_list_" + signalIdString, signalArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "signalaskdelete_" + signalIdString, signalArgument)));
 			if (signal.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "signalrelease_" + signalIdString, signalArgument, "hideElement('b_signalrelease_" + signalIdString + "');")));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "signalrelease_" + signalIdString, signalArgument, "hideElement('b_signalrelease_" + signalIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "signaledit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "signaledit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -2741,17 +2743,17 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(street.first));
 			string streetIdString = to_string(street.second->GetID());
 			streetArgument["street"] = streetIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "streetedit_list_" + streetIdString, streetArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "streetaskdelete_" + streetIdString, streetArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "streetedit_list_" + streetIdString, streetArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "streetaskdelete_" + streetIdString, streetArgument)));
 			if (street.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "streetrelease_" + streetIdString, streetArgument, "hideElement('b_streetrelease_" + streetIdString + "');")));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "streetrelease_" + streetIdString, streetArgument, "hideElement('b_streetrelease_" + streetIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "streetedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "streetedit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -2979,17 +2981,17 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(track.first));
 			string trackIdString = to_string(track.second->GetID());
 			trackArgument["track"] = trackIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "trackedit_list_" + trackIdString, trackArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "trackaskdelete_" + trackIdString, trackArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "trackedit_list_" + trackIdString, trackArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "trackaskdelete_" + trackIdString, trackArgument)));
 			if (track.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommand("Release", "trackrelease_" + trackIdString, trackArgument, "hideElement('b_trackrelease_" + trackIdString + "');")));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "trackrelease_" + trackIdString, trackArgument, "hideElement('b_trackrelease_" + trackIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "trackedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "trackedit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -3199,13 +3201,13 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddContent(feedback.first));
 			string feedbackIdString = to_string(feedback.second->GetID());
 			feedbackArgument["feedback"] = feedbackIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Edit", "feedbackedit_list_" + feedbackIdString, feedbackArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopup("Delete", "feedbackaskdelete_" + feedbackIdString, feedbackArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "feedbackedit_list_" + feedbackIdString, feedbackArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "feedbackaskdelete_" + feedbackIdString, feedbackArgument)));
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopup("New", "feedbackedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "feedbackedit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
