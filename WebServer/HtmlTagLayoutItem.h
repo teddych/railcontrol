@@ -29,11 +29,10 @@ namespace WebServer
 	class HtmlTagLayoutItem : public HtmlTag
 	{
 		public:
-			HtmlTagLayoutItem() = delete;
-			HtmlTagLayoutItem(const std::string& name) : HtmlTag(name) {}
+			HtmlTagLayoutItem() {};
 			virtual ~HtmlTagLayoutItem() {};
 
-			const unsigned char EdgeLength = 36;
+			static const unsigned char EdgeLength = 36;
 			const std::string EdgeLengthString = std::to_string(EdgeLength);
 	};
 }; // namespace WebServer

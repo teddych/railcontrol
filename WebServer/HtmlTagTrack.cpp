@@ -29,7 +29,7 @@ using std::to_string;
 namespace WebServer
 {
 	HtmlTagTrack::HtmlTagTrack(const Manager& manager, const DataModel::Track* track)
-	:	HtmlTagLayoutItem(track->GetName())
+	:	HtmlTagLayoutItem()
 	{
 		layoutPosition_t posX;
 		layoutPosition_t posY;
@@ -41,6 +41,7 @@ namespace WebServer
 		DataModel::Track::type_t type = track->GetType();
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
+		const string& trackName = track->GetName();
 
 		bool occupied = track->GetFeedbackStateDelayed() == DataModel::Feedback::FeedbackStateOccupied;
 
@@ -154,7 +155,7 @@ namespace WebServer
 		}
 
 		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(track->GetRotation()) + "deg) translate(" + to_string(translate) + "px," + to_string(translate) + "px);\">" + image + "</svg>"));
-		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(name));
+		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(trackName));
 		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
 		AddChildTag(div1);
 
@@ -165,7 +166,7 @@ namespace WebServer
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(name))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(trackName))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_block").AddContent("Block track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=true');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_unblock").AddContent("Unblock track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=false');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent("Release track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
