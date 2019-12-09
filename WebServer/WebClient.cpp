@@ -744,9 +744,14 @@ namespace WebServer
 				break;
 
 			case S88Modules:
+			{
 				argumentName = Languages::TextNrOfS88Modules;
 				const int valueInteger = Utils::Utils::StringToInteger(value, 0, 62);
 				return HtmlTagInputIntegerWithLabel(argumentNumber, argumentName, valueInteger, 0, 62);
+			}
+
+			default:
+				return HtmlTag();
 		}
 		return HtmlTagInputTextWithLabel(argumentNumber, argumentName, value);
 	}
