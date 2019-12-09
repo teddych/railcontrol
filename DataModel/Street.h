@@ -41,11 +41,11 @@ namespace DataModel
 		public:
 			static const delay_t DefaultDelay = 250;
 
-			enum commuterType_t : unsigned char
+			enum pushpullType_t : unsigned char
 			{
-				CommuterTypeNo = 0,
-				CommuterTypeOnly = 1,
-				CommuterTypeBoth = 2
+				PushpullTypeNo = 0,
+				PushpullTypeOnly = 1,
+				PushpullTypeBoth = 2
 			};
 
 			Street(Manager* manager, const streetID_t streetID)
@@ -53,7 +53,7 @@ namespace DataModel
 			 	LockableItem(),
 			 	manager(manager),
 				delay(0),
-				commuter(CommuterTypeBoth),
+				pushpull(PushpullTypeBoth),
 				minTrainLength(0),
 				maxTrainLength(0),
 				automode(AutomodeNo),
@@ -96,8 +96,8 @@ namespace DataModel
 
 			delay_t GetDelay() const { return delay; }
 			void SetDelay(delay_t delay) { this->delay = delay; }
-			commuterType_t GetCommuter() const { return commuter; }
-			void SetCommuter(const commuterType_t commuter) { this->commuter = commuter; }
+			pushpullType_t GetPushpull() const { return pushpull; }
+			void SetPushpull(const pushpullType_t pushpull) { this->pushpull = pushpull; }
 			length_t GetMinTrainLength() const { return minTrainLength; }
 			void SetMinTrainLength(const length_t length) { this->minTrainLength = length; }
 			length_t GetMaxTrainLength() const { return maxTrainLength; }
@@ -136,7 +136,7 @@ namespace DataModel
 
 			delay_t delay;
 			std::vector<DataModel::Relation*> relations;
-			commuterType_t commuter;
+			pushpullType_t pushpull;
 			length_t minTrainLength;
 			length_t maxTrainLength;
 			automode_t automode;

@@ -53,7 +53,7 @@ namespace DataModel
 			<< LayoutItem::Serialize()
 			<< ";" << LockableItem::Serialize()
 			<< ";delay=" << static_cast<int>(delay)
-			<< ";commuter=" << static_cast<int>(commuter)
+			<< ";pushpull=" << static_cast<int>(pushpull)
 			<< ";mintrainlength=" << static_cast<int>(minTrainLength)
 			<< ";maxtrainlength=" << static_cast<int>(maxTrainLength)
 			<< ";lastused=" << lastUsed
@@ -85,7 +85,8 @@ namespace DataModel
 		LockableItem::Deserialize(arguments);
 
 		delay = static_cast<delay_t>(Utils::Utils::GetIntegerMapEntry(arguments, "delay", DefaultDelay));
-		commuter = static_cast<commuterType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", CommuterTypeBoth));
+		pushpull = static_cast<pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", PushpullTypeBoth)); // FIXME: remove later
+		pushpull = static_cast<pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", pushpull));
 		minTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
 		maxTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		lastUsed = Utils::Utils::GetIntegerMapEntry(arguments, "lastused", 0);
@@ -148,14 +149,14 @@ namespace DataModel
 			return false;
 		}
 
-		const bool locoCommuter = loco->GetCommuter();
-		if (commuter != locoCommuter && commuter != CommuterTypeBoth)
+		const bool locoPushpull = loco->GetPushpull();
+		if (pushpull != locoPushpull && pushpull != PushpullTypeBoth)
 		{
-			logger->Debug(Languages::TextDifferentCommuterTypes, GetName());
+			logger->Debug(Languages::TextDifferentPushpullTypes, GetName());
 			return false;
 		}
 
-		if (allowLocoTurn == true && locoCommuter == true)
+		if (allowLocoTurn == true && locoPushpull == true)
 		{
 			return true;
 		}

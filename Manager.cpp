@@ -636,11 +636,11 @@ bool Manager::LocoSave(const locoID_t locoID,
 	const address_t address,
 	const function_t nrOfFunctions,
 	const length_t length,
-	const bool commuter,
+	const bool pushpull,
 	const locoSpeed_t maxSpeed,
 	const locoSpeed_t travelSpeed,
 	const locoSpeed_t reducedSpeed,
-	const locoSpeed_t creepSpeed,
+	const locoSpeed_t creepingSpeed,
 	const std::vector<DataModel::Relation*>& slaves,
 	string& result)
 {
@@ -666,11 +666,11 @@ bool Manager::LocoSave(const locoID_t locoID,
 	loco->SetAddress(address);
 	loco->SetNrOfFunctions(nrOfFunctions);
 	loco->SetLength(length);
-	loco->SetCommuter(commuter);
+	loco->SetPushpull(pushpull);
 	loco->SetMaxSpeed(maxSpeed);
 	loco->SetTravelSpeed(travelSpeed);
 	loco->SetReducedSpeed(reducedSpeed);
-	loco->SetCreepSpeed(creepSpeed);
+	loco->SetCreepingSpeed(creepingSpeed);
 	loco->AssignSlaves(slaves);
 
 	// save in db
@@ -1819,7 +1819,7 @@ bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPositio
 bool Manager::StreetSave(const streetID_t streetID,
 	const std::string& name,
 	const delay_t delay,
-	const Street::commuterType_t commuter,
+	const Street::pushpullType_t pushpull,
 	const length_t minTrainLength,
 	const length_t maxTrainLength,
 	const std::vector<DataModel::Relation*>& relations,
@@ -1872,7 +1872,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	// update existing street
 	street->SetName(CheckObjectName(streets, streetMutex, streetID, name.size() == 0 ? "S" : name));
 	street->SetDelay(delay);
-	street->SetCommuter(commuter);
+	street->SetPushpull(pushpull);
 	street->SetMinTrainLength(minTrainLength);
 	street->SetMaxTrainLength(maxTrainLength);
 	street->AssignRelations(relations);

@@ -28,7 +28,7 @@ namespace WebServer
 {
 	class HtmlTagLayoutItem : public HtmlTag
 	{
-		public:
+		protected:
 			HtmlTagLayoutItem() {};
 			virtual ~HtmlTagLayoutItem() {};
 

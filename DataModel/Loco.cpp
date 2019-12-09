@@ -65,11 +65,11 @@ namespace DataModel
 			<< ";direction=" << (direction == DirectionRight ? "right" : "left")
 			<< ";trackID=" << static_cast<int>(trackIdFrom)
 			<< ";length=" << length
-			<< ";commuter=" << static_cast<int>(commuter)
+			<< ";pushpull=" << static_cast<int>(pushpull)
 			<< ";maxspeed=" << maxSpeed
 			<< ";travelspeed=" << travelSpeed
 			<< ";reducedspeed=" << reducedSpeed
-			<< ";creepspeed=" << creepSpeed;
+			<< ";creepingspeed=" << creepingSpeed;
 		return ss.str();
 	}
 
@@ -88,11 +88,13 @@ namespace DataModel
 		functions.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "functions", "0"));
 		direction = (Utils::Utils::GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
 		length = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "length", 0));
-		commuter = Utils::Utils::GetBoolMapEntry(arguments, "commuter", false);
+		pushpull = Utils::Utils::GetBoolMapEntry(arguments, "commuter", false);  // FIXME: remove later
+		pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", pushpull);
 		maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
 		travelSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
 		reducedSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
-		creepSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
+		creepingSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepingSpeed);
+		creepingSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepingspeed", creepingSpeed);
 		return true;
 	}
 
@@ -513,9 +515,9 @@ namespace DataModel
 
 		if (feedbackID == feedbackIdCreep)
 		{
-			if (speed > creepSpeed)
+			if (speed > creepingSpeed)
 			{
-				manager->LocoSpeed(ControlTypeInternal, this, creepSpeed);
+				manager->LocoSpeed(ControlTypeInternal, this, creepingSpeed);
 			}
 			return;
 		}

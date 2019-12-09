@@ -130,18 +130,18 @@ namespace DataModel
 
 			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackFrom != nullptr || this->streetFirst != nullptr; }
 
-			bool GetCommuter() const { return commuter; }
+			bool GetPushpull() const { return pushpull; }
 			length_t GetLength() const { return length; }
 			void SetLength(const length_t length) {  this->length = length; }
 			locoSpeed_t GetMaxSpeed() const { return maxSpeed; }
 			locoSpeed_t GetTravelSpeed() const { return travelSpeed; }
 			locoSpeed_t GetReducedSpeed() const { return reducedSpeed; }
-			locoSpeed_t GetCreepSpeed() const { return creepSpeed; }
-			void SetCommuter(bool commuter) { this->commuter = commuter; }
+			locoSpeed_t GetCreepingSpeed() const { return creepingSpeed; }
+			void SetPushpull(bool pushpull) { this->pushpull = pushpull; }
 			void SetMaxSpeed(locoSpeed_t speed) { maxSpeed = speed; }
 			void SetTravelSpeed(locoSpeed_t speed) { travelSpeed = speed; }
 			void SetReducedSpeed(locoSpeed_t speed) { reducedSpeed = speed; }
-			void SetCreepSpeed(locoSpeed_t speed) { creepSpeed = speed; }
+			void SetCreepingSpeed(locoSpeed_t speed) { creepingSpeed = speed; }
 
 			bool AssignSlaves(const std::vector<DataModel::Relation*>& newslaves);
 			const std::vector<DataModel::Relation*>& GetSlaves() const { return slaves; };
@@ -174,11 +174,11 @@ namespace DataModel
 			std::thread locoThread;
 
 			length_t length;
-			bool commuter;
+			bool pushpull;
 			locoSpeed_t maxSpeed;
 			locoSpeed_t travelSpeed;
 			locoSpeed_t reducedSpeed;
-			locoSpeed_t creepSpeed;
+			locoSpeed_t creepingSpeed;
 
 			locoSpeed_t speed;
 			direction_t direction;

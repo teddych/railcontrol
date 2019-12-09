@@ -111,6 +111,10 @@ namespace WebServer
 			HtmlTag HtmlTagSlave(const std::string& priority, const objectID_t objectId = ObjectNone);
 			HtmlTag HtmlTagRelationObject(const std::string& priority, const objectType_t objectType, const objectID_t objectId = ObjectNone, const accessoryState_t state = DataModel::Accessory::AccessoryStateOff);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected = false) const;
+			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const Languages::textSelector_t buttonValue, const bool selected = false) const
+			{
+				return HtmlTagTabMenuItem(tabName, Languages::GetText(buttonValue), selected);
+			}
 			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const trackID_t trackID, const feedbackID_t feedbackID = FeedbackNone);
 			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault);
 			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve);

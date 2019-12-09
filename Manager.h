@@ -89,11 +89,11 @@ class Manager
 			const address_t address,
 			const function_t nrOfFunctions,
 			const length_t length,
-			const bool commuter,
+			const bool pushpull,
 			const locoSpeed_t maxSpeed,
 			const locoSpeed_t travelSpeed,
 			const locoSpeed_t reducedSpeed,
-			const locoSpeed_t creepSpeed,
+			const locoSpeed_t creepingSpeed,
 			const std::vector<DataModel::Relation*>& slaves,
 			std::string& result
 		);
@@ -178,7 +178,7 @@ class Manager
 		bool StreetSave(const streetID_t streetID,
 			const std::string& name,
 			const delay_t delay,
-			const DataModel::Street::commuterType_t commuter,
+			const DataModel::Street::pushpullType_t pushpull,
 			const length_t minTrainLength,
 			const length_t maxTrainLength,
 			const std::vector<DataModel::Relation*>& relations,

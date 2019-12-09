@@ -870,7 +870,7 @@ namespace WebServer
 	void WebClient::HandleLayerList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Layers"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextLayers));
 		HtmlTag table("table");
 		const map<string,layerID_t> layerList = manager.LayerListByName();
 		map<string,string> layerArgument;
@@ -1120,7 +1120,7 @@ namespace WebServer
 	HtmlTag WebClient::HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol)
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTagLabel("Protocol:", "protocol"));
+		content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
 		map<string,protocol_t> protocolMap = manager.LocoProtocolsOfControl(controlID);
 		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
 		return content;
@@ -1515,12 +1515,12 @@ namespace WebServer
 		address_t address = 1;
 		string name = Languages::GetText(Languages::TextNew);
 		function_t nrOfFunctions = 0;
-		bool commuter = false;
+		bool pushpull = false;
 		length_t length = 0;
 		locoSpeed_t maxSpeed = MaxSpeed;
 		locoSpeed_t travelSpeed = DefaultTravelSpeed;
 		locoSpeed_t reducedSpeed = DefaultReducedSpeed;
-		locoSpeed_t creepSpeed = DefaultCreepSpeed;
+		locoSpeed_t creepingSpeed = DefaultCreepingSpeed;
 		vector<Relation*> slaves;
 
 		if (locoID > LocoNone)
@@ -1531,12 +1531,12 @@ namespace WebServer
 			address = loco->GetAddress();
 			name = loco->GetName();
 			nrOfFunctions = loco->GetNrOfFunctions();
-			commuter = loco->GetCommuter();
+			pushpull = loco->GetPushpull();
 			length = loco->GetLength();
 			maxSpeed = loco->GetMaxSpeed();
 			travelSpeed = loco->GetTravelSpeed();
 			reducedSpeed = loco->GetReducedSpeed();
-			creepSpeed = loco->GetCreepSpeed();
+			creepingSpeed = loco->GetCreepingSpeed();
 			slaves = loco->GetSlaves();
 		}
 
@@ -1553,9 +1553,9 @@ namespace WebServer
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", "Basic", true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("slaves", "Slaves"));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", "Automode"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("slaves", Languages::TextMultipleUnit));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent;
@@ -1566,11 +1566,11 @@ namespace WebServer
 		basicContent.AddAttribute("id", "tab_basic");
 		basicContent.AddClass("tab_content");
 		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		basicContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('loco', " + to_string(locoID) + ")"));
+		basicContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('loco', " + to_string(locoID) + ")"));
 		basicContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 9999));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", "# of functions:", nrOfFunctions, 0, DataModel::LocoFunctions::maxFunctions));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Train length:", length, 0, 99999));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", Languages::TextNrOfFunctions, nrOfFunctions, 0, DataModel::LocoFunctions::maxFunctions));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
 		formContent.AddChildTag(basicContent);
 
 		HtmlTag slavesDiv("div");
@@ -1604,11 +1604,11 @@ namespace WebServer
 		automodeContent.AddAttribute("id", "tab_automode");
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
-		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("commuter", "Commuter:", "commuter", commuter));
-		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("maxspeed", "Maximum speed:", maxSpeed, 0, MaxSpeed));
-		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("travelspeed", "Travel speed:", travelSpeed, 0, MaxSpeed));
-		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("reducedspeed", "Reduced speed:", reducedSpeed, 0, MaxSpeed));
-		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("creepspeed", "Creep speed:", creepSpeed, 0, MaxSpeed));
+		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("pushpull", Languages::TextPushPullTrain, "pushpull", pushpull));
+		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("maxspeed", Languages::TextMaximumSpeed, maxSpeed, 0, MaxSpeed));
+		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("travelspeed", Languages::TextTravelSpeed, travelSpeed, 0, MaxSpeed));
+		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("reducedspeed", Languages::TextReducedSpeed, reducedSpeed, 0, MaxSpeed));
+		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("creepingspeed", Languages::TextCreepingSpeed, creepingSpeed, 0, MaxSpeed));
 		formContent.AddChildTag(automodeContent);
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
@@ -1626,7 +1626,7 @@ namespace WebServer
 		const address_t address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
 		const function_t nrOfFunctions = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
 		const length_t length = Utils::Utils::GetIntegerMapEntry(arguments, "length", 0);
-		const bool commuter = Utils::Utils::GetBoolMapEntry(arguments, "commuter", false);
+		const bool pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", false);
 		const locoSpeed_t maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
 		locoSpeed_t travelSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
 		if (travelSpeed > maxSpeed)
@@ -1638,10 +1638,10 @@ namespace WebServer
 		{
 			reducedSpeed = travelSpeed;
 		}
-		locoSpeed_t creepSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepSpeed);
-		if (creepSpeed > reducedSpeed)
+		locoSpeed_t creepingSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepingspeed", DefaultCreepingSpeed);
+		if (creepingSpeed > reducedSpeed)
 		{
-			creepSpeed = reducedSpeed;
+			creepingSpeed = reducedSpeed;
 		}
 		vector<Relation*> slaves;
 		unsigned int slaveCount = Utils::Utils::GetIntegerMapEntry(arguments, "slavecounter", 0);
@@ -1665,11 +1665,11 @@ namespace WebServer
 			address,
 			nrOfFunctions,
 			length,
-			commuter,
+			pushpull,
 			maxSpeed,
 			travelSpeed,
 			reducedSpeed,
-			creepSpeed,
+			creepingSpeed,
 			slaves,
 			result))
 		{
@@ -1683,7 +1683,7 @@ namespace WebServer
 	void WebClient::HandleLocoList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Locos"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextLocos));
 		HtmlTag table("table");
 		const map<string,DataModel::Loco*> locoList = manager.LocoListByName();
 		map<string,string> locoArgument;
@@ -1954,7 +1954,7 @@ namespace WebServer
 	void WebClient::HandleAccessoryList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Accessories"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextAccessories));
 		HtmlTag table("table");
 		const map<string,DataModel::Accessory*> accessoryList = manager.AccessoryListByName();
 		map<string,string> accessoryArgument;
@@ -2157,7 +2157,7 @@ namespace WebServer
 	void WebClient::HandleSwitchList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Switches"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSwitches));
 		HtmlTag table("table");
 		const map<string,DataModel::Switch*> switchList = manager.SwitchListByName();
 		map<string,string> switchArgument;
@@ -2371,7 +2371,7 @@ namespace WebServer
 	void WebClient::HandleSignalList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Signals"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSignals));
 		HtmlTag table("table");
 		const map<string,DataModel::Signal*> signalList = manager.SignalListByName();
 		map<string,string> signalArgument;
@@ -2483,7 +2483,7 @@ namespace WebServer
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name = Languages::GetText(Languages::TextNew);
 		delay_t delay = Street::DefaultDelay;
-		Street::commuterType_t commuter = Street::CommuterTypeBoth;
+		Street::pushpullType_t pushpull = Street::PushpullTypeBoth;
 		length_t minTrainLength = 0;
 		length_t maxTrainLength = 0;
 		vector<Relation*> relations;
@@ -2506,7 +2506,7 @@ namespace WebServer
 			const DataModel::Street* street = manager.GetStreet(streetID);
 			name = street->GetName();
 			delay = street->GetDelay();
-			commuter = street->GetCommuter();
+			pushpull = street->GetPushpull();
 			minTrainLength = street->GetMinTrainLength();
 			maxTrainLength = street->GetMaxTrainLength();
 			relations = street->GetRelations();
@@ -2597,11 +2597,11 @@ namespace WebServer
 		feedbackDiv.AddAttribute("id", "feedbacks");
 		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
 		tracksDiv.AddChildTag(feedbackDiv);
-		map<string,string> commuterOptions;
-		commuterOptions[to_string(Street::CommuterTypeNo)] = "Only non-commuter";
-		commuterOptions[to_string(Street::CommuterTypeBoth)] = "Commuter and non-commuter";
-		commuterOptions[to_string(Street::CommuterTypeOnly)] = "Only commuter";
-		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("commuter", "Allow trains:", commuterOptions, to_string(commuter)));
+		map<string,string> pushpullOptions;
+		pushpullOptions[to_string(Street::PushpullTypeNo)] = "Only non-push-pull";
+		pushpullOptions[to_string(Street::PushpullTypeBoth)] = "push-pull and non-push-pull";
+		pushpullOptions[to_string(Street::PushpullTypeOnly)] = "Only push-pull";
+		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("pushpull", "Allow trains:", pushpullOptions, to_string(pushpull)));
 		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("mintrainlength", "Min. train length:", minTrainLength, 0, 99999));
 		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("maxtrainlength", "Max. train length:", maxTrainLength, 0, 99999));
 		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("waitafterrelease", "Wait after release (s):", waitAfterRelease, 0, 300));
@@ -2625,7 +2625,7 @@ namespace WebServer
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		delay_t delay = static_cast<delay_t>(Utils::Utils::GetIntegerMapEntry(arguments, "delay"));
-		Street::commuterType_t commuter = static_cast<Street::commuterType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", Street::CommuterTypeBoth));
+		Street::pushpullType_t pushpull = static_cast<Street::pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", Street::PushpullTypeBoth));
 		length_t mintrainlength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
 		length_t maxtrainlength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible"));
@@ -2664,7 +2664,7 @@ namespace WebServer
 		if (!manager.StreetSave(streetID,
 			name,
 			delay,
-			commuter,
+			pushpull,
 			mintrainlength,
 			maxtrainlength,
 			relations,
@@ -2744,7 +2744,7 @@ namespace WebServer
 	void WebClient::HandleStreetList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Streets"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextStreets));
 		HtmlTag table("table");
 		const map<string,DataModel::Street*> streetList = manager.StreetListByName();
 		map<string,string> streetArgument;
@@ -2983,7 +2983,7 @@ namespace WebServer
 	void WebClient::HandleTrackList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Tracks"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextTracks));
 		HtmlTag table("table");
 		const map<string,DataModel::Track*> trackList = manager.TrackListByName();
 		map<string,string> trackArgument;
@@ -3203,7 +3203,7 @@ namespace WebServer
 	void WebClient::HandleFeedbackList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Feedback"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextFeedbacks));
 		HtmlTag table("table");
 		const map<string,DataModel::Feedback*> feedbackList = manager.FeedbackListByName();
 		map<string,string> feedbackArgument;
@@ -3468,7 +3468,7 @@ namespace WebServer
 		ss << HtmlTagInputSliderLocoSpeed("speed", MinSpeed, loco->GetMaxSpeed(), speed, locoID);
 		buttonArguments["speed"] = to_string(MinSpeed);
 		ss << HtmlTagButtonCommand("0", id + "_0", buttonArguments);
-		buttonArguments["speed"] = to_string(loco->GetCreepSpeed());
+		buttonArguments["speed"] = to_string(loco->GetCreepingSpeed());
 		ss << HtmlTagButtonCommand("I", id + "_1", buttonArguments);
 		buttonArguments["speed"] = to_string(loco->GetReducedSpeed());
 		ss << HtmlTagButtonCommand("II", id + "_2", buttonArguments);
