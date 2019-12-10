@@ -1167,17 +1167,17 @@ namespace WebServer
 	{
 		HtmlTag content("div");
 		content.AddAttribute("id", "position");;
-		content.AddChildTag(HtmlTagInputIntegerWithLabel("posx", "Pos X:", posx, 0, 255));
-		content.AddChildTag(HtmlTagInputIntegerWithLabel("posy", "Pos Y:", posy, 0, 255));
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("posx", Languages::TextPosX, posx, 0, 255));
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("posy", Languages::TextPosY, posy, 0, 255));
 		map<string,layerID_t> layerList = manager.LayerListByName();
-		content.AddChildTag(HtmlTagSelectWithLabel("posz", "Pos Z:", layerList, posz));
+		content.AddChildTag(HtmlTagSelectWithLabel("posz", Languages::TextPosZ, layerList, posz));
 		return content;
 	}
 
 	HtmlTag WebClient::HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible)
 	{
 		HtmlTag content;
-		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", "Visible:", "visible", static_cast<bool>(visible));
+		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", Languages::TextVisible, "visible", static_cast<bool>(visible));
 		checkboxVisible.AddAttribute("id", "visible");
 		checkboxVisible.AddAttribute("onchange", "onChangeCheckboxShowHide('visible', 'position');");
 		content.AddChildTag(checkboxVisible);
@@ -2821,21 +2821,12 @@ namespace WebServer
 				break;
 		}
 
-		std::map<string, string> typeOptions;
-		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeStraight))] = "Straight";
-		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeTurn))] = "Turn";
-		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeEnd))] = "End/BufferStop";
-		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeBridge))] = "Bridge";
-		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeTunnel))] = "Tunnel (two sides)";
-		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeTunnelEnd))] = "Tunnel (one side)";
-		typeOptions[to_string(static_cast<int>(DataModel::Track::TrackTypeLink))] = "Link";
-
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("feedback", "Feedbacks"));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", "Automode"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("feedback", Languages::TextFeedbacks));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
@@ -2843,14 +2834,23 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"));
 		formContent.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
 
+		std::map<DataModel::Track::type_t, Languages::textSelector_t> typeOptions;
+		typeOptions[DataModel::Track::TrackTypeStraight] = Languages::TextStraight;
+		typeOptions[DataModel::Track::TrackTypeTurn] = Languages::TextTurn;
+		typeOptions[DataModel::Track::TrackTypeEnd] = Languages::TextBufferStop;
+		typeOptions[DataModel::Track::TrackTypeBridge] = Languages::TextBridge;
+		typeOptions[DataModel::Track::TrackTypeTunnel] = Languages::TextTunnelTwoSides;
+		typeOptions[DataModel::Track::TrackTypeTunnelEnd] = Languages::TextTunnelOneSide;
+		typeOptions[DataModel::Track::TrackTypeLink] = Languages::TextLink;
+
 		HtmlTag mainContent("div");
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", "Type:", typeOptions, to_string(type)).AddAttribute("onchange", "onChangeTrackType();return false;"));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type).AddAttribute("onchange", "onChangeTrackType();return false;"));
 		HtmlTag i_length("div");
 		i_length.AddAttribute("id", "i_length");
-		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", "Length:", height, 1, 100));
+		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, 1, 100));
 		switch (type)
 		{
 			case DataModel::Track::TrackTypeTurn:
