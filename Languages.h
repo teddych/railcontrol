@@ -31,6 +31,9 @@ class Languages
 	public:
 		enum textSelector_t : unsigned int
 		{
+			Text180Deg,
+			Text90DegAntiClockwise,
+			Text90DegClockwise,
 			TextAccessories,
 			TextAccessoryAddressDccTooHigh,
 			TextAccessoryAddressMmTooHigh,
@@ -86,6 +89,7 @@ class Languages
 			TextHsi88ErrorConfiguring,
 			TextIPAddress,
 			TextInvalidDataReceived,
+			TextInverted,
 			TextLayer1,
 			TextLayer1IsUndeletable,
 			TextLayerDeleted,
@@ -129,6 +133,7 @@ class Languages
 			TextMultipleUnit,
 			TextName,
 			TextNew,
+			TextNoRotation,
 			TextNoS88Modules,
 			TextNrOfFunctions,
 			TextNrOfS88Modules,
@@ -150,7 +155,9 @@ class Languages
 			TextRed,
 			TextReducedSpeed,
 			TextRelease,
+			TextReleaseWhenFree,
 			TextRight,
+			TextRotation,
 			TextSaving,
 			TextSelectStreetBy,
 			TextSenderSocketCreated,

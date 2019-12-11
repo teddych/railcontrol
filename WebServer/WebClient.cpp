@@ -1142,7 +1142,7 @@ namespace WebServer
 	HtmlTag WebClient::HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol)
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTagLabel("Protocol:", "protocol"));
+		content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
 		map<string,protocol_t> protocolMap = manager.AccessoryProtocolsOfControl(controlID);
 		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
 		return content;
@@ -1361,12 +1361,12 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagRotation(const DataModel::LayoutItem::layoutRotation_t rotation) const
 	{
-		std::map<string, string> rotationOptions;
-		rotationOptions[to_string(DataModel::LayoutItem::Rotation0)] = "none";
-		rotationOptions[to_string(DataModel::LayoutItem::Rotation90)] = "90 deg clockwise";
-		rotationOptions[to_string(DataModel::LayoutItem::Rotation180)] = "180 deg";
-		rotationOptions[to_string(DataModel::LayoutItem::Rotation270)] = "90 deg anti-clockwise";
-		return HtmlTagSelectWithLabel("rotation", "Rotation:", rotationOptions, to_string(rotation));
+		std::map<DataModel::LayoutItem::layoutRotation_t, Languages::textSelector_t> rotationOptions;
+		rotationOptions[DataModel::LayoutItem::Rotation0] = Languages::TextNoRotation;
+		rotationOptions[DataModel::LayoutItem::Rotation90] = Languages::Text90DegClockwise;
+		rotationOptions[DataModel::LayoutItem::Rotation180] = Languages::Text180Deg;
+		rotationOptions[DataModel::LayoutItem::Rotation270] = Languages::Text90DegAntiClockwise;
+		return HtmlTagSelectWithLabel("rotation", Languages::TextRotation, rotationOptions, rotation);
 	}
 
 	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction, const string& onchange) const
@@ -1872,6 +1872,7 @@ namespace WebServer
 			posx = accessory->GetPosX();
 			posy = accessory->GetPosY();
 			posz = accessory->GetPosZ();
+			duration = accessory->GetDuration();
 			inverted = accessory->GetInverted();
 		}
 
@@ -1887,19 +1888,34 @@ namespace WebServer
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform")
-			.AddChildTag(HtmlTagInputHidden("cmd", "accessorysave"))
-			.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)))
-			.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"))
-			.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID))
-				.AddAttribute("onchange", "loadProtocol('accessory', " + to_string(accessoryID) + ")")
-				)
-			.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)))
-			.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044))
-			.AddChildTag(HtmlTagDuration(duration))
-			.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted))
-			.AddChildTag(HtmlTagPosition(posx, posy, posz))
-		));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag formContent;
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "accessorysave"));
+		formContent.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)));
+
+		HtmlTag mainContent("div");
+		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddClass("tab_content");
+		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('accessory', " + to_string(accessoryID) + ")"));
+		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
+		mainContent.AddChildTag(HtmlTagDuration(duration));
+		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
+		formContent.AddChildTag(mainContent);
+
+		HtmlTag positionContent("div");
+		positionContent.AddAttribute("id", "tab_position");
+		positionContent.AddClass("tab_content");
+		positionContent.AddClass("hidden");
+		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
+		formContent.AddChildTag(positionContent);
+
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		ReplyHtmlWithHeader(content);
@@ -1968,7 +1984,7 @@ namespace WebServer
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
 			if (accessory.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "accessoryrelease_" + accessoryIdString, accessoryArgument, "hideElement('b_accessiryrelease_" + accessoryIdString + "');")));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "accessoryrelease_" + accessoryIdString, accessoryArgument, "hideElement('b_accessoryrelease_" + accessoryIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
@@ -2084,8 +2100,8 @@ namespace WebServer
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent;
@@ -2097,11 +2113,11 @@ namespace WebServer
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('switch', " + to_string(switchID) + ")"));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('switch', " + to_string(switchID) + ")"));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
-		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(HtmlTagDuration(duration));
-		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted));
+		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
 		HtmlTag positionContent("div");
@@ -2298,8 +2314,8 @@ namespace WebServer
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent;
@@ -2311,11 +2327,11 @@ namespace WebServer
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('signal', " + to_string(signalID) + ")"));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('signal', " + to_string(signalID) + ")"));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
-		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", "Address:", address, 1, 2044));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(HtmlTagDuration(duration));
-		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted));
+		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
 		HtmlTag positionContent("div");
@@ -2877,7 +2893,7 @@ namespace WebServer
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
 		automodeContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, true));
-		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("releasewhenfree", "Release when free:", "trze", releaseWhenFree));
+		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("releasewhenfree", Languages::TextReleaseWhenFree, "true", releaseWhenFree));
 		formContent.AddChildTag(automodeContent);
 
 		unsigned int feedbackCounter = 0;
