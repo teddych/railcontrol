@@ -1205,9 +1205,9 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, switchOptions, objectId).AddClass("select_relation_id"));
 
-				map<string, switchState_t> stateOptions;
-				stateOptions["Straight"] = DataModel::Switch::SwitchStateStraight;
-				stateOptions["Turnout"] = DataModel::Switch::SwitchStateTurnout;
+				map<switchState_t,Languages::textSelector_t> stateOptions;
+				stateOptions[DataModel::Switch::SwitchStateStraight] = Languages::TextStraight;
+				stateOptions[DataModel::Switch::SwitchStateTurnout] = Languages::TextTurnout;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -1222,9 +1222,9 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, signalOptions, objectId).AddClass("select_relation_id"));
 
-				map<string, signalState_t> stateOptions;
-				stateOptions["Green"] = DataModel::Signal::SignalStateGreen;
-				stateOptions["Red"] = DataModel::Signal::SignalStateRed;
+				map<signalState_t,Languages::textSelector_t> stateOptions;
+				stateOptions[DataModel::Signal::SignalStateGreen] = Languages::TextGreen;
+				stateOptions[DataModel::Signal::SignalStateRed] = Languages::TextRed;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -1239,9 +1239,9 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, accessoryOptions, objectId).AddClass("select_relation_id"));
 
-				map<string, accessoryState_t> stateOptions;
-				stateOptions["on"] = DataModel::Accessory::AccessoryStateOn;
-				stateOptions["off"] = DataModel::Accessory::AccessoryStateOff;
+				map<accessoryState_t,Languages::textSelector_t> stateOptions;
+				stateOptions[DataModel::Accessory::AccessoryStateOn] = Languages::TextOn;
+				stateOptions[DataModel::Accessory::AccessoryStateOff] = Languages::TextOff;
 				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
@@ -1256,10 +1256,10 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, trackOptions, objectId).AddClass("select_relation_id"));
 
-				map<string, direction_t> stateOptions;
-				stateOptions["Left"] = DirectionLeft;
-				stateOptions["Right"] = DirectionRight;
-				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
+				map<unsigned char,Languages::textSelector_t> stateOptions;
+				stateOptions[static_cast<unsigned char>(DirectionLeft)] = Languages::TextLeft;
+				stateOptions[static_cast<unsigned char>(DirectionRight)] = Languages::TextRight;
+				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, static_cast<unsigned char>(state)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1277,7 +1277,7 @@ namespace WebServer
 
 			default:
 			{
-				content.AddContent("Unknown objecttype");
+				content.AddContent(Languages::TextUnknownObjectType);
 				return content;
 			}
 		}
@@ -1292,12 +1292,12 @@ namespace WebServer
 		deleteButton.AddClass("wide_button");
 		content.AddChildTag(deleteButton);
 
-		map<string,objectType_t> objectTypeOptions;
-		objectTypeOptions["Accessory"] = ObjectTypeAccessory;
-		objectTypeOptions["Signal"] = ObjectTypeSignal;
-		objectTypeOptions["Switch"] = ObjectTypeSwitch;
-		objectTypeOptions["Track"] = ObjectTypeTrack;
-		objectTypeOptions["Street"] = ObjectTypeStreet;
+		map<objectType_t,Languages::textSelector_t> objectTypeOptions;
+		objectTypeOptions[ObjectTypeAccessory] = Languages::TextAccessory;
+		objectTypeOptions[ObjectTypeSignal] = Languages::TextSignal;
+		objectTypeOptions[ObjectTypeSwitch] = Languages::TextSwitch;
+		objectTypeOptions[ObjectTypeTrack] = Languages::TextTrack;
+		objectTypeOptions[ObjectTypeStreet] = Languages::TextStreet;
 		HtmlTagSelect select("relation_type_" + priority, objectTypeOptions, objectType);
 		select.AddClass("select_relation_objecttype");
 		select.AddAttribute("onchange", "loadRelationObject(" + priority + ");return false;");
@@ -2544,10 +2544,10 @@ namespace WebServer
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", "Basic", true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("relation", "Relations"));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", "Auto-mode"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("relation", Languages::TextMembers));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
@@ -2559,7 +2559,7 @@ namespace WebServer
 		basicContent.AddAttribute("id", "tab_basic");
 		basicContent.AddClass("tab_content");
 		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("delay", "Delay in ms:", delay, 1, USHRT_MAX));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("delay", Languages::TextWaitingTimeBetweenMembers, delay, 1, USHRT_MAX));
 		formContent.AddChildTag(basicContent);
 
 		HtmlTag relationDiv("div");
