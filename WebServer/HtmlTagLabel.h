@@ -41,7 +41,9 @@ namespace WebServer
 			HtmlTagLabel(const Languages::textSelector_t label, const std::string& reference)
 			: HtmlTag("label")
 			{
-				AddContent(label);
+				std::string stringLabel = Languages::GetText(label);
+				stringLabel.append(":");
+				AddContent(stringLabel);
 				AddAttribute("for", reference);
 			};
 	};

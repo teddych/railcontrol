@@ -1155,7 +1155,7 @@ namespace WebServer
 		durationOptions["0100"] = "100";
 		durationOptions["0250"] = "250";
 		durationOptions["1000"] = "1000";
-		return HtmlTagSelectWithLabel("duration", Languages::GetText(label), durationOptions, Utils::Utils::ToStringWithLeadingZeros(duration, 4));
+		return HtmlTagSelectWithLabel("duration", label, durationOptions, Utils::Utils::ToStringWithLeadingZeros(duration, 4));
 	}
 
 	HtmlTag WebClient::HtmlTagDuration(const accessoryDuration_t duration) const
