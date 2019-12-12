@@ -1369,7 +1369,7 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("rotation", Languages::TextRotation, rotationOptions, rotation);
 	}
 
-	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const std::string& label, const trackID_t trackId, const direction_t direction, const string& onchange) const
+	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const Languages::textSelector_t label, const trackID_t trackId, const direction_t direction, const string& onchange) const
 	{
 		HtmlTag tag;
 		map<string,trackID_t> tracks = manager.TrackListIdByName();
@@ -1380,9 +1380,9 @@ namespace WebServer
 			selectTrack.AddAttribute("onchange", onchange);
 		}
 		tag.AddChildTag(selectTrack);
-		map<string,direction_t> directions;
-		directions["Left"] = DirectionLeft;
-		directions["Right"] = DirectionRight;
+		map<direction_t,Languages::textSelector_t> directions;
+		directions[DirectionLeft] = Languages::TextLeft;
+		directions[DirectionRight] = Languages::TextRight;
 		tag.AddChildTag(HtmlTagSelect(name + "direction", directions, direction).AddClass("select_direction"));
 		return tag;
 	}
@@ -1393,10 +1393,10 @@ namespace WebServer
 		map<string,feedbackID_t> feedbacks = manager.FeedbacksOfTrack(trackId);
 		map<string,feedbackID_t> feedbacksWithNone = feedbacks;
 		feedbacksWithNone["-"] = FeedbackNone;
-		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackreduced", "Reduce speed at:", feedbacksWithNone, feedbackIdReduced).AddClass("select_feedback"));
-		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackcreep", "Creep at:", feedbacksWithNone, feedbackIdCreep).AddClass("select_feedback"));
-		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackstop", "Stop at:", feedbacks, feedbackIdStop).AddClass("select_feedback"));
-		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackover", "Overrun at:", feedbacksWithNone, feedbackIdOver).AddClass("select_feedback"));
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackreduced", Languages::TextReducedSpeedAt, feedbacksWithNone, feedbackIdReduced).AddClass("select_feedback"));
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackcreep", Languages::TextCreepAt, feedbacksWithNone, feedbackIdCreep).AddClass("select_feedback"));
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackstop", Languages::TextStopAt, feedbacks, feedbackIdStop).AddClass("select_feedback"));
+		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackover", Languages::TextOverrunAt, feedbacksWithNone, feedbackIdOver).AddClass("select_feedback"));
 		return tag;
 	}
 
@@ -2596,7 +2596,7 @@ namespace WebServer
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
 
-		HtmlTagInputCheckboxWithLabel checkboxAutomode("automode", "Auto-mode:", "automode", static_cast<bool>(automode));
+		HtmlTagInputCheckboxWithLabel checkboxAutomode("automode", Languages::TextAutomode, "automode", static_cast<bool>(automode));
 		checkboxAutomode.AddAttribute("id", "automode");
 		checkboxAutomode.AddAttribute("onchange", "onChangeCheckboxShowHide('automode', 'tracks');");
 		automodeContent.AddChildTag(checkboxAutomode);
@@ -2607,20 +2607,20 @@ namespace WebServer
 		{
 			tracksDiv.AddAttribute("hidden");
 		}
-		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", "From track:", fromTrack, fromDirection));
-		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", "To track:", toTrack, toDirection, "updateFeedbacksOfTrack(); return false;"));
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", Languages::TextFromTrack, fromTrack, fromDirection));
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", Languages::TextToTrack, toTrack, toDirection, "updateFeedbacksOfTrack(); return false;"));
 		HtmlTag feedbackDiv("div");
 		feedbackDiv.AddAttribute("id", "feedbacks");
 		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
 		tracksDiv.AddChildTag(feedbackDiv);
-		map<string,string> pushpullOptions;
-		pushpullOptions[to_string(Street::PushpullTypeNo)] = "Only non-push-pull";
-		pushpullOptions[to_string(Street::PushpullTypeBoth)] = "push-pull and non-push-pull";
-		pushpullOptions[to_string(Street::PushpullTypeOnly)] = "Only push-pull";
-		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("pushpull", "Allow trains:", pushpullOptions, to_string(pushpull)));
-		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("mintrainlength", "Min. train length:", minTrainLength, 0, 99999));
-		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("maxtrainlength", "Max. train length:", maxTrainLength, 0, 99999));
-		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("waitafterrelease", "Wait after release (s):", waitAfterRelease, 0, 300));
+		map<Street::pushpullType_t,Languages::textSelector_t> pushpullOptions;
+		pushpullOptions[Street::PushpullTypeNo] = Languages::TextNoPushPull;
+		pushpullOptions[Street::PushpullTypeBoth] = Languages::TextAllTrains;
+		pushpullOptions[Street::PushpullTypeOnly] = Languages::TextPushPullOnly;
+		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("pushpull", Languages::TextAllowedTrains, pushpullOptions, pushpull));
+		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("mintrainlength", Languages::TextMinTrainLength, minTrainLength, 0, 99999));
+		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("maxtrainlength", Languages::TextMaxTrainLength, maxTrainLength, 0, 99999));
+		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("waitafterrelease", Languages::TextWaitAfterRelease, waitAfterRelease, 0, 300));
 		automodeContent.AddChildTag(tracksDiv);
 		formContent.AddChildTag(automodeContent);
 
@@ -3165,9 +3165,9 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", "Control:", controlOptions, to_string(controlId)).AddAttribute("onchange", "loadProtocol('feedback', " + to_string(feedbackID) + ")"));
-		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", "Pin:", pin, 1, 4096));
-		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", "Inverted:", "true", inverted));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlId)).AddAttribute("onchange", "loadProtocol('feedback', " + to_string(feedbackID) + ")"));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", Languages::TextPin, pin, 1, 4096));
+		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
 		HtmlTag positionContent("div");
