@@ -1400,7 +1400,7 @@ namespace WebServer
 		return tag;
 	}
 
-	HtmlTag WebClient::HtmlTagTabMenuItem(const std::string& tabName, const std::string& buttonValue, const bool selected) const
+	HtmlTag WebClient::HtmlTagTabMenuItem(const std::string& tabName, const Languages::textSelector_t buttonValue, const bool selected) const
 	{
 		HtmlTag button("button");
 		button.AddClass("tab_button");
@@ -3077,7 +3077,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("h1").AddContent("Select loco for track " + track->GetName()));
 		content.AddChildTag(HtmlTagInputHidden("cmd", "tracksetloco"));
 		content.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
-		content.AddChildTag(HtmlTagSelectWithLabel("loco", "Loco:", locos));
+		content.AddChildTag(HtmlTagSelectWithLabel("loco", Languages::TextLoco, locos));
 		content.AddChildTag(HtmlTag("br"));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
@@ -3152,8 +3152,8 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", "Main", true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", "Position"));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");

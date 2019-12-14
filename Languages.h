@@ -114,6 +114,7 @@ class Languages
 			TextLoadedStreet,
 			TextLoadedSwitch,
 			TextLoadedTrack,
+			TextLoco,
 			TextLocoAddressDccTooHigh,
 			TextLocoAddressMmTooHigh,
 			TextLocoDeleted,
