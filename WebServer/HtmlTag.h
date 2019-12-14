@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <vector>
 
 #include "Languages.h"
+#include "Logger/Logger.h"
 
 namespace WebServer
 {
@@ -44,12 +45,39 @@ namespace WebServer
 			HtmlTag(const std::string& name) : name(name) {}
 			virtual ~HtmlTag() {};
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value = "");
-			virtual HtmlTag AddChildTag(const HtmlTag& child);
-			virtual HtmlTag AddContent(const std::string& content);
-			virtual HtmlTag AddContent(const Languages::textSelector_t text);
-			virtual HtmlTag AddClass(const std::string& _class);
+			virtual HtmlTag AddChildTag(const HtmlTag& child)
+			{
+				this->childTags.push_back(child);
+				return *this;
+			}
+
+			virtual HtmlTag AddContent(const std::string& content)
+			{
+				this->content += content;
+				return *this;
+			}
+
+			template<typename... Args>
+			HtmlTag AddContent(const Languages::textSelector_t text, Args... args)
+			{
+				return AddContent(Logger::Logger::Format(Languages::GetText(text), args...));
+			}
+
+			virtual HtmlTag AddClass(const std::string& _class)
+			{
+				classes.push_back(_class);
+				return *this;
+			}
+
 			virtual size_t ContentSize() const { return content.size(); }
-			operator std::string () const;
+
+			operator std::string () const
+			{
+				std::stringstream ss;
+				ss << *this;
+				return ss.str();
+			}
+
 			friend std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag);
 	};
 }; // namespace WebServer

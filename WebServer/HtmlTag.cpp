@@ -34,36 +34,6 @@ namespace WebServer
 		return *this;
 	}
 
-	HtmlTag HtmlTag::AddChildTag(const HtmlTag& child)
-	{
-		this->childTags.push_back(child);
-		return *this;
-	}
-
-	HtmlTag HtmlTag::AddContent(const std::string& content)
-	{
-		this->content += content;
-		return *this;
-	}
-
-	HtmlTag HtmlTag::AddContent(const Languages::textSelector_t text)
-	{
-		return AddContent(Languages::GetText(text));
-	}
-
-	HtmlTag HtmlTag::AddClass(const std::string& _class)
-	{
-		classes.push_back(_class);
-		return *this;
-	}
-
-	HtmlTag::operator std::string () const
-	{
-		std::stringstream ss;
-		ss << *this;
-		return ss.str();
-	}
-
 	std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag)
 	{
 		if (tag.name.size() > 0)

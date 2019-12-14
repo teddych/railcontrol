@@ -822,8 +822,8 @@ namespace WebServer
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete layer &quot;" + layer->GetName() + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the layer &quot;" + layer->GetName() + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteLayer));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, layer->GetName()));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "layerdelete"))
 			.AddContent(HtmlTagInputHidden("layer", to_string(layerID))
@@ -1015,8 +1015,8 @@ namespace WebServer
 		}
 
 		HtmlTag content;
-		content.AddContent(HtmlTag("h1").AddContent("Delete control &quot;" + control->name + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the control &quot;" + control->name + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteControl));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, control->name));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "controldelete"))
 			.AddContent(HtmlTagInputHidden("control", to_string(controlID))
@@ -1727,8 +1727,8 @@ namespace WebServer
 
 		HtmlTag content;
 		const string& locoName = loco->GetName();
-		content.AddContent(HtmlTag("h1").AddContent("Delete loco &quot;" + locoName + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the loco &quot;" + locoName + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteLoco));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, locoName));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "locodelete"))
 			.AddContent(HtmlTagInputHidden("loco", to_string(locoID))
@@ -2013,8 +2013,8 @@ namespace WebServer
 
 		HtmlTag content;
 		const string& accessoryName = accessory->GetName();
-		content.AddContent(HtmlTag("h1").AddContent("Delete accessory &quot;" + accessoryName + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the accessory &quot;" + accessoryName + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteAccessory));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, accessoryName));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "accessorydelete"))
 			.AddContent(HtmlTagInputHidden("accessory", to_string(accessoryID))
@@ -2216,8 +2216,8 @@ namespace WebServer
 
 		HtmlTag content;
 		const string& switchName = mySwitch->GetName();
-		content.AddContent(HtmlTag("h1").AddContent("Delete switch &quot;" + switchName + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the switch &quot;" + switchName + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteSwitch));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, switchName));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "switchdelete"))
 			.AddContent(HtmlTagInputHidden("switch", to_string(switchID))
@@ -2430,8 +2430,8 @@ namespace WebServer
 
 		HtmlTag content;
 		const string& signalName = signal->GetName();
-		content.AddContent(HtmlTag("h1").AddContent("Delete signal &quot;" + signalName + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the signal &quot;" + signalName + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteSignal));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, signalName));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "signaldelete"))
 			.AddContent(HtmlTagInputHidden("signal", to_string(signalID))
@@ -2725,8 +2725,8 @@ namespace WebServer
 
 		HtmlTag content;
 		const string& streetName = street->GetName();
-		content.AddContent(HtmlTag("h1").AddContent("Delete street &quot;" + streetName + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the street &quot;" + streetName + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteStreet));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, streetName));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "streetdelete"))
 			.AddContent(HtmlTagInputHidden("street", to_string(streetID))
@@ -2985,8 +2985,8 @@ namespace WebServer
 
 		HtmlTag content;
 		const string& trackName = track->GetName();
-		content.AddContent(HtmlTag("h1").AddContent("Delete track &quot;" + trackName + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the track &quot;" + trackName + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteTrack));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, trackName));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "trackdelete"))
 			.AddContent(HtmlTagInputHidden("track", to_string(trackID))
@@ -3258,8 +3258,8 @@ namespace WebServer
 
 		HtmlTag content;
 		const string& feedbackName = feedback->GetName();
-		content.AddContent(HtmlTag("h1").AddContent("Delete feedback &quot;" + feedbackName + "&quot;?"));
-		content.AddContent(HtmlTag("p").AddContent("Are you sure to delete the feedback &quot;" + feedbackName + "&quot;?"));
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteFeedback));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, feedbackName));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "feedbackdelete"))
 			.AddContent(HtmlTagInputHidden("feedback", to_string(feedbackID))
