@@ -88,9 +88,9 @@ namespace WebServer
 	void WebClient::Worker()
 	{
 		Utils::Utils::SetThreadName("WebClient");
-		logger->Info("HTTP connection {0}: open", id);
+		logger->Info(Languages::TextHttpConnectionOpen, id);
 		WorkerImpl();
-		logger->Info("HTTP connection {0}: close", id);
+		logger->Info(Languages::TextHttpConnectionClose, id);
 	}
 
 	void WebClient::WorkerImpl()
@@ -141,12 +141,12 @@ namespace WebServer
 			map<string, string> headers;
 			InterpretClientRequest(lines, method, uri, protocol, arguments, headers);
 			keepalive = (Utils::Utils::GetStringMapEntry(headers, "Connection", "close").compare("keep-alive") == 0);
-			logger->Info("HTTP connection {0}: Request {1} {2}", id, method, uri);
+			logger->Info(Languages::TextHttpConnectionRequest, id, method, uri);
 
 			// if method is not implemented
 			if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0))
 			{
-				logger->Info("HTTP connection {0}: HTTP method {1} not implemented", id, method);
+				logger->Info(Languages::TextHttpConnectionNotImplemented, id, method);
 				HtmlResponseNotImplemented response(method);
 				connection->Send(response);
 				return;
@@ -155,7 +155,7 @@ namespace WebServer
 			// handle requests
 			if (arguments["cmd"].compare("quit") == 0)
 			{
-				ReplyHtmlWithHeader(string("Stopping Railcontrol"));
+				ReplyHtmlWithHeaderAndParagraph(Languages::TextStoppingRailControl);
 				stopRailControlWebserver();
 			}
 			else if (arguments["cmd"].compare("booster") == 0)
@@ -163,12 +163,12 @@ namespace WebServer
 				bool on = Utils::Utils::GetBoolMapEntry(arguments, "on");
 				if (on)
 				{
-					ReplyHtmlWithHeader(string("Turning booster on"));
+					ReplyHtmlWithHeaderAndParagraph(Languages::TextTurningBoosterOn);
 					manager.Booster(ControlTypeWebserver, BoosterGo);
 				}
 				else
 				{
-					ReplyHtmlWithHeader(string("Turning booster off"));
+					ReplyHtmlWithHeaderAndParagraph(Languages::TextTurningBoosterOff);
 					manager.Booster(ControlTypeWebserver, BoosterStop);
 				}
 			}
@@ -661,7 +661,7 @@ namespace WebServer
 		{
 			HtmlResponseNotFound response(virtualFile);
 			connection->Send(response);
-			logger->Info("HTTP connection {0}: 404 Not found: {1}", id, virtualFile);
+			logger->Info(Languages::TextHttpConnectionNotFound, id, virtualFile);
 			return;
 		}
 
@@ -1156,11 +1156,6 @@ namespace WebServer
 		durationOptions["0250"] = "250";
 		durationOptions["1000"] = "1000";
 		return HtmlTagSelectWithLabel("duration", label, durationOptions, Utils::Utils::ToStringWithLeadingZeros(duration, 4));
-	}
-
-	HtmlTag WebClient::HtmlTagDuration(const accessoryDuration_t duration) const
-	{
-		return HtmlTagDuration(duration, Languages::TextDuration);
 	}
 
 	HtmlTag WebClient::HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz)
@@ -1962,9 +1957,7 @@ namespace WebServer
 
 		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState, false);
 
-		stringstream ss;
-		ss << "Accessory &quot;" << manager.GetAccessoryName(accessoryID) << "&quot; is now set to " << accessoryState;
-		ReplyHtmlWithHeaderAndParagraph(ss.str());
+		ReplyHtmlWithHeaderAndParagraph(accessoryState ? Languages::TextAccessoryStateIsGreen : Languages::TextAccessoryStateIsRed, manager.GetAccessoryName(accessoryID));
 	}
 
 	void WebClient::HandleAccessoryList()
@@ -2165,9 +2158,7 @@ namespace WebServer
 
 		manager.SwitchState(ControlTypeWebserver, switchID, switchState, false);
 
-		stringstream ss;
-		ss << "Switch &quot;" << manager.GetSwitchName(switchID) << "&quot; is now set to " << switchState;
-		ReplyHtmlWithHeaderAndParagraph(ss.str());
+		ReplyHtmlWithHeaderAndParagraph(switchState ? Languages::TextSwitchStateIsStraight : Languages::TextSwitchStateIsTurnout, manager.GetSwitchName(switchID));
 	}
 
 	void WebClient::HandleSwitchList()
@@ -2379,9 +2370,7 @@ namespace WebServer
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
 
-		stringstream ss;
-		ss << "Signal &quot;" << manager.GetSignalName(signalID) << "&quot; is now set to " << signalState;
-		ReplyHtmlWithHeaderAndParagraph(ss.str());
+		ReplyHtmlWithHeaderAndParagraph(signalState ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, manager.GetSignalName(signalID));
 	}
 
 	void WebClient::HandleSignalList()
@@ -3211,9 +3200,7 @@ namespace WebServer
 
 		manager.FeedbackState(feedbackID, state);
 
-		stringstream ss;
-		ss << "Feedback &quot;" << manager.GetFeedbackName(feedbackID) << "&quot; is now set to " << state;
-		ReplyHtmlWithHeaderAndParagraph(ss.str());
+		ReplyHtmlWithHeaderAndParagraph(state ? Languages::TextFeedbackStateIsOn : Languages::TextFeedbackStateIsOff, manager.GetFeedbackName(feedbackID));
 	}
 
 	void WebClient::HandleFeedbackList()

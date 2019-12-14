@@ -101,7 +101,7 @@ namespace WebServer
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagDuration(const accessoryDuration_t duration, const Languages::textSelector_t label) const;
-			HtmlTag HtmlTagDuration(const accessoryDuration_t duration) const;
+			HtmlTag HtmlTagDuration(const accessoryDuration_t duration) const { return HtmlTagDuration(duration, Languages::TextDuration); }
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz);
 			HtmlTag HtmlTagPosition(const layoutPosition_t posx, const layoutPosition_t posy, const layoutPosition_t posz, const visible_t visible);
 			HtmlTag HtmlTagRotation(const DataModel::LayoutItem::layoutRotation_t rotation) const;
