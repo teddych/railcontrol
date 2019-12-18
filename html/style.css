@@ -40,13 +40,45 @@ body {
 }
 
 .loco {
-	height: calc(100% - 204px);
 	width: 250px;
 	position: fixed;
 	top: 90px;
+	left: 0px;
 	border: solid 1px;
 	overflow-x: hidden;
 	overflow-y: auto;
+}
+
+.clock {
+	height: 250px;
+	width: 250px;
+	position: fixed;
+	bottom: 112px;
+	left: 0px;
+	border: solid 1px;
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+.clock2 {
+	height: 250px;
+	width: 250px;
+}
+
+@media (max-height: 909px) {
+	.loco {
+		height: calc(100% - 204px);
+	}
+
+	.clock {
+		display: none;
+	}
+}
+
+@media (min-height: 910px) {
+	.loco {
+		height: calc(100% - 456px);
+	}
 }
 
 .layout {
