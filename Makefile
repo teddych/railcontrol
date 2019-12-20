@@ -10,6 +10,7 @@ CPPFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
 CPPFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
+LIBSAMALGAMATION=-lpthread -ldl
 
 TMPDIR=/RailControl
 
@@ -81,8 +82,7 @@ dist: all
 	strip Storage/*.so
 	tar cvJf railcontrol.tar.xz Hardware/*.so Storage/*.so railcontrol railcontrol.conf.dist html/*
 
-#dist-cygwin: amalgamation
-dist-cygwin:
+dist-cygwin: amalgamation
 	strip railcontrol.exe
 	mkdir $(TMPDIR)
 	cp -r \
@@ -103,7 +103,7 @@ amalgamation: Timestamp.cpp
 	./amalgamation.bash
 	$(CPP) $(CPPFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C Storage amalgamation
-	$(CPP) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
+	$(CPP) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 	rm Timestamp.cpp
@@ -112,7 +112,7 @@ raspi: Timestamp.cpp
 	./amalgamation.bash
 	$(CPPRASPI) $(CPPFLAGSRASPI) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C Storage raspi
-	$(CPPRASPI) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBS)
+	$(CPPRASPI) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 	rm Timestamp.cpp
