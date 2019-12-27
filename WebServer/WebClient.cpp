@@ -3052,18 +3052,22 @@ namespace WebServer
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID != LocoNone)
 		{
-			bool ok = manager.LocoIntoTrack(locoID, trackID);
-			ReplyHtmlWithHeaderAndParagraph(ok ? "Loco added to track." : "Unable to add loco to track.");
+			if (!manager.LocoIntoTrack(locoID, trackID))
+			{
+				ReplyResponse(ResponseError, Languages::TextUnableToAddLocoToTrack, manager.GetLocoName(locoID), manager.GetTrackName(trackID));
+				return;
+			}
+			ReplyResponse(ResponseInfo, Languages::TextLocoIsOnTrack, manager.GetLocoName(locoID), manager.GetTrackName(trackID));
 			return;
 		}
 		const DataModel::Track* track = manager.GetTrack(trackID);
 		if (track->IsInUse())
 		{
-			ReplyHtmlWithHeaderAndParagraph("Track " + track->GetName() + " is in use.");
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextTrackIsInUse, track->GetName());
 			return;
 		}
 		map<string,locoID_t> locos = manager.LocoListFree();
-		content.AddChildTag(HtmlTag("h1").AddContent("Select loco for track " + track->GetName()));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSelectLocoForTrack, track->GetName()));
 		content.AddChildTag(HtmlTagInputHidden("cmd", "tracksetloco"));
 		content.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
 		content.AddChildTag(HtmlTagSelectWithLabel("loco", Languages::TextLoco, locos));
