@@ -167,15 +167,15 @@ namespace WebServer
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(trackName))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_block").AddContent("Block track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=true');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_unblock").AddContent("Unblock track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=false');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent("Release track").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_loco_release").AddContent("Release loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=locorelease&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_set").AddContent("Set loco").AddAttribute("onClick", "loadPopup('/?cmd=tracksetloco&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_start_loco").AddContent("Start loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstartloco&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_stop_loco").AddContent("Stop loco").AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstoploco&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_block").AddContent(Languages::TextBlockTrack).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=true');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_unblock").AddContent(Languages::TextUnblockTrack).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=false');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent(Languages::TextReleaseTrack).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_loco_release").AddContent(Languages::TextReleaseLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=locorelease&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_set").AddContent(Languages::TextSetLoco).AddAttribute("onClick", "loadPopup('/?cmd=tracksetloco&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_start_loco").AddContent(Languages::TextStartLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstartloco&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_stop_loco").AddContent(Languages::TextStopLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstoploco&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextEdit).AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextDelete).AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
 			);
 		AddChildTag(div2);
 	}
