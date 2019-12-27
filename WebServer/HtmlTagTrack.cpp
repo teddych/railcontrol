@@ -136,7 +136,7 @@ namespace WebServer
 				const string textPositionX = to_string(EdgeLength * trackHeight - 1);
 				image = "<polygon class=\"track\" points=\"14,0 22,0 22," + layoutHeight + " 14," + layoutHeight + "\"/>";
 				image += "<text class=\"loconame\" x=\"-" + textPositionX + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";
-				image += "<text class=\"trackname\" x=\"-" + textPositionX + "\" y=\"33\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + name + "</text>";
+				image += "<text class=\"trackname\" x=\"-" + textPositionX + "\" y=\"33\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + track->GetName() + "</text>";
 				break;
 		}
 
