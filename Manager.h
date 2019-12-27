@@ -310,8 +310,6 @@ class Manager
 		const std::map<std::string,protocol_t> ProtocolsOfControl(const addressType_t type, const controlID_t) const;
 
 		bool LocoReleaseInternal(DataModel::Loco* loco);
-		bool TrackReleaseInternal(const trackID_t trackID);
-		bool TrackReleaseInternal(DataModel::Track* track);
 
 		template<class Key, class Value>
 		void DeleteAllMapEntries(std::map<Key,Value*>& m, std::mutex& x)

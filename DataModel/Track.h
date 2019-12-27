@@ -90,6 +90,7 @@ namespace DataModel
 			bool ReserveForce(const locoID_t locoID);
 			bool Lock(const locoID_t locoID) override;
 			bool Release(const locoID_t locoID) override;
+			bool ReleaseForce(const locoID_t locoID);
 
 			std::string LayoutType() const override { return "track"; };
 			type_t GetType() const { return type; }

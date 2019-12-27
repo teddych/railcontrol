@@ -159,6 +159,15 @@ namespace DataModel
 		return true;
 	}
 
+	bool Track::ReleaseForce(const locoID_t locoID)
+	{
+		bool ret = LockableItem::Release(locoID);
+		this->locoIdDelayed = LocoNone;
+		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
+		manager->TrackPublishState(this);
+		return ret;
+	}
+
 	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 	{
 		DataModel::Feedback::feedbackState_t oldState = this->state;

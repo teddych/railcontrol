@@ -2372,7 +2372,7 @@ bool Manager::TrackRelease(const trackID_t trackID)
 	{
 		return false;
 	}
-	return TrackReleaseInternal(track);
+	return track->ReleaseForce(LocoNone);
 }
 
 bool Manager::LocoReleaseInTrack(const trackID_t trackID)
@@ -2383,7 +2383,7 @@ bool Manager::LocoReleaseInTrack(const trackID_t trackID)
 		return false;
 	}
 	locoID_t locoID = track->GetLoco();
-	track->Release(locoID);
+	track->ReleaseForce(locoID);
 	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
@@ -2392,15 +2392,6 @@ bool Manager::LocoReleaseInTrack(const trackID_t trackID)
 	return LocoReleaseInternal(loco);
 }
 
-bool Manager::TrackReleaseInternal(Track* track)
-{
-	bool ret = track->Release(LocoNone);
-	if (ret == false)
-	{
-		return false;
-	}
-	return true;
-}
 bool Manager::TrackStartLoco(const trackID_t trackID)
 {
 	Track* track = GetTrack(trackID);
