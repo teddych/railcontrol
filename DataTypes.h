@@ -37,7 +37,7 @@ typedef unsigned int length_t;
 
 // layoutItem
 typedef unsigned char layoutItemSize_t;
-typedef unsigned char layoutPosition_t;
+typedef char layoutPosition_t;
 
 // accessory
 typedef objectID_t accessoryID_t;

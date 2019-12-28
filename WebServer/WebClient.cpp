@@ -3111,12 +3111,12 @@ namespace WebServer
 		HtmlTag content;
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		string name = Languages::GetText(Languages::TextNew);
-		controlID_t controlId = ControlNone;
-		feedbackPin_t pin = FeedbackPinNone;
 		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible", feedbackID == FeedbackNone && (posx || posy) ? VisibleYes : VisibleNo));
+		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible", feedbackID == FeedbackNone && ((posx || posy) && posz >= LayerUndeletable) ? VisibleYes : VisibleNo));
+		controlID_t controlId = posz < LayerUndeletable ? -posz : ControlNone;
+		feedbackPin_t pin = posy * 16 + posx + (posx > 8 ? 0 : 1);
 		bool inverted = false;
 		if (feedbackID > FeedbackNone)
 		{
