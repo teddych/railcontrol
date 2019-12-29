@@ -174,8 +174,8 @@ namespace WebServer
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_set").AddContent(Languages::TextSetLoco).AddAttribute("onClick", "loadPopup('/?cmd=tracksetloco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_start_loco").AddContent(Languages::TextStartLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstartloco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_stop_loco").AddContent(Languages::TextStopLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstoploco&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextEdit).AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextDelete).AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextEditTrack).AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextDeleteTrack).AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
 			);
 		AddChildTag(div2);
 	}

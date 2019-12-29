@@ -59,8 +59,8 @@ namespace WebServer
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(feedbackName))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=feedbackedit&feedback=" + feedbackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=feedbackaskdelete&feedback=" + feedbackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextEditFeedback).AddAttribute("onClick", "loadPopup('/?cmd=feedbackedit&feedback=" + feedbackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextDeleteFeedback).AddAttribute("onClick", "loadPopup('/?cmd=feedbackaskdelete&feedback=" + feedbackIdString + "');"))
 			);
 		AddChildTag(div2);
 	}

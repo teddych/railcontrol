@@ -373,7 +373,6 @@ button:active {
 }
 
 .contextmenu {
-	width: 200px;
 	position: absolute;
 	display: none;
 	z-index: 1;

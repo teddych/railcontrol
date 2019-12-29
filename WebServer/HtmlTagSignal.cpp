@@ -63,9 +63,9 @@ namespace WebServer
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(signalName))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Release").AddAttribute("onClick", "fireRequestAndForget('/?cmd=signalrelease&signal=" + signalIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=signaledit&signal=" + signalIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=signalaskdelete&signal=" + signalIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextReleaseSignal).AddAttribute("onClick", "fireRequestAndForget('/?cmd=signalrelease&signal=" + signalIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextEditSignal).AddAttribute("onClick", "loadPopup('/?cmd=signaledit&signal=" + signalIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextDeleteSignal).AddAttribute("onClick", "loadPopup('/?cmd=signalaskdelete&signal=" + signalIdString + "');"))
 			);
 		AddChildTag(div2);
 	}

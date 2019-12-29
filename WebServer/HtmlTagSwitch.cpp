@@ -67,9 +67,9 @@ namespace WebServer
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(switchName))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Release").AddAttribute("onClick", "fireRequestAndForget('/?cmd=switchrelease&switch=" + switchIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Edit").AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=" + switchIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent("Delete").AddAttribute("onClick", "loadPopup('/?cmd=switchaskdelete&switch=" + switchIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextReleaseSwitch).AddAttribute("onClick", "fireRequestAndForget('/?cmd=switchrelease&switch=" + switchIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextEditSwitch).AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=" + switchIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextDeleteSwitch).AddAttribute("onClick", "loadPopup('/?cmd=switchaskdelete&switch=" + switchIdString + "');"))
 			);
 		AddChildTag(div2);
 	}
