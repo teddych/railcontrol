@@ -141,7 +141,7 @@ namespace WebServer
 		}
 
 		int translate = 0;
-		if (trackHeight > Height1)
+		if (trackHeight > DataModel::LayoutItem::Height1)
 		{
 			DataModel::LayoutItem::layoutRotation_t trackRotation = track->GetRotation();
 			if (trackRotation == DataModel::LayoutItem::Rotation90 || trackRotation == DataModel::LayoutItem::Rotation270)

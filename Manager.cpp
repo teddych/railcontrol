@@ -106,8 +106,8 @@ Manager::Manager(Config& config)
 	if (layers.count(LayerUndeletable) != 1)
 	{
 		string result;
-		bool initLayer0 = LayerSave(0, Languages::GetText(Languages::TextLayer1), result);
-		if (initLayer0 == false)
+		bool initLayer1 = LayerSave(0, Languages::GetText(Languages::TextLayer1), result);
+		if (initLayer1 == false)
 		{
 			logger->Error(Languages::TextUnableToAddLayer1);
 		}
@@ -657,6 +657,7 @@ bool Manager::LocoSave(const locoID_t locoID,
 
 	if (loco == nullptr)
 	{
+		result = Languages::GetText(Languages::TextUnableToAddLoco);
 		return false;
 	}
 
@@ -955,33 +956,33 @@ const std::string& Manager::GetAccessoryName(const accessoryID_t accessoryID) co
 	return accessories.at(accessoryID)->GetName();
 }
 
-bool Manager::CheckAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+bool Manager::CheckAccessoryPosition(const Accessory* accessory, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
 {
-	Accessory* accessory = GetAccessory(accessoryID);
 	if (accessory == nullptr)
+	{
+		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
+	}
+
+	if (accessory->HasPosition(posX, posY, posZ))
 	{
 		return true;
 	}
-
-	return accessory->HasPosition(posX, posY, posZ);
+	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 }
 
 bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryDuration_t duration, const bool inverted, string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
-		result.append("Invalid control-protocol-address combination.");
-		return false;
-	}
-
-	if (!CheckAccessoryPosition(accessoryID, posX, posY, posZ)
-		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
-	{
-		result.append(Languages::GetText(accessoryID == AccessoryNone ? Languages::TextUnableToAddAccessory : Languages::TextUnableToMoveAccessory));
 		return false;
 	}
 
 	Accessory* accessory = GetAccessory(accessoryID);
+	if (!CheckAccessoryPosition(accessory, posX, posY, posZ, result))
+	{
+		return false;
+	}
+
 	if (accessory == nullptr)
 	{
 		accessory = CreateAndAddObject(accessories, accessoryMutex);
@@ -989,6 +990,7 @@ bool Manager::AccessorySave(const accessoryID_t accessoryID, const string& name,
 
 	if (accessory == nullptr)
 	{
+		result = Languages::GetText(Languages::TextUnableToAddAccessory);
 		return false;
 	}
 
@@ -1181,12 +1183,11 @@ const std::string& Manager::GetFeedbackName(const feedbackID_t feedbackID) const
 	return feedbacks.at(feedbackID)->GetName();
 }
 
-bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+bool Manager::CheckFeedbackPosition(const Feedback* feedback, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
 {
-	Feedback* feedback = GetFeedback(feedbackID);
 	if (feedback == nullptr)
 	{
-		return true;
+		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 	}
 
 	if (feedback->GetVisible() == VisibleNo)
@@ -1194,19 +1195,21 @@ bool Manager::CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutP
 		return true;
 	}
 
-	return feedback->HasPosition(posX, posY, posZ);
+	if (feedback->HasPosition(posX, posY, posZ))
+	{
+		return true;
+	}
+	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 }
 
 feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::string& name, const visible_t visible, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, const controlID_t controlID, const feedbackPin_t pin, const bool inverted, string& result)
 {
-	if (visible && !CheckFeedbackPosition(feedbackID, posX, posY, posZ)
-		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
+	Feedback* feedback = GetFeedback(feedbackID);
+	if (visible && !CheckFeedbackPosition(feedback, posX, posY, posZ, result))
 	{
-		result.append(Languages::GetText(feedbackID == FeedbackNone ? Languages::TextUnableToAddFeedback : Languages::TextUnableToMoveFeedback));
 		return FeedbackNone;
 	}
 
-	Feedback* feedback = GetFeedback(feedbackID);
 	if (feedback == nullptr)
 	{
 		feedback = CreateAndAddObject(feedbacks, feedbackMutex);
@@ -1214,6 +1217,7 @@ feedbackID_t Manager::FeedbackSave(const feedbackID_t feedbackID, const std::str
 
 	if (feedback == nullptr)
 	{
+		result = Languages::GetText(Languages::TextUnableToAddFeedback);
 		return false;
 	}
 
@@ -1350,7 +1354,7 @@ const map<string,trackID_t> Manager::TrackListIdByName() const
 	return out;
 }
 
-bool Manager::CheckTrackPosition(const trackID_t trackID,
+bool Manager::CheckTrackPosition(const Track* track,
 	const layoutPosition_t posX,
 	const layoutPosition_t posY,
 	const layoutPosition_t posZ,
@@ -1363,10 +1367,10 @@ bool Manager::CheckTrackPosition(const trackID_t trackID,
 	layoutPosition_t z1 = posZ;
 	layoutItemSize_t w1;
 	layoutItemSize_t h1;
-	bool ret = DataModel::LayoutItem::MapPosition(posX, posY, Width1, height, rotation, x1, y1, w1, h1);
+	bool ret = DataModel::LayoutItem::MapPosition(posX, posY, DataModel::LayoutItem::Width1, height, rotation, x1, y1, w1, h1);
 	if (ret == false)
 	{
-		result = "Unable to calculate position";
+		result = Languages::GetText(Languages::TextUnableToCalculatePosition);
 		return false;
 	}
 
@@ -1376,14 +1380,13 @@ bool Manager::CheckTrackPosition(const trackID_t trackID,
 	layoutItemSize_t w2 = 0;
 	layoutItemSize_t h2 = 0;
 
-	Track* track = GetTrack(trackID);
 	if (track != nullptr)
 	{
 		z2 = track->GetPosZ();
-		ret = DataModel::LayoutItem::MapPosition(track->GetPosX(), track->GetPosY(), Width1, track->GetHeight(), track->GetRotation(), x2, y2, w2, h2);
+		ret = DataModel::LayoutItem::MapPosition(track->GetPosX(), track->GetPosY(), DataModel::LayoutItem::Width1, track->GetHeight(), track->GetRotation(), x2, y2, w2, h2);
 		if (ret == false)
 		{
-			result = "Unable to calculate position";
+			result = Languages::GetText(Languages::TextUnableToCalculatePosition);
 			return false;
 		}
 	}
@@ -1458,13 +1461,12 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 	const bool releaseWhenFree,
 	string& result)
 {
-	if (!CheckTrackPosition(trackID, posX, posY, posZ, height, rotation, result))
+	Track* track = GetTrack(trackID);
+	if (!CheckTrackPosition(track, posX, posY, posZ, height, rotation, result))
 	{
-		result.append(Languages::GetText(trackID == TrackNone ? Languages::TextUnableToAddTrack : Languages::TextUnableToMoveTrack));
 		return TrackNone;
 	}
 
-	Track* track = GetTrack(trackID);
 	if (track == nullptr)
 	{
 		track = CreateAndAddObject(tracks, trackMutex);
@@ -1472,6 +1474,7 @@ trackID_t Manager::TrackSave(const trackID_t trackID,
 
 	if (track == nullptr)
 	{
+		result = Languages::GetText(Languages::TextUnableToAddTrack);
 		return false;
 	}
 
@@ -1616,15 +1619,18 @@ const std::string& Manager::GetSwitchName(const switchID_t switchID) const
 	return switches.at(switchID)->GetName();
 }
 
-bool Manager::CheckSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+bool Manager::CheckSwitchPosition(const Switch* mySwitch, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
 {
-	Switch* mySwitch = GetSwitch(switchID);
 	if (mySwitch == nullptr)
+	{
+		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
+	}
+
+	if (mySwitch->HasPosition(posX, posY, posZ))
 	{
 		return true;
 	}
-
-	return mySwitch->HasPosition(posX, posY, posZ);
+	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 }
 
 bool Manager::SwitchSave(const switchID_t switchID,
@@ -1645,13 +1651,12 @@ bool Manager::SwitchSave(const switchID_t switchID,
 		return false;
 	}
 
-	if (!CheckSwitchPosition(switchID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
+	Switch* mySwitch = GetSwitch(switchID);
+	if (!CheckSwitchPosition(mySwitch, posX, posY, posZ, result))
 	{
-		result.append(Languages::GetText(switchID == SwitchNone ? Languages::TextUnableToAddSwitch : Languages::TextUnableToMoveSwitch));
 		return false;
 	}
 
-	Switch* mySwitch = GetSwitch(switchID);
 	if (mySwitch == nullptr)
 	{
 		mySwitch = CreateAndAddObject(switches, switchMutex);
@@ -1659,6 +1664,7 @@ bool Manager::SwitchSave(const switchID_t switchID,
 
 	if (mySwitch == nullptr)
 	{
+		result = Languages::GetText(Languages::TextUnableToAddSwitch);
 		return false;
 	}
 
@@ -1800,12 +1806,11 @@ const string& Manager::GetStreetName(const streetID_t streetID) const
 	return streets.at(streetID)->GetName();
 }
 
-bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+bool Manager::CheckStreetPosition(const Street* street, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
 {
-	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
-		return true;
+		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 	}
 
 	if (street->GetVisible() == VisibleNo)
@@ -1813,7 +1818,11 @@ bool Manager::CheckStreetPosition(const streetID_t streetID, const layoutPositio
 		return true;
 	}
 
-	return street->HasPosition(posX, posY, posZ);
+	if (street->HasPosition(posX, posY, posZ))
+	{
+		return true;
+	}
+	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 }
 
 bool Manager::StreetSave(const streetID_t streetID,
@@ -1840,14 +1849,12 @@ bool Manager::StreetSave(const streetID_t streetID,
 	string& result)
 {
 
-	if (visible && !CheckStreetPosition(streetID, posX, posY, posZ)
-		&& !CheckPositionFree(posX, posY, posZ, Width1, Height1, DataModel::LayoutItem::Rotation0, result))
+	Street* street = GetStreet(streetID);
+	if (visible && !CheckStreetPosition(street, posX, posY, posZ, result))
 	{
-		result.append(Languages::GetText(streetID == StreetNone ? Languages::TextUnableToAddStreet : Languages::TextUnableToMoveStreet));
 		return false;
 	}
 
-	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
 		street = CreateAndAddObject(streets, streetMutex);
@@ -1855,6 +1862,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 
 	if (street == nullptr)
 	{
+		result = Languages::GetText(Languages::TextUnableToAddStreet);
 		return false;
 	}
 
@@ -2146,15 +2154,19 @@ const std::string& Manager::GetSignalName(const signalID_t signalID) const
 	return signals.at(signalID)->GetName();
 }
 
-bool Manager::CheckSignalPosition(const signalID_t signalID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const
+bool Manager::CheckSignalPosition(const Signal* signal, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, string& result) const
 {
-	Signal* signal = GetSignal(signalID);
 	if (signal == nullptr)
+	{
+		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
+	}
+
+	if (signal->HasPosition(posX, posY, posZ))
 	{
 		return true;
 	}
+	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 
-	return signal->HasPosition(posX, posY, posZ);
 }
 
 bool Manager::SignalSave(const signalID_t signalID,
@@ -2176,13 +2188,12 @@ bool Manager::SignalSave(const signalID_t signalID,
 		return false;
 	}
 
-	if (!CheckSignalPosition(signalID, posX, posY, posZ) && !CheckPositionFree(posX, posY, posZ, Width1, Height1, rotation, result))
+	Signal* signal = GetSignal(signalID);
+	if (!CheckSignalPosition(signal, posX, posY, posZ, result))
 	{
-		result.append(Languages::GetText(signalID == SignalNone ? Languages::TextUnableToAddSignal : Languages::TextUnableToMoveSignal));
 		return false;
 	}
 
-	Signal* signal = GetSignal(signalID);
 	if (signal == nullptr)
 	{
 		signal = CreateAndAddObject(signals, signalMutex);
@@ -2190,6 +2201,7 @@ bool Manager::SignalSave(const signalID_t signalID,
 
 	if (signal == nullptr)
 	{
+		result = Languages::GetText(Languages::TextUnableToAddSignal);
 		return false;
 	}
 

@@ -39,6 +39,9 @@ namespace DataModel
 				Rotation270
 			};
 
+			static const layoutItemSize_t Width1 = 1;
+			static const layoutItemSize_t Height1 = 1;
+
 			LayoutItem(const objectID_t objectID)
 			:	Object(objectID),
 				visible(VisibleYes),

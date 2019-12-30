@@ -96,9 +96,6 @@ static const locoSpeed_t DefaultReducedSpeed = 400;
 static const locoSpeed_t DefaultCreepingSpeed = 100;
 static const locoSpeed_t MinSpeed = 0;
 
-static const layoutItemSize_t Width1 = 1;
-static const layoutItemSize_t Height1 = 1;
-
 static const accessoryDuration_t DefaultAccessoryDuration = 100;
 
 enum controlType_t : unsigned char

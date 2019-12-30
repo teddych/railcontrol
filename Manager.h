@@ -282,19 +282,51 @@ class Manager
 			const layoutItemSize_t height,
 			const DataModel::LayoutItem::layoutRotation_t rotation,
 			std::string& result) const;
-		template<class Type> bool CheckLayoutPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result, const std::map<objectID_t, Type*>& layoutVector, std::mutex& mutex) const;
-		bool CheckAccessoryPosition(const accessoryID_t accessoryID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
-		bool CheckSwitchPosition(const switchID_t switchID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
-		bool CheckStreetPosition(const streetID_t streetID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
-		bool CheckTrackPosition(const trackID_t trackID,
+
+		template<class Type>
+		bool CheckLayoutPositionFree(const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			std::string& result,
+			const std::map<objectID_t, Type*>& layoutVector, std::mutex& mutex) const;
+
+		bool CheckAccessoryPosition(const DataModel::Accessory* accessory,
+			const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			std::string& result) const;
+
+		bool CheckSwitchPosition(const DataModel::Switch* mySwitch,
+			const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			std::string& result) const;
+
+		bool CheckStreetPosition(const DataModel::Street* street,
+			const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			std::string& result) const;
+
+		bool CheckTrackPosition(const DataModel::Track* track,
 			const layoutPosition_t posX,
 			const layoutPosition_t posY,
 			const layoutPosition_t posZ,
 			const layoutItemSize_t height,
 			const DataModel::LayoutItem::layoutRotation_t rotation,
 			std::string& result) const;
-		bool CheckFeedbackPosition(const feedbackID_t feedbackID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
-		bool CheckSignalPosition(const signalID_t signalID, const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ) const;
+
+		bool CheckFeedbackPosition(const DataModel::Feedback* feedback,
+			const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			std::string& result) const;
+
+		bool CheckSignalPosition(const DataModel::Signal* signal,
+			const layoutPosition_t posX,
+			const layoutPosition_t posY,
+			const layoutPosition_t posZ,
+			std::string& result) const;
 
 		bool CheckAddressLoco(const protocol_t protocol, const address_t address, std::string& result);
 		bool CheckAddressAccessory(const protocol_t protocol, const address_t address, std::string& result);
