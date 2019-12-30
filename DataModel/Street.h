@@ -79,7 +79,7 @@ namespace DataModel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string LayoutType() const override { return "street"; };
+			std::string LayoutType() const override { return Languages::GetText(Languages::TextStreet); };
 
 			void DeleteRelations();
 			bool AssignRelations(const std::vector<DataModel::Relation*>& newRelations);

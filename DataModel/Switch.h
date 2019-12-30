@@ -58,7 +58,7 @@ namespace DataModel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string LayoutType() const override { return "switch"; };
+			std::string LayoutType() const override { return Languages::GetText(Languages::TextSwitch); };
 
 			switchState_t GetState() const { return static_cast<switchState_t>(state); }
 			switchType_t GetType() const { return static_cast<switchType_t>(type); }

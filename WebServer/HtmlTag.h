@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <map>
 #include <ostream>
+#include <sstream>
 #include <string>
 #include <vector>
 

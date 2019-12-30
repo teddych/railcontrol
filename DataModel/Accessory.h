@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/HardwareHandle.h"
 #include "DataModel/LayoutItem.h"
 #include "DataModel/LockableItem.h"
+#include "Languages.h"
 
 class Manager;
 
@@ -74,7 +75,7 @@ namespace DataModel
 
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
-			virtual std::string LayoutType() const override { return "accessory"; }
+			virtual std::string LayoutType() const override { return Languages::GetText(Languages::TextAccessory); }
 
 			void SetType(accessoryType_t type) { this->type = type; }
 			accessoryType_t GetType() const { return type; }

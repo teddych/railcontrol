@@ -23,7 +23,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
-#include "DataModel/Accessory.h"
 #include "DataTypes.h"
 
 class Languages
@@ -96,6 +95,7 @@ class Languages
 			TextEditStreet,
 			TextEditSwitch,
 			TextEditTrack,
+			TextFeedback,
 			TextFeedbackChange,
 			TextFeedbackDeleted,
 			TextFeedbackDoesNotExist,
@@ -375,7 +375,7 @@ class Languages
 
 		static const char* GetGreenRed(const accessoryState_t state)
 		{
-			return GetText(state == DataModel::Accessory::AccessoryStateOn ? TextGreen : TextRed);
+			return GetText(static_cast<bool>(state) ? TextGreen : TextRed);
 		}
 
 		static const char* languages[MaxTexts][MaxLanguages];

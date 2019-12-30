@@ -61,7 +61,7 @@ namespace DataModel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string LayoutType() const override { return "signal"; };
+			std::string LayoutType() const override { return Languages::GetText(Languages::TextSignal); };
 
 			bool Release(const locoID_t locoID) override;
 

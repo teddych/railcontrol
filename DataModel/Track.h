@@ -92,7 +92,7 @@ namespace DataModel
 			bool Release(const locoID_t locoID) override;
 			bool ReleaseForce(const locoID_t locoID);
 
-			std::string LayoutType() const override { return "track"; };
+			std::string LayoutType() const override { return Languages::GetText(Languages::TextTrack); };
 			type_t GetType() const { return type; }
 			void SetType(const type_t type) { this->type = type; }
 			std::vector<feedbackID_t> GetFeedbacks() const { return feedbacks; }

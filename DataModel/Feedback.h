@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataTypes.h"
 #include "DataModel/LayoutItem.h"
+#include "Languages.h"
 
 class Manager;
 
@@ -60,7 +61,7 @@ namespace DataModel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string LayoutType() const override { return "feedback"; };
+			std::string LayoutType() const override { return Languages::GetText(Languages::TextFeedback); };
 
 			void SetInverted(const bool inverted) { this->inverted = inverted; }
 			bool GetInverted() const { return inverted; }
