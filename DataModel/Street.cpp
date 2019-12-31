@@ -185,15 +185,20 @@ namespace DataModel
 			return false;
 		}
 
-		bool ret = true;
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto relation : relations)
 		{
-			ret &= relation->Execute(delay);
+			bool retRelation = relation->Execute(delay);
+			if (retRelation == false)
+			{
+				Logger::Logger* logger = Logger::Logger::GetLogger("street");
+				logger->Debug("Unable to execute {0}", GetName());
+				return false;
+			}
 		}
 		lastUsed = time(nullptr);
 		++counter;
-		return ret;
+		return true;
 	}
 
 	bool Street::Reserve(const locoID_t locoID)
@@ -203,29 +208,35 @@ namespace DataModel
 			return false;
 		}
 
+		Logger::Logger* logger = Logger::Logger::GetLogger("street");
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		bool ret = LockableItem::Reserve(locoID);
 		if (ret == false)
 		{
+			logger->Debug("Unable to reserve {0}", GetName());
 			return false;
 		}
 
-		Track* track = manager->GetTrack(toTrack);
-		if (track == nullptr || track->Reserve(locoID) == false)
+		if (automode == AutomodeYes)
 		{
-			ReleaseInternal(locoID);
-			return false;
+			Track* track = manager->GetTrack(toTrack);
+			if (track == nullptr || track->Reserve(locoID) == false)
+			{
+				logger->Debug("Unable to reserve {0}", track ? track->GetName() : "missing to track");
+				ReleaseInternal(locoID);
+				return false;
+			}
 		}
 
-		ret = true;
 		for (auto relation : relations)
 		{
-			ret &= relation->Reserve(locoID);
-		}
-		if (ret == false)
-		{
-			ReleaseInternal(locoID);
-			return false;
+			bool retRelation = relation->Reserve(locoID);
+			if (retRelation == false)
+			{
+				logger->Debug("Unable to reserve relation");
+				ReleaseInternal(locoID);
+				return false;
+			}
 		}
 		return true;
 	}
@@ -237,31 +248,36 @@ namespace DataModel
 			return false;
 		}
 
+		Logger::Logger* logger = Logger::Logger::GetLogger("street");
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		bool ret = LockableItem::Lock(locoID);
 		if (ret == false)
 		{
+			logger->Debug("Unable to lock {0}", GetName());
 			return false;
 		}
 
-		Track* track = manager->GetTrack(toTrack);
-		if (track == nullptr || track->Lock(locoID) == false)
+		if (automode == AutomodeYes)
 		{
-			ReleaseInternal(locoID);
-			return false;
+			Track* track = manager->GetTrack(toTrack);
+			if (track == nullptr || track->Lock(locoID) == false)
+			{
+				logger->Debug("Unable to lock {0}", track ? track->GetName() : "missing to track");
+				ReleaseInternal(locoID);
+				return false;
+			}
 		}
 
-		ret = true;
 		for (auto relation : relations)
 		{
-			ret &= relation->Lock(locoID);
+			bool retRelation = relation->Lock(locoID);
+			if (retRelation == false)
+			{
+				logger->Debug("Unable to lock relation");
+				ReleaseInternalWithToTrack(locoID);
+				return false;
+			}
 		}
-		if (ret == false)
-		{
-			ReleaseInternalWithToTrack(locoID);
-			return false;
-		}
-
 		return true;
 	}
 
