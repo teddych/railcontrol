@@ -59,7 +59,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Relation::Execute(const delay_t delay)
+	bool Relation::Execute(Logger::Logger* logger, const delay_t delay)
 	{
 		switch (objectType2)
 		{
@@ -99,7 +99,7 @@ namespace DataModel
 
 
 			case ObjectTypeStreet:
-				return manager->StreetExecute(objectID2);
+				return manager->StreetExecute(logger, objectID2);
 
 			default:
 				return false;
@@ -132,7 +132,7 @@ namespace DataModel
 		}
 	}
 
-	bool Relation::Reserve(const locoID_t locoID)
+	bool Relation::Reserve(Logger::Logger* logger, const locoID_t locoID)
 	{
 		bool ret = LockableItem::Reserve(locoID);
 		if (ret == false)
@@ -140,17 +140,36 @@ namespace DataModel
 			return false;
 		}
 
-		LockableItem* object = GetObject2();
-		if (object == nullptr)
+		LockableItem* lockable = GetObject2();
+		if (lockable == nullptr)
 		{
 			LockableItem::Release(locoID);
 			return false;
 		}
 
-		return object->Reserve(locoID);
+		Street* street = dynamic_cast<Street*>(lockable);
+		if (street != nullptr)
+		{
+			return street->Reserve(logger, locoID);
+		}
+
+		bool retLockable = lockable->Reserve(locoID);
+		if (retLockable == true)
+		{
+			return true;
+		}
+
+		Object* object = dynamic_cast<Object*>(lockable);
+		if (object == nullptr)
+		{
+			return false;
+		}
+
+		logger->Debug(Languages::TextUnableToReserve, object->GetName());
+		return false;
 	}
 
-	bool Relation::Lock(const locoID_t locoID)
+	bool Relation::Lock(Logger::Logger* logger, const locoID_t locoID)
 	{
 		bool ret = LockableItem::Lock(locoID);
 		if (ret == false)
@@ -158,14 +177,33 @@ namespace DataModel
 			return false;
 		}
 
-		LockableItem* object = GetObject2();
-		if (object == nullptr)
+		LockableItem* lockable = GetObject2();
+		if (lockable == nullptr)
 		{
 			LockableItem::Release(locoID);
 			return false;
 		}
 
-		return object->Lock(locoID);
+		Street* street = dynamic_cast<Street*>(lockable);
+		if (street != nullptr)
+		{
+			return street->Lock(logger, locoID);
+		}
+
+		bool retLockable = lockable->Lock(locoID);
+		if (retLockable == true)
+		{
+			return true;
+		}
+
+		Object* object = dynamic_cast<Object*>(lockable);
+		if (object == nullptr)
+		{
+			return false;
+		}
+
+		logger->Debug(Languages::TextUnableToLock, object->GetName());
+		return false;
 	}
 
 	bool Relation::Release(const locoID_t locoID)

@@ -169,8 +169,8 @@ class Manager
 		bool SwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// street
-		void ExecuteStreet(const streetID_t streetID);
-		void ExecuteStreetAsync(const streetID_t streetID);
+		bool StreetExecute(Logger::Logger* logger, const streetID_t streetID);
+		void StreetExecuteAsync(Logger::Logger* logger, const streetID_t streetID);
 		DataModel::Street* GetStreet(const streetID_t streetID) const;
 		const std::string& GetStreetName(const streetID_t streetID) const;
 		const std::map<streetID_t,DataModel::Street*>& StreetList() const { return streets; }
@@ -198,7 +198,6 @@ class Manager
 			const wait_t waitAfterRelease,
 			std::string& result);
 		bool StreetDelete(const streetID_t streetID);
-		bool StreetExecute(const streetID_t streetID);
 
 		// layer
 		DataModel::Layer* GetLayer(const layerID_t layerID) const;

@@ -27,6 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/LockableItem.h"
 #include "DataModel/Serializable.h"
 #include "DataTypes.h"
+#include "Logger/Logger.h"
 
 class Manager;
 
@@ -68,10 +69,21 @@ namespace DataModel
 			objectID_t ObjectID2() { return objectID2; }
 			priority_t Priority() { return priority; }
 			accessoryState_t AccessoryState() { return accessoryState; }
-			bool Reserve(const locoID_t locoID) override;
-			bool Lock(const locoID_t locoID) override;
+
+			bool Reserve(Logger::Logger* logger, const locoID_t locoID);
+			bool Reserve(const locoID_t locoID) override
+			{
+				return Reserve(Logger::Logger::GetLogger("relation"), locoID);
+			}
+
+			bool Lock(Logger::Logger* logger, const locoID_t locoID);
+			bool Lock(const locoID_t locoID) override
+			{
+				return Lock(Logger::Logger::GetLogger("relation"), locoID);
+			}
+
 			bool Release(const locoID_t locoID) override;
-			bool Execute(const delay_t delay);
+			bool Execute(Logger::Logger* logger, const delay_t delay);
 
 		private:
 			LockableItem* GetObject2();

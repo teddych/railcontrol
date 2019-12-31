@@ -1766,24 +1766,24 @@ bool Manager::SwitchRelease(const streetID_t switchID)
 * Street                   *
 ***************************/
 
-void Manager::ExecuteStreet(const streetID_t streetID)
+bool Manager::StreetExecute(Logger::Logger* logger, const streetID_t streetID)
 {
 	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
-		return;
+		return false;
 	}
-	street->Execute();
+	return street->Execute(logger);
 }
 
-void Manager::ExecuteStreetAsync(const streetID_t streetID)
+void Manager::StreetExecuteAsync(Logger::Logger* logger, const streetID_t streetID)
 {
 	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
 		return;
 	}
-	std::async(std::launch::async, Street::ExecuteStatic, street);
+	std::async(std::launch::async, Street::ExecuteStatic, logger, street);
 }
 
 Street* Manager::GetStreet(const streetID_t streetID) const
@@ -1960,16 +1960,6 @@ bool Manager::StreetDelete(const streetID_t streetID)
 	}
 	delete street;
 	return true;
-}
-
-bool Manager::StreetExecute(const streetID_t streetID)
-{
-	Street* street = GetStreet(streetID);
-	if (street == nullptr)
-	{
-		return false;
-	}
-	return street->Execute();
 }
 
 Layer* Manager::GetLayer(const layerID_t layerID) const

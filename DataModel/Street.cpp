@@ -178,7 +178,7 @@ namespace DataModel
 	}
 
 
-	bool Street::Execute()
+	bool Street::Execute(Logger::Logger* logger)
 	{
 		if (manager->Booster() == BoosterStop)
 		{
@@ -188,11 +188,10 @@ namespace DataModel
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto relation : relations)
 		{
-			bool retRelation = relation->Execute(delay);
+			bool retRelation = relation->Execute(logger, delay);
 			if (retRelation == false)
 			{
-				Logger::Logger* logger = Logger::Logger::GetLogger("street");
-				logger->Debug("Unable to execute {0}", GetName());
+				logger->Debug(Languages::TextUnableToExecuteStreet, GetName());
 				return false;
 			}
 		}
@@ -201,28 +200,32 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::Reserve(const locoID_t locoID)
+	bool Street::Reserve(Logger::Logger* logger, const locoID_t locoID)
 	{
 		if (manager->Booster() == BoosterStop)
 		{
 			return false;
 		}
 
-		Logger::Logger* logger = Logger::Logger::GetLogger("street");
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		bool ret = LockableItem::Reserve(locoID);
 		if (ret == false)
 		{
-			logger->Debug("Unable to reserve {0}", GetName());
+			logger->Debug(Languages::TextUnableToReserve, GetName());
 			return false;
 		}
 
 		if (automode == AutomodeYes)
 		{
 			Track* track = manager->GetTrack(toTrack);
-			if (track == nullptr || track->Reserve(locoID) == false)
+			if (track == nullptr)
 			{
-				logger->Debug("Unable to reserve {0}", track ? track->GetName() : "missing to track");
+				ReleaseInternal(locoID);
+				return false;
+			}
+			if (track->Reserve(locoID) == false)
+			{
+				logger->Debug(Languages::TextUnableToReserve, track->GetName());
 				ReleaseInternal(locoID);
 				return false;
 			}
@@ -230,10 +233,9 @@ namespace DataModel
 
 		for (auto relation : relations)
 		{
-			bool retRelation = relation->Reserve(locoID);
+			bool retRelation = relation->Reserve(logger, locoID);
 			if (retRelation == false)
 			{
-				logger->Debug("Unable to reserve relation");
 				ReleaseInternal(locoID);
 				return false;
 			}
@@ -241,28 +243,32 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::Lock(const locoID_t locoID)
+	bool Street::Lock(Logger::Logger* logger, const locoID_t locoID)
 	{
 		if (manager->Booster() == BoosterStop)
 		{
 			return false;
 		}
 
-		Logger::Logger* logger = Logger::Logger::GetLogger("street");
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		bool ret = LockableItem::Lock(locoID);
 		if (ret == false)
 		{
-			logger->Debug("Unable to lock {0}", GetName());
+			logger->Debug(Languages::TextUnableToLock, GetName());
 			return false;
 		}
 
 		if (automode == AutomodeYes)
 		{
 			Track* track = manager->GetTrack(toTrack);
-			if (track == nullptr || track->Lock(locoID) == false)
+			if (track == nullptr)
 			{
-				logger->Debug("Unable to lock {0}", track ? track->GetName() : "missing to track");
+				ReleaseInternal(locoID);
+				return false;
+			}
+			if (track->Lock(locoID) == false)
+			{
+				logger->Debug(Languages::TextUnableToLock, track->GetName());
 				ReleaseInternal(locoID);
 				return false;
 			}
@@ -270,10 +276,9 @@ namespace DataModel
 
 		for (auto relation : relations)
 		{
-			bool retRelation = relation->Lock(locoID);
+			bool retRelation = relation->Lock(logger, locoID);
 			if (retRelation == false)
 			{
-				logger->Debug("Unable to lock relation");
 				ReleaseInternalWithToTrack(locoID);
 				return false;
 			}

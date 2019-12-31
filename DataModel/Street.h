@@ -87,11 +87,21 @@ namespace DataModel
 
 			bool FromTrackDirection(Logger::Logger* logger, const trackID_t trackID, const direction_t trackDirection, const DataModel::Loco* loco, const bool allowLocoTurn);
 
-			bool Execute();
-			static bool ExecuteStatic(Street* street) { return street->Execute(); }
+			bool Execute(Logger::Logger* logger);
+			static bool ExecuteStatic(Logger::Logger* logger, Street* street) { return street->Execute(logger); }
 
-			bool Reserve(const locoID_t locoID) override;
-			bool Lock(const locoID_t locoID) override;
+			bool Reserve(Logger::Logger* logger, const locoID_t locoID);
+			bool Reserve(const locoID_t locoID) override
+			{
+				return Reserve(Logger::Logger::GetLogger(GetName()), locoID);
+			}
+
+			bool Lock(Logger::Logger* logger, const locoID_t locoID);
+			bool Lock(const locoID_t locoID) override
+			{
+				return Lock(Logger::Logger::GetLogger(GetName()), locoID);
+			}
+
 			bool Release(const locoID_t locoID) override;
 
 			delay_t GetDelay() const { return delay; }

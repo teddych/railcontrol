@@ -2776,7 +2776,7 @@ namespace WebServer
 	void WebClient::HandleStreetExecute(const map<string, string>& arguments)
 	{
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
-		manager.ExecuteStreetAsync(streetID);
+		manager.StreetExecuteAsync(logger, streetID);
 		ReplyHtmlWithHeaderAndParagraph("Street executed");
 	}
 
