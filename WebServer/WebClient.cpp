@@ -1521,18 +1521,21 @@ namespace WebServer
 		if (locoID > LocoNone)
 		{
 			const DataModel::Loco* loco = manager.GetLoco(locoID);
-			controlID = loco->GetControlID();
-			protocol = loco->GetProtocol();
-			address = loco->GetAddress();
-			name = loco->GetName();
-			nrOfFunctions = loco->GetNrOfFunctions();
-			pushpull = loco->GetPushpull();
-			length = loco->GetLength();
-			maxSpeed = loco->GetMaxSpeed();
-			travelSpeed = loco->GetTravelSpeed();
-			reducedSpeed = loco->GetReducedSpeed();
-			creepingSpeed = loco->GetCreepingSpeed();
-			slaves = loco->GetSlaves();
+			if (loco != nullptr)
+			{
+				controlID = loco->GetControlID();
+				protocol = loco->GetProtocol();
+				address = loco->GetAddress();
+				name = loco->GetName();
+				nrOfFunctions = loco->GetNrOfFunctions();
+				pushpull = loco->GetPushpull();
+				length = loco->GetLength();
+				maxSpeed = loco->GetMaxSpeed();
+				travelSpeed = loco->GetTravelSpeed();
+				reducedSpeed = loco->GetReducedSpeed();
+				creepingSpeed = loco->GetCreepingSpeed();
+				slaves = loco->GetSlaves();
+			}
 		}
 
 		std::map<controlID_t,string> controls = manager.LocoControlListNames();
@@ -1860,15 +1863,18 @@ namespace WebServer
 		if (accessoryID > AccessoryNone)
 		{
 			const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
-			controlID = accessory->GetControlID();
-			protocol = accessory->GetProtocol();
-			address = accessory->GetAddress();
-			name = accessory->GetName();
-			posx = accessory->GetPosX();
-			posy = accessory->GetPosY();
-			posz = accessory->GetPosZ();
-			duration = accessory->GetDuration();
-			inverted = accessory->GetInverted();
+			if (accessory != nullptr)
+			{
+				controlID = accessory->GetControlID();
+				protocol = accessory->GetProtocol();
+				address = accessory->GetAddress();
+				name = accessory->GetName();
+				posx = accessory->GetPosX();
+				posy = accessory->GetPosY();
+				posz = accessory->GetPosZ();
+				duration = accessory->GetDuration();
+				inverted = accessory->GetInverted();
+			}
 		}
 
 		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
@@ -2063,17 +2069,20 @@ namespace WebServer
 		if (switchID > SwitchNone)
 		{
 			const DataModel::Switch* mySwitch = manager.GetSwitch(switchID);
-			controlID = mySwitch->GetControlID();
-			protocol = mySwitch->GetProtocol();
-			address = mySwitch->GetAddress();
-			name = mySwitch->GetName();
-			posx = mySwitch->GetPosX();
-			posy = mySwitch->GetPosY();
-			posz = mySwitch->GetPosZ();
-			rotation = mySwitch->GetRotation();
-			type = mySwitch->GetType();
-			duration = mySwitch->GetDuration();
-			inverted = mySwitch->GetInverted();
+			if (mySwitch != nullptr)
+			{
+				controlID = mySwitch->GetControlID();
+				protocol = mySwitch->GetProtocol();
+				address = mySwitch->GetAddress();
+				name = mySwitch->GetName();
+				posx = mySwitch->GetPosX();
+				posy = mySwitch->GetPosY();
+				posz = mySwitch->GetPosZ();
+				rotation = mySwitch->GetRotation();
+				type = mySwitch->GetType();
+				duration = mySwitch->GetDuration();
+				inverted = mySwitch->GetInverted();
+			}
 		}
 
 		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
@@ -2276,17 +2285,20 @@ namespace WebServer
 		if (signalID > SignalNone)
 		{
 			const DataModel::Signal* signal = manager.GetSignal(signalID);
-			controlID = signal->GetControlID();
-			protocol = signal->GetProtocol();
-			address = signal->GetAddress();
-			name = signal->GetName();
-			posx = signal->GetPosX();
-			posy = signal->GetPosY();
-			posz = signal->GetPosZ();
-			rotation = signal->GetRotation();
-			type = signal->GetType();
-			duration = signal->GetDuration();
-			inverted = signal->GetInverted();
+			if (signal != nullptr)
+			{
+				controlID = signal->GetControlID();
+				protocol = signal->GetProtocol();
+				address = signal->GetAddress();
+				name = signal->GetName();
+				posx = signal->GetPosX();
+				posy = signal->GetPosY();
+				posz = signal->GetPosZ();
+				rotation = signal->GetRotation();
+				type = signal->GetType();
+				duration = signal->GetDuration();
+				inverted = signal->GetInverted();
+			}
 		}
 
 		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
@@ -2509,26 +2521,29 @@ namespace WebServer
 		if (streetID > StreetNone)
 		{
 			const DataModel::Street* street = manager.GetStreet(streetID);
-			name = street->GetName();
-			delay = street->GetDelay();
-			pushpull = street->GetPushpull();
-			minTrainLength = street->GetMinTrainLength();
-			maxTrainLength = street->GetMaxTrainLength();
-			relations = street->GetRelations();
-			visible = street->GetVisible();
-			posx = street->GetPosX();
-			posy = street->GetPosY();
-			posz = street->GetPosZ();
-			automode = street->GetAutomode();
-			fromTrack = street->GetFromTrack();
-			fromDirection = street->GetFromDirection();
-			toTrack = street->GetToTrack();
-			toDirection = street->GetToDirection();
-			feedbackIdReduced = street->GetFeedbackIdReduced();
-			feedbackIdCreep = street->GetFeedbackIdCreep();
-			feedbackIdStop = street->GetFeedbackIdStop();
-			feedbackIdOver = street->GetFeedbackIdOver();
-			waitAfterRelease = street->GetWaitAfterRelease();
+			if (street != nullptr)
+			{
+				name = street->GetName();
+				delay = street->GetDelay();
+				pushpull = street->GetPushpull();
+				minTrainLength = street->GetMinTrainLength();
+				maxTrainLength = street->GetMaxTrainLength();
+				relations = street->GetRelations();
+				visible = street->GetVisible();
+				posx = street->GetPosX();
+				posy = street->GetPosY();
+				posz = street->GetPosZ();
+				automode = street->GetAutomode();
+				fromTrack = street->GetFromTrack();
+				fromDirection = street->GetFromDirection();
+				toTrack = street->GetToTrack();
+				toDirection = street->GetToDirection();
+				feedbackIdReduced = street->GetFeedbackIdReduced();
+				feedbackIdCreep = street->GetFeedbackIdCreep();
+				feedbackIdStop = street->GetFeedbackIdStop();
+				feedbackIdOver = street->GetFeedbackIdOver();
+				waitAfterRelease = street->GetWaitAfterRelease();
+			}
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
@@ -2804,16 +2819,19 @@ namespace WebServer
 		if (trackID > TrackNone)
 		{
 			const DataModel::Track* track = manager.GetTrack(trackID);
-			name = track->GetName();
-			posx = track->GetPosX();
-			posy = track->GetPosY();
-			posz = track->GetPosZ();
-			height = track->GetHeight();
-			rotation = track->GetRotation();
-			type = track->GetType();
-			feedbacks = track->GetFeedbacks();
-			selectStreetApproach = track->GetSelectStreetApproach();
-			releaseWhenFree = track->GetReleaseWhenFree();
+			if (track != nullptr)
+			{
+				name = track->GetName();
+				posx = track->GetPosX();
+				posy = track->GetPosY();
+				posz = track->GetPosZ();
+				height = track->GetHeight();
+				rotation = track->GetRotation();
+				type = track->GetType();
+				feedbacks = track->GetFeedbacks();
+				selectStreetApproach = track->GetSelectStreetApproach();
+				releaseWhenFree = track->GetReleaseWhenFree();
+			}
 		}
 		switch (type)
 		{
@@ -3132,14 +3150,17 @@ namespace WebServer
 		if (feedbackID > FeedbackNone)
 		{
 			const DataModel::Feedback* feedback = manager.GetFeedback(feedbackID);
-			name = feedback->GetName();
-			controlId = feedback->GetControlID();
-			pin = feedback->GetPin();
-			inverted = feedback->GetInverted();
-			visible = feedback->GetVisible();
-			posx = feedback->GetPosX();
-			posy = feedback->GetPosY();
-			posz = feedback->GetPosZ();
+			if (feedback != nullptr)
+			{
+				name = feedback->GetName();
+				controlId = feedback->GetControlID();
+				pin = feedback->GetPin();
+				inverted = feedback->GetInverted();
+				visible = feedback->GetVisible();
+				posx = feedback->GetPosX();
+				posy = feedback->GetPosY();
+				posz = feedback->GetPosZ();
+			}
 		}
 
 		std::map<controlID_t,string> controls = manager.FeedbackControlListNames();
