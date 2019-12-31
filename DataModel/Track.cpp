@@ -162,6 +162,7 @@ namespace DataModel
 	bool Track::ReleaseForce(const locoID_t locoID)
 	{
 		bool ret = LockableItem::Release(locoID);
+		this->state = DataModel::Feedback::FeedbackStateFree;
 		this->locoIdDelayed = LocoNone;
 		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
 		manager->TrackPublishState(this);
