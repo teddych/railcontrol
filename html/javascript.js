@@ -375,7 +375,8 @@ function dataUpdate(event)
 		var parts = argument.split('=');
 		if (parts[0] == 'status')
 		{
-			status.innerHTML += parts[1] + '<br>';
+			var statusData = status.innerHTML + parts[1] + '<br>';
+			status.innerHTML = statusData.substring(statusData.length - 2500);
 			status.scrollTop = status.scrollHeight - status.clientHeight;
 		}
 		else
