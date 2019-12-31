@@ -85,13 +85,13 @@ namespace DataModel
 		LockableItem::Deserialize(arguments);
 
 		delay = static_cast<delay_t>(Utils::Utils::GetIntegerMapEntry(arguments, "delay", DefaultDelay));
-		pushpull = static_cast<pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", PushpullTypeBoth)); // FIXME: remove later
-		pushpull = static_cast<pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", pushpull));
-		minTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
-		maxTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		lastUsed = Utils::Utils::GetIntegerMapEntry(arguments, "lastused", 0);
 		counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 0);
 		automode = static_cast<automode_t>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
+		if (automode == AutomodeNo)
+		{
+			return true;
+		}
 		fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
 		fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
 		toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "toTrack", TrackNone);
@@ -100,6 +100,10 @@ namespace DataModel
 		feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdCreep", FeedbackNone);
 		feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdStop", FeedbackNone);
 		feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdOver", FeedbackNone);
+		pushpull = static_cast<pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", PushpullTypeBoth)); // FIXME: remove later
+		pushpull = static_cast<pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", pushpull));
+		minTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
+		maxTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
 		return true;
 	}
