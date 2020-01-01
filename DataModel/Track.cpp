@@ -172,12 +172,13 @@ namespace DataModel
 	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 	{
 		DataModel::Feedback::feedbackState_t oldState = this->state;
+		bool oldBlocked = blocked;
 		bool ret = FeedbackStateInternal(feedbackID, state);
 		if (ret == false)
 		{
 			return false;
 		}
-		if (oldState == state)
+		if (oldState == state && oldBlocked == blocked)
 		{
 			return true;
 		}
@@ -193,7 +194,11 @@ namespace DataModel
 			Loco* loco = manager->GetLoco(GetLocoDelayed());
 			if (loco == nullptr)
 			{
-				manager->Booster(ControlTypeInternal, BoosterStop);
+				if (blocked == false)
+				{
+					manager->Booster(ControlTypeInternal, BoosterStop);
+					blocked = true;
+				}
 			}
 			else
 			{
