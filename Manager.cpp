@@ -1880,24 +1880,42 @@ bool Manager::StreetSave(const streetID_t streetID,
 	// update existing street
 	street->SetName(CheckObjectName(streets, streetMutex, streetID, name.size() == 0 ? "S" : name));
 	street->SetDelay(delay);
-	street->SetPushpull(pushpull);
-	street->SetMinTrainLength(minTrainLength);
-	street->SetMaxTrainLength(maxTrainLength);
 	street->AssignRelations(relations);
 	street->SetVisible(visible);
 	street->SetPosX(posX);
 	street->SetPosY(posY);
 	street->SetPosZ(posZ);
 	street->SetAutomode(automode);
-	street->SetFromTrack(fromTrack);
-	street->SetFromDirection(fromDirection);
-	street->SetToTrack(toTrack);
-	street->SetToDirection(toDirection);
-	street->SetFeedbackIdReduced(feedbackIdReduced);
-	street->SetFeedbackIdCreep(feedbackIdCreep);
-	street->SetFeedbackIdStop(feedbackIdStop);
-	street->SetFeedbackIdOver(feedbackIdOver);
-	street->SetWaitAfterRelease(waitAfterRelease);
+	if (automode == AutomodeYes)
+	{
+		street->SetFromTrack(fromTrack);
+		street->SetFromDirection(fromDirection);
+		street->SetToTrack(toTrack);
+		street->SetToDirection(toDirection);
+		street->SetFeedbackIdReduced(feedbackIdReduced);
+		street->SetFeedbackIdCreep(feedbackIdCreep);
+		street->SetFeedbackIdStop(feedbackIdStop);
+		street->SetFeedbackIdOver(feedbackIdOver);
+		street->SetPushpull(pushpull);
+		street->SetMinTrainLength(minTrainLength);
+		street->SetMaxTrainLength(maxTrainLength);
+		street->SetWaitAfterRelease(waitAfterRelease);
+	}
+	else
+	{
+		street->SetFromTrack(TrackNone);
+		street->SetFromDirection(DirectionRight);
+		street->SetToTrack(TrackNone);
+		street->SetToDirection(DirectionLeft);
+		street->SetFeedbackIdReduced(FeedbackNone);
+		street->SetFeedbackIdCreep(FeedbackNone);
+		street->SetFeedbackIdStop(FeedbackNone);
+		street->SetFeedbackIdOver(FeedbackNone);
+		street->SetPushpull(Street::PushpullTypeBoth);
+		street->SetMinTrainLength(0);
+		street->SetMaxTrainLength(0);
+		street->SetWaitAfterRelease(0);
+	}
 
 	//Add new street
 	track = GetTrack(fromTrack);

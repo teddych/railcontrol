@@ -53,13 +53,14 @@ namespace DataModel
 			<< LayoutItem::Serialize()
 			<< ";" << LockableItem::Serialize()
 			<< ";delay=" << static_cast<int>(delay)
-			<< ";pushpull=" << static_cast<int>(pushpull)
-			<< ";mintrainlength=" << static_cast<int>(minTrainLength)
-			<< ";maxtrainlength=" << static_cast<int>(maxTrainLength)
 			<< ";lastused=" << lastUsed
 			<< ";counter=" << counter
-			<< ";automode=" << static_cast<int>(automode)
-			<< ";fromTrack=" << static_cast<int>(fromTrack)
+			<< ";automode=" << static_cast<int>(automode);
+		if (automode == AutomodeNo)
+		{
+			return ss.str();
+		}
+		ss << ";fromTrack=" << static_cast<int>(fromTrack)
 			<< ";fromDirection=" << static_cast<int>(fromDirection)
 			<< ";toTrack=" << static_cast<int>(toTrack)
 			<< ";toDirection=" << static_cast<int>(toDirection)
@@ -67,6 +68,9 @@ namespace DataModel
 			<< ";feedbackIdCreep=" << static_cast<int>(feedbackIdCreep)
 			<< ";feedbackIdStop=" << static_cast<int>(feedbackIdStop)
 			<< ";feedbackIdOver=" << static_cast<int>(feedbackIdOver)
+			<< ";pushpull=" << static_cast<int>(pushpull)
+			<< ";mintrainlength=" << static_cast<int>(minTrainLength)
+			<< ";maxtrainlength=" << static_cast<int>(maxTrainLength)
 			<< ";waitafterrelease=" << static_cast<int>(waitAfterRelease);
 		return ss.str();
 	}
@@ -90,6 +94,18 @@ namespace DataModel
 		automode = static_cast<automode_t>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		if (automode == AutomodeNo)
 		{
+			fromTrack = TrackNone;
+			fromDirection = DirectionRight;
+			toTrack = TrackNone;
+			toDirection = DirectionLeft;
+			feedbackIdReduced = FeedbackNone;
+			feedbackIdCreep = FeedbackNone;
+			feedbackIdStop = FeedbackNone;
+			feedbackIdOver = FeedbackNone;
+			pushpull = PushpullTypeBoth;
+			minTrainLength = 0;
+			maxTrainLength = 0;
+			waitAfterRelease = 0;
 			return true;
 		}
 		fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
