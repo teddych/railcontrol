@@ -77,11 +77,14 @@ namespace DataModel
 			return;
 		}
 
-		if (stateCounter == MaxStateCounter)
+		unsigned char oldStateCounter = stateCounter;
+		stateCounter = MaxStateCounter;
+
+		if (oldStateCounter > 0)
 		{
 			return;
 		}
-		stateCounter = MaxStateCounter;
+
 		manager->FeedbackState(this);
 		UpdateTrackState(FeedbackStateOccupied);
 	}

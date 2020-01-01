@@ -86,7 +86,7 @@ namespace DataModel
 			bool inverted;
 			trackID_t trackID;
 			unsigned char stateCounter;
-			const unsigned char MaxStateCounter = 10;
+			static const unsigned char MaxStateCounter = 10;
 	};
 
 } // namespace DataModel
