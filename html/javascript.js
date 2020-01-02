@@ -544,7 +544,7 @@ function dataUpdate(event)
 			var occupied = false;
 			var blocked = false;
 			var error = false;
-
+			var direction = true;
 
 			if (argumentMap.has('occupied'))
 			{
@@ -594,6 +594,11 @@ function dataUpdate(event)
 				element.classList.add('track_error');
 			}
 
+			if (argumentMap.has('direction'))
+			{
+				direction = argumentMap.get('direction') == 'true';
+			}
+
 			var contextElement = document.getElementById(elementName + '_context');
 			if (contextElement)
 			{
@@ -622,18 +627,25 @@ function dataUpdate(event)
 					contextElement.classList.remove('track_blocked');
 					contextElement.classList.add('track_unblocked');
 				}
+
+				if (direction == true)
+				{
+					contextElement.classList.remove('direction_left');
+					contextElement.classList.add('direction_right');
+				}
+				else
+				{
+					contextElement.classList.remove('direction_right');
+					contextElement.classList.add('direction_left');
+				}
 			}
 
 			var locoElement = document.getElementById(elementName + '_text_loconame');
 			if (locoElement)
 			{
-				var direction = '&larr;';
-				if (argumentMap.has('direction'))
-				{
-					direction = argumentMap.get('direction') == 'true' ? '&rarr; ' : '&larr; ';
-				}
+				var directionArrow = direction ? '&rarr; ' : '&larr; ';
 				var locoName = argumentMap.has('loconame') ? argumentMap.get('loconame') : '';
-				locoElement.innerHTML = direction + locoName;
+				locoElement.innerHTML = directionArrow + locoName;
 			}
 		}
 	}

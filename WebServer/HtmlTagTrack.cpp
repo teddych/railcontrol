@@ -163,16 +163,17 @@ namespace WebServer
 		div2.AddClass("contextmenu");
 		div2.AddClass(reserved ? "loco_known" : "loco_unknown");
 		div2.AddClass(blocked ? "track_blocked" : "track_unblocked");
+		div2.AddClass(track->GetLocoDirection() == DirectionRight ? "direction_right" : "direction_left");
 		div2.AddAttribute("id", id + "_context");
 		div2.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 		div2.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(trackName))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_block").AddContent(Languages::TextBlockTrack).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=true');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_unblock").AddContent(Languages::TextUnblockTrack).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackblock&track=" + trackIdString + "&blocked=false');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_left").AddContent(Languages::TextTrackDirectionToLeft).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackdirection&direction=false&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_right").AddContent(Languages::TextTrackDirectionToRight).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackdirection&direction=true&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_left").AddContent(Languages::TextTurnDirectionOfTravelToLeft).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackdirection&direction=false&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_right").AddContent(Languages::TextTurnDirectionOfTravelToRight).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackdirection&direction=true&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_release").AddContent(Languages::TextReleaseTrack).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackrelease&track=" + trackIdString + "');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_loco_release").AddContent(Languages::TextReleaseLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=locorelease&track=" + trackIdString + "');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_loco_release").AddContent(Languages::TextReleaseTrackAndLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=locorelease&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_set").AddContent(Languages::TextSetLoco).AddAttribute("onClick", "loadPopup('/?cmd=tracksetloco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_start_loco").AddContent(Languages::TextStartLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstartloco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_stop_loco").AddContent(Languages::TextStopLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstoploco&track=" + trackIdString + "');"))
