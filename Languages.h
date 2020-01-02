@@ -262,6 +262,8 @@ class Languages
 			TextTooManyS88Modules,
 			TextTrack,
 			TextTrackDeleted,
+			TextTrackDirectionToLeft,
+			TextTrackDirectionToRight,
 			TextTrackDoesNotExist,
 			TextTrackIsInUse,
 			TextTrackSaved,

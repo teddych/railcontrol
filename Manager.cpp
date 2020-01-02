@@ -2451,6 +2451,7 @@ void Manager::TrackSetLocoDirection(const trackID_t trackID, const direction_t d
 		return;
 	}
 	track->SetLocoDirection(direction);
+	TrackPublishState(track);
 }
 
 void Manager::TrackPublishState(const DataModel::Track* track)

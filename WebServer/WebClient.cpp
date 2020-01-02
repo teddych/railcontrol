@@ -424,6 +424,10 @@ namespace WebServer
 			{
 				HandleTrackBlock(arguments);
 			}
+			else if (arguments["cmd"].compare("trackdirection") == 0)
+			{
+				HandleTrackDirection(arguments);
+			}
 			else if (arguments["cmd"].compare("feedbackedit") == 0)
 			{
 				HandleFeedbackEdit(arguments);
@@ -3122,6 +3126,14 @@ namespace WebServer
 		bool blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked");
 		manager.TrackBlock(trackID, blocked);
 		ReplyHtmlWithHeaderAndParagraph("Track block/unblock received");
+	}
+
+	void WebClient::HandleTrackDirection(const map<string, string>& arguments)
+	{
+		trackID_t trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track");
+		direction_t direction = (Utils::Utils::GetBoolMapEntry(arguments, "direction") ? DirectionRight : DirectionLeft);
+		manager.TrackSetLocoDirection(trackID, direction);
+		ReplyHtmlWithHeaderAndParagraph("Loco direction of track set");
 	}
 
 	void WebClient::HandleFeedbackEdit(const map<string, string>& arguments)

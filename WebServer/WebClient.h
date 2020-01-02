@@ -183,6 +183,7 @@ namespace WebServer
 			void HandleTrackStartLoco(const std::map<std::string, std::string>& arguments);
 			void HandleTrackStopLoco(const std::map<std::string, std::string>& arguments);
 			void HandleTrackBlock(const std::map<std::string, std::string>& arguments);
+			void HandleTrackDirection(const std::map<std::string, std::string>& arguments);
 			void HandleFeedbackEdit(const std::map<std::string,std::string>& arguments);
 			void HandleFeedbackSave(const std::map<std::string,std::string>& arguments);
 			void HandleFeedbackState(const std::map<std::string,std::string>& arguments);

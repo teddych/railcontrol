@@ -263,6 +263,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextTooManyS88Modules */ { "Too many S88 modules configured: {0}. Max is {1}", "Zu viele S88 Module konfiguriert: {0}. Maximum ist {1}", "Demasiado módulos S88 configurado: {0}. El maximo es {1}" },
 /* TextTrack*/ { "track", "Gleis", "vía" },
 /* TextTrackDeleted */ { "Track {0} deleted", "Gleis {0} gelöscht", "Vía {0} eliminado" },
+/* TextTrackDirectionToLeft */ { "Turn track direction to left", "Drehe Gleisrichtung nach links", "Gire la dirección de la vía hacia la izquierda" },
+/* TextTrackDirectionToRight */ { "Turn track direction to right", "Drehe Gleisrichtung nach rechts", "Gire la dirección de la vía hacia la dereja" },
 /* TextTrackDoesNotExist */ { "Track does not exist", "Gleis existiert nicht", "Vía no existe" },
 /* TextTrackIsInUse */ { "Track {0} is in use", "Gleis {0} ist in Benutzung", "Vía {0} está en uso" },
 /* TextTrackSaved */ { "Track {0} saved", "Gleis {0} gespeichert", "Vía {0} guardado" },
