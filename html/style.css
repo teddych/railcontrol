@@ -258,7 +258,7 @@ body {
 .popup {
 	position: fixed;
 	display: none;
-	height: 500px;
+	height: 600px;
 	width: 600px;
 	top: 20px;
 	left: 20px;
@@ -271,7 +271,7 @@ body {
 
 .popup_content {
 	width: 100%;
-	height: 360px;
+	height: 460px;
 	overflow-x: hidden;
 	overflow-y: auto;
 }
