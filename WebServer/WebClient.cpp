@@ -2508,10 +2508,10 @@ namespace WebServer
 		length_t minTrainLength = 0;
 		length_t maxTrainLength = 0;
 		vector<Relation*> relations;
-		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible", VisibleYes));
 		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible", streetID == StreetNone && ((posx || posy) && posz >= LayerUndeletable) ? VisibleYes : VisibleNo));
 		automode_t automode = static_cast<automode_t>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		trackID_t fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
 		direction_t fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
