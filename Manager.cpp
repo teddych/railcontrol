@@ -1132,14 +1132,14 @@ void Manager::FeedbackState(Feedback* feedback)
 		return;
 	}
 	DataModel::Feedback::feedbackState_t state = feedback->GetState();
-	logger->Info(state ? Languages::TextFeedbackStateIsOn : Languages::TextFeedbackStateIsOff, feedback->GetName());
+	const string& feedbackName = feedback->GetName();
+	logger->Info(state ? Languages::TextFeedbackStateIsOn : Languages::TextFeedbackStateIsOff, feedbackName);
+	const feedbackID_t feedbackID = feedback->GetID();
 	{
-		const string& name = feedback->GetName();
-		const feedbackID_t feedbackID = feedback->GetID();
 		std::lock_guard<std::mutex> guard(controlMutex);
 		for (auto control : controls)
 		{
-			control.second->FeedbackState(name, feedbackID, state);
+			control.second->FeedbackState(feedbackName, feedbackID, state);
 		}
 	}
 }
