@@ -101,6 +101,10 @@ namespace DataModel
 			case ObjectTypeStreet:
 				return manager->StreetExecute(logger, objectID2);
 
+			case ObjectTypeLoco:
+				manager->LocoFunction(ControlTypeInternal, GetLoco(), static_cast<function_t>(objectID2), static_cast<bool>(accessoryState));
+				return true;
+
 			default:
 				return false;
 		}
@@ -141,6 +145,11 @@ namespace DataModel
 			return false;
 		}
 
+		if (ObjectType2() == ObjectTypeLoco)
+		{
+			return true;
+		}
+
 		LockableItem* lockable = GetObject2();
 		if (lockable == nullptr)
 		{
@@ -164,6 +173,11 @@ namespace DataModel
 		if (ret == false)
 		{
 			return false;
+		}
+
+		if (ObjectType2() == ObjectTypeLoco)
+		{
+			return true;
 		}
 
 		LockableItem* lockable = GetObject2();

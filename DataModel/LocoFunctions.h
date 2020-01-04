@@ -42,7 +42,7 @@ namespace DataModel
 
 			void SetFunction(const function_t nr, const bool state)
 			{
-				if (nr >= maxCount)
+				if (nr >= MaxCount)
 				{
 					return;
 				}
@@ -51,7 +51,7 @@ namespace DataModel
 
 			bool GetFunction(const function_t nr) const
 			{
-				if (nr >= maxCount)
+				if (nr >= MaxCount)
 				{
 					return false;
 				}
@@ -94,9 +94,9 @@ namespace DataModel
 			bool Deserialize(const std::string& serialized) override
 			{
 				count = serialized.size();
-				if (count > maxCount)
+				if (count > MaxCount)
 				{
-					count = maxCount;
+					count = MaxCount;
 				}
 				for (function_t i = 0; i < count; ++i)
 				{
@@ -105,11 +105,17 @@ namespace DataModel
 				return true;
 			}
 
-			static const function_t maxFunctions = 32;
+			static const function_t MaxFunctions = 32;
+			enum locoFunctionTypes : unsigned char
+			{
+				Off = 0,
+				On,
+				Pulse
+			};
 
 		private:
-			static const function_t maxCount = maxFunctions + 1; // f0 - f32 = 33
+			static const function_t MaxCount = MaxFunctions + 1; // f0 - f32 = 33
 			function_t count;
-			bool states[maxCount];
+			bool states[MaxCount];
 	};
 } // namespace DataModel

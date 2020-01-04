@@ -1274,6 +1274,22 @@ namespace WebServer
 				return content;
 			}
 
+			case ObjectTypeLoco:
+			{
+				map<string,string> functionOptions;
+				for (function_t function = 0; function <= DataModel::LocoFunctions::MaxFunctions; ++function)
+				{
+					functionOptions[Utils::Utils::ToStringWithLeadingZeros(function, 2)] = "F" + to_string(function);
+				}
+				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, functionOptions, Utils::Utils::ToStringWithLeadingZeros(objectId, 2)).AddClass("select_relation_id"));
+
+				map<unsigned char,Languages::textSelector_t> stateOptions;
+				stateOptions[static_cast<unsigned char>(DataModel::LocoFunctions::Off)] = Languages::TextOff;
+				stateOptions[static_cast<unsigned char>(DataModel::LocoFunctions::On)] = Languages::TextOn;
+				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, static_cast<unsigned char>(state)).AddClass("select_relation_state"));
+				return content;
+			}
+
 			default:
 			{
 				content.AddContent(Languages::TextUnknownObjectType);
@@ -1297,6 +1313,7 @@ namespace WebServer
 		objectTypeOptions[ObjectTypeSwitch] = Languages::TextSwitch;
 		objectTypeOptions[ObjectTypeTrack] = Languages::TextTrack;
 		objectTypeOptions[ObjectTypeStreet] = Languages::TextStreet;
+		objectTypeOptions[ObjectTypeLoco] = Languages::TextLoco;
 		HtmlTagSelect select("relation_type_" + priority, objectTypeOptions, objectType);
 		select.AddClass("select_relation_objecttype");
 		select.AddAttribute("onchange", "loadRelationObject(" + priority + ");return false;");
@@ -1571,7 +1588,7 @@ namespace WebServer
 		basicContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('loco', " + to_string(locoID) + ")"));
 		basicContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", Languages::TextNrOfFunctions, nrOfFunctions, 0, DataModel::LocoFunctions::maxFunctions));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", Languages::TextNrOfFunctions, nrOfFunctions, 0, DataModel::LocoFunctions::MaxFunctions));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
 		formContent.AddChildTag(basicContent);
 
@@ -2676,7 +2693,7 @@ namespace WebServer
 			objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_type_" + priorityString));
 			objectID_t objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_id_" + priorityString, SwitchNone);
 			accessoryState_t state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
-			if (objectId == SwitchNone)
+			if (objectId == 0 && objectType != ObjectTypeLoco)
 			{
 				continue;
 			}
@@ -3074,7 +3091,7 @@ namespace WebServer
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID != LocoNone)
 		{
-			if (!manager.LocoIntoTrack(locoID, trackID))
+			if (!manager.LocoIntoTrack(logger, locoID, trackID))
 			{
 				ReplyResponse(ResponseError, Languages::TextUnableToAddLocoToTrack, manager.GetLocoName(locoID), manager.GetTrackName(trackID));
 				return;
