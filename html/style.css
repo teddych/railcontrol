@@ -251,7 +251,8 @@ body {
 .track_blocked .loconame,
 .track_error .loconame,
 .direction_left .track_left,
-.direction_right .track_right {
+.direction_right .track_right,
+.feedback_layer .real_layer_only {
 	display: none;
 }
 

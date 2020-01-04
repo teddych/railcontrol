@@ -902,6 +902,15 @@ function loadLayout()
 	if (layer)
 	{
 		requestUpdateItem('layout', '/?cmd=layout&layer=' + layer.value);
+		var context = document.getElementById('layout_context');
+		if (layer.value > 0)
+		{
+			context.classList.remove('feedback_layer');
+		}
+		else
+		{
+			context.classList.add('feedback_layer');
+		}
 	}
 }
 
