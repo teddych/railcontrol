@@ -71,17 +71,7 @@ namespace DataModel
 			accessoryState_t AccessoryState() { return accessoryState; }
 
 			bool Reserve(Logger::Logger* logger, const locoID_t locoID);
-			bool Reserve(const locoID_t locoID) override
-			{
-				return Reserve(Logger::Logger::GetLogger("relation"), locoID);
-			}
-
 			bool Lock(Logger::Logger* logger, const locoID_t locoID);
-			bool Lock(const locoID_t locoID) override
-			{
-				return Lock(Logger::Logger::GetLogger("relation"), locoID);
-			}
-
 			bool Release(const locoID_t locoID) override;
 			bool Execute(Logger::Logger* logger, const delay_t delay);
 

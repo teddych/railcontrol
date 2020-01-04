@@ -232,7 +232,7 @@ class Manager
 		bool SignalProtocolAddress(const signalID_t signalID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// automode
-		bool LocoIntoTrack(const locoID_t locoID, const trackID_t trackID);
+		bool LocoIntoTrack(Logger::Logger* logger, const locoID_t locoID, const trackID_t trackID);
 		bool LocoRelease(const locoID_t locoID);
 		bool TrackRelease(const trackID_t trackID);
 		bool LocoReleaseInTrack(const trackID_t trackID);

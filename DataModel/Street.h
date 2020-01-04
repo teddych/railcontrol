@@ -91,17 +91,7 @@ namespace DataModel
 			static bool ExecuteStatic(Logger::Logger* logger, Street* street) { return street->Execute(logger); }
 
 			bool Reserve(Logger::Logger* logger, const locoID_t locoID);
-			bool Reserve(const locoID_t locoID) override
-			{
-				return Reserve(Logger::Logger::GetLogger(GetName()), locoID);
-			}
-
 			bool Lock(Logger::Logger* logger, const locoID_t locoID);
-			bool Lock(const locoID_t locoID) override
-			{
-				return Lock(Logger::Logger::GetLogger(GetName()), locoID);
-			}
-
 			bool Release(const locoID_t locoID) override;
 
 			delay_t GetDelay() const { return delay; }

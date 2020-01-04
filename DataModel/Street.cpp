@@ -224,10 +224,9 @@ namespace DataModel
 		}
 
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		bool ret = LockableItem::Reserve(locoID);
+		bool ret = LockableItem::Reserve(logger, locoID);
 		if (ret == false)
 		{
-			logger->Debug(Languages::TextUnableToReserve, GetName());
 			return false;
 		}
 
@@ -239,9 +238,8 @@ namespace DataModel
 				ReleaseInternal(locoID);
 				return false;
 			}
-			if (track->Reserve(locoID) == false)
+			if (track->Reserve(logger, locoID) == false)
 			{
-				logger->Debug(Languages::TextUnableToReserve, track->GetName());
 				ReleaseInternal(locoID);
 				return false;
 			}
@@ -267,10 +265,9 @@ namespace DataModel
 		}
 
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		bool ret = LockableItem::Lock(locoID);
+		bool ret = LockableItem::Lock(logger, locoID);
 		if (ret == false)
 		{
-			logger->Debug(Languages::TextUnableToLock, GetName());
 			return false;
 		}
 
@@ -282,9 +279,8 @@ namespace DataModel
 				ReleaseInternal(locoID);
 				return false;
 			}
-			if (track->Lock(locoID) == false)
+			if (track->Lock(logger, locoID) == false)
 			{
-				logger->Debug(Languages::TextUnableToLock, track->GetName());
 				ReleaseInternal(locoID);
 				return false;
 			}

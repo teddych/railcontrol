@@ -2310,7 +2310,7 @@ bool Manager::SignalRelease(const streetID_t signalID)
 * Automode                 *
 ***************************/
 
-bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
+bool Manager::LocoIntoTrack(Logger::Logger* logger, const locoID_t locoID, const trackID_t trackID)
 {
 	Track* track = GetTrack(trackID);
 	if (track == nullptr)
@@ -2324,7 +2324,7 @@ bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 		return false;
 	}
 
-	bool reserved = track->ReserveForce(locoID);
+	bool reserved = track->ReserveForce(logger, locoID);
 	if (reserved == false)
 	{
 		return false;
@@ -2337,7 +2337,7 @@ bool Manager::LocoIntoTrack(const locoID_t locoID, const trackID_t trackID)
 		return false;
 	}
 
-	reserved = track->Lock(locoID);
+	reserved = track->Lock(logger, locoID);
 	if (reserved == false)
 	{
 		loco->Release();

@@ -19,6 +19,7 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include "DataModel/LockableItem.h"
+#include "DataModel/Object.h"
 #include "Utils/Utils.h"
 
 using std::map;
@@ -40,7 +41,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool LockableItem::Reserve(const locoID_t locoID)
+	bool LockableItem::Reserve(Logger::Logger* logger, const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(lockMutex);
 		if (this->locoID == locoID)
@@ -51,8 +52,28 @@ namespace DataModel
 			}
 			return true;
 		}
-		if (this->locoID != LocoNone || lockState != LockStateFree)
+
+		if (this->locoID != LocoNone)
 		{
+			Object *object = dynamic_cast<Object*>(this);
+			if (object == nullptr)
+			{
+				return false;
+			}
+
+			logger->Debug(Languages::TextIsNotFree, object->GetName());
+			return false;
+		}
+
+		if (lockState != LockStateFree)
+		{
+			Object *object = dynamic_cast<Object*>(this);
+			if (object == nullptr)
+			{
+				return false;
+			}
+
+			logger->Debug(Languages::TextIsNotFree, object->GetName());
 			return false;
 		}
 		lockState = LockStateReserved;
@@ -60,13 +81,34 @@ namespace DataModel
 		return true;
 	}
 
-	bool LockableItem::Lock(const locoID_t locoID)
+	bool LockableItem::Lock(Logger::Logger* logger, const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(lockMutex);
-		if ((lockState != LockStateReserved && lockState != LockStateHardLocked) || this->locoID != locoID)
+
+		if (this->locoID != locoID)
 		{
+			Object *object = dynamic_cast<Object*>(this);
+			if (object == nullptr)
+			{
+				return false;
+			}
+
+			logger->Debug(Languages::TextIsNotFree, object->GetName());
 			return false;
 		}
+
+		if (lockState != LockStateReserved && lockState != LockStateHardLocked)
+		{
+			Object *object = dynamic_cast<Object*>(this);
+			if (object == nullptr)
+			{
+				return false;
+			}
+
+			logger->Debug(Languages::TextIsNotFree, object->GetName());
+			return false;
+		}
+
 		lockState = LockStateHardLocked;
 		return true;
 	}

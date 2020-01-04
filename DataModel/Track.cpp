@@ -107,26 +107,29 @@ namespace DataModel
 		return true;
 	}
 
-	bool Track::Reserve(const locoID_t locoID)
+	bool Track::Reserve(Logger::Logger* logger, const locoID_t locoID)
 	{
 		if (this->locoIdDelayed != LocoNone && this->locoIdDelayed != locoID)
 		{
+			logger->Debug(Languages::TextTrackIsInUse, GetName());
 			return false;
 		}
 		if (blocked == true)
 		{
+			logger->Debug(Languages::TextTrackStatusIsBlocked, GetName());
 			return false;
 		}
 		if (state != DataModel::Feedback::FeedbackStateFree)
 		{
+			logger->Debug(Languages::TextIsNotFree, GetName());
 			return false;
 		}
-		return ReserveForce(locoID);
+		return ReserveForce(logger, locoID);
 	}
 
-	bool Track::ReserveForce(const locoID_t locoID)
+	bool Track::ReserveForce(Logger::Logger* logger, const locoID_t locoID)
 	{
-		bool ret = LockableItem::Reserve(locoID);
+		bool ret = LockableItem::Reserve(logger, locoID);
 		if (ret == false)
 		{
 			return false;
@@ -135,10 +138,13 @@ namespace DataModel
 		return true;
 	}
 
-	bool Track::Lock(const locoID_t locoID)
+	bool Track::Lock(Logger::Logger* logger, const locoID_t locoID)
 	{
-		bool ret = LockableItem::Lock(locoID);
-		manager->TrackPublishState(this);
+		bool ret = LockableItem::Lock(logger, locoID);
+		if (ret)
+		{
+			manager->TrackPublishState(this);
+		}
 		return ret;
 	}
 

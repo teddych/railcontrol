@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <mutex>
 
 #include "DataTypes.h"
+#include "Logger/Logger.h"
 
 namespace DataModel
 {
@@ -52,8 +53,8 @@ namespace DataModel
 
 			locoID_t GetLoco() const { return locoID; }
 			lockState_t GetLockState() const { return lockState; }
-			virtual bool Reserve(const locoID_t locoID);
-			virtual bool Lock(const locoID_t locoID);
+			virtual bool Reserve(Logger::Logger* logger, const locoID_t locoID);
+			virtual bool Lock(Logger::Logger* logger, const locoID_t locoID);
 			virtual bool Release(const locoID_t locoID);
 
 			bool IsInUse() const { return lockState != LockStateFree || locoID != LocoNone; }

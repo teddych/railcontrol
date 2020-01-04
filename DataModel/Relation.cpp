@@ -134,15 +134,17 @@ namespace DataModel
 
 	bool Relation::Reserve(Logger::Logger* logger, const locoID_t locoID)
 	{
-		bool ret = LockableItem::Reserve(locoID);
+		bool ret = LockableItem::Reserve(logger, locoID);
 		if (ret == false)
 		{
+			logger->Debug(Languages::TextUnableToReserve);
 			return false;
 		}
 
 		LockableItem* lockable = GetObject2();
 		if (lockable == nullptr)
 		{
+			logger->Debug(Languages::TextRelationTargetNotFound);
 			LockableItem::Release(locoID);
 			return false;
 		}
@@ -153,25 +155,12 @@ namespace DataModel
 			return street->Reserve(logger, locoID);
 		}
 
-		bool retLockable = lockable->Reserve(locoID);
-		if (retLockable == true)
-		{
-			return true;
-		}
-
-		Object* object = dynamic_cast<Object*>(lockable);
-		if (object == nullptr)
-		{
-			return false;
-		}
-
-		logger->Debug(Languages::TextUnableToReserve, object->GetName());
-		return false;
+		return lockable->Reserve(logger, locoID);
 	}
 
 	bool Relation::Lock(Logger::Logger* logger, const locoID_t locoID)
 	{
-		bool ret = LockableItem::Lock(locoID);
+		bool ret = LockableItem::Lock(logger, locoID);
 		if (ret == false)
 		{
 			return false;
@@ -190,7 +179,7 @@ namespace DataModel
 			return street->Lock(logger, locoID);
 		}
 
-		bool retLockable = lockable->Lock(locoID);
+		bool retLockable = lockable->Lock(logger, locoID);
 		if (retLockable == true)
 		{
 			return true;

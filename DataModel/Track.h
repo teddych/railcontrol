@@ -86,9 +86,9 @@ namespace DataModel
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 
-			bool Reserve(const locoID_t locoID) override;
-			bool ReserveForce(const locoID_t locoID);
-			bool Lock(const locoID_t locoID) override;
+			bool Reserve(Logger::Logger* logger, const locoID_t locoID) override;
+			bool ReserveForce(Logger::Logger* logger, const locoID_t locoID);
+			bool Lock(Logger::Logger* logger, const locoID_t locoID) override;
 			bool Release(const locoID_t locoID) override;
 			bool ReleaseForce(const locoID_t locoID);
 

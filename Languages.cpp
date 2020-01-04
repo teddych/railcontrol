@@ -28,7 +28,6 @@ along with RailControl; see the file LICENCE. If not see
 
 
 
-
 const char* Languages::languages[MaxTexts][MaxLanguages] =
 {
 /* Text180Deg */ { "180 degrees", "180 Grad", "180 grados" },
@@ -119,6 +118,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextIPAddress */ { "IP address", "IP Adresse", "Dirección IP" },
 /* TextInvalidDataReceived */ { "Invalid data received", "Ungültige Daten empfangen", "Recibido datos non validos" },
 /* TextInverted */ { "Inverted", "Invertiert", "Invertido" },
+/* TextIsLocked */ { "{0} is locked", "{0} ist gesperrt", "{0} está bloqueado" },
+/* TextIsNotFree */ { "{0} is not free", "{0} ist nicht frei", "{0} no está libre" },
 /* TextLayer1 */ { "Layer 1", "Schicht 1", "Capa 1" },
 /* TextLayer1IsUndeletable */ { "Layer 1 is undeletable", "Schicht 1 ist unlöschbar", "Capa 1 no se puede eliminar" },
 /* TextLayerDeleted */ { "Layer {0} deleted", "Schicht {0} gelöscht", "Capa {0} eliminado" },
@@ -192,6 +193,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextRed */ { "red", "rot", "rojo" },
 /* TextReducedSpeed */ { "Reduced speed", "Reduzierte Geschwindigkeit", "Velocidad reducido" },
 /* TextReducedSpeedAt */ { "Reduce speed at", "Reduziere Geschwindigkeit bei", "Reducir velocidad a" },
+/* TextRelationTargetNotFound */ { "Relation target not found", "Ziel der Relation nicht gefunden", "Relación no encontrado" },
 /* TextRelease */ { "Release", "Freigeben", "Liberar" },
 /* TextReleaseAccessory */ { "Release accessory", "Zubehörartikel freigeben", "Liberar acesorio" },
 /* TextReleaseLoco */ { "Release locomotive", "Lokomotive freigeben", "Liberar locomotora" },
