@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <mutex>
 #include <string>
 
 #include "DataTypes.h"
@@ -87,6 +88,7 @@ namespace DataModel
 			trackID_t trackID;
 			unsigned char stateCounter;
 			static const unsigned char MaxStateCounter = 10;
+			mutable std::mutex updateMutex;
 	};
 
 } // namespace DataModel

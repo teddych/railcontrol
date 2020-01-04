@@ -67,22 +67,25 @@ namespace DataModel
 	void Feedback::SetState(const feedbackState_t newState)
 	{
 		feedbackState_t state = static_cast<feedbackState_t>(newState != inverted);
-		if (state == FeedbackStateFree)
 		{
-			if (stateCounter < MaxStateCounter)
+			std::lock_guard<std::mutex> Guard(updateMutex);
+			if (state == FeedbackStateFree)
+			{
+				if (stateCounter < MaxStateCounter)
+				{
+					return;
+				}
+				stateCounter = MaxStateCounter - 1;
+				return;
+			}
+
+			unsigned char oldStateCounter = stateCounter;
+			stateCounter = MaxStateCounter;
+
+			if (oldStateCounter > 0)
 			{
 				return;
 			}
-			stateCounter = MaxStateCounter - 1;
-			return;
-		}
-
-		unsigned char oldStateCounter = stateCounter;
-		stateCounter = MaxStateCounter;
-
-		if (oldStateCounter > 0)
-		{
-			return;
 		}
 
 		manager->FeedbackPublishState(this);
@@ -102,15 +105,18 @@ namespace DataModel
 
 	void Feedback::Debounce()
 	{
-		if (stateCounter == MaxStateCounter || stateCounter == 0)
 		{
-			return;
-		}
+			std::lock_guard<std::mutex> Guard(updateMutex);
+			if (stateCounter == MaxStateCounter || stateCounter == 0)
+			{
+				return;
+			}
 
-		--stateCounter;
-		if (stateCounter != 0)
-		{
-			return;
+			--stateCounter;
+			if (stateCounter != 0)
+			{
+				return;
+			}
 		}
 		manager->FeedbackPublishState(this);
 		UpdateTrackState(FeedbackStateFree);
