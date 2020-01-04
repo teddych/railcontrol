@@ -85,7 +85,7 @@ namespace DataModel
 			return;
 		}
 
-		manager->FeedbackState(this);
+		manager->FeedbackPublishState(this);
 		UpdateTrackState(FeedbackStateOccupied);
 	}
 
@@ -112,7 +112,7 @@ namespace DataModel
 		{
 			return;
 		}
-		manager->FeedbackState(this);
+		manager->FeedbackPublishState(this);
 		UpdateTrackState(FeedbackStateFree);
 	}
 } // namespace DataModel

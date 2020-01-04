@@ -125,7 +125,7 @@ class Manager
 		// feedback
 		void FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const DataModel::Feedback::feedbackState_t state);
 		void FeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state);
-		void FeedbackState(DataModel::Feedback* feedback);
+		void FeedbackPublishState(DataModel::Feedback* feedback);
 		DataModel::Feedback* GetFeedback(const feedbackID_t feedbackID) const;
 		DataModel::Feedback* GetFeedbackUnlocked(const feedbackID_t feedbackID) const;
 		const std::string& GetFeedbackName(const feedbackID_t feedbackID) const;
@@ -270,7 +270,7 @@ class Manager
 		void LocoFunction(const controlType_t controlType, DataModel::Loco* loco, const function_t function, const bool on);
 		void AccessoryState(const controlType_t controlType, DataModel::Accessory* accessory, const accessoryState_t state, const bool force);
 		void SwitchState(const controlType_t controlType, DataModel::Switch* mySwitch, const accessoryState_t state, const bool force);
-		void FeedbackState(DataModel::Feedback* feedback, const DataModel::Feedback::feedbackState_t state);
+		void FeedbackState(DataModel::Feedback* feedback, const DataModel::Feedback::feedbackState_t state)  { feedback->SetState(state); }
 
 		// layout
 		bool CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ, std::string& result) const;

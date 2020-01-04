@@ -177,16 +177,19 @@ namespace DataModel
 
 	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 	{
-		DataModel::Feedback::feedbackState_t oldState = this->state;
-		bool oldBlocked = blocked;
-		bool ret = FeedbackStateInternal(feedbackID, state);
-		if (ret == false)
 		{
-			return false;
-		}
-		if (oldState == state && oldBlocked == blocked)
-		{
-			return true;
+			std::lock_guard<std::mutex> Guard(updateMutex);
+			DataModel::Feedback::feedbackState_t oldState = this->state;
+			bool oldBlocked = blocked;
+			bool ret = FeedbackStateInternal(feedbackID, state);
+			if (ret == false)
+			{
+				return false;
+			}
+			if (oldState == state && oldBlocked == blocked)
+			{
+				return true;
+			}
 		}
 		manager->TrackPublishState(this);
 		return true;
@@ -194,7 +197,6 @@ namespace DataModel
 
 	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 	{
-		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (state == DataModel::Feedback::FeedbackStateOccupied)
 		{
 			Loco* loco = manager->GetLoco(GetLocoDelayed());

@@ -1113,19 +1113,14 @@ void Manager::FeedbackState(const controlID_t controlID, const feedbackPin_t pin
 void Manager::FeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
-	FeedbackState(feedback, state);
-}
-
-void Manager::FeedbackState(Feedback* feedback, const DataModel::Feedback::feedbackState_t state)
-{
 	if (feedback == nullptr)
 	{
 		return;
 	}
-	feedback->SetState(state);
+	FeedbackState(feedback, state);
 }
 
-void Manager::FeedbackState(Feedback* feedback)
+void Manager::FeedbackPublishState(Feedback* feedback)
 {
 	if (feedback == nullptr)
 	{
