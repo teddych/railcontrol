@@ -1823,7 +1823,7 @@ bool Manager::CheckStreetPosition(const Street* street, const layoutPosition_t p
 bool Manager::StreetSave(const streetID_t streetID,
 	const std::string& name,
 	const delay_t delay,
-	const Street::pushpullType_t pushpull,
+	const Street::PushpullType pushpull,
 	const length_t minTrainLength,
 	const length_t maxTrainLength,
 	const std::vector<DataModel::Relation*>& relations,
@@ -1836,6 +1836,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 	const direction_t fromDirection,
 	const trackID_t toTrack,
 	const direction_t toDirection,
+	const Street::Speed speed,
 	const feedbackID_t feedbackIdReduced,
 	const feedbackID_t feedbackIdCreep,
 	const feedbackID_t feedbackIdStop,
@@ -1887,6 +1888,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 		street->SetFromDirection(fromDirection);
 		street->SetToTrack(toTrack);
 		street->SetToDirection(toDirection);
+		street->SetSpeed(speed);
 		street->SetFeedbackIdReduced(feedbackIdReduced);
 		street->SetFeedbackIdCreep(feedbackIdCreep);
 		street->SetFeedbackIdStop(feedbackIdStop);
@@ -1902,6 +1904,7 @@ bool Manager::StreetSave(const streetID_t streetID,
 		street->SetFromDirection(DirectionRight);
 		street->SetToTrack(TrackNone);
 		street->SetToDirection(DirectionLeft);
+		street->SetSpeed(Street::SpeedTravel);
 		street->SetFeedbackIdReduced(FeedbackNone);
 		street->SetFeedbackIdCreep(FeedbackNone);
 		street->SetFeedbackIdStop(FeedbackNone);

@@ -400,7 +400,23 @@ namespace DataModel
 
 		// start loco
 		manager->TrackPublishState(newTrack);
-		manager->LocoSpeed(ControlTypeInternal, objectID, travelSpeed);
+		locoSpeed_t newSpeed;
+		switch (streetFirst->GetSpeed())
+		{
+			case Street::SpeedTravel:
+				newSpeed = travelSpeed;
+				break;
+
+			case Street::SpeedReduced:
+				newSpeed = reducedSpeed;
+				break;
+
+			case Street::SpeedCreeping:
+			default:
+				newSpeed = creepingSpeed;
+				break;
+		}
+		manager->LocoSpeed(ControlTypeInternal, objectID, newSpeed);
 		state = LocoStateSearchingSecond;
 	}
 
@@ -454,15 +470,32 @@ namespace DataModel
 		feedbackIdFirst = feedbackIdStop;
 		feedbackIdOver = streetSecond->GetFeedbackIdOver();
 		feedbackIdStop = streetSecond->GetFeedbackIdStop();
-		feedbackIdCreep = streetSecond->GetFeedbackIdCreep();
-		feedbackIdReduced = streetSecond->GetFeedbackIdReduced();
+		Street::Speed speedFirst = streetFirst->GetSpeed();
+		Street::Speed speedSecond = streetSecond->GetSpeed();
+		if (speedSecond == Street::SpeedTravel)
+		{
+			feedbackIdCreep = streetSecond->GetFeedbackIdCreep();
+			feedbackIdReduced = streetSecond->GetFeedbackIdReduced();
+			if (speedFirst == Street::SpeedTravel)
+			{
+				manager->LocoSpeed(ControlTypeInternal, objectID, travelSpeed);
+			}
+		}
+		else if (speedSecond == Street::SpeedReduced)
+		{
+			feedbackIdCreep = streetSecond->GetFeedbackIdCreep();
+			if (speedFirst == Street::SpeedReduced)
+			{
+				manager->LocoSpeed(ControlTypeInternal, objectID, reducedSpeed);
+			}
+		}
+
 		wait = streetSecond->GetWaitAfterRelease();
 		newTrack->SetLocoDirection(static_cast<direction_t>(!streetSecond->GetToDirection()));
 		logger->Info("Heading to {0} via {1}", newTrack->GetName(), streetSecond->GetName());
 
 		// start loco
 		manager->TrackPublishState(newTrack);
-		manager->LocoSpeed(ControlTypeInternal, objectID, travelSpeed);
 		state = LocoStateRunning;
 	}
 
@@ -563,6 +596,29 @@ namespace DataModel
 			logger->Error("{0} is running in automode without a street / track. Putting loco into error state", name);
 			return;
 		}
+
+		locoSpeed_t newSpeed;
+		switch (streetFirst->GetSpeed())
+		{
+			case Street::SpeedTravel:
+				newSpeed = travelSpeed;
+				break;
+
+			case Street::SpeedReduced:
+				newSpeed = reducedSpeed;
+				break;
+
+			case Street::SpeedCreeping:
+			default:
+				newSpeed = creepingSpeed;
+				break;
+		}
+
+		if (newSpeed < speed)
+		{
+			manager->LocoSpeed(ControlTypeInternal, objectID, newSpeed);
+		}
+
 
 		streetFirst->Release(objectID);
 		streetFirst = streetSecond;

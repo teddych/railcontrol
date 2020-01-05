@@ -2521,7 +2521,7 @@ namespace WebServer
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name = Languages::GetText(Languages::TextNew);
 		delay_t delay = Street::DefaultDelay;
-		Street::pushpullType_t pushpull = Street::PushpullTypeBoth;
+		Street::PushpullType pushpull = Street::PushpullTypeBoth;
 		length_t minTrainLength = 0;
 		length_t maxTrainLength = 0;
 		vector<Relation*> relations;
@@ -2534,6 +2534,7 @@ namespace WebServer
 		direction_t fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
 		trackID_t toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "totrack", TrackNone);
 		direction_t toDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		Street::Speed speed = static_cast<Street::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Street::SpeedTravel));
 		feedbackID_t feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
 		feedbackID_t feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
 		feedbackID_t feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
@@ -2559,6 +2560,7 @@ namespace WebServer
 				fromDirection = street->GetFromDirection();
 				toTrack = street->GetToTrack();
 				toDirection = street->GetToDirection();
+				speed = street->GetSpeed();
 				feedbackIdReduced = street->GetFeedbackIdReduced();
 				feedbackIdCreep = street->GetFeedbackIdCreep();
 				feedbackIdStop = street->GetFeedbackIdStop();
@@ -2634,11 +2636,16 @@ namespace WebServer
 		}
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", Languages::TextFromTrack, fromTrack, fromDirection));
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", Languages::TextToTrack, toTrack, toDirection, "updateFeedbacksOfTrack(); return false;"));
+		map<Street::Speed,Languages::textSelector_t> speedOptions;
+		speedOptions[Street::SpeedTravel] = Languages::TextTravelSpeed;
+		speedOptions[Street::SpeedReduced] = Languages::TextReducedSpeed;
+		speedOptions[Street::SpeedCreeping] = Languages::TextCreepingSpeed;
+		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("speed", Languages::TextSpeed, speedOptions, speed));
 		HtmlTag feedbackDiv("div");
 		feedbackDiv.AddAttribute("id", "feedbacks");
 		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
 		tracksDiv.AddChildTag(feedbackDiv);
-		map<Street::pushpullType_t,Languages::textSelector_t> pushpullOptions;
+		map<Street::PushpullType,Languages::textSelector_t> pushpullOptions;
 		pushpullOptions[Street::PushpullTypeNo] = Languages::TextNoPushPull;
 		pushpullOptions[Street::PushpullTypeBoth] = Languages::TextAllTrains;
 		pushpullOptions[Street::PushpullTypeOnly] = Languages::TextPushPullOnly;
@@ -2666,7 +2673,7 @@ namespace WebServer
 		streetID_t streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		delay_t delay = static_cast<delay_t>(Utils::Utils::GetIntegerMapEntry(arguments, "delay"));
-		Street::pushpullType_t pushpull = static_cast<Street::pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", Street::PushpullTypeBoth));
+		Street::PushpullType pushpull = static_cast<Street::PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", Street::PushpullTypeBoth));
 		length_t mintrainlength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
 		length_t maxtrainlength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		visible_t visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible"));
@@ -2678,6 +2685,7 @@ namespace WebServer
 		direction_t fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
 		trackID_t toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "totrack", TrackNone);
 		direction_t toDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		Street::Speed speed = static_cast<Street::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Street::SpeedTravel));
 		feedbackID_t feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
 		feedbackID_t feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
 		feedbackID_t feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
@@ -2718,6 +2726,7 @@ namespace WebServer
 			fromDirection,
 			toTrack,
 			toDirection,
+			speed,
 			feedbackIdReduced,
 			feedbackIdCreep,
 			feedbackIdStop,

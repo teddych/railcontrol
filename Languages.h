@@ -233,6 +233,7 @@ class Languages
 			TextSignalUpdated,
 			TextSignals,
 			TextSimple,
+			TextSpeed,
 			TextStartLoco,
 			TextStopAt,
 			TextStopLoco,

@@ -233,6 +233,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSignalUpdated */ { "Signal {0} updated", "Signal {0} aktualisiert", "Señal {0} actualizado" },
 /* TextSignals */ { "Signals", "Signale", "Señales" },
 /* TextSimple */ { "simple", "einfach", "simple" },
+/* TextSpeed */ { "Speed", "Geschwindigkeit", "Velocidad" },
 /* TextStartLoco */ { "Start locomotive", "Starte Lokomotive", "Poner locomotora en marcha" },
 /* TextStopAt */ { "Stop at", "Anhalten bei", "Parar a" },
 /* TextStopLoco */ { "Stop locomotive", "Stoppe Lokomotive", "Parar locomotora" },

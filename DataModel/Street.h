@@ -41,12 +41,22 @@ namespace DataModel
 		public:
 			static const delay_t DefaultDelay = 250;
 
-			enum pushpullType_t : unsigned char
+			enum PushpullType : unsigned char
 			{
 				PushpullTypeNo = 0,
 				PushpullTypeOnly = 1,
 				PushpullTypeBoth = 2
 			};
+
+			enum Speed : unsigned char
+			{
+				SpeedMax = 3,
+				SpeedTravel = 2,
+				SpeedReduced = 1,
+				SpeedCreeping = 0
+			};
+
+			Street() = delete;
 
 			Street(Manager* manager, const streetID_t streetID)
 			:	LayoutItem(streetID),
@@ -61,6 +71,7 @@ namespace DataModel
 				fromDirection(DirectionRight),
 				toTrack(TrackNone),
 				toDirection(DirectionRight),
+				speed(SpeedTravel),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
 				feedbackIdStop(FeedbackNone),
@@ -96,8 +107,8 @@ namespace DataModel
 
 			delay_t GetDelay() const { return delay; }
 			void SetDelay(delay_t delay) { this->delay = delay; }
-			pushpullType_t GetPushpull() const { return pushpull; }
-			void SetPushpull(const pushpullType_t pushpull) { this->pushpull = pushpull; }
+			PushpullType GetPushpull() const { return pushpull; }
+			void SetPushpull(const PushpullType pushpull) { this->pushpull = pushpull; }
 			length_t GetMinTrainLength() const { return minTrainLength; }
 			void SetMinTrainLength(const length_t length) { this->minTrainLength = length; }
 			length_t GetMaxTrainLength() const { return maxTrainLength; }
@@ -113,6 +124,8 @@ namespace DataModel
 			trackID_t GetToTrack() const { return toTrack; };
 			void SetToDirection(const direction_t toDirection) { this->toDirection = toDirection; }
 			direction_t GetToDirection() const { return toDirection; }
+			void SetSpeed(Speed startSpeed) { this->speed = startSpeed; }
+			Speed GetSpeed() const { return speed; }
 			void SetFeedbackIdReduced(const feedbackID_t feedbackIdReduced) { this->feedbackIdReduced = feedbackIdReduced; }
 			feedbackID_t GetFeedbackIdReduced() const { return feedbackIdReduced; }
 			void SetFeedbackIdCreep(const feedbackID_t feedbackIdCreep) { this->feedbackIdCreep = feedbackIdCreep; }
@@ -136,7 +149,7 @@ namespace DataModel
 
 			delay_t delay;
 			std::vector<DataModel::Relation*> relations;
-			pushpullType_t pushpull;
+			PushpullType pushpull;
 			length_t minTrainLength;
 			length_t maxTrainLength;
 			automode_t automode;
@@ -144,6 +157,8 @@ namespace DataModel
 			direction_t fromDirection;
 			trackID_t toTrack;
 			direction_t toDirection;
+
+			Speed speed;
 			feedbackID_t feedbackIdReduced;
 			feedbackID_t feedbackIdCreep;
 			feedbackID_t feedbackIdStop;

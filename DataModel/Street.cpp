@@ -64,6 +64,7 @@ namespace DataModel
 			<< ";fromDirection=" << static_cast<int>(fromDirection)
 			<< ";toTrack=" << static_cast<int>(toTrack)
 			<< ";toDirection=" << static_cast<int>(toDirection)
+			<< ";speed=" << static_cast<int>(speed)
 			<< ";feedbackIdReduced=" << static_cast<int>(feedbackIdReduced)
 			<< ";feedbackIdCreep=" << static_cast<int>(feedbackIdCreep)
 			<< ";feedbackIdStop=" << static_cast<int>(feedbackIdStop)
@@ -98,6 +99,7 @@ namespace DataModel
 			fromDirection = DirectionRight;
 			toTrack = TrackNone;
 			toDirection = DirectionLeft;
+			speed = SpeedTravel;
 			feedbackIdReduced = FeedbackNone;
 			feedbackIdCreep = FeedbackNone;
 			feedbackIdStop = FeedbackNone;
@@ -112,12 +114,13 @@ namespace DataModel
 		fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
 		toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "toTrack", TrackNone);
 		toDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
+		speed = static_cast<Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", SpeedTravel));
 		feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
 		feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdCreep", FeedbackNone);
 		feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdStop", FeedbackNone);
 		feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdOver", FeedbackNone);
-		pushpull = static_cast<pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", PushpullTypeBoth)); // FIXME: remove later
-		pushpull = static_cast<pushpullType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", pushpull));
+		pushpull = static_cast<PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", PushpullTypeBoth)); // FIXME: remove later
+		pushpull = static_cast<PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", pushpull));
 		minTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
 		maxTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
