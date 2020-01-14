@@ -422,7 +422,7 @@ button:active {
 }
 
 .contextmenu {
-	position: absolute;
+	position: fixed;
 	display: none;
 	z-index: 1;
 }

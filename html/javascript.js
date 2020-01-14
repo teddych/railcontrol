@@ -231,6 +231,37 @@ function onClickSignal(signalID)
 	return false;
 }
 
+function showContextMenu(elementName) {
+	var element = document.getElementById(elementName);
+	if (element === null)
+	{
+		return;
+	}
+
+	var mouseX = event.clientX;
+	var mouseY = event.clientY;
+	var windowX = window.innerWidth;
+	var windowY = window.innerHeight;
+
+	if (windowX > (mouseX * 2)) {
+		element.style.left = mouseX + "px";
+		element.style.right = "auto";
+	}
+	else {
+		element.style.left = "auto";
+		element.style.right = (windowX - mouseX) + "px";
+	}
+
+	if (windowY > (mouseY * 2)) {
+		element.style.top = mouseY + "px";
+		element.style.bottom = "auto";
+	}
+	else {
+		element.style.top = "auto";
+		element.style.bottom = (windowY - mouseY) + "px";
+	}
+	element.style.display = 'block';
+}
 
 function onContextLayoutItem(event, ID)
 {
@@ -240,11 +271,7 @@ function onContextLayoutItem(event, ID)
 	}
 	event.stopPropagation();
 	hideAllContextMenus();
-	var menu = document.getElementById(ID + '_context');
-	if (menu)
-	{
-		menu.style.display = 'block';
-	}
+	showContextMenu(ID + '_context');
 	return false;
 }
 
@@ -849,14 +876,7 @@ function loadLayoutContext(event)
 	}
 	event.preventDefault();
 	hideAllContextMenus();
-	menu = document.getElementById('layout_context');
-	if (!menu)
-	{
-		return true;
-	}
-	menu.style.display = 'block';
-	menu.style.left = event.pageX + 'px';
-	menu.style.top = event.pageY + 'px';
+	showContextMenu('layout_context');
 	window.layoutPosX = Math.floor((event.pageX - 254) / 36);
 	window.layoutPosY = Math.floor((event.pageY - 92) / 36);
 	return true;
