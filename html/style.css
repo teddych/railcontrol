@@ -20,7 +20,7 @@ body {
 	left: 0px;
 	top: 55px;
 	height: 50px;
-	width: 250px;
+	width: 252px;
 }
 
 .layer_selector {
@@ -28,19 +28,15 @@ body {
 	right: 0px;
 	top: 55px;
 	height: 50px;
-	width: calc(100% - 254px);
+	width: calc(100% - 252px);
 }
 
-.loco_selector select {
-	width: 250px;
-}
-
+.loco_selector select,
 .layer_selector select {
 	width: 100%;
 }
 
 .loco {
-	width: 250px;
 	position: fixed;
 	top: 90px;
 	left: 0px;
@@ -49,11 +45,13 @@ body {
 	overflow-y: auto;
 }
 
+.inner_loco {
+	width: 250px;
+}
+
 .clock {
 	height: 250px;
-	width: 250px;
 	position: fixed;
-	bottom: 112px;
 	left: 0px;
 	border: solid 1px;
 	overflow-x: hidden;
@@ -65,19 +63,79 @@ body {
 	width: 250px;
 }
 
-@media (max-height: 909px) {
-	.loco {
-		height: calc(100% - 204px);
+@media (max-width: 735px) {
+	.layer_selector,
+	.layout,
+	.menu_add {
+		display: none;
+	}
+
+	.loco_selector {
+		width: 100%;
+	}
+
+	.loco,
+	.status,
+	.clock {
+		width: calc(100% - 2px);
+	}
+
+	@media (max-height: 909px) {
+		.loco {
+			height: calc(100% - 204px);
+		}
+
+		.clock {
+			display: none;
+		}
+	}
+
+	@media (min-height: 910px) {
+		.loco {
+			height: calc(100% - 456px);
+		}
 	}
 
 	.clock {
-		display: none;
+		bottom: 112px;;
 	}
 }
 
-@media (min-height: 910px) {
-	.loco {
-		height: calc(100% - 456px);
+@media (min-width: 736px) {
+	.layer_selector,
+	.layout,
+	.menu_add {
+		display: inline-block;
+	}
+
+	.loco,
+	.loco_selector,
+	.clock {
+		width: 250px
+	}
+
+	.status {
+		width: calc(100% - 254px);
+	}
+
+	@media (max-height: 799px) {
+		.loco {
+			height: calc(100% - 92px);
+		}
+
+		.clock {
+			display: none;
+		}
+	}
+
+	@media (min-height: 800px) {
+		.loco {
+			height: calc(100% - 344px);
+		}
+	}
+
+	.clock {
+		bottom: 0px;
 	}
 }
 
@@ -135,20 +193,8 @@ body {
 }
 
 .menu_main,
-.menu_add,
 .inline-block {
 	display: inline-block;
-}
-
-@media (max-width: 735px) {
-	.layer_selector,
-	.layout {
-		display: none;
-	}
-	.menu_add {
-		display: none;
-	}
-
 }
 
 .layout_item {
@@ -316,8 +362,8 @@ select {
 .status {
 	position: fixed;
 	bottom: 0px;
+	right: 0px;
 	height: 110px;
-	width: 100%;
 	border: solid 1px;
 	overflow-x: hidden;
 	overflow-y: scroll;

@@ -70,7 +70,6 @@ using DataModel::Switch;
 using DataModel::Track;
 using std::map;
 using std::string;
-using std::stringstream;
 using std::thread;
 using std::to_string;
 using std::vector;
@@ -652,7 +651,7 @@ namespace WebServer
 
 	void WebClient::DeliverFile(const string& virtualFile)
 	{
-		stringstream ss;
+		std::stringstream ss;
 		char workingDir[128];
 		if (getcwd(workingDir, sizeof(workingDir)))
 		{
@@ -3535,31 +3534,32 @@ namespace WebServer
 			return;
 		}
 
-		stringstream ss;
-		ss << HtmlTag("p").AddContent(loco->GetName());
+		HtmlTag container("div");
+		container.AddAttribute("class", "inner_loco");
+		container.AddChildTag(HtmlTag("p").AddContent(loco->GetName()));
 		unsigned int speed = loco->Speed();
 		map<string, string> buttonArguments;
 		buttonArguments["loco"] = to_string(locoID);
 
 		string id = "locospeed_" + to_string(locoID);
-		ss << HtmlTagInputSliderLocoSpeed("speed", MinSpeed, loco->GetMaxSpeed(), speed, locoID);
+		container.AddChildTag(HtmlTagInputSliderLocoSpeed("speed", MinSpeed, loco->GetMaxSpeed(), speed, locoID));
 		buttonArguments["speed"] = to_string(MinSpeed);
-		ss << HtmlTagButtonCommand("0", id + "_0", buttonArguments);
+		container.AddChildTag(HtmlTagButtonCommand("0", id + "_0", buttonArguments));
 		buttonArguments["speed"] = to_string(loco->GetCreepingSpeed());
-		ss << HtmlTagButtonCommand("I", id + "_1", buttonArguments);
+		container.AddChildTag(HtmlTagButtonCommand("I", id + "_1", buttonArguments));
 		buttonArguments["speed"] = to_string(loco->GetReducedSpeed());
-		ss << HtmlTagButtonCommand("II", id + "_2", buttonArguments);
+		container.AddChildTag(HtmlTagButtonCommand("II", id + "_2", buttonArguments));
 		buttonArguments["speed"] = to_string(loco->GetTravelSpeed());
-		ss << HtmlTagButtonCommand("III", id + "_3", buttonArguments);
+		container.AddChildTag(HtmlTagButtonCommand("III", id + "_3", buttonArguments));
 		buttonArguments["speed"] = to_string(loco->GetMaxSpeed());
-		ss << HtmlTagButtonCommand("IV", id + "_4", buttonArguments);
+		container.AddChildTag(HtmlTagButtonCommand("IV", id + "_4", buttonArguments));
 		buttonArguments.erase("speed");
 
 		id = "locoedit_" + to_string(locoID);
-		ss << HtmlTagButtonPopup(HtmlTag("span").AddClass("symbola").AddContent("&#x270D;"), id, buttonArguments);
+		container.AddChildTag(HtmlTagButtonPopup(HtmlTag("span").AddClass("symbola").AddContent("&#x270D;"), id, buttonArguments));
 
 		id = "locodirection_" + to_string(locoID);
-		ss << HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9193;"), id, loco->GetDirection(), buttonArguments).AddClass("button_direction");
+		container.AddChildTag(HtmlTagButtonCommandToggle(HtmlTag("span").AddClass("symbola").AddContent("&#9193;"), id, loco->GetDirection(), buttonArguments).AddClass("button_direction"));
 
 		id = "locofunction_" + to_string(locoID);
 		function_t nrOfFunctions = loco->GetNrOfFunctions();
@@ -3567,10 +3567,10 @@ namespace WebServer
 		{
 			string nrText(to_string(nr));
 			buttonArguments["function"] = nrText;
-			ss << HtmlTagButtonCommandToggle("f" + nrText, id + "_" + nrText, loco->GetFunction(nr), buttonArguments);
+			container.AddChildTag(HtmlTagButtonCommandToggle("f" + nrText, id + "_" + nrText, loco->GetFunction(nr), buttonArguments));
 		}
 		buttonArguments.erase("function");
-		ReplyHtmlWithHeaderAndParagraph(ss.str());
+		ReplyHtmlWithHeaderAndParagraph(container);
 	}
 
 	void WebClient::PrintMainHTML() {
