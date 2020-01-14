@@ -201,6 +201,7 @@ namespace DataModel
 	{
 		if (manager->Booster() == BoosterStop)
 		{
+			logger->Debug(Languages::TextBoosterIsTurnedOff);
 			return false;
 		}
 
@@ -210,7 +211,6 @@ namespace DataModel
 			bool retRelation = relation->Execute(logger, delay);
 			if (retRelation == false)
 			{
-				logger->Debug(Languages::TextUnableToExecuteStreet, GetName());
 				return false;
 			}
 		}
@@ -223,6 +223,7 @@ namespace DataModel
 	{
 		if (manager->Booster() == BoosterStop)
 		{
+			logger->Debug(Languages::TextBoosterIsTurnedOff);
 			return false;
 		}
 
@@ -264,6 +265,7 @@ namespace DataModel
 	{
 		if (manager->Booster() == BoosterStop)
 		{
+			logger->Debug(Languages::TextBoosterIsTurnedOff);
 			return false;
 		}
 
