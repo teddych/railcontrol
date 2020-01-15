@@ -40,8 +40,9 @@ namespace DataModel
 			<< ";objectID1=" << objectID1
 			<< ";objectType2=" << static_cast<int>(objectType2)
 			<< ";objectID2=" << objectID2
+			<< ";type=" << type
 			<< ";priority=" << static_cast<int>(priority)
-			<< ";accessoryState=" << static_cast<int>(accessoryState);
+			<< ";data=" << static_cast<int>(data);
 		return ss.str();
 	}
 
@@ -54,8 +55,26 @@ namespace DataModel
 		objectID1 = Utils::Utils::GetIntegerMapEntry(arguments, "objectID1");
 		objectType2 = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType2"));
 		objectID2 = Utils::Utils::GetIntegerMapEntry(arguments, "objectID2");
+		type = static_cast<type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TypeCalculate));
+		if (type == TypeCalculate)
+		{
+			switch (objectType1)
+			{
+				case ObjectTypeStreet:
+					type = TypeStreetAtLock;
+					break;
+
+				case ObjectTypeLoco:
+					type = TypeLocoSlave;
+					break;
+
+				default:
+					break;
+			}
+		}
 		priority = Utils::Utils::GetIntegerMapEntry(arguments, "priority");
-		accessoryState = Utils::Utils::GetBoolMapEntry(arguments, "accessoryState");
+		data = Utils::Utils::GetIntegerMapEntry(arguments, "accessoryState"); // FIXME: remove later
+		data = Utils::Utils::GetIntegerMapEntry(arguments, "data", data);
 		return true;
 	}
 
@@ -65,7 +84,7 @@ namespace DataModel
 		{
 			case ObjectTypeAccessory:
 			{
-				bool ret = manager->AccessoryState(ControlTypeInternal, objectID2, accessoryState, true);
+				bool ret = manager->AccessoryState(ControlTypeInternal, objectID2, static_cast<accessoryState_t>(data), true);
 				if (ret == false)
 				{
 					return false;
@@ -75,7 +94,7 @@ namespace DataModel
 
 			case ObjectTypeSwitch:
 			{
-				bool ret = manager->SwitchState(ControlTypeInternal, objectID2, accessoryState, true);
+				bool ret = manager->SwitchState(ControlTypeInternal, objectID2, static_cast<switchState_t>(data), true);
 				if (ret == false)
 				{
 					return false;
@@ -85,7 +104,7 @@ namespace DataModel
 
 			case ObjectTypeSignal:
 			{
-				bool ret = manager->SignalState(ControlTypeInternal, objectID2, accessoryState, true);
+				bool ret = manager->SignalState(ControlTypeInternal, objectID2, static_cast<signalState_t>(data), true);
 				if (ret == false)
 				{
 					return false;
@@ -94,7 +113,7 @@ namespace DataModel
 			}
 
 			case ObjectTypeTrack:
-				manager->TrackSetLocoDirection(objectID2, static_cast<direction_t>(accessoryState));
+				manager->TrackSetLocoDirection(objectID2, static_cast<direction_t>(data));
 				return true;
 
 
@@ -102,7 +121,7 @@ namespace DataModel
 				return manager->StreetExecute(logger, objectID2);
 
 			case ObjectTypeLoco:
-				manager->LocoFunction(ControlTypeInternal, GetLoco(), static_cast<function_t>(objectID2), static_cast<bool>(accessoryState));
+				manager->LocoFunction(ControlTypeInternal, GetLoco(), static_cast<function_t>(objectID2), static_cast<bool>(data));
 				return true;
 
 			default:

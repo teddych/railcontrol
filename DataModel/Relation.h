@@ -36,26 +36,36 @@ namespace DataModel
 	class Relation : protected Serializable, public LockableItem
 	{
 		public:
+			enum type_t : unsigned char
+			{
+				TypeCalculate = 0,
+				TypeStreetAtLock = 1,
+				TypeStreetAtUnlock = 2,
+				TypeLocoSlave = 10
+			};
+
 			Relation(Manager* manager,
 				const objectType_t objectType1,
 				const objectID_t objectID1,
 				const objectType_t objectType2,
 				const objectID_t objectID2,
+				const type_t type,
 				const priority_t priority,
-				const accessoryState_t accessoryState)
+				const unsigned char data)
 			:	manager(manager),
 				objectType1(objectType1),
 			 	objectID1(objectID1),
 				objectType2(objectType2),
 				objectID2(objectID2),
+				type(type),
 				priority(priority),
-				accessoryState(accessoryState)
+				data(data)
 			{}
 
 			Relation(Manager* manager,
 				const std::string& serialized)
 			:	manager(manager),
-				accessoryState(DataModel::Accessory::AccessoryStateOff)
+				data(0)
 			{
 				Deserialize(serialized);
 			}
@@ -65,10 +75,11 @@ namespace DataModel
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
 
-			objectType_t ObjectType2() { return objectType2; }
-			objectID_t ObjectID2() { return objectID2; }
-			priority_t Priority() { return priority; }
-			accessoryState_t AccessoryState() { return accessoryState; }
+			objectType_t ObjectType2() const { return objectType2; }
+			objectID_t ObjectID2() const { return objectID2; }
+			type_t Type() const { return type; }
+			priority_t Priority() const { return priority; }
+			unsigned char GetState() const { return data; }
 
 			bool Reserve(Logger::Logger* logger, const locoID_t locoID);
 			bool Lock(Logger::Logger* logger, const locoID_t locoID);
@@ -83,8 +94,9 @@ namespace DataModel
 			objectID_t objectID1;
 			objectType_t objectType2;
 			objectID_t objectID2;
+			type_t type;
 			priority_t priority;
-			accessoryState_t accessoryState;
+			unsigned char data;
 	};
 } // namespace DataModel
 

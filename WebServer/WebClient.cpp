@@ -1671,7 +1671,7 @@ namespace WebServer
 			{
 				continue;
 			}
-			slaves.push_back(new Relation(&manager, ObjectTypeLoco, locoID, ObjectTypeLoco, slaveId, 0, false));
+			slaves.push_back(new Relation(&manager, ObjectTypeLoco, locoID, ObjectTypeLoco, slaveId, Relation::TypeLocoSlave, 0, 0));
 		}
 
 		string result;
@@ -2594,7 +2594,11 @@ namespace WebServer
 		priority_t priority = 1;
 		for (auto relation : relations)
 		{
-			relationDiv.AddChildTag(HtmlTagRelation(to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->AccessoryState()));
+			if (relation->Type() != Relation::TypeStreetAtLock)
+			{
+				continue;
+			}
+			relationDiv.AddChildTag(HtmlTagRelation(to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->GetState()));
 			priority = relation->Priority() + 1;
 		}
 		relationDiv.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority)));
@@ -2699,12 +2703,12 @@ namespace WebServer
 			string priorityString = to_string(relationId);
 			objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_type_" + priorityString));
 			objectID_t objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_id_" + priorityString, SwitchNone);
-			accessoryState_t state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
+			unsigned char state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
 			if (objectId == 0 && objectType != ObjectTypeLoco)
 			{
 				continue;
 			}
-			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, priority, state));
+			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtLock, priority, state));
 			++priority;
 		}
 
