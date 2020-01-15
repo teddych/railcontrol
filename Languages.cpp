@@ -56,6 +56,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextAllTrains */ { "all trains", "alle Züge", "todos los trenes" },
 /* TextAllowedTrains */ { "Allowed trains:", "Erlaubte Züge", "Trenes permitidos" },
 /* TextAreYouSureToDelete */ { "Are you sure you really want to delete {0}?", "Sind sie sicher, dass sie {0} löschen möchten?", "Está usted seguro, que usted quiere eliminar {0}?" },
+/* TextAtLock */ { "At lock", "Beim Sperren", "Durante bloquear" },
+/* TextAtUnlock */ { "At unlock", "Beim Freigeben", "Durante liberar" },
 /* TextAutomaticallyAddUnknownFeedbacks */ { "Automatically add unknown feedbacks", "Füge unbekannte Rückmelder automatisch hinzu", "Añadir retroseñales desconosidos automaticamente" },
 /* TextAutomode */ { "Automode", "Automode", "Autómodo" },
 /* TextBasic */ { "Basic data", "Basisdaten", "Datos basicos" },

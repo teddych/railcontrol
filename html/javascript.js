@@ -64,22 +64,22 @@ function addSlave()
 	return false;
 }
 
-function addRelation()
+function addRelation(type)
 {
-	var relationCounter = document.getElementById('relationcounter');
+	var relationCounter = document.getElementById('relationcounter' + type);
 	if (!relationCounter)
 	{
 		return false;
 	}
-	var relationDiv = document.getElementById('relation');
+	var relationDiv = document.getElementById('relation' + type);
 	if (!relationDiv)
 	{
 		return false;
 	}
 
+	var url = '/?cmd=relationadd&priority=' + relationCounter.value + '&type=' + type;
+	requestAddItem('new_' + type + '_priority_' + relationCounter.value, url);
 	relationCounter.value++;
-	var url = '/?cmd=relationadd&priority=' + relationCounter.value;
-	requestAddItem('new_priority_' + relationCounter.value, url);
 	return false;
 }
 
@@ -849,15 +849,15 @@ function loadProtocol(type, ID)
 	requestUpdateItem(elementName, url);
 }
 
-function loadRelationObject(priority)
+function loadRelationObject(type, priority)
 {
-	var elementName = 'relation_object_' + priority;
+	var elementName = 'relation_' + type + '_' + priority;
 	var object = document.getElementById(elementName);
 	if (!object)
 	{
 		return;
 	}
-	var typeSelector = document.getElementById('s_relation_type_' + priority);
+	var typeSelector = document.getElementById('s_' + elementName + '_type');
 	if (!typeSelector)
 	{
 		return;
@@ -865,7 +865,8 @@ function loadRelationObject(priority)
 	var url = '/?cmd=relationobject';
 	url += '&objecttype=' + typeSelector.value;
 	url += '&priority=' + priority;
-	requestUpdateItem(elementName, url);
+	url += '&type=' + type;
+	requestUpdateItem(elementName + "_object", url);
 }
 
 function loadLayoutContext(event)

@@ -56,6 +56,8 @@ class Languages
 			TextAllTrains,
 			TextAllowedTrains,
 			TextAreYouSureToDelete,
+			TextAtLock,
+			TextAtUnlock,
 			TextAutomaticallyAddUnknownFeedbacks,
 			TextAutomode,
 			TextBasic,

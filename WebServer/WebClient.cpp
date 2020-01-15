@@ -1188,7 +1188,7 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagRelationObject(const string& priority, const objectType_t objectType, const objectID_t objectId, const accessoryState_t state)
+	HtmlTag WebClient::HtmlTagRelationObject(const string& name, const objectType_t objectType, const objectID_t objectId, const accessoryState_t state)
 	{
 		HtmlTag content;
 		switch (objectType)
@@ -1201,12 +1201,12 @@ namespace WebServer
 				{
 					switchOptions[mySwitch.first] = mySwitch.second->GetID();
 				}
-				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, switchOptions, objectId).AddClass("select_relation_id"));
+				content.AddChildTag(HtmlTagSelect(name + "_id", switchOptions, objectId).AddClass("select_relation_id"));
 
 				map<switchState_t,Languages::textSelector_t> stateOptions;
 				stateOptions[DataModel::Switch::SwitchStateStraight] = Languages::TextStraight;
 				stateOptions[DataModel::Switch::SwitchStateTurnout] = Languages::TextTurnout;
-				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1218,12 +1218,12 @@ namespace WebServer
 				{
 					signalOptions[signal.first] = signal.second->GetID();
 				}
-				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, signalOptions, objectId).AddClass("select_relation_id"));
+				content.AddChildTag(HtmlTagSelect(name + "_id", signalOptions, objectId).AddClass("select_relation_id"));
 
 				map<signalState_t,Languages::textSelector_t> stateOptions;
 				stateOptions[DataModel::Signal::SignalStateGreen] = Languages::TextGreen;
 				stateOptions[DataModel::Signal::SignalStateRed] = Languages::TextRed;
-				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1235,12 +1235,12 @@ namespace WebServer
 				{
 					accessoryOptions[accessory.first] = accessory.second->GetID();
 				}
-				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, accessoryOptions, objectId).AddClass("select_relation_id"));
+				content.AddChildTag(HtmlTagSelect(name + "_id", accessoryOptions, objectId).AddClass("select_relation_id"));
 
 				map<accessoryState_t,Languages::textSelector_t> stateOptions;
 				stateOptions[DataModel::Accessory::AccessoryStateOn] = Languages::TextOn;
 				stateOptions[DataModel::Accessory::AccessoryStateOff] = Languages::TextOff;
-				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, state).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, state).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1252,12 +1252,12 @@ namespace WebServer
 				{
 					trackOptions[track.first] = track.second->GetID();
 				}
-				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, trackOptions, objectId).AddClass("select_relation_id"));
+				content.AddChildTag(HtmlTagSelect(name + "_id", trackOptions, objectId).AddClass("select_relation_id"));
 
 				map<unsigned char,Languages::textSelector_t> stateOptions;
 				stateOptions[static_cast<unsigned char>(DirectionLeft)] = Languages::TextLeft;
 				stateOptions[static_cast<unsigned char>(DirectionRight)] = Languages::TextRight;
-				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, static_cast<unsigned char>(state)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect("state_" + name, stateOptions, static_cast<unsigned char>(state)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1269,7 +1269,7 @@ namespace WebServer
 				{
 					streetOptions[track.first] = track.second->GetID();
 				}
-				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, streetOptions, objectId).AddClass("select_relation_id"));
+				content.AddChildTag(HtmlTagSelect(name + "_id", streetOptions, objectId).AddClass("select_relation_id"));
 				return content;
 			}
 
@@ -1280,12 +1280,12 @@ namespace WebServer
 				{
 					functionOptions[Utils::Utils::ToStringWithLeadingZeros(function, 2)] = "F" + to_string(function);
 				}
-				content.AddChildTag(HtmlTagSelect("relation_id_" + priority, functionOptions, Utils::Utils::ToStringWithLeadingZeros(objectId, 2)).AddClass("select_relation_id"));
+				content.AddChildTag(HtmlTagSelect(name + "_id", functionOptions, Utils::Utils::ToStringWithLeadingZeros(objectId, 2)).AddClass("select_relation_id"));
 
 				map<unsigned char,Languages::textSelector_t> stateOptions;
 				stateOptions[static_cast<unsigned char>(DataModel::LocoFunctions::Off)] = Languages::TextOff;
 				stateOptions[static_cast<unsigned char>(DataModel::LocoFunctions::On)] = Languages::TextOn;
-				content.AddChildTag(HtmlTagSelect("relation_state_" + priority, stateOptions, static_cast<unsigned char>(state)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<unsigned char>(state)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1297,12 +1297,13 @@ namespace WebServer
 		}
 	}
 
-	HtmlTag WebClient::HtmlTagRelation(const string& priority, const objectType_t objectType, const objectID_t objectId, const accessoryState_t state)
+	HtmlTag WebClient::HtmlTagRelation(const string& type, const string& priority, const objectType_t objectType, const objectID_t objectId, const accessoryState_t state)
 	{
 		HtmlTag content("div");
-		content.AddAttribute("id", "priority_" + priority);
-		HtmlTagButton deleteButton(Languages::TextDelete, "delete_relation_" + priority);
-		deleteButton.AddAttribute("onclick", "deleteElement('priority_" + priority + "');return false;");
+		string name = "relation_" + type + "_" + priority;
+		content.AddAttribute("id", name);
+		HtmlTagButton deleteButton(Languages::TextDelete, "delete_" + name);
+		deleteButton.AddAttribute("onclick", "deleteElement('" + name + "');return false;");
 		deleteButton.AddClass("wide_button");
 		content.AddChildTag(deleteButton);
 
@@ -1313,14 +1314,14 @@ namespace WebServer
 		objectTypeOptions[ObjectTypeTrack] = Languages::TextTrack;
 		objectTypeOptions[ObjectTypeStreet] = Languages::TextStreet;
 		objectTypeOptions[ObjectTypeLoco] = Languages::TextLoco;
-		HtmlTagSelect select("relation_type_" + priority, objectTypeOptions, objectType);
+		HtmlTagSelect select(name + "_type", objectTypeOptions, objectType);
 		select.AddClass("select_relation_objecttype");
-		select.AddAttribute("onchange", "loadRelationObject(" + priority + ");return false;");
+		select.AddAttribute("onchange", "loadRelationObject('" + type + "', " + priority + ");return false;");
 		content.AddChildTag(select);
 		HtmlTag contentObject("div");
-		contentObject.AddAttribute("id", "relation_object_" + priority);
+		contentObject.AddAttribute("id", name + "_object");
 		contentObject.AddClass("inline-block");
-		contentObject.AddChildTag(HtmlTagRelationObject(priority, objectType, objectId, state));
+		contentObject.AddChildTag(HtmlTagRelationObject(name, objectType, objectId, state));
 		content.AddChildTag(contentObject);
 		return content;
 	}
@@ -1472,10 +1473,15 @@ namespace WebServer
 	void WebClient::HandleRelationAdd(const map<string, string>& arguments)
 	{
 		string priorityString = Utils::Utils::GetStringMapEntry(arguments, "priority", "1");
+		string type = Utils::Utils::GetStringMapEntry(arguments, "type", "atunlock");
+		if (type.compare("atunlock") != 0)
+		{
+			type = "atlock";
+		}
 		priority_t priority = Utils::Utils::StringToInteger(priorityString, 1);
 		HtmlTag container;
-		container.AddChildTag(HtmlTagRelation(priorityString));
-		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority + 1)));
+		container.AddChildTag(HtmlTagRelation(type, priorityString));
+		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_" + type + "_priority_" + to_string(priority + 1)));
 		ReplyHtmlWithHeader(container);
 	}
 
@@ -1517,8 +1523,10 @@ namespace WebServer
 	void WebClient::HandleRelationObject(const map<string, string>& arguments)
 	{
 		const string priority = Utils::Utils::GetStringMapEntry(arguments, "priority");
+		const string type = Utils::Utils::GetStringMapEntry(arguments, "type");
+		const string name = "relation_" + type + "_" + priority;
 		const objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objecttype"));
-		ReplyHtmlWithHeader(HtmlTagRelationObject(priority, objectType));
+		ReplyHtmlWithHeader(HtmlTagRelationObject(name, objectType));
 	}
 
 	void WebClient::HandleLocoEdit(const map<string, string>& arguments)
@@ -2571,7 +2579,8 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("relation", Languages::TextMembers));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("relationatlock", Languages::TextAtLock));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("relationatunlock", Languages::TextAtUnlock));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
@@ -2588,31 +2597,54 @@ namespace WebServer
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("delay", Languages::TextWaitingTimeBetweenMembers, delay, 1, USHRT_MAX));
 		formContent.AddChildTag(basicContent);
 
-		HtmlTag relationDiv("div");
-		relationDiv.AddChildTag(HtmlTagInputHidden("relationcounter", to_string(relations.size())));
-		relationDiv.AddAttribute("id", "relation");
-		priority_t priority = 1;
+		HtmlTag relationDivAtLock("div");
+		relationDivAtLock.AddAttribute("id", "relationatlock");
+		priority_t priorityAtLock = 1;
+
+		HtmlTag relationDivAtUnlock("div");
+		relationDivAtUnlock.AddAttribute("id", "relationatunlock");
+		priority_t priorityAtUnlock = 1;
 		for (auto relation : relations)
 		{
-			if (relation->Type() != Relation::TypeStreetAtLock)
+			if (relation->Type() == Relation::TypeStreetAtLock)
 			{
-				continue;
+				relationDivAtLock.AddChildTag(HtmlTagRelation("atlock", to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->GetState()));
+				priorityAtLock = relation->Priority() + 1;
 			}
-			relationDiv.AddChildTag(HtmlTagRelation(to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->GetState()));
-			priority = relation->Priority() + 1;
+			else if (relation->Type() == Relation::TypeStreetAtUnlock)
+			{
+				relationDivAtUnlock.AddChildTag(HtmlTagRelation("atunlock", to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->GetState()));
+				priorityAtUnlock = relation->Priority() + 1;
+			}
 		}
-		relationDiv.AddChildTag(HtmlTag("div").AddAttribute("id", "new_priority_" + to_string(priority)));
-		HtmlTag relationContent("div");
-		relationContent.AddAttribute("id", "tab_relation");
-		relationContent.AddClass("tab_content");
-		relationContent.AddClass("hidden");
-		relationContent.AddChildTag(relationDiv);
-		HtmlTagButton newButton(Languages::TextNew, "newrelation");
-		newButton.AddAttribute("onclick", "addRelation();return false;");
-		newButton.AddClass("wide_button");
-		relationContent.AddChildTag(newButton);
-		relationContent.AddChildTag(HtmlTag("br"));
-		formContent.AddChildTag(relationContent);
+		relationDivAtLock.AddChildTag(HtmlTagInputHidden("relationcounteratlock", to_string(priorityAtLock)));
+		relationDivAtLock.AddChildTag(HtmlTag("div").AddAttribute("id", "new_atlock_priority_" + to_string(priorityAtLock)));
+		relationDivAtUnlock.AddChildTag(HtmlTagInputHidden("relationcounteratunlock", to_string(priorityAtUnlock)));
+		relationDivAtUnlock.AddChildTag(HtmlTag("div").AddAttribute("id", "new_atunlock_priority_" + to_string(priorityAtUnlock)));
+
+		HtmlTag relationContentAtLock("div");
+		relationContentAtLock.AddAttribute("id", "tab_relationatlock");
+		relationContentAtLock.AddClass("tab_content");
+		relationContentAtLock.AddClass("hidden");
+		relationContentAtLock.AddChildTag(relationDivAtLock);
+		HtmlTagButton newButtonAtLock(Languages::TextNew, "newrelationatlock");
+		newButtonAtLock.AddAttribute("onclick", "addRelation('atlock');return false;");
+		newButtonAtLock.AddClass("wide_button");
+		relationContentAtLock.AddChildTag(newButtonAtLock);
+		relationContentAtLock.AddChildTag(HtmlTag("br"));
+		formContent.AddChildTag(relationContentAtLock);
+
+		HtmlTag relationContentAtUnlock("div");
+		relationContentAtUnlock.AddAttribute("id", "tab_relationatunlock");
+		relationContentAtUnlock.AddClass("tab_content");
+		relationContentAtUnlock.AddClass("hidden");
+		relationContentAtUnlock.AddChildTag(relationDivAtUnlock);
+		HtmlTagButton newButtonAtUnlock(Languages::TextNew, "newrelationatunlock");
+		newButtonAtUnlock.AddAttribute("onclick", "addRelation('atunlock');return false;");
+		newButtonAtUnlock.AddClass("wide_button");
+		relationContentAtUnlock.AddChildTag(newButtonAtUnlock);
+		relationContentAtUnlock.AddChildTag(HtmlTag("br"));
+		formContent.AddChildTag(relationContentAtUnlock);
 
 		HtmlTag positionContent("div");
 		positionContent.AddAttribute("id", "tab_position");
@@ -2695,21 +2727,37 @@ namespace WebServer
 		feedbackID_t feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
 		wait_t waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
 
+		priority_t relationCountAtLock = Utils::Utils::GetIntegerMapEntry(arguments, "relationcounteratlock", 0);
+		priority_t relationCountAtUnlock = Utils::Utils::GetIntegerMapEntry(arguments, "relationcounteratunlock", 0);
+
 		vector<Relation*> relations;
-		priority_t relationCount = Utils::Utils::GetIntegerMapEntry(arguments, "relationcounter", 0);
-		priority_t priority = 1;
-		for (priority_t relationId = 1; relationId <= relationCount; ++relationId)
+		priority_t priorityAtLock = 1;
+		for (priority_t relationId = 1; relationId <= relationCountAtLock; ++relationId)
 		{
 			string priorityString = to_string(relationId);
-			objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_type_" + priorityString));
-			objectID_t objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_id_" + priorityString, SwitchNone);
-			unsigned char state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_state_" + priorityString);
+			objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_type"));
+			objectID_t objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_id", SwitchNone);
+			unsigned char state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_state");
 			if (objectId == 0 && objectType != ObjectTypeLoco)
 			{
 				continue;
 			}
-			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtLock, priority, state));
-			++priority;
+			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtLock, priorityAtLock, state));
+			++priorityAtLock;
+		}
+		priority_t priorityAtUnlock = 1;
+		for (priority_t relationId = 1; relationId <= relationCountAtUnlock; ++relationId)
+		{
+			string priorityString = to_string(relationId);
+			objectType_t objectType = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_type"));
+			objectID_t objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_id", SwitchNone);
+			unsigned char state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_state");
+			if (objectId == 0 && objectType != ObjectTypeLoco)
+			{
+				continue;
+			}
+			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtUnlock, priorityAtUnlock, state));
+			++priorityAtUnlock;
 		}
 
 		string result;
