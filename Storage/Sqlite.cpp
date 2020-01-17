@@ -94,13 +94,17 @@ namespace Storage
 		}
 
 		// create relations table if needed
-		if (tablenames["relations"] == false)
+		string tableNameRelations = "relations";
+		if (tablenames[tableNameRelations] == true)
 		{
-			bool ret = CreateTableRelations();
-			if (ret == false)
-			{
-				return;
-			}
+			ret = CheckTableRelations();
+		}
+		else {
+			ret = CreateTableRelations(tableNameRelations);
+		}
+		if (ret == false)
+		{
+			return;
 		}
 
 		// create settings table if needed
@@ -139,7 +143,7 @@ namespace Storage
 		return 0;
 	}
 
-	bool SQLite::DropTable(string table)
+	bool SQLite::DropTable(const string table)
 	{
 		logger->Info(Languages::TextDroppingTable, table);
 		string query = "DROP TABLE " + table + ";";
@@ -150,14 +154,15 @@ namespace Storage
 	{
 		logger->Info(Languages::TextCreatingTable, "hardware");
 		const string query = "CREATE TABLE hardware ("
-			"controlid UNSIGNED TINYINT PRIMARY KEY,"
+			"controlid UNSIGNED TINYINT,"
 			" hardwaretype UNSIGNED TINYINT,"
 			" name VARCHAR(50),"
 			" arg1 VARCHAR(255),"
 			" arg2 VARCHAR(255),"
 			" arg3 VARCHAR(255),"
 			" arg4 VARCHAR(255),"
-			" arg5 VARCHAR(255));";
+			" arg5 VARCHAR(255),"
+			"PRIMARY KEY (controlid));";
 		return Execute(query);
 	}
 
@@ -173,11 +178,11 @@ namespace Storage
 		return Execute(query);
 	}
 
-	bool SQLite::CreateTableRelations()
+	bool SQLite::CreateTableRelations(const string& name)
 	{
-		logger->Info(Languages::TextCreatingTable, "relations");
-		const char* query = "CREATE TABLE relations ("
-			"type UNSIGEND TINYINT, "
+		logger->Info(Languages::TextCreatingTable, name);
+		const string query = "CREATE TABLE " + name + " ("
+			"type UNSIGNED TINYINT, "
 			"objecttype1 UNSIGNED TINYINT, "
 			"objectid1 UNSIGNED SHORTINT, "
 			"objecttype2 UNSIGNED TINYINT, "
@@ -196,6 +201,90 @@ namespace Storage
 			"value SHORTTEXT,"
 			"PRIMARY KEY (key));";
 		return Execute(query);
+	}
+
+	struct TableInfo
+	{
+		public:
+			int cid;
+			string name;
+			string type;
+			bool notNull;
+			bool defaultNull;
+			string defaultValue;
+			int primaryKey;
+	};
+
+	bool SQLite::CheckTableRelations()
+	{
+		vector<TableInfo> tableInfos;
+		const char* query = "PRAGMA table_info('relations');";
+		bool ret = Execute(query, CallbackTableInfo, &tableInfos);
+		if (ret == false)
+		{
+			return false;
+		}
+
+		if (tableInfos.size() == 7)
+		{
+			return true;
+		}
+
+		if (tableInfos.size() == 6)
+		{
+			return UpdateTableRelations1();
+		}
+		return false;
+	}
+
+	bool SQLite::UpdateTableRelations1()
+	{
+		const string tableName = "relations";
+		const string tempTableName = "relations_temp";
+		bool ret = CreateTableRelations(tempTableName);
+		if (ret == false)
+		{
+			return false;
+		}
+		logger->Info(Languages::TextCopyingFromTo, tableName, tempTableName);
+		const string query = "INSERT INTO " + tempTableName + " SELECT 0, objecttype1, objectid1, objecttype2, objectid2, priority, relation FROM " + tableName + ";";
+		ret = Execute(query);
+		if (ret == false)
+		{
+			return false;
+		}
+		ret = DropTable(tableName);
+		if (ret == false)
+		{
+			return false;
+		}
+		logger->Info(Languages::TextRenamingFromTo, tempTableName, tableName);
+		return RenameTable(tempTableName, tableName);
+	}
+
+	bool SQLite::RenameTable(const string& oldName, const string& newName)
+	{
+		const string query = "ALTER TABLE " + oldName + " RENAME TO " + newName + ";";
+		return Execute(query);
+	}
+
+	int SQLite::CallbackTableInfo(void* v, int argc, char **argv, __attribute__((unused)) char **colName)
+	{
+		vector<TableInfo>* tableInfos = static_cast<vector<TableInfo>*>(v);
+		if (argc != 6)
+		{
+			return 0;
+		}
+		TableInfo tableInfo;
+		tableInfo.cid = Utils::Utils::StringToInteger(argv[0]);
+		tableInfo.name = argv[1];
+		tableInfo.type = argv[2];
+		tableInfo.notNull = Utils::Utils::StringToInteger(argv[3]) > 0;
+		tableInfo.defaultNull = argv[4] == nullptr;
+		tableInfo.defaultValue = argv[4] != nullptr ? argv[4] : "";
+		tableInfo.primaryKey = Utils::Utils::StringToInteger(argv[5]);
+		tableInfos->push_back(tableInfo);
+		return 0;
 	}
 
 	void SQLite::SaveHardwareParams(const Hardware::HardwareParams& hardwareParams)
@@ -226,9 +315,9 @@ namespace Storage
 		{
 			return 0;
 		}
-		controlID_t controlID = atoi(argv[0]);
+		controlID_t controlID = Utils::Utils::StringToInteger(argv[0]);
 
-		HardwareParams* params = new HardwareParams(controlID, static_cast<hardwareType_t>(atoi(argv[1])), argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
+		HardwareParams* params = new HardwareParams(controlID, static_cast<hardwareType_t>(Utils::Utils::StringToInteger(argv[1])), argv[2], argv[3], argv[4], argv[5], argv[6], argv[7]);
 		(*hardwareParams)[controlID] = params;
 		return 0;
 	}
@@ -358,12 +447,13 @@ namespace Storage
 			return false;
 		}
 
-		logger->Debug(Languages::TextQuery, query);
-
 		char* dbError = nullptr;
 		int rc = sqlite3_exec(db, query, callback, result, &dbError);
 		if (rc == SQLITE_OK)
 		{
+			int affected = sqlite3_changes(db);
+
+			logger->Debug(Languages::TextQuery, query, affected);
 			return true;
 		}
 

@@ -60,16 +60,16 @@ namespace Storage
 
 			bool Execute(const std::string& query, sqlite3_callback callback = nullptr, void* result = nullptr) { return Execute(query.c_str(), callback, result); }
 			bool Execute(const char* query, sqlite3_callback callback, void* result);
-			bool DropTable(std::string table);
-			bool DropTableHardware() { return DropTable("hardware"); }
-			bool DropTableObjects() { return DropTable("objects"); }
-			bool DropTableRelations() { return DropTable("relations"); }
-			bool DropTableSettings() { return DropTable("settings"); }
+			bool DropTable(const std::string table);
 			bool CreateTableHardware();
 			bool CreateTableObjects();
-			bool CreateTableRelations();
+			bool CreateTableRelations(const std::string& name);
 			bool CreateTableSettings();
+			bool CheckTableRelations();
+			bool UpdateTableRelations1();
+			bool RenameTable(const std::string& oldName, const std::string& newName);
 
+			static int CallbackTableInfo(void *v, int argc, char **argv, char **colName);
 			static int CallbackListTables(void *v, int argc, char **argv, char **colName);
 			static int CallbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
 			static int CallbackStringVector(void* v, int argc, char **argv, char **colName);
