@@ -73,12 +73,7 @@ namespace Storage
 			static int CallbackListTables(void *v, int argc, char **argv, char **colName);
 			static int CallbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
 			static int CallbackStringVector(void* v, int argc, char **argv, char **colName);
-			static std::string EscapeString(const std::string& input)
-			{
-				std::string output = input;
-				Utils::Utils::ReplaceString(output, "'", "''");
-				return output;
-			}
+			static std::string EscapeString(const std::string& input);
 	};
 
 	extern "C" SQLite* create_Sqlite(const StorageParams& params);

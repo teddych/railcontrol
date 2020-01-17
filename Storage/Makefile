@@ -4,8 +4,6 @@ CPP=g++
 CCRASPI=aarch64-linux-gcc
 CPPRASPI=aarch64-linux-g++
 
-CFLAGS=-g -O2
-CFLAGSAMALGAMATION=-g -O2
 CFLAGSRASPI=--sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot/
 CPPFLAGS=-g -fpic -O2 -Wall -Wextra -Werror -std=c++11 -I..
 CPPFLAGSRASPI=-g -fpic -O2 -Wall --Wextra -Werror std=c++11 -I.. --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot/

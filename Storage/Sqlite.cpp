@@ -372,4 +372,17 @@ namespace Storage
 		return false;
 	}
 
+	string SQLite::EscapeString(const string& input)
+	{
+		string output;
+		for (size_t i = 0; i < input.size(); ++i)
+		{
+			if (input[i] == '\'')
+			{
+				output += "'";
+			}
+			output += input[i];
+		}
+		return output;
+	}
 } // namespace Storage
