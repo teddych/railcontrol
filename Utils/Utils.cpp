@@ -23,11 +23,11 @@ along with RailControl; see the file LICENCE. If not see
 #include <cstdio>     // printf
 #include <cstdlib>    // exit(0);
 #include <cstring>    // memset
+#include <fstream>
 #include <iostream>   // cout
 #include <sstream>
 #include <string>
 #include <sys/time.h> // gettimeofday
-#include <unistd.h>   // close;
 
 #include "Network/Select.h"
 #include "Utils/Utils.h"
@@ -228,5 +228,15 @@ namespace Utils
 		output.append(1, zero);
 		output.append(1, one);
 		return output;
+	}
+
+	void Utils::CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to)
+	{
+		logger->Info(Languages::TextCopyingFromTo, from, to);
+		std::ifstream source(from, std::ios::binary);
+		std::ofstream destination(to, std::ios::binary);
+		destination << source.rdbuf();
+		source.close();
+		destination.close();
 	}
 }

@@ -27,6 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Storage/sqlite/sqlite3.h"
 #include "Storage/StorageInterface.h"
 #include "Storage/StorageParams.h"
+#include "Utils/Utils.h"
 
 namespace Storage
 {
@@ -53,15 +54,31 @@ namespace Storage
 			void CommitTransaction() override;
 
 		private:
-			void Execute(const std::string& query);
-
 			sqlite3 *db;
 			const std::string filename;
 			Logger::Logger* logger;
 
+			bool Execute(const std::string& query, sqlite3_callback callback = nullptr, void* result = nullptr) { return Execute(query.c_str(), callback, result); }
+			bool Execute(const char* query, sqlite3_callback callback, void* result);
+			bool DropTable(std::string table);
+			bool DropTableHardware() { return DropTable("hardware"); }
+			bool DropTableObjects() { return DropTable("objects"); }
+			bool DropTableRelations() { return DropTable("relations"); }
+			bool DropTableSettings() { return DropTable("settings"); }
+			bool CreateTableHardware();
+			bool CreateTableObjects();
+			bool CreateTableRelations();
+			bool CreateTableSettings();
+
 			static int CallbackListTables(void *v, int argc, char **argv, char **colName);
 			static int CallbackAllHardwareParams(void *v, int argc, char **argv, char **colName);
 			static int CallbackStringVector(void* v, int argc, char **argv, char **colName);
+			static std::string EscapeString(const std::string& input)
+			{
+				std::string output = input;
+				Utils::Utils::ReplaceString(output, "'", "''");
+				return output;
+			}
 	};
 
 	extern "C" SQLite* create_Sqlite(const StorageParams& params);
