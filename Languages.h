@@ -212,6 +212,7 @@ class Languages
 			TextReleaseTrack,
 			TextReleaseTrackAndLoco,
 			TextReleaseWhenFree,
+			TextRenamingFromTo,
 			TextRight,
 			TextRotation,
 			TextSQLiteErrorQuery,
