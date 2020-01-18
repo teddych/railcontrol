@@ -5,11 +5,8 @@
 - Bahnübergänge
 - Automatisches Umfahren des Zuges an der Endstation
 - Eingleisige Strecken im Gegenverkehr
-- Lokfuntionen ausführen bei Fahrstrassen
 - Masseträgheit von Zügen simulieren
 - Trotz freier Fahrt anhalten an Bahnsteigen
-- Aktionen beim Freigeben von Fahrstrassen
-- Automatisches Rückstellen von Schutzweichen
 - Mehrere Objekte gleichzeitig verschieben auf dem Layout
 - Lokbilder
 - Fahren nach Fahrplan bzw. Vorgabe des Zielortes
@@ -17,3 +14,4 @@
 - Auto-/Manual Mode: Im Manual-Mode darf der Strom wegen auslösenden Feedbacks nicht abstellen
 - Fahrstrassen mit unverschlossenen Objekten
 - Text-Elemente im Layout
+- Aktionen ausführen bei Feedback an/aus
