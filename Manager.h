@@ -259,7 +259,8 @@ class Manager
 		bool SaveSettings(const accessoryDuration_t duration,
 			const bool autoAddFeedback,
 			const DataModel::Track::selectStreetApproach_t selectStreetApproach,
-			const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve);
+			const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve,
+			const Logger::Logger::logLevel_t logLevel);
 
 	private:
 		const ControlInterface* GetControl(const controlID_t controlID) const;

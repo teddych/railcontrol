@@ -82,10 +82,11 @@ Manager::Manager(Config& config)
 		return;
 	}
 
-	defaultAccessoryDuration = Utils::Utils::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"));
+	Logger::Logger::SetLogLevel(static_cast<Logger::Logger::logLevel_t>(Utils::Utils::StringToInteger(storage->GetSetting("LogLevel"), Logger::Logger::LevelInfo)));
+	defaultAccessoryDuration = Utils::Utils::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"), 250);
 	autoAddFeedback = Utils::Utils::StringToBool(storage->GetSetting("AutoAddFeedback"));
 	selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
-	nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve")));
+	nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve"), 2));
 
 
 	controls[ControlIdWebserver] = new WebServer::WebServer(*this, config.getValue("webserverport", 80));
@@ -2779,12 +2780,14 @@ bool Manager::CheckControlProtocolAddress(const addressType_t type, const contro
 bool Manager::SaveSettings(const accessoryDuration_t duration,
 	const bool autoAddFeedback,
 	const DataModel::Track::selectStreetApproach_t selectStreetApproach,
-	const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
+	const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve,
+	const Logger::Logger::logLevel_t logLevel)
 {
 	this->defaultAccessoryDuration = duration;
 	this->autoAddFeedback = autoAddFeedback;
 	this->selectStreetApproach = selectStreetApproach;
 	this->nrOfTracksToReserve = nrOfTracksToReserve;
+	Logger::Logger::SetLogLevel(logLevel);
 	if (storage == nullptr)
 	{
 		return false;
@@ -2793,6 +2796,7 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 	storage->SaveSetting("AutoAddFeedback", std::to_string(autoAddFeedback));
 	storage->SaveSetting("SelectStreetApproach", std::to_string(static_cast<int>(selectStreetApproach)));
 	storage->SaveSetting("NrOfTracksToReserve", std::to_string(static_cast<int>(nrOfTracksToReserve)));
+	storage->SaveSetting("LogLevel", std::to_string(static_cast<int>(logLevel)));
 	return true;
 }
 

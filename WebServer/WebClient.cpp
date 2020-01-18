@@ -1452,6 +1452,17 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("nroftrackstoreserve", Languages::TextNrOfTracksToReserve, options, nrOfTracksToReserve);
 	}
 
+	HtmlTag WebClient::HtmlTagLogLevel()
+	{
+		map<Logger::Logger::logLevel_t,Languages::textSelector_t> options;
+		options[Logger::Logger::LevelOff] = Languages::TextOff;
+		options[Logger::Logger::LevelError] = Languages::TextError;
+		options[Logger::Logger::LevelWarning] = Languages::TextWarning;
+		options[Logger::Logger::LevelInfo] = Languages::TextInfo;
+		options[Logger::Logger::LevelDebug] = Languages::TextDebug;
+		return HtmlTagSelectWithLabel("loglevel", Languages::TextLogLevel, options, Logger::Logger::GetLogLevel());
+	}
+
 	void WebClient::HandleProtocolAccessory(const map<string, string>& arguments)
 	{
 		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -3466,6 +3477,7 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", Languages::TextAutomaticallyAddUnknownFeedbacks, "autoaddfeedback", autoAddFeedback));
 		formContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, false));
 		formContent.AddChildTag(HtmlTagNrOfTracksToReserve(nrOfTracksToReserve));
+		formContent.AddChildTag(HtmlTagLogLevel());
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -3479,7 +3491,8 @@ namespace WebServer
 		const bool autoAddFeedback = Utils::Utils::GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
 		const DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetRandom));
 		const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
-		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve);
+		const Logger::Logger::logLevel_t logLevel = static_cast<Logger::Logger::logLevel_t>(Utils::Utils::GetIntegerMapEntry(arguments, "loglevel", Logger::Logger::LevelInfo));
+		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve, logLevel);
 		ReplyResponse(ResponseInfo, Languages::TextSettingsSaved);
 	}
 

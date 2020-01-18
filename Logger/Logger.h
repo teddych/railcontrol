@@ -31,6 +31,15 @@ namespace Logger
 	class Logger
 	{
 		public:
+			enum logLevel_t : unsigned char
+			{
+				LevelOff = 0,
+				LevelError,
+				LevelWarning,
+				LevelInfo,
+				LevelDebug
+			};
+
 			Logger(LoggerServer& server, const std::string& component)
 			:	server(server),
 			 	component(component)
@@ -39,6 +48,11 @@ namespace Logger
 			~Logger() {};
 
 			static Logger* GetLogger(const std::string& component) { return LoggerServer::Instance().GetLogger(component); }
+
+			static logLevel_t logLevel;
+
+			static void SetLogLevel(logLevel_t level) { logLevel = level; }
+			static logLevel_t GetLogLevel() { return logLevel; }
 
 			bool IsComponent(const std::string& component) { return component.compare(this->component) == 0; }
 
@@ -80,41 +94,57 @@ namespace Logger
 
 			template<typename... Args> void Error(const Languages::textSelector_t text, Args... args)
 			{
-				Log(std::string("Error"), Languages::GetText(text), args...);
+				Error(Languages::GetText(text), args...);
 			}
 
 			template<typename... Args> void Error(const std::string& text, Args... args)
 			{
+				if (logLevel < LevelError)
+				{
+					return;
+				}
 				Log("Error", text, args...);
 			}
 
 			template<typename... Args> void Warning(const Languages::textSelector_t text, Args... args)
 			{
-				Log(std::string("Warning"), Languages::GetText(text), args...);
+				Warning(Languages::GetText(text), args...);
 			}
 
 			template<typename... Args> void Warning(const std::string& text, Args... args)
 			{
+				if (logLevel < LevelWarning)
+				{
+					return;
+				}
 				Log("Warning", text, args...);
 			}
 
 			template<typename... Args> void Info(const Languages::textSelector_t text, Args... args)
 			{
-				Log("Info", Languages::GetText(text), args...);
+				Info(Languages::GetText(text), args...);
 			}
 
 			template<typename... Args> void Info(const std::string& text, Args... args)
 			{
+				if (logLevel < LevelInfo)
+				{
+					return;
+				}
 				Log("Info", text, args...);
 			}
 
 			template<typename... Args> void Debug(const Languages::textSelector_t text, Args... args)
 			{
-				Log(std::string("Debug"), Languages::GetText(text), args...);
+				Debug(Languages::GetText(text), args...);
 			}
 
 			template<typename... Args> void Debug(const std::string& text, Args... args)
 			{
+				if (logLevel < LevelDebug)
+				{
+					return;
+				}
 				Log("Debug", text, args...);
 			}
 

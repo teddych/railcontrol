@@ -28,6 +28,8 @@ using std::string;
 
 namespace Logger
 {
+	Logger::logLevel_t Logger::logLevel = Logger::LevelInfo;
+
 	string Logger::DateTime()
 	{
 		char buffer[27];
