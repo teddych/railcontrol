@@ -55,7 +55,7 @@ namespace DataModel
 			lockState_t GetLockState() const { return lockState; }
 			virtual bool Reserve(Logger::Logger* logger, const locoID_t locoID);
 			virtual bool Lock(Logger::Logger* logger, const locoID_t locoID);
-			virtual bool Release(const locoID_t locoID);
+			virtual bool Release(Logger::Logger* logger, const locoID_t locoID);
 
 			bool IsInUse() const { return lockState != LockStateFree || locoID != LocoNone; }
 

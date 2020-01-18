@@ -113,7 +113,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool LockableItem::Release(const locoID_t locoID)
+	bool LockableItem::Release(__attribute__((unused)) Logger::Logger* logger, const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(lockMutex);
 		if (this->locoID != locoID && locoID != LocoNone)

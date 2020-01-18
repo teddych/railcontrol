@@ -56,16 +56,16 @@ namespace Storage
 			virtual void ObjectsOfType(const objectType_t objectType, std::vector<std::string>& objects) = 0;
 
 			// save datamodelrelation
-			virtual void SaveRelation(const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation) = 0;
+			virtual void SaveRelation(const DataModel::Relation::type_t type, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation) = 0;
 
 			// delete datamodelrelation
-			virtual void DeleteRelationFrom(const objectType_t objectType, const objectID_t objectID) = 0;
+			virtual void DeleteRelationsFrom(const DataModel::Relation::type_t type, const objectID_t objectID) = 0;
 
 			// delete datamodelrelation
-			virtual void DeleteRelationTo(const objectType_t objectType, const objectID_t objectID) = 0;
+			virtual void DeleteRelationsTo(const objectType_t objectType, const objectID_t objectID) = 0;
 
 			// read datamodelrelation
-			virtual void RelationsFrom(const objectType_t objectType, const objectID_t objectID, std::vector<std::string>& relations) = 0;
+			virtual void RelationsFrom(const DataModel::Relation::type_t type, const objectID_t objectID, std::vector<std::string>& relations) = 0;
 
 			// read datamodelrelation
 			virtual void RelationsTo(const objectType_t objectType, const objectID_t objectID, std::vector<std::string>& relations) = 0;

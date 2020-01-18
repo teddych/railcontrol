@@ -68,7 +68,7 @@ namespace DataModel
 				feedbackIdsReached(),
 				wait(0)
 			{
-				logger = Logger::Logger::GetLogger("Loco " + name);
+				logger = Logger::Logger::GetLogger(GetName());
 				SetNrOfFunctions(0);
 			}
 
@@ -92,10 +92,12 @@ namespace DataModel
 				wait(0)
 			{
 				Deserialize(serialized);
-				logger = Logger::Logger::GetLogger("Loco " + name);
+				logger = Logger::Logger::GetLogger(GetName());
 			}
 
 			virtual ~Loco();
+
+			Logger::Logger* GetLogger() { return logger; }
 
 			objectType_t GetObjectType() const { return ObjectTypeLoco; }
 
@@ -105,7 +107,7 @@ namespace DataModel
 			virtual void SetName(const std::string& name) override
 			{
 				Object::SetName(name);
-				logger = Logger::Logger::GetLogger("Loco " + name);
+				logger = Logger::Logger::GetLogger(name);
 			}
 
 			bool GoToAutoMode();

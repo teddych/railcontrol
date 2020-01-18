@@ -84,7 +84,11 @@ namespace DataModel
 
 			Street(Manager* manager, const std::string& serialized);
 
-			~Street() { DeleteRelations(); }
+			~Street()
+			{
+				DeleteRelations(relationsAtLock);
+				DeleteRelations(relationsAtUnlock);
+			}
 
 			objectType_t GetObjectType() const { return ObjectTypeStreet; }
 
@@ -92,18 +96,27 @@ namespace DataModel
 			bool Deserialize(const std::string& serialized) override;
 			std::string LayoutType() const override { return Languages::GetText(Languages::TextStreet); };
 
-			void DeleteRelations();
-			bool AssignRelations(const std::vector<DataModel::Relation*>& newRelations);
-			const std::vector<DataModel::Relation*>& GetRelations() const { return relations; };
+			void DeleteRelationsAtLock() { DeleteRelations(relationsAtLock); };
+			void DeleteRelationsAtUnlock() { DeleteRelations(relationsAtUnlock); };
+			bool AssignRelationsAtLock(const std::vector<DataModel::Relation*>& newRelations)
+			{
+				return AssignRelations(relationsAtLock, newRelations);
+			}
+			bool AssignRelationsAtUnlock(const std::vector<DataModel::Relation*>& newRelations)
+			{
+				return AssignRelations(relationsAtUnlock, newRelations);
+			}
+			const std::vector<DataModel::Relation*>& GetRelationsAtLock() const { return relationsAtLock; };
+			const std::vector<DataModel::Relation*>& GetRelationsAtUnlock() const { return relationsAtUnlock; };
 
 			bool FromTrackDirection(Logger::Logger* logger, const trackID_t trackID, const direction_t trackDirection, const DataModel::Loco* loco, const bool allowLocoTurn);
 
-			bool Execute(Logger::Logger* logger);
-			static bool ExecuteStatic(Logger::Logger* logger, Street* street) { return street->Execute(logger); }
+			bool Execute(Logger::Logger* logger, const locoID_t locoID);
+			static bool ExecuteStatic(Logger::Logger* logger, Street* street) { return street->Execute(logger, LocoNone); }
 
-			bool Reserve(Logger::Logger* logger, const locoID_t locoID);
-			bool Lock(Logger::Logger* logger, const locoID_t locoID);
-			bool Release(const locoID_t locoID) override;
+			bool Reserve(Logger::Logger* logger, const locoID_t locoID) override;
+			bool Lock(Logger::Logger* logger, const locoID_t locoID) override;
+			bool Release(Logger::Logger* logger, const locoID_t locoID) override;
 
 			delay_t GetDelay() const { return delay; }
 			void SetDelay(delay_t delay) { this->delay = delay; }
@@ -141,14 +154,17 @@ namespace DataModel
 			static bool CompareLastUsed(const Street* s1, const Street* s2) { return s1->GetLastUsed() < s2->GetLastUsed(); }
 
 		private:
-			bool ReleaseInternal(const locoID_t locoID);
-			void ReleaseInternalWithToTrack(const locoID_t locoID);
+			bool ReleaseInternal(Logger::Logger* logger, const locoID_t locoID);
+			void ReleaseInternalWithToTrack(Logger::Logger* logger, const locoID_t locoID);
+			static void DeleteRelations(std::vector<DataModel::Relation*>& relations);
+			bool AssignRelations(std::vector<DataModel::Relation*>& relations, const std::vector<DataModel::Relation*>& newRelations);
 
 			Manager* manager;
 			std::mutex updateMutex;
 
 			delay_t delay;
-			std::vector<DataModel::Relation*> relations;
+			std::vector<DataModel::Relation*> relationsAtLock;
+			std::vector<DataModel::Relation*> relationsAtUnlock;
 			PushpullType pushpull;
 			length_t minTrainLength;
 			length_t maxTrainLength;

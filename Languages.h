@@ -127,6 +127,7 @@ class Languages
 			TextInverted,
 			TextIsLockedBy,
 			TextIsNotFree,
+			TextIsUpToDate,
 			TextLayer1,
 			TextLayer1IsUndeletable,
 			TextLayerDeleted,

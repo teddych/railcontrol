@@ -183,13 +183,12 @@ namespace Storage
 		logger->Info(Languages::TextCreatingTable, name);
 		const string query = "CREATE TABLE " + name + " ("
 			"type UNSIGNED TINYINT, "
-			"objecttype1 UNSIGNED TINYINT, "
 			"objectid1 UNSIGNED SHORTINT, "
 			"objecttype2 UNSIGNED TINYINT, "
 			"objectid2 UNSIGNED SHORTINT, "
 			"priority UNSIGNED TINYINT, "
 			"relation SHORTTEXT,"
-			"PRIMARY KEY (type, objecttype1, objectid1, objecttype2, objectid2, priority));";
+			"PRIMARY KEY (type, objectid1, objecttype2, objectid2, priority));";
 		return Execute(query);
 	}
 
@@ -225,16 +224,18 @@ namespace Storage
 			return false;
 		}
 
-		if (tableInfos.size() == 7)
+		string name = "relations";
+		if (tableInfos.size() != 6)
 		{
-			return true;
+			return DropTable(name) && CreateTableRelations(name);
 		}
 
-		if (tableInfos.size() == 6)
+		if (tableInfos[0].name.compare("type") != 0)
 		{
 			return UpdateTableRelations1();
 		}
-		return false;
+		logger->Info(Languages::TextIsUpToDate, name);
+		return true;
 	}
 
 	bool SQLite::UpdateTableRelations1()
@@ -247,7 +248,7 @@ namespace Storage
 			return false;
 		}
 		logger->Info(Languages::TextCopyingFromTo, tableName, tempTableName);
-		const string query = "INSERT INTO " + tempTableName + " SELECT 0, objecttype1, objectid1, objecttype2, objectid2, priority, relation FROM " + tableName + ";";
+		const string query = "INSERT INTO " + tempTableName + " SELECT objecttype1 * 8, objectid1, objecttype2, objectid2, priority, relation FROM " + tableName + ";";
 		ret = Execute(query);
 		if (ret == false)
 		{
@@ -356,10 +357,10 @@ namespace Storage
 	}
 
 	// save DataModelrelation
-	void SQLite::SaveRelation(const objectType_t objectType1, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation)
+	void SQLite::SaveRelation(const DataModel::Relation::type_t type, const objectID_t objectID1, const objectType_t objectType2, const objectID_t objectID2, const priority_t priority, const std::string& relation)
 	{
-		string query = "INSERT OR REPLACE INTO relations (objecttype1, objectid1, objecttype2, objectid2, priority, relation) VALUES ("
-			+ to_string(objectType1) + ", "
+		string query = "INSERT OR REPLACE INTO relations (type, objectid1, objecttype2, objectid2, priority, relation) VALUES ("
+			+ to_string(type) + ", "
 			+ to_string(objectID1) + ", "
 			+ to_string(objectType2) + ", "
 			+ to_string(objectID2) + ", "
@@ -369,15 +370,15 @@ namespace Storage
 	}
 
 	// delete DataModelrelaton
-	void SQLite::DeleteRelationFrom(const objectType_t objectType, const objectID_t objectID)
+	void SQLite::DeleteRelationsFrom(const DataModel::Relation::type_t type, const objectID_t objectID)
 	{
-		string query = "DELETE FROM relations WHERE objecttype1 = " + to_string(objectType)
+		string query = "DELETE FROM relations WHERE type = " + to_string(type)
 			+ " AND objectid1 = " + to_string(objectID) + ";";
 		Execute(query);
 	}
 
 	// delete DataModelrelaton
-	void SQLite::DeleteRelationTo(const objectType_t objectType, const objectID_t objectID)
+	void SQLite::DeleteRelationsTo(const objectType_t objectType, const objectID_t objectID)
 	{
 		string query = "DELETE FROM relations WHERE objecttype2 = " + to_string(objectType)
 			+ " AND objectid2 = " + to_string(objectID) + ";";
@@ -385,9 +386,9 @@ namespace Storage
 	}
 
 	// read DataModelrelations
-	void SQLite::RelationsFrom(const objectType_t objectType, const objectID_t objectID, vector<string>& relations)
+	void SQLite::RelationsFrom(const DataModel::Relation::type_t type, const objectID_t objectID, vector<string>& relations)
 	{
-		string query = "SELECT relation FROM relations WHERE objecttype1 = " + to_string(objectType)
+		string query = "SELECT relation FROM relations WHERE type = " + to_string(type)
 			+ " AND objectid1 = " + to_string(objectID) + " ORDER BY priority ASC;";
 		Execute(query, CallbackStringVector, &relations);
 	}

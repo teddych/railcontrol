@@ -48,6 +48,7 @@ namespace DataModel
 			logger->Info("Waiting until {0} has stopped", name);
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
+		DeleteSlaves();
 	}
 
 	std::string Loco::Serialize() const
@@ -118,27 +119,27 @@ namespace DataModel
 
 		if (streetFirst != nullptr)
 		{
-			streetFirst->Release(objectID);
+			streetFirst->Release(logger, objectID);
 			streetFirst = nullptr;
 		}
 		if (streetSecond != nullptr)
 		{
-			streetSecond->Release(objectID);
+			streetSecond->Release(logger, objectID);
 			streetSecond = nullptr;
 		}
 		if (trackFrom != nullptr)
 		{
-			trackFrom->Release(objectID);
+			trackFrom->Release(logger, objectID);
 			trackFrom = nullptr;
 		}
 		if (trackFirst != nullptr)
 		{
-			trackFirst->Release(objectID);
+			trackFirst->Release(logger, objectID);
 			trackFirst = nullptr;
 		}
 		if (trackSecond != nullptr)
 		{
-			trackSecond->Release(objectID);
+			trackSecond->Release(logger, objectID);
 			trackSecond = nullptr;
 		}
 		feedbackIdOver = FeedbackNone;
@@ -513,13 +514,13 @@ namespace DataModel
 
 			if (street->Lock(logger, objectID) == false)
 			{
-				street->Release(objectID);
+				street->Release(logger, objectID);
 				continue;
 			}
 
-			if (street->Execute(logger) == false)
+			if (street->Execute(logger, objectID) == false)
 			{
-				street->Release(objectID);
+				street->Release(logger, objectID);
 				continue;
 			}
 			return street;
@@ -620,11 +621,11 @@ namespace DataModel
 		}
 
 
-		streetFirst->Release(objectID);
+		streetFirst->Release(logger, objectID);
 		streetFirst = streetSecond;
 		streetSecond = nullptr;
 
-		trackFrom->Release(objectID);
+		trackFrom->Release(logger, objectID);
 		trackFrom = trackFirst;
 		trackFirst = trackSecond;
 		trackSecond = nullptr;
@@ -660,10 +661,10 @@ namespace DataModel
 		}
 
 		manager->LocoDestinationReached(objectID, streetFirst->GetID(), trackFrom->GetID());
-		streetFirst->Release(objectID);
+		streetFirst->Release(logger, objectID);
 		streetFirst = nullptr;
 
-		trackFrom->Release(objectID);
+		trackFrom->Release(logger, objectID);
 		trackFrom = trackFirst;
 		trackFirst = nullptr;
 

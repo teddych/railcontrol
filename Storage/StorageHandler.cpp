@@ -168,7 +168,7 @@ namespace Storage
 			Loco* loco = new Loco(manager, object);
 			vector<string> slavesString;
 			const streetID_t locoID = loco->GetID();
-			instance->RelationsFrom(ObjectTypeLoco, locoID, slavesString);
+			instance->RelationsFrom(DataModel::Relation::TypeLocoSlave, locoID, slavesString);
 			vector<Relation*> slaves;
 			for (auto slaveString : slavesString)
 			{
@@ -186,6 +186,7 @@ namespace Storage
 			return;
 		}
 		StartTransactionInternal();
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeLocoSlave, locoID);
 		instance->DeleteObject(ObjectTypeLoco, locoID);
 		CommitTransactionInternal();
 	}
@@ -304,13 +305,10 @@ namespace Storage
 		StartTransactionInternal();
 		const streetID_t streetID = street.GetID();
 		instance->SaveObject(ObjectTypeStreet, streetID, street.GetName(), serialized);
-		instance->DeleteRelationFrom(ObjectTypeStreet, streetID);
-		const vector<DataModel::Relation*> relations = street.GetRelations();
-		for (auto relation : relations)
-		{
-			string serializedRelation = relation->Serialize();
-			instance->SaveRelation(ObjectTypeStreet, streetID, relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
-		}
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeStreetAtLock, streetID);
+		SaveRelations(street.GetRelationsAtLock());
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeStreetAtUnlock, streetID);
+		SaveRelations(street.GetRelationsAtUnlock());
 		CommitTransactionInternal();
 	}
 
@@ -324,13 +322,8 @@ namespace Storage
 		StartTransactionInternal();
 		const locoID_t locoID = loco.GetID();
 		instance->SaveObject(ObjectTypeLoco, locoID, loco.GetName(), serialized);
-		instance->DeleteRelationFrom(ObjectTypeLoco, locoID);
-		const vector<DataModel::Relation*> slaves = loco.GetSlaves();
-		for (auto slave : slaves)
-		{
-			string serializedRelation = slave->Serialize();
-			instance->SaveRelation(ObjectTypeLoco, locoID, ObjectTypeLoco, slave->ObjectID2(), slave->Priority(), serializedRelation);
-		}
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeLocoSlave, locoID);
+		SaveRelations(loco.GetSlaves());
 		CommitTransactionInternal();
 	}
 
@@ -344,15 +337,9 @@ namespace Storage
 		instance->ObjectsOfType(ObjectTypeStreet, objects);
 		for (auto object : objects) {
 			Street* street = new Street(manager, object);
-			vector<string> relationsString;
 			const streetID_t streetID = street->GetID();
-			instance->RelationsFrom(ObjectTypeStreet, streetID, relationsString);
-			vector<Relation*> relations;
-			for (auto relationString : relationsString)
-			{
-				relations.push_back(new Relation(manager, relationString));
-			}
-			street->AssignRelations(relations);
+			street->AssignRelationsAtLock(RelationsFrom(Relation::TypeStreetAtLock, streetID));
+			street->AssignRelationsAtUnlock(RelationsFrom(Relation::TypeStreetAtUnlock, streetID));
 			streets[streetID] = street;
 		}
 	}
@@ -364,6 +351,8 @@ namespace Storage
 			return;
 		}
 		StartTransactionInternal();
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeStreetAtLock, streetID);
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeStreetAtUnlock, streetID);
 		instance->DeleteObject(ObjectTypeStreet, streetID);
 		CommitTransactionInternal();
 	}
@@ -475,6 +464,27 @@ namespace Storage
 			return;
 		}
 		instance->CommitTransaction();
+	}
+
+	void StorageHandler::SaveRelations(const vector<DataModel::Relation*> relations)
+	{
+		for (auto relation : relations)
+		{
+			string serializedRelation = relation->Serialize();
+			instance->SaveRelation(relation->Type(), relation->ObjectID1(), relation->ObjectType2(), relation->ObjectID2(), relation->Priority(), serializedRelation);
+		}
+	}
+
+	vector<Relation*> StorageHandler::RelationsFrom(const DataModel::Relation::type_t type, const objectID_t objectID)
+	{
+		vector<string> relationStrings;
+		instance->RelationsFrom(type, objectID, relationStrings);
+		vector<Relation*> output;
+		for (auto relationString : relationStrings)
+		{
+			output.push_back(new Relation(manager, relationString));
+		}
+		return output;
 	}
 } // namespace Storage
 

@@ -89,8 +89,8 @@ namespace DataModel
 			bool Reserve(Logger::Logger* logger, const locoID_t locoID) override;
 			bool ReserveForce(Logger::Logger* logger, const locoID_t locoID);
 			bool Lock(Logger::Logger* logger, const locoID_t locoID) override;
-			bool Release(const locoID_t locoID) override;
-			bool ReleaseForce(const locoID_t locoID);
+			bool Release(Logger::Logger* logger, const locoID_t locoID) override;
+			bool ReleaseForce(Logger::Logger* logger, const locoID_t locoID);
 
 			std::string LayoutType() const override { return Languages::GetText(Languages::TextTrack); };
 			type_t GetType() const { return type; }

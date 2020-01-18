@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <vector>
 #include <map>
 
 #include "DataModel/DataModel.h"
@@ -81,6 +82,9 @@ namespace Storage
 		private:
 			void StartTransactionInternal();
 			void CommitTransactionInternal();
+			void SaveRelations(const std::vector<DataModel::Relation*> relations);
+			std::vector<DataModel::Relation*> RelationsFrom(const DataModel::Relation::type_t type, const objectID_t objectID);
+
 
 			Manager* manager;
 			createStorage_t* createStorage;

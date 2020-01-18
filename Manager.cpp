@@ -1066,7 +1066,7 @@ bool Manager::AccessoryRelease(const accessoryID_t accessoryID)
 		return false;
 	}
 	locoID_t locoID = accessory->GetLoco();
-	return accessory->Release(locoID);
+	return accessory->Release(logger, locoID);
 }
 
 bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
@@ -1754,21 +1754,21 @@ bool Manager::SwitchRelease(const streetID_t switchID)
 		return false;
 	}
 	locoID_t locoID = mySwitch->GetLoco();
-	return mySwitch->Release(locoID);
+	return mySwitch->Release(logger, locoID);
 }
 
 /***************************
 * Street                   *
 ***************************/
 
-bool Manager::StreetExecute(Logger::Logger* logger, const streetID_t streetID)
+bool Manager::StreetExecute(Logger::Logger* logger, const locoID_t locoID, const streetID_t streetID)
 {
 	Street* street = GetStreet(streetID);
 	if (street == nullptr)
 	{
 		return false;
 	}
-	return street->Execute(logger);
+	return street->Execute(logger, locoID);
 }
 
 void Manager::StreetExecuteAsync(Logger::Logger* logger, const streetID_t streetID)
@@ -1826,7 +1826,8 @@ bool Manager::StreetSave(const streetID_t streetID,
 	const Street::PushpullType pushpull,
 	const length_t minTrainLength,
 	const length_t maxTrainLength,
-	const std::vector<DataModel::Relation*>& relations,
+	const std::vector<DataModel::Relation*>& relationsAtLock,
+	const std::vector<DataModel::Relation*>& relationsAtUnlock,
 	const visible_t visible,
 	const layoutPosition_t posX,
 	const layoutPosition_t posY,
@@ -1876,7 +1877,8 @@ bool Manager::StreetSave(const streetID_t streetID,
 	// update existing street
 	street->SetName(CheckObjectName(streets, streetMutex, streetID, name.size() == 0 ? "S" : name));
 	street->SetDelay(delay);
-	street->AssignRelations(relations);
+	street->AssignRelationsAtLock(relationsAtLock);
+	street->AssignRelationsAtUnlock(relationsAtUnlock);
 	street->SetVisible(visible);
 	street->SetPosX(posX);
 	street->SetPosY(posY);
@@ -2301,7 +2303,7 @@ bool Manager::SignalRelease(const streetID_t signalID)
 		return false;
 	}
 	locoID_t locoID = signal->GetLoco();
-	return signal->Release(locoID);
+	return signal->Release(logger, locoID);
 }
 
 /***************************
@@ -2331,7 +2333,7 @@ bool Manager::LocoIntoTrack(Logger::Logger* logger, const locoID_t locoID, const
 	reserved = loco->ToTrack(trackID);
 	if (reserved == false)
 	{
-		track->Release(locoID);
+		track->Release(logger, locoID);
 		return false;
 	}
 
@@ -2339,7 +2341,7 @@ bool Manager::LocoIntoTrack(Logger::Logger* logger, const locoID_t locoID, const
 	if (reserved == false)
 	{
 		loco->Release();
-		track->Release(locoID);
+		track->Release(logger, locoID);
 		return false;
 	}
 
@@ -2390,7 +2392,7 @@ bool Manager::TrackRelease(const trackID_t trackID)
 	{
 		return false;
 	}
-	return track->ReleaseForce(LocoNone);
+	return track->ReleaseForce(logger, LocoNone);
 }
 
 bool Manager::LocoReleaseInTrack(const trackID_t trackID)
@@ -2401,7 +2403,7 @@ bool Manager::LocoReleaseInTrack(const trackID_t trackID)
 		return false;
 	}
 	locoID_t locoID = track->GetLoco();
-	track->ReleaseForce(locoID);
+	track->ReleaseForce(logger, locoID);
 	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
@@ -2477,7 +2479,7 @@ bool Manager::StreetRelease(const streetID_t streetID)
 		return false;
 	}
 	locoID_t locoID = street->GetLoco();
-	return street->Release(locoID);
+	return street->Release(logger, locoID);
 }
 
 bool Manager::LocoDestinationReached(const locoID_t locoID, const streetID_t streetID, const trackID_t trackID)

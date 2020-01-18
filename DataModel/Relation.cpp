@@ -36,11 +36,11 @@ namespace DataModel
 	{
 		stringstream ss;
 		ss << LockableItem::Serialize()
+			<< ";type=" << static_cast<int>(type)
 			<< ";objectType1=" << static_cast<int>(objectType1)
 			<< ";objectID1=" << objectID1
 			<< ";objectType2=" << static_cast<int>(objectType2)
 			<< ";objectID2=" << objectID2
-			<< ";type=" << type
 			<< ";priority=" << static_cast<int>(priority)
 			<< ";data=" << static_cast<int>(data);
 		return ss.str();
@@ -52,33 +52,17 @@ namespace DataModel
 		ParseArguments(serialized, arguments);
 		LockableItem::Deserialize(arguments);
 		objectType1 = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType1"));
+		type = static_cast<type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", objectType1 << 3));
 		objectID1 = Utils::Utils::GetIntegerMapEntry(arguments, "objectID1");
 		objectType2 = static_cast<objectType_t>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType2"));
 		objectID2 = Utils::Utils::GetIntegerMapEntry(arguments, "objectID2");
-		type = static_cast<type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TypeCalculate));
-		if (type == TypeCalculate)
-		{
-			switch (objectType1)
-			{
-				case ObjectTypeStreet:
-					type = TypeStreetAtLock;
-					break;
-
-				case ObjectTypeLoco:
-					type = TypeLocoSlave;
-					break;
-
-				default:
-					break;
-			}
-		}
 		priority = Utils::Utils::GetIntegerMapEntry(arguments, "priority");
 		data = Utils::Utils::GetIntegerMapEntry(arguments, "accessoryState"); // FIXME: remove later
 		data = Utils::Utils::GetIntegerMapEntry(arguments, "data", data);
 		return true;
 	}
 
-	bool Relation::Execute(Logger::Logger* logger, const delay_t delay)
+	bool Relation::Execute(Logger::Logger* logger, const locoID_t locoID, const delay_t delay)
 	{
 		switch (objectType2)
 		{
@@ -118,10 +102,10 @@ namespace DataModel
 
 
 			case ObjectTypeStreet:
-				return manager->StreetExecute(logger, objectID2);
+				return manager->StreetExecute(logger, locoID, objectID2);
 
 			case ObjectTypeLoco:
-				manager->LocoFunction(ControlTypeInternal, GetLoco(), static_cast<function_t>(objectID2), static_cast<bool>(data));
+				manager->LocoFunction(ControlTypeInternal, locoID, static_cast<function_t>(objectID2), static_cast<bool>(data));
 				return true;
 
 			default:
@@ -173,7 +157,7 @@ namespace DataModel
 		if (lockable == nullptr)
 		{
 			logger->Debug(Languages::TextRelationTargetNotFound);
-			LockableItem::Release(locoID);
+			LockableItem::Release(logger, locoID);
 			return false;
 		}
 
@@ -202,7 +186,7 @@ namespace DataModel
 		LockableItem* lockable = GetObject2();
 		if (lockable == nullptr)
 		{
-			LockableItem::Release(locoID);
+			LockableItem::Release(logger, locoID);
 			return false;
 		}
 
@@ -228,14 +212,14 @@ namespace DataModel
 		return false;
 	}
 
-	bool Relation::Release(const locoID_t locoID)
+	bool Relation::Release(Logger::Logger* logger, const locoID_t locoID)
 	{
 		LockableItem* object = GetObject2();
 		if (object != nullptr)
 		{
-			object->Release(locoID);
+			object->Release(logger, locoID);
 		}
-		return LockableItem::Release(locoID);
+		return LockableItem::Release(logger, locoID);
 	}
 } // namespace DataModel
 

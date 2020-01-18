@@ -39,9 +39,11 @@ namespace DataModel
 			enum type_t : unsigned char
 			{
 				TypeCalculate = 0,
-				TypeStreetAtLock = 1,
-				TypeStreetAtUnlock = 2,
-				TypeLocoSlave = 10
+				TypeStreetAtLock = ObjectTypeStreet << 3,
+				TypeStreetAtUnlock = (ObjectTypeStreet << 3) + 1,
+				TypeLocoSlave = ObjectTypeLoco << 3,
+				TypeFeedbackAtSet = ObjectTypeFeedback << 3,
+				TypeFeedbackAtUnset = (ObjectTypeFeedback << 3) + 1,
 			};
 
 			Relation(Manager* manager,
@@ -75,16 +77,17 @@ namespace DataModel
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
 
+			objectID_t ObjectID1() const { return objectID1; }
 			objectType_t ObjectType2() const { return objectType2; }
 			objectID_t ObjectID2() const { return objectID2; }
 			type_t Type() const { return type; }
 			priority_t Priority() const { return priority; }
 			unsigned char GetState() const { return data; }
 
-			bool Reserve(Logger::Logger* logger, const locoID_t locoID);
-			bool Lock(Logger::Logger* logger, const locoID_t locoID);
-			bool Release(const locoID_t locoID) override;
-			bool Execute(Logger::Logger* logger, const delay_t delay);
+			bool Reserve(Logger::Logger* logger, const locoID_t locoID) override;
+			bool Lock(Logger::Logger* logger, const locoID_t locoID) override;
+			bool Release(Logger::Logger* logger, const locoID_t locoID) override;
+			bool Execute(Logger::Logger* logger, const locoID_t locoID, const delay_t delay);
 
 		private:
 			LockableItem* GetObject2();

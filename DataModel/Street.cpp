@@ -127,7 +127,7 @@ namespace DataModel
 		return true;
 	}
 
-	void Street::DeleteRelations()
+	void Street::DeleteRelations(std::vector<DataModel::Relation*>& relations)
 	{
 		while (!relations.empty())
 		{
@@ -136,14 +136,14 @@ namespace DataModel
 		}
 	}
 
-	bool Street::AssignRelations(const std::vector<DataModel::Relation*>& newRelations)
+	bool Street::AssignRelations(std::vector<DataModel::Relation*>& relations, const std::vector<DataModel::Relation*>& newRelations)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (GetLockState() != LockStateFree)
 		{
 			return false;
 		}
-		DeleteRelations();
+		DeleteRelations(relations);
 		relations = newRelations;
 		return true;
 	}
@@ -197,7 +197,7 @@ namespace DataModel
 	}
 
 
-	bool Street::Execute(Logger::Logger* logger)
+	bool Street::Execute(Logger::Logger* logger, const locoID_t locoID)
 	{
 		if (manager->Booster() == BoosterStop)
 		{
@@ -206,9 +206,9 @@ namespace DataModel
 		}
 
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		for (auto relation : relations)
+		for (auto relation : relationsAtLock)
 		{
-			bool retRelation = relation->Execute(logger, delay);
+			bool retRelation = relation->Execute(logger, locoID, delay);
 			if (retRelation == false)
 			{
 				return false;
@@ -239,22 +239,22 @@ namespace DataModel
 			Track* track = manager->GetTrack(toTrack);
 			if (track == nullptr)
 			{
-				ReleaseInternal(locoID);
+				ReleaseInternal(logger, locoID);
 				return false;
 			}
 			if (track->Reserve(logger, locoID) == false)
 			{
-				ReleaseInternal(locoID);
+				ReleaseInternal(logger, locoID);
 				return false;
 			}
 		}
 
-		for (auto relation : relations)
+		for (auto relation : relationsAtLock)
 		{
 			bool retRelation = relation->Reserve(logger, locoID);
 			if (retRelation == false)
 			{
-				ReleaseInternal(locoID);
+				ReleaseInternal(logger, locoID);
 				return false;
 			}
 		}
@@ -281,51 +281,55 @@ namespace DataModel
 			Track* track = manager->GetTrack(toTrack);
 			if (track == nullptr)
 			{
-				ReleaseInternal(locoID);
+				ReleaseInternal(logger, locoID);
 				return false;
 			}
 			if (track->Lock(logger, locoID) == false)
 			{
-				ReleaseInternal(locoID);
+				ReleaseInternal(logger, locoID);
 				return false;
 			}
 		}
 
-		for (auto relation : relations)
+		for (auto relation : relationsAtLock)
 		{
 			bool retRelation = relation->Lock(logger, locoID);
 			if (retRelation == false)
 			{
-				ReleaseInternalWithToTrack(locoID);
+				ReleaseInternalWithToTrack(logger, locoID);
 				return false;
 			}
 		}
 		return true;
 	}
 
-	bool Street::Release(const locoID_t locoID)
+	bool Street::Release(Logger::Logger* logger, const locoID_t locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		return ReleaseInternal(locoID);
+		return ReleaseInternal(logger, locoID);
 	}
 
-	bool Street::ReleaseInternal(const locoID_t locoID)
+	bool Street::ReleaseInternal(Logger::Logger* logger, const locoID_t locoID)
 	{
-		for (auto relation : relations)
+		for (auto relation : relationsAtUnlock)
 		{
-			relation->Release(locoID);
+			relation->Execute(logger, locoID, delay);
 		}
-		return LockableItem::Release(locoID);
+		for (auto relation : relationsAtLock)
+		{
+			relation->Release(logger, locoID);
+		}
+		return LockableItem::Release(logger, locoID);
 	}
 
-	void Street::ReleaseInternalWithToTrack(const locoID_t locoID)
+	void Street::ReleaseInternalWithToTrack(Logger::Logger* logger, const locoID_t locoID)
 	{
 		Track* track = manager->GetTrack(toTrack);
 		if (track != nullptr)
 		{
-			track->Release(locoID);
+			track->Release(logger, locoID);
 		}
-		ReleaseInternal(locoID);
+		ReleaseInternal(logger, locoID);
 	}
 } // namespace DataModel
 

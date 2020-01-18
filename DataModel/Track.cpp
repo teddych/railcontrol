@@ -148,9 +148,9 @@ namespace DataModel
 		return ret;
 	}
 
-	bool Track::Release(const locoID_t locoID)
+	bool Track::Release(Logger::Logger* logger, const locoID_t locoID)
 	{
-		bool ret = LockableItem::Release(locoID);
+		bool ret = LockableItem::Release(logger, locoID);
 		if (ret == false)
 		{
 			return false;
@@ -165,9 +165,9 @@ namespace DataModel
 		return true;
 	}
 
-	bool Track::ReleaseForce(const locoID_t locoID)
+	bool Track::ReleaseForce(Logger::Logger* logger, const locoID_t locoID)
 	{
-		bool ret = LockableItem::Release(locoID);
+		bool ret = LockableItem::Release(logger, locoID);
 		this->state = DataModel::Feedback::FeedbackStateFree;
 		this->locoIdDelayed = LocoNone;
 		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
@@ -238,7 +238,7 @@ namespace DataModel
 			Loco* loco = manager->GetLoco(locoID);
 			if (loco != nullptr && loco->IsRunningFromTrack(GetID()))
 			{
-				return Release(GetLoco());
+				return Release(loco->GetLogger(), locoID);
 			}
 		}
 

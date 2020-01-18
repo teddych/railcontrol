@@ -2531,7 +2531,8 @@ namespace WebServer
 		Street::PushpullType pushpull = Street::PushpullTypeBoth;
 		length_t minTrainLength = 0;
 		length_t maxTrainLength = 0;
-		vector<Relation*> relations;
+		vector<Relation*> relationsAtLock;
+		vector<Relation*> relationsAtUnlock;
 		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
@@ -2557,7 +2558,8 @@ namespace WebServer
 				pushpull = street->GetPushpull();
 				minTrainLength = street->GetMinTrainLength();
 				maxTrainLength = street->GetMaxTrainLength();
-				relations = street->GetRelations();
+				relationsAtLock = street->GetRelationsAtLock();
+				relationsAtUnlock = street->GetRelationsAtUnlock();
 				visible = street->GetVisible();
 				posx = street->GetPosX();
 				posy = street->GetPosY();
@@ -2600,27 +2602,13 @@ namespace WebServer
 		HtmlTag relationDivAtLock("div");
 		relationDivAtLock.AddAttribute("id", "relationatlock");
 		priority_t priorityAtLock = 1;
-
-		HtmlTag relationDivAtUnlock("div");
-		relationDivAtUnlock.AddAttribute("id", "relationatunlock");
-		priority_t priorityAtUnlock = 1;
-		for (auto relation : relations)
+		for (auto relation : relationsAtLock)
 		{
-			if (relation->Type() == Relation::TypeStreetAtLock)
-			{
-				relationDivAtLock.AddChildTag(HtmlTagRelation("atlock", to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->GetState()));
-				priorityAtLock = relation->Priority() + 1;
-			}
-			else if (relation->Type() == Relation::TypeStreetAtUnlock)
-			{
-				relationDivAtUnlock.AddChildTag(HtmlTagRelation("atunlock", to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->GetState()));
-				priorityAtUnlock = relation->Priority() + 1;
-			}
+			relationDivAtLock.AddChildTag(HtmlTagRelation("atlock", to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->GetState()));
+			priorityAtLock = relation->Priority() + 1;
 		}
 		relationDivAtLock.AddChildTag(HtmlTagInputHidden("relationcounteratlock", to_string(priorityAtLock)));
 		relationDivAtLock.AddChildTag(HtmlTag("div").AddAttribute("id", "new_atlock_priority_" + to_string(priorityAtLock)));
-		relationDivAtUnlock.AddChildTag(HtmlTagInputHidden("relationcounteratunlock", to_string(priorityAtUnlock)));
-		relationDivAtUnlock.AddChildTag(HtmlTag("div").AddAttribute("id", "new_atunlock_priority_" + to_string(priorityAtUnlock)));
 
 		HtmlTag relationContentAtLock("div");
 		relationContentAtLock.AddAttribute("id", "tab_relationatlock");
@@ -2633,6 +2621,17 @@ namespace WebServer
 		relationContentAtLock.AddChildTag(newButtonAtLock);
 		relationContentAtLock.AddChildTag(HtmlTag("br"));
 		formContent.AddChildTag(relationContentAtLock);
+
+		HtmlTag relationDivAtUnlock("div");
+		relationDivAtUnlock.AddAttribute("id", "relationatunlock");
+		priority_t priorityAtUnlock = 1;
+		for (auto relation : relationsAtUnlock)
+		{
+			relationDivAtUnlock.AddChildTag(HtmlTagRelation("atunlock", to_string(relation->Priority()), relation->ObjectType2(), relation->ObjectID2(), relation->GetState()));
+			priorityAtUnlock = relation->Priority() + 1;
+		}
+		relationDivAtUnlock.AddChildTag(HtmlTagInputHidden("relationcounteratunlock", to_string(priorityAtUnlock)));
+		relationDivAtUnlock.AddChildTag(HtmlTag("div").AddAttribute("id", "new_atunlock_priority_" + to_string(priorityAtUnlock)));
 
 		HtmlTag relationContentAtUnlock("div");
 		relationContentAtUnlock.AddAttribute("id", "tab_relationatunlock");
@@ -2730,7 +2729,7 @@ namespace WebServer
 		priority_t relationCountAtLock = Utils::Utils::GetIntegerMapEntry(arguments, "relationcounteratlock", 0);
 		priority_t relationCountAtUnlock = Utils::Utils::GetIntegerMapEntry(arguments, "relationcounteratunlock", 0);
 
-		vector<Relation*> relations;
+		vector<Relation*> relationsAtLock;
 		priority_t priorityAtLock = 1;
 		for (priority_t relationId = 1; relationId <= relationCountAtLock; ++relationId)
 		{
@@ -2742,9 +2741,11 @@ namespace WebServer
 			{
 				continue;
 			}
-			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtLock, priorityAtLock, state));
+			relationsAtLock.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtLock, priorityAtLock, state));
 			++priorityAtLock;
 		}
+
+		vector<Relation*> relationsAtUnlock;
 		priority_t priorityAtUnlock = 1;
 		for (priority_t relationId = 1; relationId <= relationCountAtUnlock; ++relationId)
 		{
@@ -2756,7 +2757,7 @@ namespace WebServer
 			{
 				continue;
 			}
-			relations.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtUnlock, priorityAtUnlock, state));
+			relationsAtUnlock.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtUnlock, priorityAtUnlock, state));
 			++priorityAtUnlock;
 		}
 
@@ -2767,7 +2768,8 @@ namespace WebServer
 			pushpull,
 			mintrainlength,
 			maxtrainlength,
-			relations,
+			relationsAtLock,
+			relationsAtUnlock,
 			visible,
 			posx,
 			posy,

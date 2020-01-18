@@ -127,6 +127,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextInverted */ { "Inverted", "Invertiert", "Invertido" },
 /* TextIsLocked */ { "{0} is locked", "{0} ist gesperrt", "{0} está bloqueado" },
 /* TextIsNotFree */ { "{0} is not free", "{0} ist nicht frei", "{0} no está libre" },
+/* TextIsUpToDate */ { "{0} is up to date", "{0} ist aktuell", "{0} es actual" },
 /* TextLayer1 */ { "Layer 1", "Schicht 1", "Capa 1" },
 /* TextLayer1IsUndeletable */ { "Layer 1 is undeletable", "Schicht 1 ist unlöschbar", "Capa 1 no se puede eliminar" },
 /* TextLayerDeleted */ { "Layer {0} deleted", "Schicht {0} gelöscht", "Capa {0} eliminado" },

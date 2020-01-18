@@ -31,8 +31,15 @@ namespace DataModel
 	class Object : protected Serializable
 	{
 		public:
-			Object() : objectID(ObjectNone) {}
-			Object(const objectID_t objectID) : objectID(objectID) {}
+			Object()
+			:	objectID(ObjectNone),
+			 	name(std::to_string(objectID))
+			{}
+
+			Object(const objectID_t objectID)
+			:	objectID(objectID),
+				name(std::to_string(objectID))
+			{}
 
 			virtual ~Object() {}
 

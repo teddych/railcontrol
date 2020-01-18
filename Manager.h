@@ -169,7 +169,7 @@ class Manager
 		bool SwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// street
-		bool StreetExecute(Logger::Logger* logger, const streetID_t streetID);
+		bool StreetExecute(Logger::Logger* logger, const locoID_t locoID, const streetID_t streetID);
 		void StreetExecuteAsync(Logger::Logger* logger, const streetID_t streetID);
 		DataModel::Street* GetStreet(const streetID_t streetID) const;
 		const std::string& GetStreetName(const streetID_t streetID) const;
@@ -181,7 +181,8 @@ class Manager
 			const DataModel::Street::PushpullType pushpull,
 			const length_t minTrainLength,
 			const length_t maxTrainLength,
-			const std::vector<DataModel::Relation*>& relations,
+			const std::vector<DataModel::Relation*>& relationsAtLock,
+			const std::vector<DataModel::Relation*>& relationsAtUnlock,
 			const visible_t visible,
 			const layoutPosition_t posX,
 			const layoutPosition_t posY,
