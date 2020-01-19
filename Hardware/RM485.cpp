@@ -58,7 +58,7 @@ namespace Hardware
 		ttyFileDescriptor = open(params->arg1.c_str(), O_RDWR | O_NOCTTY);
 		if (ttyFileDescriptor == -1)
 		{
-			logger->Error("Unable to open {0}", params->arg1);
+			logger->Error(Languages::TextUnableToOpenSerial, params->arg1);
 			return;
 		}
 
@@ -84,7 +84,7 @@ namespace Hardware
 		{
 			return;
 		}
-		logger->Info("RM485 module {0} found", address);
+		logger->Info(Languages::TextRM485ModuleFound, address);
 		uint16_t baseAddress = address * Communication::MaxInputBytesPerModule;
 		ssize_t length = communication.ReadAll(address, data + baseAddress);
 		for (uint16_t a = baseAddress; a < baseAddress + length; ++a)
@@ -99,7 +99,7 @@ namespace Hardware
 				DataModel::Feedback::feedbackState_t state = ((dataByte & 0x01) == 0 ? DataModel::Feedback::FeedbackStateFree : DataModel::Feedback::FeedbackStateOccupied);
 				if (state == DataModel::Feedback::FeedbackStateOccupied)
 				{
-					logger->Info("Pin {0}, {1}", pin, state);
+					logger->Info(Languages::TextFeedbackChange, ((pin - 1) & 0x07) + 1, address, state);
 					manager->FeedbackState(controlID, pin, state);
 				}
 				dataByte >>= 1;

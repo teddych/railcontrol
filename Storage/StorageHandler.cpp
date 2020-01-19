@@ -21,7 +21,6 @@ along with RailControl; see the file LICENCE. If not see
 #ifndef AMALGAMATION
 #include <dlfcn.h>              // dl*
 #endif
-#include <sstream>
 #include <string>
 #include <vector>
 
@@ -58,38 +57,33 @@ namespace Storage
 #else
 		// generate symbol and library names
 		char* error;
-		std::stringstream ss;
-		ss << "Storage/" << params.module << ".so";
+		string moduleName = "Storage/" + params.module + ".so";
 
 		Logger::Logger* logger = Logger::Logger::GetLogger("StorageHandler");
-		dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
-		if (!dlhandle)
+		dlhandle = dlopen(moduleName.c_str(), RTLD_LAZY);
+		if (dlhandle == nullptr)
 		{
-			logger->Error("Can not open storage library: {0}", dlerror());
+			logger->Error(Languages::TextCanNotOpenLibrary, moduleName, dlerror());
 			return;
 		}
 
 		// look for symbol create_*
-		ss.str(std::string());
-		ss << "create_" << params.module;
-		string s = ss.str();
-		createStorage_t* newCreateStorage = (createStorage_t*) dlsym(dlhandle, s.c_str());
+		string createSymbol = "create_" + params.module;
+		createStorage_t* newCreateStorage = (createStorage_t*) dlsym(dlhandle, createSymbol.c_str());
 		error = dlerror();
 		if (error)
 		{
-			logger->Error("Unable to find symbol {0}", s);
+			logger->Error(Languages::TextUnableToFindSymbol, createSymbol);
 			return;
 		}
 
 		// look for symbol destroy_*
-		ss.str(std::string());
-		ss << "destroy_" << params.module;
-		s = ss.str();
-		destroyStorage_t* newDestroyStorage = (destroyStorage_t*) dlsym(dlhandle, s.c_str());
+		string destroySymbol = "destroy_" + params.module;
+		destroyStorage_t* newDestroyStorage = (destroyStorage_t*) dlsym(dlhandle, destroySymbol.c_str());
 		error = dlerror();
 		if (error)
 		{
-			logger->Error("Unable to find symbol {0}", s);
+			logger->Error(Languages::TextUnableToFindSymbol, destroySymbol);
 			return;
 		}
 

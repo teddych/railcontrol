@@ -22,8 +22,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <dlfcn.h>              // dl*
 #endif
 
-#include <sstream>
-
 #include "DataTypes.h"
 #include "Logger/Logger.h"
 #include "Hardware/CS2.h"
@@ -115,49 +113,44 @@ namespace Hardware
 		char* error;
 		const string& symbol = hardwareSymbols[type];
 
-		std::stringstream ss;
-		ss << "Hardware/" << symbol << ".so";
+		string moduleName = "Hardware/" + symbol + ".so";
 
 		Logger::Logger* logger = Logger::Logger::GetLogger("HardwareHandler");
 		void* dlhandle = manager.HardwareLibraryGet(type);
 		if (dlhandle == nullptr)
 		{
 			// open dynamic library
-			dlhandle = dlopen(ss.str().c_str(), RTLD_LAZY);
-			if (!dlhandle)
+			dlhandle = dlopen(moduleName.c_str(), RTLD_LAZY);
+			if (dlhandle == nullptr)
 			{
-				logger->Error("Can not open library: {0}", dlerror());
+				logger->Error(Languages::TextCanNotOpenLibrary, moduleName, dlerror());
 				return;
 			}
-			logger->Info("Hardware library {0} loaded", symbol);
+			logger->Info(Languages::TextLibraryLoaded, symbol);
 			if (!manager.HardwareLibraryAdd(type, dlhandle))
 			{
-				logger->Error("Unable to store library address");
+				logger->Error(Languages::TextUnabelToStoreLibraryAddress, moduleName);
 				return;
 			}
 		}
 
 		// look for symbol create_*
-		ss.str(std::string());
-		ss << "create_" << symbol;
-		string s = ss.str();
-		createHardware_t* new_create_hardware = (createHardware_t*)dlsym(dlhandle, s.c_str());
+		string createSymbol = "create_" + symbol;
+		createHardware_t* new_create_hardware = (createHardware_t*)dlsym(dlhandle, createSymbol.c_str());
 		error = dlerror();
 		if (error)
 		{
-			logger->Error("Unable to find symbol {0}: {1}", s, error);
+			logger->Error(Languages::TextUnableToFindSymbol, createSymbol, error);
 			return;
 		}
 
 		// look for symbol destroy_*
-		ss.str(std::string());
-		ss << "destroy_" << symbol;
-		s = ss.str();
-		destroyHardware_t* new_destroy_hardware = (destroyHardware_t*)dlsym(dlhandle, s.c_str());
+		string destroySymbol = "destroy_" + symbol;
+		destroyHardware_t* new_destroy_hardware = (destroyHardware_t*)dlsym(dlhandle, destroySymbol.c_str());
 		error = dlerror();
 		if (error)
 		{
-			logger->Error("Unable to find symbol {0}: {1}", s, error);
+			logger->Error(Languages::TextUnableToFindSymbol, destroySymbol, error);
 			return;
 		}
 

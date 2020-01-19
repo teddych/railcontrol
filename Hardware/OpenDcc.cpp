@@ -54,7 +54,7 @@ namespace Hardware
 		bool ok = SendNop();
 		if (!ok)
 		{
-			logger->Error("OpenDCC does not answer");
+			logger->Error(Languages::TextControlDoesNotAnswer);
 			return;
 		}
 
@@ -65,22 +65,22 @@ namespace Hardware
 
 		if (s88Modules > MaxS88Modules)
 		{
-			logger->Error("Too many S88 modules configured.");
+			logger->Error(Languages::TextTooManyS88Modules, s88Modules, MaxS88Modules);
 			return;
 		}
 
 		if (s88Modules == 0)
 		{
-			logger->Info("No S88 modules configured.");
+			logger->Info(Languages::TextNoS88Modules);
 			return;
 		}
 
-		logger->Info("{0} ({1}/{2}/{3}) S88 modules configured.", s88Modules, s88Modules1, s88Modules2, s88Modules3);
+		logger->Info(Languages::TextHsi88Configured, s88Modules, s88Modules1, s88Modules2, s88Modules3);
 		bool restart = false;
 		unsigned char modules = SendXP88Get(0);
 		if (modules != s88Modules)
 		{
-			logger->Info("Configuring {0} modules in total", s88Modules);
+			logger->Info(Languages::TextNrOfS88Modules, s88Modules);
 			SendXP88Set(0, s88Modules);
 			restart = true;;
 		}
@@ -88,7 +88,7 @@ namespace Hardware
 		modules = SendXP88Get(1);
 		if (modules != s88Modules1)
 		{
-			logger->Info("Configuring bus 1 with {0} modules", s88Modules1);
+			logger->Info(Languages::TextNrOfS88ModulesOnBus, s88Modules1, 1);
 			SendXP88Set(1, s88Modules1);
 			restart = true;;
 		}
@@ -96,7 +96,7 @@ namespace Hardware
 		modules = SendXP88Get(2);
 		if (modules != s88Modules2)
 		{
-			logger->Info("Configuring bus 2 with {0} modules", s88Modules2);
+			logger->Info(Languages::TextNrOfS88ModulesOnBus, s88Modules2, 2);
 			SendXP88Set(2, s88Modules2);
 			restart = true;;
 		}
@@ -104,7 +104,7 @@ namespace Hardware
 		modules = SendXP88Get(3);
 		if (modules != s88Modules3)
 		{
-			logger->Info("Configuring bus 3 with {0} modules", s88Modules3);
+			logger->Info(Languages::TextNrOfS88ModulesOnBus, s88Modules3, 3);
 			SendXP88Set(3, s88Modules3);
 			restart = true;;
 		}
@@ -118,7 +118,7 @@ namespace Hardware
 			ok = SendNop();
 			if (!ok)
 			{
-				logger->Error("Control does not answer");
+				logger->Error(Languages::TextControlDoesNotAnswer);
 				return;
 			}
 		}
@@ -253,7 +253,7 @@ namespace Hardware
 		bool ret = serialLine.ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
-			logger->Warning("No answer to XLok command");
+			logger->Warning(Languages::TextControlDoesNotAnswer);
 			return false;
 		}
 		switch (input)
@@ -262,19 +262,19 @@ namespace Hardware
 				return true;
 
 			case XBADPRM:
-				logger->Warning("XLok returned bad parameter");
+				logger->Warning(Languages::TextControlReturnedBadParameter);
 				return false;
 
 			case XLKHALT:
-				logger->Warning("XLok returned OpenDCC on HALT");
+				logger->Warning(Languages::TextControlReturnedOnHalt);
 				return false;
 
 			case XLKPOFF:
-				logger->Warning("XLok returned Power OFF");
+				logger->Warning(Languages::TextControlReturnedPowerOff);
 				return false;
 
 			default:
-				logger->Warning("XLok returned unknown error code: {0}", static_cast<int>(input));
+				logger->Warning(Languages::TextControlReturnedUnknownErrorCode, static_cast<int>(input));
 				return false;
 		}
 	}
@@ -282,7 +282,7 @@ namespace Hardware
 	bool OpenDcc::SendXFunc(const address_t address) const
 	{
 		OpenDccCacheEntry entry = cache.GetData(address);
-		logger->Info("Setting functions 1-8 of OpenDCC loco {0} to {1}", address, entry.function[0]);
+		logger->Info(Languages::TextSettingFunctions1_8, address, entry.function[0]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char data[4] = { XFunc, addressLSB, addressMSB, entry.function[0] };
@@ -293,7 +293,7 @@ namespace Hardware
 	bool OpenDcc::SendXFunc2(const address_t address) const
 	{
 		OpenDccCacheEntry entry = cache.GetData(address);
-		logger->Info("Setting functions 9-16 of OpenDCC loco {0} to {1}", address, entry.function[1]);
+		logger->Info(Languages::TextSettingFunctions9_16, address, entry.function[1]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char data[4] = { XFunc2, addressLSB, addressMSB, entry.function[1] };
@@ -304,7 +304,7 @@ namespace Hardware
 	bool OpenDcc::SendXFunc34(const address_t address) const
 	{
 		OpenDccCacheEntry entry = cache.GetData(address);
-		logger->Info("Setting functions 17-28 of OpenDCC loco {0} to {1} and {2}", address, entry.function[2], entry.function[3]);
+		logger->Info(Languages::TextSettingFunctions17_28, address, entry.function[2], entry.function[3]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char data[5] = { XFunc34, addressLSB, addressMSB, entry.function[2], entry.function[3] };
@@ -318,7 +318,7 @@ namespace Hardware
 		bool ret = serialLine.ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
-			logger->Warning("No answer to XFunc command");
+			logger->Warning(Languages::TextControlDoesNotAnswer);
 			return false;
 		}
 		switch (input)
@@ -327,15 +327,15 @@ namespace Hardware
 				return true;
 
 			case XBADPRM:
-				logger->Warning("XFunc returned bad parameter");
+				logger->Warning(Languages::TextControlReturnedBadParameter);
 				return false;
 
 			case XNOSLOT:
-				logger->Warning("XFunc returned queue full");
+				logger->Warning(Languages::TextControlReturnedQueueFull);
 				return false;
 
 			default:
-				logger->Warning("XFunc returned unknown error code: {0}", static_cast<int>(input));
+				logger->Warning(Languages::TextControlReturnedUnknownErrorCode, static_cast<int>(input));
 				return false;
 		}
 	}
@@ -346,7 +346,7 @@ namespace Hardware
 		{
 			return;
 		}
-		logger->Info("Setting OpenDCC accessory {0} to {1}/{2}", address, state, on);
+		logger->Info(Languages::TextSettingAccessoryWithProtocol, ProtocolDCC, address, state, on);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char statusBits = (state << 7) | (on << 6);
@@ -357,7 +357,7 @@ namespace Hardware
 		bool ret = serialLine.ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
-			logger->Warning("No answer to XTrnt command");
+			logger->Warning(Languages::TextControlDoesNotAnswer);
 			return;
 		}
 		switch (input)
@@ -366,15 +366,15 @@ namespace Hardware
 				return;
 
 			case XBADPRM:
-				logger->Warning("XTrnt returned bad parameter");
+				logger->Warning(Languages::TextControlReturnedBadParameter);
 				return;
 
 			case XLOWTSP:
-				logger->Warning("XTrnt returned queue nearly full");
+				logger->Warning(Languages::TextControlReturnedQueueNearlyFull);
 				return;
 
 			default:
-				logger->Warning("XTrnt returned unknown error code: {0}", static_cast<int>(input));
+				logger->Warning(Languages::TextControlReturnedUnknownErrorCode, static_cast<int>(input));
 				return;
 		}
 	}
@@ -399,7 +399,7 @@ namespace Hardware
 	bool OpenDcc::SendRestart() const
 	{
 		unsigned char data[3] = { '@', '@', 0x0D };
-		logger->Info("Restarting OpenDCC");
+		logger->Info(Languages::TextRestarting);
 		serialLine.Send(data, sizeof(data));
 		return true;
 	}
@@ -525,7 +525,7 @@ namespace Hardware
 
 		if (locoEvent)
 		{
-			logger->Debug("Loco Event detected");
+			logger->Debug(Languages::TextLocoEventDetected);
 		}
 
 		if (powerEvent)
@@ -535,7 +535,7 @@ namespace Hardware
 
 		if (switchEvent)
 		{
-			logger->Debug("Switch Event detected");
+			logger->Debug(Languages::TextSwitchEventDetected);
 		}
 	}
 

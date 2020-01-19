@@ -31,7 +31,7 @@ namespace Network
 		fileHandle = open(tty.c_str(), O_RDWR | O_NOCTTY);
 		if (fileHandle == -1)
 		{
-			logger->Error("Unable to open serial {0}", tty);
+			logger->Error(Languages::TextUnableToOpenSerial, tty);
 			return;
 		}
 
