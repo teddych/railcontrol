@@ -109,6 +109,7 @@ namespace DataModel
 
 	bool Track::Reserve(Logger::Logger* logger, const locoID_t locoID)
 	{
+		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (this->locoIdDelayed != LocoNone && this->locoIdDelayed != locoID)
 		{
 			logger->Debug(Languages::TextTrackIsInUse, GetName());
@@ -150,43 +151,56 @@ namespace DataModel
 
 	bool Track::Release(Logger::Logger* logger, const locoID_t locoID)
 	{
-		bool ret = LockableItem::Release(logger, locoID);
-		if (ret == false)
 		{
-			return false;
+			std::lock_guard<std::mutex> Guard(updateMutex);
+			bool ret = LockableItem::Release(logger, locoID);
+			if (ret == false)
+			{
+				return false;
+			}
+			if (state != DataModel::Feedback::FeedbackStateFree)
+			{
+				return true;
+			}
+			this->locoIdDelayed = LocoNone;
+			this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
 		}
-		if (state != DataModel::Feedback::FeedbackStateFree)
-		{
-			return true;
-		}
-		this->locoIdDelayed = LocoNone;
-		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
 		manager->TrackPublishState(this);
 		return true;
 	}
 
 	bool Track::ReleaseForce(Logger::Logger* logger, const locoID_t locoID)
 	{
-		bool ret = LockableItem::Release(logger, locoID);
-		this->state = DataModel::Feedback::FeedbackStateFree;
-		this->locoIdDelayed = LocoNone;
-		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
+		bool ret;
+		{
+			std::lock_guard<std::mutex> Guard(updateMutex);
+			ret = ReleaseForceUnlocked(logger, locoID);
+		}
 		manager->TrackPublishState(this);
 		return ret;
 	}
 
-	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
+	bool Track::ReleaseForceUnlocked(Logger::Logger* logger, const locoID_t locoID)
+	{
+		bool ret = LockableItem::Release(logger, locoID);
+		this->state = DataModel::Feedback::FeedbackStateFree;
+		this->locoIdDelayed = LocoNone;
+		this->stateDelayed = DataModel::Feedback::FeedbackStateFree;
+		return ret;
+	}
+
+	bool Track::SetFeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t newState)
 	{
 		{
 			std::lock_guard<std::mutex> Guard(updateMutex);
 			DataModel::Feedback::feedbackState_t oldState = this->state;
 			bool oldBlocked = blocked;
-			bool ret = FeedbackStateInternal(feedbackID, state);
+			bool ret = FeedbackStateInternal(feedbackID, newState);
 			if (ret == false)
 			{
 				return false;
 			}
-			if (oldState == state && oldBlocked == blocked)
+			if (oldState == newState && oldBlocked == blocked)
 			{
 				return true;
 			}
@@ -195,9 +209,9 @@ namespace DataModel
 		return true;
 	}
 
-	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state)
+	bool Track::FeedbackStateInternal(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t newState)
 	{
-		if (state == DataModel::Feedback::FeedbackStateOccupied)
+		if (newState == DataModel::Feedback::FeedbackStateOccupied)
 		{
 			Loco* loco = manager->GetLoco(GetLocoDelayed());
 			if (loco == nullptr)
@@ -213,14 +227,14 @@ namespace DataModel
 				loco->LocationReached(feedbackID);
 			}
 
-			this->state = state;
-			this->stateDelayed = state;
+			this->state = newState;
+			this->stateDelayed = newState;
 			return true;
 		}
 
-		for (auto f : feedbacks)
+		for (auto feedbackID : feedbacks)
 		{
-			DataModel::Feedback* feedback = manager->GetFeedbackUnlocked(f);
+			DataModel::Feedback* feedback = manager->GetFeedbackUnlocked(feedbackID);
 			if (feedback == nullptr)
 			{
 				continue;
@@ -238,7 +252,9 @@ namespace DataModel
 			Loco* loco = manager->GetLoco(locoID);
 			if (loco != nullptr && loco->IsRunningFromTrack(GetID()))
 			{
-				return Release(loco->GetLogger(), locoID);
+				bool ret = ReleaseForceUnlocked(loco->GetLogger(), locoID);
+				manager->TrackPublishState(this);
+				return ret;
 			}
 		}
 

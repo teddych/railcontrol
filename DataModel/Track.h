@@ -99,7 +99,6 @@ namespace DataModel
 			void Feedbacks(const std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
 
 			bool SetFeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state);
-			DataModel::Feedback::feedbackState_t GetFeedbackState() const { return state; };
 			DataModel::Feedback::feedbackState_t GetFeedbackStateDelayed() const { return stateDelayed; };
 
 			bool AddStreet(Street* street);
@@ -121,6 +120,7 @@ namespace DataModel
 			bool FeedbackStateInternal(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state);
 			void OrderValidStreets(std::vector<DataModel::Street*>& validStreets) const;
 			selectStreetApproach_t GetSelectStreetApproachCalculated() const;
+			bool ReleaseForceUnlocked(Logger::Logger* logger, const locoID_t locoID);
 
 			Manager* manager;
 			mutable std::mutex updateMutex;
