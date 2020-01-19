@@ -48,7 +48,7 @@ namespace Hardware
 	 	serialLine(logger, params->arg1, B19200, 8, 'N', 2),
 		run(false)
 	{
-		logger->Info(name);
+		logger->Info(Languages::TextStarting, name);
 
 		SendP50XOnly();
 		bool ok = SendNop();

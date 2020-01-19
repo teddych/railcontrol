@@ -94,44 +94,29 @@ namespace Logger
 
 			template<typename... Args> void Error(const Languages::textSelector_t text, Args... args)
 			{
-				Error(Languages::GetText(text), args...);
-			}
-
-			template<typename... Args> void Error(const std::string& text, Args... args)
-			{
 				if (logLevel < LevelError)
 				{
 					return;
 				}
-				Log("Error", text, args...);
+				Log("Error", Languages::GetText(text), args...);
 			}
 
 			template<typename... Args> void Warning(const Languages::textSelector_t text, Args... args)
-			{
-				Warning(Languages::GetText(text), args...);
-			}
-
-			template<typename... Args> void Warning(const std::string& text, Args... args)
 			{
 				if (logLevel < LevelWarning)
 				{
 					return;
 				}
-				Log("Warning", text, args...);
+				Log("Warning", Languages::GetText(text), args...);
 			}
 
 			template<typename... Args> void Info(const Languages::textSelector_t text, Args... args)
-			{
-				Info(Languages::GetText(text), args...);
-			}
-
-			template<typename... Args> void Info(const std::string& text, Args... args)
 			{
 				if (logLevel < LevelInfo)
 				{
 					return;
 				}
-				Log("Info", text, args...);
+				Log("Info", Languages::GetText(text), args...);
 			}
 
 			template<typename... Args> void Debug(const Languages::textSelector_t text, Args... args)

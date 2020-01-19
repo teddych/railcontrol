@@ -49,7 +49,7 @@ namespace Hardware
 	 	serialLine(logger, params->arg1, B9600, 8, 'N', 1),
 		run(false)
 	{
-		logger->Info(name);
+		logger->Info(Languages::TextStarting, name);
 
 		memset(s88Memory, 0, sizeof(s88Memory));
 
@@ -71,7 +71,7 @@ namespace Hardware
 		}
 
 		std::string version = GetVersion();
-		logger->Info("HSI-88 version: {0}", version);
+		logger->Info(Languages::TextVersion, version);
 
 		unsigned char modulesConfigured = ConfigureS88();
 		if (s88Modules != modulesConfigured)

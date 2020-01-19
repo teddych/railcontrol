@@ -31,15 +31,15 @@ using std::string;
 
 Config::Config(const std::string& fileName)
 {
-	Logger::Logger* logger = Logger::LoggerServer::Instance().GetLogger("Main");
+	Logger::Logger* logger = Logger::LoggerServer::Instance().GetLogger("Config");
 	// read config values
-	logger->Info("Reading config file {0}", fileName);
+	logger->Info(Languages::TextReadingConfigFile, fileName);
 
 	std::ifstream configFile;
 	configFile.open(fileName);
 	if (!configFile.is_open())
 	{
-		logger->Warning("Unable to open configfile {0}", fileName);
+		logger->Warning(Languages::TextUnableToOpenFile, fileName);
 		return;
 	}
 
@@ -62,13 +62,9 @@ Config::Config(const std::string& fileName)
 		}
 
 		config[configKey] = configValue;
+		logger->Info(Languages::TextParameterFoundInConfigFile, configKey, configValue);
 	}
 	configFile.close();
-
-	for(auto option : config)
-	{
-		logger->Info("Parameter found in config file: {0} = {1}", option.first, option.second);
-	}
 }
 
 const string& Config::getValue(const string& key, const string& defaultValue)

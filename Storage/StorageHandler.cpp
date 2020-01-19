@@ -105,7 +105,7 @@ namespace Storage
 		if (instance)
 		{
 			destroyStorage(instance);
-			instance = NULL;
+			instance = nullptr;
 		}
 
 #ifndef AMALGAMATION
@@ -113,7 +113,7 @@ namespace Storage
 		if (dlhandle)
 		{
 			dlclose(dlhandle);
-			dlhandle = NULL;
+			dlhandle = nullptr;
 		}
 #endif
 	}

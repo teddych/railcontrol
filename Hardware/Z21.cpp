@@ -53,7 +53,8 @@ namespace Hardware
 	 	senderConnection(logger, params->arg1, Z21Port),
 	 	receiverConnection(logger, "0.0.0.0", Z21Port)
 	{
-		logger->Info(name);
+		logger->Info(Languages::TextStarting, name);
+
 		if (senderConnection.IsConnected())
 		{
 			logger->Info(Languages::TextSenderSocketCreated);
@@ -84,22 +85,22 @@ namespace Hardware
 
 	void Z21::LocoSpeed(__attribute__ ((unused)) const protocol_t& protocol, __attribute__ ((unused)) const address_t& address, __attribute__ ((unused)) const locoSpeed_t& speed)
 	{
-		logger->Warning("Setting speed not implemented");
+		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 	}
 
 	void Z21::LocoDirection(__attribute__ ((unused)) const protocol_t& protocol, __attribute__ ((unused)) const address_t& address, __attribute__ ((unused)) const direction_t& direction)
 	{
-		logger->Warning("Setting direction not implemented");
+		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 	}
 
 	void Z21::LocoFunction(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const function_t function, __attribute__ ((unused)) const bool on)
 	{
-		logger->Warning("Setting loco function not implemented");
+		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 	}
 
 	void Z21::Accessory(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const accessoryState_t state, __attribute__ ((unused)) const bool on)
 	{
-		logger->Warning("Setting accessory not implemented");
+		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 	}
 
 	// the Receiver thread of the Z21
@@ -145,7 +146,6 @@ namespace Hardware
 				continue;
 			}
 
-			logger->Debug("Received {0} bytes from Z21", dataLength);
 			logger->Hex(buffer, dataLength);
 
 			ssize_t dataRead = 0;
@@ -182,6 +182,7 @@ namespace Hardware
 			}
 
 			case 0x18:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0x1A:
@@ -226,6 +227,7 @@ namespace Hardware
 				switch (buffer[8])
 				{
 					case 0x43:
+						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;
 
 					case 0x61:
@@ -240,6 +242,7 @@ namespace Hardware
 								break;
 
 							case 0x02:
+								logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 								break;
 
 							case 0x08:
@@ -247,9 +250,11 @@ namespace Hardware
 								break;
 
 							case 0x12:
+								logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 								break;
 
 							case 0x13:
+								logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 								break;
 
 							case 0x82:
@@ -259,21 +264,27 @@ namespace Hardware
 						break;
 
 					case 0x62:
+						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;
 
 					case 0x63:
+						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;
 
 					case 0x64:
+						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;
 
 					case 0x81:
+						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;
 
 					case 0xEF:
+						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;
 
 					case 0xF3:
+						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;
 
 					default:
@@ -282,42 +293,55 @@ namespace Hardware
 				break;
 
 			case 0x51:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0x60:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0x70:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0x80:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0x84:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0x88:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0xA0:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0xA1:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0xA2:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0xA3:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0xA4:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			case 0xC4:
+				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
 
 			default:
+				logger->Warning(Languages::TextZ21DoesNotUnderstand);
 				return -1;
 		}
 		return dataLength;

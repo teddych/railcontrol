@@ -49,15 +49,15 @@ namespace Hardware
 	 	serialLine(logger, params->arg1, B2400, 8, 'N', 2),
 		run(true)
 	{
-		logger->Info(name);
+		logger->Info(Languages::TextStarting, name);
 
 		s88Modules = Utils::Utils::StringToInteger(params->arg2, 0, MaxS88Modules);
 		if (s88Modules == 0)
 		{
-			logger->Info("No S88 modules configured.");
+			logger->Info(Languages::TextNoS88Modules);
 			return;
 		}
-		logger->Info("{0} S88 modules configured.", s88Modules);
+		logger->Info(Languages::TextNrOfS88Modules, s88Modules);
 		s88Thread = std::thread(&Hardware::M6051::S88Worker, this);
 	}
 
@@ -81,12 +81,12 @@ namespace Hardware
 
 		if (status)
 		{
-			logger->Info("Turning booster on");
+			logger->Info(Languages::TextTurningBoosterOn);
 			c = 96;
 		}
 		else
 		{
-			logger->Info("Turning booster off");
+			logger->Info(Languages::TextTurningBoosterOn);
 			c = 97;
 		}
 		serialLine.Send(c);

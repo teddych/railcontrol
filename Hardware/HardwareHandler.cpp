@@ -192,7 +192,6 @@ namespace Hardware
 			return;
 		}
 		dlclose(dlhandle);
-		Logger::Logger::GetLogger("HardwareHandler")->Info("Hardware library {0} unloaded", hardwareSymbols[type]);
 #endif
 	}
 

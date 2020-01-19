@@ -53,7 +53,8 @@ namespace Hardware
 	 	senderConnection(logger, params->arg1, CS2SenderPort),
 	 	receiverConnection(logger, "0.0.0.0", CS2ReceiverPort)
 	{
-		logger->Info(name);
+		logger->Info(Languages::TextStarting, name);
+
 		if (senderConnection.IsConnected())
 		{
 			logger->Info(Languages::TextSenderSocketCreated);
@@ -334,14 +335,14 @@ namespace Hardware
 			{
 				// speed event
 				locoSpeed_t speed = Utils::Utils::DataBigEndianToShort(buffer + 9);
-				logger->Info("Received loco speed command for protocol {0} address {1} and speed {2}", protocol, address, speed);
+				logger->Info(Languages::TextReceivedSpeedCommand, protocol, address, speed);
 				manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), speed);
 			}
 			else if (command == 0x05 && !response && length == 5)
 			{
 				// direction event (implies speed=0)
 				direction_t direction = (buffer[9] == 1 ? DirectionRight : DirectionLeft);
-				logger->Info("Received loco direction command for protocol {0} address {1} and direction {2}", protocol, address, direction);
+				logger->Info(Languages::TextReceivedDirectionCommand, protocol, address, direction);
 				manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), MinSpeed);
 				manager->LocoDirection(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), direction);
 			}
@@ -350,7 +351,7 @@ namespace Hardware
 				// function event
 				function_t function = buffer[9];
 				bool on = buffer[10] != 0;
-				logger->Info("Received loco function command for protocol {0} address {1} and function {2} state {3}", protocol, address, function, on);
+				logger->Info(Languages::TextReceivedFunctionCommand, protocol, address, function, on);
 				manager->LocoFunction(ControlTypeHardware, controlID, protocol, static_cast<address_t>(address), function, on);
 			}
 			else if (command == 0x0B && !response && length == 6 && buffer[10] == 1)
@@ -359,7 +360,7 @@ namespace Hardware
 				accessoryState_t state = buffer[9];
 				// GUI-address is 1-based, protocol-address is 0-based
 				++address;
-				logger->Info("Received accessory command for protocol {0} address {1} and state {2}", protocol, address, state);
+				logger->Info(Languages::TextReceivedAccessoryCommand, protocol, address, state);
 				manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 			}
 		}

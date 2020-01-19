@@ -52,8 +52,9 @@ namespace Hardware
 		rescanAddress(0),
 		rescanCount(RescanCountStart)
 	{
+		logger->Info(Languages::TextStarting, name);
+
 		memset(data, 0, sizeof(data));
-		logger->Info(name);
 
 		ttyFileDescriptor = open(params->arg1.c_str(), O_RDWR | O_NOCTTY);
 		if (ttyFileDescriptor == -1)
@@ -139,7 +140,7 @@ namespace Hardware
 					{
 						DataModel::Feedback::feedbackState_t state = (((newData[pos] >> shift) & 0x01) == 0 ? DataModel::Feedback::FeedbackStateFree : DataModel::Feedback::FeedbackStateOccupied);
 						uint16_t pin = (byteAddress * 8) + shift + 1;
-						logger->Info("Pin {0}, {1}", pin, state);
+						logger->Info(Languages::TextFeedbackChange, shift + 1, byteAddress, state);
 						manager->FeedbackState(controlID, pin, state);
 					}
 				}
