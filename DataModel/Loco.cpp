@@ -45,7 +45,7 @@ namespace DataModel
 					return;
 				}
 			}
-			logger->Info("Waiting until {0} has stopped", name);
+			logger->Info(Languages::TextWaitingUntilHasStopped, name);
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 		}
 		DeleteSlaves();
@@ -161,12 +161,12 @@ namespace DataModel
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		if (trackFrom == nullptr)
 		{
-			logger->Warning("Can not start {0} because it is not on a track", name);
+			logger->Warning(Languages::TextCanNotStartNotOnTrack, name);
 			return false;
 		}
 		if (state == LocoStateError)
 		{
-			logger->Warning("Can not start {0} because it is in error state", name);
+			logger->Warning(Languages::TextCanNotStartInErrorState, name);
 			return false;
 		}
 		if (state == LocoStateTerminated)
@@ -176,7 +176,7 @@ namespace DataModel
 		}
 		if (state != LocoStateManual)
 		{
-			logger->Info("Can not start {0} because it is already running", name);
+			logger->Info(Languages::TextCanNotStartAlreadyRunning, name);
 			return false;
 		}
 
@@ -193,7 +193,7 @@ namespace DataModel
 			switch (state)
 			{
 				case LocoStateManual:
-					manager->LocoSpeed(ControlTypeInternal, objectID, 0);
+					manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 					return true;
 
 				case LocoStateSearchingFirst:
@@ -208,14 +208,14 @@ namespace DataModel
 				case LocoStateSearchingSecond:
 				case LocoStateRunning:
 				case LocoStateStopping:
-					logger->Info("{0} is actually running, waiting until reached its destination", name);
+					logger->Info(Languages::TextIsRunningWaitingUntilDestination, name);
 					state = LocoStateStopping;
 					return false;
 
 				default:
-					logger->Error("{0} is in unknown state. Setting to error state and setting speed to 0.", name);
+					manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
+					logger->Error(Languages::TextIsInUnknownStateErrorStopping, name);
 					state = LocoStateError;
-					manager->LocoSpeed(ControlTypeInternal, objectID, 0);
 					return false;
 			}
 		}
@@ -260,11 +260,11 @@ namespace DataModel
 	{
 		SetMinThreadPriorityAndThreadName();
 		const string& name = GetName();
-		logger->Info("{0} is now in automode", name);
+		logger->Info(Languages::TextIsNowInAutoMode, name);
 
 		while (true)
 		{
-			{ // sleep is outside the lock
+			{ // sleep must be outside of locked block
 				std::lock_guard<std::mutex> Guard(stateMutex);
 				feedbackID_t feedbackId = feedbackIdsReached.Dequeue();
 				if (feedbackId != FeedbackNone)
@@ -286,7 +286,7 @@ namespace DataModel
 				{
 					case LocoStateOff:
 						// automode is turned off, terminate thread
-						logger->Info("{0} is now in manual mode", name);
+						logger->Info(Languages::TextIsNowInManualMode, name);
 						state = LocoStateTerminated;
 						return;
 
@@ -316,22 +316,22 @@ namespace DataModel
 						break;
 
 					case LocoStateStopping:
-						logger->Info("{0} has not yet reached its destination. Going to manual mode when it reached its destination.", name);
+						logger->Info(Languages::TextHasNotReachedDestination, name);
 						break;
 
 					case LocoStateTerminated:
-						logger->Error("{0} is in terminated state while automode is running. Putting loco into error state", name);
+						logger->Error(Languages::TextIsInTerminatedState, name);
 						state = LocoStateError;
 						break;
 
 					case LocoStateManual:
-						logger->Error("{0} is in manual state while automode is running. Putting loco into error state", name);
+						logger->Error(Languages::TextIsInManualState, name);
 						state = LocoStateError;
 						#include "Fallthrough.h"
 
 					case LocoStateError:
-						logger->Error("{0} is in error state.", name);
-						manager->LocoSpeed(ControlTypeInternal, objectID, 0);
+						logger->Error(Languages::TextIsInErrorState, name);
+						manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 						break;
 				}
 			}
@@ -342,36 +342,18 @@ namespace DataModel
 
 	void Loco::SearchDestinationFirst()
 	{
-		// check if already running
-		if (streetFirst != nullptr || streetSecond != nullptr)
+		if (streetFirst != nullptr)
 		{
 			state = LocoStateError;
-			logger->Error("{0} has already a street reserved. Going to error state.", name);
+			logger->Error(Languages::TextHasAlreadyReservedStreet, name);
 			return;
 		}
-
-		if (trackFrom == nullptr)
-		{
-			state = LocoStateOff;
-			logger->Info("{0} is not on a track. Switching to manual mode.", name);
-			return;
-		}
-
-		if (trackFrom->GetLoco() != objectID)
-		{
-			state = LocoStateError;
-			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, trackFrom->GetName(), manager->GetLocoName(trackFrom->GetLoco()));
-			return;
-		}
-		logger->Debug("Looking for new destination starting from {0}.", trackFrom->GetName());
 
 		Street* usedStreet = SearchDestination(trackFrom, true);
 		if (usedStreet == nullptr)
 		{
-			logger->Debug("No valid street found for {0}", name);
 			return;
 		}
-
 
 		trackID_t newTrackIdFirst = usedStreet->GetToTrack();
 		Track* newTrack = manager->GetTrack(newTrackIdFirst);
@@ -397,7 +379,7 @@ namespace DataModel
 		}
 		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
 		newTrack->SetLocoDirection(static_cast<direction_t>(!streetFirst->GetToDirection()));
-		logger->Info("Heading to {0} via {1}", newTrack->GetName(), streetFirst->GetName());
+		logger->Info(Languages::TextHeadingToVia, newTrack->GetName(), streetFirst->GetName());
 
 		// start loco
 		manager->TrackPublishState(newTrack);
@@ -417,44 +399,14 @@ namespace DataModel
 				newSpeed = creepingSpeed;
 				break;
 		}
-		manager->LocoSpeed(ControlTypeInternal, objectID, newSpeed);
+		manager->LocoSpeed(ControlTypeInternal, this, newSpeed);
 		state = LocoStateSearchingSecond;
 	}
 
 	void Loco::SearchDestinationSecond()
 	{
-		// check if already running
-		if (streetSecond != nullptr)
-		{
-			state = LocoStateError;
-			logger->Error("{0} has already a street reserved. Going to error state.", name);
-			return;
-		}
-
-		if (trackFirst == nullptr)
-		{
-			state = LocoStateOff;
-			logger->Info("{0} is not on a track. Switching to manual mode.", name);
-			return;
-		}
-
-		if (trackFirst->GetLoco() != objectID)
-		{
-			state = LocoStateError;
-			logger->Error("{0} thinks it is on track {1} but there is {2}. Going to error state.", name, trackFirst->GetName(), manager->GetLocoName(trackFirst->GetLoco()));
-			return;
-		}
-		logger->Debug("Looking for new destination starting from {0}.", trackFirst->GetName());
-
 		Street* usedStreet = SearchDestination(trackFirst, false);
 		if (usedStreet == nullptr)
-		{
-			logger->Debug("No valid street found for {0}", name);
-			return;
-		}
-
-		bool turnLoco = (trackFirst->GetLocoDirection() != usedStreet->GetFromDirection());
-		if (turnLoco)
 		{
 			return;
 		}
@@ -479,7 +431,7 @@ namespace DataModel
 			feedbackIdReduced = streetSecond->GetFeedbackIdReduced();
 			if (speedFirst == Street::SpeedTravel)
 			{
-				manager->LocoSpeed(ControlTypeInternal, objectID, travelSpeed);
+				manager->LocoSpeed(ControlTypeInternal, this, travelSpeed);
 			}
 		}
 		else if (speedSecond == Street::SpeedReduced)
@@ -487,13 +439,13 @@ namespace DataModel
 			feedbackIdCreep = streetSecond->GetFeedbackIdCreep();
 			if (speedFirst == Street::SpeedReduced)
 			{
-				manager->LocoSpeed(ControlTypeInternal, objectID, reducedSpeed);
+				manager->LocoSpeed(ControlTypeInternal, this, reducedSpeed);
 			}
 		}
 
 		wait = streetSecond->GetWaitAfterRelease();
 		newTrack->SetLocoDirection(static_cast<direction_t>(!streetSecond->GetToDirection()));
-		logger->Info("Heading to {0} via {1}", newTrack->GetName(), streetSecond->GetName());
+		logger->Info(Languages::TextHeadingToViaVia, newTrack->GetName(), streetFirst->GetName(), streetSecond->GetName());
 
 		// start loco
 		manager->TrackPublishState(newTrack);
@@ -502,6 +454,28 @@ namespace DataModel
 
 	Street* Loco::SearchDestination(Track* track, const bool allowLocoTurn)
 	{
+		logger->Debug(Languages::TextLookingForDestination, track->GetName());
+		if (streetSecond != nullptr)
+		{
+			state = LocoStateError;
+			logger->Error(Languages::TextHasAlreadyReservedStreet, name);
+			return nullptr;
+		}
+
+		if (track == nullptr)
+		{
+			state = LocoStateOff;
+			logger->Info(Languages::TextIsNotOnTrack, name);
+			return nullptr;
+		}
+
+		if (track->GetLoco() != objectID)
+		{
+			state = LocoStateError;
+			logger->Error(Languages::TextIsOnOcupiedTrack, name, track->GetName(), manager->GetLocoName(track->GetLoco()));
+			return nullptr;
+		}
+
 		vector<Street*> validStreets;
 		track->GetValidStreets(logger, this, allowLocoTurn, validStreets);
 		for (auto street : validStreets)
@@ -523,8 +497,15 @@ namespace DataModel
 				street->Release(logger, objectID);
 				continue;
 			}
+
+			if (!allowLocoTurn && track->GetLocoDirection() != street->GetFromDirection())
+			{
+				continue;
+			}
+
 			return street;
 		}
+		logger->Debug(Languages::TextNoValidStreetFound, name);
 		return nullptr;
 	}
 
@@ -534,7 +515,7 @@ namespace DataModel
 		{
 			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 			manager->Booster(ControlTypeInternal, BoosterStop);
-			logger->Error("{0} hit overrun feedback {1}", name, manager->GetFeedbackName(feedbackID));
+			logger->Error(Languages::TextHitOverrun, name, manager->GetFeedbackName(feedbackID));
 			return;
 		}
 
@@ -592,9 +573,9 @@ namespace DataModel
 	{
 		if (streetFirst == nullptr || trackFrom == nullptr)
 		{
-			Speed(MinSpeed);
+			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 			state = LocoStateError;
-			logger->Error("{0} is running in automode without a street / track. Putting loco into error state", name);
+			logger->Error(Languages::TextIsInAutomodeWithoutStreetTrack, name);
 			return;
 		}
 
@@ -615,9 +596,9 @@ namespace DataModel
 				break;
 		}
 
-		if (newSpeed < speed)
+		if (speed > newSpeed)
 		{
-			manager->LocoSpeed(ControlTypeInternal, objectID, newSpeed);
+			manager->LocoSpeed(ControlTypeInternal, this, newSpeed);
 		}
 
 
@@ -630,33 +611,33 @@ namespace DataModel
 		trackFirst = trackSecond;
 		trackSecond = nullptr;
 
-		feedbackIdFirst = FeedbackNone;
-
 		// set state
 		switch (state)
 		{
 			case LocoStateRunning:
 				state = LocoStateSearchingSecond;
-				return;
+				break;
 
 			case LocoStateStopping:
 				// do nothing
-				return;
+				break;
 
 			default:
-				logger->Error("{0} is running in impossible automode state {1} while ID first reached. Putting loco into error state", name, state);
+				logger->Error(Languages::TextIsInInvalidAutomodeState, name, state, manager->GetFeedbackName(feedbackIdFirst));
 				state = LocoStateError;
-				return;
+				break;
 		}
+
+		feedbackIdFirst = FeedbackNone;
 	}
 
 	void Loco::FeedbackIdStopReached()
 	{
 		if (streetFirst == nullptr || trackFrom == nullptr)
 		{
-			Speed(MinSpeed);
+			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 			state = LocoStateError;
-			logger->Error("{0} is running in automode without a street / track. Putting loco into error state", name);
+			logger->Error(Languages::TextIsInAutomodeWithoutStreetTrack, name);
 			return;
 		}
 
@@ -667,27 +648,28 @@ namespace DataModel
 		trackFrom->Release(logger, objectID);
 		trackFrom = trackFirst;
 		trackFirst = nullptr;
+		logger->Info(Languages::TextReachedItsDestination, name);
 
-		feedbackIdStop = FeedbackNone;
-		feedbackIdCreep = FeedbackNone;
-		feedbackIdReduced = FeedbackNone;
-		logger->Info("{0} reached its destination", name);
 		// set state
 		switch (state)
 		{
 			case LocoStateSearchingSecond:
 				state = LocoStateSearchingFirst;
-				return;
+				break;
 
 			case LocoStateStopping:
 				state = LocoStateOff;
-				return;
+				break;
 
 			default:
-				logger->Error("{0} is running in impossible automode state {1} while ID stop reached. Putting loco into error state", name, state);
+				logger->Error(Languages::TextIsInInvalidAutomodeState, name, state, manager->GetFeedbackName(feedbackIdStop));
 				state = LocoStateError;
-				return;
+				break;
 		}
+
+		feedbackIdStop = FeedbackNone;
+		feedbackIdCreep = FeedbackNone;
+		feedbackIdReduced = FeedbackNone;
 	}
 
 	void Loco::DeleteSlaves()
@@ -705,6 +687,4 @@ namespace DataModel
 		slaves = newslaves;
 		return true;
 	}
-
-
 } // namespace DataModel
