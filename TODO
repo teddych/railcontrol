@@ -14,3 +14,4 @@
 - Fahrstrassen mit unverschlossenen Objekten
 - Text-Elemente im Layout
 - Aktionen ausführen bei Feedback an/aus
+- Formulare als POST-Request senden um maximale URL-Länge zu umgehen

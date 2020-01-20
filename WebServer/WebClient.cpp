@@ -99,7 +99,7 @@ namespace WebServer
 
 		while (run && keepalive)
 		{
-			char buffer_in[1024];
+			char buffer_in[4096];
 			memset(buffer_in, 0, sizeof(buffer_in));
 
 			size_t pos = 0;
