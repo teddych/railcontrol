@@ -308,6 +308,7 @@ class Languages
 			TextStreet,
 			TextStreetDeleted,
 			TextStreetDoesNotExist,
+			TextStreetIsLocked,
 			TextStreetIsReleased,
 			TextStreetSaved,
 			TextStreetUpdated,

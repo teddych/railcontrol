@@ -62,6 +62,7 @@ namespace DataModel
 			:	LayoutItem(streetID),
 			 	LockableItem(),
 			 	manager(manager),
+				executeAtUnlock(false),
 				delay(0),
 				pushpull(PushpullTypeBoth),
 				minTrainLength(0),
@@ -161,6 +162,7 @@ namespace DataModel
 
 			Manager* manager;
 			std::mutex updateMutex;
+			bool executeAtUnlock;
 
 			delay_t delay;
 			std::vector<DataModel::Relation*> relationsAtLock;

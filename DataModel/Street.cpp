@@ -35,7 +35,8 @@ namespace DataModel
 {
 	Street::Street(Manager* manager, const std::string& serialized)
 	:	LockableItem(),
-	 	manager(manager)
+	 	manager(manager),
+	 	executeAtUnlock(false)
 	{
 		Deserialize(serialized);
 		Track* track = manager->GetTrack(fromTrack);
@@ -203,6 +204,13 @@ namespace DataModel
 
 	bool Street::Execute(Logger::Logger* logger, const locoID_t locoID)
 	{
+		bool isInUse = IsInUse();
+		if (isInUse && locoID != GetLoco())
+		{
+			logger->Info(Languages::TextStreetIsLocked, GetName());
+			return false;
+		}
+
 		if (manager->Booster() == BoosterStop)
 		{
 			logger->Debug(Languages::TextBoosterIsTurnedOff);
@@ -220,6 +228,10 @@ namespace DataModel
 		}
 		lastUsed = time(nullptr);
 		++counter;
+		if (isInUse)
+		{
+			executeAtUnlock = true;
+		}
 		return true;
 	}
 
@@ -258,7 +270,7 @@ namespace DataModel
 			bool retRelation = relation->Reserve(logger, locoID);
 			if (retRelation == false)
 			{
-				ReleaseInternal(logger, locoID);
+				ReleaseInternalWithToTrack(logger, locoID);
 				return false;
 			}
 		}
@@ -315,9 +327,13 @@ namespace DataModel
 
 	bool Street::ReleaseInternal(Logger::Logger* logger, const locoID_t locoID)
 	{
-		for (auto relation : relationsAtUnlock)
+		if (executeAtUnlock)
 		{
-			relation->Execute(logger, locoID, delay);
+			for (auto relation : relationsAtUnlock)
+			{
+				relation->Execute(logger, locoID, delay);
+			}
+			executeAtUnlock = false;
 		}
 		for (auto relation : relationsAtLock)
 		{

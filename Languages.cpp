@@ -308,6 +308,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextStreet*/ { "street", "Fahrstrasse", "itinerario" },
 /* TextStreetDeleted */ { "Street {0} deleted", "Fahrstrasse {0} gelöscht", "Itinerario {0} eliminado" },
 /* TextStreetDoesNotExist */ { "Street does not exist", "Fahrstrasse existiert nicht", "Itinerario no existe" },
+/* TextStreetIsLocked */ { "Street {0} is locked", "Fahrstrasse {0} ist gesperrt", "Itinerario {0} está bloqueado" },
 /* TextStreetIsReleased */ { "Street {0} is released", "Fahrstrasse {0} ist freigegeben", "Itinerario {0} está desbloqueado" },
 /* TextStreetSaved */ { "Street {0} saved", "Fahrstrasse {0} gespeichert", "Itinerario {0} guardado" },
 /* TextStreetUpdated */ { "Street {0} updated", "Fahrstrasse {0} aktualisiert", "Itinerario {0} actualizado" },
