@@ -145,6 +145,10 @@ namespace DataModel
 		}
 		DeleteRelations(relations);
 		relations = newRelations;
+		for (auto relation : relations)
+		{
+			relation->ObjectID1(objectID); // FIXME: remove later. In older versions the objectID has always been stored with value 0
+		}
 		return true;
 	}
 

@@ -78,6 +78,7 @@ namespace DataModel
 			virtual bool Deserialize(const std::string& serialized) override;
 
 			objectID_t ObjectID1() const { return objectID1; }
+			void ObjectID1(objectID_t objectID1) { this->objectID1 = objectID1; }
 			objectType_t ObjectType2() const { return objectType2; }
 			objectID_t ObjectID2() const { return objectID2; }
 			type_t Type() const { return type; }
