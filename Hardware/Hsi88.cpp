@@ -101,9 +101,10 @@ namespace Hardware
 		char input = 0;
 		while (true)
 		{
-			int ret = serialLine.Receive(&input, sizeof(input));
+			int ret = serialLine.Receive(&input, sizeof(input), 1, 0);
 			if (ret < 0 || input == '\r')
 			{
+				logger->Hex(data);
 				return data;
 			}
 			data.append(&input, ret);
@@ -113,6 +114,7 @@ namespace Hardware
 	std::string Hsi88::GetVersion()
 	{
 		const unsigned char command[2] = { 'v', '\r' };
+		logger->Hex(command, sizeof(command));
 		serialLine.Send(command, sizeof(command));
 		return ReadUntilCR();
 	}
@@ -121,8 +123,10 @@ namespace Hardware
 	{
 		const unsigned char command [5] = { 's', static_cast<unsigned char>(s88Modules1 >> 1), static_cast<unsigned char>(s88Modules2 >> 1), static_cast<unsigned char>(s88Modules3 >> 1), '\r' };
 		serialLine.Send(command, sizeof(command));
+		logger->Hex(command, sizeof(command));
 		char input[3];
 		int ret = serialLine.ReceiveExact(input, sizeof(input));
+		logger->Hex(reinterpret_cast<unsigned char*>(input), sizeof(input));
 		if (ret <= 0)
 		{
 			return 0;
@@ -151,6 +155,7 @@ namespace Hardware
 		const unsigned char moduleDataSize = modules * 3;
 		const unsigned char commandSize = moduleDataSize + headerDataSize;
 		serialLine.ReceiveExact(data, moduleDataSize);
+		logger->Hex(data);
 		if (data.size() != commandSize)
 		{
 			return;
