@@ -25,6 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <vector>
 
 #include "DataModel/Feedback.h"
+#include "DataModel/Loco.h"
 #include "DataTypes.h"
 
 class ControlInterface
@@ -51,16 +52,16 @@ class ControlInterface
 		virtual void LayerSettings(__attribute__((unused)) const layerID_t layerID, __attribute__((unused)) const std::string& name) {};
 		virtual void LocoDelete(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const std::string& name) {};
 		virtual void LocoDestinationReached(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const streetID_t streetID, __attribute__((unused)) const trackID_t trackID) {};
-		virtual void LocoDirection(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const direction_t direction) {};
-		virtual void LocoFunction(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const function_t function, __attribute__((unused)) const bool on) {};
+		virtual void LocoDirection(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const direction_t direction) {};
+		virtual void LocoFunction(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const function_t function, __attribute__((unused)) const bool on) {};
 		virtual void LocoIntoTrack(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const trackID_t trackID, __attribute__((unused)) const std::string& locoName, __attribute__((unused)) const std::string& trackName) {};
 		virtual void LocoProtocols(__attribute__((unused)) std::vector<protocol_t>& protocols) const {};
 		virtual bool LocoProtocolSupported(__attribute__((unused)) protocol_t protocol) const { return false; };
 		virtual void LocoRelease(__attribute__((unused)) const locoID_t locoID) {};
 		virtual void LocoSettings(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const std::string& name) {};
-		virtual void LocoSpeed(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const locoSpeed_t speed) {};
-		virtual void LocoStart(__attribute__((unused)) const locoID_t locoID) {};
-		virtual void LocoStop(__attribute__((unused)) const locoID_t locoID) {};
+		virtual void LocoSpeed(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const locoSpeed_t speed) {};
+		virtual void LocoStart(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const std::string& name) {};
+		virtual void LocoStop(__attribute__((unused)) const locoID_t locoID, __attribute__((unused)) const std::string& name) {};
 		virtual void StreetDelete(__attribute__((unused)) const streetID_t streetID, __attribute__((unused)) const std::string& name) {};
 		virtual void StreetRelease(__attribute__((unused)) const streetID_t streetID) {};
 		virtual void StreetSettings(__attribute__((unused)) const streetID_t streetID, __attribute__((unused)) const std::string& name) {};
@@ -74,13 +75,13 @@ class ControlInterface
 		virtual void SignalSettings(__attribute__((unused)) const signalID_t signalID, __attribute__((unused)) const std::string& name) {};
 		virtual void SignalState(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const signalID_t signalID, __attribute__((unused)) const signalState_t state, __attribute__((unused)) const bool on) {};
 
-		virtual void LocoSpeedDirectionFunctions(const locoID_t locoID, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool>& functions)
+		virtual void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool>& functions)
 		{
-			LocoSpeed(ControlTypeInternal, locoID, speed);
-			LocoDirection(ControlTypeInternal, locoID, direction);
+			LocoSpeed(ControlTypeInternal, loco, speed);
+			LocoDirection(ControlTypeInternal, loco, direction);
 			for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
 			{
-				LocoFunction(ControlTypeInternal, locoID, functionNr, functions[functionNr]);
+				LocoFunction(ControlTypeInternal, loco, functionNr, functions[functionNr]);
 			}
 		}
 

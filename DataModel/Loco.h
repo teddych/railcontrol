@@ -119,7 +119,7 @@ namespace DataModel
 
 			void LocationReached(const feedbackID_t feedbackID);
 
-			void Speed(const locoSpeed_t speed);
+			void Speed(const locoSpeed_t speed, const bool withSlaves);
 			locoSpeed_t Speed() const { return speed; }
 
 			void SetFunction(const function_t nr, const bool state) { functions.SetFunction(nr, state); }

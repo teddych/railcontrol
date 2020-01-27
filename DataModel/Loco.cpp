@@ -193,7 +193,6 @@ namespace DataModel
 			switch (state)
 			{
 				case LocoStateManual:
-					manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 					return true;
 
 				case LocoStateSearchingFirst:
@@ -213,7 +212,6 @@ namespace DataModel
 					return false;
 
 				default:
-					manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 					logger->Error(Languages::TextIsInUnknownStateErrorStopping, name);
 					state = LocoStateError;
 					return false;
@@ -551,12 +549,16 @@ namespace DataModel
 		}
 	}
 
-	void Loco::Speed(const locoSpeed_t speed)
+	void Loco::Speed(const locoSpeed_t speed, const bool withSlaves)
 	{
 		this->speed = speed;
+		if (!withSlaves)
+		{
+			return;
+		}
 		for (auto slave : slaves)
 		{
-			manager->LocoSpeed(ControlTypeInternal, slave->ObjectID2(), speed);
+			manager->LocoSpeed(ControlTypeInternal, slave->ObjectID2(), speed, false);
 		}
 	}
 

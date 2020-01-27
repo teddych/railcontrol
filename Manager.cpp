@@ -257,6 +257,7 @@ void Manager::Booster(const controlType_t controlType, const boosterState_t stat
 
 void Manager::InitLocos()
 {
+	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto loco : locos)
 	{
 		if (boosterState == BoosterStop)
@@ -267,7 +268,7 @@ void Manager::InitLocos()
 		for (auto control : controls)
 		{
 			std::vector<bool> functions = loco.second->GetFunctions();
-			control.second->LocoSpeedDirectionFunctions(loco.first, loco.second->Speed(), loco.second->GetDirection(), functions);
+			control.second->LocoSpeedDirectionFunctions(loco.second, loco.second->Speed(), loco.second->GetDirection(), functions);
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
@@ -753,13 +754,13 @@ void Manager::LocoSpeed(const controlType_t controlType, const controlID_t contr
 	LocoSpeed(controlType, loco, speed);
 }
 
-bool Manager::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
+bool Manager::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed, const bool withSlaves)
 {
 	Loco* loco = GetLoco(locoID);
-	return LocoSpeed(controlType, loco, speed);
+	return LocoSpeed(controlType, loco, speed, withSlaves);
 }
 
-bool Manager::LocoSpeed(const controlType_t controlType, Loco* loco, const locoSpeed_t speed)
+bool Manager::LocoSpeed(const controlType_t controlType, Loco* loco, const locoSpeed_t speed, const bool withSlaves)
 {
 	if (loco == nullptr)
 	{
@@ -770,13 +771,13 @@ bool Manager::LocoSpeed(const controlType_t controlType, Loco* loco, const locoS
 	{
 		s = MaxSpeed;
 	}
-	const locoID_t locoID = loco->GetID();
-	logger->Info(Languages::TextLocoSpeedIs, loco->GetName(), s);
-	loco->Speed(s);
+	const string& locoName = loco->GetName();
+	logger->Info(Languages::TextLocoSpeedIs, locoName, s);
+	loco->Speed(s, withSlaves);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoSpeed(controlType, locoID, s);
+		control.second->LocoSpeed(controlType, loco, s);
 	}
 	return true;
 }
@@ -814,12 +815,11 @@ void Manager::LocoDirection(const controlType_t controlType, Loco* loco, const d
 		return;
 	}
 	loco->SetDirection(direction);
-	const locoID_t locoID = loco->GetID();
 	logger->Info(direction ? Languages::TextLocoDirectionIsRight : Languages::TextLocoDirectionIsLeft, loco->GetName());
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoDirection(controlType, locoID, direction);
+		control.second->LocoDirection(controlType, loco, direction);
 	}
 }
 
@@ -847,12 +847,11 @@ void Manager::LocoFunction(const controlType_t controlType, Loco* loco, const fu
 	}
 
 	loco->SetFunction(function, on);
-	const locoID_t locoID = loco->GetID();
 	logger->Info(on ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoFunction(controlType, locoID, function, on);
+		control.second->LocoFunction(controlType, loco, function, on);
 	}
 }
 
@@ -2508,7 +2507,7 @@ bool Manager::LocoStart(const locoID_t locoID)
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoStart(locoID);
+		control.second->LocoStart(locoID, loco->GetName());
 	}
 	return true;
 }
@@ -2528,13 +2527,14 @@ bool Manager::LocoStop(const locoID_t locoID)
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoStop(locoID);
+		control.second->LocoStop(locoID, loco->GetName());
 	}
 	return true;
 }
 
 bool Manager::LocoStartAll()
 {
+	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto loco : locos)
 	{
 		bool ret = loco.second->GoToAutoMode();
@@ -2546,7 +2546,7 @@ bool Manager::LocoStartAll()
 			std::lock_guard<std::mutex> guard(controlMutex);
 			for (auto control : controls)
 			{
-				control.second->LocoStart(loco.first);
+				control.second->LocoStart(loco.first, loco.second->GetName());
 			}
 		}
 	}
@@ -2556,6 +2556,7 @@ bool Manager::LocoStartAll()
 bool Manager::LocoStopAll()
 {
 	bool ret1 = true;
+	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto loco : locos)
 	{
 		if (!loco.second->IsInUse())
@@ -2572,7 +2573,7 @@ bool Manager::LocoStopAll()
 			std::lock_guard<std::mutex> guard(controlMutex);
 			for (auto control : controls)
 			{
-				control.second->LocoStop(loco.first);
+				control.second->LocoStop(loco.first, loco.second->GetName());
 			}
 		}
 	}
@@ -2581,10 +2582,10 @@ bool Manager::LocoStopAll()
 
 void Manager::StopAllLocosImmediately(const controlType_t controlType)
 {
+	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto loco : locos)
 	{
-		locoID_t locoId = loco.second->GetID();
-		LocoSpeed(controlType, locoId, MinSpeed);
+		LocoSpeed(controlType, loco.second, MinSpeed, false);
 	}
 }
 

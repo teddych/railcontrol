@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <dlfcn.h>              // dl*
 #endif
 
+#include "DataModel/Loco.h"
 #include "DataTypes.h"
 #include "Logger/Logger.h"
 #include "Hardware/CS2.h"
@@ -283,72 +284,40 @@ namespace Hardware
 		instance->Booster(status);
 	}
 
-	void HardwareHandler::LocoSpeed(const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
+	void HardwareHandler::LocoSpeed(const controlType_t controlType, const DataModel::Loco* loco, const locoSpeed_t speed)
 	{
-		if (controlType == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr || loco->GetControlID() != ControlID())
 		{
 			return;
 		}
-		controlID_t controlID = 0;
-		protocol_t protocol = ProtocolNone;
-		address_t address = AddressNone;
-		manager.LocoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != ControlID())
-		{
-			return;
-		}
-		instance->LocoSpeed(protocol, address, speed);
+		instance->LocoSpeed(loco->GetProtocol(), loco->GetAddress(), speed);
 	}
 
-	void HardwareHandler::LocoDirection(const controlType_t controlType, const locoID_t locoID, const direction_t direction)
+	void HardwareHandler::LocoDirection(const controlType_t controlType, const DataModel::Loco* loco, const direction_t direction)
 	{
-		if (controlType == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr || loco->GetControlID() != ControlID())
 		{
 			return;
 		}
-		controlID_t controlID = 0;
-		protocol_t protocol = ProtocolNone;
-		address_t address = AddressNone;
-		manager.LocoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != ControlID())
-		{
-			return;
-		}
-		instance->LocoDirection(protocol, address, direction);
+		instance->LocoDirection(loco->GetProtocol(), loco->GetAddress(), direction);
 	}
 
-	void HardwareHandler::LocoFunction(const controlType_t controlType, const locoID_t locoID, const function_t function, const bool on)
+	void HardwareHandler::LocoFunction(const controlType_t controlType, const DataModel::Loco* loco, const function_t function, const bool on)
 	{
-		if (controlType == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware || instance == nullptr || loco->GetControlID() != ControlID())
 		{
 			return;
 		}
-		controlID_t controlID = 0;
-		protocol_t protocol = ProtocolNone;
-		address_t address = AddressNone;
-		manager.LocoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != ControlID())
-		{
-			return;
-		}
-		instance->LocoFunction(protocol, address, function, on);
+		instance->LocoFunction(loco->GetProtocol(), loco->GetAddress(), function, on);
 	}
 
-	void HardwareHandler::LocoSpeedDirectionFunctions(const locoID_t locoID, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool>& functions)
+	void HardwareHandler::LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool>& functions)
 	{
-		if (instance == nullptr)
+		if (instance == nullptr || loco->GetControlID() != ControlID())
 		{
 			return;
 		}
-		controlID_t controlID = 0;
-		protocol_t protocol = ProtocolNone;
-		address_t address = AddressNone;
-		manager.LocoProtocolAddress(locoID, controlID, protocol, address);
-		if (controlID != ControlID())
-		{
-			return;
-		}
-		instance->LocoSpeedDirectionFunctions(protocol, address, speed, direction, functions);
+		instance->LocoSpeedDirectionFunctions(loco->GetProtocol(), loco->GetAddress(), speed, direction, functions);
 	}
 
 	void HardwareHandler::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)

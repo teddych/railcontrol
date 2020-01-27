@@ -104,25 +104,25 @@ namespace WebServer {
 		}
 	}
 
-	void WebServer::LocoSpeed(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const locoSpeed_t speed)
+	void WebServer::LocoSpeed(__attribute__((unused)) const controlType_t controlType, const DataModel::Loco* loco, const locoSpeed_t speed)
 	{
 		stringstream command;
-		command << "locospeed;loco=" << locoID << ";speed=" << speed;
-		AddUpdate(command.str(), Languages::TextLocoSpeedIs, manager.GetLocoName(locoID), speed);
+		command << "locospeed;loco=" << loco->GetID() << ";speed=" << speed;
+		AddUpdate(command.str(), Languages::TextLocoSpeedIs, loco->GetName(), speed);
 	}
 
-	void WebServer::LocoDirection(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const direction_t direction)
+	void WebServer::LocoDirection(__attribute__((unused)) const controlType_t controlType, const DataModel::Loco* loco, const direction_t direction)
 	{
 		stringstream command;
-		command << "locodirection;loco=" << locoID << ";direction=" << (direction ? "true" : "false");
-		AddUpdate(command.str(), direction ? Languages::TextLocoDirectionIsRight : Languages::TextLocoDirectionIsLeft, manager.GetLocoName(locoID));
+		command << "locodirection;loco=" << loco->GetID() << ";direction=" << (direction ? "true" : "false");
+		AddUpdate(command.str(), direction ? Languages::TextLocoDirectionIsRight : Languages::TextLocoDirectionIsLeft, loco->GetName());
 	}
 
-	void WebServer::LocoFunction(__attribute__((unused)) const controlType_t controlType, const locoID_t locoID, const function_t function, const bool state)
+	void WebServer::LocoFunction(__attribute__((unused)) const controlType_t controlType, const DataModel::Loco* loco, const function_t function, const bool state)
 	{
 		stringstream command;
-		command << "locofunction;loco=" << locoID << ";function=" << static_cast<unsigned int>(function) << ";on=" << (state ? "true" : "false");
-		AddUpdate(command.str(), state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, manager.GetLocoName(locoID), function);
+		command << "locofunction;loco=" << loco->GetID() << ";function=" << static_cast<unsigned int>(function) << ";on=" << (state ? "true" : "false");
+		AddUpdate(command.str(), state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
 	}
 
 	void WebServer::AccessoryState(__attribute__((unused)) const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
@@ -324,18 +324,18 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextLocoHasReachedDestination, manager.GetLocoName(locoID), manager.GetTrackName(trackID), manager.GetStreetName(streetID));
 	}
 
-	void WebServer::LocoStart(const locoID_t locoID)
+	void WebServer::LocoStart(const locoID_t locoID, const std::string& name)
 	{
 		stringstream command;
 		command << "locoStart;loco=" << locoID;
-		AddUpdate(command.str(), Languages::TextLocoIsInAutoMode, manager.GetLocoName(locoID));
+		AddUpdate(command.str(), Languages::TextLocoIsInAutoMode, name);
 	}
 
-	void WebServer::LocoStop(const locoID_t locoID)
+	void WebServer::LocoStop(const locoID_t locoID, const std::string& name)
 	{
 		stringstream command;
 		command << "locoStop;loco=" << locoID;
-		AddUpdate(command.str(), Languages::TextLocoIsInManualMode, manager.GetLocoName(locoID));
+		AddUpdate(command.str(), Languages::TextLocoIsInManualMode, name);
 	}
 
 	void WebServer::LocoSettings(const locoID_t locoID, const std::string& name)
