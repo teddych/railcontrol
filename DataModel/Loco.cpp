@@ -452,6 +452,10 @@ namespace DataModel
 
 	Street* Loco::SearchDestination(Track* track, const bool allowLocoTurn)
 	{
+		if (manager->Booster() == BoosterStop)
+		{
+			return nullptr;
+		}
 		logger->Debug(Languages::TextLookingForDestination, track->GetName());
 		if (streetSecond != nullptr)
 		{
