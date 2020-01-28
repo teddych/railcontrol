@@ -163,11 +163,14 @@ namespace Hardware
 		for (unsigned char module = 0; module < modules; ++module)
 		{
 			const unsigned char modulePosition = module * 3 + 2;
-			const unsigned char dataPosition = modulePosition + 1;
+			const unsigned char* moduleData = reinterpret_cast<const unsigned char*>(data.c_str()) + modulePosition;
+			if (*moduleData > (MaxS88Modules >> 1))
+			{
+				continue;
+			}
 			const unsigned char memoryPosition = (data[modulePosition] - 1) * 2;
-			const unsigned char* dataByte = reinterpret_cast<const unsigned char*>(data.c_str()) + dataPosition;
-			CheckFeedbackByte(dataByte + 1, s88Memory + memoryPosition, memoryPosition);
-			CheckFeedbackByte(dataByte, s88Memory + memoryPosition + 1, memoryPosition + 1);
+			CheckFeedbackByte(moduleData + 2, s88Memory + memoryPosition, memoryPosition);
+			CheckFeedbackByte(moduleData + 1, s88Memory + memoryPosition + 1, memoryPosition + 1);
 		}
 	}
 
