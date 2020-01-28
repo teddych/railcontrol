@@ -51,7 +51,8 @@ namespace Hardware
 	{
 		logger->Info(Languages::TextStarting, name);
 
-		memset(s88Memory, 0, sizeof(s88Memory));
+		memset(s88Init, 0xFF, sizeof(s88Memory));
+		memset(s88Memory, 0x00, sizeof(s88Memory));
 
 		s88Modules1 = Utils::Utils::StringToInteger(params->arg2, 0);
 		s88Modules2 = Utils::Utils::StringToInteger(params->arg3, 0);
@@ -169,31 +170,32 @@ namespace Hardware
 				continue;
 			}
 			const unsigned char memoryPosition = (data[modulePosition] - 1) * 2;
-			CheckFeedbackByte(moduleData + 2, s88Memory + memoryPosition, memoryPosition);
-			CheckFeedbackByte(moduleData + 1, s88Memory + memoryPosition + 1, memoryPosition + 1);
+			CheckFeedbackByte(moduleData[2], memoryPosition);
+			CheckFeedbackByte(moduleData[1], memoryPosition + 1);
 		}
 	}
 
-	void Hsi88::CheckFeedbackByte(const unsigned char* dataByte, unsigned char* memoryByte, const unsigned char module)
+	void Hsi88::CheckFeedbackByte(const unsigned char dataByte, const unsigned char module)
 	{
-		unsigned char diff = *memoryByte ^ *dataByte;
+		unsigned char diff = (s88Memory[module] ^ dataByte) | s88Init[module];
 		if (!diff)
 		{
 			return;
 		}
-		*memoryByte = *dataByte;
 		unsigned char pin = 0;
 		while (diff)
 		{
 			if (diff & 0x01)
 			{
-				DataModel::Feedback::feedbackState_t state = static_cast<DataModel::Feedback::feedbackState_t>((*dataByte >> pin) & 0x01);
+				DataModel::Feedback::feedbackState_t state = static_cast<DataModel::Feedback::feedbackState_t>((dataByte >> pin) & 0x01);
 				logger->Info(Languages::TextFeedbackChange, pin + 1, module, Languages::GetOnOff(state));
 				manager->FeedbackState(controlID, module * 8 + pin + 1, state);
 			}
 			diff >>= 1;
 			++pin;
 		}
+		s88Memory[module] = dataByte;
+		s88Init[module] = 0;
 	}
 
 	void Hsi88::CheckEventsWorker()

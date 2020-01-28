@@ -58,13 +58,14 @@ namespace Hardware
 			unsigned short s88Modules;
 
 			std::thread checkEventsThread;
+			unsigned char s88Init[MaxS88Modules];
 			unsigned char s88Memory[MaxS88Modules];
 
 			std::string ReadUntilCR();
 			std::string GetVersion();
 			unsigned char ConfigureS88();
 			void ReadData();
-			void CheckFeedbackByte(const unsigned char* dataByte, unsigned char* memoryByte, const unsigned char module);
+			void CheckFeedbackByte(const unsigned char dataByte, const unsigned char module);
 
 			void CheckEventsWorker();
 	};
