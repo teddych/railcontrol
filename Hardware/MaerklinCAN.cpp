@@ -18,17 +18,7 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include <cstdint>    //int64_t;
-#include <cstdio>     //printf
-#include <cstdlib>    //exit(0);
-#include <cstring>    //memset
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <unistd.h>   //close;
-
-#include "Hardware/CS2.h"
+#include "Hardware/MaerklinCAN.h"
 #include "Utils/Utils.h"
 
 namespace Hardware
@@ -168,6 +158,7 @@ namespace Hardware
 		buffer[9] = state & 0x03;
 		buffer[10] = static_cast<unsigned char>(on);
 	}
+
 	void MaerklinCAN::Parse(const unsigned char* buffer)
 	{
 		//xlog("Receiver %i bytes received", datalen);

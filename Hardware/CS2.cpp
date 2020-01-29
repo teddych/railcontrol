@@ -18,16 +18,6 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include <cstdint>    //int64_t;
-#include <cstdio>     //printf
-#include <cstdlib>    //exit(0);
-#include <cstring>    //memset
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <thread>
-#include <unistd.h>   //close;
-
 #include "Hardware/CS2.h"
 #include "Utils/Utils.h"
 

@@ -20,15 +20,10 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <arpa/inet.h>
-#include <thread>
-
 #include "HardwareParams.h"
 #include "Hardware/MaerklinCAN.h"
 #include "Logger/Logger.h"
 #include "Network/UdpConnection.h"
-
-// CAN protocol specification at http://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
 
 namespace Hardware
 {

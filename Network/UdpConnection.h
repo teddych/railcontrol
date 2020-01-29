@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <arpa/inet.h>
 #include <string>
 
 #include "Logger/Logger.h"
