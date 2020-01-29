@@ -8,6 +8,7 @@ LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \
 	CS2.so \
+	CcSchnitte.so \
 	Hsi88.so \
 	M6051.so \
 	OpenDcc.so \
@@ -15,14 +16,17 @@ LIBS= \
 	Virtual.so \
 	Z21.so
 
+all: $(LIBS)
+
+CcSchnitte.so: CcSchnitte.cpp *.h ../Manager.h ../Languages.h
+	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ MaerklinCAN.cpp $<
+
 CS2.so: CS2.cpp *.h ../Manager.h ../Languages.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ MaerklinCAN.cpp $<
 
 %.so: %.cpp *.h ../Manager.h ../Languages.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 
-all: $(LIBS)
-
 clean:
-	rm -f *.o *.so
+	rm -f *.so
 

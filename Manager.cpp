@@ -282,6 +282,7 @@ void Manager::InitLocos()
 const std::map<hardwareType_t,string> Manager::HardwareListNames()
 {
 	std::map<hardwareType_t,string> hardwareList;
+	hardwareList[HardwareTypeCcSchnitte] = "CC-Schnitte";
 	hardwareList[HardwareTypeM6051] = "Märklin Interface 6050/6051";
 	hardwareList[HardwareTypeCS2] = "Märklin Central Station 2 (CS2)";
 	hardwareList[HardwareTypeOpenDcc] = "OpenDCC Z1";

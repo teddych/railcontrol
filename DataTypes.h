@@ -168,6 +168,7 @@ enum hardwareType_t : unsigned char
 	HardwareTypeOpenDcc = 5,
 	HardwareTypeHsi88 = 6,
 	HardwareTypeZ21 = 7,
+	HardwareTypeCcSchnitte = 8,
 	HardwareTypeNumbers
 };
 
