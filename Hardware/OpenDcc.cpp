@@ -18,12 +18,6 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include <cstring>    //memset
-#include <fcntl.h>
-#include <sstream>
-#include <termios.h>
-
-#include "Network/Select.h"
 #include "Hardware/OpenDcc.h"
 #include "Utils/Utils.h"
 
@@ -249,7 +243,7 @@ namespace Hardware
 		const unsigned char data[5] = { XLok, addressLSB, addressMSB, entry.speed, entry.directionF0 };
 
 		serialLine.Send(data, sizeof(data));
-		char input;
+		unsigned char input;
 		bool ret = serialLine.ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
@@ -314,7 +308,7 @@ namespace Hardware
 
 	bool OpenDcc::ReceiveFunctionCommandAnswer() const
 	{
-		char input;
+		unsigned char input;
 		bool ret = serialLine.ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
@@ -353,7 +347,7 @@ namespace Hardware
 		const unsigned char addressStatus = addressMSB | statusBits;
 		const unsigned char data[3] = { XTrnt, addressLSB, addressStatus };
 		serialLine.Send(data, sizeof(data));
-		char input;
+		unsigned char input;
 		bool ret = serialLine.ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
@@ -391,7 +385,7 @@ namespace Hardware
 	bool OpenDcc::SendOneByteCommand(const unsigned char data) const
 	{
 		serialLine.Send(data);
-		char input[1];
+		unsigned char input[1];
 		int ret = serialLine.Receive(input, sizeof(input));
 		return ret > 0 && input[0] == OK;
 	}
@@ -409,12 +403,12 @@ namespace Hardware
 		unsigned char data[2] = { XP88Get, param };
 		serialLine.Send(data, sizeof(data));
 		unsigned char input;
-		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+		size_t ret = serialLine.ReceiveExact(&input, 1);
 		if (ret == 0 || input != OK)
 		{
 			return 0xFF;
 		}
-		ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+		ret = serialLine.ReceiveExact(&input, 1);
 		if (ret == 0)
 		{
 			return 0xFF;
@@ -427,7 +421,7 @@ namespace Hardware
 		unsigned char data[3] = { XP88Set, param, value };
 		serialLine.Send(data, sizeof(data));
 		unsigned char input;
-		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+		size_t ret = serialLine.ReceiveExact(&input, 1);
 		if (ret == 0)
 		{
 			return false;
@@ -459,7 +453,7 @@ namespace Hardware
 		while (true)
 		{
 			unsigned char module;
-			size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&module), 1);
+			size_t ret = serialLine.ReceiveExact(&module, 1);
 			if (ret == 0 || module == 0)
 			{
 				return;
@@ -469,7 +463,7 @@ namespace Hardware
 			module <<= 1;
 
 			unsigned char data[2];
-			ret = serialLine.ReceiveExact(reinterpret_cast<char*>(data), sizeof(data));
+			ret = serialLine.ReceiveExact(data, sizeof(data));
 			if (ret == 0)
 			{
 				return;
@@ -494,7 +488,7 @@ namespace Hardware
 		unsigned char data[1] = { XEvent };
 		serialLine.Send(data, sizeof(data));
 		unsigned char input;
-		size_t ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+		size_t ret = serialLine.ReceiveExact(&input, 1);
 		if (ret == 0)
 		{
 			return;
@@ -511,7 +505,7 @@ namespace Hardware
 			{
 				break;
 			}
-			ret = serialLine.ReceiveExact(reinterpret_cast<char*>(&input), 1);
+			ret = serialLine.ReceiveExact(&input, 1);
 			if (ret == 0)
 			{
 				break;

@@ -29,14 +29,13 @@ namespace Network
 	void Serial::Init()
 	{
 		fileHandle = open(tty.c_str(), O_RDWR | O_NOCTTY);
-		if (fileHandle == -1)
+		if (!IsConnected())
 		{
 			logger->Error(Languages::TextUnableToOpenSerial, tty);
 			return;
 		}
 
 		struct termios options;
-		tcgetattr(fileHandle, &options);
 		options.c_cflag = 0;
 		options.c_cc[VMIN] = 1;     // read one byte at least
 		options.c_cc[VTIME] = 0;    // timeout disabled
@@ -88,7 +87,7 @@ namespace Network
 		}
 
 		// CSIZE not set: no datasize
-		options.c_cflag |= CRTSCTS;  // hardware flow control
+		//options.c_cflag |= CRTSCTS;  // hardware flow control
 		options.c_cflag |= CLOCAL;  // ignore control lines
 		options.c_cflag |= CREAD;   // enable receiver
 		tcsetattr(fileHandle, TCSANOW, &options); // store options
@@ -96,25 +95,34 @@ namespace Network
 		ClearBuffers();
 	}
 
+	void Serial::Close()
+	 {
+		if (!IsConnected())
+		{
+			return;
+		}
+		close(fileHandle);
+		fileHandle = -1;
+	 }
+
 	bool Serial::Receive(std::string& data, const size_t maxData, const unsigned int timeoutS, const unsigned int timeoutUS)
 	{
-		char dataBuffer[maxData];
-		int ret = Receive(dataBuffer, maxData, timeoutS, timeoutUS);
-		if (ret < 0)
+		unsigned char dataBuffer[maxData];
+		ssize_t ret = Receive(dataBuffer, maxData, timeoutS, timeoutUS);
+		if (ret <= 0)
 		{
 			return false;
 		}
-		data.append(dataBuffer, ret);
+		data.append(reinterpret_cast<char*>(dataBuffer), ret);
 		return true;
 	}
 
-	size_t Serial::Receive(char* data, const size_t maxData, const unsigned int timeoutS, const unsigned int timeoutUS)
+	ssize_t Serial::Receive(unsigned char* data, const size_t maxData, const unsigned int timeoutS, const unsigned int timeoutUS)
 	{
 		if (!IsConnected())
 		{
 			return -1;
 		}
-		std::lock_guard<std::mutex> Guard(fileHandleMutex);
 		fd_set set;
 		FD_ZERO(&set);
 		FD_SET(fileHandle, &set);
@@ -122,7 +130,7 @@ namespace Network
 		tvTimeout.tv_sec = timeoutS;
 		tvTimeout.tv_usec = timeoutUS;
 
-		size_t ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tvTimeout));
+		ssize_t ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tvTimeout));
 		if (ret <= 0)
 		{
 			return -1;
@@ -132,6 +140,7 @@ namespace Network
 		{
 			return -1;
 		}
+		logger->Hex(data, ret);
 		return ret;
 	}
 
@@ -150,13 +159,13 @@ namespace Network
 		return true;
 	}
 
-	size_t Serial::ReceiveExact(char* data, const size_t length, const unsigned int timeoutS, const unsigned int timeoutUS)
+	ssize_t Serial::ReceiveExact(unsigned char* data, const size_t length, const unsigned int timeoutS, const unsigned int timeoutUS)
 	{
 		size_t actualSize = 0;
 		size_t endSize = length;
 		while (actualSize < endSize)
 		{
-			size_t ret = Receive(data + actualSize, endSize - actualSize, timeoutS, timeoutUS);
+			ssize_t ret = Receive(data + actualSize, endSize - actualSize, timeoutS, timeoutUS);
 			if (ret <= 0)
 			{
 				return actualSize;

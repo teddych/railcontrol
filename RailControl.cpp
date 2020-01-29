@@ -21,7 +21,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <cstdio>		//printf
 #include <cstdlib>		//exit(0);
 #include <cstring>		//memset
-#include <dlfcn.h>		// dlclose
 #include <iostream>
 #include <signal.h>
 #include <sstream>

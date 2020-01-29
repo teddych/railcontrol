@@ -59,32 +59,32 @@ namespace Network
 
 			void ClearBuffers() { tcflush(fileHandle, TCIOFLUSH); }
 
-			unsigned int Send(const std::string& data)
+			ssize_t Send(const std::string& data)
 			{
 				std::lock_guard<std::mutex> Guard(fileHandleMutex);
 				return write(fileHandle, data.c_str(), data.length());
 			}
 
-			unsigned int Send(const unsigned char data)
+			ssize_t Send(const unsigned char data)
 			{
 				std::lock_guard<std::mutex> Guard(fileHandleMutex);
 				return write(fileHandle, &data, 1);
 			}
 
-			unsigned int Send(const unsigned char* data, const size_t size)
+			ssize_t Send(const unsigned char* data, const size_t size)
 			{
 				std::lock_guard<std::mutex> Guard(fileHandleMutex);
 				return write(fileHandle, data, size);
 			}
 
 			bool Receive(std::string& data, const size_t maxData = 1024, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
-			size_t Receive(char* data, const size_t maxData = 1024, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
+			ssize_t Receive(unsigned char* data, const size_t maxData, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
 			bool ReceiveExact(std::string& data, const size_t length, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
-			size_t ReceiveExact(char* data, const size_t length, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
+			ssize_t ReceiveExact(unsigned char* data, const size_t length, const unsigned int timeoutS = 0, const unsigned int timeoutUS = 100000);
 
 		private:
 			void Init();
-			void Close() { if (fileHandle == -1) return; close(fileHandle); fileHandle = -1; }
+			void Close();
 
 			Logger::Logger* logger;
 			const std::string tty;
