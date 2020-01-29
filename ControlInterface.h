@@ -75,7 +75,7 @@ class ControlInterface
 		virtual void SignalSettings(__attribute__((unused)) const signalID_t signalID, __attribute__((unused)) const std::string& name) {};
 		virtual void SignalState(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const signalID_t signalID, __attribute__((unused)) const signalState_t state, __attribute__((unused)) const bool on) {};
 
-		virtual void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool>& functions)
+		virtual void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions)
 		{
 			LocoSpeed(ControlTypeInternal, loco, speed);
 			LocoDirection(ControlTypeInternal, loco, direction);

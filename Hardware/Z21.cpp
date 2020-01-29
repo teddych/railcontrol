@@ -83,12 +83,12 @@ namespace Hardware
 		senderConnection.Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::LocoSpeed(__attribute__ ((unused)) const protocol_t& protocol, __attribute__ ((unused)) const address_t& address, __attribute__ ((unused)) const locoSpeed_t& speed)
+	void Z21::LocoSpeed(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const locoSpeed_t speed)
 	{
 		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 	}
 
-	void Z21::LocoDirection(__attribute__ ((unused)) const protocol_t& protocol, __attribute__ ((unused)) const address_t& address, __attribute__ ((unused)) const direction_t& direction)
+	void Z21::LocoDirection(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const direction_t direction)
 	{
 		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 	}

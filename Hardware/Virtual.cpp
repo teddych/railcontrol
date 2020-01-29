@@ -56,13 +56,13 @@ namespace Hardware
 	}
 
 	// set loco speed
-	void Virtual::LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
+	void Virtual::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
 		logger->Info(Languages::TextSettingSpeedWithProtocol, protocol, address, speed);
 	}
 
 	// set the direction of a loco
-	void Virtual::LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction)
+	void Virtual::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
 	{
 		logger->Info(Languages::TextSettingDirectionWithProtocol, protocol, address, Languages::GetLeftRight(direction));
 	}

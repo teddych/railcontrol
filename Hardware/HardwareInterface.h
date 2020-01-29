@@ -71,16 +71,16 @@ namespace Hardware
 			virtual void Booster(__attribute__((unused)) const boosterState_t status) {};
 
 			// set loco speed
-			virtual void LocoSpeed(__attribute__((unused)) const protocol_t& protocol, __attribute__((unused)) const address_t& address, __attribute__((unused)) const locoSpeed_t& speed) {};
+			virtual void LocoSpeed(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const locoSpeed_t speed) {};
 
 			// set loco direction
-			virtual void LocoDirection(__attribute__((unused)) const protocol_t& protocol, __attribute__((unused)) const address_t& address, __attribute__((unused)) const direction_t& direction) {};
+			virtual void LocoDirection(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const direction_t direction) {};
 
 			// set loco function
 			virtual void LocoFunction(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const function_t function, __attribute__((unused)) const bool on) {};
 
 			// set loco
-			virtual void LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool> functions)
+			virtual void LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions)
 			{
 				LocoSpeed(protocol, address, speed);
 				LocoDirection(protocol, address, direction);
@@ -94,6 +94,7 @@ namespace Hardware
 			virtual void Accessory(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const accessoryState_t state, __attribute__((unused)) const bool on) {};
 
 		protected:
+
 			Manager* manager;
 			const controlID_t controlID;
 			const std::string name;

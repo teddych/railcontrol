@@ -155,7 +155,7 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::LocoSpeed(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
+	void OpenDcc::LocoSpeed(__attribute__((unused)) const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
 		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
 		{
@@ -167,7 +167,7 @@ namespace Hardware
 	}
 
 
-	void OpenDcc::LocoDirection(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const direction_t& direction)
+	void OpenDcc::LocoDirection(__attribute__((unused)) const protocol_t protocol, const address_t address, const direction_t direction)
 	{
 		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
 		{
@@ -211,7 +211,7 @@ namespace Hardware
 		SendXFunc34(address);
 	}
 
-	void OpenDcc::LocoSpeedDirectionFunctions(__attribute__((unused)) const protocol_t protocol, const address_t address, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool> functions)
+	void OpenDcc::LocoSpeedDirectionFunctions(__attribute__((unused)) const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions)
 	{
 		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
 		{

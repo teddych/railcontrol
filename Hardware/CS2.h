@@ -21,12 +21,10 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include <arpa/inet.h>
-#include <cstring>
-#include <string>
 #include <thread>
 
-#include "HardwareInterface.h"
 #include "HardwareParams.h"
+#include "Hardware/MaerklinCAN.h"
 #include "Logger/Logger.h"
 #include "Network/UdpConnection.h"
 
@@ -34,7 +32,7 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	class CS2 : HardwareInterface
+	class CS2 : protected MaerklinCAN
 	{
 		public:
 			CS2(const HardwareParams* params);
@@ -73,32 +71,18 @@ namespace Hardware
 			}
 
 			void Booster(const boosterState_t status) override;
-			void LocoSpeed(const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed) override;
-			void LocoDirection(const protocol_t& protocol, const address_t& address, const direction_t& direction) override;
+			void LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed) override;
+			void LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction) override;
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
 		private:
-			Logger::Logger* logger;
 			volatile bool run;
 			Network::UdpConnection senderConnection;
 			Network::UdpConnection receiverConnection;
 			std::thread receiverThread;
-			static const unsigned short hash = 0x7337;
-
-			typedef unsigned char cs2Prio_t;
-			typedef unsigned char cs2Command_t;
-			typedef unsigned char cs2Response_t;
-			typedef unsigned char cs2Length_t;
-			typedef uint32_t cs2Address_t;
-
-			void CreateCommandHeader(unsigned char* buffer, const cs2Prio_t prio, const cs2Command_t command, const cs2Response_t response, const cs2Length_t length);
-			void ReadCommandHeader(unsigned char* buffer, cs2Prio_t& prio, cs2Command_t& command, cs2Response_t& response, cs2Length_t& length, cs2Address_t& address, protocol_t& protocol);
-			void CreateLocID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
-			void CreateAccessoryID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
 			void Receiver();
 
-			static const unsigned char CS2CommandBufferLength = 13;
 			static const unsigned short CS2SenderPort = 15731;
 			static const unsigned short CS2ReceiverPort = 15730;
 	};

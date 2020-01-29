@@ -15,6 +15,9 @@ LIBS= \
 	Virtual.so \
 	Z21.so
 
+CS2.so: CS2.cpp *.h ../Manager.h ../Languages.h
+	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ MaerklinCAN.cpp $<
+
 %.so: %.cpp *.h ../Manager.h ../Languages.h
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
 

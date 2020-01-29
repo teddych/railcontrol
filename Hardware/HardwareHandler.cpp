@@ -311,7 +311,7 @@ namespace Hardware
 		instance->LocoFunction(loco->GetProtocol(), loco->GetAddress(), function, on);
 	}
 
-	void HardwareHandler::LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const locoSpeed_t& speed, const direction_t& direction, std::vector<bool>& functions)
+	void HardwareHandler::LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions)
 	{
 		if (instance == nullptr || loco->GetControlID() != ControlID())
 		{

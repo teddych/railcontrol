@@ -92,7 +92,7 @@ namespace Hardware
 		serialLine.Send(c);
 	}
 
-	void M6051::LocoSpeed(__attribute__((unused)) const protocol_t& protocol, const address_t& address, const locoSpeed_t& speed)
+	void M6051::LocoSpeed(__attribute__((unused)) const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
 		if (!serialLine.IsConnected())
 		{
@@ -105,7 +105,7 @@ namespace Hardware
 		SendTwoBytes(speedMM, addressMM);
 	}
 
-	void M6051::LocoDirection(__attribute__((unused)) const protocol_t& protocol, const address_t& address, __attribute__((unused)) const direction_t& direction)
+	void M6051::LocoDirection(__attribute__((unused)) const protocol_t protocol, const address_t address, __attribute__((unused)) const direction_t direction)
 	{
 		if (!serialLine.IsConnected())
 		{
