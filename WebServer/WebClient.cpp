@@ -1473,12 +1473,7 @@ namespace WebServer
 		}
 		accessoryID_t accessoryId = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		Accessory* accessory = manager.GetAccessory(accessoryId);
-		if (accessory == nullptr)
-		{
-			ReplyHtmlWithHeaderAndParagraph(Languages::TextAccessoryDoesNotExist);
-			return;
-		}
-		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, accessory->GetProtocol()));
+		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, accessory == nullptr ? ProtocolNone : accessory->GetProtocol()));
 	}
 
 	void WebClient::HandleRelationAdd(const map<string, string>& arguments)
@@ -1523,12 +1518,7 @@ namespace WebServer
 		}
 		switchID_t switchId = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		Switch* mySwitch = manager.GetSwitch(switchId);
-		if (mySwitch == nullptr)
-		{
-			ReplyHtmlWithHeaderAndParagraph(Languages::TextSwitchDoesNotExist);
-			return;
-		}
-		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch->GetProtocol()));
+		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch == nullptr ? ProtocolNone : mySwitch->GetProtocol()));
 	}
 
 	void WebClient::HandleRelationObject(const map<string, string>& arguments)
