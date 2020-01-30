@@ -98,6 +98,7 @@ namespace WebServer
 			HtmlTag HtmlTagLocoSelector() const;
 			HtmlTag HtmlTagLayerSelector() const;
 			static HtmlTag HtmlTagControlArgument(const unsigned char argNr, const argumentType_t type, const std::string& value);
+			HtmlTag HtmlTagProtocol(const std::map<std::string,protocol_t>& protocolMap, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol);
 			HtmlTag HtmlTagDuration(const accessoryDuration_t duration, const Languages::textSelector_t label) const;

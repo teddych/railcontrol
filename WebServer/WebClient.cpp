@@ -1120,13 +1120,26 @@ namespace WebServer
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Loco released" : "Loco not released");
 	}
 
-	HtmlTag WebClient::HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol)
+	HtmlTag WebClient::HtmlTagProtocol(const map<string,protocol_t>& protocolMap, const protocol_t selectedProtocol)
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
-		map<string,protocol_t> protocolMap = manager.LocoProtocolsOfControl(controlID);
-		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
+		if (protocolMap.size() > 1)
+		{
+			content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
+			content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
+		}
+		else
+		{
+			auto entry = protocolMap.begin();
+			content.AddChildTag(HtmlTagInputHidden("protocol", std::to_string(entry->second)));
+		}
 		return content;
+	}
+
+	HtmlTag WebClient::HtmlTagProtocolLoco(const controlID_t controlID, const protocol_t selectedProtocol)
+	{
+		map<string,protocol_t> protocolMap = manager.LocoProtocolsOfControl(controlID);
+		return HtmlTagProtocol(protocolMap, selectedProtocol);
 	}
 
 	void WebClient::HandleProtocolLoco(const map<string, string>& arguments)
@@ -1144,11 +1157,8 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagProtocolAccessory(const controlID_t controlID, const protocol_t selectedProtocol)
 	{
-		HtmlTag content;
-		content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
 		map<string,protocol_t> protocolMap = manager.AccessoryProtocolsOfControl(controlID);
-		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
-		return content;
+		return HtmlTagProtocol(protocolMap, selectedProtocol);
 	}
 
 	HtmlTag WebClient::HtmlTagDuration(const accessoryDuration_t duration, const Languages::textSelector_t label) const
