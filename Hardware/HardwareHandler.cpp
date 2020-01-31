@@ -183,7 +183,7 @@ namespace Hardware
 			instance = nullptr;
 		}
 
-#ifndef AMALGAMAGTION
+#ifndef AMALGAMATION
 		hardwareType_t type = params->hardwareType;
 		// close library
 		if (manager.ControlsOfHardwareType(type) > 1)

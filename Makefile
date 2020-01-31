@@ -5,14 +5,14 @@ CCRASPI=aarch64-linux-gcc
 CPPRASPI=aarch64-linux-g++
 
 CPPFLAGS=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
-# -O2 does not work
 CPPFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
 CPPFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 LIBSAMALGAMATION=-lpthread -ldl
 
-TMPDIR=/RailControl
+TMPDIR=RailControl
+TMPDIRCYGWIN=/RailControl
 
 OBJ= \
 	Config.o \
@@ -81,10 +81,22 @@ dist: all
 	strip Hardware/*.so
 	strip Storage/*.so
 	tar cvJf railcontrol.tar.xz Hardware/*.so Storage/*.so railcontrol railcontrol.conf.dist html/*
+	mkdir $(TMPDIR)
+	mkdir $(TMPDIR)/Hardware
+	mkdir $(TMPDIR)/Storage
+	cp -r \
+		html \
+		railcontrol.conf.dist \
+		railcontrol \
+		$(TMPDIR)
+	cp -r Hardware/*.so $(TMPDIR)/Hardware
+	cp -r Storage/*.so $(TMPDIR)/Storage
+	tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz $(TMPDIR)/* $(TMPDIR)/html/*
+	rm -r $(TMPDIR)
 
 dist-cygwin: amalgamation
 	strip railcontrol.exe
-	mkdir $(TMPDIR)
+	mkdir $(TMPDIRCYGWIN)
 	cp -r \
 		/cygdrive/c/Windows/SYSTEM32/ntdll.dll \
 		/cygdrive/c/Windows/system32/KERNELBASE.dll \
@@ -95,9 +107,9 @@ dist-cygwin: amalgamation
 		html \
 		railcontrol.conf.dist \
 		railcontrol.exe \
-		$(TMPDIR)
-	zip -9 railcontrol.windows.`date +"%Y%m%d"`.zip $(TMPDIR)/* $(TMPDIR)/html/*
-	rm -r $(TMPDIR)
+		$(TMPDIRCYGWIN)
+	zip -9 railcontrol.windows.`date +"%Y%m%d"`.zip $(TMPDIRCYGWIN)/* $(TMPDIRCYGWIN)/html/*
+	rm -r $(TMPDIRCYGWIN)
 
 amalgamation: Timestamp.cpp
 	./amalgamation.bash
