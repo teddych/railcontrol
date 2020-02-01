@@ -262,6 +262,10 @@ class Manager
 			const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve,
 			const Logger::Logger::logLevel_t logLevel);
 
+		controlID_t GetControlForLoco() const;
+		controlID_t GetControlForAccessory() const;
+		controlID_t GetControlForFeedback() const;
+
 	private:
 		const ControlInterface* GetControl(const controlID_t controlID) const;
 		DataModel::Loco* GetLoco(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
@@ -371,9 +375,6 @@ class Manager
 
 		Hardware::HardwareParams* CreateAndAddControl();
 
-		Logger::Logger* logger;
-		volatile boosterState_t boosterState;
-
 		template<class ID, class T>
 		bool CheckObjectName(std::map<ID,T*>& objects, const std::string& name)
 		{
@@ -432,6 +433,9 @@ class Manager
 		}
 
 		void InitLocos();
+
+		Logger::Logger* logger;
+		volatile boosterState_t boosterState;
 
 		// FIXME: check usage of all mutexes
 

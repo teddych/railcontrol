@@ -47,7 +47,7 @@ namespace Hardware
 			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
 			void Booster(const controlType_t controlType, boosterState_t status) override;
 			bool CanHandleAccessories() const override;
-			bool CanHandleFeedback() const override;
+			bool CanHandleFeedbacks() const override;
 			bool CanHandleLocos() const override;
 			void LocoDirection(const controlType_t controlType, const DataModel::Loco* loco, const direction_t direction) override;
 			void LocoFunction(const controlType_t controlType, const DataModel::Loco* loco, const function_t function, const bool on) override;

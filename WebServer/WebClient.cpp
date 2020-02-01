@@ -1544,7 +1544,7 @@ namespace WebServer
 	{
 		HtmlTag content;
 		locoID_t locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		controlID_t controlID = ControlIdNone;
+		controlID_t controlID = manager.GetControlForLoco();
 		protocol_t protocol = ProtocolNone;
 		address_t address = 1;
 		string name = Languages::GetText(Languages::TextNew);
@@ -1577,17 +1577,6 @@ namespace WebServer
 			}
 		}
 
-		std::map<controlID_t,string> controls = manager.LocoControlListNames();
-		std::map<string, string> controlOptions;
-		for(auto control : controls)
-		{
-			controlOptions[to_string(control.first)] = control.second;
-			if (controlID == ControlIdNone)
-			{
-				controlID = control.first;
-			}
-		}
-
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
@@ -1603,7 +1592,7 @@ namespace WebServer
 		basicContent.AddAttribute("id", "tab_basic");
 		basicContent.AddClass("tab_content");
 		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		basicContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('loco', " + to_string(locoID) + ")"));
+		basicContent.AddChildTag(HtmlTagControlLoco(controlID, "loco", locoID));
 		basicContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", Languages::TextNrOfFunctions, nrOfFunctions, 0, DataModel::LocoFunctions::MaxFunctions));
@@ -1886,11 +1875,48 @@ namespace WebServer
 		ReplyHtmlWithHeader(content);
 	}
 
+	HtmlTag WebClient::HtmlTagControl(const std::map<controlID_t,string>& controls, const controlID_t controlID, const string& objectType, const objectID_t objectID)
+	{
+		if (controls.size() == 1)
+		{
+			return HtmlTagInputHidden("control", to_string(controlID));
+		}
+		controlID_t controlIDMutable = controlID;
+		std::map<string, string> controlOptions;
+		for(auto control : controls)
+		{
+			controlOptions[to_string(control.first)] = control.second;
+			if (controlIDMutable == ControlIdNone)
+			{
+				controlIDMutable = control.first;
+			}
+		}
+		return HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlIDMutable)).AddAttribute("onchange", "loadProtocol('" + objectType + "', " + to_string(objectID) + ")");
+	}
+
+	HtmlTag WebClient::HtmlTagControlLoco(const controlID_t controlID, const string& objectType, const objectID_t objectID)
+	{
+		std::map<controlID_t,string> controls = manager.LocoControlListNames();
+		return HtmlTagControl(controls, controlID, objectType, objectID);
+	}
+
+	HtmlTag WebClient::HtmlTagControlAccessory(const controlID_t controlID, const string& objectType, const objectID_t objectID)
+	{
+		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
+		return HtmlTagControl(controls, controlID, objectType, objectID);
+	}
+
+	HtmlTag WebClient::HtmlTagControlFeedback(const controlID_t controlID, const string& objectType, const objectID_t objectID)
+	{
+		std::map<controlID_t,string> controls = manager.FeedbackControlListNames();
+		return HtmlTagControl(controls, controlID, objectType, objectID);
+	}
+
 	void WebClient::HandleAccessoryEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
 		accessoryID_t accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		controlID_t controlID = ControlIdNone;
+		controlID_t controlID = manager.GetControlForAccessory();
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
@@ -1916,17 +1942,6 @@ namespace WebServer
 			}
 		}
 
-		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
-		std::map<string, string> controlOptions;
-		for(auto control : controls)
-		{
-			controlOptions[to_string(control.first)] = control.second;
-			if (controlID == ControlIdNone)
-			{
-				controlID = control.first;
-			}
-		}
-
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
@@ -1941,7 +1956,7 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('accessory', " + to_string(accessoryID) + ")"));
+		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "accessory", accessoryID));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(HtmlTagDuration(duration));
@@ -2094,7 +2109,7 @@ namespace WebServer
 	{
 		HtmlTag content;
 		switchID_t switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		controlID_t controlID = ControlIdNone;
+		controlID_t controlID = manager.GetControlForAccessory();
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
@@ -2124,17 +2139,6 @@ namespace WebServer
 			}
 		}
 
-		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
-		std::map<string, string> controlOptions;
-		for(auto control : controls)
-		{
-			controlOptions[to_string(control.first)] = control.second;
-			if (controlID == ControlIdNone)
-			{
-				controlID = control.first;
-			}
-		}
-
 		std::map<switchType_t,Languages::textSelector_t> typeOptions;
 		typeOptions[DataModel::Switch::SwitchTypeLeft] = Languages::TextLeft;
 		typeOptions[DataModel::Switch::SwitchTypeRight] = Languages::TextRight;
@@ -2154,7 +2158,7 @@ namespace WebServer
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('switch', " + to_string(switchID) + ")"));
+		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "switch", switchID));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(HtmlTagDuration(duration));
@@ -2310,7 +2314,7 @@ namespace WebServer
 	{
 		HtmlTag content;
 		signalID_t signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		controlID_t controlID = ControlIdNone;
+		controlID_t controlID = manager.GetControlForAccessory();
 		protocol_t protocol = ProtocolNone;
 		address_t address = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
@@ -2340,17 +2344,6 @@ namespace WebServer
 			}
 		}
 
-		std::map<controlID_t,string> controls = manager.AccessoryControlListNames();
-		std::map<string, string> controlOptions;
-		for(auto control : controls)
-		{
-			controlOptions[to_string(control.first)] = control.second;
-			if (controlID == ControlIdNone)
-			{
-				controlID = control.first;
-			}
-		}
-
 		std::map<signalType_t, Languages::textSelector_t> typeOptions;
 		typeOptions[DataModel::Signal::SignalTypeSimple] = Languages::TextSimple;
 
@@ -2369,7 +2362,7 @@ namespace WebServer
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlID)).AddAttribute("onchange", "loadProtocol('signal', " + to_string(signalID) + ")"));
+		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "signal", signalID));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(HtmlTagDuration(duration));
@@ -3231,7 +3224,7 @@ namespace WebServer
 		HtmlTag content;
 		feedbackID_t feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		string name = Languages::GetText(Languages::TextNew);
-		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "controlid", ControlNone);
+		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "controlid", manager.GetControlForFeedback());
 		feedbackPin_t pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin", 0);
 		layoutPosition_t posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
@@ -3265,17 +3258,6 @@ namespace WebServer
 			}
 		}
 
-		std::map<controlID_t,string> controls = manager.FeedbackControlListNames();
-		std::map<string, string> controlOptions;
-		for(auto control : controls)
-		{
-			controlOptions[to_string(control.first)] = control.second;
-			if (controlId == ControlIdNone)
-			{
-				controlId = control.first;
-			}
-		}
-
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 
 		HtmlTag tabMenu("div");
@@ -3292,7 +3274,7 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlId)).AddAttribute("onchange", "loadProtocol('feedback', " + to_string(feedbackID) + ")"));
+		mainContent.AddChildTag(HtmlTagControlFeedback(controlId, "feedback", feedbackID));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", Languages::TextPin, pin, 1, 4096));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);

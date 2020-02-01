@@ -233,7 +233,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextPosition */ { "Position", "Position", "Posición" },
 /* TextPositionAlreadyInUse */ { "Position {0}/{1}/{2} is already used by {3} \"{4}\".", "Position {0}/{1}/{2} wird bereits verwendet von {3} \"{4}\".", "Positión {0}/{1}/{2} está usado de {3} \"{4}\"." },
 /* TextProtocol */ { "Protocol", "Protocol", "Protocolo" },
-/* TextProtocolNotSupported */ { "Protocol {0}is not supported by control. Please use one of: {1}", "Protokoll {0} wird nicht unterstützt von der Zentrale. Verwende eines aus {1}", "Protocolo {0}no compatible con esa control. Utilisa uno de {1}" },
+/* TextProtocolNotSupported */ { "Protocol {0} is not supported by control. Please use one of: {1}", "Protokoll {0} wird nicht unterstützt von der Zentrale. Verwende eines aus {1}", "Protocolo {0} no está compatible con ese control. Utilisa uno de {1}" },
 /* TextPushPullOnly */ { "push-pull trains only", "nur Wendezüge", "solamente push-pull trenes" },
 /* TextPushPullTrain */ { "Push-Pull train", "Wendezug", "Tren push-pull" },
 /* TextQuery */ { "Query: {0} Rows affected {1}", "Abfrage: {0} Geänderte Datensätze: {1}", "Consulta: {0} Líneas afectados: {1}" },

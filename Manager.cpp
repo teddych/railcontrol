@@ -496,7 +496,7 @@ const std::map<controlID_t,std::string> Manager::FeedbackControlListNames() cons
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleFeedback() == false)
+		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleFeedbacks() == false)
 		{
 			continue;
 		}
@@ -1991,7 +1991,7 @@ const map<string,layerID_t> Manager::LayerListByNameWithFeedback() const
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (!control.second->CanHandleFeedback())
+		if (!control.second->CanHandleFeedbacks())
 		{
 			continue;
 		}
@@ -2825,10 +2825,46 @@ T* Manager::CreateAndAddObject(std::map<ID,T*>& objects, std::mutex& mutex)
 	return newObject;
 }
 
+controlID_t Manager::GetControlForLoco() const
+{
+	for (auto control : controls)
+	{
+		if (control.second->CanHandleLocos())
+		{
+			return control.first;
+		}
+	}
+	return ControlIdNone;
+}
+
+controlID_t Manager::GetControlForAccessory() const
+{
+	for (auto control : controls)
+	{
+		if (control.second->CanHandleAccessories())
+		{
+			return control.first;
+		}
+	}
+	return ControlIdNone;
+}
+
+controlID_t Manager::GetControlForFeedback() const
+{
+	for (auto control : controls)
+	{
+		if (control.second->CanHandleFeedbacks())
+		{
+			return control.first;
+		}
+	}
+	return ControlIdNone;
+}
+
 Hardware::HardwareParams* Manager::CreateAndAddControl()
 {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);
-	controlID_t newObjectID = ControlIdFirstHardware;
+	controlID_t newObjectID = ControlIdFirstHardware - 1;
 	for (auto hardwareParam : hardwareParams)
 	{
 		if (hardwareParam.first > newObjectID)

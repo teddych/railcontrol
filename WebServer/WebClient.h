@@ -118,6 +118,10 @@ namespace WebServer
 			static HtmlTag HtmlTagLogLevel();
 			static HtmlTag HtmlTagFeedbackOnControlLayer(const DataModel::Feedback* feedback);
 			static HtmlTag HtmlTagControlArguments(const hardwareType_t hardwareType, const std::string& arg1 = "", const std::string& arg2 = "", const std::string& arg3 = "", const std::string& arg4 = "", const std::string& arg5 = "");
+			static HtmlTag HtmlTagControl(const std::map<controlID_t,std::string>& controls, const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
+			HtmlTag HtmlTagControlLoco(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
+			HtmlTag HtmlTagControlAccessory(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
+			HtmlTag HtmlTagControlFeedback(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void HandleLayerSave(const std::map<std::string, std::string>& arguments);

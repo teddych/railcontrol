@@ -232,7 +232,7 @@ namespace Hardware
 		return instance->CanHandleAccessories();
 	}
 
-	bool HardwareHandler::CanHandleFeedback() const
+	bool HardwareHandler::CanHandleFeedbacks() const
 	{
 		if (instance == nullptr)
 		{
