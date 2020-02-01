@@ -47,10 +47,10 @@ namespace Hardware
 	}
 
 	Z21::Z21(const HardwareParams* params)
-	:	HardwareInterface(params->manager, params->controlID, "Z21 / " + params->name + " at IP " + params->arg1),
-	 	logger(Logger::Logger::GetLogger("Z21 " + params->name + " " + params->arg1)),
+	:	HardwareInterface(params->GetManager(), params->GetControlID(), "Z21 / " + params->GetName() + " at IP " + params->GetArg1()),
+	 	logger(Logger::Logger::GetLogger("Z21 " + params->GetName() + " " + params->GetArg1())),
 	 	run(true),
-	 	senderConnection(logger, params->arg1, Z21Port),
+	 	senderConnection(logger, params->GetArg1(), Z21Port),
 	 	receiverConnection(logger, "0.0.0.0", Z21Port)
 	{
 		logger->Info(Languages::TextStarting, name);

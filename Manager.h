@@ -367,26 +367,9 @@ class Manager
 		void DebounceWorker();
 
 		template<class ID, class T>
-		T* CreateAndAddObject(std::map<ID,T*>& objects, std::mutex& mutex)
-		{
-			std::lock_guard<std::mutex> Guard(mutex);
-			ID newObjectID = 0;
-			for (auto object : objects)
-			{
-				if (object.first > newObjectID)
-				{
-					newObjectID = object.first;
-				}
-			}
-			++newObjectID;
-			T* newObject = new T(this, newObjectID);
-			if (newObject == nullptr)
-			{
-				return nullptr;
-			}
-			objects[newObjectID] = newObject;
-			return newObject;
-		}
+		T* CreateAndAddObject(std::map<ID,T*>& objects, std::mutex& mutex);
+
+		Hardware::HardwareParams* CreateAndAddControl();
 
 		Logger::Logger* logger;
 		volatile boosterState_t boosterState;

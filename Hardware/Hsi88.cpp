@@ -44,9 +44,9 @@ namespace Hardware
 	}
 
 	Hsi88::Hsi88(const HardwareParams* params)
-	:	HardwareInterface(params->manager, params->controlID, "HSI-88 / " + params->name + " at serial port " + params->arg1),
-	 	logger(Logger::Logger::GetLogger("HSI-88 " + params->name + " " + params->arg1)),
-	 	serialLine(logger, params->arg1, B9600, 8, 'N', 1),
+	:	HardwareInterface(params->GetManager(), params->GetControlID(), "HSI-88 / " + params->GetName() + " at serial port " + params->GetArg1()),
+	 	logger(Logger::Logger::GetLogger("HSI-88 " + params->GetName() + " " + params->GetArg1())),
+	 	serialLine(logger, params->GetArg1(), B9600, 8, 'N', 1),
 		run(false)
 	{
 		logger->Info(Languages::TextStarting, name);
@@ -54,9 +54,9 @@ namespace Hardware
 		memset(s88Init, 0xFF, sizeof(s88Memory));
 		memset(s88Memory, 0x00, sizeof(s88Memory));
 
-		s88Modules1 = Utils::Utils::StringToInteger(params->arg2, 0);
-		s88Modules2 = Utils::Utils::StringToInteger(params->arg3, 0);
-		s88Modules3 = Utils::Utils::StringToInteger(params->arg4, 0);
+		s88Modules1 = Utils::Utils::StringToInteger(params->GetArg2(), 0);
+		s88Modules2 = Utils::Utils::StringToInteger(params->GetArg3(), 0);
+		s88Modules3 = Utils::Utils::StringToInteger(params->GetArg4(), 0);
 		s88Modules = s88Modules1 + s88Modules2 + s88Modules3;
 
 		if (s88Modules > MaxS88Modules)

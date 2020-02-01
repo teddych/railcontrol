@@ -49,27 +49,31 @@ namespace Hardware
 			{
 			}
 
-			HardwareParams(Manager* manager,
-				controlID_t controlID,
-				hardwareType_t hardwareType,
-				std::string name,
-				std::string arg1,
-				std::string arg2,
-				std::string arg3,
-				std::string arg4,
-				std::string arg5)
+			HardwareParams(Manager* manager, controlID_t controlID)
 			:	manager(manager),
-				controlID(controlID),
-				hardwareType(hardwareType),
-				name(name),
-				arg1(arg1),
-				arg2(arg2),
-				arg3(arg3),
-				arg4(arg4),
-				arg5(arg5)
+				controlID(controlID)
 			{
 			}
 
+			void SetManager(const Manager* manager) { this->manager = const_cast<Manager*>(manager); }
+			Manager* GetManager() const { return manager; }
+			controlID_t GetControlID() const { return controlID; }
+			void SetName(const std::string& name) { this->name = name; }
+			const std::string& GetName() const { return name; }
+			void SetHardwareType(const hardwareType_t hardwareType) { this->hardwareType = hardwareType; }
+			hardwareType_t GetHardwareType() const { return hardwareType; }
+			void SetArg1(const std::string& arg) { this->arg1 = arg; }
+			std::string GetArg1() const { return arg1; }
+			void SetArg2(const std::string& arg) { this->arg2 = arg; }
+			std::string GetArg2() const { return arg2; }
+			void SetArg3(const std::string& arg) { this->arg3 = arg; }
+			std::string GetArg3() const { return arg3; }
+			void SetArg4(const std::string& arg) { this->arg4 = arg; }
+			std::string GetArg4() const { return arg4; }
+			void SetArg5(const std::string& arg) { this->arg5 = arg; }
+			std::string GetArg5() const { return arg5; }
+
+		private:
 			Manager* manager;
 			controlID_t controlID;
 			hardwareType_t hardwareType;

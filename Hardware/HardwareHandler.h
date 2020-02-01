@@ -39,7 +39,7 @@ namespace Hardware
 		public:
 			HardwareHandler(Manager& manager, const HardwareParams* params);
 			~HardwareHandler();
-			controlID_t ControlID() const { return params->controlID; }
+			controlID_t ControlID() const { return params->GetControlID(); }
 			const std::string GetName() const override;
 
 			void AccessoryProtocols(std::vector<protocol_t>& protocols) const override;

@@ -45,9 +45,9 @@ namespace Hardware
 	}
 
 	RM485::RM485(const HardwareParams* params)
-	:	HardwareInterface(params->manager, params->controlID, "RM485 / " + params->name + " at serial port " + params->arg1),
-		logger(Logger::Logger::GetLogger("RM485 " + params->name + " " + params->arg1)),
-		communication(params->arg1),
+	:	HardwareInterface(params->GetManager(), params->GetControlID(), "RM485 / " + params->GetName() + " at serial port " + params->GetArg1()),
+		logger(Logger::Logger::GetLogger("RM485 " + params->GetName() + " " + params->GetArg1())),
+		communication(params->GetArg1()),
 		run(true),
 		rescanAddress(0),
 		rescanCount(RescanCountStart)
@@ -56,10 +56,10 @@ namespace Hardware
 
 		memset(data, 0, sizeof(data));
 
-		ttyFileDescriptor = open(params->arg1.c_str(), O_RDWR | O_NOCTTY);
+		ttyFileDescriptor = open(params->GetArg1().c_str(), O_RDWR | O_NOCTTY);
 		if (ttyFileDescriptor == -1)
 		{
-			logger->Error(Languages::TextUnableToOpenSerial, params->arg1);
+			logger->Error(Languages::TextUnableToOpenSerial, params->GetArg1());
 			return;
 		}
 

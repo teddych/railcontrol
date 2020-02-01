@@ -44,14 +44,14 @@ namespace Hardware
 	}
 
 	M6051::M6051(const HardwareParams* params)
-	:	HardwareInterface(params->manager, params->controlID, "Maerklin Interface (6050/6051) / " + params->name + " at serial port " + params->arg1),
-	 	logger(Logger::Logger::GetLogger("M6051 " + params->name + " " + params->arg1)),
-	 	serialLine(logger, params->arg1, B2400, 8, 'N', 2),
+	:	HardwareInterface(params->GetManager(), params->GetControlID(), "Maerklin Interface (6050/6051) / " + params->GetName() + " at serial port " + params->GetArg1()),
+	 	logger(Logger::Logger::GetLogger("M6051 " + params->GetName() + " " + params->GetArg1())),
+	 	serialLine(logger, params->GetArg1(), B2400, 8, 'N', 2),
 		run(true)
 	{
 		logger->Info(Languages::TextStarting, name);
 
-		s88Modules = Utils::Utils::StringToInteger(params->arg2, 0, MaxS88Modules);
+		s88Modules = Utils::Utils::StringToInteger(params->GetArg2(), 0, MaxS88Modules);
 		if (s88Modules == 0)
 		{
 			logger->Info(Languages::TextNoS88Modules);

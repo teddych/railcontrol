@@ -37,9 +37,9 @@ namespace Hardware
 	}
 
 	OpenDcc::OpenDcc(const HardwareParams* params)
-	:	HardwareInterface(params->manager, params->controlID, "OpenDCC / " + params->name + " at serial port " + params->arg1),
-	 	logger(Logger::Logger::GetLogger("OpenDCC " + params->name + " " + params->arg1)),
-	 	serialLine(logger, params->arg1, B19200, 8, 'N', 2),
+	:	HardwareInterface(params->GetManager(), params->GetControlID(), "OpenDCC / " + params->GetName() + " at serial port " + params->GetArg1()),
+	 	logger(Logger::Logger::GetLogger("OpenDCC " + params->GetName() + " " + params->GetArg1())),
+	 	serialLine(logger, params->GetArg1(), B19200, 8, 'N', 2),
 		run(false)
 	{
 		logger->Info(Languages::TextStarting, name);
@@ -52,9 +52,9 @@ namespace Hardware
 			return;
 		}
 
-		s88Modules1 = Utils::Utils::StringToInteger(params->arg2, 0);
-		s88Modules2 = Utils::Utils::StringToInteger(params->arg3, 0);
-		s88Modules3 = Utils::Utils::StringToInteger(params->arg4, 0);
+		s88Modules1 = Utils::Utils::StringToInteger(params->GetArg2(), 0);
+		s88Modules2 = Utils::Utils::StringToInteger(params->GetArg3(), 0);
+		s88Modules3 = Utils::Utils::StringToInteger(params->GetArg4(), 0);
 		s88Modules = s88Modules1 + s88Modules2 + s88Modules3;
 
 		if (s88Modules > MaxS88Modules)

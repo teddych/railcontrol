@@ -61,7 +61,7 @@ namespace Hardware
 		instance(nullptr),
 		params(params)
 	{
-		hardwareType_t type = params->hardwareType;
+		hardwareType_t type = params->GetHardwareType();
 
 #ifdef AMALGAMATION
 		switch(type)
@@ -184,7 +184,7 @@ namespace Hardware
 		}
 
 #ifndef AMALGAMATION
-		hardwareType_t type = params->hardwareType;
+		hardwareType_t type = params->GetHardwareType();
 		// close library
 		if (manager.ControlsOfHardwareType(type) > 1)
 		{

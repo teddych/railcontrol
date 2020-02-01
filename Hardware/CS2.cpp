@@ -34,12 +34,12 @@ namespace Hardware
 	}
 
 	CS2::CS2(const HardwareParams* params)
-	:	MaerklinCAN(params->manager,
-			params->controlID,
-			Logger::Logger::GetLogger("CS2 " + params->name + " " + params->arg1),
-			"Maerklin Central Station 2 (CS2) / " + params->name + " at IP " + params->arg1),
+	:	MaerklinCAN(params->GetManager(),
+			params->GetControlID(),
+			Logger::Logger::GetLogger("CS2 " + params->GetName() + " " + params->GetArg1()),
+			"Maerklin Central Station 2 (CS2) / " + params->GetName() + " at IP " + params->GetArg1()),
 	 	run(true),
-	 	senderConnection(logger, params->arg1, CS2SenderPort),
+	 	senderConnection(logger, params->GetArg1(), CS2SenderPort),
 	 	receiverConnection(logger, "0.0.0.0", CS2ReceiverPort)
 	{
 		logger->Info(Languages::TextStarting, name);

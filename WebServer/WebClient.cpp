@@ -940,13 +940,13 @@ namespace WebServer
 			Hardware::HardwareParams* params = manager.GetHardware(controlID);
 			if (params != nullptr)
 			{
-				hardwareType = params->hardwareType;
-				name = params->name;
-				arg1 = params->arg1;
-				arg2 = params->arg2;
-				arg3 = params->arg3;
-				arg4 = params->arg4;
-				arg5 = params->arg5;
+				hardwareType = params->GetHardwareType();
+				name = params->GetName();
+				arg1 = params->GetArg1();
+				arg2 = params->GetArg2();
+				arg3 = params->GetArg3();
+				arg4 = params->GetArg4();
+				arg5 = params->GetArg5();
 			}
 		}
 
@@ -1019,7 +1019,7 @@ namespace WebServer
 
 		HtmlTag content;
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteControl));
-		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, control->name));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, control->GetName()));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
 			.AddContent(HtmlTagInputHidden("cmd", "controldelete"))
 			.AddContent(HtmlTagInputHidden("control", to_string(controlID))
@@ -1039,7 +1039,7 @@ namespace WebServer
 			return;
 		}
 
-		string name = control->name;
+		string name = control->GetName();
 
 		if (!manager.ControlDelete(controlID))
 		{
@@ -1061,7 +1061,7 @@ namespace WebServer
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(hardware.first));
-			string controlIdString = to_string(hardware.second->controlID);
+			string controlIdString = to_string(hardware.second->GetControlID());
 			hardwareArgument["control"] = controlIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "controledit_list_" + controlIdString, hardwareArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "controlaskdelete_" + controlIdString, hardwareArgument)));

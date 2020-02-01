@@ -45,8 +45,8 @@ namespace Hardware
 
 
 	Virtual::Virtual(const HardwareParams* params)
-	:	HardwareInterface(params->manager, params->controlID, "Virtual Command Station / " + params->name),
-	 	logger(Logger::Logger::GetLogger("Virtual " + params->name))
+	:	HardwareInterface(params->GetManager(), params->GetControlID(), "Virtual Command Station / " + params->GetName()),
+	 	logger(Logger::Logger::GetLogger("Virtual " + params->GetName()))
 	{}
 
 	// turn booster on or off

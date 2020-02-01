@@ -94,9 +94,9 @@ Manager::Manager(Config& config)
 	storage->AllHardwareParams(hardwareParams);
 	for (auto hardwareParam : hardwareParams)
 	{
-		hardwareParam.second->manager = this;
-		controls[hardwareParam.second->controlID] = new HardwareHandler(*this, hardwareParam.second);
-		logger->Info(Languages::TextLoadedControl, hardwareParam.first, hardwareParam.second->name);
+		hardwareParam.second->SetManager(this);
+		controls[hardwareParam.second->GetControlID()] = new HardwareHandler(*this, hardwareParam.second);
+		logger->Info(Languages::TextLoadedControl, hardwareParam.first, hardwareParam.second->GetName());
 	}
 
 	storage->AllLayers(layers);
@@ -193,7 +193,7 @@ Manager::~Manager()
 			{
 				continue;
 			}
-			logger->Info(Languages::TextUnloadingControl, controlID, params->name);
+			logger->Info(Languages::TextUnloadingControl, controlID, params->GetName());
 			delete control.second;
 			hardwareParams.erase(controlID);
 			delete params;
@@ -305,46 +305,29 @@ bool Manager::ControlSave(const controlID_t& controlID,
 {
 	if (controlID != ControlIdNone && controlID < ControlIdFirstHardware)
 	{
-		result.assign("Invalid controlID");
+		result = Languages::GetText(Languages::TextInvalidControlID);
 		return false;
 	}
 
 	HardwareParams* params = GetHardware(controlID);
-	if (params != nullptr)
+	if (params == nullptr)
 	{
-		params->name = CheckObjectName(controls, controlMutex, controlID, name.size() == 0 ? "C" : name);
-		params->hardwareType = hardwareType;
-		params->arg1 = arg1;
-		params->arg2 = arg2;
-		params->arg3 = arg3;
-		params->arg4 = arg4;
-		params->arg5 = arg5;
-		// FIXME: reload hardware
+		params = CreateAndAddControl();
 	}
-	else
+	if (params == nullptr)
 	{
-		std::lock_guard<std::mutex> guard(controlMutex);
-		controlID_t newControlID = ControlIdFirstHardware - 1;
-		// get next controlID
-		for (auto control : controls)
-		{
-			if (control.first > newControlID)
-			{
-				newControlID = control.first;
-			}
-		}
-		++newControlID;
-		// create new control
-		params = new HardwareParams(this, newControlID, hardwareType, name, arg1, arg2, arg3, arg4, arg5);
-		if (params == nullptr)
-		{
-			result.assign("Unable to allocate memory for control");
-			return false;
-		}
+		result = Languages::GetText(Languages::TextUnableToAddControl);
+		return false;
+	}
 
-		controls[newControlID] = new HardwareHandler(*this, params);
-		hardwareParams[newControlID] = params;
-	}
+	params->SetName(CheckObjectName(hardwareParams, hardwareMutex, controlID, name.size() == 0 ? "C" : name));
+	params->SetHardwareType(hardwareType);
+	params->SetArg1(arg1);
+	params->SetArg2(arg2);
+	params->SetArg3(arg3);
+	params->SetArg4(arg4);
+	params->SetArg5(arg5);
+
 	if (storage)
 	{
 		storage->Save(*params);
@@ -404,9 +387,9 @@ unsigned int Manager::ControlsOfHardwareType(const hardwareType_t hardwareType)
 	unsigned int counter = 0;
 	for (auto hardwareParam : hardwareParams)
 	{
-		if (hardwareParam.second->hardwareType == hardwareType)
+		if (hardwareParam.second->GetHardwareType() == hardwareType)
 		{
-			counter++;
+			++counter;
 		}
 	}
 	return counter;
@@ -472,16 +455,16 @@ const std::map<controlID_t,std::string> Manager::LocoControlListNames() const
 	for (auto hardware : hardwareParams)
 	{
 		std::lock_guard<std::mutex> guard2(controlMutex);
-		if (controls.count(hardware.second->controlID) != 1)
+		if (controls.count(hardware.second->GetControlID()) != 1)
 		{
 			continue;
 		}
-		ControlInterface* c = controls.at(hardware.second->controlID);
+		ControlInterface* c = controls.at(hardware.second->GetControlID());
 		if (c->CanHandleLocos() == false)
 		{
 			continue;
 		}
-		ret[hardware.first] = hardware.second->name;
+		ret[hardware.first] = hardware.second->GetName();
 	}
 	return ret;
 }
@@ -493,16 +476,16 @@ const std::map<controlID_t,std::string> Manager::AccessoryControlListNames() con
 	for (auto hardware : hardwareParams)
 	{
 		std::lock_guard<std::mutex> guard2(controlMutex);
-		if (controls.count(hardware.second->controlID) != 1)
+		if (controls.count(hardware.second->GetControlID()) != 1)
 		{
 			continue;
 		}
-		ControlInterface* c = controls.at(hardware.second->controlID);
+		ControlInterface* c = controls.at(hardware.second->GetControlID());
 		if (c->CanHandleAccessories() == false)
 		{
 			continue;
 		}
-		ret[hardware.first] = hardware.second->name;
+		ret[hardware.first] = hardware.second->GetName();
 	}
 	return ret;
 }
@@ -528,7 +511,7 @@ const map<string,Hardware::HardwareParams*> Manager::ControlListByName() const
 	std::lock_guard<std::mutex> guard(hardwareMutex);
 	for(auto hardware : hardwareParams)
 	{
-		out[hardware.second->name] = hardware.second;
+		out[hardware.second->GetName()] = hardware.second;
 	}
 	return out;
 }
@@ -2818,4 +2801,47 @@ void Manager::DebounceWorker()
 		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
 	logger->Info(Languages::TextDebounceThreadTerminated);
+}
+
+template<class ID, class T>
+T* Manager::CreateAndAddObject(std::map<ID,T*>& objects, std::mutex& mutex)
+{
+	std::lock_guard<std::mutex> Guard(mutex);
+	ID newObjectID = 0;
+	for (auto object : objects)
+	{
+		if (object.first > newObjectID)
+		{
+			newObjectID = object.first;
+		}
+	}
+	++newObjectID;
+	T* newObject = new T(this, newObjectID);
+	if (newObject == nullptr)
+	{
+		return nullptr;
+	}
+	objects[newObjectID] = newObject;
+	return newObject;
+}
+
+Hardware::HardwareParams* Manager::CreateAndAddControl()
+{
+	std::lock_guard<std::mutex> Guard(hardwareMutex);
+	controlID_t newObjectID = ControlIdFirstHardware;
+	for (auto hardwareParam : hardwareParams)
+	{
+		if (hardwareParam.first > newObjectID)
+		{
+			newObjectID = hardwareParam.first;
+		}
+	}
+	++newObjectID;
+	Hardware::HardwareParams* newObject = new Hardware::HardwareParams(this, newObjectID);
+	if (newObject == nullptr)
+	{
+		return nullptr;
+	}
+	hardwareParams[newObjectID] = newObject;
+	return newObject;
 }
