@@ -43,7 +43,7 @@ class ControlInterface
 		virtual void ArgumentTypes(__attribute__((unused)) std::map<unsigned char,argumentType_t>& argumentTypes) const {}
 		virtual void Booster(__attribute__((unused)) const controlType_t controlType, __attribute__((unused)) const boosterState_t state) {};
 		virtual bool CanHandleAccessories() const { return false; }
-		virtual bool CanHandleFeedback() const { return false; }
+		virtual bool CanHandleFeedbacks() const { return false; }
 		virtual bool CanHandleLocos() const { return false; }
 		virtual void FeedbackDelete(__attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const std::string& name) {}
 		virtual void FeedbackSettings(__attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const std::string& name) {}
