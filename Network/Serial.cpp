@@ -140,7 +140,6 @@ namespace Network
 		{
 			return -1;
 		}
-		logger->Hex(data, ret);
 		return ret;
 	}
 
