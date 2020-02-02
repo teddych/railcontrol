@@ -188,6 +188,10 @@ namespace DataModel
 
 	bool Loco::GoToManualMode()
 	{
+		if (state == LocoStateManual)
+		{
+			return true;
+		}
 		requestManualMode = true;
 		locoThread.join();
 		state = LocoStateManual;
