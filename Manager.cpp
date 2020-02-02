@@ -2529,7 +2529,10 @@ bool Manager::LocoStop(const locoID_t locoID)
 		return true;
 	}
 	loco->RequestManualMode();
-	while (loco->GoToManualMode() == false);
+	while (loco->GoToManualMode() == false)
+	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
+	}
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
@@ -2554,6 +2557,7 @@ bool Manager::LocoStopAll()
 	bool anyLocosInAutoMode = true;
 	while (anyLocosInAutoMode)
 	{
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 		anyLocosInAutoMode = false;
 		std::lock_guard<std::mutex> guard(locoMutex);
 		for (auto loco : locos)
@@ -2569,7 +2573,7 @@ bool Manager::LocoStopAll()
 				std::lock_guard<std::mutex> guard(controlMutex);
 				for (auto control : controls)
 				{
-					control.second->LocoStart(loco.first, loco.second->GetName());
+					control.second->LocoStop(loco.first, loco.second->GetName());
 				}
 			}
 		}
