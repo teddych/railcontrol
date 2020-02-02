@@ -291,14 +291,14 @@ namespace Storage
 	void SQLite::SaveHardwareParams(const Hardware::HardwareParams& hardwareParams)
 	{
 		string query = "INSERT OR REPLACE INTO hardware VALUES ("
-			+ to_string(hardwareParams.controlID) + ", "
-			+ to_string(hardwareParams.hardwareType) + ", '"
-			+ EscapeString(hardwareParams.name) + "', '"
-			+ EscapeString(hardwareParams.arg1) + "', '"
-			+ EscapeString(hardwareParams.arg2) + "', '"
-			+ EscapeString(hardwareParams.arg3) + "', '"
-			+ EscapeString(hardwareParams.arg4) + "', '"
-			+ EscapeString(hardwareParams.arg5) + "');";
+			+ to_string(hardwareParams.GetControlID()) + ", "
+			+ to_string(hardwareParams.GetHardwareType()) + ", '"
+			+ EscapeString(hardwareParams.GetName()) + "', '"
+			+ EscapeString(hardwareParams.GetArg1()) + "', '"
+			+ EscapeString(hardwareParams.GetArg2()) + "', '"
+			+ EscapeString(hardwareParams.GetArg3()) + "', '"
+			+ EscapeString(hardwareParams.GetArg4()) + "', '"
+			+ EscapeString(hardwareParams.GetArg5()) + "');";
 		Execute(query);
 	}
 
