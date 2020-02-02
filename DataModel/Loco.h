@@ -55,6 +55,7 @@ namespace DataModel
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
+				requestManualMode(false),
 				trackFrom(nullptr),
 				trackFirst(nullptr),
 				trackSecond(nullptr),
@@ -78,6 +79,7 @@ namespace DataModel
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
+				requestManualMode(false),
 				trackFrom(nullptr),
 				trackFirst(nullptr),
 				trackSecond(nullptr),
@@ -188,6 +190,7 @@ namespace DataModel
 			std::vector<DataModel::Relation*> slaves;
 
 			volatile locoState_t state;
+			volatile bool requestManualMode;
 			Track* trackFrom;
 			Track* trackFirst;
 			Track* trackSecond;

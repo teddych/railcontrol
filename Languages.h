@@ -150,7 +150,6 @@ class Languages
 			TextIsInInvalidAutomodeState,
 			TextIsInManualState,
 			TextIsInTerminatedState,
-			TextIsInUnknownStateErrorStopping,
 			TextIsLockedBy,
 			TextIsNotFree,
 			TextIsNotOnTrack,

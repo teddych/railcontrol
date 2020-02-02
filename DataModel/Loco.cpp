@@ -188,35 +188,7 @@ namespace DataModel
 
 	bool Loco::GoToManualMode()
 	{
-		{
-			std::lock_guard<std::mutex> Guard(stateMutex);
-			switch (state)
-			{
-				case LocoStateManual:
-					return true;
-
-				case LocoStateSearchingFirst:
-				case LocoStateOff:
-				case LocoStateError:
-					state = LocoStateOff;
-					break;
-
-				case LocoStateTerminated:
-					break;
-
-				case LocoStateSearchingSecond:
-				case LocoStateRunning:
-				case LocoStateStopping:
-					logger->Info(Languages::TextIsRunningWaitingUntilDestination, name);
-					state = LocoStateStopping;
-					return false;
-
-				default:
-					logger->Error(Languages::TextIsInUnknownStateErrorStopping, name);
-					state = LocoStateError;
-					return false;
-			}
-		}
+		requestManualMode = true;
 		locoThread.join();
 		state = LocoStateManual;
 		return true;
@@ -280,15 +252,22 @@ namespace DataModel
 						FeedbackIdStopReached();
 					}
 				}
+
 				switch (state)
 				{
 					case LocoStateOff:
 						// automode is turned off, terminate thread
 						logger->Info(Languages::TextIsNowInManualMode, name);
 						state = LocoStateTerminated;
+						requestManualMode = false;
 						return;
 
 					case LocoStateSearchingFirst:
+						if (requestManualMode)
+						{
+							state = LocoStateOff;
+							break;
+						}
 						if (wait > 0)
 						{
 							--wait;
@@ -298,6 +277,12 @@ namespace DataModel
 						break;
 
 					case LocoStateSearchingSecond:
+						if (requestManualMode)
+						{
+							logger->Info(Languages::TextIsRunningWaitingUntilDestination, name);
+							state = LocoStateStopping;
+							break;
+						}
 						if (manager->GetNrOfTracksToReserve() <= 1)
 						{
 							break;
@@ -311,10 +296,16 @@ namespace DataModel
 
 					case LocoStateRunning:
 						// loco is already running, waiting until destination reached
+						if (requestManualMode)
+						{
+							logger->Info(Languages::TextIsRunningWaitingUntilDestination, name);
+							state = LocoStateStopping;
+						}
 						break;
 
 					case LocoStateStopping:
 						logger->Info(Languages::TextHasNotReachedDestination, name);
+
 						break;
 
 					case LocoStateTerminated:
@@ -330,6 +321,10 @@ namespace DataModel
 					case LocoStateError:
 						logger->Error(Languages::TextIsInErrorState, name);
 						manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
+						if (requestManualMode)
+						{
+							state = LocoStateOff;
+						}
 						break;
 				}
 			}

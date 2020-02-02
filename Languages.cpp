@@ -150,7 +150,6 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextIsInInvalidAutomodeState */ { "{0} is running in invalid automode state {1} while {2} is reached. Setting error state.", "{0} ist in unerlaubten Automode Status {1} während {2} erreicht wurde. Setze Fehlerstatus.", "{0} está en estado ilegal {1} mientras llegando {2}. Poniando estado error." },
 /* TextIsInManualState */ { "{0} is in manual state while automode is running. Setting error state.", "{0} ist im Status manuell während der Auto-Modus eingeschaltet ist. Setze Fehlerstatus.", "{0} está en estado manual durante modo auto. Poniando estado error." },
 /* TextIsInTerminatedState */ { "{0} is in terminated state while automode is running. Setting error state.", "{0} ist im Status beendet während der Auto-Modus eingeschaltet ist. Setze Fehlerstatus.", "{0} está en estado terminado durante modo auto. Poniando estado error." },
-/* TextIsInUnknownStateErrorStopping */ { "{0} is in unknown state. Setting locomotive to error state and stopping it.", "{0} hat unbekannten Status. Setze Fehlerstatus und halte Lokomotive an.", "{0} está en modo desconocido. Poniando en modo error i parando locomotora." },
 /* TextIsLocked */ { "{0} is locked", "{0} ist gesperrt", "{0} está bloqueado" },
 /* TextIsNotFree */ { "{0} is not free", "{0} ist nicht frei", "{0} no está libre" },
 /* TextIsNotOnTrack */ { "{0} is not on a track. Switching to manual mode.", "{0} ist nicht auf einem Gleis. Wechsle in den Modus manuell.", "{0} no está sobre una vía. Poniando en modo manual." },
