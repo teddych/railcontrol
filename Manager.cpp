@@ -2496,26 +2496,6 @@ bool Manager::LocoStart(const locoID_t locoID)
 	return true;
 }
 
-bool Manager::LocoStop(const locoID_t locoID)
-{
-	Loco* loco = GetLoco(locoID);
-	if (loco == nullptr)
-	{
-		return false;
-	}
-	bool ret = loco->GoToManualMode();
-	if (ret == false)
-	{
-		return false;
-	}
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto control : controls)
-	{
-		control.second->LocoStop(locoID, loco->GetName());
-	}
-	return true;
-}
-
 bool Manager::LocoStartAll()
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
@@ -2537,31 +2517,64 @@ bool Manager::LocoStartAll()
 	return true;
 }
 
+bool Manager::LocoStop(const locoID_t locoID)
+{
+	Loco* loco = GetLoco(locoID);
+	if (loco == nullptr)
+	{
+		return false;
+	}
+	if (loco->IsInManualMode())
+	{
+		return true;
+	}
+	loco->RequestManualMode();
+	while (loco->GoToManualMode() == false);
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->LocoStop(locoID, loco->GetName());
+	}
+	return true;
+}
+
 bool Manager::LocoStopAll()
 {
-	bool ret1 = true;
-	std::lock_guard<std::mutex> guard(locoMutex);
-	for (auto loco : locos)
 	{
-		if (!loco.second->IsInUse())
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (auto loco : locos)
 		{
-			continue;
-		}
-		bool ret2 = loco.second->GoToManualMode();
-		ret1 &= ret2;
-		if (ret2 == false)
-		{
-			continue;
-		}
-		{
-			std::lock_guard<std::mutex> guard(controlMutex);
-			for (auto control : controls)
+			if (loco.second->IsInAutoMode() == false)
 			{
-				control.second->LocoStop(loco.first, loco.second->GetName());
+				continue;
+			}
+			loco.second->RequestManualMode();
+		}
+	}
+	bool anyLocosInAutoMode = true;
+	while (anyLocosInAutoMode)
+	{
+		anyLocosInAutoMode = false;
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (auto loco : locos)
+		{
+			if (loco.second->IsInManualMode())
+			{
+				continue;
+			}
+			bool locoInManualMode = loco.second->GoToManualMode();
+			anyLocosInAutoMode |= !locoInManualMode;
+			if (locoInManualMode)
+			{
+				std::lock_guard<std::mutex> guard(controlMutex);
+				for (auto control : controls)
+				{
+					control.second->LocoStart(loco.first, loco.second->GetName());
+				}
 			}
 		}
 	}
-	return ret1;
+	return true;
 }
 
 void Manager::StopAllLocosImmediately(const controlType_t controlType)

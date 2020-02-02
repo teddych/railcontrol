@@ -186,13 +186,25 @@ namespace DataModel
 		return true;
 	}
 
+	void Loco::RequestManualMode()
+	{
+		if (state == LocoStateManual || state == LocoStateTerminated)
+		{
+			return;
+		}
+		requestManualMode = true;
+	}
+
 	bool Loco::GoToManualMode()
 	{
 		if (state == LocoStateManual)
 		{
 			return true;
 		}
-		requestManualMode = true;
+		if (state != LocoStateTerminated)
+		{
+			return false;
+		}
 		locoThread.join();
 		state = LocoStateManual;
 		return true;

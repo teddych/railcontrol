@@ -113,6 +113,7 @@ namespace DataModel
 			}
 
 			bool GoToAutoMode();
+			void RequestManualMode();
 			bool GoToManualMode();
 
 			bool ToTrack(const trackID_t trackID);
@@ -132,6 +133,8 @@ namespace DataModel
 			void SetDirection(const direction_t direction);
 			direction_t GetDirection() const { return direction; }
 
+			bool IsInManualMode() const { return this->state == LocoStateManual; }
+			bool IsInAutoMode() const { return this->state != LocoStateManual && this->state != LocoStateTerminated; }
 			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackFrom != nullptr || this->streetFirst != nullptr; }
 
 			bool GetPushpull() const { return pushpull; }
