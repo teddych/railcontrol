@@ -2570,10 +2570,11 @@ bool Manager::LocoStopAll()
 			anyLocosInAutoMode |= !locoInManualMode;
 			if (locoInManualMode)
 			{
+				const string& locoName = loco.second->GetName();
 				std::lock_guard<std::mutex> guard(controlMutex);
 				for (auto control : controls)
 				{
-					control.second->LocoStop(loco.first, loco.second->GetName());
+					control.second->LocoStop(loco.first, locoName);
 				}
 			}
 		}
