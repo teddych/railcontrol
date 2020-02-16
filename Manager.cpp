@@ -73,7 +73,7 @@ Manager::Manager(Config& config)
 	unknownSignal(Languages::GetText(Languages::TextSignalDoesNotExist))
 {
 	StorageParams storageParams;
-	storageParams.module = config.getValue("dbengine", "Sqlite");
+	storageParams.module = "Sqlite";
 	storageParams.filename = config.getValue("dbfilename", "railcontrol.sqlite");
 	storage = new StorageHandler(this, storageParams);
 	if (storage == nullptr)
