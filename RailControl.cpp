@@ -77,9 +77,6 @@ int main (int argc, char* argv[])
 
 	Config config(argc == 2 ? argv[1] : "railcontrol.conf");
 
-	string language = config.getValue("language", "EN");
-	Languages::SetDefaultLanguage(language);
-
 	// init manager that does all the stuff in a seperate thread
 	Manager m(config);
 

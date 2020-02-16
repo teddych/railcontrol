@@ -114,6 +114,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextEditStreet */ { "Edit street", "Fahrstrasse bearbeiten", "Editar itinerario" },
 /* TextEditSwitch */ { "Edit switch", "Weiche bearbeiten", "Editar desvío" },
 /* TextEditTrack */ { "Edit track", "Gleis bearbeiten", "Editar vía" },
+/* TextEnglish */ { "English", "Englisch", "Ingles" },
 /* TextError */ { "error", "Fehler", "errores" },
 /* TextExecutingStreet */ { "Executing street {0}", "Führe Fahrstrasse {0} aus", "Ejecutando itinerario {0}" },
 /* TextFeedback */ { "feedback", "Rückmelder", "retroseñal" },
@@ -126,6 +127,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextFeedbackUpdated */ { "Feedback {0} updated", "Rückmelder {0} aktualisiert", "Retroseñal {0} actualizado" },
 /* TextFeedbacks */ { "Feedbacks", "Rückmelder", "Retroseñales" },
 /* TextFromTrack */ { "From track", "Von Gleis", "De vía" },
+/* TextGerman */ { "German", "Deutsch", "Aleman" },
 /* TextGreen */ { "green", "grün", "verde" },
 /* TextHasAlreadyReservedStreet */ { "{0} has already reserved a street. Setting error state.", "{0} hat schon eine Fahrstrasse reserviert. Setze Fehlerstatus.", "{0} ya ha reservado un itinerario. Poniando estado error." },
 /* TextHasNotReachedDestination */ { "{0} has not yet reached its destination. Going to manual mode when it reached its destination.", "{0} hat ihr Ziel noch nicht erreicht. Setze sie in Modus manuell wenn sie ihr Ziel erreicht hat", "{0} no ha llegado su destino. Poniando en modo manual cuando ha llegado su destino." },
@@ -158,6 +160,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextIsOnOcupiedTrack */ { "{0} thinks it is on track {1} but there is {2}. Setting error state.", "{0} meint sie sei auf Gleis {1} aber dort ist {2}. Setze Fehlerstatus.", "{0} cree que está sobre vía {1} pero allá está {2}. Poniando estado error." },
 /* TextIsRunningWaitingUntilDestination */ { "{0} is actually running, waiting until reached its destination", "{0} fährt noch, warte bis sie das Ziel erreicht hat.", "{0} todavía está en marcha, esperando hasta ha llegado el destino" },
 /* TextIsUpToDate */ { "{0} is up to date", "{0} ist aktuell", "{0} es actual" },
+/* TextLanguage */ { "Language", "Sprache", "Lingua" },
 /* TextLayer1 */ { "Layer 1", "Schicht 1", "Capa 1" },
 /* TextLayer1IsUndeletable */ { "Layer 1 is undeletable", "Schicht 1 ist unlöschbar", "Capa 1 no se puede eliminar" },
 /* TextLayerDeleted */ { "Layer {0} deleted", "Schicht {0} gelöscht", "Capa {0} eliminado" },
@@ -296,6 +299,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSignalUpdated */ { "Signal {0} updated", "Signal {0} aktualisiert", "Señal {0} actualizado" },
 /* TextSignals */ { "Signals", "Signale", "Señales" },
 /* TextSimple */ { "simple", "einfach", "simple" },
+/* TextSpanish */ { "Spanisch", "Spanisch", "Español" },
 /* TextSpeed */ { "Speed", "Geschwindigkeit", "Velocidad" },
 /* TextStartLoco */ { "Start locomotive", "Starte Lokomotive", "Poner locomotora en marcha" },
 /* TextStarting */ { "Starting {0}", "Starte {0}", "Encendiendo {0}" },
@@ -353,8 +357,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextTurn */ { "turn", "gebogen", "curvo" },
 /* TextTurnDirectionOfTravelToLeft */ { "Turn direction of travel to left", "Drehe Fahrtrichtung nach links", "Gire la dirección del movimiento hacia la izquierda" },
 /* TextTurnDirectionOfTravelToRight */ { "Turn direction of travel to right", "Drehe Fahrtrichtung nach rechts", "Gire la dirección del movimiento hacia la dereja" },
-/* TextTurningBoosterOff */ { "Turning booster off", "Dektiviere booster", "Apagando booster" },
-/* TextTurningBoosterOn */ { "Turning booster on", "Aktiviere booster", "Encendiendo booster" },
+/* TextTurningBoosterOff */ { "Turning booster off", "Deaktiviere Booster", "Apagando booster" },
+/* TextTurningBoosterOn */ { "Turning booster on", "Aktiviere Booster", "Encendiendo booster" },
 /* TextTurnout */ { "turnout", "abzweigend", "desviando" },
 /* TextType */ { "Type", "Typ", "Typo" },
 /* TextUnabelToStoreLibraryAddress */ { "Unable to store library address for {0}", "Adresse der Biblikothek {0} kann nicht gespeichert werden", "Imposible guardar la dirección de la biblioteca {0}" },
@@ -409,24 +413,3 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 };
 
 Languages::language_t Languages::defaultLanguage = Languages::EN;
-
-Languages::language_t Languages::ParseLanguage(std::string& languageString)
-{
-	if (languageString.size() < 2)
-	{
-		return Languages::EN;
-	}
-
-	Utils::Utils::StringToUpper(languageString);
-	if (languageString[0] == 'D' && languageString[1] == 'E')
-	{
-		return Languages::DE;
-	}
-
-	if (languageString[0] == 'E' && languageString[1] == 'S')
-	{
-		return Languages::ES;
-	}
-
-	return Languages::EN;
-}

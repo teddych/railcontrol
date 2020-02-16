@@ -83,6 +83,7 @@ Manager::Manager(Config& config)
 	}
 
 	Logger::Logger::SetLogLevel(static_cast<Logger::Logger::logLevel_t>(Utils::Utils::StringToInteger(storage->GetSetting("LogLevel"), Logger::Logger::LevelInfo)));
+	Languages::SetDefaultLanguage(static_cast<Languages::language_t>(Utils::Utils::StringToInteger(storage->GetSetting("Language"), Languages::EN)));
 	defaultAccessoryDuration = Utils::Utils::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"), 250);
 	autoAddFeedback = Utils::Utils::StringToBool(storage->GetSetting("AutoAddFeedback"));
 	selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
@@ -2784,13 +2785,16 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 	const bool autoAddFeedback,
 	const DataModel::Track::selectStreetApproach_t selectStreetApproach,
 	const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve,
-	const Logger::Logger::logLevel_t logLevel)
+	const Logger::Logger::logLevel_t logLevel,
+	const Languages::language_t language)
 {
 	this->defaultAccessoryDuration = duration;
 	this->autoAddFeedback = autoAddFeedback;
 	this->selectStreetApproach = selectStreetApproach;
 	this->nrOfTracksToReserve = nrOfTracksToReserve;
 	Logger::Logger::SetLogLevel(logLevel);
+	Languages::SetDefaultLanguage(language);
+
 	if (storage == nullptr)
 	{
 		return false;
@@ -2800,6 +2804,7 @@ bool Manager::SaveSettings(const accessoryDuration_t duration,
 	storage->SaveSetting("SelectStreetApproach", std::to_string(static_cast<int>(selectStreetApproach)));
 	storage->SaveSetting("NrOfTracksToReserve", std::to_string(static_cast<int>(nrOfTracksToReserve)));
 	storage->SaveSetting("LogLevel", std::to_string(static_cast<int>(logLevel)));
+	storage->SaveSetting("Language", std::to_string(static_cast<int>(language)));
 	return true;
 }
 

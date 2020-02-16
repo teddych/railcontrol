@@ -116,6 +116,7 @@ namespace WebServer
 			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault);
 			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve);
 			static HtmlTag HtmlTagLogLevel();
+			static HtmlTag HtmlTagLanguage();
 			static HtmlTag HtmlTagFeedbackOnControlLayer(const DataModel::Feedback* feedback);
 			static HtmlTag HtmlTagControlArguments(const hardwareType_t hardwareType, const std::string& arg1 = "", const std::string& arg2 = "", const std::string& arg3 = "", const std::string& arg4 = "", const std::string& arg5 = "");
 			static HtmlTag HtmlTagControl(const std::map<controlID_t,std::string>& controls, const controlID_t controlID, const std::string& objectType, const objectID_t objectID);

@@ -7,6 +7,3 @@ dbfilename = railcontrol.sqlite
 
 # Default webserver port is 80, default alt webserver port is 8080
 webserverport = 8080
-
-# available languages: de, en, es. Default: en
-language = en

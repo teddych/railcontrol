@@ -114,6 +114,7 @@ class Languages
 			TextEditStreet,
 			TextEditSwitch,
 			TextEditTrack,
+			TextEnglish,
 			TextError,
 			TextExecutingStreet,
 			TextFeedback,
@@ -126,6 +127,7 @@ class Languages
 			TextFeedbackUpdated,
 			TextFeedbacks,
 			TextFromTrack,
+			TextGerman,
 			TextGreen,
 			TextHasAlreadyReservedStreet,
 			TextHasNotReachedDestination,
@@ -158,6 +160,7 @@ class Languages
 			TextIsOnOcupiedTrack,
 			TextIsRunningWaitingUntilDestination,
 			TextIsUpToDate,
+			TextLanguage,
 			TextLayer1,
 			TextLayer1IsUndeletable,
 			TextLayerDeleted,
@@ -296,6 +299,7 @@ class Languages
 			TextSignalUpdated,
 			TextSignals,
 			TextSimple,
+			TextSpanish,
 			TextSpeed,
 			TextStartLoco,
 			TextStarting,
@@ -417,12 +421,15 @@ class Languages
 			MaxLanguages
 		};
 
-		static void SetDefaultLanguage(std::string& languageString)
+		static void SetDefaultLanguage(language_t language)
 		{
-			defaultLanguage = ParseLanguage(languageString);
+			defaultLanguage = language >= MaxLanguages ? EN : language;
 		}
 
-		static language_t ParseLanguage(std::string& languageString);
+		static language_t GetDefaultLanguage()
+		{
+			return defaultLanguage;
+		}
 
 		static const char* GetText(const textSelector_t selector)
 		{
@@ -431,10 +438,9 @@ class Languages
 
 		static const char* GetText(const language_t language, const textSelector_t selector)
 		{
-			static const char* unknownText = "Unknown Text";
-
 			if (language >= MaxLanguages || selector >= MaxTexts)
 			{
+				static const char* unknownText = "Unknown Text";
 				return unknownText;
 			}
 

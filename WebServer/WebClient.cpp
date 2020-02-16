@@ -1473,6 +1473,15 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("loglevel", Languages::TextLogLevel, options, Logger::Logger::GetLogLevel());
 	}
 
+	HtmlTag WebClient::HtmlTagLanguage()
+	{
+		map<Languages::language_t,Languages::textSelector_t> options;
+		options[Languages::EN] = Languages::TextEnglish;
+		options[Languages::DE] = Languages::TextGerman;
+		options[Languages::ES] = Languages::TextSpanish;
+		return HtmlTagSelectWithLabel("language", Languages::TextLanguage, options, Languages::GetDefaultLanguage());
+	}
+
 	void WebClient::HandleProtocolAccessory(const map<string, string>& arguments)
 	{
 		controlID_t controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
@@ -3460,6 +3469,7 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, false));
 		formContent.AddChildTag(HtmlTagNrOfTracksToReserve(nrOfTracksToReserve));
 		formContent.AddChildTag(HtmlTagLogLevel());
+		formContent.AddChildTag(HtmlTagLanguage());
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -3474,7 +3484,8 @@ namespace WebServer
 		const DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetRandom));
 		const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
 		const Logger::Logger::logLevel_t logLevel = static_cast<Logger::Logger::logLevel_t>(Utils::Utils::GetIntegerMapEntry(arguments, "loglevel", Logger::Logger::LevelInfo));
-		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve, logLevel);
+		const Languages::language_t language = static_cast<Languages::language_t>(Utils::Utils::GetIntegerMapEntry(arguments, "language", Languages::EN));
+		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve, logLevel, language);
 		ReplyResponse(ResponseInfo, Languages::TextSettingsSaved);
 	}
 

@@ -260,7 +260,8 @@ class Manager
 			const bool autoAddFeedback,
 			const DataModel::Track::selectStreetApproach_t selectStreetApproach,
 			const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve,
-			const Logger::Logger::logLevel_t logLevel);
+			const Logger::Logger::logLevel_t logLevel,
+			const Languages::language_t language);
 
 		controlID_t GetControlForLoco() const;
 		controlID_t GetControlForAccessory() const;
