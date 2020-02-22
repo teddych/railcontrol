@@ -55,21 +55,51 @@ namespace Logger
 		workString.replace(pos, needle.size(), value);
 	}
 
+	void Logger::AsciiPart(std::stringstream& output, const unsigned char* input, const size_t size)
+	{
+		output << "  ";
+		if (size < 8)
+		{
+			output << "  ";
+		}
+		for (size_t index = size; index < 16; ++index)
+		{
+			output << "   ";
+		}
+		for (size_t index = 0; index < size; ++index)
+		{
+			if (index == 8)
+			{
+				output << " ";
+			}
+			if (input[index] >= 0x20 && input[index] < 127)
+			{
+				output << input[index];
+			}
+			else
+			{
+				output << ".";
+			}
+		}
+	}
+
 	void Logger::Hex(const unsigned char* input, const size_t size)
 	{
 		std::stringstream output;
-		for (size_t index = 0; index < size; ++index)
+		size_t index;
+		for (index = 0; index < size; ++index)
 		{
 			if ((index & 0x0F) == 0)
 			{
 				output << "0x" << std::setfill('0') << std::setw(4) << std::hex << index << "   ";
 			}
 
-			output << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(input[index]);
+			output << std::setfill('0') << std::setw(2) << std::hex << static_cast<unsigned int>(input[index]) << " ";
 
 			size_t next = index + 1;
 			if ((next & 0x0F) == 0)
 			{
+				AsciiPart(output, input + index - 15, 16);
 				Debug(output.str());
 				output.str(std::string());
 				if (next == size)
@@ -78,12 +108,13 @@ namespace Logger
 				}
 				continue;
 			}
-			output << " ";
 			if ((next & 0x07) == 0)
 			{
 				output << "  ";
 			}
 		}
+		size_t reminder = (index & 0x0F);
+		AsciiPart(output, input + index - reminder, reminder);
 		Debug(output.str());
 	}
 }

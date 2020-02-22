@@ -140,6 +140,7 @@ namespace Logger
 			const std::string component;
 
 		private:
+			static void AsciiPart(std::stringstream& output, const unsigned char* input, const size_t size);
 			static std::string DateTime();
 
 			static void Replace(std::string& workString, const unsigned char argument, const std::string& value);
