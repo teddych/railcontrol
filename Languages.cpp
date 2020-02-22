@@ -78,6 +78,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextControlDoesNotAnswer */ { "Control does not answer", "Zentrale antwortet nicht", "Control no respuesta" },
 /* TextControlDoesNotExist */ { "Control does not exist", "Zentrale existiert nicht", "Control no existe" },
 /* TextControlReturnedBadParameter */ { "Control returned bad parameter", "Zentrale sendete falscher Parameter", "Control respondió malo parametro" },
+/* TextControlReturnedError */ { "Control returned error: {0}", "Zentrale meldete Fehler: {0}", "Control contesta error: {0}" },
 /* TextControlReturnedOnHalt */ { "Control returned on HALT", "Zentrale sendete auf HALT", "Control respondió en HALT" },
 /* TextControlReturnedPowerOff */ { "Control returned Power Off", "Zentrale sendete Strom aus", "Control respondió codico booster apagado" },
 /* TextControlReturnedQueueFull */ { "Control returned queue full", "Zentrale sendete Warteschlange voll", "Control respondió cola lleno" },

@@ -78,6 +78,7 @@ class Languages
 			TextControlDoesNotAnswer,
 			TextControlDoesNotExist,
 			TextControlReturnedBadParameter,
+			TextControlReturnedError,
 			TextControlReturnedOnHalt,
 			TextControlReturnedPowerOff,
 			TextControlReturnedQueueFull,

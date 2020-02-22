@@ -91,13 +91,22 @@ namespace Hardware
 			void Parser();
 			void ParseReply();
 			void ParseEvent();
+			void ParseEventLine();
+			void ParseEndLine();
+			std::string ReadUntilChar(const char c);
+			std::string ReadUntilLineEnd();
 
 			void ActivateBoosterUpdates()
 			{
 				Send("request(1,view)\n");
 			}
 
-			char ReadChar()
+			char GetChar(const size_t offset = 0) const
+			{
+				return readBuffer[readBufferPosition + offset];
+			}
+
+			char ReadAndConsumeChar()
 			{
 				return readBuffer[readBufferPosition++];
 			}
@@ -107,12 +116,22 @@ namespace Hardware
 				return charToCheck == readBuffer[readBufferPosition++];
 			}
 
-			void SkipOptionalChar(const char charToSkip)
+			bool SkipOptionalChar(const char charToSkip);
+
+			void SkipWhiteSpace()
 			{
-				if (charToSkip == readBuffer[readBufferPosition])
-				{
-					++readBufferPosition;
-				}
+				while(SkipOptionalChar(' '));
+			}
+
+			bool Compare(const char* reference, const size_t size) const;
+			bool CompareAndConsume(const char* reference, const size_t size);
+			bool IsNumber() const;
+			int ParseInt();
+
+			bool CheckGraterThenAtLineEnd()
+			{
+				SkipWhiteSpace();
+				return CompareAndConsume(">\r\n", 3);
 			}
 
 			Logger::Logger* logger;

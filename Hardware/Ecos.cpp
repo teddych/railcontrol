@@ -51,6 +51,7 @@ namespace Hardware
 			return;
 		}
 		receiverThread = std::thread(&Hardware::Ecos::Receiver, this);
+		ActivateBoosterUpdates();
 	}
 
 	Ecos::~Ecos()
@@ -134,7 +135,7 @@ namespace Hardware
 			logger->Error(Languages::TextInvalidDataReceived);
 			return;
 		}
-		char type = ReadChar();
+		char type = ReadAndConsumeChar();
 		switch (type)
 		{
 			case 'R':
@@ -153,10 +154,7 @@ namespace Hardware
 
 	void Ecos::ParseReply()
 	{
-		if (ReadChar() != 'E'
-			|| ReadChar() != 'P'
-			|| ReadChar() != 'L'
-			|| ReadChar() != 'Y')
+		if (CompareAndConsume("EPLY", 4) == false)
 		{
 			logger->Error(Languages::TextInvalidDataReceived);
 			return;
@@ -165,13 +163,127 @@ namespace Hardware
 
 	void Ecos::ParseEvent()
 	{
-		if (ReadChar() != 'V'
-			|| ReadChar() != 'E'
-			|| ReadChar() != 'N'
-			|| ReadChar() != 'T')
+		if (CompareAndConsume("VENT", 4) == false)
 		{
 			logger->Error(Languages::TextInvalidDataReceived);
 			return;
 		}
+		ParseInt();
+		if (CheckGraterThenAtLineEnd() == false)
+		{
+			return;
+		}
+		while(GetChar() != '<')
+		{
+			ParseEventLine();
+		}
+		ParseEndLine();
+	}
+
+	void Ecos::ParseEventLine()
+	{
+		int object = ParseInt();
+		SkipWhiteSpace();
+		if (object == 1)
+		{
+			if (Compare("status[GO]", 10))
+			{
+				manager->Booster(ControlTypeHardware, BoosterGo);
+			}
+			else if (Compare("status[STOP]", 12))
+			{
+				manager->Booster(ControlTypeHardware, BoosterStop);
+			}
+		}
+		logger->Debug("Object {0}", object);
+		string event = ReadUntilLineEnd();
+		logger->Hex(event);
+	}
+
+	void Ecos::ParseEndLine()
+	{
+		if (CompareAndConsume("<END", 4) == false)
+		{
+			logger->Error(Languages::TextInvalidDataReceived);
+			return;
+		}
+		int i = ParseInt();
+		if (i == 0)
+		{
+			return;
+		}
+		SkipWhiteSpace();
+		string error = ReadUntilChar('>');
+		logger->Error(Languages::TextControlReturnedError, error);
+	}
+
+	string Ecos::ReadUntilChar(const char c)
+	{
+		string out;
+		while(GetChar() != c)
+		{
+			out.append(1, ReadAndConsumeChar());
+		}
+		return out;
+	}
+
+	string Ecos::ReadUntilLineEnd()
+	{
+		string out = ReadUntilChar('\r');
+		CheckChar('\r');
+		CheckChar('\n');
+		return out;
+	}
+
+	bool Ecos::Compare(const char* reference, const size_t size) const
+	{
+		for (size_t index = 0; index < size; ++index)
+		{
+			if (GetChar(index) != reference[index])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool Ecos::CompareAndConsume(const char* reference, const size_t size)
+	{
+		for (size_t index = 0; index < size; ++index)
+		{
+			if (ReadAndConsumeChar() != reference[index])
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	bool Ecos::SkipOptionalChar(const char charToSkip)
+	{
+		if (charToSkip == GetChar())
+		{
+			++readBufferPosition;
+			return true;
+		}
+		return false;
+	}
+
+	bool Ecos::IsNumber() const
+	{
+		const char c = GetChar();
+		return (c >= '0' && c <= '9');
+	}
+
+	int Ecos::ParseInt()
+	{
+		SkipWhiteSpace();
+		int out = 0;
+		while(IsNumber())
+		{
+			out *= 10;
+			out += ReadAndConsumeChar() - '0';
+		}
+		return out;
 	}
 } // namespace
