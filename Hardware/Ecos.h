@@ -75,7 +75,11 @@ namespace Hardware
 				argumentTypes[1] = IpAddress;
 			}
 
-			void Booster(const boosterState_t status) override;
+			void Booster(const boosterState_t status) override
+			{
+				Send(status == BoosterGo ? "set(1,go)\n" : "set(1,stop)\n");
+			}
+
 			void LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed) override;
 			void LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction) override;
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
@@ -83,23 +87,43 @@ namespace Hardware
 
 		private:
 			void Send(const char* data);
-			void ActivateBoosterUpdates();
-
 			void Receiver();
-			char ReadChar();
-			bool CheckChar(char charToCheck);
 			void Parser();
 			void ParseReply();
 			void ParseEvent();
+
+			void ActivateBoosterUpdates()
+			{
+				Send("request(1,view)\n");
+			}
+
+			char ReadChar()
+			{
+				return readBuffer[readBufferPosition++];
+			}
+
+			bool CheckChar(const char charToCheck)
+			{
+				return charToCheck == readBuffer[readBufferPosition++];
+			}
+
+			void SkipOptionalChar(const char charToSkip)
+			{
+				if (charToSkip == readBuffer[readBufferPosition])
+				{
+					++readBufferPosition;
+				}
+			}
 
 			Logger::Logger* logger;
 			volatile bool run;
 			std::thread receiverThread;
 
-			Network::TcpClient tcp;
+			Network::TcpConnection tcp;
 
 			static const unsigned short MaxMessageSize = 1024;
 			char readBuffer[MaxMessageSize];
+			ssize_t readBufferLength;
 			unsigned char readBufferPosition;
 
 

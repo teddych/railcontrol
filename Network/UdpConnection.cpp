@@ -33,23 +33,22 @@ namespace Network
 	 	connected(false),
 	 	port(port)
 	{
-		// create socket
-		connectionSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-		if (connectionSocket == -1)
-		{
-			logger->Error(Languages::TextUnableToCreateSocket);
-			return;
-		}
-
-		// setting listening port
 		memset((char*)&sockaddr, 0, sizeof(sockaddr));
 		struct sockaddr_in* sockaddr_in = reinterpret_cast<struct sockaddr_in*>(&sockaddr);
 		sockaddr_in->sin_family = AF_INET;
 		sockaddr_in->sin_port = htons(port);
-		if (inet_aton(server.c_str(), &sockaddr_in->sin_addr) == 0)
+		int ok = inet_pton(AF_INET, server.c_str(), &sockaddr_in->sin_addr);
+		if (ok <= 0)
 		{
-			logger->Error(Languages::TextUnableToResolveAddress);
-			close(connectionSocket);
+			logger->Error(Languages::TextUnableToResolveAddress, server);
+			return;
+		}
+
+		// create socket
+		connectionSocket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+		if (connectionSocket == -1)
+		{
+			logger->Error(Languages::TextUnableToCreateUdpSocket, server, port);
 			return;
 		}
 

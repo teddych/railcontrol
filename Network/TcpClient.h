@@ -33,62 +33,6 @@ namespace Network
 	{
 		public:
 			TcpClient() = delete;
-			TcpClient(Logger::Logger* logger, const std::string& host, const unsigned short port);
-			~TcpClient()
-			{
-				Terminate();
-			}
-
-			void Terminate()
-			{
-				if (connection == nullptr)
-				{
-					return;
-				}
-				delete connection;
-				connection = nullptr;
-			}
-
-			int Send(const char* buf, const size_t buflen, const int flags = 0)
-			{
-				if (connection == nullptr)
-				{
-					errno = ENOTCONN;
-					return -1;
-				}
-				return connection->Send(buf, buflen, flags);
-			}
-
-			int Send(const std::string& string, const int flags = 0)
-			{
-				if (connection == nullptr)
-				{
-					errno = ENOTCONN;
-					return -1;
-				}
-				return connection->Send(string.c_str(), string.size(), flags);
-			}
-
-			int Receive(char* buf, const size_t buflen, const int flags = 0)
-			{
-				if (connection == nullptr)
-				{
-					errno = ENOTCONN;
-					return -1;
-				}
-				return connection->Receive(buf, buflen, flags);
-			}
-
-			bool IsConnected()
-			{
-				return connection != nullptr;
-			}
-
-		private:
-			Logger::Logger* logger;
-			const std::string host;
-			const unsigned short port;
-			TcpConnection* connection;
-			bool connected;
+			static TcpConnection GetTcpClientConnection(Logger::Logger* logger, const std::string& host, const unsigned short port);
 	};
 }

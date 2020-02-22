@@ -27,12 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Network
 {
-	TcpClient::TcpClient(Logger::Logger* logger, const std::string& host, const unsigned short port)
-	:	logger(logger),
-	 	host(host),
-	 	port(port),
-	 	connection(nullptr),
-	 	connected(false)
+	TcpConnection TcpClient::GetTcpClientConnection(Logger::Logger* logger, const std::string& host, const unsigned short port)
 	{
 	    struct sockaddr_in ecosAddress;
 	    ecosAddress.sin_family = AF_INET;
@@ -40,25 +35,39 @@ namespace Network
 	    int ok = inet_pton(AF_INET, host.c_str(), &ecosAddress.sin_addr);
 	    if (ok <= 0)
 	    {
-	        printf("\nInvalid address/ Address not supported \n");
-	        return;
+			logger->Error(Languages::TextUnableToResolveAddress, host);
+	        return TcpConnection(0);
 	    }
 
 	    int sock = socket(AF_INET, SOCK_STREAM, 0);
 	    if (sock < 0)
 	    {
-	        printf("\n Socket creation error \n");
-	        return;
+			logger->Error(Languages::TextUnableToCreateTcpSocket, host, port);
+	        return TcpConnection(0);
 	    }
 
 	    ok = connect(sock, (struct sockaddr *)&ecosAddress, sizeof(ecosAddress));
 	    if (ok < 0)
 	    {
-	        printf("\nConnection Failed \n");
+	    	Languages::textSelector_t text;
+	    	switch (errno)
+	    	{
+	    		case ECONNREFUSED:
+	    			text = Languages::TextConnectionRefused;
+	    			break;
+
+	    		case ENETUNREACH:
+	    			text = Languages::TextNetworkUnreachable;
+	    			break;
+
+	    		default:
+	    			text = Languages::TextConnectionFailed;
+		    }
+			logger->Error(text, host, port);
 	        close(sock);
-	        return;
+	        return TcpConnection(0);
 	    }
 
-		connection = new TcpConnection(sock);
+		return TcpConnection(sock);
 	}
 }

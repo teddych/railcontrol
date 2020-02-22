@@ -36,7 +36,13 @@ namespace Network
 		}
 	}
 
-	int TcpConnection::Send(const char* buf, const size_t buflen, const int flags) {
+	int TcpConnection::Send(const char* buf, const size_t buflen, const int flags)
+	{
+		if (connectionSocket == 0 || connected == false)
+		{
+			errno = ENOTCONN;
+			return -1;
+		}
 		errno = 0;
 		fd_set set;
 		FD_ZERO(&set);
@@ -59,6 +65,7 @@ namespace Network
 		if (ret <= 0)
 		{
 			errno = ECONNRESET;
+			Terminate();
 			return -1;
 		}
 		return ret;
@@ -66,6 +73,11 @@ namespace Network
 
 	int TcpConnection::Receive(char* buf, const size_t buflen, const int flags)
 	{
+		if (connectionSocket == 0 || connected == false)
+		{
+			errno = ENOTCONN;
+			return -1;
+		}
 		errno = 0;
 		fd_set set;
 		FD_ZERO(&set);
@@ -88,6 +100,7 @@ namespace Network
 		if (ret <= 0)
 		{
 			errno = ECONNRESET;
+			Terminate();
 			return -1;
 		}
 		return ret;

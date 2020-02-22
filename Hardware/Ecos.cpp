@@ -41,8 +41,9 @@ namespace Hardware
 			"ESU ECoS / " + params->GetName() + " at IP " + params->GetArg1()),
 		logger(Logger::Logger::GetLogger("ECoS " + params->GetName() + " " + params->GetArg1())),
 	 	run(false),
-	 	tcp(logger, params->GetArg1(), EcosPort),
-	 	readBufferPosition(0)
+	 	tcp(Network::TcpClient::GetTcpClientConnection(logger, params->GetArg1(), EcosPort)),
+	 	readBufferLength(0),
+		readBufferPosition(0)
 	{
 		logger->Info(Languages::TextStarting, name);
 		if (!tcp.IsConnected())
@@ -61,11 +62,6 @@ namespace Hardware
 		run = false;
 		receiverThread.join();
 		logger->Info(Languages::TextTerminatingSenderSocket);
-	}
-
-	void Ecos::Booster(const boosterState_t status)
-	{
-		Send(status == BoosterGo ? "set(1,go)\n" : "set(1,stop)\n");
 	}
 
 //	void Ecos::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
@@ -97,11 +93,6 @@ namespace Hardware
 		}
 	}
 
-	void Ecos::ActivateBoosterUpdates()
-	{
-		Send("request(1,view)\n");
-	}
-
 	void Ecos::Receiver()
 	{
 		Utils::Utils::SetThreadName("ECoS");
@@ -110,14 +101,14 @@ namespace Hardware
 		run = true;
 		while(run)
 		{
-			ssize_t datalen = tcp.Receive(readBuffer, sizeof(readBuffer));
+			readBufferLength = tcp.Receive(readBuffer, sizeof(readBuffer));
 
 			if (!run)
 			{
 				break;
 			}
 
-			if (datalen < 0)
+			if (readBufferLength < 0)
 			{
 				if (errno == ETIMEDOUT)
 				{
@@ -127,7 +118,7 @@ namespace Hardware
 				logger->Error(Languages::TextUnableToReceiveData);
 				break;
 			}
-			logger->Hex(reinterpret_cast<unsigned char*>(readBuffer), datalen);
+			logger->Hex(reinterpret_cast<unsigned char*>(readBuffer), readBufferLength);
 
 			Parser();
 		}
@@ -135,42 +126,52 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 
-	char Ecos::ReadChar()
-	{
-		return readBuffer[readBufferPosition++];
-	}
-
-	bool Ecos::CheckChar(char charToCheck)
-	{
-		return charToCheck == readBuffer[readBufferPosition++];
-	}
-
 	void Ecos::Parser()
 	{
-		if (CheckChar('<'))
+		readBufferPosition = 0;
+		if (!CheckChar('<'))
 		{
 			logger->Error(Languages::TextInvalidDataReceived);
 			return;
 		}
 		char type = ReadChar();
-		if (type == 'R')
+		switch (type)
 		{
-			ParseReply();
-			return;
+			case 'R':
+				ParseReply();
+				return;
+
+			case 'E':
+				ParseEvent();
+				return;
+
+			default:
+				logger->Error(Languages::TextInvalidDataReceived);
+				return;
 		}
-		if (type == 'E')
-		{
-			ParseEvent();
-			return;
-		}
-		logger->Error(Languages::TextInvalidDataReceived);
 	}
 
 	void Ecos::ParseReply()
 	{
+		if (ReadChar() != 'E'
+			|| ReadChar() != 'P'
+			|| ReadChar() != 'L'
+			|| ReadChar() != 'Y')
+		{
+			logger->Error(Languages::TextInvalidDataReceived);
+			return;
+		}
 	}
 
 	void Ecos::ParseEvent()
 	{
+		if (ReadChar() != 'V'
+			|| ReadChar() != 'E'
+			|| ReadChar() != 'N'
+			|| ReadChar() != 'T')
+		{
+			logger->Error(Languages::TextInvalidDataReceived);
+			return;
+		}
 	}
 } // namespace

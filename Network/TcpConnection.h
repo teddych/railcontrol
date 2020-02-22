@@ -30,7 +30,7 @@ namespace Network
 			TcpConnection() = delete;
 			TcpConnection(int socket)
 			:	connectionSocket(socket),
-				connected(true)
+				connected(socket != 0)
 			{}
 
 			~TcpConnection()
@@ -46,6 +46,8 @@ namespace Network
 			}
 
 			int Receive(char* buf, const size_t buflen, const int flags = 0);
+
+			bool IsConnected() const { return connected; }
 
 		private:
 			int connectionSocket;
