@@ -121,15 +121,16 @@ enum boosterState_t : bool
 enum protocol_t : unsigned char
 {
 	ProtocolNone = 0,
-	ProtocolServer,
-	ProtocolMM1,
-	ProtocolMM2,
-	ProtocolMFX,
-	ProtocolDCC,
-	ProtocolDCCShort,
-	ProtocolDCCLong,
-	ProtocolSX1,
-	ProtocolSX2,
+	ProtocolServer = 1,
+	ProtocolMM1 = 2,
+	ProtocolMM2 = 3,
+	ProtocolMFX = 4,
+	ProtocolDCC = 5,
+	ProtocolDCC14 = 6,
+	ProtocolDCC28 = 7,
+	ProtocolDCC128 = 8,
+	ProtocolSX1 = 9,
+	ProtocolSX2 = 10,
 	ProtocolEnd = ProtocolSX2
 };
 
@@ -141,6 +142,9 @@ static const std::string protocolSymbols[] =
 	"MM2",
 	"mfx",
 	"DCC",
+	"DCC14",
+	"DCC28",
+	"DCC128",
 	"SX1",
 	"SX2"
 };
@@ -169,6 +173,7 @@ enum hardwareType_t : unsigned char
 	HardwareTypeHsi88 = 6,
 	HardwareTypeZ21 = 7,
 	HardwareTypeCcSchnitte = 8,
+	HardwareTypeEcos = 9,
 	HardwareTypeNumbers
 };
 

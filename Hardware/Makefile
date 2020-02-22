@@ -9,6 +9,7 @@ LDFLAGS=-g -shared -Wl,-soname,
 LIBS= \
 	CS2.so \
 	CcSchnitte.so \
+	Ecos.so \
 	Hsi88.so \
 	M6051.so \
 	OpenDcc.so \

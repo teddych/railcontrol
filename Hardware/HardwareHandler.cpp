@@ -27,6 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Logger/Logger.h"
 #include "Hardware/CS2.h"
 #include "Hardware/CcSchnitte.h"
+#include "Hardware/Ecos.h"
 #include "Hardware/HardwareHandler.h"
 #include "Hardware/Hsi88.h"
 #include "Hardware/M6051.h"
@@ -50,7 +51,8 @@ namespace Hardware
 		"OpenDcc",
 		"Hsi88",
 		"Z21",
-		"CcSchnitte"
+		"CcSchnitte",
+		"Ecos"
 	};
 
 	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params)
@@ -105,6 +107,11 @@ namespace Hardware
 			case HardwareTypeCcSchnitte:
 				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_CcSchnitte);
 				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_CcSchnitte);
+				break;
+
+			case HardwareTypeEcos:
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_Ecos);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_Ecos);
 				break;
 
 			default:
@@ -408,6 +415,10 @@ namespace Hardware
 
 			case HardwareTypeCcSchnitte:
 				Hardware::CcSchnitte::GetArgumentTypes(arguments);
+				return;
+
+			case HardwareTypeEcos:
+				Hardware::Ecos::GetArgumentTypes(arguments);
 				return;
 
 			default:

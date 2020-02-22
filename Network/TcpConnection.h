@@ -39,18 +39,13 @@ namespace Network
 			}
 
 			void Terminate();
-			int Send(const char* buf, const size_t buflen, const int flags);
-			int Send(const std::string& string, const int flags)
+			int Send(const char* buf, const size_t buflen, const int flags = 0);
+			int Send(const std::string& string, const int flags = 0)
 			{
 				return Send(string.c_str(), string.size(), flags);
 			}
 
-			int Send(const std::string& string)
-			{
-				return Send(string, 0);
-			}
-
-			int Receive(char* buf, const size_t buflen, const int flags);
+			int Receive(char* buf, const size_t buflen, const int flags = 0);
 
 		private:
 			int connectionSocket;
