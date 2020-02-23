@@ -102,14 +102,14 @@ namespace Hardware
 		run = true;
 		while(run)
 		{
-			readBufferLength = tcp.Receive(readBuffer, sizeof(readBuffer));
+			ReadLine();
 
 			if (!run)
 			{
 				break;
 			}
 
-			if (readBufferLength < 0)
+			if (readBufferLength == 0)
 			{
 				if (errno == ETIMEDOUT)
 				{
@@ -119,7 +119,6 @@ namespace Hardware
 				logger->Error(Languages::TextUnableToReceiveData);
 				break;
 			}
-			logger->Hex(reinterpret_cast<unsigned char*>(readBuffer), readBufferLength);
 
 			Parser();
 		}
@@ -127,9 +126,43 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 
-	void Ecos::Parser()
+	void Ecos::ReadLine()
 	{
 		readBufferPosition = 0;
+		readBufferLength = -1;
+		while(true)
+		{
+			int dataLength = tcp.Receive(readBuffer + readBufferPosition, 1);
+			if (dataLength != 1)
+			{
+				readBufferLength = 0;
+				break;
+			}
+			if (readBuffer[readBufferPosition] == '\r')
+			{
+				continue;
+			}
+			if (readBuffer[readBufferPosition] == '\n')
+			{
+				readBufferLength = readBufferPosition;
+				break;
+			}
+			++readBufferPosition;
+			if (readBufferPosition >= MaxMessageSize)
+			{
+				break;
+			}
+		}
+		readBufferPosition = 0;
+		if (readBufferLength == 0)
+		{
+			return;
+		}
+		logger->Hex(reinterpret_cast<unsigned char*>(readBuffer), readBufferLength);
+	}
+
+	void Ecos::Parser()
+	{
 		if (!CheckChar('<'))
 		{
 			logger->Error(Languages::TextInvalidDataReceived);
@@ -159,6 +192,13 @@ namespace Hardware
 			logger->Error(Languages::TextInvalidDataReceived);
 			return;
 		}
+		ReadLine();
+		while(GetChar() != '<')
+		{
+			// ParseReplyLine()
+			ReadLine();
+		}
+		ParseEndLine();
 	}
 
 	void Ecos::ParseEvent()
@@ -173,9 +213,11 @@ namespace Hardware
 		{
 			return;
 		}
+		ReadLine();
 		while(GetChar() != '<')
 		{
 			ParseEventLine();
+			ReadLine();
 		}
 		ParseEndLine();
 	}
@@ -194,8 +236,8 @@ namespace Hardware
 			{
 				manager->Booster(ControlTypeHardware, BoosterStop);
 			}
+			return;
 		}
-		logger->Debug("Object {0}", object);
 		string event = ReadUntilLineEnd();
 		logger->Hex(event);
 	}
@@ -229,9 +271,7 @@ namespace Hardware
 
 	string Ecos::ReadUntilLineEnd()
 	{
-		string out = ReadUntilChar('\r');
-		CheckChar('\r');
-		CheckChar('\n');
+		string out = ReadUntilChar('\n');
 		return out;
 	}
 

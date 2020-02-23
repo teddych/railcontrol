@@ -88,6 +88,7 @@ namespace Hardware
 		private:
 			void Send(const char* data);
 			void Receiver();
+			void ReadLine();
 			void Parser();
 			void ParseReply();
 			void ParseEvent();
@@ -103,16 +104,29 @@ namespace Hardware
 
 			char GetChar(const size_t offset = 0) const
 			{
-				return readBuffer[readBufferPosition + offset];
+				size_t position = readBufferPosition + offset;
+				if (position >= MaxMessageSize)
+				{
+					return 0;
+				}
+				return readBuffer[position];
 			}
 
 			char ReadAndConsumeChar()
 			{
+				if (readBufferPosition >= MaxMessageSize)
+				{
+					return 0;
+				}
 				return readBuffer[readBufferPosition++];
 			}
 
 			bool CheckChar(const char charToCheck)
 			{
+				if (readBufferPosition >= MaxMessageSize)
+				{
+					return false;
+				}
 				return charToCheck == readBuffer[readBufferPosition++];
 			}
 
@@ -131,7 +145,7 @@ namespace Hardware
 			bool CheckGraterThenAtLineEnd()
 			{
 				SkipWhiteSpace();
-				return CompareAndConsume(">\r\n", 3);
+				return CompareAndConsume(">\n", 2);
 			}
 
 			Logger::Logger* logger;
@@ -143,7 +157,7 @@ namespace Hardware
 			static const unsigned short MaxMessageSize = 1024;
 			char readBuffer[MaxMessageSize];
 			ssize_t readBufferLength;
-			unsigned char readBufferPosition;
+			size_t readBufferPosition;
 
 
 			static const unsigned short EcosPort = 15471;
