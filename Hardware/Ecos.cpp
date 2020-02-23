@@ -18,10 +18,14 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
+#include <cstring>
+
 #include "Hardware/Ecos.h"
 #include "Utils/Utils.h"
 
 using std::string;
+using std::strlen;
+using std::to_string;
 
 namespace Hardware
 {
@@ -34,6 +38,9 @@ namespace Hardware
 	{
 		delete(ecos);
 	}
+
+	const char* const Ecos::CommandActivateBoosterUpdates = "request(1,view)\n";
+	const char* const Ecos::CommandQueryLocos = "queryObjects(10,protocol,addr,name)\n";
 
 	Ecos::Ecos(const HardwareParams* params)
 	:	HardwareInterface(params->GetManager(),
@@ -51,7 +58,8 @@ namespace Hardware
 			return;
 		}
 		receiverThread = std::thread(&Hardware::Ecos::Receiver, this);
-		ActivateBoosterUpdates();
+		SendActivateBoosterUpdates();
+		SendQueryLocos();
 	}
 
 	Ecos::~Ecos()
@@ -65,9 +73,17 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingSenderSocket);
 	}
 
-//	void Ecos::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
-	void Ecos::LocoSpeed(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const locoSpeed_t speed)
+	void Ecos::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
+		unsigned int locomotiveData = ProtocolAddressToLocomotiveData(protocol, address);
+		if (dataToLoco.count(locomotiveData) != 1)
+		{
+			return;
+		}
+		unsigned int locomotiveId = dataToLoco[locomotiveData];
+		SendGetLocoHandle(locomotiveId);
+		string command = "set(" + to_string(locomotiveId) + ",speed[" + to_string(speed >> 3) + "])\n";
+		Send(command.c_str());
 	}
 
 //	void Ecos::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
@@ -192,13 +208,95 @@ namespace Hardware
 			logger->Error(Languages::TextInvalidDataReceived);
 			return;
 		}
+		SkipWhiteSpace();
+
+		if (Compare(CommandQueryLocos, strlen(CommandQueryLocos) - 1))
+		{
+			ParseQueryLocos();
+			logger->Debug("Booster update activated");
+		}
 		ReadLine();
 		while(GetChar() != '<')
 		{
-			// ParseReplyLine()
+			// ParseLine()
 			ReadLine();
 		}
 		ParseEndLine();
+	}
+
+	void Ecos::ParseQueryLocos()
+	{
+		ReadLine();
+		while(GetChar() != '<')
+		{
+			ParseLocoData();
+			ReadLine();
+		}
+		ParseEndLine();
+	}
+
+	void Ecos::ParseLocoData()
+	{
+		int locomotiveId = ParseInt();
+		string option;
+		string stringProtocol;
+		int address;
+		ParseOption(option, stringProtocol);
+		ParseOptionInt(option, address);
+		int protocol = ProtocolNone;
+		if (stringProtocol.compare("MFX") == 0)
+		{
+			protocol = ProtocolMFX;
+		}
+		else if (stringProtocol.compare("MM14") == 0)
+		{
+			protocol = ProtocolMM1;
+		}
+		else if (stringProtocol.compare("MM27") == 0)
+		{
+			protocol = ProtocolMM2;
+		}
+		else if (stringProtocol.compare("DCC14") == 0)
+		{
+			protocol = ProtocolDCC14;
+		}
+		else if (stringProtocol.compare("DCC28") == 0)
+		{
+			protocol = ProtocolDCC28;
+		}
+		else if (stringProtocol.compare("DCC128") == 0)
+		{
+			protocol = ProtocolDCC128;
+		}
+		if (protocol == ProtocolNone)
+		{
+			return;
+		}
+		unsigned int locomotiveData = ProtocolAddressToLocomotiveData(protocol, address);
+		locoToData[locomotiveId] = locomotiveData;
+		dataToLoco[locomotiveData] = locomotiveId;
+		SendActivateLocoUpdates(locomotiveId);
+
+		logger->Debug("Locomotive ID: {0} {1} {2}", locomotiveId, protocol, address);
+	}
+
+	void Ecos::ParseOption(string& option, string& value)
+	{
+		SkipWhiteSpace();
+		option = ReadUntilChar('[');
+		CheckChar('[');
+		value = ReadUntilChar(']');
+		CheckChar(']');
+	}
+
+	void Ecos::ParseOptionInt(string& option, int& value)
+	{
+		SkipWhiteSpace();
+		option = ReadUntilChar('[');
+		CheckChar('[');
+		string stringValue = ReadUntilChar(']');
+		value = Utils::Utils::StringToInteger(stringValue);
+		CheckChar(']');
 	}
 
 	void Ecos::ParseEvent()

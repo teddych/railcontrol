@@ -85,21 +85,48 @@ namespace Hardware
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
+			static const char* const CommandActivateBoosterUpdates;
+			static const char* const CommandQueryLocos;
+
 		private:
+			static const unsigned short MaxMessageSize = 1024;
+			static const unsigned short EcosPort = 15471;
+
 			void Send(const char* data);
 			void Receiver();
 			void ReadLine();
 			void Parser();
 			void ParseReply();
+			void ParseQueryLocos();
+			void ParseLocoData();
+			void ParseOption(std::string& option, std::string& value);
+			void ParseOptionInt(std::string& option, int& value);
 			void ParseEvent();
 			void ParseEventLine();
 			void ParseEndLine();
 			std::string ReadUntilChar(const char c);
 			std::string ReadUntilLineEnd();
 
-			void ActivateBoosterUpdates()
+			void SendActivateBoosterUpdates()
 			{
-				Send("request(1,view)\n");
+				Send(CommandActivateBoosterUpdates);
+			}
+
+			void SendQueryLocos()
+			{
+				Send(CommandQueryLocos);
+			}
+
+			void SendActivateLocoUpdates(const int locomotiveId)
+			{
+				std::string command = "request(" + std::to_string(locomotiveId) + ",view)\n";
+				Send(command.c_str());
+			}
+
+			void SendGetLocoHandle(const int locomotiveId)
+			{
+				std::string command = "request(" + std::to_string(locomotiveId) + ",control,force)\n";
+				Send(command.c_str());
 			}
 
 			char GetChar(const size_t offset = 0) const
@@ -154,17 +181,29 @@ namespace Hardware
 
 			Network::TcpConnection tcp;
 
-			static const unsigned short MaxMessageSize = 1024;
 			char readBuffer[MaxMessageSize];
 			ssize_t readBufferLength;
 			size_t readBufferPosition;
 
+			static unsigned int ProtocolAddressToLocomotiveData(int protocol, int address)
+			{
+				return (static_cast<unsigned int>(protocol) << 16) + static_cast<unsigned int>(address);
+			}
 
-			static const unsigned short EcosPort = 15471;
+			static protocol_t LocomotiveDataToProtocol(unsigned int locomotiveData)
+			{
+				return static_cast<protocol_t>(locomotiveData >> 16);
+			}
+
+			static address_t LocomotiveDataToAddress(unsigned int locomotiveData)
+			{
+				return locomotiveData & 0xFFFF;
+			}
+
+			std::map<unsigned int,unsigned int> locoToData;
+			std::map<unsigned int,unsigned int> dataToLoco;
 	};
 
 	extern "C" Ecos* create_Ecos(const HardwareParams* params);
 	extern "C" void destroy_Ecos(Ecos* ecos);
-
 } // namespace
-
