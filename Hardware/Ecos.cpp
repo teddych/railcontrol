@@ -41,6 +41,8 @@ namespace Hardware
 
 	const char* const Ecos::CommandActivateBoosterUpdates = "request(1,view)\n";
 	const char* const Ecos::CommandQueryLocos = "queryObjects(10,protocol,addr,name)\n";
+	const char* const Ecos::CommandQueryAccessories = "queryObjects(11,protocol,addr,name1,name2,name3)\n";
+	const char* const Ecos::CommandQueryFeedbacks = "queryObjects(26)\n";
 
 	Ecos::Ecos(const HardwareParams* params)
 	:	HardwareInterface(params->GetManager(),
@@ -60,6 +62,8 @@ namespace Hardware
 		receiverThread = std::thread(&Hardware::Ecos::Receiver, this);
 		SendActivateBoosterUpdates();
 		SendQueryLocos();
+		SendQueryAccessories();
+		SendQueryFeedbacks();
 	}
 
 	Ecos::~Ecos()
@@ -81,14 +85,22 @@ namespace Hardware
 			return;
 		}
 		unsigned int locomotiveId = dataToLoco[locomotiveData];
-		SendGetLocoHandle(locomotiveId);
+		SendGetHandle(locomotiveId);
 		string command = "set(" + to_string(locomotiveId) + ",speed[" + to_string(speed >> 3) + "])\n";
 		Send(command.c_str());
 	}
 
-//	void Ecos::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
-	void Ecos::LocoDirection(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const direction_t direction)
+	void Ecos::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
 	{
+		unsigned int locomotiveData = ProtocolAddressToLocomotiveData(protocol, address);
+		if (dataToLoco.count(locomotiveData) != 1)
+		{
+			return;
+		}
+		unsigned int locomotiveId = dataToLoco[locomotiveData];
+		SendGetHandle(locomotiveId);
+		string command = "set(" + to_string(locomotiveId) + ",dir[" + (direction == DirectionRight ? "0" : "1") + "])\n";
+		Send(command.c_str());
 	}
 
 //	void Ecos::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
@@ -240,9 +252,11 @@ namespace Hardware
 		int locomotiveId = ParseInt();
 		string option;
 		string stringProtocol;
+		string name;
 		int address;
 		ParseOption(option, stringProtocol);
 		ParseOptionInt(option, address);
+		ParseOptionString(option, name);
 		int protocol = ProtocolNone;
 		if (stringProtocol.compare("MFX") == 0)
 		{
@@ -277,7 +291,7 @@ namespace Hardware
 		dataToLoco[locomotiveData] = locomotiveId;
 		SendActivateLocoUpdates(locomotiveId);
 
-		logger->Debug("Locomotive ID: {0} {1} {2}", locomotiveId, protocol, address);
+		logger->Info(Languages::TextFoundLocoInEcosDatabase, locomotiveId, protocol, address, name);
 	}
 
 	void Ecos::ParseOption(string& option, string& value)
@@ -296,6 +310,17 @@ namespace Hardware
 		CheckChar('[');
 		string stringValue = ReadUntilChar(']');
 		value = Utils::Utils::StringToInteger(stringValue);
+		CheckChar(']');
+	}
+
+	void Ecos::ParseOptionString(string& option, string& value)
+	{
+		SkipWhiteSpace();
+		option = ReadUntilChar('[');
+		CheckChar('[');
+		CheckChar('"');
+		value = ReadUntilChar('"');
+		CheckChar('"');
 		CheckChar(']');
 	}
 
@@ -324,20 +349,75 @@ namespace Hardware
 	{
 		int object = ParseInt();
 		SkipWhiteSpace();
-		if (object == 1)
+
+		if (object >= 20000)
 		{
-			if (Compare("status[GO]", 10))
-			{
-				manager->Booster(ControlTypeHardware, BoosterGo);
-			}
-			else if (Compare("status[STOP]", 12))
-			{
-				manager->Booster(ControlTypeHardware, BoosterStop);
-			}
+			ParseAccessoryEvent(object);
 			return;
 		}
+
+		if (object >= 1000)
+		{
+			ParseLocoEvent(object);
+			return;
+		}
+
+		if (object == 1)
+		{
+			ParseBoosterEvent();
+			return;
+		}
+
 		string event = ReadUntilLineEnd();
 		logger->Hex(event);
+	}
+
+	void Ecos::ParseBoosterEvent()
+	{
+		if (Compare("status[GO]", 10))
+		{
+			manager->Booster(ControlTypeHardware, BoosterGo);
+		}
+		else if (Compare("status[STOP]", 12))
+		{
+			manager->Booster(ControlTypeHardware, BoosterStop);
+		}
+	}
+
+	void Ecos::ParseLocoEvent(int loco)
+	{
+		if (locoToData.count(loco) != 1)
+		{
+			return;
+		}
+		string option;
+		int value;
+		ParseOptionInt(option, value);
+
+		if (option.compare("speed") == 0)
+		{
+			address_t address;
+			protocol_t protocol;
+			GetProtocolAddress(loco, protocol, address);
+			locoSpeed_t speed = value << 3;
+			manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, speed);
+			return;
+		}
+
+		if (option.compare("dir") == 0)
+		{
+			address_t address;
+			protocol_t protocol;
+			GetProtocolAddress(loco, protocol, address);
+			direction_t direction = (value == 1 ? DirectionLeft : DirectionRight);
+			manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, direction);
+			return;
+		}
+	}
+
+	void Ecos::ParseAccessoryEvent(__attribute__((unused)) int accessory)
+	{
+
 	}
 
 	void Ecos::ParseEndLine()

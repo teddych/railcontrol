@@ -87,6 +87,8 @@ namespace Hardware
 
 			static const char* const CommandActivateBoosterUpdates;
 			static const char* const CommandQueryLocos;
+			static const char* const CommandQueryAccessories;
+			static const char* const CommandQueryFeedbacks;
 
 		private:
 			static const unsigned short MaxMessageSize = 1024;
@@ -99,10 +101,16 @@ namespace Hardware
 			void ParseReply();
 			void ParseQueryLocos();
 			void ParseLocoData();
-			void ParseOption(std::string& option, std::string& value);
-			void ParseOptionInt(std::string& option, int& value);
+
 			void ParseEvent();
 			void ParseEventLine();
+			void ParseBoosterEvent();
+			void ParseLocoEvent(int loco);
+			void ParseAccessoryEvent(int accessory);
+
+			void ParseOption(std::string& option, std::string& value);
+			void ParseOptionInt(std::string& option, int& value);
+			void ParseOptionString(std::string& option, std::string& value);
 			void ParseEndLine();
 			std::string ReadUntilChar(const char c);
 			std::string ReadUntilLineEnd();
@@ -117,15 +125,25 @@ namespace Hardware
 				Send(CommandQueryLocos);
 			}
 
+			void SendQueryAccessories()
+			{
+				Send(CommandQueryAccessories);
+			}
+
+			void SendQueryFeedbacks()
+			{
+				Send(CommandQueryFeedbacks);
+			}
+
 			void SendActivateLocoUpdates(const int locomotiveId)
 			{
 				std::string command = "request(" + std::to_string(locomotiveId) + ",view)\n";
 				Send(command.c_str());
 			}
 
-			void SendGetLocoHandle(const int locomotiveId)
+			void SendGetHandle(const int id)
 			{
-				std::string command = "request(" + std::to_string(locomotiveId) + ",control,force)\n";
+				std::string command = "request(" + std::to_string(id) + ",control,force)\n";
 				Send(command.c_str());
 			}
 
@@ -188,6 +206,13 @@ namespace Hardware
 			static unsigned int ProtocolAddressToLocomotiveData(int protocol, int address)
 			{
 				return (static_cast<unsigned int>(protocol) << 16) + static_cast<unsigned int>(address);
+			}
+
+			void GetProtocolAddress(const unsigned int loco, protocol_t& protocol, address_t& address)
+			{
+				unsigned int locomotiveData = locoToData[loco];
+				protocol = LocomotiveDataToProtocol(locomotiveData);
+				address = LocomotiveDataToAddress(locomotiveData);
 			}
 
 			static protocol_t LocomotiveDataToProtocol(unsigned int locomotiveData)

@@ -129,6 +129,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextFeedbackStateIsOn */ { "Feedback state of {0} is now on", "Der Status des Rückmelders {0} ist nun ein", "El estado de la retroseñal {0} está encendido" },
 /* TextFeedbackUpdated */ { "Feedback {0} updated", "Rückmelder {0} aktualisiert", "Retroseñal {0} actualizado" },
 /* TextFeedbacks */ { "Feedbacks", "Rückmelder", "Retroseñales" },
+/* TextFoundLocoInEcosDatabase */ { "Found locomotive in ECoS database: ID: {0} Protocol: {1} Address: {2} Name: {3}", "Locomotive in ECoS Datenbank gefunden: ID: {0} Protokol: {1} Adresse: {2} Name: {3}", "Encontrado una locomotora en la base de datos de ECoS: ID: {0} Protocolo: {1} Dirección: {2} Nombre: {3}" },
 /* TextFromTrack */ { "From track", "Von Gleis", "De vía" },
 /* TextGerman */ { "German", "Deutsch", "Aleman" },
 /* TextGreen */ { "green", "grün", "verde" },
