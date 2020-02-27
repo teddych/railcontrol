@@ -861,7 +861,12 @@ void Manager::AccessoryState(const controlType_t controlType, const controlID_t 
 		return;
 	}
 
-	// FIXME: add code for signals
+	Signal* signal = GetSignal(controlID, protocol, address);
+	if (signal != nullptr)
+	{
+		SignalState(controlType, signal, state, true);
+		return;
+	}
 }
 
 bool Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool force)
