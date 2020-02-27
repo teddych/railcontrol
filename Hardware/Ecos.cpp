@@ -19,6 +19,7 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include <cstring>
+#include <vector>
 
 #include "Hardware/Ecos.h"
 #include "Utils/Utils.h"
@@ -26,6 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 using std::string;
 using std::strlen;
 using std::to_string;
+using std::vector;
 
 namespace Hardware
 {
@@ -103,9 +105,17 @@ namespace Hardware
 		Send(command.c_str());
 	}
 
-//	void Ecos::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
-	void Ecos::LocoFunction(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const function_t function, __attribute__ ((unused)) const bool on)
+	void Ecos::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
+		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
+		if (dataToLoco.count(locomotiveData) != 1)
+		{
+			return;
+		}
+		unsigned int locomotiveId = dataToLoco[locomotiveData];
+		SendGetHandle(locomotiveId);
+		string command = "set(" + to_string(locomotiveId) + ",func[" + to_string(function) + "," + (on == true ? "1" : "0") + "])\n";
+		Send(command.c_str());
 	}
 
 	void Ecos::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
@@ -413,6 +423,7 @@ namespace Hardware
 		ParseInt();
 		if (CheckGraterThenAtLineEnd() == false)
 		{
+			logger->Error(Languages::TextInvalidDataReceived);
 			return;
 		}
 		ReadLine();
@@ -470,15 +481,15 @@ namespace Hardware
 			return;
 		}
 		string option;
-		int value;
-		ParseOptionInt(option, value);
+		string value;
+		ParseOption(option, value);
 
 		if (option.compare("speed") == 0)
 		{
 			address_t address;
 			protocol_t protocol;
 			GetLocoProtocolAddress(loco, protocol, address);
-			locoSpeed_t speed = value << 3;
+			locoSpeed_t speed = Utils::Utils::StringToInteger(value) << 3;
 			manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, speed);
 			return;
 		}
@@ -488,8 +499,26 @@ namespace Hardware
 			address_t address;
 			protocol_t protocol;
 			GetLocoProtocolAddress(loco, protocol, address);
-			direction_t direction = (value == 1 ? DirectionLeft : DirectionRight);
+			direction_t direction = (Utils::Utils::StringToInteger(value) == 1 ? DirectionLeft : DirectionRight);
 			manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, direction);
+			return;
+		}
+
+		if (option.compare("func") == 0)
+		{
+			address_t address;
+			protocol_t protocol;
+			GetLocoProtocolAddress(loco, protocol, address);
+			vector<string> valueList;
+			Utils::Utils::SplitString(value, ",", valueList);
+			if (valueList.size() < 2)
+			{
+				logger->Error(Languages::TextInvalidDataReceived);
+				return;
+			}
+			function_t function = Utils::Utils::StringToInteger(valueList[0], 0);
+			bool on = Utils::Utils::StringToBool(valueList[1]);
+			manager->LocoFunction(ControlTypeHardware, controlID, protocol, address, function, on);
 			return;
 		}
 	}
