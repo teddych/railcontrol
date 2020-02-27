@@ -79,7 +79,7 @@ namespace Hardware
 
 	void Ecos::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
-		unsigned int locomotiveData = ProtocolAddressToLocomotiveData(protocol, address);
+		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
 		if (dataToLoco.count(locomotiveData) != 1)
 		{
 			return;
@@ -92,7 +92,7 @@ namespace Hardware
 
 	void Ecos::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
 	{
-		unsigned int locomotiveData = ProtocolAddressToLocomotiveData(protocol, address);
+		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
 		if (dataToLoco.count(locomotiveData) != 1)
 		{
 			return;
@@ -108,9 +108,21 @@ namespace Hardware
 	{
 	}
 
-//	void Ecos::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
-	void Ecos::Accessory(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const accessoryState_t state, __attribute__ ((unused)) const bool on)
+	void Ecos::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
+		if (on == false)
+		{
+			return;
+		}
+		unsigned int accessoryData = ProtocolAddressToData(protocol, address);
+		if (dataToAccessory.count(accessoryData) != 1)
+		{
+			return;
+		}
+		unsigned int accessoryId = dataToAccessory[accessoryData];
+		SendGetHandle(accessoryId);
+		string command = "set(" + to_string(accessoryId) + ",state[" + (state ? "0" : "1") + "])\n";
+		Send(command.c_str());
 	}
 
 	void Ecos::Send(const char* data)
@@ -225,8 +237,15 @@ namespace Hardware
 		if (Compare(CommandQueryLocos, strlen(CommandQueryLocos) - 1))
 		{
 			ParseQueryLocos();
-			logger->Debug("Booster update activated");
+			return;
 		}
+
+		if (Compare(CommandQueryAccessories, strlen(CommandQueryAccessories) - 1))
+		{
+			ParseQueryAccessories();
+			return;
+		}
+
 		ReadLine();
 		while(GetChar() != '<')
 		{
@@ -242,6 +261,17 @@ namespace Hardware
 		while(GetChar() != '<')
 		{
 			ParseLocoData();
+			ReadLine();
+		}
+		ParseEndLine();
+	}
+
+	void Ecos::ParseQueryAccessories()
+	{
+		ReadLine();
+		while(GetChar() != '<')
+		{
+			ParseAccessoryData();
 			ReadLine();
 		}
 		ParseEndLine();
@@ -284,21 +314,61 @@ namespace Hardware
 		}
 		if (protocol == ProtocolNone)
 		{
+			logger->Warning(Languages::TextInvalidDataReceived);
 			return;
 		}
-		unsigned int locomotiveData = ProtocolAddressToLocomotiveData(protocol, address);
+		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
 		locoToData[locomotiveId] = locomotiveData;
 		dataToLoco[locomotiveData] = locomotiveId;
-		SendActivateLocoUpdates(locomotiveId);
+		SendActivateUpdates(locomotiveId);
 
 		logger->Info(Languages::TextFoundLocoInEcosDatabase, locomotiveId, protocol, address, name);
+	}
+
+	void Ecos::ParseAccessoryData()
+	{
+		int accessoryId = ParseInt();
+		string option;
+		string stringProtocol;
+		string name1;
+		string name2;
+		string name3;
+		int address;
+		ParseOption(option, stringProtocol);
+		ParseOptionInt(option, address);
+		ParseOptionString(option, name1);
+		ParseOptionString(option, name2);
+		ParseOptionString(option, name3);
+		int protocol = ProtocolNone;
+		if (stringProtocol.compare("MOT") == 0)
+		{
+			protocol = ProtocolMM;
+		}
+		else if (stringProtocol.compare("DCC") == 0)
+		{
+			protocol = ProtocolDCC;
+		}
+		if (protocol == ProtocolNone)
+		{
+			logger->Warning(Languages::TextInvalidDataReceived);
+			return;
+		}
+		unsigned int accessoryData = ProtocolAddressToData(protocol, address);
+		accessoryToData[accessoryId] = accessoryData;
+		dataToAccessory[accessoryData] = accessoryId;
+		SendActivateUpdates(accessoryId);
+
+		logger->Info(Languages::TextFoundAccessoryInEcosDatabase, accessoryId, protocol, address, name1, name2, name3);
 	}
 
 	void Ecos::ParseOption(string& option, string& value)
 	{
 		SkipWhiteSpace();
 		option = ReadUntilChar('[');
-		CheckChar('[');
+		if (!CheckChar('['))
+		{
+			return;
+		}
 		value = ReadUntilChar(']');
 		CheckChar(']');
 	}
@@ -307,7 +377,10 @@ namespace Hardware
 	{
 		SkipWhiteSpace();
 		option = ReadUntilChar('[');
-		CheckChar('[');
+		if (!CheckChar('['))
+		{
+			return;
+		}
 		string stringValue = ReadUntilChar(']');
 		value = Utils::Utils::StringToInteger(stringValue);
 		CheckChar(']');
@@ -317,8 +390,14 @@ namespace Hardware
 	{
 		SkipWhiteSpace();
 		option = ReadUntilChar('[');
-		CheckChar('[');
-		CheckChar('"');
+		if (!CheckChar('['))
+		{
+			return;
+		}
+		if (!CheckChar('"'))
+		{
+			return;
+		}
 		value = ReadUntilChar('"');
 		CheckChar('"');
 		CheckChar(']');
@@ -398,7 +477,7 @@ namespace Hardware
 		{
 			address_t address;
 			protocol_t protocol;
-			GetProtocolAddress(loco, protocol, address);
+			GetLocoProtocolAddress(loco, protocol, address);
 			locoSpeed_t speed = value << 3;
 			manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, speed);
 			return;
@@ -408,15 +487,32 @@ namespace Hardware
 		{
 			address_t address;
 			protocol_t protocol;
-			GetProtocolAddress(loco, protocol, address);
+			GetLocoProtocolAddress(loco, protocol, address);
 			direction_t direction = (value == 1 ? DirectionLeft : DirectionRight);
 			manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, direction);
 			return;
 		}
 	}
 
-	void Ecos::ParseAccessoryEvent(__attribute__((unused)) int accessory)
+	void Ecos::ParseAccessoryEvent(int accessory)
 	{
+		if (accessoryToData.count(accessory) != 1)
+		{
+			return;
+		}
+		string option;
+		int value;
+		ParseOptionInt(option, value);
+
+		if (option.compare("state") == 0)
+		{
+			address_t address;
+			protocol_t protocol;
+			GetAccessoryProtocolAddress(accessory, protocol, address);
+			accessoryState_t state = (value == 0);
+			manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
+			return;
+		}
 
 	}
 
@@ -440,11 +536,15 @@ namespace Hardware
 	string Ecos::ReadUntilChar(const char c)
 	{
 		string out;
-		while(GetChar() != c)
+		while(true)
 		{
+			const char readChar = GetChar();
+			if (readChar == c || readChar == 0)
+			{
+				return out;
+			}
 			out.append(1, ReadAndConsumeChar());
 		}
-		return out;
 	}
 
 	string Ecos::ReadUntilLineEnd()

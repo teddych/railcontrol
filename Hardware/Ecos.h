@@ -61,13 +61,13 @@ namespace Hardware
 
 			void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const override
 			{
-				protocols.push_back(ProtocolMM2);
+				protocols.push_back(ProtocolMM);
 				protocols.push_back(ProtocolDCC);
 			}
 
 			bool AccessoryProtocolSupported(protocol_t protocol) const override
 			{
-				return (protocol == ProtocolMM2 || protocol == ProtocolDCC);
+				return (protocol == ProtocolMM || protocol == ProtocolDCC);
 			}
 
 			static void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes)
@@ -100,7 +100,9 @@ namespace Hardware
 			void Parser();
 			void ParseReply();
 			void ParseQueryLocos();
+			void ParseQueryAccessories();
 			void ParseLocoData();
+			void ParseAccessoryData();
 
 			void ParseEvent();
 			void ParseEventLine();
@@ -135,9 +137,9 @@ namespace Hardware
 				Send(CommandQueryFeedbacks);
 			}
 
-			void SendActivateLocoUpdates(const int locomotiveId)
+			void SendActivateUpdates(const int id)
 			{
-				std::string command = "request(" + std::to_string(locomotiveId) + ",view)\n";
+				std::string command = "request(" + std::to_string(id) + ",view)\n";
 				Send(command.c_str());
 			}
 
@@ -203,30 +205,40 @@ namespace Hardware
 			ssize_t readBufferLength;
 			size_t readBufferPosition;
 
-			static unsigned int ProtocolAddressToLocomotiveData(int protocol, int address)
+			static unsigned int ProtocolAddressToData(int protocol, int address)
 			{
 				return (static_cast<unsigned int>(protocol) << 16) + static_cast<unsigned int>(address);
 			}
 
-			void GetProtocolAddress(const unsigned int loco, protocol_t& protocol, address_t& address)
+			void GetLocoProtocolAddress(const unsigned int loco, protocol_t& protocol, address_t& address)
 			{
 				unsigned int locomotiveData = locoToData[loco];
-				protocol = LocomotiveDataToProtocol(locomotiveData);
-				address = LocomotiveDataToAddress(locomotiveData);
+				protocol = DataToProtocol(locomotiveData);
+				address = DataToAddress(locomotiveData);
 			}
 
-			static protocol_t LocomotiveDataToProtocol(unsigned int locomotiveData)
+			void GetAccessoryProtocolAddress(const unsigned int accessory, protocol_t& protocol, address_t& address)
 			{
-				return static_cast<protocol_t>(locomotiveData >> 16);
+				unsigned int accessoryData = accessoryToData[accessory];
+				protocol = DataToProtocol(accessoryData);
+				address = DataToAddress(accessoryData);
 			}
 
-			static address_t LocomotiveDataToAddress(unsigned int locomotiveData)
+			static protocol_t DataToProtocol(unsigned int data)
 			{
-				return locomotiveData & 0xFFFF;
+				return static_cast<protocol_t>(data >> 16);
+			}
+
+			static address_t DataToAddress(unsigned int data)
+			{
+				return data & 0xFFFF;
 			}
 
 			std::map<unsigned int,unsigned int> locoToData;
 			std::map<unsigned int,unsigned int> dataToLoco;
+
+			std::map<unsigned int,unsigned int> accessoryToData;
+			std::map<unsigned int,unsigned int> dataToAccessory;
 	};
 
 	extern "C" Ecos* create_Ecos(const HardwareParams* params);

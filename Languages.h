@@ -129,6 +129,7 @@ class Languages
 			TextFeedbackStateIsOn,
 			TextFeedbackUpdated,
 			TextFeedbacks,
+			TextFoundAccessoryInEcosDatabase,
 			TextFoundLocoInEcosDatabase,
 			TextFromTrack,
 			TextGerman,
