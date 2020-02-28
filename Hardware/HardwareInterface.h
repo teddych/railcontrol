@@ -56,16 +56,16 @@ namespace Hardware
 			virtual bool CanHandleFeedback() const { return false; }
 
 			// get available loco protocols of this control
-			virtual void GetLocoProtocols(std::vector<protocol_t>& protocols) const { protocols.push_back(ProtocolNone); }
+			virtual void GetLocoProtocols(__attribute__((unused)) std::vector<protocol_t>& protocols) const {};
 
 			// is given loco protocol supported
-			virtual bool LocoProtocolSupported(const protocol_t protocol) const { return protocol == ProtocolNone; }
+			virtual bool LocoProtocolSupported(__attribute__((unused)) const protocol_t protocol) const { return false; }
 
 			// get available accessory protocols of this control
-			virtual void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const { protocols.push_back(ProtocolNone); }
+			virtual void GetAccessoryProtocols(__attribute__((unused)) std::vector<protocol_t>& protocols) const {}
 
 			// is given accessory protocol supported
-			virtual bool AccessoryProtocolSupported(const protocol_t protocol) const { return protocol == ProtocolNone; }
+			virtual bool AccessoryProtocolSupported(__attribute__((unused)) const protocol_t protocol) const { return false; }
 
 			// turn booster on or off
 			virtual void Booster(__attribute__((unused)) const boosterState_t status) {};

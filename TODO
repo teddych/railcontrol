@@ -18,5 +18,4 @@
 - Lokfunktionen mit konfigurierbaren Icons
 - Numerischen Lokfunktionen eine definierte Funktion zuordnen (Rangiergang, Innenbeleuchtung, Lokpfiff, ...)
 - Reinizialisierung der Zentralen nach speichern der Parameter
-- Protokolle der Zentralen per Default = delete
 - Synchronisieren der ECoS Lok-Datenbank
