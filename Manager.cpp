@@ -340,6 +340,13 @@ bool Manager::ControlSave(const controlID_t& controlID,
 
 	if (newControl == true)
 	{
+		std::lock_guard<std::mutex> Guard(controlMutex);
+		ControlInterface* control = new HardwareHandler(*this, params);
+		if (control == nullptr)
+		{
+			return false;
+		}
+		controls[params->GetControlID()] = control;
 		return true;
 	}
 
@@ -355,7 +362,6 @@ bool Manager::ControlSave(const controlID_t& controlID,
 
 bool Manager::ControlDelete(controlID_t controlID)
 {
-	HardwareParams* params = nullptr;
 	{
 		std::lock_guard<std::mutex> guard(hardwareMutex);
 		if (controlID < ControlIdFirstHardware || hardwareParams.count(controlID) != 1)
@@ -363,7 +369,7 @@ bool Manager::ControlDelete(controlID_t controlID)
 			return false;
 		}
 
-		params = hardwareParams.at(controlID);
+		HardwareParams* params = hardwareParams.at(controlID);
 		if (params == nullptr)
 		{
 			return false;
@@ -378,6 +384,10 @@ bool Manager::ControlDelete(controlID_t controlID)
 			return false;
 		}
 		ControlInterface* control = controls.at(controlID);
+		if (control == nullptr)
+		{
+			return false;
+		}
 		controls.erase(controlID);
 		delete control;
 	}
@@ -2918,11 +2928,11 @@ Hardware::HardwareParams* Manager::CreateAndAddControl()
 		}
 	}
 	++newObjectID;
-	Hardware::HardwareParams* newObject = new Hardware::HardwareParams(this, newObjectID);
-	if (newObject == nullptr)
+	Hardware::HardwareParams* newParams = new Hardware::HardwareParams(this, newObjectID);
+	if (newParams == nullptr)
 	{
 		return nullptr;
 	}
-	hardwareParams[newObjectID] = newObject;
-	return newObject;
+	hardwareParams[newObjectID] = newParams;
+	return newParams;
 }
