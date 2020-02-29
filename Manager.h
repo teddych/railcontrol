@@ -268,7 +268,7 @@ class Manager
 		controlID_t GetControlForFeedback() const;
 
 	private:
-		const ControlInterface* GetControl(const controlID_t controlID) const;
+		ControlInterface* GetControl(const controlID_t controlID) const;
 		DataModel::Loco* GetLoco(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
 		DataModel::Accessory* GetAccessory(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
 		DataModel::Switch* GetSwitch(const controlID_t controlID, const protocol_t protocol, const address_t address) const;

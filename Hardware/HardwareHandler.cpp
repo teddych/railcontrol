@@ -55,14 +55,9 @@ namespace Hardware
 		"Ecos"
 	};
 
-	HardwareHandler::HardwareHandler(Manager& manager, const HardwareParams* params)
-	:	ControlInterface(ControlTypeHardware),
-		manager(manager),
-		createHardware(nullptr),
-		destroyHardware(nullptr),
-		instance(nullptr),
-		params(params)
+	void HardwareHandler::Init(const HardwareParams* params)
 	{
+		this->params = params;
 		hardwareType_t type = params->GetHardwareType();
 
 #ifdef AMALGAMATION
@@ -89,7 +84,7 @@ namespace Hardware
 				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_RM485);
 				break;
 
-			case HardwareTypeOpenDcc:
+			case HardwareTypeOpenDcc:HardwareHandler
 				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_OpenDcc);
 				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_OpenDcc);
 				break;
@@ -120,10 +115,6 @@ namespace Hardware
 				break;
 		}
 #else
-		// FIXME: if the same hardware library is loaded twice
-		// FIXME: the clean up does not work correctly
-		// FIXME: the second unload will crash
-
 		// generate symbol and library names
 		char* error;
 		const string& symbol = hardwareSymbols[type];
@@ -175,23 +166,26 @@ namespace Hardware
 #endif
 
 		// start control
-		if (createHardware)
+		if (createHardware != nullptr)
 		{
 			instance = createHardware(params);
 		}
 	}
 
-	HardwareHandler::~HardwareHandler()
+	void HardwareHandler::Close()
 	{
-		// stop control
-		if (instance)
+		Hardware::HardwareInterface* instanceTemp = instance;
+		instance = nullptr;
+		createHardware = nullptr;
+		if (instanceTemp != nullptr)
 		{
-			destroyHardware(instance);
-			instance = nullptr;
+			destroyHardware(instanceTemp);
 		}
+		destroyHardware = nullptr;
 
 #ifndef AMALGAMATION
 		hardwareType_t type = params->GetHardwareType();
+		params = nullptr;
 		// close library
 		if (manager.ControlsOfHardwareType(type) > 1)
 		{
@@ -207,6 +201,8 @@ namespace Hardware
 			return;
 		}
 		dlclose(dlhandle);
+#else
+		params = nullptr;
 #endif
 	}
 

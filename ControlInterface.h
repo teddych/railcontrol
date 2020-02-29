@@ -25,14 +25,24 @@ along with RailControl; see the file LICENCE. If not see
 #include <vector>
 
 #include "DataModel/Feedback.h"
-#include "DataModel/Loco.h"
 #include "DataTypes.h"
+
+namespace DataModel
+{
+	class Loco;
+}
+
+namespace Hardware
+{
+	class HardwareParams;
+}
 
 class ControlInterface
 {
 	public:
 		ControlInterface(controlType_t controlType) : controlType(controlType) {}
 		virtual ~ControlInterface() {};
+		virtual void ReInit(__attribute__((unused)) const Hardware::HardwareParams* params) {};
 		controlType_t ControlType() const { return controlType; }
 		virtual const std::string GetName() const = 0;
 		virtual void AccessoryDelete(__attribute__((unused)) const accessoryID_t accessoryID, __attribute__((unused)) const std::string& name) {}

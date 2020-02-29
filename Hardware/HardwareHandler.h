@@ -37,8 +37,28 @@ namespace Hardware
 	class HardwareHandler: public ControlInterface
 	{
 		public:
-			HardwareHandler(Manager& manager, const HardwareParams* params);
-			~HardwareHandler();
+			HardwareHandler(Manager& manager, const HardwareParams* params)
+			:	ControlInterface(ControlTypeHardware),
+				manager(manager),
+				createHardware(nullptr),
+				destroyHardware(nullptr),
+				instance(nullptr),
+				params(nullptr)
+			{
+				Init(params);
+			}
+
+			~HardwareHandler()
+			{
+				Close();
+			}
+
+			void ReInit(const HardwareParams* params)
+			{
+				Close();
+				Init(params);
+			}
+
 			controlID_t ControlID() const { return params->GetControlID(); }
 			const std::string GetName() const override;
 
@@ -68,6 +88,9 @@ namespace Hardware
 			const HardwareParams* params;
 
 			static const std::string hardwareSymbols[];
+
+			void Init(const HardwareParams* params);
+			void Close();
 	};
 }; // namespace Hardware
 

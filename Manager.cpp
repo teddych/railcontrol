@@ -312,10 +312,13 @@ bool Manager::ControlSave(const controlID_t& controlID,
 	}
 
 	HardwareParams* params = GetHardware(controlID);
+	bool newControl = false;
 	if (params == nullptr)
 	{
 		params = CreateAndAddControl();
+		newControl = true;
 	}
+
 	if (params == nullptr)
 	{
 		result = Languages::GetText(Languages::TextUnableToAddControl);
@@ -330,10 +333,23 @@ bool Manager::ControlSave(const controlID_t& controlID,
 	params->SetArg4(arg4);
 	params->SetArg5(arg5);
 
-	if (storage)
+	if (storage != nullptr)
 	{
 		storage->Save(*params);
 	}
+
+	if (newControl == true)
+	{
+		return true;
+	}
+
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return false;
+	}
+
+	control->ReInit(params);
 	return true;
 }
 
@@ -429,7 +445,7 @@ bool Manager::HardwareLibraryRemove(const hardwareType_t hardwareType)
 	return true;
 }
 
-const ControlInterface* Manager::GetControl(const controlID_t controlID) const
+ControlInterface* Manager::GetControl(const controlID_t controlID) const
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
 	if (controls.count(controlID) != 1)
