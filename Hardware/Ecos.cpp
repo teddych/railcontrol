@@ -42,8 +42,8 @@ namespace Hardware
 	}
 
 	const char* const Ecos::CommandActivateBoosterUpdates = "request(1,view)\n";
-	const char* const Ecos::CommandQueryLocos = "queryObjects(10,protocol,addr,name)\n";
-	const char* const Ecos::CommandQueryAccessories = "queryObjects(11,protocol,addr,name1,name2,name3)\n";
+	const char* const Ecos::CommandQueryLocos = "queryObjects(10,name)\n";
+	const char* const Ecos::CommandQueryAccessories = "queryObjects(11,name1,name2,name3)\n";
 	const char* const Ecos::CommandQueryFeedbacks = "queryObjects(26)\n";
 
 	Ecos::Ecos(const HardwareParams* params)
@@ -80,59 +80,39 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingSenderSocket);
 	}
 
-	void Ecos::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
+	void Ecos::LocoSpeed(__attribute__((unused)) const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
-		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
-		if (dataToLoco.count(locomotiveData) != 1)
-		{
-			return;
-		}
-		unsigned int locomotiveId = dataToLoco[locomotiveData];
-		SendGetHandle(locomotiveId);
-		string command = "set(" + to_string(locomotiveId) + ",speed[" + to_string(speed >> 3) + "])\n";
+		const unsigned int locoId = address + OffsetLocoAddress;
+		SendGetHandle(locoId);
+		const string command = "set(" + to_string(locoId) + ",speed[" + to_string(speed >> 3) + "])\n";
 		Send(command.c_str());
 	}
 
-	void Ecos::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
+	void Ecos::LocoDirection(__attribute__((unused)) const protocol_t protocol, const address_t address, const direction_t direction)
 	{
-		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
-		if (dataToLoco.count(locomotiveData) != 1)
-		{
-			return;
-		}
-		unsigned int locomotiveId = dataToLoco[locomotiveData];
-		SendGetHandle(locomotiveId);
-		string command = "set(" + to_string(locomotiveId) + ",dir[" + (direction == DirectionRight ? "0" : "1") + "])\n";
+		const unsigned int locoId = address + OffsetLocoAddress;
+		SendGetHandle(locoId);
+		const string command = "set(" + to_string(locoId) + ",dir[" + (direction == DirectionRight ? "0" : "1") + "])\n";
 		Send(command.c_str());
 	}
 
-	void Ecos::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
+	void Ecos::LocoFunction(__attribute__((unused)) const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
-		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
-		if (dataToLoco.count(locomotiveData) != 1)
-		{
-			return;
-		}
-		unsigned int locomotiveId = dataToLoco[locomotiveData];
-		SendGetHandle(locomotiveId);
-		string command = "set(" + to_string(locomotiveId) + ",func[" + to_string(function) + "," + (on == true ? "1" : "0") + "])\n";
+		const unsigned int locoId = address + OffsetLocoAddress;
+		SendGetHandle(locoId);
+		const string command = "set(" + to_string(locoId) + ",func[" + to_string(function) + "," + (on == true ? "1" : "0") + "])\n";
 		Send(command.c_str());
 	}
 
-	void Ecos::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void Ecos::Accessory(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
+		const unsigned int accessoryId = address + OffsetAccessoryAddress;
 		if (on == false)
 		{
 			return;
 		}
-		unsigned int accessoryData = ProtocolAddressToData(protocol, address);
-		if (dataToAccessory.count(accessoryData) != 1)
-		{
-			return;
-		}
-		unsigned int accessoryId = dataToAccessory[accessoryData];
 		SendGetHandle(accessoryId);
-		string command = "set(" + to_string(accessoryId) + ",state[" + (state ? "0" : "1") + "])\n";
+		const string command = "set(" + to_string(accessoryId) + ",state[" + (state ? "0" : "1") + "])\n";
 		Send(command.c_str());
 	}
 
@@ -307,9 +287,8 @@ namespace Hardware
 
 	void Ecos::ParseLocoData()
 	{
-		int locomotiveId = ParseInt();
-		address_t address = 0;
-		protocol_t protocol = ProtocolNone;
+		unsigned int locoId = ParseInt();
+		address_t address = locoId - OffsetLocoAddress;
 		string name;
 		while(true)
 		{
@@ -325,72 +304,16 @@ namespace Hardware
 			{
 				name = value;
 			}
-			else if (option.compare("addr") == 0)
-			{
-				address = Utils::Utils::StringToInteger(value);
-			}
-			else if (option.compare("protocol") == 0)
-			{
-				if (value.compare("MFX") == 0)
-				{
-					protocol = ProtocolMFX;
-				}
-				else if (value.compare("MM14") == 0)
-				{
-					protocol = ProtocolMM1;
-				}
-				else if (value.compare("MM27") == 0)
-				{
-					protocol = ProtocolMM1_27;
-				}
-				else if (value.compare("MM28") == 0)
-				{
-					protocol = ProtocolMM2;
-				}
-				else if (value.compare("DCC14") == 0)
-				{
-					protocol = ProtocolDCC14;
-				}
-				else if (value.compare("DCC28") == 0)
-				{
-					protocol = ProtocolDCC28;
-				}
-				else if (value.compare("DCC128") == 0)
-				{
-					protocol = ProtocolDCC128;
-				}
-				else if (value.compare("LGB14") == 0)
-				{
-					protocol = ProtocolLGB;
-				}
-				else if (value.compare("SX32") == 0)
-				{
-					protocol = ProtocolSX1;
-				}
-			}
 		}
-		if (protocol == ProtocolNone)
-		{
-			logger->Warning(Languages::TextInvalidDataReceived);
-			return;
-		}
-		if (protocol == ProtocolMFX)
-		{
-			address = locomotiveId;
-		}
-		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
-		locoToData[locomotiveId] = locomotiveData;
-		dataToLoco[locomotiveData] = locomotiveId;
-		SendActivateUpdates(locomotiveId);
+		SendActivateUpdates(locoId);
 
-		logger->Info(Languages::TextFoundLocoInEcosDatabase, locomotiveId, protocol, address, name);
+		logger->Info(Languages::TextFoundLocoInEcosDatabase, address, name);
 	}
 
 	void Ecos::ParseAccessoryData()
 	{
-		int accessoryId = ParseInt();
-		protocol_t protocol = ProtocolNone;
-		address_t address;
+		unsigned int accessoryId = ParseInt();
+		address_t address = accessoryId - OffsetAccessoryAddress;
 		string name1;
 		string name2;
 		string name3;
@@ -416,40 +339,18 @@ namespace Hardware
 			{
 				name3 = value;
 			}
-			else if (option.compare("addr") == 0)
-			{
-				address = Utils::Utils::StringToInteger(value);
-			}
-			else if (option.compare("protocol") == 0)
-			{
-				if (value.compare("MOT") == 0)
-				{
-					protocol = ProtocolMM;
-				}
-				else if (value.compare("DCC") == 0)
-				{
-					protocol = ProtocolDCC;
-				}
-			}
 		}
-		if (protocol == ProtocolNone)
-		{
-			logger->Warning(Languages::TextInvalidDataReceived);
-			return;
-		}
-		unsigned int accessoryData = ProtocolAddressToData(protocol, address);
-		accessoryToData[accessoryId] = accessoryData;
-		dataToAccessory[accessoryData] = accessoryId;
 		SendActivateUpdates(accessoryId);
 
-		logger->Info(Languages::TextFoundAccessoryInEcosDatabase, accessoryId, protocol, address, name1, name2, name3);
+		logger->Info(Languages::TextFoundAccessoryInEcosDatabase, address, name1, name2, name3);
 	}
 
 	void Ecos::ParseFeedbackData()
 	{
 		int feedbackId = ParseInt();
+		address_t address = feedbackId - OffsetFeedbackModuleAddress;
 		SendActivateUpdates(feedbackId);
-		logger->Info(Languages::TextFoundFeedbackModuleInEcosDatabase, feedbackId);
+		logger->Info(Languages::TextFoundFeedbackModuleInEcosDatabase, address);
 	}
 
 	void Ecos::ParseOption(string& option, string& value)
@@ -514,19 +415,19 @@ namespace Hardware
 		int object = ParseInt();
 		SkipWhiteSpace();
 
-		if (object >= 20000)
+		if (object > OffsetAccessoryAddress)
 		{
 			ParseAccessoryEvent(object);
 			return;
 		}
 
-		if (object >= 1000)
+		if (object > OffsetLocoAddress)
 		{
 			ParseLocoEvent(object);
 			return;
 		}
 
-		if (object >= 100)
+		if (object >= OffsetFeedbackModuleAddress)
 		{
 			ParseFeedbackEvent(object);
 			return;
@@ -556,39 +457,27 @@ namespace Hardware
 
 	void Ecos::ParseLocoEvent(int loco)
 	{
-		if (locoToData.count(loco) != 1)
-		{
-			return;
-		}
+		address_t address = loco - OffsetLocoAddress;
 		string option;
 		string value;
 		ParseOption(option, value);
 
 		if (option.compare("speed") == 0)
 		{
-			address_t address;
-			protocol_t protocol;
-			GetLocoProtocolAddress(loco, protocol, address);
 			locoSpeed_t speed = Utils::Utils::StringToInteger(value) << 3;
-			manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, speed);
+			manager->LocoSpeed(ControlTypeHardware, controlID, ProtocolServer, address, speed);
 			return;
 		}
 
 		if (option.compare("dir") == 0)
 		{
-			address_t address;
-			protocol_t protocol;
-			GetLocoProtocolAddress(loco, protocol, address);
 			direction_t direction = (Utils::Utils::StringToInteger(value) == 1 ? DirectionLeft : DirectionRight);
-			manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, direction);
+			manager->LocoDirection(ControlTypeHardware, controlID, ProtocolServer, address, direction);
 			return;
 		}
 
 		if (option.compare("func") == 0)
 		{
-			address_t address;
-			protocol_t protocol;
-			GetLocoProtocolAddress(loco, protocol, address);
 			vector<string> valueList;
 			Utils::Utils::SplitString(value, ",", valueList);
 			if (valueList.size() < 2)
@@ -598,28 +487,22 @@ namespace Hardware
 			}
 			function_t function = Utils::Utils::StringToInteger(valueList[0], 0);
 			bool on = Utils::Utils::StringToBool(valueList[1]);
-			manager->LocoFunction(ControlTypeHardware, controlID, protocol, address, function, on);
+			manager->LocoFunction(ControlTypeHardware, controlID, ProtocolServer, address, function, on);
 			return;
 		}
 	}
 
 	void Ecos::ParseAccessoryEvent(int accessory)
 	{
-		if (accessoryToData.count(accessory) != 1)
-		{
-			return;
-		}
+		address_t address = accessory - OffsetAccessoryAddress;
 		string option;
 		int value;
 		ParseOptionInt(option, value);
 
 		if (option.compare("state") == 0)
 		{
-			address_t address;
-			protocol_t protocol;
-			GetAccessoryProtocolAddress(accessory, protocol, address);
 			accessoryState_t state = (value == 0);
-			manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
+			manager->AccessoryState(ControlTypeHardware, controlID, ProtocolServer, address, state);
 			return;
 		}
 	}
@@ -632,7 +515,7 @@ namespace Hardware
 
 		if (option.compare("state") == 0)
 		{
-			unsigned int module1 = (feedback - 100) << 1;
+			unsigned int module1 = (feedback - OffsetFeedbackModuleAddress) << 1;
 			unsigned int module2 = module1 + 1;
 			uint8_t moduleData1 = value & 0xFF;
 			uint8_t moduleData2 = (value >> 8) & 0xFF;

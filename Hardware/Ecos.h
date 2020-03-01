@@ -39,35 +39,22 @@ namespace Hardware
 
 			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override
 			{
-				protocols.push_back(ProtocolMM1);
-				protocols.push_back(ProtocolMM2);
-				protocols.push_back(ProtocolMFX);
-				protocols.push_back(ProtocolDCC14);
-				protocols.push_back(ProtocolDCC28);
-				protocols.push_back(ProtocolDCC128);
-				protocols.push_back(ProtocolSX1);
+				protocols.push_back(ProtocolServer);
 			}
 
 			bool LocoProtocolSupported(protocol_t protocol) const override
 			{
-				return (protocol == ProtocolMM1
-				|| protocol == ProtocolMM2
-				|| protocol == ProtocolMFX
-				|| protocol == ProtocolDCC14
-				|| protocol == ProtocolDCC28
-				|| protocol == ProtocolDCC128
-				|| protocol == ProtocolSX1);
+				return (protocol == ProtocolServer);
 			}
 
 			void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const override
 			{
-				protocols.push_back(ProtocolMM);
-				protocols.push_back(ProtocolDCC);
+				protocols.push_back(ProtocolServer);
 			}
 
 			bool AccessoryProtocolSupported(protocol_t protocol) const override
 			{
-				return (protocol == ProtocolMM || protocol == ProtocolDCC);
+				return (protocol == ProtocolServer);
 			}
 
 			static void GetArgumentTypes(std::map<unsigned char,argumentType_t>& argumentTypes)
@@ -208,35 +195,6 @@ namespace Hardware
 				return CompareAndConsume(">\n", 2);
 			}
 
-			static unsigned int ProtocolAddressToData(int protocol, int address)
-			{
-				return (static_cast<unsigned int>(protocol) << 16) + static_cast<unsigned int>(address);
-			}
-
-			void GetLocoProtocolAddress(const unsigned int loco, protocol_t& protocol, address_t& address)
-			{
-				unsigned int locomotiveData = locoToData[loco];
-				protocol = DataToProtocol(locomotiveData);
-				address = DataToAddress(locomotiveData);
-			}
-
-			void GetAccessoryProtocolAddress(const unsigned int accessory, protocol_t& protocol, address_t& address)
-			{
-				unsigned int accessoryData = accessoryToData[accessory];
-				protocol = DataToProtocol(accessoryData);
-				address = DataToAddress(accessoryData);
-			}
-
-			static protocol_t DataToProtocol(unsigned int data)
-			{
-				return static_cast<protocol_t>(data >> 16);
-			}
-
-			static address_t DataToAddress(unsigned int data)
-			{
-				return data & 0xFFFF;
-			}
-
 			Logger::Logger* logger;
 			volatile bool run;
 			std::thread receiverThread;
@@ -247,14 +205,12 @@ namespace Hardware
 			ssize_t readBufferLength;
 			size_t readBufferPosition;
 
-			std::map<unsigned int,unsigned int> locoToData;
-			std::map<unsigned int,unsigned int> dataToLoco;
-
-			std::map<unsigned int,unsigned int> accessoryToData;
-			std::map<unsigned int,unsigned int> dataToAccessory;
-
 			static const unsigned int MaxFeedbackModules = 128;
 			uint8_t feedbackMemory[MaxFeedbackModules];
+
+			static const int OffsetLocoAddress = 999;
+			static const int OffsetAccessoryAddress = 19999;
+			static const int OffsetFeedbackModuleAddress = 100;
 	};
 
 	extern "C" Ecos* create_Ecos(const HardwareParams* params);
