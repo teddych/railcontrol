@@ -130,9 +130,12 @@ enum protocol_t : unsigned char
 	ProtocolDCC28 = 7,
 	ProtocolDCC128 = 8,
 	ProtocolMM = 9,
-	ProtocolSX1 = 10,
-	ProtocolSX2 = 11,
-	ProtocolEnd = ProtocolSX2
+	ProtocolMM1_27 = 10,
+	ProtocolMMFX = 11,
+	ProtocolSX1 = 12,
+	ProtocolSX2 = 13,
+	ProtocolLGB = 14,
+	ProtocolEnd = ProtocolLGB
 };
 
 static const std::string protocolSymbols[] =
@@ -147,8 +150,11 @@ static const std::string protocolSymbols[] =
 	"DCC28",
 	"DCC128",
 	"MM",
+	"MM1 27",
+	"MM fx",
 	"SX1",
-	"SX2"
+	"SX2",
+	"LGB"
 };
 
 enum addressType_t : unsigned char

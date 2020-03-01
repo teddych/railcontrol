@@ -308,42 +308,75 @@ namespace Hardware
 	void Ecos::ParseLocoData()
 	{
 		int locomotiveId = ParseInt();
-		string option;
-		string stringProtocol;
+		address_t address = 0;
+		protocol_t protocol = ProtocolNone;
 		string name;
-		int address;
-		ParseOption(option, stringProtocol);
-		ParseOptionInt(option, address);
-		ParseOption(option, name);
-		int protocol = ProtocolNone;
-		if (stringProtocol.compare("MFX") == 0)
+		while(true)
 		{
-			protocol = ProtocolMFX;
-		}
-		else if (stringProtocol.compare("MM14") == 0)
-		{
-			protocol = ProtocolMM1;
-		}
-		else if (stringProtocol.compare("MM27") == 0)
-		{
-			protocol = ProtocolMM2;
-		}
-		else if (stringProtocol.compare("DCC14") == 0)
-		{
-			protocol = ProtocolDCC14;
-		}
-		else if (stringProtocol.compare("DCC28") == 0)
-		{
-			protocol = ProtocolDCC28;
-		}
-		else if (stringProtocol.compare("DCC128") == 0)
-		{
-			protocol = ProtocolDCC128;
+			string option;
+			string value;
+			ParseOption(option, value);
+			if (option.size() == 0)
+			{
+				break;
+			}
+
+			if (option.compare("name") == 0)
+			{
+				name = value;
+			}
+			else if (option.compare("addr") == 0)
+			{
+				address = Utils::Utils::StringToInteger(value);
+			}
+			else if (option.compare("protocol") == 0)
+			{
+				if (value.compare("MFX") == 0)
+				{
+					protocol = ProtocolMFX;
+				}
+				else if (value.compare("MM14") == 0)
+				{
+					protocol = ProtocolMM1;
+				}
+				else if (value.compare("MM27") == 0)
+				{
+					protocol = ProtocolMM1_27;
+				}
+				else if (value.compare("MM28") == 0)
+				{
+					protocol = ProtocolMM2;
+				}
+				else if (value.compare("DCC14") == 0)
+				{
+					protocol = ProtocolDCC14;
+				}
+				else if (value.compare("DCC28") == 0)
+				{
+					protocol = ProtocolDCC28;
+				}
+				else if (value.compare("DCC128") == 0)
+				{
+					protocol = ProtocolDCC128;
+				}
+				else if (value.compare("LGB14") == 0)
+				{
+					protocol = ProtocolLGB;
+				}
+				else if (value.compare("SX32") == 0)
+				{
+					protocol = ProtocolSX1;
+				}
+			}
 		}
 		if (protocol == ProtocolNone)
 		{
 			logger->Warning(Languages::TextInvalidDataReceived);
 			return;
+		}
+		if (protocol == ProtocolMFX)
+		{
+			address = locomotiveId;
 		}
 		unsigned int locomotiveData = ProtocolAddressToData(protocol, address);
 		locoToData[locomotiveId] = locomotiveData;
@@ -356,25 +389,48 @@ namespace Hardware
 	void Ecos::ParseAccessoryData()
 	{
 		int accessoryId = ParseInt();
-		string option;
-		string stringProtocol;
+		protocol_t protocol = ProtocolNone;
+		address_t address;
 		string name1;
 		string name2;
 		string name3;
-		int address;
-		ParseOption(option, stringProtocol);
-		ParseOptionInt(option, address);
-		ParseOption(option, name1);
-		ParseOption(option, name2);
-		ParseOption(option, name3);
-		int protocol = ProtocolNone;
-		if (stringProtocol.compare("MOT") == 0)
+		while (true)
 		{
-			protocol = ProtocolMM;
-		}
-		else if (stringProtocol.compare("DCC") == 0)
-		{
-			protocol = ProtocolDCC;
+			string option;
+			string value;
+			ParseOption(option, value);
+			if (option.size() == 0)
+			{
+				break;
+			}
+
+			if (option.compare("name1") == 0)
+			{
+				name1 = value;
+			}
+			else if (option.compare("name2") == 0)
+			{
+				name2 = value;
+			}
+			else if (option.compare("name3") == 0)
+			{
+				name3 = value;
+			}
+			else if (option.compare("addr") == 0)
+			{
+				address = Utils::Utils::StringToInteger(value);
+			}
+			else if (option.compare("protocol") == 0)
+			{
+				if (value.compare("MOT") == 0)
+				{
+					protocol = ProtocolMM;
+				}
+				else if (value.compare("DCC") == 0)
+				{
+					protocol = ProtocolDCC;
+				}
+			}
 		}
 		if (protocol == ProtocolNone)
 		{
@@ -408,9 +464,13 @@ namespace Hardware
 		{
 			CheckAndConsumeChar('"');
 			value = ReadUntilChar('"');
-			return;
+			CheckAndConsumeChar('"');
 		}
-		value = ReadUntilChar(']');
+		else
+		{
+			value = ReadUntilChar(']');
+		}
+		CheckAndConsumeChar(']');
 	}
 
 	void Ecos::ParseOptionInt(string& option, int& value)

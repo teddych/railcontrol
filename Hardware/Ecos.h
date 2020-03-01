@@ -208,16 +208,6 @@ namespace Hardware
 				return CompareAndConsume(">\n", 2);
 			}
 
-			Logger::Logger* logger;
-			volatile bool run;
-			std::thread receiverThread;
-
-			Network::TcpConnection tcp;
-
-			char readBuffer[MaxMessageSize];
-			ssize_t readBufferLength;
-			size_t readBufferPosition;
-
 			static unsigned int ProtocolAddressToData(int protocol, int address)
 			{
 				return (static_cast<unsigned int>(protocol) << 16) + static_cast<unsigned int>(address);
@@ -246,6 +236,16 @@ namespace Hardware
 			{
 				return data & 0xFFFF;
 			}
+
+			Logger::Logger* logger;
+			volatile bool run;
+			std::thread receiverThread;
+
+			Network::TcpConnection tcp;
+
+			char readBuffer[MaxMessageSize];
+			ssize_t readBufferLength;
+			size_t readBufferPosition;
 
 			std::map<unsigned int,unsigned int> locoToData;
 			std::map<unsigned int,unsigned int> dataToLoco;
