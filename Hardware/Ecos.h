@@ -101,18 +101,22 @@ namespace Hardware
 			void ParseReply();
 			void ParseQueryLocos();
 			void ParseQueryAccessories();
+			void ParseQueryFeedbacks();
 			void ParseLocoData();
 			void ParseAccessoryData();
+			void ParseFeedbackData();
 
 			void ParseEvent();
 			void ParseEventLine();
 			void ParseBoosterEvent();
 			void ParseLocoEvent(int loco);
 			void ParseAccessoryEvent(int accessory);
+			void ParseFeedbackEvent(int feedback);
+			void CheckFeedbackDiff(unsigned int module, uint8_t data);
 
 			void ParseOption(std::string& option, std::string& value);
 			void ParseOptionInt(std::string& option, int& value);
-			void ParseOptionString(std::string& option, std::string& value);
+			void ParseOptionHex(std::string& option, int& value);
 			void ParseEndLine();
 			std::string ReadUntilChar(const char c);
 			std::string ReadUntilLineEnd();
@@ -168,13 +172,22 @@ namespace Hardware
 				return readBuffer[readBufferPosition++];
 			}
 
-			bool CheckChar(const char charToCheck)
+			bool CheckAndConsumeChar(const char charToCheck)
 			{
 				if (readBufferPosition >= MaxMessageSize)
 				{
 					return false;
 				}
 				return charToCheck == readBuffer[readBufferPosition++];
+			}
+
+			bool CheckChar(const char charToCheck)
+			{
+				if (readBufferPosition >= MaxMessageSize)
+				{
+					return false;
+				}
+				return charToCheck == readBuffer[readBufferPosition];
 			}
 
 			bool SkipOptionalChar(const char charToSkip);
@@ -239,6 +252,9 @@ namespace Hardware
 
 			std::map<unsigned int,unsigned int> accessoryToData;
 			std::map<unsigned int,unsigned int> dataToAccessory;
+
+			static const unsigned int MaxFeedbackModules = 128;
+			uint8_t feedbackMemory[MaxFeedbackModules];
 	};
 
 	extern "C" Ecos* create_Ecos(const HardwareParams* params);

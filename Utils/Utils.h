@@ -39,7 +39,7 @@ namespace Utils
 			static bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const bool defaultValue = false);
 			static std::string ToStringWithLeadingZeros(const unsigned int number, const unsigned char chars);
 			static int StringToInteger(const std::string& value) { return StringToInteger(value, 0, INT_MAX); }
-			static int StringToInteger(const std::string& value, const int defaultValue);
+			static int StringToInteger(const std::string& value, const int defaultValue, const bool hex = false);
 			static int StringToInteger(const std::string& value, const int min, const int max);
 			static bool StringToBool(const std::string& value);
 			static void SetThreadName(const std::string& name) { SetThreadName(name.c_str()); }

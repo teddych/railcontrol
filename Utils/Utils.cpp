@@ -108,7 +108,7 @@ namespace Utils
 		return out;
 	}
 
-	int Utils::StringToInteger(const std::string& value, const int defaultValue)
+	int Utils::StringToInteger(const std::string& value, const int defaultValue, const bool hex)
 	{
 		size_t valueSize = value.size();
 		if (valueSize == 0)
@@ -118,7 +118,7 @@ namespace Utils
 
 		char* end;
 		const char* start = value.c_str();
-		long longValue = std::strtol(start, &end, 10);
+		long longValue = std::strtol(start, &end, hex ? 16 : 10);
 		if (errno == ERANGE || start == end)
 		{
 			return defaultValue;

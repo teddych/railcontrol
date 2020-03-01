@@ -130,6 +130,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextFeedbackUpdated */ { "Feedback {0} updated", "Rückmelder {0} aktualisiert", "Retroseñal {0} actualizado" },
 /* TextFeedbacks */ { "Feedbacks", "Rückmelder", "Retroseñales" },
 /* TextFoundAccessoryInEcosDatabase */ { "Found accessory in ECoS database: ID: {0} Protocol: {1} Address: {2} Name: {3}/{4}/{5}", "Zubehörartikel in ECoS Datenbank gefunden: ID: {0} Protokol: {1} Adresse: {2} Name: {3}/{4}/{5}", "Encontrado un accessorio en la base de datos de ECoS: ID: {0} Protocolo: {1} Dirección: {2} Nombre: {3}/{4}/{5}" },
+/* TextFoundFeedbackModuleInEcosDatabase */ { "Found feedback module in ECoS database: ID: {0}", "Rückmeldemodule in ECoS Datenbank gefunden: ID: {0}", "Encontrado un modulo retroseñal en la base de datos de ECoS: ID: {0}" },
 /* TextFoundLocoInEcosDatabase */ { "Found locomotive in ECoS database: ID: {0} Protocol: {1} Address: {2} Name: {3}", "Locomotive in ECoS Datenbank gefunden: ID: {0} Protokol: {1} Adresse: {2} Name: {3}", "Encontrado una locomotora en la base de datos de ECoS: ID: {0} Protocolo: {1} Dirección: {2} Nombre: {3}" },
 /* TextFromTrack */ { "From track", "Von Gleis", "De vía" },
 /* TextGerman */ { "German", "Deutsch", "Aleman" },

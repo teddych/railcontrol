@@ -61,6 +61,7 @@ namespace Hardware
 		{
 			return;
 		}
+		std::memset(feedbackMemory, 0, MaxFeedbackModules);
 		receiverThread = std::thread(&Hardware::Ecos::Receiver, this);
 		SendActivateBoosterUpdates();
 		SendQueryLocos();
@@ -213,7 +214,7 @@ namespace Hardware
 
 	void Ecos::Parser()
 	{
-		if (!CheckChar('<'))
+		if (!CheckAndConsumeChar('<'))
 		{
 			logger->Error(Languages::TextInvalidDataReceived);
 			return;
@@ -256,6 +257,12 @@ namespace Hardware
 			return;
 		}
 
+		if (Compare(CommandQueryFeedbacks, strlen(CommandQueryFeedbacks) - 1))
+		{
+			ParseQueryFeedbacks();
+			return;
+		}
+
 		ReadLine();
 		while(GetChar() != '<')
 		{
@@ -287,6 +294,17 @@ namespace Hardware
 		ParseEndLine();
 	}
 
+	void Ecos::ParseQueryFeedbacks()
+	{
+		ReadLine();
+		while(GetChar() != '<')
+		{
+			ParseFeedbackData();
+			ReadLine();
+		}
+		ParseEndLine();
+	}
+
 	void Ecos::ParseLocoData()
 	{
 		int locomotiveId = ParseInt();
@@ -296,7 +314,7 @@ namespace Hardware
 		int address;
 		ParseOption(option, stringProtocol);
 		ParseOptionInt(option, address);
-		ParseOptionString(option, name);
+		ParseOption(option, name);
 		int protocol = ProtocolNone;
 		if (stringProtocol.compare("MFX") == 0)
 		{
@@ -346,9 +364,9 @@ namespace Hardware
 		int address;
 		ParseOption(option, stringProtocol);
 		ParseOptionInt(option, address);
-		ParseOptionString(option, name1);
-		ParseOptionString(option, name2);
-		ParseOptionString(option, name3);
+		ParseOption(option, name1);
+		ParseOption(option, name2);
+		ParseOption(option, name3);
 		int protocol = ProtocolNone;
 		if (stringProtocol.compare("MOT") == 0)
 		{
@@ -371,46 +389,42 @@ namespace Hardware
 		logger->Info(Languages::TextFoundAccessoryInEcosDatabase, accessoryId, protocol, address, name1, name2, name3);
 	}
 
+	void Ecos::ParseFeedbackData()
+	{
+		int feedbackId = ParseInt();
+		SendActivateUpdates(feedbackId);
+		logger->Info(Languages::TextFoundFeedbackModuleInEcosDatabase, feedbackId);
+	}
+
 	void Ecos::ParseOption(string& option, string& value)
 	{
 		SkipWhiteSpace();
 		option = ReadUntilChar('[');
-		if (!CheckChar('['))
+		if (!CheckAndConsumeChar('['))
 		{
 			return;
 		}
+		if (GetChar() == '"')
+		{
+			CheckAndConsumeChar('"');
+			value = ReadUntilChar('"');
+			return;
+		}
 		value = ReadUntilChar(']');
-		CheckChar(']');
 	}
 
 	void Ecos::ParseOptionInt(string& option, int& value)
 	{
-		SkipWhiteSpace();
-		option = ReadUntilChar('[');
-		if (!CheckChar('['))
-		{
-			return;
-		}
-		string stringValue = ReadUntilChar(']');
-		value = Utils::Utils::StringToInteger(stringValue);
-		CheckChar(']');
+		string stringValue;
+		ParseOption(option, stringValue);
+		value = Utils::Utils::StringToInteger(stringValue, 0);
 	}
 
-	void Ecos::ParseOptionString(string& option, string& value)
+	void Ecos::ParseOptionHex(string& option, int& value)
 	{
-		SkipWhiteSpace();
-		option = ReadUntilChar('[');
-		if (!CheckChar('['))
-		{
-			return;
-		}
-		if (!CheckChar('"'))
-		{
-			return;
-		}
-		value = ReadUntilChar('"');
-		CheckChar('"');
-		CheckChar(']');
+		string stringValue;
+		ParseOption(option, stringValue);
+		value = Utils::Utils::StringToInteger(stringValue, 0, true);
 	}
 
 	void Ecos::ParseEvent()
@@ -449,6 +463,12 @@ namespace Hardware
 		if (object >= 1000)
 		{
 			ParseLocoEvent(object);
+			return;
+		}
+
+		if (object >= 100)
+		{
+			ParseFeedbackEvent(object);
 			return;
 		}
 
@@ -542,7 +562,48 @@ namespace Hardware
 			manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 			return;
 		}
+	}
 
+	void Ecos::ParseFeedbackEvent(int feedback)
+	{
+		string option;
+		int value;
+		ParseOptionHex(option, value);
+
+		if (option.compare("state") == 0)
+		{
+			unsigned int module1 = (feedback - 100) << 1;
+			unsigned int module2 = module1 + 1;
+			uint8_t moduleData1 = value & 0xFF;
+			uint8_t moduleData2 = (value >> 8) & 0xFF;
+			CheckFeedbackDiff(module1, moduleData1);
+			CheckFeedbackDiff(module2, moduleData2);
+			return;
+		}
+	}
+
+	void Ecos::CheckFeedbackDiff(unsigned int module, uint8_t data)
+	{
+		uint8_t oldData = feedbackMemory[module];
+		if (oldData == data)
+		{
+			return;
+		}
+
+		for(unsigned int pin = 0; pin < 8; ++pin)
+		{
+			uint8_t oldPinData = (oldData >> pin) & 0x01;
+			uint8_t pinData = (data >> pin) & 0x01;
+			if (oldPinData == pinData)
+			{
+				continue;
+			}
+			const unsigned int address = (module << 3) + pin + 1;
+			const DataModel::Feedback::feedbackState_t state = pinData == 1 ? DataModel::Feedback::FeedbackStateOccupied : DataModel::Feedback::FeedbackStateFree;
+			manager->FeedbackState(controlID, address, state);
+			logger->Info(Languages::TextFeedbackChange, address & 0x000F, address >> 4, state);
+		}
+		feedbackMemory[module] = data;
 	}
 
 	void Ecos::ParseEndLine()

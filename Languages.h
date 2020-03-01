@@ -130,6 +130,7 @@ class Languages
 			TextFeedbackUpdated,
 			TextFeedbacks,
 			TextFoundAccessoryInEcosDatabase,
+			TextFoundFeedbackModuleInEcosDatabase,
 			TextFoundLocoInEcosDatabase,
 			TextFromTrack,
 			TextGerman,
