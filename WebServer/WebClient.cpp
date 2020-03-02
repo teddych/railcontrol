@@ -2331,7 +2331,7 @@ namespace WebServer
 		layoutPosition_t posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		signalType_t type = DataModel::Signal::SignalTypeSimple;
+		signalType_t type = DataModel::Signal::SignalTypeSimpleLeft;
 		accessoryDuration_t duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (signalID > SignalNone)
@@ -2354,7 +2354,8 @@ namespace WebServer
 		}
 
 		std::map<signalType_t, Languages::textSelector_t> typeOptions;
-		typeOptions[DataModel::Signal::SignalTypeSimple] = Languages::TextSimple;
+		typeOptions[DataModel::Signal::SignalTypeSimpleLeft] = Languages::TextSimpleLeft;
+		typeOptions[DataModel::Signal::SignalTypeSimpleRight] = Languages::TextSimpleRight;
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
@@ -2403,7 +2404,7 @@ namespace WebServer
 		layoutPosition_t posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		layoutPosition_t posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		signalType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Signal::SignalTypeSimple);
+		signalType_t type = Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Signal::SignalTypeSimpleLeft);
 		accessoryDuration_t duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;

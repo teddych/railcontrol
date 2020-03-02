@@ -36,7 +36,8 @@ namespace DataModel
 		public:
 			enum signalType : signalType_t
 			{
-				SignalTypeSimple = 0
+				SignalTypeSimpleLeft = 0,
+				SignalTypeSimpleRight = 1
 			};
 
 			enum signalState : signalState_t

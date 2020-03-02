@@ -47,9 +47,16 @@ namespace WebServer
 		div1.AddClass(state == DataModel::Signal::SignalStateRed ? "signal_red" : "signal_green");
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		string image;
-		if (type == DataModel::Signal::SignalTypeSimple)
+		switch (type)
 		{
-			image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(signal->GetRotation()) + "deg);\"><polygon points=\"14,0 22,0 22,36 14,36\" fill=\"black\" /><polygon points=\"1,5 5,1 9,1 13,5 13,18 9,22 5,22 1,18\" fill=\"black\"/><polyline points=\"7,7 7,30\" style=\"stroke:black;stroke-width:2\"/><circle class=\"red\" cx=\"7\" cy=\"7\" r=\"4\" fill=\"darkgray\"/><circle class=\"green\" cx=\"7\" cy=\"16\" r=\"4\" fill=\"darkgray\"/></svg>";
+			case DataModel::Signal::SignalTypeSimpleRight:
+				image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(signal->GetRotation()) + "deg);\"><polygon points=\"14,0 22,0 22,36 14,36\" fill=\"black\" /><polygon points=\"23,5 27,1 31,1 35,5 35,18 31,22 27,22 23,18\" fill=\"black\"/><polyline points=\"29,7 29,30\" style=\"stroke:black;stroke-width:2\"/><circle class=\"red\" cx=\"29\" cy=\"7\" r=\"4\" fill=\"darkgray\"/><circle class=\"green\" cx=\"29\" cy=\"16\" r=\"4\" fill=\"darkgray\"/></svg>";
+				break;
+
+			case DataModel::Signal::SignalTypeSimpleLeft:
+			default:
+				image = "<svg width=\"" + EdgeLengthString + "\" height=\"" + EdgeLengthString + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(signal->GetRotation()) + "deg);\"><polygon points=\"14,0 22,0 22,36 14,36\" fill=\"black\" /><polygon points=\"1,5 5,1 9,1 13,5 13,18 9,22 5,22 1,18\" fill=\"black\"/><polyline points=\"7,7 7,30\" style=\"stroke:black;stroke-width:2\"/><circle class=\"red\" cx=\"7\" cy=\"7\" r=\"4\" fill=\"darkgray\"/><circle class=\"green\" cx=\"7\" cy=\"16\" r=\"4\" fill=\"darkgray\"/></svg>";
+				break;
 		}
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(signalName + " (addr=" + to_string(signal->GetAddress()) + ")"));
