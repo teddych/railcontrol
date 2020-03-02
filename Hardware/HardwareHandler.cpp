@@ -84,7 +84,7 @@ namespace Hardware
 				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_RM485);
 				break;
 
-			case HardwareTypeOpenDcc:HardwareHandler
+			case HardwareTypeOpenDcc:
 				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_OpenDcc);
 				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_OpenDcc);
 				break;
