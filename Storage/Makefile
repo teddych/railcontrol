@@ -5,7 +5,7 @@ CCRASPI=aarch64-linux-gcc
 CPPRASPI=aarch64-linux-g++
 
 CFLAGSRASPI=--sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot/
-CPPFLAGS=-g -fpic -O2 -Wall -Wextra -Werror -std=c++11 -I..
+CPPFLAGS=-g -fpic -Og -Wall -Wextra -Werror -std=c++11 -I..
 CPPFLAGSRASPI=-g -fpic -O2 -Wall --Wextra -Werror std=c++11 -I.. --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot/
 LDFLAGS=-g -shared -Wl,-soname,
 CFLAGSSQLITE=-g -fpic -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP

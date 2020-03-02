@@ -147,11 +147,8 @@ static const std::string protocolSymbols[] =
 	"DCC28",
 	"DCC128",
 	"MM",
-	"MM1 27",
-	"MM fx",
 	"SX1",
-	"SX2",
-	"LGB"
+	"SX2"
 };
 
 enum addressType_t : unsigned char

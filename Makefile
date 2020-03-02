@@ -4,7 +4,7 @@ CPP=g++
 CCRASPI=aarch64-linux-gcc
 CPPRASPI=aarch64-linux-g++
 
-CPPFLAGS=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
+CPPFLAGS=-I. -g -O0 -Wall -Wextra -Werror -std=c++11
 CPPFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
 CPPFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
 LDFLAGS=-g -Wl,--export-dynamic
@@ -15,6 +15,8 @@ TMPDIR=RailControl
 TMPDIRCYGWIN=/RailControl
 
 OBJ= \
+	WebServer/WebClient.o \
+	Manager.o \
 	Config.o \
 	DataModel/Accessory.o \
 	DataModel/Feedback.o \
@@ -34,8 +36,8 @@ OBJ= \
 	Languages.o \
 	Logger/Logger.o \
 	Logger/LoggerServer.o \
-	Manager.o \
 	Network/Serial.o \
+	Network/TcpClient.o \
 	Network/TcpConnection.o \
 	Network/TcpServer.o \
 	Network/UdpConnection.o \
@@ -66,7 +68,6 @@ OBJ= \
 	WebServer/HtmlTagSwitch.o \
 	WebServer/HtmlTagTrack.o \
 	WebServer/Response.o \
-	WebServer/WebClient.o \
 	WebServer/WebServer.o
 
 all: $(OBJ)
