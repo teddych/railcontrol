@@ -23,6 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <cstdio>     // printf
 #include <cstdlib>    // exit(0);
 #include <cstring>    // memset
+#include <dirent.h>
 #include <fstream>
 #include <iostream>   // cout
 #include <sstream>
@@ -239,4 +240,44 @@ namespace Utils
 		source.close();
 		destination.close();
 	}
+
+#ifdef __CYGWIN__
+	bool Utils::GetFilesInDir(vector<string>& filesFound, const string& path, const string& prefix)
+	{
+		bool ret = false;
+		size_t prefixLength = prefix.length();
+		DIR* dirp = opendir(path.c_str());
+		struct dirent* dp;
+		while ((dp = readdir(dirp)) != nullptr)
+		{
+			string file(dp->d_name);
+			string prefixRead = file.substr(0, prefixLength);
+			if (prefix.compare(prefixRead) != 0)
+			{
+				continue;
+			}
+			filesFound.push_back(file);
+			ret = true;
+		}
+		closedir(dirp);
+		return ret;
+	}
+
+	bool Utils::GetComPorts(std::vector<unsigned char>& comPorts)
+	{
+		vector<string> filesFound;
+		bool ret = GetFilesInDir(filesFound, "/dev/", "ttyS");
+		if (ret == false)
+		{
+			return false;
+		}
+		for (auto file : filesFound)
+		{
+			string comPortString = file.substr(4);
+			unsigned char comPort = StringToInteger(comPortString);
+			comPorts.push_back(comPort);
+		}
+		return true;
+	}
+#endif
 }

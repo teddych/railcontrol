@@ -743,8 +743,25 @@ namespace WebServer
 				break;
 
 			case SerialPort:
+			{
 				argumentName = Languages::TextSerialPort;
+#ifdef __CYGWIN__
+				vector<unsigned char> comPorts;
+				bool ret = Utils::Utils::GetComPorts(comPorts);
+				if (ret == false || comPorts.size() == 0)
+				{
+					break;
+				}
+				map<string,string> comPortOptions;
+				for (auto comPort : comPorts)
+				{
+					comPortOptions["/dev/ttyS" + to_string(comPort)] = "COM" + to_string(comPort + 1);
+				}
+				return HtmlTagSelectWithLabel(argumentNumber, argumentName, comPortOptions, value);
+#else
 				break;
+#endif
+			}
 
 			case S88Modules:
 			{

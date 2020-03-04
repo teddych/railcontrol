@@ -60,5 +60,11 @@ namespace Utils
 			static uint16_t DataLittleEndianToShort(const unsigned char* buffer);
 			static std::string IntegerToBCD(const unsigned int input);
 			static void CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to);
+#ifdef __CYGWIN__
+		private:
+			static bool GetFilesInDir(std::vector<std::string>& filesFound, const std::string& path, const std::string& prefix);
+		public:
+			static bool GetComPorts(std::vector<unsigned char>& comPorts);
+#endif
 	};
 }
