@@ -241,6 +241,16 @@ namespace Utils
 		destination.close();
 	}
 
+	void Utils::SetMinThreadPriority()
+	{
+		sched_param param;
+		int policy;
+		pthread_t self = pthread_self();
+		pthread_getschedparam(self, &policy, &param);
+		param.sched_priority = sched_get_priority_min(policy);
+		pthread_setschedparam(self, policy, &param);
+	}
+
 #ifdef __CYGWIN__
 	bool Utils::GetFilesInDir(vector<string>& filesFound, const string& path, const string& prefix)
 	{

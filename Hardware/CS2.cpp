@@ -50,7 +50,7 @@ namespace Hardware
 		}
 		else
 		{
-			logger->Error(Languages::TextUnableToCreatUdpSocketForSendingData);
+			logger->Error(Languages::TextUnableToCreateUdpSocketForSendingData);
 		}
 		receiverThread = std::thread(&Hardware::CS2::Receiver, this);
 	}
@@ -119,7 +119,7 @@ namespace Hardware
 		logger->Info(Languages::TextReceiverThreadStarted);
 		if (!receiverConnection.IsConnected())
 		{
-			logger->Error(Languages::TextUnableToCreatUdpSocketForReceivingData);
+			logger->Error(Languages::TextUnableToCreateUdpSocketForReceivingData);
 			return;
 		}
 

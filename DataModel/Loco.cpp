@@ -231,21 +231,11 @@ namespace DataModel
 		state = LocoStateManual;
 	}
 
-	void Loco::SetMinThreadPriorityAndThreadName()
-	{
-		sched_param param;
-		int policy;
-		pthread_t self = pthread_self();
-		pthread_getschedparam(self, &policy, &param);
-		param.sched_priority = sched_get_priority_min(policy);
-		pthread_setschedparam(self, policy, &param);
-		Utils::Utils::SetThreadName(name);
-	}
-
 	void Loco::AutoMode()
 	{
-		SetMinThreadPriorityAndThreadName();
+		Utils::Utils::SetMinThreadPriority();
 		const string& name = GetName();
+		Utils::Utils::SetThreadName(name);
 		logger->Info(Languages::TextIsNowInAutoMode, name);
 
 		while (true)

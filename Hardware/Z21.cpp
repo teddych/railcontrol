@@ -26,8 +26,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <sstream>
 #include <string>
 #include <thread>
-#include <unistd.h>   //close;
-
 #include "Hardware/Z21.h"
 #include "Utils/Utils.h"
 
@@ -50,27 +48,28 @@ namespace Hardware
 	:	HardwareInterface(params->GetManager(), params->GetControlID(), "Z21 / " + params->GetName() + " at IP " + params->GetArg1()),
 	 	logger(Logger::Logger::GetLogger("Z21 " + params->GetName() + " " + params->GetArg1())),
 	 	run(true),
-	 	senderConnection(logger, params->GetArg1(), Z21Port),
-	 	receiverConnection(logger, "0.0.0.0", Z21Port)
+	 	connection(logger, params->GetArg1(), Z21Port)
 	{
 		logger->Info(Languages::TextStarting, name);
 
-		if (senderConnection.IsConnected())
+		if (connection.IsConnected())
 		{
 			logger->Info(Languages::TextSenderSocketCreated);
 		}
 		else
 		{
-			logger->Error(Languages::TextUnableToCreatUdpSocketForSendingData);
+			logger->Error(Languages::TextUnableToCreateUdpSocket, params->GetArg1(), Z21Port);
 		}
 		receiverThread = std::thread(&Hardware::Z21::Receiver, this);
+		heartBeatThread = std::thread(&Hardware::Z21::HeartBeatSender, this);
 	}
 
 	Z21::~Z21()
 	{
 		run = false;
 		SendLogOff();
-		receiverConnection.Terminate();
+		connection.Terminate();
+		heartBeatThread.join();
 		receiverThread.join();
 		logger->Info(Languages::TextTerminatingSenderSocket);
 	}
@@ -80,12 +79,111 @@ namespace Hardware
 		logger->Info(status ? Languages::TextTurningBoosterOn : Languages::TextTurningBoosterOff);
 		unsigned char buffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x21, 0x80, 0xA1 };
 		buffer[5] |= status;
-		senderConnection.Send(buffer, sizeof(buffer));
+		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::LocoSpeed(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const locoSpeed_t speed)
+	void Z21::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
-		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+		LocoSpeedDirection(protocol, address, speed, DirectionRight);
+	}
+
+	unsigned char Z21::CalcSpeed14(const locoSpeed_t speed)
+	{
+		locoSpeed_t speedInternal = speed >> 6;
+		switch (speedInternal)
+		{
+			case MinSpeed:
+				return 0x00;
+
+			case 0x0F:
+				return 0x0F;
+
+			default:
+				return speedInternal + 1;
+		}
+	}
+
+	unsigned char Z21::CalcSpeed28(const locoSpeed_t speed)
+	{
+		locoSpeed_t speedInternal = speed >> 5;
+		switch (speedInternal)
+		{
+			case MinSpeed:
+				return 0x00;
+
+			case 0x1F:
+				return 0x1F;
+
+			default:
+				++speedInternal;
+				return (speedInternal >> 1 | (speedInternal & 0x01) << 4);
+		}
+	}
+
+	unsigned char Z21::CalcSpeed128(const locoSpeed_t speed)
+	{
+		locoSpeed_t speedInternal = speed >> 3;
+		switch (speedInternal)
+		{
+			case MinSpeed:
+				return 0x00;
+
+			case 0x7F:
+				return 0x7F;
+
+			default:
+				return speedInternal + 1;
+		}
+	}
+
+	void Z21::LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction)
+	{
+		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4 };
+		switch (protocol)
+		{
+			case ProtocolMM1:
+			case ProtocolMM15:
+			case ProtocolMM2:
+				SendLocoModeMM(address);
+				break;
+
+			case ProtocolDCC14:
+			case ProtocolDCC28:
+			case ProtocolDCC128:
+				SendLocoModeDCC(address);
+				break;
+
+			default:
+				return;
+		}
+
+		switch (protocol)
+		{
+			case ProtocolMM1:
+			case ProtocolDCC14:
+				buffer[5] = 0x10;
+				buffer[8] = CalcSpeed14(speed);
+				break;
+
+			case ProtocolMM15:
+			case ProtocolDCC28:
+				buffer[5] = 0x12;
+				buffer[8] = CalcSpeed28(speed);
+				break;
+
+			case ProtocolMM2:
+			case ProtocolDCC128:
+				buffer[5] = 0x13;
+				buffer[8] = CalcSpeed128(speed);
+				break;
+
+			default:
+				return;
+		}
+		Utils::Utils::ShortToDataBigEndian(address | 0xC000, buffer + 6);
+		buffer[8] |=  static_cast<unsigned char>(direction) << 7;
+		buffer[9] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8];
+		Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::LocoDirection(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const direction_t direction)
@@ -103,32 +201,47 @@ namespace Hardware
 		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 	}
 
-	// the Receiver thread of the Z21
+	void Z21::HeartBeatSender()
+	{
+		Utils::Utils::SetMinThreadPriority();
+		Utils::Utils::SetThreadName("Z21 Heartbeat Sender");
+		logger->Info(Languages::TextHeartBeatThreadStarted);
+		unsigned int counter = 0;
+		while(run)
+		{
+			std::this_thread::sleep_for(std::chrono::seconds(1));
+			++counter;
+			counter &= 0x0F;
+			if (counter != 0)
+			{
+				continue;
+			}
+			SendGetStatus();
+		}
+		logger->Info(Languages::TextTerminatingHeartBeatThread);
+	}
+
 	void Z21::Receiver()
 	{
-		Utils::Utils::SetThreadName("Z21");
+		Utils::Utils::SetThreadName("Z21 Receiver");
 		logger->Info(Languages::TextReceiverThreadStarted);
-		if (!receiverConnection.IsConnected())
-		{
-			logger->Error(Languages::TextUnableToCreatUdpSocketForReceivingData);
-			return;
-		}
-
-		bool ret = receiverConnection.Bind();
-		if (!ret)
-		{
-			logger->Error(Languages::TextUnableToBindUdpSocket);
-			return;
-		}
 
 		SendGetSerialNumber();
 		SendGetHardwareInfo();
-		SendBroadcastFlags(0x00010001);
+		SendBroadcastFlags(static_cast<BroadCastFlags>(BroadCastFlagBasic
+			| BroadCastFlagRBus
+			| BroadCastFlagSystemState
+			| BroadCastFlagAllLoco
+			| BroadCastFlagCanDetector
+			| BroadCastFlagLocoNetBasic
+			| BroadCastFlagLocoNetLoco
+			| BroadCastFlagLocoNetSwitch
+			| BroadCastFlagLocoNetDetector));
 
 		unsigned char buffer[Z21CommandBufferLength];
 		while(run)
 		{
-			ssize_t dataLength = receiverConnection.Receive(buffer, sizeof(buffer));
+			ssize_t dataLength = connection.Receive(buffer, sizeof(buffer));
 
 			if (!run)
 			{
@@ -159,7 +272,6 @@ namespace Hardware
 				dataRead += ret;
 			}
 		}
-		receiverConnection.Terminate();
 		logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 
@@ -350,25 +462,59 @@ namespace Hardware
 	void Z21::SendGetSerialNumber()
 	{
 		char buffer[4] = { 0x04, 0x00, 0x10, 0x00 };
-		senderConnection.Send(buffer, sizeof(buffer));
+		Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::SendGetHardwareInfo()
 	{
 		char buffer[4] = { 0x04, 0x00, 0x1A, 0x00 };
-		senderConnection.Send(buffer, sizeof(buffer));
+		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::SendGetStatus()
+	{
+		char buffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x21, 0x24, 0x05 };
+		Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::SendLogOff()
 	{
 		char buffer[4] = { 0x04, 0x00, 0x30, 0x00 };
-		senderConnection.Send(buffer, sizeof(buffer));
+		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::SendBroadcastFlags(const unsigned int flags)
+	void Z21::SendBroadcastFlags(const BroadCastFlags flags)
 	{
 		unsigned char buffer[8] = { 0x08, 0x00, 0x50, 0x00 };
 		Utils::Utils::IntToDataLittleEndian(flags, buffer + 4);
-		senderConnection.Send(buffer, sizeof(buffer));
+		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::SendLocoMode(const address_t address, const unsigned char mode)
+	{
+		unsigned char buffer[7] = { 0x07, 0x00, 0x61, 0x00 };
+		Utils::Utils::ShortToDataBigEndian(address, buffer + 4);
+		buffer[6] = mode;
+		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::SendLocoModeMM(const address_t address)
+	{
+		if (address > MaxMMAddress)
+		{
+			return;
+		}
+		SendLocoMode(address, 0x01);
+	}
+
+	void Z21::SendLocoModeDCC(const address_t address)
+	{
+		SendLocoMode(address, 0x00);
+	}
+
+	int Z21::Send(const unsigned char* buffer, const size_t bufferLength)
+	{
+		logger->Hex(buffer, bufferLength);
+		return connection.Send(buffer, bufferLength);
 	}
 } // namespace

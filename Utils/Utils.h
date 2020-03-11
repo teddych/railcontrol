@@ -42,13 +42,6 @@ namespace Utils
 			static int StringToInteger(const std::string& value, const int defaultValue, const bool hex = false);
 			static int StringToInteger(const std::string& value, const int min, const int max);
 			static bool StringToBool(const std::string& value);
-			static void SetThreadName(const std::string& name) { SetThreadName(name.c_str()); }
-			static void SetThreadName(__attribute__((unused)) const char* name)
-			{
-#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 12)
-				pthread_setname_np(pthread_self(), name);
-#endif
-			}
 			static void StringToUpper(std::string& s) { for (auto& c : s) c = toupper(c); }
 			static void IntToDataBigEndian(const uint32_t i, unsigned char* buffer);
 			static uint32_t DataBigEndianToInt(const unsigned char* buffer);
@@ -60,6 +53,14 @@ namespace Utils
 			static uint16_t DataLittleEndianToShort(const unsigned char* buffer);
 			static std::string IntegerToBCD(const unsigned int input);
 			static void CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to);
+			static void SetThreadName(const std::string& name) { SetThreadName(name.c_str()); }
+			static void SetThreadName(__attribute__((unused)) const char* name)
+			{
+#if __GLIBC__ > 2 || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 12)
+				pthread_setname_np(pthread_self(), name);
+#endif
+			}
+			static void SetMinThreadPriority();
 #ifdef __CYGWIN__
 		private:
 			static bool GetFilesInDir(std::vector<std::string>& filesFound, const std::string& path, const std::string& prefix);
