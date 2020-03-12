@@ -82,11 +82,6 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
-	{
-		LocoSpeedDirection(protocol, address, speed, DirectionRight);
-	}
-
 	unsigned char Z21::CalcSpeed14(const locoSpeed_t speed)
 	{
 		locoSpeed_t speedInternal = speed >> 6;
@@ -134,6 +129,20 @@ namespace Hardware
 			default:
 				return speedInternal + 1;
 		}
+	}
+
+	void Z21::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
+	{
+		direction_t direction = cache.GetDirection(address);
+		cache.SetSpeed(address, speed);
+		LocoSpeedDirection(protocol, address, speed, direction);
+	}
+
+	void Z21::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
+	{
+		locoSpeed_t speed = cache.GetSpeed(address);
+		cache.SetDirection(address, direction);
+		LocoSpeedDirection(protocol, address, speed, direction);
 	}
 
 	void Z21::LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction)
@@ -186,14 +195,23 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::LocoDirection(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const direction_t direction)
+	void Z21::LocoFunction(__attribute__ ((unused)) const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
-		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4, 0xF8 };
+		Utils::Utils::ShortToDataBigEndian(address | 0xC000, buffer + 6);
+		buffer[8] = (static_cast<unsigned char>(on) << 6) | (function & 0x3F);
+		buffer[9] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8];
+		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::LocoFunction(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const function_t function, __attribute__ ((unused)) const bool on)
+	void Z21::LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions)
 	{
-		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+		cache.SetSpeedDirection(address, speed, direction);
+		LocoSpeedDirection(protocol, address, speed, direction);
+		for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
+		{
+			LocoFunction(protocol, address, functionNr, functions[functionNr]);
+		}
 	}
 
 	void Z21::Accessory(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const accessoryState_t state, __attribute__ ((unused)) const bool on)

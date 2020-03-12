@@ -27,6 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
+#include "Hardware/Z21Cache.h"
 #include "Logger/Logger.h"
 #include "Network/UdpConnection.h"
 
@@ -83,8 +84,8 @@ namespace Hardware
 			void Booster(const boosterState_t status) override;
 			void LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed) override;
 			void LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction) override;
-			void LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction);
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
+			void LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions) override;
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
 		private:
@@ -93,6 +94,7 @@ namespace Hardware
 			Network::UdpConnection connection;
 			std::thread receiverThread;
 			std::thread heartBeatThread;
+			Z21Cache cache;
 
 			static const unsigned short Z21Port = 21105;
 			static const unsigned int Z21CommandBufferLength = 1472; // = Max Ethernet MTU
@@ -113,6 +115,7 @@ namespace Hardware
 				BroadCastFlagLocoNetDetector = 0x08000000
 			};
 
+			void LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction);
 			void HeartBeatSender();
 			void Receiver();
 			ssize_t InterpretData(unsigned char* buffer, size_t bufferLength);
