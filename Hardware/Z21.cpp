@@ -147,25 +147,25 @@ namespace Hardware
 
 	void Z21::LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction)
 	{
-		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4 };
 		switch (protocol)
 		{
 			case ProtocolMM1:
 			case ProtocolMM15:
 			case ProtocolMM2:
-				SendLocoModeMM(address);
+				SendSetLocoModeMM(address);
 				break;
 
 			case ProtocolDCC14:
 			case ProtocolDCC28:
 			case ProtocolDCC128:
-				SendLocoModeDCC(address);
+				SendSetLocoModeDCC(address);
 				break;
 
 			default:
 				return;
 		}
 
+		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4 };
 		switch (protocol)
 		{
 			case ProtocolMM1:
@@ -214,9 +214,28 @@ namespace Hardware
 		}
 	}
 
-	void Z21::Accessory(__attribute__ ((unused)) const protocol_t protocol, __attribute__ ((unused)) const address_t address, __attribute__ ((unused)) const accessoryState_t state, __attribute__ ((unused)) const bool on)
+	void Z21::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
-		logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+		const address_t zeroBasedAddress = address - 1;
+		switch (protocol)
+		{
+			case ProtocolMM:
+				SendSetTurnoutModeMM(zeroBasedAddress);
+				break;
+
+			case ProtocolDCC:
+				SendSetTurnoutModeDCC(zeroBasedAddress);
+				break;
+
+			default:
+				return;
+		}
+
+		unsigned char buffer[9] = { 0x09, 0x00, 0x40, 0x00, 0x53 };
+		Utils::Utils::ShortToDataBigEndian(zeroBasedAddress, buffer + 5);
+		buffer[7] = 0x80 | (static_cast<unsigned char>(on) << 3) | static_cast<unsigned char>(state);
+		buffer[8] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7];
+		Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::HeartBeatSender()
@@ -246,7 +265,7 @@ namespace Hardware
 
 		SendGetSerialNumber();
 		SendGetHardwareInfo();
-		SendBroadcastFlags(static_cast<BroadCastFlags>(BroadCastFlagBasic
+		SendBroadcastFlags(static_cast<broadCastFlags_t>(BroadCastFlagBasic
 			| BroadCastFlagRBus
 			| BroadCastFlagSystemState
 			| BroadCastFlagAllLoco
@@ -501,33 +520,64 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::SendBroadcastFlags(const BroadCastFlags flags)
+	void Z21::SendBroadcastFlags(const broadCastFlags_t flags)
 	{
 		unsigned char buffer[8] = { 0x08, 0x00, 0x50, 0x00 };
 		Utils::Utils::IntToDataLittleEndian(flags, buffer + 4);
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::SendLocoMode(const address_t address, const unsigned char mode)
+	void Z21::SendSetMode(const address_t address, const commands_t command, const protocolMode_t mode)
 	{
-		unsigned char buffer[7] = { 0x07, 0x00, 0x61, 0x00 };
+		switch (command)
+		{
+			case CommandSetLocoMode:
+			case CommandSetTurnoutMode:
+				break;
+
+			default:
+				return;
+		}
+
+		switch (mode)
+		{
+			case ProtocolModeMM:
+				if (address > MaxMMAddress)
+				{
+					return;
+				}
+				break;
+
+			case ProtocolModeDCC:
+				break;
+
+			default:
+				return;
+		}
+
+		unsigned char buffer[7] = { 0x07, 0x00, command, 0x00, 0x00, 0x00, mode };
 		Utils::Utils::ShortToDataBigEndian(address, buffer + 4);
-		buffer[6] = mode;
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::SendLocoModeMM(const address_t address)
+	void Z21::SendSetLocoModeMM(const address_t address)
 	{
-		if (address > MaxMMAddress)
-		{
-			return;
-		}
-		SendLocoMode(address, 0x01);
+		SendSetMode(address, CommandSetLocoMode, ProtocolModeMM);
 	}
 
-	void Z21::SendLocoModeDCC(const address_t address)
+	void Z21::SendSetLocoModeDCC(const address_t address)
 	{
-		SendLocoMode(address, 0x00);
+		SendSetMode(address, CommandSetLocoMode, ProtocolModeDCC);
+	}
+
+	void Z21::SendSetTurnoutModeMM(const address_t address)
+	{
+		SendSetMode(address, CommandSetTurnoutMode, ProtocolModeMM);
+	}
+
+	void Z21::SendSetTurnoutModeDCC(const address_t address)
+	{
+		SendSetMode(address, CommandSetTurnoutMode, ProtocolModeDCC);
 	}
 
 	int Z21::Send(const unsigned char* buffer, const size_t bufferLength)

@@ -90,7 +90,7 @@ namespace Hardware
 
 		private:
 			Logger::Logger* logger;
-			volatile unsigned char run;
+			volatile bool run;
 			Network::UdpConnection connection;
 			std::thread receiverThread;
 			std::thread heartBeatThread;
@@ -100,7 +100,7 @@ namespace Hardware
 			static const unsigned int Z21CommandBufferLength = 1472; // = Max Ethernet MTU
 			static const address_t MaxMMAddress = 255;
 
-			enum BroadCastFlags :  uint32_t
+			enum broadCastFlags_t : uint32_t
 			{
 				BroadCastFlagBasic           = 0x00000001,
 				BroadCastFlagRBus            = 0x00000002,
@@ -115,6 +115,18 @@ namespace Hardware
 				BroadCastFlagLocoNetDetector = 0x08000000
 			};
 
+			enum commands_t : uint8_t
+			{
+				CommandSetLocoMode = 0x61,
+				CommandSetTurnoutMode = 70
+			};
+
+			enum protocolMode_t : uint8_t
+			{
+				ProtocolModeDCC = 0,
+				ProtocolModeMM = 1
+			};
+
 			void LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction);
 			void HeartBeatSender();
 			void Receiver();
@@ -124,10 +136,12 @@ namespace Hardware
 			void SendGetHardwareInfo();
 			void SendGetStatus();
 			void SendLogOff();
-			void SendBroadcastFlags(const BroadCastFlags flags);
-			void SendLocoMode(const address_t address, const unsigned char mode);
-			void SendLocoModeMM(const address_t address);
-			void SendLocoModeDCC(const address_t address);
+			void SendBroadcastFlags(const broadCastFlags_t flags);
+			void SendSetMode(const address_t address, const commands_t command, const protocolMode_t mode);
+			void SendSetLocoModeMM(const address_t address);
+			void SendSetLocoModeDCC(const address_t address);
+			void SendSetTurnoutModeMM(const address_t address);
+			void SendSetTurnoutModeDCC(const address_t address);
 			int Send(const unsigned char* buffer, const size_t bufferLength);
 			int Send(const char* buffer, const size_t bufferLength) { return Send(reinterpret_cast<const unsigned char*>(buffer), bufferLength); }
 
