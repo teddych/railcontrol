@@ -104,7 +104,7 @@ namespace Hardware
 		Send(command.c_str());
 	}
 
-	void Ecos::Accessory(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void Ecos::AccessoryOnOrOff(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		const unsigned int accessoryId = address + OffsetAccessoryAddress;
 		if (on == false)

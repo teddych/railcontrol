@@ -64,7 +64,8 @@ namespace Hardware
 
 			void AccessoryProtocols(std::vector<protocol_t>& protocols) const override;
 			bool AccessoryProtocolSupported(protocol_t protocol) const override;
-			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
+			void AccessoryState(const controlType_t controlType, const DataModel::Accessory* accessory, const accessoryState_t state) override;
+
 			void Booster(const controlType_t controlType, boosterState_t status) override;
 			bool CanHandleAccessories() const override;
 			bool CanHandleFeedbacks() const override;
@@ -75,8 +76,8 @@ namespace Hardware
 			bool LocoProtocolSupported(protocol_t protocol) const override;
 			void LocoSpeed(const controlType_t controlType, const DataModel::Loco* loco, const locoSpeed_t speed) override;
 			void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions) override;
-			void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) override;
-			void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on) override;
+			void SwitchState(const controlType_t controlType, const DataModel::Switch* mySwitch, const switchState_t state) override;
+			void SignalState(const controlType_t controlType, const DataModel::Signal* signal, const signalState_t state) override;
 
 			static void ArgumentTypesOfHardwareType(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments);
 

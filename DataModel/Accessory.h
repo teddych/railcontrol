@@ -82,7 +82,7 @@ namespace DataModel
 			void SetState(accessoryState_t state) { this->state = state; lastUsed = time(nullptr); ++counter; }
 			accessoryState_t GetState() const { return state; }
 			void SetDuration(accessoryDuration_t duration) { this->duration = duration; }
-			accessoryType_t GetDuration() const { return duration; }
+			accessoryDuration_t GetDuration() const { return duration; }
 
 			void SetInverted(const bool inverted) { this->inverted = inverted; }
 			bool GetInverted() const { return inverted; }

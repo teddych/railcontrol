@@ -103,7 +103,7 @@ namespace Hardware
 		}
 	}
 
-	void CS2::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void CS2::AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		unsigned char buffer[CANCommandBufferLength];
 		CreateAccessoryCommand(buffer, protocol, address, state, on);

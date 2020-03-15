@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <future>
 #include <map>
 #include <string>
 #include <vector>
@@ -91,13 +92,25 @@ namespace Hardware
 			}
 
 			// accessory command
-			virtual void Accessory(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const accessoryState_t state, __attribute__((unused)) const bool on) {};
+			virtual void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime)
+			{
+				AccessoryOnOrOff(protocol, address, state, true);
+				std::async(std::launch::async, AccessoryOnOrOffStatic, this, protocol, address, state, waitTime);
+			};
 
 		protected:
-
 			Manager* manager;
 			const controlID_t controlID;
 			const std::string name;
+
+			virtual void AccessoryOnOrOff(__attribute__((unused)) const protocol_t protocol, __attribute__((unused)) const address_t address, __attribute__((unused)) const accessoryState_t state, __attribute__((unused)) const bool on) {}
+
+		private:
+			static void AccessoryOnOrOffStatic(HardwareInterface* hardware, const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(waitTime));
+				hardware->AccessoryOnOrOff(protocol, address, state, false);
+			}
 	};
 
 } // namespace

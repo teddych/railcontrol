@@ -118,7 +118,7 @@ namespace Hardware
 		}
 	}
 
-	void CcSchnitte::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void CcSchnitte::AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		if (!serialLine.IsConnected())
 		{

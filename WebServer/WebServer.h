@@ -47,7 +47,7 @@ namespace WebServer
 			const std::string GetName() const override { return "Webserver"; }
 			void AccessoryDelete(const accessoryID_t accessoryID, const std::string& name) override;
 			void AccessorySettings(const accessoryID_t accessoryID, const std::string& name) override;
-			void AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on) override;
+			void AccessoryState(const controlType_t controlType, const DataModel::Accessory* accessory, const accessoryState_t state) override;
 			void Booster(const controlType_t controlType, const boosterState_t status) override;
 			void FeedbackDelete(const feedbackID_t feedbackID, const std::string& name) override;
 			void FeedbackSettings(const feedbackID_t feedbackID, const std::string& name) override;
@@ -69,13 +69,13 @@ namespace WebServer
 			void StreetSettings(const streetID_t streetID, const std::string& name) override;
 			void SwitchDelete(const switchID_t switchID, const std::string& name) override;
 			void SwitchSettings(const switchID_t switchID, const std::string& name) override;
-			void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on) override;
+			void SwitchState(const controlType_t controlType, const DataModel::Switch* mySwitch, const switchState_t state) override;
 			void TrackDelete(const trackID_t trackID, const std::string& name) override;
 			void TrackSettings(const trackID_t trackID, const std::string& name) override;
 			void TrackState(const trackID_t trackID, const std::string& name, const bool occupied, const bool blocked, const direction_t direction, const std::string& locoName) override;
 			void SignalDelete(const signalID_t signalID, const std::string& name) override;
 			void SignalSettings(const signalID_t signalID, const std::string& name) override;
-			void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on) override;
+			void SignalState(const controlType_t controlType, const DataModel::Signal* signal, const signalState_t state) override;
 
 		private:
 			template<typename... Args> void AddUpdate(const std::string& command, const Languages::textSelector_t text, Args... args)

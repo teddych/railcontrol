@@ -125,15 +125,11 @@ namespace WebServer {
 		AddUpdate(command.str(), state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
 	}
 
-	void WebServer::AccessoryState(__attribute__((unused)) const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void WebServer::AccessoryState(__attribute__((unused)) const controlType_t controlType, const DataModel::Accessory* accessory, const accessoryState_t state)
 	{
-		if (on == false)
-		{
-			return;
-		}
 		stringstream command;
-		command << "accessory;accessory=" << accessoryID << ";state=" << (state == DataModel::Accessory::AccessoryStateOn ? "green" : "red");
-		AddUpdate(command.str(), state ? Languages::TextAccessoryStateIsGreen : Languages::TextAccessoryStateIsRed, manager.GetAccessoryName(accessoryID));
+		command << "accessory;accessory=" << accessory->GetID() << ";state=" << (state == DataModel::Accessory::AccessoryStateOn ? "green" : "red");
+		AddUpdate(command.str(), state ? Languages::TextAccessoryStateIsGreen : Languages::TextAccessoryStateIsRed, accessory->GetName());
 	}
 
 	void WebServer::AccessorySettings(const accessoryID_t accessoryID, const std::string& name)
@@ -185,15 +181,11 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextStreetDeleted, name);
 	}
 
-	void WebServer::SwitchState(__attribute__((unused)) const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
+	void WebServer::SwitchState(__attribute__((unused)) const controlType_t controlType, const DataModel::Switch* mySwitch, const switchState_t state)
 	{
-		if (on == false)
-		{
-			return;
-		}
 		stringstream command;
-		command << "switch;switch=" << switchID << ";state=" << (state ? "straight" : "turnout");
-		AddUpdate(command.str(), state ? Languages::TextSwitchStateIsStraight : Languages::TextSwitchStateIsTurnout, manager.GetSwitchName(switchID));
+		command << "switch;switch=" << mySwitch->GetID() << ";state=" << (state ? "straight" : "turnout");
+		AddUpdate(command.str(), state ? Languages::TextSwitchStateIsStraight : Languages::TextSwitchStateIsTurnout, mySwitch->GetName());
 	}
 
 	void WebServer::SwitchSettings(const switchID_t switchID, const std::string& name)
@@ -278,15 +270,11 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextLocoIsOnTrack, locoName, trackName);
 	}
 
-	void WebServer::SignalState(__attribute__((unused)) const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on)
+	void WebServer::SignalState(__attribute__((unused)) const controlType_t controlType, const DataModel::Signal* signal, const signalState_t state)
 	{
-		if (on == false)
-		{
-			return;
-		}
 		stringstream command;
-		command << "signal;signal=" << signalID << ";state=" << (state ? "green" : "red");
-		AddUpdate(command.str(), state ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, manager.GetSignalName(signalID));
+		command << "signal;signal=" << signal->GetID() << ";state=" << (state ? "green" : "red");
+		AddUpdate(command.str(), state ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, signal->GetName());
 	}
 
 	void WebServer::SignalSettings(const signalID_t signalID, const std::string& name)

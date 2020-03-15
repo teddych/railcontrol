@@ -330,55 +330,40 @@ namespace Hardware
 		instance->LocoSpeedDirectionFunctions(loco->GetProtocol(), loco->GetAddress(), speed, direction, functions);
 	}
 
-	void HardwareHandler::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool on)
+	void HardwareHandler::AccessoryState(const controlType_t controlType, const DataModel::Accessory* accessory, const accessoryState_t state)
 	{
-		if (controlType == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware
+			|| instance == nullptr
+			|| accessory == nullptr
+			|| accessory->GetControlID() != this->ControlID())
 		{
 			return;
 		}
-		controlID_t controlID = 0;
-		protocol_t protocol = ProtocolNone;
-		address_t address = AddressNone;
-		manager.AccessoryProtocolAddress(accessoryID, controlID, protocol, address);
-		if (controlID != ControlID())
-		{
-			return;
-		}
-		instance->Accessory(protocol, address, state, on);
+		instance->Accessory(accessory->GetProtocol(), accessory->GetAddress(), state, accessory->GetDuration());
 	}
 
-	void HardwareHandler::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool on)
+	void HardwareHandler::SwitchState(const controlType_t controlType, const DataModel::Switch* mySwitch, const switchState_t state)
 	{
-		if (controlType == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware
+			|| instance == nullptr
+			|| mySwitch == nullptr
+			|| mySwitch->GetControlID() != this->ControlID())
 		{
 			return;
 		}
-		controlID_t controlID = 0;
-		protocol_t protocol = ProtocolNone;
-		address_t address = AddressNone;
-		manager.SwitchProtocolAddress(switchID, controlID, protocol, address);
-		if (controlID != ControlID())
-		{
-			return;
-		}
-		instance->Accessory(protocol, address, state, on);
+		instance->Accessory(mySwitch->GetProtocol(), mySwitch->GetAddress(), state, mySwitch->GetDuration());
 	}
 
-	void HardwareHandler::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool on)
+	void HardwareHandler::SignalState(const controlType_t controlType, const DataModel::Signal* signal, const signalState_t state)
 	{
-		if (controlType == ControlTypeHardware || instance == nullptr)
+		if (controlType == ControlTypeHardware
+			|| instance == nullptr
+			|| signal == nullptr
+			|| signal->GetControlID() != this->ControlID())
 		{
 			return;
 		}
-		controlID_t controlID = 0;
-		protocol_t protocol = ProtocolNone;
-		address_t address = AddressNone;
-		manager.SignalProtocolAddress(signalID, controlID, protocol, address);
-		if (controlID != ControlID())
-		{
-			return;
-		}
-		instance->Accessory(protocol, address, state, on);
+		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), state, signal->GetDuration());
 	}
 
 	void HardwareHandler::ArgumentTypesOfHardwareType(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments)

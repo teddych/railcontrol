@@ -214,7 +214,7 @@ namespace Hardware
 		}
 	}
 
-	void Z21::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void Z21::AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		const address_t zeroBasedAddress = address - 1;
 		switch (protocol)

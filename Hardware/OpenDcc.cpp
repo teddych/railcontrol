@@ -334,7 +334,7 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::Accessory(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void OpenDcc::AccessoryOnOrOff(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		if (!serialLine.IsConnected() || !CheckAccessoryAddress(address))
 		{

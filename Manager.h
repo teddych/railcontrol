@@ -34,8 +34,6 @@ along with RailControl; see the file LICENCE. If not see
 #include "Logger/Logger.h"
 #include "Storage/StorageHandler.h"
 
-class DelayedCall;
-
 class Manager
 {
 	public:
@@ -120,7 +118,6 @@ class Manager
 		bool AccessorySave(const accessoryID_t accessoryID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const controlID_t controlID, const protocol_t protocol, const address_t address, const accessoryType_t type, const accessoryDuration_t timeout, const bool inverted, std::string& result);
 		bool AccessoryDelete(const accessoryID_t accessoryID);
 		bool AccessoryRelease(const accessoryID_t accessoryID);
-		bool AccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// feedback
 		void FeedbackState(const controlID_t controlID, const feedbackPin_t pin, const DataModel::Feedback::feedbackState_t state);
@@ -158,7 +155,6 @@ class Manager
 
 		// switch
 		bool SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool force);
-		void SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on);
 		DataModel::Switch* GetSwitch(const switchID_t switchID) const;
 		const std::string& GetSwitchName(const switchID_t switchID) const;
 		const std::map<switchID_t,DataModel::Switch*>& SwitchList() const { return switches; }
@@ -166,7 +162,6 @@ class Manager
 		bool SwitchSave(const switchID_t switchID, const std::string& name, const layoutPosition_t x, const layoutPosition_t y, const layoutPosition_t z, const DataModel::LayoutItem::layoutRotation_t rotation, const controlID_t controlID, const protocol_t protocol, const address_t address, const switchType_t type, const switchDuration_t timeout, const bool inverted, std::string& result);
 		bool SwitchDelete(const switchID_t switchID);
 		bool SwitchRelease(const switchID_t switchID);
-		bool SwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// street
 		bool StreetExecute(Logger::Logger* logger, const locoID_t locoID, const streetID_t streetID);
@@ -210,7 +205,6 @@ class Manager
 
 		// signal
 		bool SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool force);
-		void SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool inverted, const bool on);
 		void SignalState(const controlType_t controlType, DataModel::Signal* signal, const accessoryState_t state, const bool force);
 		DataModel::Signal* GetSignal(const signalID_t signalID) const;
 		const std::string& GetSignalName(const signalID_t signalID) const;
@@ -231,7 +225,6 @@ class Manager
 			std::string& result);
 		bool SignalDelete(const signalID_t signalID);
 		bool SignalRelease(const signalID_t signalID);
-		bool SignalProtocolAddress(const signalID_t signalID, controlID_t& controlID, protocol_t& protocol, address_t& address) const;
 
 		// automode
 		bool LocoIntoTrack(Logger::Logger* logger, const locoID_t locoID, const trackID_t trackID);
@@ -485,7 +478,6 @@ class Manager
 
 		// storage
 		Storage::StorageHandler* storage;
-		DelayedCall* delayedCall;
 
 		accessoryDuration_t defaultAccessoryDuration;
 		bool autoAddFeedback;

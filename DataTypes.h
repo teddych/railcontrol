@@ -44,6 +44,7 @@ typedef objectID_t accessoryID_t;
 typedef unsigned char accessoryType_t;
 typedef bool accessoryState_t;
 typedef unsigned short accessoryDuration_t;
+typedef unsigned long waitTime_t;
 
 // feedback
 typedef objectID_t feedbackID_t;

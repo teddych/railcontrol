@@ -24,7 +24,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <unistd.h>
 
 #include "DataModel/LayoutItem.h"
-#include "DelayedCall.h"
 #include "Languages.h"
 #include "Hardware/HardwareHandler.h"
 #include "Hardware/HardwareParams.h"
@@ -55,7 +54,6 @@ Manager::Manager(Config& config)
 :	logger(Logger::Logger::GetLogger(Languages::GetText(Languages::TextManager))),
  	boosterState(BoosterStop),
 	storage(nullptr),
- 	delayedCall(new DelayedCall(*this)),
 	defaultAccessoryDuration(DefaultAccessoryDuration),
 	autoAddFeedback(false),
 	selectStreetApproach(DataModel::Track::SelectStreetRandom),
@@ -214,9 +212,6 @@ Manager::~Manager()
 	DeleteAllMapEntries(feedbacks, feedbackMutex);
 	DeleteAllMapEntries(tracks, trackMutex);
 	DeleteAllMapEntries(layers, layerMutex);
-
-	delete delayedCall;
-	delayedCall = nullptr;
 
 	if (storage == nullptr)
 	{
@@ -920,21 +915,13 @@ void Manager::AccessoryState(const controlType_t controlType, Accessory* accesso
 	}
 
 	accessory->SetState(state);
-	const accessoryID_t accessoryID = accessory->GetID();
 	const bool inverted = accessory->GetInverted();
 
-	this->AccessoryState(controlType, accessoryID, state, inverted, true);
-
-	delayedCall->Accessory(controlType, accessoryID, state, inverted, accessory->GetDuration());
-}
-
-void Manager::AccessoryState(const controlType_t controlType, const accessoryID_t accessoryID, const accessoryState_t state, const bool inverted, const bool on)
-{
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
 		accessoryState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
-		control.second->AccessoryState(controlType, accessoryID, tempState, on);
+		control.second->AccessoryState(controlType, accessory, tempState);
 	}
 }
 
@@ -1084,22 +1071,6 @@ bool Manager::AccessoryRelease(const accessoryID_t accessoryID)
 	}
 	locoID_t locoID = accessory->GetLoco();
 	return accessory->Release(logger, locoID);
-}
-
-bool Manager::AccessoryProtocolAddress(const accessoryID_t accessoryID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
-{
-	if (accessories.count(accessoryID) != 1)
-	{
-		controlID = 0;
-		protocol = ProtocolNone;
-		address = 0;
-		return false;
-	}
-	Accessory* accessory = accessories.at(accessoryID);
-	controlID = accessory->GetControlID();
-	protocol = accessory->GetProtocol();
-	address = accessory->GetAddress();
-	return true;
 }
 
 /***************************
@@ -1579,21 +1550,13 @@ void Manager::SwitchState(const controlType_t controlType, Switch* mySwitch, con
 	}
 
 	mySwitch->SetState(state);
-	switchID_t switchID = mySwitch->GetID();
 	bool inverted = mySwitch->GetInverted();
 
-	this->SwitchState(controlType, switchID, state, inverted, true);
-
-	delayedCall->Switch(controlType, switchID, state, inverted, mySwitch->GetDuration());
-}
-
-void Manager::SwitchState(const controlType_t controlType, const switchID_t switchID, const switchState_t state, const bool inverted, const bool on)
-{
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
 		switchState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
-		control.second->SwitchState(controlType, switchID, tempState, on);
+		control.second->SwitchState(controlType, mySwitch, tempState);
 	}
 }
 
@@ -1745,22 +1708,6 @@ const map<string,DataModel::Switch*> Manager::SwitchListByName() const
 		out[mySwitch.second->GetName()] = mySwitch.second;
 	}
 	return out;
-}
-
-bool Manager::SwitchProtocolAddress(const switchID_t switchID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
-{
-	if (switches.count(switchID) != 1)
-	{
-		controlID = 0;
-		protocol = ProtocolNone;
-		address = 0;
-		return false;
-	}
-	Switch* mySwitch = switches.at(switchID);
-	controlID = mySwitch->GetControlID();
-	protocol = mySwitch->GetProtocol();
-	address = mySwitch->GetAddress();
-	return true;
 }
 
 bool Manager::SwitchRelease(const streetID_t switchID)
@@ -2127,21 +2074,13 @@ void Manager::SignalState(const controlType_t controlType, Signal* signal, const
 	}
 
 	signal->SetState(state);
-	signalID_t signalID = signal->GetID();
 	bool inverted = signal->GetInverted();
 
-	this->SignalState(controlType, signalID, state, inverted, true);
-
-	delayedCall->Signal(controlType, signalID, state, inverted, signal->GetDuration());
-}
-
-void Manager::SignalState(const controlType_t controlType, const signalID_t signalID, const signalState_t state, const bool inverted, const bool on)
-{
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
 		signalState_t tempState = (control.first >= ControlIdFirstHardware ? (state != inverted) : state);
-		control.second->SignalState(controlType, signalID, tempState, on);
+		control.second->SignalState(controlType, signal, tempState);
 	}
 }
 
@@ -2294,22 +2233,6 @@ const map<string,DataModel::Signal*> Manager::SignalListByName() const
 		out[signal.second->GetName()] = signal.second;
 	}
 	return out;
-}
-
-bool Manager::SignalProtocolAddress(const signalID_t signalID, controlID_t& controlID, protocol_t& protocol, address_t& address) const
-{
-	if (signals.count(signalID) != 1)
-	{
-		controlID = 0;
-		protocol = ProtocolNone;
-		address = 0;
-		return false;
-	}
-	Signal* signal = signals.at(signalID);
-	controlID = signal->GetControlID();
-	protocol = signal->GetProtocol();
-	address = signal->GetAddress();
-	return true;
 }
 
 bool Manager::SignalRelease(const streetID_t signalID)
