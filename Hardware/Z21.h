@@ -35,6 +35,29 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
+	class AccessoryQueueEntry
+	{
+		public:
+			AccessoryQueueEntry()
+				:	protocol(ProtocolNone),
+				 	address(AddressNone),
+				 	state(false),
+				 	waitTime(0)
+			{}
+
+			AccessoryQueueEntry(const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime)
+			:	protocol(protocol),
+			 	address(address),
+			 	state(state),
+			 	waitTime(waitTime)
+			{}
+
+			protocol_t protocol;
+			address_t address;
+			accessoryState_t state;
+			waitTime_t waitTime;
+	};
+
 	class Z21 : HardwareInterface
 	{
 		public:
@@ -86,6 +109,7 @@ namespace Hardware
 			void LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction) override;
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 			void LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions) override;
+			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime) override;
 			void AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 
 		private:
@@ -94,7 +118,10 @@ namespace Hardware
 			Network::UdpConnection connection;
 			std::thread receiverThread;
 			std::thread heartBeatThread;
+			std::thread accessorySenderThread;
 			Z21Cache cache;
+
+			Utils::ThreadSafeQueue<AccessoryQueueEntry> accessoryQueue;
 
 			static const unsigned short Z21Port = 21105;
 			static const unsigned int Z21CommandBufferLength = 1472; // = Max Ethernet MTU
@@ -128,6 +155,7 @@ namespace Hardware
 			};
 
 			void LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction);
+			void AccessorySender();
 			void HeartBeatSender();
 			void Receiver();
 			ssize_t InterpretData(unsigned char* buffer, size_t bufferLength);
@@ -142,6 +170,8 @@ namespace Hardware
 			void SendSetLocoModeDCC(const address_t address);
 			void SendSetTurnoutModeMM(const address_t address);
 			void SendSetTurnoutModeDCC(const address_t address);
+			void AccessoryOn(const protocol_t protocol, const address_t address, const accessoryState_t state);
+			void AccessoryOff(const protocol_t protocol, const address_t address, const accessoryState_t state);
 			int Send(const unsigned char* buffer, const size_t bufferLength);
 			int Send(const char* buffer, const size_t bufferLength) { return Send(reinterpret_cast<const unsigned char*>(buffer), bufferLength); }
 

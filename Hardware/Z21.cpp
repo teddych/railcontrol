@@ -62,13 +62,16 @@ namespace Hardware
 		}
 		receiverThread = std::thread(&Hardware::Z21::Receiver, this);
 		heartBeatThread = std::thread(&Hardware::Z21::HeartBeatSender, this);
+		accessorySenderThread = std::thread(&Hardware::Z21::AccessorySender, this);
 	}
 
 	Z21::~Z21()
 	{
 		run = false;
 		SendLogOff();
+		accessoryQueue.Terminate();
 		connection.Terminate();
+		accessorySenderThread.join();
 		heartBeatThread.join();
 		receiverThread.join();
 		logger->Info(Languages::TextTerminatingSenderSocket);
@@ -214,6 +217,35 @@ namespace Hardware
 		}
 	}
 
+	void Z21::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime)
+	{
+		AccessoryQueueEntry entry(protocol, address, state, waitTime);
+		accessoryQueue.Enqueue(entry);
+	}
+
+	void Z21::AccessoryOn(const protocol_t protocol, const address_t address, const accessoryState_t state)
+	{
+		switch (protocol)
+		{
+			case ProtocolMM:
+				SendSetTurnoutModeMM(address);
+				break;
+
+			case ProtocolDCC:
+				SendSetTurnoutModeDCC(address);
+				break;
+
+			default:
+				return;
+		}
+		AccessoryOnOrOff(protocol, address, state, true);
+	}
+
+	void Z21::AccessoryOff(const protocol_t protocol, const address_t address, const accessoryState_t state)
+	{
+		AccessoryOnOrOff(protocol, address, state, false);
+	}
+
 	void Z21::AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		const address_t zeroBasedAddress = address - 1;
@@ -236,6 +268,24 @@ namespace Hardware
 		buffer[7] = 0x80 | (static_cast<unsigned char>(on) << 3) | static_cast<unsigned char>(state);
 		buffer[8] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7];
 		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::AccessorySender()
+	{
+		Utils::Utils::SetThreadName("Z21 Accessory Sender");
+		logger->Info(Languages::TextAccessorySenderThreadStarted);
+		while (run)
+		{
+			AccessoryQueueEntry entry = accessoryQueue.Dequeue();
+			if (entry.protocol == ProtocolNone)
+			{
+				continue;
+			}
+			AccessoryOn(entry.protocol, entry.address, entry.state);
+			std::this_thread::sleep_for(std::chrono::milliseconds(entry.waitTime));
+			AccessoryOff(entry.protocol, entry.address, entry.state);
+		}
+		logger->Info(Languages::TextTerminatingAccessorySenderThread);
 	}
 
 	void Z21::HeartBeatSender()
@@ -280,7 +330,7 @@ namespace Hardware
 		{
 			ssize_t dataLength = connection.Receive(buffer, sizeof(buffer));
 
-			if (!run)
+			if (run == false)
 			{
 				break;
 			}
@@ -572,12 +622,14 @@ namespace Hardware
 
 	void Z21::SendSetTurnoutModeMM(const address_t address)
 	{
-		SendSetMode(address, CommandSetTurnoutMode, ProtocolModeMM);
+		const address_t zeroBasedAddress = address - 1;
+		SendSetMode(zeroBasedAddress, CommandSetTurnoutMode, ProtocolModeMM);
 	}
 
 	void Z21::SendSetTurnoutModeDCC(const address_t address)
 	{
-		SendSetMode(address, CommandSetTurnoutMode, ProtocolModeDCC);
+		const address_t zeroBasedAddress = address - 1;
+		SendSetMode(zeroBasedAddress, CommandSetTurnoutMode, ProtocolModeDCC);
 	}
 
 	int Z21::Send(const unsigned char* buffer, const size_t bufferLength)

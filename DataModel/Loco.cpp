@@ -242,9 +242,9 @@ namespace DataModel
 		{
 			{ // sleep must be outside of locked block
 				std::lock_guard<std::mutex> Guard(stateMutex);
-				feedbackID_t feedbackId = feedbackIdsReached.Dequeue();
-				if (feedbackId != FeedbackNone)
+				if (feedbackIdsReached.IsEmpty() == false)
 				{
+					feedbackID_t feedbackId = feedbackIdsReached.Dequeue();
 					if (feedbackId == feedbackIdFirst)
 					{
 						FeedbackIdFirstReached();

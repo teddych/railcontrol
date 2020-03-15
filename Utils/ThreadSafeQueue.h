@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <condition_variable>
 #include <queue>
 #include <mutex>
 
@@ -31,31 +32,58 @@ namespace Utils
 		public:
 			ThreadSafeQueue(void)
 			:	queue(),
-				mutex()
+				mutex(),
+				run(true)
 			{}
 
-			~ThreadSafeQueue(void) {}
+			~ThreadSafeQueue(void)
+			{
+				Terminate();
+			}
 
 			void Enqueue(T t)
 			{
-				std::lock_guard<std::mutex> lock(mutex);
+				std::unique_lock<std::mutex> lock(mutex);
 				queue.push(t);
+				cv.notify_all();
 			}
 
 			T Dequeue(void)
 			{
 				std::unique_lock<std::mutex> lock(mutex);
-				if (queue.empty())
+				while (true)
 				{
-					return 0;
+					if (queue.empty() == false)
+					{
+						break;
+					}
+					if (run == false)
+					{
+						return T();
+					}
+					cv.wait_for(lock, std::chrono::seconds(1));
 				}
 				T val = queue.front();
 				queue.pop();
 				return val;
 			}
 
+			bool IsEmpty()
+			{
+				std::unique_lock<std::mutex> lock(mutex);
+				return queue.empty();
+			}
+
+			void Terminate()
+			{
+				run = false;
+				cv.notify_all();
+			}
+
 		private:
 			std::queue<T> queue;
 			mutable std::mutex mutex;
+			std::condition_variable cv;
+			volatile bool run;
 	};
 }
