@@ -175,9 +175,12 @@ namespace Hardware
 			int Send(const unsigned char* buffer, const size_t bufferLength);
 			int Send(const char* buffer, const size_t bufferLength) { return Send(reinterpret_cast<const unsigned char*>(buffer), bufferLength); }
 
-			unsigned char CalcSpeed14(const locoSpeed_t speed);
-			unsigned char CalcSpeed28(const locoSpeed_t speed);
-			unsigned char CalcSpeed128(const locoSpeed_t speed);
+			unsigned char EncodeSpeed14(const locoSpeed_t speed);
+			unsigned char EncodeSpeed28(const locoSpeed_t speed);
+			unsigned char EncodeSpeed128(const locoSpeed_t speed);
+			locoSpeed_t DecodeSpeed14(unsigned char data);
+			locoSpeed_t DecodeSpeed28(unsigned char data);
+			locoSpeed_t DecodeSpeed128(unsigned char data);
 	};
 
 	extern "C" Z21* create_Z21(const HardwareParams* params);

@@ -85,7 +85,7 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
-	unsigned char Z21::CalcSpeed14(const locoSpeed_t speed)
+	unsigned char Z21::EncodeSpeed14(const locoSpeed_t speed)
 	{
 		locoSpeed_t speedInternal = speed >> 6;
 		switch (speedInternal)
@@ -101,7 +101,22 @@ namespace Hardware
 		}
 	}
 
-	unsigned char Z21::CalcSpeed28(const locoSpeed_t speed)
+	locoSpeed_t Z21::DecodeSpeed14(unsigned char data)
+	{
+		switch (data)
+		{
+			case 0x00:
+				return MinSpeed;
+
+			case 0x0F:
+				return MaxSpeed;
+
+			default:
+				return (data - 1) << 6;
+		}
+	}
+
+	unsigned char Z21::EncodeSpeed28(const locoSpeed_t speed)
 	{
 		locoSpeed_t speedInternal = speed >> 5;
 		switch (speedInternal)
@@ -118,7 +133,24 @@ namespace Hardware
 		}
 	}
 
-	unsigned char Z21::CalcSpeed128(const locoSpeed_t speed)
+	locoSpeed_t Z21::DecodeSpeed28(unsigned char data)
+	{
+		switch (data)
+		{
+			case 0x00:
+				return MinSpeed;
+
+			case 0x1F:
+				return MaxSpeed;
+
+			default:
+				unsigned char internalData = ((data >> 4) & 0x01) | ((data & 0x0F) << 1);
+				--internalData;
+				return internalData << 5;
+		}
+	}
+
+	unsigned char Z21::EncodeSpeed128(const locoSpeed_t speed)
 	{
 		locoSpeed_t speedInternal = speed >> 3;
 		switch (speedInternal)
@@ -131,6 +163,21 @@ namespace Hardware
 
 			default:
 				return speedInternal + 1;
+		}
+	}
+
+	locoSpeed_t Z21::DecodeSpeed128(unsigned char data)
+	{
+		switch (data)
+		{
+			case 0x00:
+				return MinSpeed;
+
+			case 0x7F:
+				return MaxSpeed;
+
+			default:
+				return (data - 1) << 3;
 		}
 	}
 
@@ -174,19 +221,19 @@ namespace Hardware
 			case ProtocolMM1:
 			case ProtocolDCC14:
 				buffer[5] = 0x10;
-				buffer[8] = CalcSpeed14(speed);
+				buffer[8] = EncodeSpeed14(speed);
 				break;
 
 			case ProtocolMM15:
 			case ProtocolDCC28:
 				buffer[5] = 0x12;
-				buffer[8] = CalcSpeed28(speed);
+				buffer[8] = EncodeSpeed28(speed);
 				break;
 
 			case ProtocolMM2:
 			case ProtocolDCC128:
 				buffer[5] = 0x13;
-				buffer[8] = CalcSpeed128(speed);
+				buffer[8] = EncodeSpeed128(speed);
 				break;
 
 			default:
@@ -479,7 +526,47 @@ namespace Hardware
 						break;
 
 					case 0xEF:
-						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+						// FIXME: MM is not recognized
+						address_t address = Utils::Utils::DataBigEndianToInt(buffer + 5) | 0x3FFF;
+						bool used = (buffer[6] >> 3) & 0x01;
+						logger->Debug(used ? "Fremd gesteuert" : "RailControl gesteuert");
+						unsigned char protocolType = buffer[6] & 0x07;
+						protocol_t protocol;
+						unsigned char speedData = buffer[7] & 0x7F;
+						locoSpeed_t newSpeed;
+						switch (protocolType)
+						{
+							case 0:
+								protocol = ProtocolDCC14;
+								newSpeed = DecodeSpeed14(speedData);
+								break;
+
+							case 2:
+								protocol = ProtocolDCC28;
+								newSpeed = DecodeSpeed28(speedData);
+								break;
+
+							case 4:
+								protocol = ProtocolDCC128;
+								newSpeed = DecodeSpeed128(speedData);
+								break;
+
+							default:
+								return dataLength;
+						}
+						locoSpeed_t oldSpeed = cache.GetSpeed(address);
+						if (newSpeed != oldSpeed)
+						{
+							cache.SetSpeed(address, newSpeed);
+							manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, newSpeed);
+						}
+						direction_t newDirection = (buffer[7] >> 7) ? DirectionRight : DirectionLeft;
+						direction_t oldDirection = cache.GetDirection(address);
+						if (newDirection != oldDirection)
+						{
+							cache.SetDirection(address, newDirection);
+							manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, newDirection);
+						}
 						break;
 
 					case 0xF3:
