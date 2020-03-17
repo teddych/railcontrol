@@ -419,7 +419,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextZ21DoesNotUnderstand */ { "Z21 does not understand our command", "Z21 versteht under Kommando nicht", "Z21 no ha endendido nuestro comando" },
 /* TextZ21SmartRail2012 */ { "SmartRail", "SmartRail", "SmartRail" },
 /* TextZ21Start2016 */ { "z21 start", "z21 start", "z21 start" },
-/* TextZ21Type */ { "Connected to a {0} with firmware version {1}", "Verbunden mit einer {0} mit firmware version", "Conectado a {0} con firmware versión {1}" },
+/* TextZ21Type */ { "Connected to a {0} with firmware version {1}", "Verbunden mit einer {0} mit firmware version {1}", "Conectado a {0} con firmware versión {1}" },
 /* TextZ21Unknown */ { "unknown Z21", "unbekannte Z21", "Z21 desconosido" },
 /* TextZ21White2013 */ { "white z21", "weisse z21", "z21 blanco" },
 // /* Text */ { "", "", "" },

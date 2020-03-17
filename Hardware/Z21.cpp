@@ -423,14 +423,14 @@ namespace Hardware
 			}
 
 			case 0x40:
-				switch (buffer[8])
+				switch (buffer[4])
 				{
 					case 0x43:
 						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;
 
 					case 0x61:
-						switch (buffer[9])
+						switch (buffer[5])
 						{
 							case 0x00:
 								manager->Booster(ControlTypeHardware, BoosterStop);
