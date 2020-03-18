@@ -526,6 +526,7 @@ namespace Hardware
 						break;
 
 					case 0xEF:
+					{
 						// FIXME: MM is not recognized
 						address_t address = Utils::Utils::DataBigEndianToInt(buffer + 5) | 0x3FFF;
 						bool used = (buffer[6] >> 3) & 0x01;
@@ -568,6 +569,7 @@ namespace Hardware
 							manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, newDirection);
 						}
 						break;
+					}
 
 					case 0xF3:
 						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
