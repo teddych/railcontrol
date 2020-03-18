@@ -154,6 +154,13 @@ namespace Hardware
 				ProtocolModeMM = 1
 			};
 
+			enum featureSet_t : uint8_t
+			{
+				FeaturesNotRestricted = 0x00,
+				FeaturesStartLocked = 0x01,
+				FeaturesStartUnlocked = 0x02
+			};
+
 			void LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction);
 			void AccessorySender();
 			void HeartBeatSender();
@@ -163,6 +170,7 @@ namespace Hardware
 			void SendGetSerialNumber();
 			void SendGetHardwareInfo();
 			void SendGetStatus();
+			void SendGetCode();
 			void SendLogOff();
 			void SendBroadcastFlags(const broadCastFlags_t flags);
 			void SendSetMode(const address_t address, const commands_t command, const protocolMode_t mode);

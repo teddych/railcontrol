@@ -362,6 +362,7 @@ namespace Hardware
 
 		SendGetSerialNumber();
 		SendGetHardwareInfo();
+		SendGetCode();
 		SendBroadcastFlags(static_cast<broadCastFlags_t>(BroadCastFlagBasic
 			| BroadCastFlagRBus
 			| BroadCastFlagSystemState
@@ -398,7 +399,7 @@ namespace Hardware
 			ssize_t dataRead = 0;
 			while (dataRead < dataLength)
 			{
-				ssize_t ret = InterpretData(buffer, dataLength - dataRead);
+				ssize_t ret = InterpretData(buffer + dataRead, dataLength - dataRead);
 				if (ret == -1)
 				{
 					break;
@@ -428,7 +429,23 @@ namespace Hardware
 			}
 
 			case 0x18:
-				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+				switch (buffer[4])
+				{
+					case FeaturesNotRestricted:
+						logger->Debug(Languages::TextZ21NotRestricted);
+						break;
+
+					case FeaturesStartLocked:
+						logger->Error(Languages::TextZ21StartLocked);
+						break;
+
+					case FeaturesStartUnlocked:
+						logger->Debug(Languages::TextZ21StartUnlocked);
+						break;
+
+					default:
+						logger->Debug(Languages::TextZ21RestrictionsUnknown);
+				}
 				break;
 
 			case 0x1A:
@@ -480,10 +497,18 @@ namespace Hardware
 						switch (buffer[5])
 						{
 							case 0x00:
+								if (buffer[6] != 0x61)
+								{
+									logger->Error(Languages::TextCheckSumError);
+								}
 								manager->Booster(ControlTypeHardware, BoosterStop);
 								break;
 
 							case 0x01:
+								if (buffer[6] != 0x60)
+								{
+									logger->Error(Languages::TextCheckSumError);
+								}
 								manager->Booster(ControlTypeHardware, BoosterGo);
 								break;
 
@@ -492,6 +517,10 @@ namespace Hardware
 								break;
 
 							case 0x08:
+								if (buffer[6] != 0x69)
+								{
+									logger->Error(Languages::TextCheckSumError);
+								}
 								manager->Booster(ControlTypeHardware, BoosterStop);
 								break;
 
@@ -597,7 +626,8 @@ namespace Hardware
 				break;
 
 			case 0x84:
-				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+				// FIXME
+				logger->Debug("Ignoring System State");
 				break;
 
 			case 0x88:
@@ -605,15 +635,18 @@ namespace Hardware
 				break;
 
 			case 0xA0:
-				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+				// FIXME
+				logger->Debug("LocoNet 0xA0 received");
 				break;
 
 			case 0xA1:
-				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+				// FIXME
+				logger->Debug("LocoNet 0xA1 received");
 				break;
 
 			case 0xA2:
-				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+				// FIXME
+				logger->Debug("LocoNet 0xA2 received");
 				break;
 
 			case 0xA3:
@@ -650,6 +683,12 @@ namespace Hardware
 	void Z21::SendGetStatus()
 	{
 		char buffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x21, 0x24, 0x05 };
+		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::SendGetCode()
+	{
+		char buffer[4] = { 0x04, 0x00, 0x18, 0x00 };
 		Send(buffer, sizeof(buffer));
 	}
 
