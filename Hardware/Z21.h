@@ -28,6 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Hardware/Z21LocoCache.h"
+#include "Hardware/Z21TurnoutCache.h"
 #include "Logger/Logger.h"
 #include "Network/UdpConnection.h"
 
@@ -39,10 +40,10 @@ namespace Hardware
 	{
 		public:
 			AccessoryQueueEntry()
-				:	protocol(ProtocolNone),
-				 	address(AddressNone),
-				 	state(false),
-				 	waitTime(0)
+			:	protocol(ProtocolNone),
+			 	address(AddressNone),
+			 	state(false),
+			 	waitTime(0)
 			{}
 
 			AccessoryQueueEntry(const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime)
@@ -119,7 +120,8 @@ namespace Hardware
 			std::thread receiverThread;
 			std::thread heartBeatThread;
 			std::thread accessorySenderThread;
-			Z21LocoCache cache;
+			Z21LocoCache locoCache;
+			Z21TurnoutCache turnoutCache;
 
 			Utils::ThreadSafeQueue<AccessoryQueueEntry> accessoryQueue;
 
@@ -145,7 +147,7 @@ namespace Hardware
 			enum commands_t : uint8_t
 			{
 				CommandSetLocoMode = 0x61,
-				CommandSetTurnoutMode = 70
+				CommandSetTurnoutMode = 0x70
 			};
 
 			enum protocolMode_t : uint8_t

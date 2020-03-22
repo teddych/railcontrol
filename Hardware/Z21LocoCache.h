@@ -30,15 +30,15 @@ namespace Hardware
 	{
 		public:
 			Z21LocoCacheEntry()
-			: speed(MinSpeed),
-			  direction(DirectionRight),
-			  protocol(ProtocolNone)
+			:	speed(MinSpeed),
+			 	direction(DirectionRight),
+			 	protocol(ProtocolNone)
 			{}
 
 			Z21LocoCacheEntry(const locoSpeed_t speed, const direction_t direction, const protocol_t protocol)
-			: speed(speed),
-			  direction(direction),
-			  protocol(protocol)
+			:	speed(speed),
+			 	direction(direction),
+			 	protocol(protocol)
 			{}
 
 			locoSpeed_t speed;
@@ -49,9 +49,6 @@ namespace Hardware
 	class Z21LocoCache
 	{
 		public:
-			Z21LocoCache() {};
-			~Z21LocoCache() {};
-
 			Z21LocoCacheEntry GetData(const address_t address)
 			{
 				if (cache.count(address) == 1)

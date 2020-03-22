@@ -183,20 +183,32 @@ namespace Hardware
 
 	void Z21::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
-		direction_t direction = cache.GetDirection(address);
-		cache.SetSpeed(address, speed);
+		if (!LocoProtocolSupported(protocol))
+		{
+			return;
+		}
+		direction_t direction = locoCache.GetDirection(address);
+		locoCache.SetSpeed(address, speed);
 		LocoSpeedDirection(protocol, address, speed, direction);
 	}
 
 	void Z21::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
 	{
-		locoSpeed_t speed = cache.GetSpeed(address);
-		cache.SetDirection(address, direction);
+		if (!LocoProtocolSupported(protocol))
+		{
+			return;
+		}
+		locoSpeed_t speed = locoCache.GetSpeed(address);
+		locoCache.SetDirection(address, direction);
 		LocoSpeedDirection(protocol, address, speed, direction);
 	}
 
 	void Z21::LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction)
 	{
+		if (!LocoProtocolSupported(protocol))
+		{
+			return;
+		}
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4 };
 		switch (protocol)
 		{
@@ -229,6 +241,10 @@ namespace Hardware
 
 	void Z21::LocoFunction(__attribute__ ((unused)) const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
+		if (!LocoProtocolSupported(protocol))
+		{
+			return;
+		}
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4, 0xF8 };
 		Utils::Utils::ShortToDataBigEndian(address | 0xC000, buffer + 6);
 		buffer[8] = (static_cast<unsigned char>(on) << 6) | (function & 0x3F);
@@ -238,7 +254,11 @@ namespace Hardware
 
 	void Z21::LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions)
 	{
-		cache.SetSpeedDirectionProtocol(address, speed, direction, protocol);
+		if (!LocoProtocolSupported(protocol))
+		{
+			return;
+		}
+		locoCache.SetSpeedDirectionProtocol(address, speed, direction, protocol);
 		switch (protocol)
 		{
 			case ProtocolMM1:
@@ -266,25 +286,34 @@ namespace Hardware
 
 	void Z21::Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime)
 	{
+		if (!AccessoryProtocolSupported(protocol))
+		{
+			return;
+		}
+		protocol_t storedProtocol = turnoutCache.GetProtocol(address);
+		if (storedProtocol == ProtocolNone)
+		{
+			switch (protocol)
+			{
+				case ProtocolMM:
+					SendSetTurnoutModeMM(address);
+					break;
+
+				case ProtocolDCC:
+					SendSetTurnoutModeDCC(address);
+					break;
+
+				default:
+					return;
+			}
+			turnoutCache.SetProtocol(address, protocol);
+		}
 		AccessoryQueueEntry entry(protocol, address, state, waitTime);
 		accessoryQueue.Enqueue(entry);
 	}
 
 	void Z21::AccessoryOn(const protocol_t protocol, const address_t address, const accessoryState_t state)
 	{
-		switch (protocol)
-		{
-			case ProtocolMM:
-				SendSetTurnoutModeMM(address);
-				break;
-
-			case ProtocolDCC:
-				SendSetTurnoutModeDCC(address);
-				break;
-
-			default:
-				return;
-		}
 		AccessoryOnOrOff(protocol, address, state, true);
 	}
 
@@ -293,23 +322,9 @@ namespace Hardware
 		AccessoryOnOrOff(protocol, address, state, false);
 	}
 
-	void Z21::AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void Z21::AccessoryOnOrOff(__attribute__((unused)) const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
 		const address_t zeroBasedAddress = address - 1;
-		switch (protocol)
-		{
-			case ProtocolMM:
-				SendSetTurnoutModeMM(zeroBasedAddress);
-				break;
-
-			case ProtocolDCC:
-				SendSetTurnoutModeDCC(zeroBasedAddress);
-				break;
-
-			default:
-				return;
-		}
-
 		unsigned char buffer[9] = { 0x09, 0x00, 0x40, 0x00, 0x53 };
 		Utils::Utils::ShortToDataBigEndian(zeroBasedAddress, buffer + 5);
 		buffer[7] = 0x80 | (static_cast<unsigned char>(on) << 3) | static_cast<unsigned char>(state);
@@ -326,6 +341,7 @@ namespace Hardware
 			AccessoryQueueEntry entry = accessoryQueue.Dequeue();
 			if (entry.protocol == ProtocolNone)
 			{
+				// ProtocolNone is in queue when we should quit
 				continue;
 			}
 			AccessoryOn(entry.protocol, entry.address, entry.state);
@@ -563,14 +579,14 @@ namespace Hardware
 						protocol_t protocol;
 						unsigned char speedData = buffer[7] & 0x7F;
 						locoSpeed_t newSpeed;
-						protocol_t storedProtocol = cache.GetProtocol(address);
+						protocol_t storedProtocol = locoCache.GetProtocol(address);
 						switch (protocolType)
 						{
 							case 0:
 								switch (storedProtocol)
 								{
 									case ProtocolNone:
-										cache.SetProtocol(address, ProtocolDCC14);
+										locoCache.SetProtocol(address, ProtocolDCC14);
 										#include "Fallthrough.h"
 
 									case ProtocolDCC14:
@@ -592,7 +608,7 @@ namespace Hardware
 								switch (storedProtocol)
 								{
 									case ProtocolNone:
-										cache.SetProtocol(address, ProtocolDCC28);
+										locoCache.SetProtocol(address, ProtocolDCC28);
 										#include "Fallthrough.h"
 
 									case ProtocolDCC28:
@@ -614,7 +630,7 @@ namespace Hardware
 								switch (storedProtocol)
 								{
 									case ProtocolNone:
-										cache.SetProtocol(address, ProtocolDCC128);
+										locoCache.SetProtocol(address, ProtocolDCC128);
 										#include "Fallthrough.h"
 
 									case ProtocolDCC128:
@@ -635,17 +651,17 @@ namespace Hardware
 							default:
 								return dataLength;
 						}
-						locoSpeed_t oldSpeed = cache.GetSpeed(address);
+						locoSpeed_t oldSpeed = locoCache.GetSpeed(address);
 						if (newSpeed != oldSpeed)
 						{
-							cache.SetSpeed(address, newSpeed);
+							locoCache.SetSpeed(address, newSpeed);
 							manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, newSpeed);
 						}
 						direction_t newDirection = (buffer[7] >> 7) ? DirectionRight : DirectionLeft;
-						direction_t oldDirection = cache.GetDirection(address);
+						direction_t oldDirection = locoCache.GetDirection(address);
 						if (newDirection != oldDirection)
 						{
-							cache.SetDirection(address, newDirection);
+							locoCache.SetDirection(address, newDirection);
 							manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, newDirection);
 						}
 						break;
