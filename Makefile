@@ -31,7 +31,6 @@ OBJ= \
 	DataModel/Street.o \
 	DataModel/Switch.o \
 	DataModel/Track.o \
-	DelayedCall.o \
 	Hardware/HardwareHandler.o \
 	Languages.o \
 	Logger/Logger.o \
