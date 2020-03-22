@@ -26,11 +26,10 @@ namespace Hardware
 	{
 		public:
 			OpenDccCacheEntry()
-			{
-				speed = 0;
-				directionF0 = 0;
-				functions = 0;
-			}
+			:	speed(0),
+			 	directionF0(0),
+			 	functions(0)
+			{}
 
 			unsigned char speed;
 			unsigned char directionF0;
@@ -47,20 +46,9 @@ namespace Hardware
 			OpenDccCache() {};
 			~OpenDccCache() {};
 
-			void CreateDataIfNotExists(const address_t address)
-			{
-				if (cache.count(address) == 1)
-				{
-					return;
-				}
-				OpenDccCacheEntry entry;
-				cache[address] = entry;
-			}
-
 			void SetSpeed(const address_t address, const locoSpeed_t speed)
 			{
-				CreateDataIfNotExists(address);
-				OpenDccCacheEntry entry = cache[address];
+				OpenDccCacheEntry entry = GetData(address);
 
 				if (speed == 0)
 				{
@@ -80,9 +68,7 @@ namespace Hardware
 
 			void SetDirection(const address_t address, const direction_t direction)
 			{
-				CreateDataIfNotExists(address);
-
-				OpenDccCacheEntry entry = cache[address];
+				OpenDccCacheEntry entry = GetData(address);
 
 				entry.directionF0 &= ~(1 << 5);
 				entry.directionF0 |= static_cast<unsigned char>(direction) << 5;
@@ -92,9 +78,7 @@ namespace Hardware
 
 			void SetFunction(const address_t address, const function_t function, const bool on)
 			{
-				CreateDataIfNotExists(address);
-
-				OpenDccCacheEntry entry = cache[address];
+				OpenDccCacheEntry entry = GetData(address);
 
 				if (function == 0)
 				{
