@@ -32,17 +32,20 @@ namespace Hardware
 			Z21LocoCacheEntry()
 			:	speed(MinSpeed),
 			 	direction(DirectionRight),
+			 	functions(0),
 			 	protocol(ProtocolNone)
 			{}
 
 			Z21LocoCacheEntry(const locoSpeed_t speed, const direction_t direction, const protocol_t protocol)
 			:	speed(speed),
 			 	direction(direction),
+			 	functions(0),
 			 	protocol(protocol)
 			{}
 
 			locoSpeed_t speed;
 			direction_t direction;
+			uint32_t functions;
 			protocol_t protocol;
 	};
 
@@ -95,6 +98,24 @@ namespace Hardware
 			{
 				Z21LocoCacheEntry entry(speed, direction, protocol);
 				cache[address] = entry;
+			}
+
+			void SetFunction(const address_t address, const function_t function, const bool on)
+			{
+				Z21LocoCacheEntry entry = GetData(address);
+				uint32_t mask = ~(1 << function);
+				entry.functions &= mask;
+				entry.functions |= on << function;
+				cache[address] = entry;
+			}
+
+			uint32_t GetFunctions(const address_t address)
+			{
+				if (cache.count(address) == 0)
+				{
+					return 0;
+				}
+				return cache[address].functions;
 			}
 
 			void SetProtocol(const address_t address, const protocol_t protocol)

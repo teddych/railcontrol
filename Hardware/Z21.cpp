@@ -245,6 +245,7 @@ namespace Hardware
 		{
 			return;
 		}
+		locoCache.SetFunction(address, function, on);
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4, 0xF8 };
 		Utils::Utils::ShortToDataBigEndian(address | 0xC000, buffer + 6);
 		buffer[8] = (static_cast<unsigned char>(on) << 6) | (function & 0x3F);
@@ -682,6 +683,27 @@ namespace Hardware
 						{
 							locoCache.SetDirection(address, newDirection);
 							manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, newDirection);
+						}
+						const uint32_t oldFunctions = locoCache.GetFunctions(address);
+						const uint32_t f0 = (static_cast<uint32_t>(buffer[8]) >> 4) & 0x01;
+						const uint32_t f1_4 = (static_cast<uint32_t>(buffer[8]) << 1) & 0x1E;
+						const uint32_t f5_12 = static_cast<uint32_t>(buffer[9]) << 5;
+						const uint32_t f13_20 = static_cast<uint32_t>(buffer[9]) << 13;
+						const uint32_t f21_28 = static_cast<uint32_t>(buffer[9]) << 21;
+						const uint32_t newFunctions = f0 | f1_4 | f5_12 | f13_20 | f21_28;
+						if (newFunctions != oldFunctions)
+						{
+							const uint32_t functionsDiff = newFunctions ^ oldFunctions;
+							for (function_t function = 0; function <= 28; ++function)
+							{
+								const bool stateChange = (functionsDiff >> function) & 0x01;
+								if (stateChange)
+								{
+									const bool newState = (newFunctions >> function) & 0x01;
+									locoCache.SetFunction(address, function, newState);
+									manager->LocoFunction(ControlTypeHardware, controlID, protocol, address, function, newState);
+								}
+							}
 						}
 						break;
 					}
