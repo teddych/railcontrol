@@ -559,18 +559,18 @@ namespace Hardware
 						address_t address = Utils::Utils::DataBigEndianToInt(buffer + 5) | 0x3FFF;
 						bool used = (buffer[6] >> 3) & 0x01;
 						logger->Debug(used ? "Fremd gesteuert" : "RailControl gesteuert");
-						protocol_t storedProtocol = cache.GetProtocol(address);
 						unsigned char protocolType = buffer[6] & 0x07;
 						protocol_t protocol;
 						unsigned char speedData = buffer[7] & 0x7F;
 						locoSpeed_t newSpeed;
+						protocol_t storedProtocol = cache.GetProtocol(address);
 						switch (protocolType)
 						{
 							case 0:
 								switch (storedProtocol)
 								{
 									case ProtocolNone:
-										cache.SetProtocol(address, ProtocolDCC128);
+										cache.SetProtocol(address, ProtocolDCC14);
 										#include "Fallthrough.h"
 
 									case ProtocolDCC14:
@@ -592,7 +592,7 @@ namespace Hardware
 								switch (storedProtocol)
 								{
 									case ProtocolNone:
-										cache.SetProtocol(address, ProtocolDCC128);
+										cache.SetProtocol(address, ProtocolDCC28);
 										#include "Fallthrough.h"
 
 									case ProtocolDCC28:
