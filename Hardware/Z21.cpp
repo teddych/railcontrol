@@ -506,8 +506,27 @@ namespace Hardware
 				switch (buffer[4])
 				{
 					case 0x43:
-						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+					{
+						accessoryState_t state;
+						switch (buffer[7])
+						{
+							case 0x01:
+								state = false;
+								break;
+
+							case 0x02:
+								state = true;
+								break;
+
+							default:
+								return dataLength;
+						}
+						const address_t zeroBasedAddress = Utils::Utils::DataBigEndianToInt(buffer + 5);
+						const address_t address = zeroBasedAddress + 1;
+						const protocol_t protocol = turnoutCache.GetProtocol(address);
+						manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 						break;
+					}
 
 					case 0x61:
 						switch (buffer[5])
@@ -572,12 +591,12 @@ namespace Hardware
 
 					case 0xEF:
 					{
-						address_t address = Utils::Utils::DataBigEndianToInt(buffer + 5) | 0x3FFF;
-						bool used = (buffer[6] >> 3) & 0x01;
+						const address_t address = Utils::Utils::DataBigEndianToInt(buffer + 5) | 0x3FFF;
+						const bool used = (buffer[6] >> 3) & 0x01;
 						logger->Debug(used ? "Fremd gesteuert" : "RailControl gesteuert");
-						unsigned char protocolType = buffer[6] & 0x07;
+						const unsigned char protocolType = buffer[6] & 0x07;
 						protocol_t protocol;
-						unsigned char speedData = buffer[7] & 0x7F;
+						const unsigned char speedData = buffer[7] & 0x7F;
 						locoSpeed_t newSpeed;
 						protocol_t storedProtocol = locoCache.GetProtocol(address);
 						switch (protocolType)
@@ -651,14 +670,14 @@ namespace Hardware
 							default:
 								return dataLength;
 						}
-						locoSpeed_t oldSpeed = locoCache.GetSpeed(address);
+						const locoSpeed_t oldSpeed = locoCache.GetSpeed(address);
 						if (newSpeed != oldSpeed)
 						{
 							locoCache.SetSpeed(address, newSpeed);
 							manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, newSpeed);
 						}
-						direction_t newDirection = (buffer[7] >> 7) ? DirectionRight : DirectionLeft;
-						direction_t oldDirection = locoCache.GetDirection(address);
+						const direction_t newDirection = (buffer[7] >> 7) ? DirectionRight : DirectionLeft;
+						const direction_t oldDirection = locoCache.GetDirection(address);
 						if (newDirection != oldDirection)
 						{
 							locoCache.SetDirection(address, newDirection);
@@ -693,7 +712,6 @@ namespace Hardware
 				break;
 
 			case 0x84:
-				// FIXME
 				logger->Debug("Ignoring System State");
 				break;
 
