@@ -45,6 +45,7 @@ class Languages
 			TextAccessoryStateIsGreen,
 			TextAccessoryStateIsRed,
 			TextAccessoryUpdated,
+			TextActualAndStoredProtocolsDiffer,
 			TextAddAccessory,
 			TextAddFeedback,
 			TextAddSignal,

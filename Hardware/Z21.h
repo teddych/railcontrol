@@ -27,7 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
-#include "Hardware/Z21Cache.h"
+#include "Hardware/Z21LocoCache.h"
 #include "Logger/Logger.h"
 #include "Network/UdpConnection.h"
 
@@ -119,7 +119,7 @@ namespace Hardware
 			std::thread receiverThread;
 			std::thread heartBeatThread;
 			std::thread accessorySenderThread;
-			Z21Cache cache;
+			Z21LocoCache cache;
 
 			Utils::ThreadSafeQueue<AccessoryQueueEntry> accessoryQueue;
 

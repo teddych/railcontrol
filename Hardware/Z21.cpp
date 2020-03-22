@@ -197,24 +197,6 @@ namespace Hardware
 
 	void Z21::LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction)
 	{
-		switch (protocol)
-		{
-			case ProtocolMM1:
-			case ProtocolMM15:
-			case ProtocolMM2:
-				SendSetLocoModeMM(address);
-				break;
-
-			case ProtocolDCC14:
-			case ProtocolDCC28:
-			case ProtocolDCC128:
-				SendSetLocoModeDCC(address);
-				break;
-
-			default:
-				return;
-		}
-
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4 };
 		switch (protocol)
 		{
@@ -256,7 +238,25 @@ namespace Hardware
 
 	void Z21::LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions)
 	{
-		cache.SetSpeedDirection(address, speed, direction);
+		cache.SetSpeedDirectionProtocol(address, speed, direction, protocol);
+		switch (protocol)
+		{
+			case ProtocolMM1:
+			case ProtocolMM15:
+			case ProtocolMM2:
+				SendSetLocoModeMM(address);
+				break;
+
+			case ProtocolDCC14:
+			case ProtocolDCC28:
+			case ProtocolDCC128:
+				SendSetLocoModeDCC(address);
+				break;
+
+			default:
+				return;
+		}
+
 		LocoSpeedDirection(protocol, address, speed, direction);
 		for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
 		{
@@ -556,10 +556,10 @@ namespace Hardware
 
 					case 0xEF:
 					{
-						// FIXME: MM is not recognized
 						address_t address = Utils::Utils::DataBigEndianToInt(buffer + 5) | 0x3FFF;
 						bool used = (buffer[6] >> 3) & 0x01;
 						logger->Debug(used ? "Fremd gesteuert" : "RailControl gesteuert");
+						protocol_t storedProtocol = cache.GetProtocol(address);
 						unsigned char protocolType = buffer[6] & 0x07;
 						protocol_t protocol;
 						unsigned char speedData = buffer[7] & 0x7F;
@@ -567,17 +567,68 @@ namespace Hardware
 						switch (protocolType)
 						{
 							case 0:
-								protocol = ProtocolDCC14;
+								switch (storedProtocol)
+								{
+									case ProtocolNone:
+										cache.SetProtocol(address, ProtocolDCC128);
+										#include "Fallthrough.h"
+
+									case ProtocolDCC14:
+										protocol = ProtocolDCC14;
+										break;
+
+									case ProtocolMM1:
+										protocol = ProtocolMM1;
+										break;
+
+									default:
+										logger->Error(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC14], protocolSymbols[storedProtocol]);
+										return dataLength;
+								}
 								newSpeed = DecodeSpeed14(speedData);
 								break;
 
 							case 2:
-								protocol = ProtocolDCC28;
+								switch (storedProtocol)
+								{
+									case ProtocolNone:
+										cache.SetProtocol(address, ProtocolDCC128);
+										#include "Fallthrough.h"
+
+									case ProtocolDCC28:
+										protocol = ProtocolDCC28;
+										break;
+
+									case ProtocolMM15:
+										protocol = ProtocolMM15;
+										break;
+
+									default:
+										logger->Error(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC28], protocolSymbols[storedProtocol]);
+										return dataLength;
+								}
 								newSpeed = DecodeSpeed28(speedData);
 								break;
 
 							case 4:
-								protocol = ProtocolDCC128;
+								switch (storedProtocol)
+								{
+									case ProtocolNone:
+										cache.SetProtocol(address, ProtocolDCC128);
+										#include "Fallthrough.h"
+
+									case ProtocolDCC128:
+										protocol = ProtocolDCC128;
+										break;
+
+									case ProtocolMM2:
+										protocol = ProtocolMM2;
+										break;
+
+									default:
+										logger->Error(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC128], protocolSymbols[storedProtocol]);
+										return dataLength;
+								}
 								newSpeed = DecodeSpeed128(speedData);
 								break;
 

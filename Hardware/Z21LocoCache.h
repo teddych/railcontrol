@@ -26,44 +26,45 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	class Z21CacheEntry
+	class Z21LocoCacheEntry
 	{
 		public:
-			Z21CacheEntry()
-			{
-				speed = MinSpeed;
-				direction = DirectionRight;
-			}
+			Z21LocoCacheEntry()
+			: speed(MinSpeed),
+			  direction(DirectionRight),
+			  protocol(ProtocolNone)
+			{}
 
-			Z21CacheEntry(const locoSpeed_t speed, const direction_t direction)
-			{
-				this->speed = speed;
-				this->direction = direction;
-			}
+			Z21LocoCacheEntry(const locoSpeed_t speed, const direction_t direction, const protocol_t protocol)
+			: speed(speed),
+			  direction(direction),
+			  protocol(protocol)
+			{}
 
 			locoSpeed_t speed;
 			direction_t direction;
+			protocol_t protocol;
 	};
 
-	class Z21Cache
+	class Z21LocoCache
 	{
 		public:
-			Z21Cache() {};
-			~Z21Cache() {};
+			Z21LocoCache() {};
+			~Z21LocoCache() {};
 
-			Z21CacheEntry GetData(const address_t address)
+			Z21LocoCacheEntry GetData(const address_t address)
 			{
 				if (cache.count(address) == 1)
 				{
 					return cache[address];
 				}
-				Z21CacheEntry entry;
+				Z21LocoCacheEntry entry;
 				return entry;
 			}
 
 			void SetSpeed(const address_t address, const locoSpeed_t speed)
 			{
-				Z21CacheEntry entry = GetData(address);
+				Z21LocoCacheEntry entry = GetData(address);
 				entry.speed = speed;
 				cache[address] = entry;
 			}
@@ -79,7 +80,7 @@ namespace Hardware
 
 			void SetDirection(const address_t address, const direction_t direction)
 			{
-				Z21CacheEntry entry = GetData(address);
+				Z21LocoCacheEntry entry = GetData(address);
 				entry.direction = direction;
 				cache[address] = entry;
 			}
@@ -93,14 +94,30 @@ namespace Hardware
 				return cache[address].direction;
 			}
 
-			void SetSpeedDirection(const address_t address, const locoSpeed_t speed, const direction_t direction)
+			void SetSpeedDirectionProtocol(const address_t address, const locoSpeed_t speed, const direction_t direction, const protocol_t protocol)
 			{
-				Z21CacheEntry entry(speed, direction);
+				Z21LocoCacheEntry entry(speed, direction, protocol);
 				cache[address] = entry;
 			}
 
+			void SetProtocol(const address_t address, const protocol_t protocol)
+			{
+				Z21LocoCacheEntry entry = GetData(address);
+				entry.protocol = protocol;
+				cache[address] = entry;
+			}
+
+			protocol_t GetProtocol(const address_t address)
+			{
+				if (cache.count(address) == 0)
+				{
+					return ProtocolNone;
+				}
+				return cache[address].protocol;
+			}
+
 		private:
-			std::map<address_t, Z21CacheEntry> cache;
+			std::map<address_t, Z21LocoCacheEntry> cache;
 	};
 } // namespace
 

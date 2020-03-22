@@ -45,6 +45,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextAccessoryStateIsGreen */ { "Accessory state of {0} is now green", "Der Status des Zubehörartikels ist nun grün", "El estado del accessorio está verde" },
 /* TextAccessoryStateIsRed */ { "Accessory state of {0} is now red", "Der Status des Zubehörartikels ist nun rot", "El estado del accessorio está rojo" },
 /* TextAccessoryUpdated */ { "Accessory {0} updated", "Zubehörartikel {0} aktualisiert", "Accessorio {0} actualizado" },
+/* TextActualAndStoredProtocolsDiffer */ { "Actual ({0}) and stored ({1}) protocols differ", "Aktuelles ({0}) und gespeichertes ({1}) Protokoll unterscheiden sich", "protocolo reciente y guardado son diferentes" },
 /* TextAddAccessory */ { "Add accessory", "Zubehörartikel hinzufügen", "Añadir acesorio" },
 /* TextAddFeedback */ { "Add feedback", "Rückmelder hinzufügen", "Añadir retroseñal" },
 /* TextAddSignal */ { "Add signal", "Signal hinzufügen", "Añadir señal" },
