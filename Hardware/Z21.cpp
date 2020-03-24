@@ -509,6 +509,7 @@ namespace Hardware
 					case 0x43:
 					{
 						accessoryState_t state;
+						logger->Debug("Turnout command received");
 						switch (buffer[7])
 						{
 							case 0x01:
@@ -524,7 +525,10 @@ namespace Hardware
 						}
 						const address_t zeroBasedAddress = Utils::Utils::DataBigEndianToInt(buffer + 5);
 						const address_t address = zeroBasedAddress + 1;
+						logger->Debug("Address: {0}", address);
 						const protocol_t protocol = turnoutCache.GetProtocol(address);
+						logger->Debug("Protocol: {0}", protocol);
+						logger->Debug("State: {0}", state);
 						manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 						break;
 					}
@@ -595,11 +599,13 @@ namespace Hardware
 						const address_t address = Utils::Utils::DataBigEndianToInt(buffer + 5) | 0x3FFF;
 						const bool used = (buffer[6] >> 3) & 0x01;
 						logger->Debug(used ? "Fremd gesteuert" : "RailControl gesteuert");
+						logger->Debug("Address: {0}", address);
 						const unsigned char protocolType = buffer[6] & 0x07;
 						protocol_t protocol;
 						const unsigned char speedData = buffer[7] & 0x7F;
 						locoSpeed_t newSpeed;
 						protocol_t storedProtocol = locoCache.GetProtocol(address);
+						logger->Debug("Stored Protocol: {0}", storedProtocol);
 						switch (protocolType)
 						{
 							case 0:
@@ -671,7 +677,10 @@ namespace Hardware
 							default:
 								return dataLength;
 						}
+						logger->Debug("Actual Protocol: {0}", protocol);
 						const locoSpeed_t oldSpeed = locoCache.GetSpeed(address);
+						logger->Debug("Old speed: {0}", oldSpeed);
+						logger->Debug("New speed: {0}", newSpeed);
 						if (newSpeed != oldSpeed)
 						{
 							locoCache.SetSpeed(address, newSpeed);
@@ -679,6 +688,8 @@ namespace Hardware
 						}
 						const direction_t newDirection = (buffer[7] >> 7) ? DirectionRight : DirectionLeft;
 						const direction_t oldDirection = locoCache.GetDirection(address);
+						logger->Debug("Old Direction: {0}", oldDirection);
+						logger->Debug("New Direction: {0}", newDirection);
 						if (newDirection != oldDirection)
 						{
 							locoCache.SetDirection(address, newDirection);
@@ -691,6 +702,8 @@ namespace Hardware
 						const uint32_t f13_20 = static_cast<uint32_t>(buffer[9]) << 13;
 						const uint32_t f21_28 = static_cast<uint32_t>(buffer[9]) << 21;
 						const uint32_t newFunctions = f0 | f1_4 | f5_12 | f13_20 | f21_28;
+						logger->Debug("Old Functions: {0}", oldFunctions);
+						logger->Debug("New Functions: {0}", newFunctions);
 						if (newFunctions != oldFunctions)
 						{
 							const uint32_t functionsDiff = newFunctions ^ oldFunctions;
