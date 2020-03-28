@@ -30,5 +30,6 @@ namespace WebServer
 		AddAttribute("id", reference);
 		AddClass("slider");
 		AddAttribute("onchange", "locoSpeedSliderChange(" + locoIdString + "); return false;");
+		AddAttribute("oninput", "locoSpeedSliderChange(" + locoIdString + "); return false;");
 	};
 };
