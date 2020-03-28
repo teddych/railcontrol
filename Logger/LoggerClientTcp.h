@@ -22,13 +22,29 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <string>
 
+#include "Logger/LoggerClient.h"
+#include "Network/TcpServer.h"
+
 namespace Logger
 {
-	class LoggerClient
+	class LoggerClientTcp : public LoggerClient
 	{
 		public:
-			virtual ~LoggerClient() {}
+			LoggerClientTcp(Network::TcpConnection* connection)
+			:	connection(connection)
+			{}
 
-			virtual void Send(const std::string& s) = 0;
+			~LoggerClientTcp()
+			{
+				connection->Terminate();
+			}
+
+			void Send(const std::string& s) override
+			{
+				connection->Send(s);
+			}
+
+		private:
+			Network::TcpConnection* connection;
 	};
 }

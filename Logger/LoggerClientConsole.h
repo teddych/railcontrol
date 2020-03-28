@@ -20,15 +20,19 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <iostream>
 #include <string>
+
+#include "Logger/LoggerClient.h"
 
 namespace Logger
 {
-	class LoggerClient
+	class LoggerClientConsole : public LoggerClient
 	{
 		public:
-			virtual ~LoggerClient() {}
-
-			virtual void Send(const std::string& s) = 0;
+			void Send(const std::string& s) override
+			{
+				std::cout << s << std::flush;
+			}
 	};
 }

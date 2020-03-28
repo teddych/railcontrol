@@ -20,15 +20,42 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <fstream>
 #include <string>
+
+#include "Logger/LoggerClient.h"
 
 namespace Logger
 {
-	class LoggerClient
+	class LoggerClientFile : public LoggerClient
 	{
 		public:
-			virtual ~LoggerClient() {}
+			LoggerClientFile(const std::string& logFileName)
+			:	logFileName(logFileName)
+			{
+				logFile.open(logFileName, std::fstream::out | std::fstream::app);
+			}
 
-			virtual void Send(const std::string& s) = 0;
+			~LoggerClientFile()
+			{
+				if (logFile.is_open() == false)
+				{
+					return;
+				}
+				logFile.close();
+}
+
+			void Send(const std::string& s) override
+			{
+				if (logFile.is_open() == false)
+				{
+					return;
+				}
+				logFile << s << std::flush;
+			}
+
+		private:
+			const std::string logFileName;
+			std::ofstream logFile;
 	};
 }

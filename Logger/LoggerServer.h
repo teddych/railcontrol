@@ -20,15 +20,19 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <fstream>
 #include <string>
 #include <vector>
 
+#include "Logger/LoggerClient.h"
+#include "Logger/LoggerClientConsole.h"
+#include "Logger/LoggerClientFile.h"
+#include "Logger/LoggerClientTcp.h"
 #include "Network/TcpServer.h"
 
 namespace Logger
 {
 	class Logger;
-	class LoggerClient;
 
 	class LoggerServer: private Network::TcpServer
 	{
@@ -39,19 +43,52 @@ namespace Logger
 			Logger* GetLogger(const std::string& component);
 			void Send(const std::string& text);
 
-			static const unsigned short defaultPort = 2223;
-			static LoggerServer& Instance(const unsigned short port = defaultPort) { static LoggerServer server(port); return server; }
+			static const unsigned short defaultLoggerPort = 2223;
+			static LoggerServer& Instance()
+			{
+				static LoggerServer server;
+				return server;
+			}
+
+			void AddFileLogger(const std::string& fileName)
+			{
+				if (fileLoggerStarted == true)
+				{
+					return;
+				}
+				clients.push_back(new LoggerClientFile(fileName));
+				fileLoggerStarted = true;
+			}
+
+			void AddConsoleLogger()
+			{
+				if (consoleLoggerStarted == true)
+				{
+					return;
+				}
+				clients.push_back(new LoggerClientConsole());
+				consoleLoggerStarted = true;
+			}
 
 		private:
-			LoggerServer(const unsigned short port)
-			:	Network::TcpServer(port, "Logger"),
-			 	run(true)
-			{}
+			LoggerServer()
+			:	Network::TcpServer(defaultLoggerPort, "Logger"),
+			 	run(true),
+			 	fileLoggerStarted(false),
+			 	consoleLoggerStarted(false)
+			{
+			}
 
 			~LoggerServer();
-			void Work(Network::TcpConnection* connection) override;
+			void Work(Network::TcpConnection* connection) override
+			{
+				clients.push_back(new LoggerClientTcp(connection));
+			}
 
-			volatile unsigned char run;
+
+			volatile bool run;
+			bool fileLoggerStarted;
+			bool consoleLoggerStarted;
 			std::vector<LoggerClient*> clients;
 			std::vector<Logger*> loggers;
 	};

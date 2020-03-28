@@ -25,7 +25,10 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 #include <vector>
 
-#include "Logger/Logger.h"
+namespace Logger
+{
+	class Logger;
+}
 
 namespace Utils
 {
@@ -53,6 +56,7 @@ namespace Utils
 			static uint16_t DataLittleEndianToShort(const unsigned char* buffer);
 			static std::string IntegerToBCD(const unsigned int input);
 			static void CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to);
+			static void RenameFile(Logger::Logger* logger, const std::string& from, const std::string& to);
 			static void SetThreadName(const std::string& name) { SetThreadName(name.c_str()); }
 			static void SetThreadName(__attribute__((unused)) const char* name)
 			{

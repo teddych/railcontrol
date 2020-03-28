@@ -30,6 +30,8 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 #include <sys/time.h> // gettimeofday
 
+#include "Languages.h"
+#include "Logger/Logger.h"
 #include "Network/Select.h"
 #include "Utils/Utils.h"
 
@@ -239,6 +241,12 @@ namespace Utils
 		destination << source.rdbuf();
 		source.close();
 		destination.close();
+	}
+
+	void Utils::RenameFile(Logger::Logger* logger, const std::string& from, const std::string& to)
+	{
+		logger->Info(Languages::TextRenamingFromTo, from, to);
+		std::rename(from.c_str(), to.c_str());
 	}
 
 	void Utils::SetMinThreadPriority()

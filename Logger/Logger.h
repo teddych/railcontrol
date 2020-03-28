@@ -47,9 +47,20 @@ namespace Logger
 
 			~Logger() {};
 
-			static Logger* GetLogger(const std::string& component) { return LoggerServer::Instance().GetLogger(component); }
+			static Logger* GetLogger(const std::string& component)
+			{
+				return LoggerServer::Instance().GetLogger(component);
+			}
 
-			static logLevel_t logLevel;
+			void AddFileLogger(const std::string& fileName)
+			{
+				LoggerServer::Instance().AddFileLogger(fileName);
+			}
+
+			void AddConsoleLogger()
+			{
+				LoggerServer::Instance().AddConsoleLogger();
+			}
 
 			static void SetLogLevel(logLevel_t level) { logLevel = level; }
 			static logLevel_t GetLogLevel() { return logLevel; }
@@ -136,10 +147,12 @@ namespace Logger
 			void Hex(const std::string& input) { Hex(reinterpret_cast<const unsigned char*>(input.c_str()), input.size()); }
 			void Hex(const unsigned char* input, const size_t size);
 
+
+		private:
+			static logLevel_t logLevel;
 			LoggerServer& server;
 			const std::string component;
 
-		private:
 			static void AsciiPart(std::stringstream& output, const unsigned char* input, const size_t size);
 			static std::string DateTime();
 

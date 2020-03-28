@@ -68,12 +68,15 @@ int main (int argc, char* argv[])
 	signal(SIGINT, stopRailControlSignal);
 	signal(SIGTERM, stopRailControlSignal);
 
-	const string railControl = "RailControl";
-	Utils::Utils::SetThreadName(railControl);
+	const string RailControl = "RailControl";
+	const string LogFileName = "railcontrol.log";
+	Utils::Utils::SetThreadName(RailControl);
 
 	runRailcontrol = true;
 	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
-	logger->Info(Languages::TextStarting, railControl);
+	logger->AddConsoleLogger();
+	logger->AddFileLogger(LogFileName);
+	logger->Info(Languages::TextStarting, RailControl);
 
 	Config config(argc == 2 ? argv[1] : "railcontrol.conf");
 
@@ -110,6 +113,7 @@ int main (int argc, char* argv[])
 	} while (input != 'q' && runRailcontrol);
 
 	logger->Info(Languages::TextStoppingRailControl);
+	Utils::Utils::RenameFile(logger, LogFileName, LogFileName + "." + std::to_string(time(0)));
 
 	// manager is cleaned up implicitly while leaving scope
 
