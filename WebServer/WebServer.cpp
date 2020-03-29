@@ -259,7 +259,7 @@ namespace WebServer {
 	void WebServer::TrackDelete(const trackID_t trackID, const std::string& name)
 	{
 		stringstream command;
-		command << "trackdelete;strack=" << trackID;
+		command << "trackdelete;track=" << trackID;
 		AddUpdate(command.str(), Languages::TextTrackDeleted, name);
 	}
 
