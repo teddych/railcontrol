@@ -45,7 +45,6 @@ class Manager
 		void Booster(const controlType_t controlType, const boosterState_t status);
 
 		// hardware (virt, CS2, ...)
-		static const std::map<hardwareType_t,std::string> HardwareListNames();
 		bool ControlSave(const controlID_t& controlID,
 			const hardwareType_t& hardwareType,
 			const std::string& name,

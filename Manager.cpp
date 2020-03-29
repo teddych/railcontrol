@@ -275,21 +275,6 @@ void Manager::InitLocos()
 * Control                  *
 ***************************/
 
-const std::map<hardwareType_t,string> Manager::HardwareListNames()
-{
-	std::map<hardwareType_t,string> hardwareList;
-	hardwareList[HardwareTypeCcSchnitte] = "CC-Schnitte";
-	hardwareList[HardwareTypeEcos] = "ESU Ecos / Märklin Central Station 1 (CS1)";
-	hardwareList[HardwareTypeM6051] = "Märklin Interface 6050/6051";
-	hardwareList[HardwareTypeCS2] = "Märklin Central Station 2 (CS2)";
-	hardwareList[HardwareTypeOpenDcc] = "OpenDCC Z1";
-	hardwareList[HardwareTypeRM485] = "RM485";
-	hardwareList[HardwareTypeHsi88] = "HSI-88";
-	hardwareList[HardwareTypeVirtual] = "Virtual Command Station (no Hardware)";
-	hardwareList[HardwareTypeZ21] = "Z21 (Power On/Off only, untested)";
-	return hardwareList;
-}
-
 bool Manager::ControlSave(const controlID_t& controlID,
 	const hardwareType_t& hardwareType,
 	const std::string& name,

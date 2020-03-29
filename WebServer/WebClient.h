@@ -129,6 +129,7 @@ namespace WebServer
 			void HandleLayerList();
 			void HandleLayerAskDelete(const std::map<std::string, std::string>& arguments);
 			void HandleLayerDelete(const std::map<std::string, std::string>& arguments);
+			static const std::map<std::string,hardwareType_t> ListHardwareNames();
 			void HandleControlEdit(const std::map<std::string, std::string>& arguments);
 			void HandleControlSave(const std::map<std::string, std::string>& arguments);
 			void HandleControlList();

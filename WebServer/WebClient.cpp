@@ -940,6 +940,23 @@ namespace WebServer
 		}
 		return div;
 	}
+
+	const std::map<string,hardwareType_t> WebClient::ListHardwareNames()
+	{
+		std::map<string,hardwareType_t> hardwareList;
+		hardwareList["CC-Schnitte"] = HardwareTypeCcSchnitte;
+		hardwareList["ESU Ecos &amp; Märklin CS1"] = HardwareTypeEcos;
+		hardwareList["LDT HSI-88"] = HardwareTypeHsi88;
+		hardwareList["Märklin Central Station 1 (CS1)"] = HardwareTypeEcos;
+		hardwareList["Märklin Central Station 2 (CS2)"] = HardwareTypeCS2;
+		hardwareList["Märklin Interface 6050/6051"] = HardwareTypeM6051;
+		hardwareList["OpenDCC Z1"] = HardwareTypeOpenDcc;
+		hardwareList["RM485"] = HardwareTypeRM485;
+		hardwareList["Roco Z21 (RailControl => Z21 only)"] = HardwareTypeZ21;
+		hardwareList["Virtual Command Station (no Hardware)"] = HardwareTypeVirtual;
+		return hardwareList;
+	}
+
 	void WebClient::HandleControlEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
@@ -967,12 +984,7 @@ namespace WebServer
 			}
 		}
 
-		const std::map<hardwareType_t,string> hardwares = manager.HardwareListNames();
-		std::map<string, string> hardwareOptions;
-		for(auto hardware : hardwares)
-		{
-			hardwareOptions[to_string(hardware.first)] = hardware.second;
-		}
+		const std::map<string,hardwareType_t> hardwareOptions = ListHardwareNames();
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag form("form");
@@ -981,7 +993,7 @@ namespace WebServer
 		form.AddChildTag(HtmlTagInputHidden("control", to_string(controlID)));
 		form.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 
-		HtmlTagSelectWithLabel selectHardwareType("hardwaretype", Languages::TextType, hardwareOptions, to_string(hardwareType));
+		HtmlTagSelectWithLabel selectHardwareType("hardwaretype", Languages::TextType, hardwareOptions, hardwareType);
 		selectHardwareType.AddAttribute("onchange", "getArgumentsOfHardwareType();");
 		form.AddChildTag(selectHardwareType);
 
