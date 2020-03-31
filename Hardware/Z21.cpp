@@ -523,7 +523,7 @@ namespace Hardware
 							default:
 								return dataLength;
 						}
-						const address_t zeroBasedAddress = Utils::Utils::DataBigEndianToInt(buffer + 5);
+						const address_t zeroBasedAddress = Utils::Utils::DataBigEndianToShort(buffer + 5);
 						const address_t address = zeroBasedAddress + 1;
 						logger->Debug("Address: {0}", address);
 						const protocol_t protocol = turnoutCache.GetProtocol(address);
@@ -596,7 +596,7 @@ namespace Hardware
 
 					case 0xEF:
 					{
-						const address_t address = Utils::Utils::DataBigEndianToInt(buffer + 5) | 0x3FFF;
+						const address_t address = Utils::Utils::DataBigEndianToShort(buffer + 5) | 0x3FFF;
 						const bool used = (buffer[6] >> 3) & 0x01;
 						logger->Debug(used ? "Fremd gesteuert" : "RailControl gesteuert");
 						logger->Debug("Address: {0}", address);
