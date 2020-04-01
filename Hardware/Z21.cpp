@@ -380,9 +380,10 @@ namespace Hardware
 		SendGetSerialNumber();
 		SendGetHardwareInfo();
 		SendGetCode();
-		SendBroadcastFlags(static_cast<broadCastFlags_t>(BroadCastFlagBasic
+		SendBroadcastFlags(static_cast<broadCastFlags_t>(
+			BroadCastFlagBasic
 			| BroadCastFlagRBus
-			| BroadCastFlagSystemState
+			//| BroadCastFlagSystemState
 			| BroadCastFlagAllLoco
 			| BroadCastFlagCanDetector
 			| BroadCastFlagLocoNetBasic
@@ -579,7 +580,7 @@ namespace Hardware
 						break;
 
 					case 0x62:
-						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+						logger->Debug("Ignoring State Change 0x62");
 						break;
 
 					case 0x63:
@@ -748,7 +749,7 @@ namespace Hardware
 				break;
 
 			case 0x84:
-				logger->Debug("Ignoring System State");
+				logger->Debug("Ignoring System State 0x84");
 				break;
 
 			case 0x88:
