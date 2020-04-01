@@ -596,9 +596,10 @@ namespace Hardware
 
 					case 0xEF:
 					{
-						const address_t address = Utils::Utils::DataBigEndianToShort(buffer + 5) | 0x3FFF;
+						logger->Debug("Loco command received");
+						const address_t address = Utils::Utils::DataBigEndianToShort(buffer + 5) & 0x3FFF;
 						const bool used = (buffer[6] >> 3) & 0x01;
-						logger->Debug(used ? "Fremd gesteuert" : "RailControl gesteuert");
+						logger->Debug(used ? "Lok gesperrt" : "Lok nicht gesperrt");
 						logger->Debug("Address: {0}", address);
 						const unsigned char protocolType = buffer[6] & 0x07;
 						protocol_t protocol;
