@@ -38,6 +38,11 @@ namespace Hardware
 			bool CanHandleAccessories() const override { return true; }
 			bool CanHandleFeedback() const override { return true; }
 
+			static void GetHint(std::string& hint)
+			{
+				hint = Languages::GetText(Languages::TextHintVirtual);
+			}
+
 			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override { protocols.push_back(ProtocolNone); }
 			bool LocoProtocolSupported(const protocol_t protocol) const override { return protocol == ProtocolNone; }
 			void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const override { protocols.push_back(ProtocolNone); }

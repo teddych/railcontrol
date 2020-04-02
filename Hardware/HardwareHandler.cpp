@@ -402,6 +402,10 @@ namespace Hardware
 				Hardware::Ecos::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
+			case HardwareTypeVirtual:
+				Hardware::Virtual::GetHint(hint);
+				return;
+
 			default:
 				hint = "";
 				return;

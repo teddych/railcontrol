@@ -152,6 +152,7 @@ class Languages
 			TextHintM6051,
 			TextHintOpenDcc,
 			TextHintRM485,
+			TextHintVirtual,
 			TextHintZ21,
 			TextHitOverrun,
 			TextHsi88Configured,
