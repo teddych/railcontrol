@@ -27,8 +27,8 @@ amalgamation: sqlite/sqlite3.c sqlite/sqlite3.h
 raspi: sqlite/sqlite3.c sqlite/sqlite3.h
 	$(CCRASPI) $(CFLAGSRASPI) $(CFLAGSSQLITE) -c -o sqlite/sqlite3.o sqlite/sqlite3.c
 
-%.so: %.cpp *.h ../*.h ../DataModel/*.h ../Languages.h
-	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
+%.o: %.cpp *.h ../*.h ../DataModel/*.h ../Logger/*.h ../Hardware/HardwareParams.h ../Languages.h
+	$(CPP) $(CPPFLAGS) -c -o $@ $<
 
 %.so: %.o *.h ../*.h ../DataModel/*.h ../Languages.h
 	$(CPP) -o $@ $< $(LDFLAGS)$@
