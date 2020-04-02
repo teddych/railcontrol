@@ -60,9 +60,10 @@ namespace Hardware
 				return (protocol == ProtocolMM2 || protocol == ProtocolDCC);
 			}
 
-			static void GetArgumentTypes(std::map<unsigned char, argumentType_t> &argumentTypes)
+			static void GetArgumentTypesAndHint(std::map<unsigned char,argumentType_t>& argumentTypes, std::string& hint)
 			{
 				argumentTypes[1] = SerialPort;
+				hint = Languages::GetText(Languages::TextHintCcSchnitte);
 			}
 
 			void Booster(const boosterState_t status) override;

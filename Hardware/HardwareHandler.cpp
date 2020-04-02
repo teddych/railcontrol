@@ -366,43 +366,44 @@ namespace Hardware
 		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), state, signal->GetDuration());
 	}
 
-	void HardwareHandler::ArgumentTypesOfHardwareType(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments)
+	void HardwareHandler::ArgumentTypesOfHardwareTypeAndHint(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments, std::string& hint)
 	{
 		switch (hardwareType)
 		{
 			case HardwareTypeCS2:
-				Hardware::CS2::GetArgumentTypes(arguments);
+				Hardware::CS2::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeM6051:
-				Hardware::M6051::GetArgumentTypes(arguments);
+				Hardware::M6051::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeRM485:
-				Hardware::RM485::GetArgumentTypes(arguments);
+				Hardware::RM485::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeOpenDcc:
-				Hardware::OpenDcc::GetArgumentTypes(arguments);
+				Hardware::OpenDcc::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeHsi88:
-				Hardware::Hsi88::GetArgumentTypes(arguments);
+				Hardware::Hsi88::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeZ21:
-				Hardware::Z21::GetArgumentTypes(arguments);
+				Hardware::Z21::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeCcSchnitte:
-				Hardware::CcSchnitte::GetArgumentTypes(arguments);
+				Hardware::CcSchnitte::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeEcos:
-				Hardware::Ecos::GetArgumentTypes(arguments);
+				Hardware::Ecos::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			default:
+				hint = "";
 				return;
 		}
 	}

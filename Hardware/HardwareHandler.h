@@ -79,7 +79,7 @@ namespace Hardware
 			void SwitchState(const controlType_t controlType, const DataModel::Switch* mySwitch, const switchState_t state) override;
 			void SignalState(const controlType_t controlType, const DataModel::Signal* signal, const signalState_t state) override;
 
-			static void ArgumentTypesOfHardwareType(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments);
+			static void ArgumentTypesOfHardwareTypeAndHint(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments, std::string& hint);
 
 		private:
 			Manager& manager;

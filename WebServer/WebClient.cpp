@@ -917,7 +917,8 @@ namespace WebServer
 	{
 		HtmlTag div;
 		std::map<unsigned char,argumentType_t> argumentTypes;
-		Hardware::HardwareHandler::ArgumentTypesOfHardwareType(hardwareType, argumentTypes);
+		std::string hint;
+		Hardware::HardwareHandler::ArgumentTypesOfHardwareTypeAndHint(hardwareType, argumentTypes, hint);
 		if (argumentTypes.count(1) == 1)
 		{
 			div.AddChildTag(HtmlTagControlArgument(1, argumentTypes.at(1), arg1));
@@ -937,6 +938,10 @@ namespace WebServer
 		if (argumentTypes.count(5) == 1)
 		{
 			div.AddChildTag(HtmlTagControlArgument(5, argumentTypes.at(5), arg5));
+		}
+		if (hint.size() > 0)
+		{
+			div.AddChildTag(HtmlTag("div").AddContent(Languages::GetText(Languages::TextHint)).AddContent(HtmlTag("br")).AddContent(hint));
 		}
 		return div;
 	}
