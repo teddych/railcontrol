@@ -26,12 +26,15 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Network/TcpConnection.h"
 
+struct sockaddr;
+
 namespace Network
 {
 	class TcpServer
 	{
 		public:
 			TcpServer() = delete;
+
 		protected:
 			TcpServer(const unsigned short port, const std::string& threadName);
 			virtual ~TcpServer();
@@ -40,12 +43,11 @@ namespace Network
 			virtual void Work(Network::TcpConnection* connection) = 0;
 
 		private:
-			void Worker();
+			void SocketCreateBindListen(int family, struct sockaddr* address);
+			void Worker(int socket);
 
-			unsigned short port;
-			int serverSocket;
 			volatile bool run;
-			std::thread serverThread;
+			std::vector<std::thread> serverThreads;
 			std::vector<TcpConnection*> connections;
 			std::string error;
 			const std::string threadName;
