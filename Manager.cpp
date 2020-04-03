@@ -73,7 +73,7 @@ Manager::Manager(Config& config)
 	StorageParams storageParams;
 	storageParams.module = "Sqlite";
 	storageParams.filename = config.getValue("dbfilename", "railcontrol.sqlite");
-	storage = new StorageHandler(this, storageParams);
+	storage = new StorageHandler(this, &storageParams);
 	if (storage == nullptr)
 	{
 		logger->Info(Languages::TextUnableToCreateStorageHandler);
