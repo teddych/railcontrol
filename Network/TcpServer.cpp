@@ -38,59 +38,19 @@ namespace Network
 	 	error(""),
 	 	threadName(threadName)
 	{
-		struct addrinfo hints;
-		memset(&hints, 0, sizeof(hints));
-		hints.ai_family = AF_UNSPEC;
-		hints.ai_socktype = SOCK_STREAM;
-		hints.ai_flags = AI_PASSIVE;
-		hints.ai_protocol = IPPROTO_TCP;
-		hints.ai_canonname = nullptr;
-		hints.ai_addr = nullptr;
-		hints.ai_next = nullptr;
+		struct sockaddr_in6 serverAddr6;
+		memset(reinterpret_cast<char*>(&serverAddr6), 0, sizeof(serverAddr6));
+		serverAddr6.sin6_family = AF_INET6;
+		serverAddr6.sin6_addr = in6addr_any;
+		serverAddr6.sin6_port = htons(port);
+		SocketCreateBindListen(serverAddr6.sin6_family, reinterpret_cast<struct sockaddr*>(&serverAddr6));
 
-		struct addrinfo* addrInfos;
-		int intResult = getaddrinfo(nullptr, std::to_string(port).c_str(), &hints, &addrInfos);
-		if (intResult != 0)
-		{
-			error = "Unable to get addresses. Unable to serve clients.";
-			return;
-		}
-
-		char buffer[sizeof(struct in6_addr)];
-		for (struct addrinfo* addrInfo = addrInfos; addrInfo != nullptr; addrInfo = addrInfo->ai_next)
-		{
-		    struct in_addr* addr = nullptr;
-		    struct sockaddr* ip = nullptr;
-		    if (addrInfo->ai_family == AF_INET){
-		        struct sockaddr_in* ipv4 = reinterpret_cast<struct sockaddr_in*>(addrInfo->ai_addr);
-		        ip = reinterpret_cast<struct sockaddr*>(ipv4);
-		        addr = &(ipv4->sin_addr);
-		    }
-		    else if (addrInfo->ai_family == AF_INET6)
-		    {
-		        struct sockaddr_in6* ipv6 = reinterpret_cast<struct sockaddr_in6*>(addrInfo->ai_addr);
-		        ip = reinterpret_cast<struct sockaddr*>(ipv6);
-		        addr = reinterpret_cast<struct in_addr*>(&(ipv6->sin6_addr));
-		    }
-		    else
-		    {
-		    	continue;
-		    }
-
-		 	const char* charPResult = inet_ntop(addrInfo->ai_family, addr, buffer, sizeof(buffer));
-			if (charPResult != nullptr)
-			{
-				std::cout
-					<< "ai_family: " << addrInfo->ai_family
-					<< " ai_socktype: " << addrInfo->ai_socktype
-					<< " ai_protocol: " << addrInfo->ai_protocol
-					<< " ai_address:" << buffer
-					<< std::endl;
-			}
-			SocketCreateBindListen(addrInfo->ai_family, ip);
-		}
-
-		freeaddrinfo(addrInfos);
+		struct sockaddr_in serverAddr4;
+		memset(reinterpret_cast<char*>(&serverAddr4), 0, sizeof(serverAddr4));
+		serverAddr4.sin_family = AF_INET;
+		serverAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
+		serverAddr4.sin_port = htons(port);
+		SocketCreateBindListen(serverAddr4.sin_family, reinterpret_cast<struct sockaddr*>(&serverAddr4));
 	}
 
 	TcpServer::~TcpServer()
@@ -123,7 +83,7 @@ namespace Network
 			return;
 		}
 
-		intResult = bind(serverSocket, address, sizeof(struct sockaddr));
+		intResult = bind(serverSocket, address, family == AF_INET ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6));
 		if (intResult < 0)
 		{
 			error = "Unable to bind socket for tcp server to port. Unable to serve clients.";
