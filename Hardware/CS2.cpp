@@ -63,51 +63,10 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingSenderSocket);
 	}
 
-	void CS2::Booster(const boosterState_t status)
+	void CS2::Send(const unsigned char* buffer)
 	{
-		unsigned char buffer[CANCommandBufferLength];
-		CreateBoosterCommand(buffer, status);
-		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
-		{
-			logger->Error(Languages::TextUnableToSendDataToControl);
-		}
-	}
-
-	void CS2::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
-	{
-		unsigned char buffer[CANCommandBufferLength];
-		CreateLocoSpeedCommand(buffer, protocol, address, speed);
-		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
-		{
-			logger->Error(Languages::TextUnableToSendDataToControl);
-		}
-	}
-
-	void CS2::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
-	{
-		unsigned char buffer[CANCommandBufferLength];
-		CreateLocoDirectionCommand(buffer, protocol, address, direction);
-		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
-		{
-			logger->Error(Languages::TextUnableToSendDataToControl);
-		}
-	}
-
-	void CS2::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
-	{
-		unsigned char buffer[CANCommandBufferLength];
-		CreateLocoFunctionCommand(buffer, protocol, address, function, on);
-		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
-		{
-			logger->Error(Languages::TextUnableToSendDataToControl);
-		}
-	}
-
-	void CS2::AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
-	{
-		unsigned char buffer[CANCommandBufferLength];
-		CreateAccessoryCommand(buffer, protocol, address, state, on);
-		if (senderConnection.Send(buffer, sizeof(buffer)) == -1)
+		logger->Hex(buffer, CANCommandBufferLength);
+		if (senderConnection.Send(buffer, CANCommandBufferLength) == -1)
 		{
 			logger->Error(Languages::TextUnableToSendDataToControl);
 		}
@@ -133,7 +92,7 @@ namespace Hardware
 		while(run)
 		{
 			ssize_t datalen = receiverConnection.Receive(buffer, sizeof(buffer));
-
+			logger->Hex(buffer, datalen);
 			if (!run)
 			{
 				break;

@@ -33,6 +33,39 @@ namespace Hardware
 		public:
 			MaerklinCAN() = delete;
 
+			bool CanHandleLocos() const override { return true; }
+			bool CanHandleAccessories() const override { return true; }
+			bool CanHandleFeedback() const override { return true; }
+
+			void GetLocoProtocols(std::vector<protocol_t> &protocols) const override
+			{
+				protocols.push_back(ProtocolMM);
+				protocols.push_back(ProtocolMFX);
+				protocols.push_back(ProtocolDCC);
+			}
+
+			bool LocoProtocolSupported(protocol_t protocol) const override
+			{
+				return (protocol == ProtocolMM || protocol == ProtocolMFX || protocol == ProtocolDCC);
+			}
+
+			void GetAccessoryProtocols(std::vector<protocol_t> &protocols) const override
+			{
+				protocols.push_back(ProtocolMM);
+				protocols.push_back(ProtocolDCC);
+			}
+
+			bool AccessoryProtocolSupported(protocol_t protocol) const override
+			{
+				return (protocol == ProtocolMM || protocol == ProtocolDCC);
+			}
+
+			void Booster(const boosterState_t status) override;
+			void LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed) override;
+			void LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction) override;
+			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
+			void AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
+
 		protected:
 
 			typedef unsigned char canPrio_t;
@@ -48,16 +81,6 @@ namespace Hardware
 
 			virtual ~MaerklinCAN() {}
 
-			void CreateBoosterCommand(unsigned char* buffer, const boosterState_t status);
-			void CreateLocoSpeedCommand(unsigned char* buffer, const protocol_t protocol, const address_t address, const locoSpeed_t speed);
-			void CreateLocoDirectionCommand(unsigned char* buffer, const protocol_t protocol, const address_t address, const direction_t direction);
-			void CreateLocoFunctionCommand(unsigned char* buffer, const protocol_t protocol, const address_t address, const function_t function, const bool on);
-			void CreateAccessoryCommand(unsigned char* buffer, const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on);
-
-			void CreateCommandHeader(unsigned char* buffer, const canPrio_t prio, const canCommand_t command, const canResponse_t response, const canLength_t length);
-			void ReadCommandHeader(const unsigned char* buffer, canPrio_t& prio, canCommand_t& command, canResponse_t& response, canLength_t& length, canAddress_t& address, protocol_t& protocol);
-			void CreateLocID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
-			void CreateAccessoryID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
 			void Parse(const unsigned char* buffer);
 
 			static const unsigned char CANCommandBufferLength = 13;
@@ -66,6 +89,12 @@ namespace Hardware
 
 		private:
 			static const unsigned short hash = 0x7337;
+
+			void CreateCommandHeader(unsigned char* buffer, const canPrio_t prio, const canCommand_t command, const canResponse_t response, const canLength_t length);
+			void ReadCommandHeader(const unsigned char* buffer, canPrio_t& prio, canCommand_t& command, canResponse_t& response, canLength_t& length, canAddress_t& address, protocol_t& protocol);
+			void CreateLocID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
+			void CreateAccessoryID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
+			virtual void Send(const unsigned char* buffer) = 0;
 	};
 } // namespace
 

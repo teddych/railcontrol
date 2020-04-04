@@ -55,7 +55,7 @@ class Manager
 			const std::string& arg5,
 			std::string& result);
 		bool ControlDelete(controlID_t controlID);
-		Hardware::HardwareParams* GetHardware(controlID_t controlID);
+		Hardware::HardwareParams* GetHardware(const controlID_t controlID);
 		unsigned int ControlsOfHardwareType(const hardwareType_t hardwareType);
 		bool HardwareLibraryAdd(const hardwareType_t hardwareType, void* libraryHandle);
 		void* HardwareLibraryGet(const hardwareType_t hardwareType) const;
@@ -63,7 +63,6 @@ class Manager
 
 		// control (console, web, ...)
 		const std::string GetControlName(const controlID_t controlID); // FIXME: => string& (reference)
-		const std::map<controlID_t,Hardware::HardwareParams*> controlList() const { return hardwareParams; }
 		const std::map<std::string,Hardware::HardwareParams*> ControlListByName() const;
 		const std::map<controlID_t,std::string> LocoControlListNames() const;
 		const std::map<controlID_t,std::string> AccessoryControlListNames() const;
@@ -260,6 +259,8 @@ class Manager
 		controlID_t GetControlForFeedback() const;
 
 	private:
+		bool ControlIsOfHardwareType(const controlID_t controlID, const hardwareType_t hardwareType);
+
 		ControlInterface* GetControl(const controlID_t controlID) const;
 		DataModel::Loco* GetLoco(const controlID_t controlID, const protocol_t protocol, const address_t address) const;
 		DataModel::Accessory* GetAccessory(const controlID_t controlID, const protocol_t protocol, const address_t address) const;

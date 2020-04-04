@@ -33,50 +33,19 @@ namespace Hardware
 			CS2(const HardwareParams* params);
 			~CS2();
 
-			bool CanHandleLocos() const override { return true; }
-			bool CanHandleAccessories() const override { return true; }
-			bool CanHandleFeedback() const override { return true; }
-
-			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override
-			{
-				protocols.push_back(ProtocolMM2);
-				protocols.push_back(ProtocolMFX);
-				protocols.push_back(ProtocolDCC);
-			}
-
-			bool LocoProtocolSupported(protocol_t protocol) const override
-			{
-				return (protocol == ProtocolMM2 || protocol == ProtocolMFX || protocol == ProtocolDCC);
-			}
-
-			void GetAccessoryProtocols(std::vector<protocol_t>& protocols) const override
-			{
-				protocols.push_back(ProtocolMM2);
-				protocols.push_back(ProtocolDCC);
-			}
-
-			bool AccessoryProtocolSupported(protocol_t protocol) const override
-			{
-				return (protocol == ProtocolMM2 || protocol == ProtocolDCC);
-			}
-
 			static void GetArgumentTypesAndHint(std::map<unsigned char,argumentType_t>& argumentTypes, std::string& hint)
 			{
 				argumentTypes[1] = IpAddress;
 				hint = Languages::GetText(Languages::TextHintCs2);
 			}
 
-			void Booster(const boosterState_t status) override;
-			void LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed) override;
-			void LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction) override;
-			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
-			void AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
-
 		private:
 			volatile bool run;
 			Network::UdpConnection senderConnection;
 			Network::UdpConnection receiverConnection;
 			std::thread receiverThread;
+
+			void Send(const unsigned char* buffer) override;
 			void Receiver();
 
 			static const unsigned short CS2SenderPort = 15731;

@@ -89,8 +89,9 @@ namespace Hardware
 		Utils::Utils::IntToDataBigEndian(locID, buffer);
 	}
 
-	void MaerklinCAN::CreateBoosterCommand(unsigned char* buffer, const boosterState_t status)
+	void MaerklinCAN::Booster(const boosterState_t status)
 	{
+		unsigned char buffer[CANCommandBufferLength];
 		logger->Info(status ? Languages::TextTurningBoosterOn : Languages::TextTurningBoosterOff);
 		// fill up header & locid
 		CreateCommandHeader(buffer, 0, 0x00, 0, 5);
@@ -100,10 +101,12 @@ namespace Hardware
 		//buffer[5-8]: 0 = all
 		//buffer[9]: subcommand stop 0x01
 		buffer[9] = status;
+		Send(buffer);
 	}
 
-	void MaerklinCAN::CreateLocoSpeedCommand(unsigned char* buffer, const protocol_t protocol, const address_t address, const locoSpeed_t speed)
+	void MaerklinCAN::LocoSpeed(const protocol_t protocol, const address_t address, const locoSpeed_t speed)
 	{
+		unsigned char buffer[CANCommandBufferLength];
 		logger->Info(Languages::TextSettingSpeedWithProtocol, protocol, address, speed);
 		// set header
 		CreateCommandHeader(buffer, 0, 0x04, 0, 6);
@@ -115,10 +118,12 @@ namespace Hardware
 		// set speed
 		buffer[9] = (speed >> 8);
 		buffer[10] = (speed & 0xFF);
+		Send(buffer);
 	}
 
-	void MaerklinCAN::CreateLocoDirectionCommand(unsigned char* buffer, const protocol_t protocol, const address_t address, const direction_t direction)
+	void MaerklinCAN::LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction)
 	{
+		unsigned char buffer[CANCommandBufferLength];
 		logger->Info(Languages::TextSettingDirectionWithProtocol, protocol, address, Languages::GetLeftRight(direction));
 		// set header
 		CreateCommandHeader(buffer, 0, 0x05, 0, 5);
@@ -129,10 +134,12 @@ namespace Hardware
 		CreateLocID(buffer + 5, protocol, address);
 		// set speed
 		buffer[9] = (direction ? 1 : 2);
+		Send(buffer);
 	}
 
-	void MaerklinCAN::CreateLocoFunctionCommand(unsigned char* buffer, const protocol_t protocol, const address_t address, const function_t function, const bool on)
+	void MaerklinCAN::LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on)
 	{
+		unsigned char buffer[CANCommandBufferLength];
 		logger->Info(Languages::TextSettingFunctionWithProtocol, static_cast<int>(function), static_cast<int>(protocol), address, Languages::GetOnOff(on));
 		// set header
 		CreateCommandHeader(buffer, 0, 0x06, 0, 6);
@@ -143,10 +150,12 @@ namespace Hardware
 		CreateLocID(buffer + 5, protocol, address);
 		buffer[9] = function;
 		buffer[10] = on;
+		Send(buffer);
 	}
 
-	void MaerklinCAN::CreateAccessoryCommand(unsigned char* buffer, const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
+	void MaerklinCAN::AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on)
 	{
+		unsigned char buffer[CANCommandBufferLength];
 		logger->Info(Languages::TextSettingAccessoryWithProtocol, static_cast<int>(protocol), address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 		// set header
 		CreateCommandHeader(buffer, 0, 0x0B, 0, 6);
@@ -157,6 +166,7 @@ namespace Hardware
 		CreateAccessoryID(buffer + 5, protocol, address - 1); // GUI-address is 1-based, protocol-address is 0-based
 		buffer[9] = state & 0x03;
 		buffer[10] = static_cast<unsigned char>(on);
+		Send(buffer);
 	}
 
 	void MaerklinCAN::Parse(const unsigned char* buffer)
