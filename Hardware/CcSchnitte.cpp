@@ -53,7 +53,7 @@ namespace Hardware
 
 	CcSchnitte::~CcSchnitte()
 	{
-		if (!run)
+		if (run == false)
 		{
 			return;
 		}

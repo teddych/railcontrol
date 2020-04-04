@@ -57,6 +57,10 @@ namespace Hardware
 
 	CS2::~CS2()
 	{
+		if (run == false)
+		{
+			return;
+		}
 		run = false;
 		receiverConnection.Terminate();
 		receiverThread.join();

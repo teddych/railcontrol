@@ -19,10 +19,10 @@ LIBS= \
 
 all: $(LIBS)
 
-CcSchnitte.so: CcSchnitte.cpp *.h ../Manager.h ../Languages.h
+CcSchnitte.so: CcSchnitte.cpp *.h ../Manager.h ../Languages.h MaerklinCAN.cpp
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ MaerklinCAN.cpp $<
 
-CS2.so: CS2.cpp *.h ../Manager.h ../Languages.h
+CS2.so: CS2.cpp *.h ../Manager.h ../Languages.h MaerklinCAN.cpp
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ MaerklinCAN.cpp $<
 
 %.so: %.cpp *.h ../Manager.h ../Languages.h
