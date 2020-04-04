@@ -7,7 +7,8 @@ CPPFLAGS=-I. -I.. -g -fpic -O2 -Wall -Wextra -Werror -std=c++11
 LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \
-	CS2.so \
+	CS2Tcp.so \
+	CS2Udp.so \
 	CcSchnitte.so \
 	Ecos.so \
 	Hsi88.so \
@@ -19,10 +20,13 @@ LIBS= \
 
 all: $(LIBS)
 
-CcSchnitte.so: CcSchnitte.cpp *.h ../Manager.h ../Languages.h MaerklinCAN.cpp
+CS2Tcp.so: CS2Tcp.cpp *.h ../Manager.h ../Languages.h MaerklinCAN.cpp
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ MaerklinCAN.cpp $<
 
-CS2.so: CS2.cpp *.h ../Manager.h ../Languages.h MaerklinCAN.cpp
+CS2Udp.so: CS2Udp.cpp *.h ../Manager.h ../Languages.h MaerklinCAN.cpp
+	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ MaerklinCAN.cpp $<
+
+CcSchnitte.so: CcSchnitte.cpp *.h ../Manager.h ../Languages.h MaerklinCAN.cpp
 	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ MaerklinCAN.cpp $<
 
 %.so: %.cpp *.h ../Manager.h ../Languages.h

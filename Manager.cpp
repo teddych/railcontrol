@@ -119,7 +119,7 @@ Manager::Manager(Config& config)
 		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
 		// FIXME: remove again later
 		if (accessory.second->GetProtocol() == ProtocolMM2
-			&& (ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeCS2)
+			&& (ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeCS2Udp)
 				|| ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeCcSchnitte)))
 		{
 			accessory.second->SetProtocol(ProtocolMM);
@@ -145,7 +145,7 @@ Manager::Manager(Config& config)
 		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
 		// FIXME: remove again later
 		if (mySwitch.second->GetProtocol() == ProtocolMM2
-			&& (ControlIsOfHardwareType(mySwitch.second->GetControlID(), HardwareTypeCS2)
+			&& (ControlIsOfHardwareType(mySwitch.second->GetControlID(), HardwareTypeCS2Udp)
 				|| ControlIsOfHardwareType(mySwitch.second->GetControlID(), HardwareTypeCcSchnitte)))
 		{
 			mySwitch.second->SetProtocol(ProtocolMM);
@@ -159,7 +159,7 @@ Manager::Manager(Config& config)
 		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
 		// FIXME: remove again later
 		if (signal.second->GetProtocol() == ProtocolMM2
-			&& (ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCS2)
+			&& (ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCS2Udp)
 				|| ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCcSchnitte)))
 		{
 			signal.second->SetProtocol(ProtocolMM);
@@ -179,7 +179,7 @@ Manager::Manager(Config& config)
 		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
 		// FIXME: remove again later
 		if (loco.second->GetProtocol() == ProtocolMM2
-			&& (ControlIsOfHardwareType(loco.second->GetControlID(), HardwareTypeCS2)
+			&& (ControlIsOfHardwareType(loco.second->GetControlID(), HardwareTypeCS2Udp)
 				|| ControlIsOfHardwareType(loco.second->GetControlID(), HardwareTypeCcSchnitte)))
 		{
 			loco.second->SetProtocol(ProtocolMM);

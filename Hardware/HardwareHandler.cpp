@@ -25,7 +25,8 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/Loco.h"
 #include "DataTypes.h"
 #include "Logger/Logger.h"
-#include "Hardware/CS2.h"
+#include <Hardware/CS2Udp.h>
+#include "Hardware/CS2Tcp.h"
 #include "Hardware/CcSchnitte.h"
 #include "Hardware/Ecos.h"
 #include "Hardware/HardwareHandler.h"
@@ -45,14 +46,15 @@ namespace Hardware
 	{
 		"none",
 		"Virtual",
-		"CS2",
+		"CS2Udp",
 		"M6051",
 		"RM485",
 		"OpenDcc",
 		"Hsi88",
 		"Z21",
 		"CcSchnitte",
-		"Ecos"
+		"Ecos",
+		"CS2Tcp"
 	};
 
 	void HardwareHandler::Init(const HardwareParams* params)
@@ -63,9 +65,14 @@ namespace Hardware
 #ifdef AMALGAMATION
 		switch(type)
 		{
-			case HardwareTypeCS2:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_CS2);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_CS2);
+			case HardwareTypeCS2Udp:
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_CS2Udp);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_CS2Udp);
+				break;
+
+			case HardwareTypeCS2Tcp:
+				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_CS2Tcp);
+				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_CS2Tcp);
 				break;
 
 			case HardwareTypeVirtual:
@@ -370,8 +377,12 @@ namespace Hardware
 	{
 		switch (hardwareType)
 		{
-			case HardwareTypeCS2:
-				Hardware::CS2::GetArgumentTypesAndHint(arguments, hint);
+			case HardwareTypeCS2Udp:
+				Hardware::CS2Udp::GetArgumentTypesAndHint(arguments, hint);
+				return;
+
+			case HardwareTypeCS2Tcp:
+				Hardware::CS2Tcp::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeM6051:

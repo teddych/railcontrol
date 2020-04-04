@@ -18,26 +18,26 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include "Hardware/CS2.h"
+#include <CS2Udp.h>
 #include "Utils/Utils.h"
 
 namespace Hardware
 {
-	extern "C" CS2* create_CS2(const HardwareParams* params)
+	extern "C" CS2Udp* create_CS2Udp(const HardwareParams* params)
 	{
-		return new CS2(params);
+		return new CS2Udp(params);
 	}
 
-	extern "C" void destroy_CS2(CS2* cs2)
+	extern "C" void destroy_CS2Udp(CS2Udp* cs2Udp)
 	{
-		delete(cs2);
+		delete(cs2Udp);
 	}
 
-	CS2::CS2(const HardwareParams* params)
+	CS2Udp::CS2Udp(const HardwareParams* params)
 	:	MaerklinCAN(params->GetManager(),
 			params->GetControlID(),
-			Logger::Logger::GetLogger("CS2 " + params->GetName() + " " + params->GetArg1()),
-			"Maerklin Central Station 2 (CS2) / " + params->GetName() + " at IP " + params->GetArg1()),
+			Logger::Logger::GetLogger("CS2UDP " + params->GetName() + " " + params->GetArg1()),
+			"Maerklin Central Station 2 (CS2) UDP / " + params->GetName() + " at IP " + params->GetArg1()),
 	 	run(true),
 	 	senderConnection(logger, params->GetArg1(), CS2SenderPort),
 	 	receiverConnection(logger, "0.0.0.0", CS2ReceiverPort)
@@ -52,10 +52,10 @@ namespace Hardware
 		{
 			logger->Error(Languages::TextUnableToCreateUdpSocketForSendingData);
 		}
-		receiverThread = std::thread(&Hardware::CS2::Receiver, this);
+		receiverThread = std::thread(&Hardware::CS2Udp::Receiver, this);
 	}
 
-	CS2::~CS2()
+	CS2Udp::~CS2Udp()
 	{
 		if (run == false)
 		{
@@ -67,7 +67,7 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingSenderSocket);
 	}
 
-	void CS2::Send(const unsigned char* buffer)
+	void CS2Udp::Send(const unsigned char* buffer)
 	{
 		logger->Hex(buffer, CANCommandBufferLength);
 		if (senderConnection.Send(buffer, CANCommandBufferLength) == -1)
@@ -76,9 +76,9 @@ namespace Hardware
 		}
 	}
 
-	void CS2::Receiver()
+	void CS2Udp::Receiver()
 	{
-		Utils::Utils::SetThreadName("CS2");
+		Utils::Utils::SetThreadName("CS2Udp");
 		logger->Info(Languages::TextReceiverThreadStarted);
 		if (!receiverConnection.IsConnected())
 		{

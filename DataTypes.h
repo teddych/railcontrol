@@ -171,7 +171,7 @@ enum hardwareType_t : unsigned char
 {
 	HardwareTypeNone = 0,
 	HardwareTypeVirtual = 1,
-	HardwareTypeCS2 = 2,
+	HardwareTypeCS2Udp = 2,
 	HardwareTypeM6051 = 3,
 	HardwareTypeRM485 = 4,
 	HardwareTypeOpenDcc = 5,
@@ -179,6 +179,7 @@ enum hardwareType_t : unsigned char
 	HardwareTypeZ21 = 7,
 	HardwareTypeCcSchnitte = 8,
 	HardwareTypeEcos = 9,
+	HardwareTypeCS2Tcp = 10,
 	HardwareTypeNumbers
 };
 

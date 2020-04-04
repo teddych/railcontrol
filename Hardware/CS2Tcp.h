@@ -23,37 +23,35 @@ along with RailControl; see the file LICENCE. If not see
 #include "HardwareParams.h"
 #include "Hardware/MaerklinCAN.h"
 #include "Logger/Logger.h"
-#include "Network/UdpConnection.h"
+#include "Network/TcpClient.h"
 
 namespace Hardware
 {
-	class CS2 : protected MaerklinCAN
+	class CS2Tcp : protected MaerklinCAN
 	{
 		public:
-			CS2(const HardwareParams* params);
-			~CS2();
+			CS2Tcp(const HardwareParams* params);
+			~CS2Tcp();
 
 			static void GetArgumentTypesAndHint(std::map<unsigned char,argumentType_t>& argumentTypes, std::string& hint)
 			{
 				argumentTypes[1] = IpAddress;
-				hint = Languages::GetText(Languages::TextHintCs2);
+				hint = Languages::GetText(Languages::TextHintCs2Tcp);
 			}
 
 		private:
 			volatile bool run;
-			Network::UdpConnection senderConnection;
-			Network::UdpConnection receiverConnection;
+			Network::TcpConnection connection;
 			std::thread receiverThread;
 
 			void Send(const unsigned char* buffer) override;
 			void Receiver();
 
-			static const unsigned short CS2SenderPort = 15731;
-			static const unsigned short CS2ReceiverPort = 15730;
+			static const unsigned short CS2Port = 15731;
 	};
 
-	extern "C" CS2* create_CS2(const HardwareParams* params);
-	extern "C" void destroy_CS2(CS2* cs2);
+	extern "C" CS2Tcp* create_CS2Tcp(const HardwareParams* params);
+	extern "C" void destroy_CS2Tcp(CS2Tcp* cs2tcp);
 
 } // namespace
 

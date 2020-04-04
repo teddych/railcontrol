@@ -953,7 +953,8 @@ namespace WebServer
 		hardwareList["ESU Ecos &amp; Märklin CS1"] = HardwareTypeEcos;
 		hardwareList["LDT HSI-88"] = HardwareTypeHsi88;
 		hardwareList["Märklin Central Station 1 (CS1)"] = HardwareTypeEcos;
-		hardwareList["Märklin Central Station 2 (CS2)"] = HardwareTypeCS2;
+		hardwareList["Märklin Central Station 2 (CS2) TCP"] = HardwareTypeCS2Tcp;
+		hardwareList["Märklin Central Station 2 (CS2) UDP"] = HardwareTypeCS2Udp;
 		hardwareList["Märklin Interface 6050/6051"] = HardwareTypeM6051;
 		hardwareList["OpenDCC Z1"] = HardwareTypeOpenDcc;
 		hardwareList["RM485"] = HardwareTypeRM485;
