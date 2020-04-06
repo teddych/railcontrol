@@ -79,4 +79,24 @@ namespace Hardware
 		logger->Info(Languages::TextSettingAccessoryWithProtocol, static_cast<int>(protocol), address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 	}
 
+	// write Märklin Motorola variable
+	void Virtual::ProgramMm(const CvNumber cv, const CvValue value)
+	{
+		logger->Info(Languages::TextProgramMm, static_cast<int>(cv), static_cast<int>(value));
+	}
+
+	// read DCC CV value
+	CvValue Virtual::ProgramDccRead(const CvNumber cv) const
+	{
+		CvValue value = cv & 0xFF;
+		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv), static_cast<int>(value));
+		return value;
+	}
+
+	// write DCC CV value
+	void Virtual::ProgramDccWrite(const CvNumber cv, const CvValue value)
+	{
+		logger->Info(Languages::TextProgramDccWrite, static_cast<int>(cv), static_cast<int>(value));
+	}
+
 } // namespace

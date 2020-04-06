@@ -58,6 +58,9 @@ class ControlInterface
 		virtual bool CanHandleAccessories() const { return false; }
 		virtual bool CanHandleFeedbacks() const { return false; }
 		virtual bool CanHandleLocos() const { return false; }
+		virtual bool CanHandleProgramMm() const { return false; }
+		virtual bool CanHandleProgramDccRead() const { return false; }
+		virtual bool CanHandleProgramDccWrite() const { return false; }
 		virtual void FeedbackDelete(__attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const std::string& name) {}
 		virtual void FeedbackSettings(__attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const std::string& name) {}
 		virtual void FeedbackState(__attribute__((unused)) const std::string& name, __attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const DataModel::Feedback::feedbackState_t state) {};
@@ -97,6 +100,10 @@ class ControlInterface
 				LocoFunction(ControlTypeInternal, loco, functionNr, functions[functionNr]);
 			}
 		}
+
+		virtual void ProgramMm(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+		virtual CvValue ProgramDccRead(const CvNumber cv) const { return cv & 0xFF; }
+		virtual void ProgramDccWrite(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 
 	private:
 		controlType_t controlType;

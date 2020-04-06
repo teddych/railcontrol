@@ -252,6 +252,36 @@ namespace Hardware
 		return instance->CanHandleFeedback();
 	}
 
+	bool HardwareHandler::CanHandleProgramMm() const
+	{
+		if (instance == nullptr)
+		{
+			return false;
+		}
+
+		return instance->CanHandleProgramMm();
+	}
+
+	bool HardwareHandler::CanHandleProgramDccRead() const
+	{
+		if (instance == nullptr)
+		{
+			return false;
+		}
+
+		return instance->CanHandleProgramDccRead();
+	}
+
+	bool HardwareHandler::CanHandleProgramDccWrite() const
+	{
+		if (instance == nullptr)
+		{
+			return false;
+		}
+
+		return instance->CanHandleProgramDccWrite();
+	}
+
 	void HardwareHandler::LocoProtocols(std::vector<protocol_t>& protocols) const
 	{
 		if (instance == nullptr)
@@ -371,6 +401,36 @@ namespace Hardware
 			return;
 		}
 		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), state, signal->GetDuration());
+	}
+
+	void HardwareHandler::ProgramMm(const CvNumber cv, const CvValue value)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+
+		instance->ProgramMm(cv, value);
+	}
+
+	CvValue HardwareHandler::ProgramDccRead(const CvNumber cv) const
+	{
+		if (instance == nullptr)
+		{
+			return cv & 0xFF;
+		}
+
+		return instance->ProgramDccRead(cv);
+	}
+
+	void HardwareHandler::ProgramDccWrite(const CvNumber cv, const CvValue value)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+
+		instance->ProgramDccWrite(cv, value);
 	}
 
 	void HardwareHandler::ArgumentTypesOfHardwareTypeAndHint(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments, std::string& hint)

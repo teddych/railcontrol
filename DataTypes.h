@@ -212,3 +212,6 @@ enum direction_t : bool
 	DirectionLeft = false,
 	DirectionRight = true
 };
+
+typedef unsigned short CvNumber;
+typedef unsigned char CvValue;

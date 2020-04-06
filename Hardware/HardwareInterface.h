@@ -56,6 +56,15 @@ namespace Hardware
 			// can this control handle feedback
 			virtual bool CanHandleFeedback() const { return false; }
 
+			// can this control handle program
+			virtual bool CanHandleProgramMm() const { return false; }
+
+			// can this control handle program
+			virtual bool CanHandleProgramDccRead() const { return false; }
+
+			// can this control handle program
+			virtual bool CanHandleProgramDccWrite() const { return false; }
+
 			// get available loco protocols of this control
 			virtual void GetLocoProtocols(__attribute__((unused)) std::vector<protocol_t>& protocols) const {};
 
@@ -97,6 +106,15 @@ namespace Hardware
 				AccessoryOnOrOff(protocol, address, state, true);
 				std::async(std::launch::async, AccessoryOnOrOffStatic, this, protocol, address, state, waitTime);
 			};
+
+			// write Märklin Motorola variable
+			virtual void ProgramMm(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+
+			// read DCC CV value
+			virtual CvValue ProgramDccRead(const CvNumber cv) const { return cv & 0xFF; }
+
+			// write DCC CV value
+			virtual void ProgramDccWrite(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 
 		protected:
 			Manager* manager;
