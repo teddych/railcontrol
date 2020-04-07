@@ -2909,6 +2909,62 @@ void Manager::ProgramDccValue(const CvNumber cv, const CvValue value)
 	}
 }
 
+bool Manager::CanHandleProgram()
+{
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		bool ret = control.second->CanHandleProgram();
+		if (ret == true)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Manager::CanHandleProgramMm()
+{
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		bool ret = control.second->CanHandleProgramMm();
+		if (ret == true)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Manager::CanHandleProgramDccRead()
+{
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		bool ret = control.second->CanHandleProgramDccRead();
+		if (ret == true)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+bool Manager::CanHandleProgramDccWrite()
+{
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		bool ret = control.second->CanHandleProgramDccWrite();
+		if (ret == true)
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 Hardware::HardwareParams* Manager::CreateAndAddControl()
 {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);

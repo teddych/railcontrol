@@ -210,6 +210,7 @@ namespace WebServer
 			void HandleSlaveAdd(const std::map<std::string,std::string>& arguments);
 			void HandleTimestamp(const std::map<std::string,std::string>& arguments);
 			void HandleControlArguments(const std::map<std::string,std::string>& arguments);
+			void HandleProgram();
 			void HandleUpdater(const std::map<std::string,std::string>& headers);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

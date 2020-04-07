@@ -70,6 +70,7 @@ namespace Hardware
 			bool CanHandleAccessories() const override;
 			bool CanHandleFeedbacks() const override;
 			bool CanHandleLocos() const override;
+			bool CanHandleProgram() const override;
 			bool CanHandleProgramMm() const override;
 			bool CanHandleProgramDccRead() const override;
 			bool CanHandleProgramDccWrite() const override;

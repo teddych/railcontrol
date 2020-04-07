@@ -57,12 +57,15 @@ namespace Hardware
 			virtual bool CanHandleFeedback() const { return false; }
 
 			// can this control handle program
+			virtual bool CanHandleProgram() const { return false; }
+
+			// can this control handle program Märklin Motorola
 			virtual bool CanHandleProgramMm() const { return false; }
 
-			// can this control handle program
+			// can this control handle read DCC CV
 			virtual bool CanHandleProgramDccRead() const { return false; }
 
-			// can this control handle program
+			// can this control handle write DCC CV
 			virtual bool CanHandleProgramDccWrite() const { return false; }
 
 			// get available loco protocols of this control

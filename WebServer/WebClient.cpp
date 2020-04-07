@@ -527,6 +527,10 @@ namespace WebServer
 			{
 				HandleControlArguments(arguments);
 			}
+			else if (arguments["cmd"].compare("program") == 0)
+			{
+				HandleProgram();
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				HandleUpdater(headers);
@@ -3561,6 +3565,32 @@ namespace WebServer
 		ReplyHtmlWithHeader(HtmlTagControlArguments(hardwareType));
 	}
 
+	void WebClient::HandleProgram()
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextProgrammer));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("mm", Languages::TextMaerklinMotorola, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("dcc", Languages::TextDcc));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag mmContent("div");
+		mmContent.AddAttribute("id", "tab_mm");
+		mmContent.AddClass("tab_content");
+		mmContent.AddContent("MM Values");
+		content.AddChildTag(mmContent);
+
+		HtmlTag dccContent("div");
+		dccContent.AddAttribute("id", "tab_dcc");
+		dccContent.AddClass("tab_content");
+		dccContent.AddClass("hidden");
+		dccContent.AddContent("Dcc Values");
+		content.AddChildTag(dccContent);
+
+		content.AddChildTag(HtmlTagButtonCancel());
+		ReplyHtmlWithHeader(content);
+	}
+
 	void WebClient::HandleUpdater(const map<string, string>& headers)
 	{
 		Response response;
@@ -3702,6 +3732,12 @@ namespace WebServer
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,20 10,20 30,15\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"28,17 28,20 34,20\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></svg>", "accessorylist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"5,34 15,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"31,34 21,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,34 18,30\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,24 18,20\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,14 18,10\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,4 18,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></svg>", "streetlist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,25 35,25\" fill=\"none\" stroke=\"black\"/><polygon points=\"4,25 4,23 8,23 8,25\" fill=\"black\" stroke=\"black\"/><polygon points=\"35,22 16,22 15,19 18,10 35,10\" stroke=\"black\" fill=\"black\"/><polygon points=\"20,12 25,12 25,15 19,15\" fill=\"white\"/><polyline points=\"26,10 30,8 26,6\" stroke=\"black\" fill=\"none\"/><circle cx=\"22\" cy=\"22\" r=\"3\"/><circle cx=\"30\" cy=\"22\" r=\"3\"/></svg>", "feedbacklist"));
+		if (manager.CanHandleProgram())
+		{
+			menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
+			menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,5 35,5\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"1,16 35,16\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"3,3 3,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"6,3 6,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"9,3 9,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"12,3 12,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"15,3 15,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"18,3 18,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"21,3 21,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"24,3 24,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"27,3 27,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"30,3 30,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"33,3 33,18\" stroke=\"black\" stroke-width=\"1\" /><text x=\"3\" y=\"31\" fill=\"black\" >Prog</text></svg>", "program"));
+		}
+
 		menu.AddChildTag(menuAdd);
 		body.AddChildTag(menu);
 

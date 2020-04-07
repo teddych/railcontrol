@@ -58,6 +58,7 @@ class ControlInterface
 		virtual bool CanHandleAccessories() const { return false; }
 		virtual bool CanHandleFeedbacks() const { return false; }
 		virtual bool CanHandleLocos() const { return false; }
+		virtual bool CanHandleProgram() const { return false; }
 		virtual bool CanHandleProgramMm() const { return false; }
 		virtual bool CanHandleProgramDccRead() const { return false; }
 		virtual bool CanHandleProgramDccWrite() const { return false; }

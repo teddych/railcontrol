@@ -37,6 +37,7 @@ namespace Hardware
 			bool CanHandleLocos() const override { return true; }
 			bool CanHandleAccessories() const override { return true; }
 			bool CanHandleFeedback() const override { return true; }
+			bool CanHandleProgram() const override { return true; }
 			bool CanHandleProgramMm() const override { return true; }
 			bool CanHandleProgramDccRead() const override { return true; }
 			bool CanHandleProgramDccWrite() const override { return true; }

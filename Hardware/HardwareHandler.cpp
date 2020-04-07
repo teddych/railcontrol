@@ -252,6 +252,16 @@ namespace Hardware
 		return instance->CanHandleFeedback();
 	}
 
+	bool HardwareHandler::CanHandleProgram() const
+	{
+		if (instance == nullptr)
+		{
+			return false;
+		}
+
+		return instance->CanHandleProgram();
+	}
+
 	bool HardwareHandler::CanHandleProgramMm() const
 	{
 		if (instance == nullptr)

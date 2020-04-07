@@ -262,6 +262,10 @@ class Manager
 		void ProgramDccRead(const controlID_t controlID, const CvNumber cv) const;
 		void ProgramDccWrite(const controlID_t controlID, const CvNumber cv, const CvValue value);
 		void ProgramDccValue(const CvNumber cv, const CvValue value);
+		bool CanHandleProgram();
+		bool CanHandleProgramMm();
+		bool CanHandleProgramDccRead();
+		bool CanHandleProgramDccWrite();
 
 	private:
 		bool ControlIsOfHardwareType(const controlID_t controlID, const hardwareType_t hardwareType);
