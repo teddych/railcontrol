@@ -413,14 +413,14 @@ namespace Hardware
 		instance->ProgramMm(cv, value);
 	}
 
-	CvValue HardwareHandler::ProgramDccRead(const CvNumber cv) const
+	void HardwareHandler::ProgramDccRead(const CvNumber cv) const
 	{
 		if (instance == nullptr)
 		{
-			return cv & 0xFF;
+			return;
 		}
 
-		return instance->ProgramDccRead(cv);
+		instance->ProgramDccRead(cv);
 	}
 
 	void HardwareHandler::ProgramDccWrite(const CvNumber cv, const CvValue value)

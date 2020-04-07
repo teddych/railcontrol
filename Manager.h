@@ -258,6 +258,11 @@ class Manager
 		controlID_t GetControlForAccessory() const;
 		controlID_t GetControlForFeedback() const;
 
+		void ProgramMm(const controlID_t controlID, const CvNumber cv, const CvValue value);
+		void ProgramDccRead(const controlID_t controlID, const CvNumber cv) const;
+		void ProgramDccWrite(const controlID_t controlID, const CvNumber cv, const CvValue value);
+		void ProgramDccValue(const CvNumber cv, const CvValue value);
+
 	private:
 		bool ControlIsOfHardwareType(const controlID_t controlID, const hardwareType_t hardwareType);
 

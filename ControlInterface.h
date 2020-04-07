@@ -102,8 +102,9 @@ class ControlInterface
 		}
 
 		virtual void ProgramMm(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
-		virtual CvValue ProgramDccRead(const CvNumber cv) const { return cv & 0xFF; }
+		virtual void ProgramDccRead(__attribute__((unused))const CvNumber cv) const {}
 		virtual void ProgramDccWrite(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+		virtual void ProgramDccValue(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 
 	private:
 		controlType_t controlType;

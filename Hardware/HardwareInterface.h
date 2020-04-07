@@ -111,7 +111,7 @@ namespace Hardware
 			virtual void ProgramMm(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 
 			// read DCC CV value
-			virtual CvValue ProgramDccRead(const CvNumber cv) const { return cv & 0xFF; }
+			virtual void ProgramDccRead(__attribute__((unused))const CvNumber cv) const {}
 
 			// write DCC CV value
 			virtual void ProgramDccWrite(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}

@@ -256,7 +256,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextPosZ */ { "Layer", "Schicht", "Capa" },
 /* TextPosition */ { "Position", "Position", "Posición" },
 /* TextPositionAlreadyInUse */ { "Position {0}/{1}/{2} is already used by {3} \"{4}\".", "Position {0}/{1}/{2} wird bereits verwendet von {3} \"{4}\".", "Positión {0}/{1}/{2} está usado de {3} \"{4}\"." },
-/* TextProgramDccRead */ { "Reading DCC CV {0} value {1}", "Lese DCC CV {0} Wert {1}", "Leyendo DCC CV {0} valor {1}" },
+/* TextProgramDccRead */ { "Reading DCC CV {0}", "Lese DCC CV {0}", "Leyendo DCC CV {0}" },
 /* TextProgramDccWrite */ { "Programming DCC CV {0} to value {1}", "Programmiere DCC CV {0} auf Wert {1}", "Programando DCC CV {0} al valor {1}" },
 /* TextProgramMm */ { "Programming Märklin Motorola variable {0} to value {1}", "Programmiere Märklin Motorola Variable {0} auf Wert {1}", "Programando Märklin Motorol variable {0} al valor {1}" },
 /* TextProtocol */ { "Protocol", "Protocol", "Protocolo" },

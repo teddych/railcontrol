@@ -86,11 +86,9 @@ namespace Hardware
 	}
 
 	// read DCC CV value
-	CvValue Virtual::ProgramDccRead(const CvNumber cv) const
+	void Virtual::ProgramDccRead(const CvNumber cv) const
 	{
-		CvValue value = cv & 0xFF;
-		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv), static_cast<int>(value));
-		return value;
+		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
 	}
 
 	// write DCC CV value

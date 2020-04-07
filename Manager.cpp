@@ -2870,6 +2870,45 @@ controlID_t Manager::GetControlForFeedback() const
 	return ControlIdNone;
 }
 
+void Manager::ProgramMm(const controlID_t controlID, const CvNumber cv, const CvValue value)
+{
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return;
+	}
+	control->ProgramMm(cv, value);
+}
+
+void Manager::ProgramDccRead(const controlID_t controlID, const CvNumber cv) const
+{
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return;
+	}
+	control->ProgramDccRead(cv);
+}
+
+void Manager::ProgramDccWrite(const controlID_t controlID, const CvNumber cv, const CvValue value)
+{
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return;
+	}
+	control->ProgramDccWrite(cv, value);
+}
+
+void Manager::ProgramDccValue(const CvNumber cv, const CvValue value)
+{
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->ProgramDccValue(cv, value);
+	}
+}
+
 Hardware::HardwareParams* Manager::CreateAndAddControl()
 {
 	std::lock_guard<std::mutex> Guard(hardwareMutex);

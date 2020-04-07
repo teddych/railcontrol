@@ -57,7 +57,7 @@ namespace Hardware
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 			void AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
 			void ProgramMm(const CvNumber cv, const CvValue value) override;
-			CvValue ProgramDccRead(const CvNumber cv) const override;
+			void ProgramDccRead(const CvNumber cv) const override;
 			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
 
 		private:
