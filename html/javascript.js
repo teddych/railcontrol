@@ -1,3 +1,17 @@
+function onClickProgramMm(variable)
+{
+	var valueElementName = 'variable_' + variable;
+	var valueElement = document.getElementById(valueElementName);
+	if (!valueElement)
+	{
+		return false;
+	}
+	var value = valueElement.value;
+	var url = '?cmd=programmm&variable=' + variable + '&value=' + value;
+	fireRequestAndForget(url);
+	return false;
+}
+
 function updateName()
 {
 	var nameField = document.getElementById('name');

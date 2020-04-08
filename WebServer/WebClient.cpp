@@ -3574,18 +3574,36 @@ namespace WebServer
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("dcc", Languages::TextDcc));
 		content.AddChildTag(tabMenu);
 
+		HtmlTag programContent("div");
+		programContent.AddClass("popup_content");
+
 		HtmlTag mmContent("div");
 		mmContent.AddAttribute("id", "tab_mm");
 		mmContent.AddClass("tab_content");
-		mmContent.AddContent("MM Values");
-		content.AddChildTag(mmContent);
+		mmContent.AddClass("narrow_label");
+		for (unsigned int index = 1; index <= 255; ++index)
+		{
+			string indexString = to_string(index);
+			HtmlTag contentObject("div");
+			contentObject.AddAttribute("id", "object_" + indexString);
+			contentObject.AddClass("inline-block");
+			contentObject.AddChildTag(HtmlTagInputIntegerWithLabel("variable_" + indexString, Languages::TextVariable, 0, 0, 255, indexString));
+			HtmlTagButton writeButton(Languages::TextWrite, "program_mm_" + indexString);
+			writeButton.AddAttribute("onclick", "onClickProgramMm(" + indexString + ");return false;");
+			writeButton.AddClass("wide_button");
+			contentObject.AddChildTag(writeButton);
+			mmContent.AddChildTag(contentObject);
+		}
+		programContent.AddChildTag(mmContent);
 
 		HtmlTag dccContent("div");
 		dccContent.AddAttribute("id", "tab_dcc");
 		dccContent.AddClass("tab_content");
 		dccContent.AddClass("hidden");
 		dccContent.AddContent("Dcc Values");
-		content.AddChildTag(dccContent);
+		programContent.AddChildTag(dccContent);
+
+		content.AddChildTag(programContent);
 
 		content.AddChildTag(HtmlTagButtonCancel());
 		ReplyHtmlWithHeader(content);
