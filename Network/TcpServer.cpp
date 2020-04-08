@@ -45,12 +45,14 @@ namespace Network
 		serverAddr6.sin6_port = htons(port);
 		SocketCreateBindListen(serverAddr6.sin6_family, reinterpret_cast<struct sockaddr*>(&serverAddr6));
 
+#ifdef __CYGWIN__
 		struct sockaddr_in serverAddr4;
 		memset(reinterpret_cast<char*>(&serverAddr4), 0, sizeof(serverAddr4));
 		serverAddr4.sin_family = AF_INET;
 		serverAddr4.sin_addr.s_addr = htonl(INADDR_ANY);
 		serverAddr4.sin_port = htons(port);
 		SocketCreateBindListen(serverAddr4.sin_family, reinterpret_cast<struct sockaddr*>(&serverAddr4));
+#endif
 	}
 
 	TcpServer::~TcpServer()
