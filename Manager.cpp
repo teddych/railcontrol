@@ -559,6 +559,51 @@ const std::map<controlID_t,std::string> Manager::FeedbackControlListNames() cons
 	return ret;
 }
 
+const std::map<controlID_t,std::string> Manager::ProgramMmControlListNames() const
+{
+	std::map<controlID_t,std::string> ret;
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramMm() == false)
+		{
+			continue;
+		}
+		ret[control.first] = control.second->GetName();
+	}
+	return ret;
+}
+
+const std::map<controlID_t,std::string> Manager::ProgramDccReadControlListNames() const
+{
+	std::map<controlID_t,std::string> ret;
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramDccRead() == false)
+		{
+			continue;
+		}
+		ret[control.first] = control.second->GetName();
+	}
+	return ret;
+}
+
+const std::map<controlID_t,std::string> Manager::ProgramDccWriteControlListNames() const
+{
+	std::map<controlID_t,std::string> ret;
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramDccWrite() == false)
+		{
+			continue;
+		}
+		ret[control.first] = control.second->GetName();
+	}
+	return ret;
+}
+
 const map<string,Hardware::HardwareParams*> Manager::ControlListByName() const
 {
 	map<string,Hardware::HardwareParams*> out;

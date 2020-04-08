@@ -7,7 +7,13 @@ function onClickProgramMm(variable)
 		return false;
 	}
 	var value = valueElement.value;
-	var url = '?cmd=programmm&variable=' + variable + '&value=' + value;
+	var controlElement = document.getElementById('controlmm');
+	if (!controlElement)
+	{
+		return false;
+	}
+	var control = controlElement.value;
+	var url = '?cmd=programmm&variable=' + variable + '&value=' + value + '&control=' + control;
 	fireRequestAndForget(url);
 	return false;
 }

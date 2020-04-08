@@ -531,6 +531,18 @@ namespace WebServer
 			{
 				HandleProgram();
 			}
+			else if (arguments["cmd"].compare("programmm") == 0)
+			{
+				HandleProgramMm(arguments);
+			}
+			else if (arguments["cmd"].compare("programdccread") == 0)
+			{
+				HandleProgramDccRead(arguments);
+			}
+			else if (arguments["cmd"].compare("programdccwrite") == 0)
+			{
+				HandleProgramDccWrite(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				HandleUpdater(headers);
@@ -1942,6 +1954,15 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlIDMutable)).AddAttribute("onchange", "loadProtocol('" + objectType + "', " + to_string(objectID) + ")");
 	}
 
+	HtmlTag WebClient::HtmlTagControl(const string& name, const std::map<controlID_t,string>& controls)
+	{
+		if (controls.size() == 1)
+		{
+			return HtmlTagInputHidden(name, to_string(controls.begin()->first));
+		}
+		return HtmlTagSelectWithLabel(name, Languages::TextControl, controls, ControlNone);
+	}
+
 	HtmlTag WebClient::HtmlTagControlLoco(const controlID_t controlID, const string& objectType, const objectID_t objectID)
 	{
 		std::map<controlID_t,string> controls = manager.LocoControlListNames();
@@ -1958,6 +1979,24 @@ namespace WebServer
 	{
 		std::map<controlID_t,string> controls = manager.FeedbackControlListNames();
 		return HtmlTagControl(controls, controlID, objectType, objectID);
+	}
+
+	HtmlTag WebClient::HtmlTagControlProgramMm()
+	{
+		std::map<controlID_t,string> controls = manager.ProgramMmControlListNames();
+		return HtmlTagControl("controlmm", controls);
+	}
+
+	HtmlTag WebClient::HtmlTagControlProgramDccRead()
+	{
+		std::map<controlID_t,string> controls = manager.ProgramDccReadControlListNames();
+		return HtmlTagControl("controldccread", controls);
+	}
+
+	HtmlTag WebClient::HtmlTagControlProgramDccWrite()
+	{
+		std::map<controlID_t,string> controls = manager.ProgramDccWriteControlListNames();
+		return HtmlTagControl("controldccwrite", controls);
 	}
 
 	void WebClient::HandleAccessoryEdit(const map<string, string>& arguments)
@@ -3581,6 +3620,7 @@ namespace WebServer
 		mmContent.AddAttribute("id", "tab_mm");
 		mmContent.AddClass("tab_content");
 		mmContent.AddClass("narrow_label");
+		mmContent.AddChildTag(HtmlTagControlProgramMm());
 		for (unsigned int index = 1; index <= 255; ++index)
 		{
 			string indexString = to_string(index);
@@ -3607,6 +3647,32 @@ namespace WebServer
 
 		content.AddChildTag(HtmlTagButtonCancel());
 		ReplyHtmlWithHeader(content);
+	}
+
+	void WebClient::HandleProgramMm(const map<string, string>& arguments)
+	{
+		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "variable"));
+		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
+		manager.ProgramMm(controlID, cv, value);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramMm, cv, value);
+	}
+
+	void WebClient::HandleProgramDccRead(const map<string, string>& arguments)
+	{
+		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
+		manager.ProgramDccRead(controlID, cv);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccRead, cv);
+	}
+
+	void WebClient::HandleProgramDccWrite(const map<string, string>& arguments)
+	{
+		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
+		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
+		manager.ProgramDccWrite(controlID, cv, value);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccWrite, cv, value);
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)
@@ -3778,6 +3844,6 @@ namespace WebServer
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::GetText(Languages::TextAddFeedback)).AddAttribute("onClick", "loadPopup('/?cmd=feedbackedit&feedback=0');"))
 			));
 
-		connection->Send(HtmlFullResponse("Railcontrol", body));
+		connection->Send(HtmlFullResponse("RailControl", body));
 	}
 }; // namespace webserver

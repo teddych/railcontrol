@@ -120,9 +120,13 @@ namespace WebServer
 			static HtmlTag HtmlTagFeedbackOnControlLayer(const DataModel::Feedback* feedback);
 			static HtmlTag HtmlTagControlArguments(const hardwareType_t hardwareType, const std::string& arg1 = "", const std::string& arg2 = "", const std::string& arg3 = "", const std::string& arg4 = "", const std::string& arg5 = "");
 			static HtmlTag HtmlTagControl(const std::map<controlID_t,std::string>& controls, const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
+			static HtmlTag HtmlTagControl(const std::string& name, const std::map<controlID_t,std::string>& controls);
 			HtmlTag HtmlTagControlLoco(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
 			HtmlTag HtmlTagControlAccessory(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
 			HtmlTag HtmlTagControlFeedback(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
+			HtmlTag HtmlTagControlProgramMm();
+			HtmlTag HtmlTagControlProgramDccRead();
+			HtmlTag HtmlTagControlProgramDccWrite();
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void HandleLayerSave(const std::map<std::string, std::string>& arguments);
@@ -211,6 +215,9 @@ namespace WebServer
 			void HandleTimestamp(const std::map<std::string,std::string>& arguments);
 			void HandleControlArguments(const std::map<std::string,std::string>& arguments);
 			void HandleProgram();
+			void HandleProgramMm(const std::map<std::string,std::string>& arguments);
+			void HandleProgramDccRead(const std::map<std::string,std::string>& arguments);
+			void HandleProgramDccWrite(const std::map<std::string,std::string>& arguments);
 			void HandleUpdater(const std::map<std::string,std::string>& headers);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);
