@@ -553,7 +553,6 @@ namespace Hardware
 					case 0x43:
 					{
 						accessoryState_t state;
-						logger->Debug("Turnout command received");
 						switch (buffer[7])
 						{
 							case 0x01:
@@ -569,10 +568,7 @@ namespace Hardware
 						}
 						const address_t zeroBasedAddress = Utils::Utils::DataBigEndianToShort(buffer + 5);
 						const address_t address = zeroBasedAddress + 1;
-						logger->Debug("Address: {0}", address);
 						const protocol_t protocol = turnoutCache.GetProtocol(address);
-						logger->Debug("Protocol: {0}", protocol);
-						logger->Debug("State: {0}", state);
 						manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 						break;
 					}
