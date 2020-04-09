@@ -1,3 +1,36 @@
+function onClickProgramDccRead(cv)
+{
+	var controlElement = document.getElementById('controldcc');
+	if (!controlElement)
+	{
+		return false;
+	}
+	var control = controlElement.value;
+	var url = '?cmd=programdccread&cv=' + cv + '&control=' + control;
+	fireRequestAndForget(url);
+	return false;
+}
+
+function onClickProgramDccWrite(cv)
+{
+	var valueElementName = 'cv_' + cv;
+	var valueElement = document.getElementById(valueElementName);
+	if (!valueElement)
+	{
+		return false;
+	}
+	var value = valueElement.value;
+	var controlElement = document.getElementById('controldcc');
+	if (!controlElement)
+	{
+		return false;
+	}
+	var control = controlElement.value;
+	var url = '?cmd=programdccwrite&cv=' + cv + '&value=' + value + '&control=' + control;
+	fireRequestAndForget(url);
+	return false;
+}
+
 function onClickProgramMm(variable)
 {
 	var valueElementName = 'variable_' + variable;

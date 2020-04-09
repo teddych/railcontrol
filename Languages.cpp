@@ -93,6 +93,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextCreatingTable */ { "Creating table {0}", "Erstelle Tabelle {0}", "Creando table {0}" },
 /* TextCreepAt */ { "Creep at", "Schleichgeschwindigkeit bei", "Velocidad a rastras a" },
 /* TextCreepingSpeed */ { "Creeping speed", "Kriech Geschwindigkeit", "Velocidad a rastras" },
+/* TextCV */ { "CV {0}", "CV {0}", "CV {0}" },
 /* TextDcc */ { "DCC", "DCC", "DCC" },
 /* TextDebounceThreadStarted */ { "Debounce thread started", "Entprellthread gestartet", "Antirebote thread encendido" },
 /* TextDebounceThreadTerminated */ { "Debounce thread terminated", "Entprellthread beedet", "Antirebote thread apagado" },

@@ -124,9 +124,6 @@ namespace WebServer
 			HtmlTag HtmlTagControlLoco(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
 			HtmlTag HtmlTagControlAccessory(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
 			HtmlTag HtmlTagControlFeedback(const controlID_t controlID, const std::string& objectType, const objectID_t objectID);
-			HtmlTag HtmlTagControlProgramMm();
-			HtmlTag HtmlTagControlProgramDccRead();
-			HtmlTag HtmlTagControlProgramDccWrite();
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void HandleLayerSave(const std::map<std::string, std::string>& arguments);

@@ -93,6 +93,7 @@ class Languages
 			TextCreatingTable,
 			TextCreepAt,
 			TextCreepingSpeed,
+			TextCV,
 			TextDcc,
 			TextDebounceThreadStarted,
 			TextDebounceThreadTerminated,

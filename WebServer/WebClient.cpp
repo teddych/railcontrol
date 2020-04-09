@@ -1981,24 +1981,6 @@ namespace WebServer
 		return HtmlTagControl(controls, controlID, objectType, objectID);
 	}
 
-	HtmlTag WebClient::HtmlTagControlProgramMm()
-	{
-		std::map<controlID_t,string> controls = manager.ProgramMmControlListNames();
-		return HtmlTagControl("controlmm", controls);
-	}
-
-	HtmlTag WebClient::HtmlTagControlProgramDccRead()
-	{
-		std::map<controlID_t,string> controls = manager.ProgramDccReadControlListNames();
-		return HtmlTagControl("controldccread", controls);
-	}
-
-	HtmlTag WebClient::HtmlTagControlProgramDccWrite()
-	{
-		std::map<controlID_t,string> controls = manager.ProgramDccWriteControlListNames();
-		return HtmlTagControl("controldccwrite", controls);
-	}
-
 	void WebClient::HandleAccessoryEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
@@ -3606,42 +3588,79 @@ namespace WebServer
 
 	void WebClient::HandleProgram()
 	{
+		std::map<controlID_t,string> controlsMm = manager.ProgramMmControlListNames();
+		unsigned int controlCountMm = controlsMm.size();
+		std::map<controlID_t,string> controlsDcc = manager.ProgramDccWriteControlListNames();
+		unsigned int controlCountDcc = controlsDcc.size();
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextProgrammer));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("mm", Languages::TextMaerklinMotorola, true));
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("dcc", Languages::TextDcc));
+		if (controlCountMm > 0)
+		{
+			tabMenu.AddChildTag(HtmlTagTabMenuItem("mm", Languages::TextMaerklinMotorola, true));
+		}
+		if (controlCountDcc > 0)
+		{
+			tabMenu.AddChildTag(HtmlTagTabMenuItem("dcc", Languages::TextDcc, controlCountMm == 0));
+		}
 		content.AddChildTag(tabMenu);
 
 		HtmlTag programContent("div");
 		programContent.AddClass("popup_content");
 
-		HtmlTag mmContent("div");
-		mmContent.AddAttribute("id", "tab_mm");
-		mmContent.AddClass("tab_content");
-		mmContent.AddClass("narrow_label");
-		mmContent.AddChildTag(HtmlTagControlProgramMm());
-		for (unsigned int index = 1; index <= 255; ++index)
+		if (controlCountMm > 0)
 		{
-			string indexString = to_string(index);
-			HtmlTag contentObject("div");
-			contentObject.AddAttribute("id", "object_" + indexString);
-			contentObject.AddClass("inline-block");
-			contentObject.AddChildTag(HtmlTagInputIntegerWithLabel("variable_" + indexString, Languages::TextVariable, 0, 0, 255, indexString));
-			HtmlTagButton writeButton(Languages::TextWrite, "program_mm_" + indexString);
-			writeButton.AddAttribute("onclick", "onClickProgramMm(" + indexString + ");return false;");
-			writeButton.AddClass("wide_button");
-			contentObject.AddChildTag(writeButton);
-			mmContent.AddChildTag(contentObject);
+			HtmlTag mmContent("div");
+			mmContent.AddAttribute("id", "tab_mm");
+			mmContent.AddClass("tab_content");
+			mmContent.AddClass("narrow_label");
+			mmContent.AddChildTag(HtmlTagControl("controlmm", controlsMm));
+			for (unsigned int index = 1; index <= 255; ++index)
+			{
+				string indexString = to_string(index);
+				HtmlTag contentObject("div");
+				contentObject.AddAttribute("id", "object_" + indexString);
+				contentObject.AddClass("inline-block");
+				contentObject.AddChildTag(HtmlTagInputIntegerWithLabel("variable_" + indexString, Languages::TextVariable, 0, 0, 255, indexString));
+				HtmlTagButton writeButton(Languages::TextWrite, "program_mm_" + indexString);
+				writeButton.AddAttribute("onclick", "onClickProgramMm(" + indexString + ");return false;");
+				writeButton.AddClass("wide_button");
+				contentObject.AddChildTag(writeButton);
+				mmContent.AddChildTag(contentObject);
+			}
+			programContent.AddChildTag(mmContent);
 		}
-		programContent.AddChildTag(mmContent);
 
-		HtmlTag dccContent("div");
-		dccContent.AddAttribute("id", "tab_dcc");
-		dccContent.AddClass("tab_content");
-		dccContent.AddClass("hidden");
-		dccContent.AddContent("Dcc Values");
-		programContent.AddChildTag(dccContent);
+		if (controlCountDcc > 0)
+		{
+			HtmlTag dccContent("div");
+			dccContent.AddAttribute("id", "tab_dcc");
+			dccContent.AddClass("tab_content");
+			dccContent.AddClass("narrow_label");
+			if (controlCountMm == 0)
+			{
+				dccContent.AddClass("hidden");
+			}
+			dccContent.AddChildTag(HtmlTagControl("controldcc", controlsMm));
+			for (unsigned int index = 1; index <= 1024; ++index)
+			{
+				string indexString = to_string(index);
+				HtmlTag contentObject("div");
+				contentObject.AddAttribute("id", "object_" + indexString);
+				contentObject.AddClass("inline-block");
+				contentObject.AddChildTag(HtmlTagInputIntegerWithLabel("cv_" + indexString, Languages::TextCV, 0, 0, 255, indexString));
+				HtmlTagButton readButton(Languages::TextRead, "program_dcc_read_" + indexString);
+				readButton.AddAttribute("onclick", "onClickProgramDccRead(" + indexString + ");return false;");
+				readButton.AddClass("wide_button");
+				contentObject.AddChildTag(readButton);
+				HtmlTagButton writeButton(Languages::TextWrite, "program_dcc_write_" + indexString);
+				writeButton.AddAttribute("onclick", "onClickProgramDccWrite(" + indexString + ");return false;");
+				writeButton.AddClass("wide_button");
+				contentObject.AddChildTag(writeButton);
+				dccContent.AddChildTag(contentObject);
+			}
+			programContent.AddChildTag(dccContent);
+		}
 
 		content.AddChildTag(programContent);
 
