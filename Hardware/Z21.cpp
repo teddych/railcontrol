@@ -233,6 +233,7 @@ namespace Hardware
 			default:
 				return;
 		}
+		locoCache.SetProtocol(address, protocol);
 		Utils::Utils::ShortToDataBigEndian(address | 0xC000, buffer + 6);
 		buffer[8] |=  static_cast<unsigned char>(direction) << 7;
 		buffer[9] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8];
@@ -627,7 +628,7 @@ namespace Hardware
 						break;
 
 					case 0x62:
-						logger->Debug("Ignoring State Change 0x62");
+						// Ignoring State Change 0x62
 						break;
 
 					case 0x63:
@@ -652,26 +653,18 @@ namespace Hardware
 
 					case 0xEF:
 					{
-						logger->Debug("Loco command received");
 						const address_t address = Utils::Utils::DataBigEndianToShort(buffer + 5) & 0x3FFF;
 						const bool used = (buffer[6] >> 3) & 0x01;
-						logger->Debug(used ? "Lok gesperrt" : "Lok nicht gesperrt");
-						logger->Debug("Address: {0}", address);
-						const unsigned char protocolType = buffer[6] & 0x07;
+						const unsigned char protocolType = buffer[7] & 0x07;
 						protocol_t protocol;
-						const unsigned char speedData = buffer[7] & 0x7F;
+						const unsigned char speedData = buffer[8] & 0x7F;
 						locoSpeed_t newSpeed;
 						protocol_t storedProtocol = locoCache.GetProtocol(address);
-						logger->Debug("Stored Protocol: {0}", storedProtocol);
 						switch (protocolType)
 						{
 							case 0:
 								switch (storedProtocol)
 								{
-									case ProtocolNone:
-										locoCache.SetProtocol(address, ProtocolDCC14);
-										#include "Fallthrough.h"
-
 									case ProtocolDCC14:
 										protocol = ProtocolDCC14;
 										break;
@@ -681,8 +674,10 @@ namespace Hardware
 										break;
 
 									default:
-										logger->Error(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC14], protocolSymbols[storedProtocol]);
-										return dataLength;
+										locoCache.SetProtocol(address, ProtocolDCC14);
+										protocol = ProtocolDCC14;
+										logger->Warning(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC14], protocolSymbols[storedProtocol]);
+										break;
 								}
 								newSpeed = DecodeSpeed14(speedData);
 								break;
@@ -690,10 +685,6 @@ namespace Hardware
 							case 2:
 								switch (storedProtocol)
 								{
-									case ProtocolNone:
-										locoCache.SetProtocol(address, ProtocolDCC28);
-										#include "Fallthrough.h"
-
 									case ProtocolDCC28:
 										protocol = ProtocolDCC28;
 										break;
@@ -703,8 +694,10 @@ namespace Hardware
 										break;
 
 									default:
-										logger->Error(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC28], protocolSymbols[storedProtocol]);
-										return dataLength;
+										locoCache.SetProtocol(address, ProtocolDCC28);
+										protocol = ProtocolDCC28;
+										logger->Warning(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC28], protocolSymbols[storedProtocol]);
+										break;
 								}
 								newSpeed = DecodeSpeed28(speedData);
 								break;
@@ -712,10 +705,6 @@ namespace Hardware
 							case 4:
 								switch (storedProtocol)
 								{
-									case ProtocolNone:
-										locoCache.SetProtocol(address, ProtocolDCC128);
-										#include "Fallthrough.h"
-
 									case ProtocolDCC128:
 										protocol = ProtocolDCC128;
 										break;
@@ -725,8 +714,10 @@ namespace Hardware
 										break;
 
 									default:
-										logger->Error(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC128], protocolSymbols[storedProtocol]);
-										return dataLength;
+										locoCache.SetProtocol(address, ProtocolDCC128);
+										protocol = ProtocolDCC128;
+										logger->Warning(Languages::TextActualAndStoredProtocolsDiffer, protocolSymbols[ProtocolDCC128], protocolSymbols[storedProtocol]);
+										break;
 								}
 								newSpeed = DecodeSpeed128(speedData);
 								break;
@@ -734,33 +725,26 @@ namespace Hardware
 							default:
 								return dataLength;
 						}
-						logger->Debug("Actual Protocol: {0}", protocol);
 						const locoSpeed_t oldSpeed = locoCache.GetSpeed(address);
-						logger->Debug("Old speed: {0}", oldSpeed);
-						logger->Debug("New speed: {0}", newSpeed);
 						if (newSpeed != oldSpeed)
 						{
 							locoCache.SetSpeed(address, newSpeed);
 							manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, newSpeed);
 						}
-						const direction_t newDirection = (buffer[7] >> 7) ? DirectionRight : DirectionLeft;
+						const direction_t newDirection = (buffer[8] >> 7) ? DirectionRight : DirectionLeft;
 						const direction_t oldDirection = locoCache.GetDirection(address);
-						logger->Debug("Old Direction: {0}", oldDirection);
-						logger->Debug("New Direction: {0}", newDirection);
 						if (newDirection != oldDirection)
 						{
 							locoCache.SetDirection(address, newDirection);
 							manager->LocoDirection(ControlTypeHardware, controlID, protocol, address, newDirection);
 						}
 						const uint32_t oldFunctions = locoCache.GetFunctions(address);
-						const uint32_t f0 = (static_cast<uint32_t>(buffer[8]) >> 4) & 0x01;
-						const uint32_t f1_4 = (static_cast<uint32_t>(buffer[8]) << 1) & 0x1E;
-						const uint32_t f5_12 = static_cast<uint32_t>(buffer[9]) << 5;
-						const uint32_t f13_20 = static_cast<uint32_t>(buffer[9]) << 13;
-						const uint32_t f21_28 = static_cast<uint32_t>(buffer[9]) << 21;
+						const uint32_t f0 = (static_cast<uint32_t>(buffer[9]) >> 4) & 0x01;
+						const uint32_t f1_4 = (static_cast<uint32_t>(buffer[9]) << 1) & 0x1E;
+						const uint32_t f5_12 = static_cast<uint32_t>(buffer[10]) << 5;
+						const uint32_t f13_20 = static_cast<uint32_t>(buffer[11]) << 13;
+						const uint32_t f21_28 = static_cast<uint32_t>(buffer[12]) << 21;
 						const uint32_t newFunctions = f0 | f1_4 | f5_12 | f13_20 | f21_28;
-						logger->Debug("Old Functions: {0}", oldFunctions);
-						logger->Debug("New Functions: {0}", newFunctions);
 						if (newFunctions != oldFunctions)
 						{
 							const uint32_t functionsDiff = newFunctions ^ oldFunctions;
