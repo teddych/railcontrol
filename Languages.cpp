@@ -260,6 +260,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextPosition */ { "Position", "Position", "Posición" },
 /* TextPositionAlreadyInUse */ { "Position {0}/{1}/{2} is already used by {3} \"{4}\".", "Position {0}/{1}/{2} wird bereits verwendet von {3} \"{4}\".", "Positión {0}/{1}/{2} está usado de {3} \"{4}\"." },
 /* TextProgramDccRead */ { "Reading DCC CV {0}", "Lese DCC CV {0}", "Leyendo DCC CV {0}" },
+/* TextProgramDccReadValue */ { "DCC CV {0} has value {1}", "DCC CV {0} hat den Wert {1}", "DCC CV {0} tiene valor {1}" },
 /* TextProgramDccWrite */ { "Programming DCC CV {0} to value {1}", "Programmiere DCC CV {0} auf Wert {1}", "Programando DCC CV {0} al valor {1}" },
 /* TextProgramMm */ { "Programming Märklin Motorola variable {0} to value {1}", "Programmiere Märklin Motorola Variable {0} auf Wert {1}", "Programando Märklin Motorol variable {0} al valor {1}" },
 /* TextProgrammer */ { "Programmer", "Programmierer", "Programador" },

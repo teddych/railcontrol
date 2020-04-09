@@ -354,6 +354,13 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextLayerDeleted, name);
 	}
 
+	void WebServer::ProgramDccValue(const CvNumber cv, const CvValue value)
+	{
+		stringstream command;
+		command << "dccvalue;cv=" << static_cast<int>(cv) << ";value=" << static_cast<int>(value);
+		AddUpdate(command.str(), Languages::TextProgramDccReadValue , static_cast<int>(cv), static_cast<int>(value));
+	}
+
 	void WebServer::AddUpdate(const string& command, const string& status)
 	{
 		stringstream ss;

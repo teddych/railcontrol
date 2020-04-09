@@ -260,6 +260,7 @@ class Languages
 			TextPosition,
 			TextPositionAlreadyInUse,
 			TextProgramDccRead,
+			TextProgramDccReadValue,
 			TextProgramDccWrite,
 			TextProgramMm,
 			TextProgrammer,

@@ -782,6 +782,17 @@ function dataUpdate(event)
 	{
 		loadLayerSelector();
 	}
+	else if (command == 'dccvalue')
+	{
+		var cv = argumentMap.get('cv');
+		var value = argumentMap.get('value');
+		var elementName = 'cv_' + cv;
+		var element = document.getElementById(elementName);
+		if (element)
+		{
+			element.value = value;
+		}
+	}
 }
 
 var updater = new EventSource('/?cmd=updater');

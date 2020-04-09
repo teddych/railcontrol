@@ -18,6 +18,7 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
+#include <future>
 #include <sstream>
 #include <string>
 
@@ -89,6 +90,7 @@ namespace Hardware
 	void Virtual::ProgramDccRead(const CvNumber cv) const
 	{
 		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
+		std::async(std::launch::async, Manager::ProgramDccValueStatic, manager, cv, cv & 0xFF);
 	}
 
 	// write DCC CV value
