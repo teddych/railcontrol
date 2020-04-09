@@ -415,6 +415,10 @@ namespace Hardware
 
 	void HardwareHandler::ProgramMm(const CvNumber cv, const CvValue value)
 	{
+		if (cv == 0 || cv > 256)
+		{
+			return;
+		}
 		if (instance == nullptr)
 		{
 			return;
@@ -425,6 +429,10 @@ namespace Hardware
 
 	void HardwareHandler::ProgramDccRead(const CvNumber cv) const
 	{
+		if (cv == 0)
+		{
+			return; // cv 0 inexistent
+		}
 		if (instance == nullptr)
 		{
 			return;
@@ -435,11 +443,18 @@ namespace Hardware
 
 	void HardwareHandler::ProgramDccWrite(const CvNumber cv, const CvValue value)
 	{
+		if (cv == 0)
+		{
+			return; // cv 0 is not programmable / inexistent
+		}
+		if (cv == 1 && value == 0)
+		{
+			return; // address zero is not allowed for DCC decoders and can not be undone.
+		}
 		if (instance == nullptr)
 		{
 			return;
 		}
-
 		instance->ProgramDccWrite(cv, value);
 	}
 

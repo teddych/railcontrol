@@ -352,6 +352,29 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingAccessorySenderThread);
 	}
 
+	void Z21::ProgramMm(const CvNumber cv, const CvValue value)
+	{
+		if (cv == 0 || cv > 256)
+		{
+			return;
+		}
+		logger->Info(Languages::TextProgramMm, static_cast<int>(cv), static_cast<int>(value));
+		const unsigned char zeroBasedCv = static_cast<unsigned char>((cv - 1) & 0xFF);
+		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0x24, 0xFF, 0x00, zeroBasedCv, value };
+		buffer[9] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8];
+		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::ProgramDccRead(const CvNumber cv) const
+	{
+		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
+	}
+
+	void Z21::ProgramDccWrite(const CvNumber cv, const CvValue value)
+	{
+		logger->Info(Languages::TextProgramDccWrite, static_cast<int>(cv), static_cast<int>(value));
+	}
+
 	void Z21::HeartBeatSender()
 	{
 		Utils::Utils::SetMinThreadPriority();
@@ -538,39 +561,63 @@ namespace Hardware
 						switch (buffer[5])
 						{
 							case 0x00:
+								// booster stop
 								if (buffer[6] != 0x61)
 								{
 									logger->Error(Languages::TextCheckSumError);
 								}
+								logger->Debug(Languages::TextBoosterIsTurnedOff);
 								manager->Booster(ControlTypeHardware, BoosterStop);
 								break;
 
 							case 0x01:
+								// booster go
 								if (buffer[6] != 0x60)
 								{
 									logger->Error(Languages::TextCheckSumError);
 								}
+								logger->Debug(Languages::TextBoosterIsTurnedOn);
 								manager->Booster(ControlTypeHardware, BoosterGo);
 								break;
 
 							case 0x02:
-								logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+								// programming mode
+								if (buffer[6] != 0x63)
+								{
+									logger->Error(Languages::TextCheckSumError);
+								}
+								logger->Debug(Languages::TextProgrammingMode);
+								manager->Booster(ControlTypeHardware, BoosterStop);
 								break;
 
 							case 0x08:
+								// short circuit
 								if (buffer[6] != 0x69)
 								{
 									logger->Error(Languages::TextCheckSumError);
 								}
+								logger->Debug(Languages::TextShortCircuit);
 								manager->Booster(ControlTypeHardware, BoosterStop);
 								break;
 
 							case 0x12:
-								logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+								// short circuit during programming
+								if (buffer[6] != 0x73)
+								{
+									logger->Error(Languages::TextCheckSumError);
+								}
+								logger->Debug(Languages::TextShortCircuit);
+								manager->Booster(ControlTypeHardware, BoosterStop);
 								break;
 
 							case 0x13:
-								logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+								// No answer from decoder
+								if (buffer[6] != 0x73)
+								{
+									logger->Error(Languages::TextCheckSumError);
+								}
+								logger->Debug(Languages::TextNoAnswerFromDecoder);
+								manager->Booster(ControlTypeHardware, BoosterStop);
 								break;
 
 							case 0x82:
@@ -588,9 +635,17 @@ namespace Hardware
 						break;
 
 					case 0x64:
-						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+					{
+						if (buffer[5] != 0x14)
+						{
+							logger->Error(Languages::TextCheckSumError);
+						}
+						const CvNumber cv = Utils::Utils::DataBigEndianToShort(buffer + 6);
+						const CvValue value = buffer[8];
+						logger->Debug(Languages::TextProgramDccReadValue, cv, value);
+						manager->ProgramDccValue(cv, value);
 						break;
-
+					}
 					case 0x81:
 						logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 						break;

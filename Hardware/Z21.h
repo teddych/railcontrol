@@ -68,6 +68,10 @@ namespace Hardware
 			bool CanHandleLocos() const override { return true; }
 			bool CanHandleAccessories() const override { return true; }
 			bool CanHandleFeedback() const override { return true; }
+			bool CanHandleProgram() const override { return true; }
+			bool CanHandleProgramMm() const override { return true; }
+			bool CanHandleProgramDccRead() const override { return true; }
+			bool CanHandleProgramDccWrite() const override { return true; }
 
 			void GetLocoProtocols(std::vector<protocol_t>& protocols) const override
 			{
@@ -113,6 +117,9 @@ namespace Hardware
 			void LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions) override;
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime) override;
 			void AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
+			void ProgramMm(const CvNumber cv, const CvValue value) override;
+			void ProgramDccRead(const CvNumber cv) const override;
+			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
 
 		private:
 			Logger::Logger* logger;
