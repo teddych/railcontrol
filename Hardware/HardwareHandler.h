@@ -83,7 +83,7 @@ namespace Hardware
 			void SwitchState(const controlType_t controlType, const DataModel::Switch* mySwitch, const switchState_t state) override;
 			void SignalState(const controlType_t controlType, const DataModel::Signal* signal, const signalState_t state) override;
 			void ProgramMm(const CvNumber cv, const CvValue value) override;
-			void ProgramDccRead(const CvNumber cv) const override;
+			void ProgramDccRead(const CvNumber cv) override;
 			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
 
 			static void ArgumentTypesOfHardwareTypeAndHint(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments, std::string& hint);

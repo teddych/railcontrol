@@ -427,7 +427,7 @@ namespace Hardware
 		instance->ProgramMm(cv, value);
 	}
 
-	void HardwareHandler::ProgramDccRead(const CvNumber cv) const
+	void HardwareHandler::ProgramDccRead(const CvNumber cv)
 	{
 		if (cv == 0)
 		{

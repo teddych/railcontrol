@@ -87,7 +87,7 @@ namespace Hardware
 	}
 
 	// read DCC CV value
-	void Virtual::ProgramDccRead(const CvNumber cv) const
+	void Virtual::ProgramDccRead(const CvNumber cv)
 	{
 		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
 		std::async(std::launch::async, Manager::ProgramDccValueStatic, manager, cv, cv & 0xFF);

@@ -366,14 +366,33 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::ProgramDccRead(const CvNumber cv) const
+	void Z21::ProgramDccRead(const CvNumber cv)
 	{
+		if (cv == 0)
+		{
+			return;
+		}
 		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
+		const CvNumber zeroBasedCv = static_cast<unsigned char>(cv - 1);
+		unsigned char buffer[9] = { 0x0A, 0x00, 0x40, 0x00, 0x23, 0x11};
+		Utils::Utils::ShortToDataBigEndian(zeroBasedCv, buffer + 6);
+		buffer[8] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7];
+		Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::ProgramDccWrite(const CvNumber cv, const CvValue value)
 	{
+		if (cv == 0)
+		{
+			return;
+		}
 		logger->Info(Languages::TextProgramDccWrite, static_cast<int>(cv), static_cast<int>(value));
+		const CvNumber zeroBasedCv = static_cast<unsigned char>(cv - 1);
+		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0x24, 0x12};
+		Utils::Utils::ShortToDataBigEndian(zeroBasedCv, buffer + 6);
+		buffer[8] = value;
+		buffer[9] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8];
+		Send(buffer, sizeof(buffer));
 	}
 
 	void Z21::HeartBeatSender()
@@ -654,7 +673,6 @@ namespace Hardware
 					case 0xEF:
 					{
 						const address_t address = Utils::Utils::DataBigEndianToShort(buffer + 5) & 0x3FFF;
-						const bool used = (buffer[6] >> 3) & 0x01;
 						const unsigned char protocolType = buffer[7] & 0x07;
 						protocol_t protocol;
 						const unsigned char speedData = buffer[8] & 0x7F;

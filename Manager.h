@@ -262,7 +262,7 @@ class Manager
 		controlID_t GetControlForFeedback() const;
 
 		void ProgramMm(const controlID_t controlID, const CvNumber cv, const CvValue value);
-		void ProgramDccRead(const controlID_t controlID, const CvNumber cv) const;
+		void ProgramDccRead(const controlID_t controlID, const CvNumber cv);
 		void ProgramDccWrite(const controlID_t controlID, const CvNumber cv, const CvValue value);
 		void ProgramDccValue(const CvNumber cv, const CvValue value);
 		static void ProgramDccValueStatic(Manager* manager, const CvNumber cv, const CvValue value)

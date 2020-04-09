@@ -2925,7 +2925,7 @@ void Manager::ProgramMm(const controlID_t controlID, const CvNumber cv, const Cv
 	control->ProgramMm(cv, value);
 }
 
-void Manager::ProgramDccRead(const controlID_t controlID, const CvNumber cv) const
+void Manager::ProgramDccRead(const controlID_t controlID, const CvNumber cv)
 {
 	ControlInterface* control = GetControl(controlID);
 	if (control == nullptr)
