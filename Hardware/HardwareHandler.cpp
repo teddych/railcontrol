@@ -25,7 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/Loco.h"
 #include "DataTypes.h"
 #include "Logger/Logger.h"
-#include <Hardware/CS2Udp.h>
+#include "Hardware/CS2Udp.h"
 #include "Hardware/CS2Tcp.h"
 #include "Hardware/CcSchnitte.h"
 #include "Hardware/Ecos.h"

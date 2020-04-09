@@ -53,7 +53,7 @@ namespace Hardware
 	};
 
 	extern "C" CS2Udp* create_CS2Udp(const HardwareParams* params);
-	extern "C" void destroy_CS2Upd(CS2Udp* cs2Udp);
+	extern "C" void destroy_CS2Udp(CS2Udp* cs2Udp);
 
 } // namespace
 
