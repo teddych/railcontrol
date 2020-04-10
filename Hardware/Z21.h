@@ -137,7 +137,7 @@ namespace Hardware
 			static const unsigned int Z21CommandBufferLength = 1472; // = Max Ethernet MTU
 			static const address_t MaxMMAddress = 255;
 
-			enum broadCastFlags_t : uint32_t
+			enum BroadCastFlag : uint32_t
 			{
 				BroadCastFlagBasic           = 0x00000001,
 				BroadCastFlagRBus            = 0x00000002,
@@ -152,40 +152,93 @@ namespace Hardware
 				BroadCastFlagLocoNetDetector = 0x08000000
 			};
 
-			enum commands_t : uint8_t
+			enum Command : uint8_t
 			{
 				CommandSetLocoMode = 0x61,
 				CommandSetTurnoutMode = 0x70
 			};
 
-			enum protocolMode_t : uint8_t
+			enum ProtocolMode : uint8_t
 			{
 				ProtocolModeDCC = 0,
 				ProtocolModeMM = 1
 			};
 
-			enum featureSet_t : uint8_t
+			enum FeatureSet : uint8_t
 			{
 				FeaturesNotRestricted = 0x00,
 				FeaturesStartLocked = 0x01,
 				FeaturesStartUnlocked = 0x02
 			};
 
+			enum Header : uint16_t
+			{
+				HeaderSerialNumber = 0x10,
+				HeaderCode = 0x18,
+				HeaderHardwareInfo = 0x1A,
+				HeaderSeeXHeader = 0x40,
+				HeaderBroadcastFlags = 0x51,
+				HeaderLocoMode = 0x60,
+				HeaderTurnoutMode = 0x70,
+				HeaderRmBusData = 0x80,
+				HeaderSystemData = 0x84,
+				HeaderRailComtData = 0x88,
+				HeaderLocoNetRx = 0xA0,
+				HeaderLocoNetTx = 0xA1,
+				HeaderLocoNetLan = 0xA2,
+				HeaderLocoNetDispatch = 0xA3,
+				HeaderLocoNetDetector = 0xA4,
+				HeaderDetector = 0xC4
+			};
+
+			enum XHeader : uint8_t
+			{
+				XHeaderTurnoutInfo = 0x43,
+				XHeaderSeeDB0 = 0x61,
+				XHeaderStatusChanged = 0x62,
+				XHeaderVersion = 0x63,
+				XHeaderCvResult = 0x64,
+				XHeaderBcStopped = 0x81,
+				XHeaderLocoInfo = 0xEF,
+				XHeaderFirmwareVersion = 0xF3
+			};
+
+			enum DB0 : uint8_t
+			{
+				DB0PowerOff = 0x00,
+				DB0PowerOn = 0x01,
+				DB0ProgrammingMode = 0x02,
+				DB0ShortCircuit = 0x08,
+				DB0CvShortCircuit = 0x12,
+				DB0CvNack = 0x13,
+				DB0UnknownCommand = 0x82,
+				DB0StatusChanged = 0x22,
+				DB0Version = 0x21,
+				DB0FirmwareVersion = 0x0A
+			};
+
 			void LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction);
 			void AccessorySender();
 			void HeartBeatSender();
 			void Receiver();
-			ssize_t InterpretData(unsigned char* buffer, size_t bufferLength);
+			ssize_t ParseData(unsigned char* buffer, size_t bufferLength);
+			void ParseXHeader(unsigned char* buffer);
+			void ParseDB0(unsigned char* buffer);
+			void ParseTurnoutData(unsigned char *buffer);
+			void ParseLocoData(unsigned char* buffer);
 
 			void SendGetSerialNumber();
 			void SendGetHardwareInfo();
 			void SendGetStatus();
 			void SendGetCode();
 			void SendLogOff();
-			void SendBroadcastFlags(const broadCastFlags_t flags);
-			void SendSetMode(const address_t address, const commands_t command, const protocolMode_t mode);
+			void SendBroadcastFlags();
+			void SendBroadcastFlags(const BroadCastFlag flags);
+			void SendSetMode(const address_t address, const Command command, const ProtocolMode mode);
+			void SendSetLocoMode(const address_t address, const protocol_t protocol);
 			void SendSetLocoModeMM(const address_t address);
 			void SendSetLocoModeDCC(const address_t address);
+			void SendSetTurnoutMode(const address_t address, const protocol_t protocol);
 			void SendSetTurnoutModeMM(const address_t address);
 			void SendSetTurnoutModeDCC(const address_t address);
 			void AccessoryOn(const protocol_t protocol, const address_t address, const accessoryState_t state);
