@@ -543,6 +543,22 @@ namespace WebServer
 			{
 				HandleProgramDccWrite(arguments);
 			}
+			else if (arguments["cmd"].compare("programdccpomlocoread") == 0)
+			{
+				HandleProgramDccPomLocoRead(arguments);
+			}
+			else if (arguments["cmd"].compare("programdccpomlocowrite") == 0)
+			{
+				HandleProgramDccPomLocoWrite(arguments);
+			}
+			else if (arguments["cmd"].compare("programdccpomaccessoryread") == 0)
+			{
+				HandleProgramDccPomAccessoryRead(arguments);
+			}
+			else if (arguments["cmd"].compare("programdccpomaccessorywrite") == 0)
+			{
+				HandleProgramDccPomAccessoryWrite(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				HandleUpdater(headers);
@@ -3590,7 +3606,7 @@ namespace WebServer
 	{
 		std::map<controlID_t,string> controlsMm = manager.ProgramMmControlListNames();
 		unsigned int controlCountMm = controlsMm.size();
-		std::map<controlID_t,string> controlsDcc = manager.ProgramDccWriteControlListNames();
+		std::map<controlID_t,string> controlsDcc = manager.ProgramDccControlListNames();
 		unsigned int controlCountDcc = controlsDcc.size();
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextProgrammer));
@@ -3692,6 +3708,44 @@ namespace WebServer
 		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
 		manager.ProgramDccWrite(controlID, cv, value);
 		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccWrite, cv, value);
+	}
+
+	void WebClient::HandleProgramDccPomLocoRead(const map<string, string>& arguments)
+	{
+		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
+		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
+		manager.ProgramDccPomLocoRead(controlID, address, cv);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccPomLocoRead, address, cv);
+	}
+
+	void WebClient::HandleProgramDccPomLocoWrite(const map<string, string>& arguments)
+	{
+		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
+		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
+		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
+		manager.ProgramDccPomLocoWrite(controlID, address, cv, value);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccPomLocoWrite, address, cv, value);
+	}
+
+	void WebClient::HandleProgramDccPomAccessoryRead(const map<string, string>& arguments)
+	{
+		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
+		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
+		manager.ProgramDccPomAccessoryRead(controlID, address, cv);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccPomAccessoryRead, address, cv);
+	}
+
+	void WebClient::HandleProgramDccPomAccessoryWrite(const map<string, string>& arguments)
+	{
+		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
+		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
+		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
+		manager.ProgramDccPomAccessoryWrite(controlID, address, cv, value);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccPomAccessoryWrite, address, cv, value);
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)

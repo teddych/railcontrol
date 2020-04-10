@@ -320,7 +320,7 @@ namespace Hardware
 
 	void Z21::ProgramMm(const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 256)
+		if (cv == 0 || cv > 0xFF)
 		{
 			return;
 		}
@@ -333,13 +333,13 @@ namespace Hardware
 
 	void Z21::ProgramDccRead(const CvNumber cv)
 	{
-		if (cv == 0)
+		if (cv == 0 || cv > 0x3FFF)
 		{
 			return;
 		}
 		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
-		const CvNumber zeroBasedCv = static_cast<unsigned char>(cv - 1);
-		unsigned char buffer[9] = { 0x0A, 0x00, 0x40, 0x00, 0x23, 0x11};
+		const CvNumber zeroBasedCv = cv - 1;
+		unsigned char buffer[9] = { 0x09, 0x00, 0x40, 0x00, 0x23, 0x11};
 		Utils::Utils::ShortToDataBigEndian(zeroBasedCv, buffer + 6);
 		buffer[8] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7];
 		Send(buffer, sizeof(buffer));
@@ -347,16 +347,48 @@ namespace Hardware
 
 	void Z21::ProgramDccWrite(const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0)
+		if (cv == 0 || cv > 0x3FFF)
 		{
 			return;
 		}
 		logger->Info(Languages::TextProgramDccWrite, static_cast<int>(cv), static_cast<int>(value));
-		const CvNumber zeroBasedCv = static_cast<unsigned char>(cv - 1);
+		const CvNumber zeroBasedCv = cv - 1;
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0x24, 0x12};
 		Utils::Utils::ShortToDataBigEndian(zeroBasedCv, buffer + 6);
 		buffer[8] = value;
 		buffer[9] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8];
+		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::ProgramDccPomLocoRead(const address_t address, const CvNumber cv)
+	{
+		if (cv == 0 || cv > 0x3FFF)
+		{
+			return;
+		}
+		logger->Info(Languages::TextProgramDccPomLocoRead, address, cv);
+		const CvNumber OptionAndZeroBasedCv = 0xE400 | ((cv - 1) & 0x03FF);
+		unsigned char buffer[12] = { 0x0C, 0x00, 0x40, 0x00, 0xE6, 0x30};
+		Utils::Utils::ShortToDataBigEndian(address, buffer + 6);
+		Utils::Utils::ShortToDataBigEndian(OptionAndZeroBasedCv, buffer + 8);
+		buffer[10] = 0;
+		buffer[11] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8] ^ buffer[9] ^ buffer[10];
+		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value)
+	{
+		if (cv == 0 || cv > 0x3FFF)
+		{
+			return;
+		}
+		logger->Info(Languages::TextProgramDccPomLocoWrite, address, cv, static_cast<int>(value));
+		const CvNumber OptionAndZeroBasedCv = 0xEC00 | ((cv - 1) & 0x03FF);
+		unsigned char buffer[12] = { 0x0C, 0x00, 0x40, 0x00, 0xE6, 0x30};
+		Utils::Utils::ShortToDataBigEndian(address, buffer + 6);
+		Utils::Utils::ShortToDataBigEndian(OptionAndZeroBasedCv, buffer + 8);
+		buffer[10] = value;
+		buffer[11] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8] ^ buffer[9] ^ buffer[10];
 		Send(buffer, sizeof(buffer));
 	}
 

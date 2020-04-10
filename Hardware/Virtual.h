@@ -39,8 +39,8 @@ namespace Hardware
 			bool CanHandleFeedback() const override { return true; }
 			bool CanHandleProgram() const override { return true; }
 			bool CanHandleProgramMm() const override { return true; }
-			bool CanHandleProgramDccRead() const override { return true; }
-			bool CanHandleProgramDccWrite() const override { return true; }
+			bool CanHandleProgramDcc() const override { return true; }
+			bool CanHandleProgramDccPom() const override { return true; }
 
 			static void GetHint(std::string& hint)
 			{
@@ -60,6 +60,10 @@ namespace Hardware
 			void ProgramMm(const CvNumber cv, const CvValue value) override;
 			void ProgramDccRead(const CvNumber cv) override;
 			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
+			void ProgramDccPomLocoRead(const address_t address, const CvNumber cv) override;
+			void ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value) override;
+			void ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv) override;
+			void ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value) override;
 
 		private:
 			Logger::Logger* logger;

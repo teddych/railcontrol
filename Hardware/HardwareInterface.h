@@ -62,11 +62,11 @@ namespace Hardware
 			// can this control handle program Märklin Motorola
 			virtual bool CanHandleProgramMm() const { return false; }
 
-			// can this control handle read DCC CV
-			virtual bool CanHandleProgramDccRead() const { return false; }
+			// can this control handle programming DCC CV
+			virtual bool CanHandleProgramDcc() const { return false; }
 
-			// can this control handle write DCC CV
-			virtual bool CanHandleProgramDccWrite() const { return false; }
+			// can this control handle programming DCC CV POM
+			virtual bool CanHandleProgramDccPom() const { return false; }
 
 			// get available loco protocols of this control
 			virtual void GetLocoProtocols(__attribute__((unused)) std::vector<protocol_t>& protocols) const {};
@@ -118,6 +118,18 @@ namespace Hardware
 
 			// write DCC CV value
 			virtual void ProgramDccWrite(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+
+			// read DCC CV POM loco value
+			virtual void ProgramDccPomLocoRead(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv) {}
+
+			// write DCC CV POM loco value
+			virtual void ProgramDccPomLocoWrite(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+
+			// read DCC CV POM accessory value
+			virtual void ProgramDccPomAccessoryRead(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv) {}
+
+			// write DCC CV POM accessory value
+			virtual void ProgramDccPomAccessoryWrite(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 
 		protected:
 			Manager* manager;

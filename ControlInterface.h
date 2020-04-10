@@ -60,8 +60,8 @@ class ControlInterface
 		virtual bool CanHandleLocos() const { return false; }
 		virtual bool CanHandleProgram() const { return false; }
 		virtual bool CanHandleProgramMm() const { return false; }
-		virtual bool CanHandleProgramDccRead() const { return false; }
-		virtual bool CanHandleProgramDccWrite() const { return false; }
+		virtual bool CanHandleProgramDcc() const { return false; }
+		virtual bool CanHandleProgramDccPom() const { return false; }
 		virtual void FeedbackDelete(__attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const std::string& name) {}
 		virtual void FeedbackSettings(__attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const std::string& name) {}
 		virtual void FeedbackState(__attribute__((unused)) const std::string& name, __attribute__((unused)) const feedbackID_t feedbackID, __attribute__((unused)) const DataModel::Feedback::feedbackState_t state) {};
@@ -106,6 +106,10 @@ class ControlInterface
 		virtual void ProgramDccRead(__attribute__((unused))const CvNumber cv) {}
 		virtual void ProgramDccWrite(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 		virtual void ProgramDccValue(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+		virtual void ProgramDccPomLocoRead(__attribute__((unused)) const address_t address, __attribute__((unused))const CvNumber cv) {}
+		virtual void ProgramDccPomLocoWrite(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+		virtual void ProgramDccPomAccessoryRead(__attribute__((unused)) const address_t address, __attribute__((unused))const CvNumber cv) {}
+		virtual void ProgramDccPomAccessoryWrite(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 
 	private:
 		controlType_t controlType;

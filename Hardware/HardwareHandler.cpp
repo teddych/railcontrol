@@ -272,24 +272,24 @@ namespace Hardware
 		return instance->CanHandleProgramMm();
 	}
 
-	bool HardwareHandler::CanHandleProgramDccRead() const
+	bool HardwareHandler::CanHandleProgramDcc() const
 	{
 		if (instance == nullptr)
 		{
 			return false;
 		}
 
-		return instance->CanHandleProgramDccRead();
+		return instance->CanHandleProgramDcc();
 	}
 
-	bool HardwareHandler::CanHandleProgramDccWrite() const
+	bool HardwareHandler::CanHandleProgramDccPom() const
 	{
 		if (instance == nullptr)
 		{
 			return false;
 		}
 
-		return instance->CanHandleProgramDccWrite();
+		return instance->CanHandleProgramDccPom();
 	}
 
 	void HardwareHandler::LocoProtocols(std::vector<protocol_t>& protocols) const
@@ -456,6 +456,68 @@ namespace Hardware
 			return;
 		}
 		instance->ProgramDccWrite(cv, value);
+	}
+
+	void HardwareHandler::ProgramDccPomLocoRead(const address_t address, const CvNumber cv)
+	{
+		if (cv == 0)
+		{
+			return; // cv 0 inexistent
+		}
+		if (instance == nullptr)
+		{
+			return;
+		}
+
+		instance->ProgramDccPomLocoRead(address, cv);
+	}
+
+	void HardwareHandler::ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value)
+	{
+		if (cv == 0)
+		{
+			return; // cv 0 is not programmable / inexistent
+		}
+		if (cv == 1 && value == 0)
+		{
+			return; // address zero is not allowed for DCC decoders and can not be undone.
+		}
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->ProgramDccPomLocoWrite(address, cv, value);
+	}
+
+	void HardwareHandler::ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv)
+	{
+		if (cv == 0)
+		{
+			return; // cv 0 inexistent
+		}
+		if (instance == nullptr)
+		{
+			return;
+		}
+
+		instance->ProgramDccPomAccessoryRead(address, cv);
+	}
+
+	void HardwareHandler::ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value)
+	{
+		if (cv == 0)
+		{
+			return; // cv 0 is not programmable / inexistent
+		}
+		if (cv == 1 && value == 0)
+		{
+			return; // address zero is not allowed for DCC decoders and can not be undone.
+		}
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->ProgramDccPomAccessoryWrite(address, cv, value);
 	}
 
 	void HardwareHandler::ArgumentTypesOfHardwareTypeAndHint(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments, std::string& hint)

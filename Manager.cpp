@@ -574,13 +574,13 @@ const std::map<controlID_t,std::string> Manager::ProgramMmControlListNames() con
 	return ret;
 }
 
-const std::map<controlID_t,std::string> Manager::ProgramDccReadControlListNames() const
+const std::map<controlID_t,std::string> Manager::ProgramDccPomControlListNames() const
 {
 	std::map<controlID_t,std::string> ret;
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramDccRead() == false)
+		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramDccPom() == false)
 		{
 			continue;
 		}
@@ -589,13 +589,13 @@ const std::map<controlID_t,std::string> Manager::ProgramDccReadControlListNames(
 	return ret;
 }
 
-const std::map<controlID_t,std::string> Manager::ProgramDccWriteControlListNames() const
+const std::map<controlID_t,std::string> Manager::ProgramDccControlListNames() const
 {
 	std::map<controlID_t,std::string> ret;
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramDccWrite() == false)
+		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramDcc() == false)
 		{
 			continue;
 		}
@@ -2945,12 +2945,52 @@ void Manager::ProgramDccWrite(const controlID_t controlID, const CvNumber cv, co
 	control->ProgramDccWrite(cv, value);
 }
 
+void Manager::ProgramDccPomLocoRead(const controlID_t controlID, const address_t address, const CvNumber cv)
+{
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return;
+	}
+	control->ProgramDccPomLocoRead(address, cv);
+}
+
+void Manager::ProgramDccPomLocoWrite(const controlID_t controlID, const address_t address, const CvNumber cv, const CvValue value)
+{
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return;
+	}
+	control->ProgramDccPomLocoWrite(address, cv, value);
+}
+
+void Manager::ProgramDccPomAccessoryRead(const controlID_t controlID, const address_t address, const CvNumber cv)
+{
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return;
+	}
+	control->ProgramDccPomAccessoryRead(address, cv);
+}
+
+void Manager::ProgramDccPomAccessoryWrite(const controlID_t controlID, const address_t address, const CvNumber cv, const CvValue value)
+{
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return;
+	}
+	control->ProgramDccPomAccessoryWrite(address, cv, value);
+}
+
 void Manager::ProgramDccValue(const CvNumber cv, const CvValue value)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->ProgramDccValue(cv, value);
+		control.second->ProgramDccValue(cv, value);;
 	}
 }
 
@@ -2987,7 +3027,7 @@ bool Manager::CanHandleProgramDccRead()
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		bool ret = control.second->CanHandleProgramDccRead();
+		bool ret = control.second->CanHandleProgramDccPom();
 		if (ret == true)
 		{
 			return true;
@@ -3001,7 +3041,7 @@ bool Manager::CanHandleProgramDccWrite()
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		bool ret = control.second->CanHandleProgramDccWrite();
+		bool ret = control.second->CanHandleProgramDcc();
 		if (ret == true)
 		{
 			return true;

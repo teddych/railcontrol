@@ -72,8 +72,8 @@ namespace Hardware
 			bool CanHandleLocos() const override;
 			bool CanHandleProgram() const override;
 			bool CanHandleProgramMm() const override;
-			bool CanHandleProgramDccRead() const override;
-			bool CanHandleProgramDccWrite() const override;
+			bool CanHandleProgramDcc() const override;
+			bool CanHandleProgramDccPom() const override;
 			void LocoDirection(const controlType_t controlType, const DataModel::Loco* loco, const direction_t direction) override;
 			void LocoFunction(const controlType_t controlType, const DataModel::Loco* loco, const function_t function, const bool on) override;
 			void LocoProtocols(std::vector<protocol_t>& protocols) const override;
@@ -85,6 +85,10 @@ namespace Hardware
 			void ProgramMm(const CvNumber cv, const CvValue value) override;
 			void ProgramDccRead(const CvNumber cv) override;
 			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
+			void ProgramDccPomLocoRead(const address_t address, const CvNumber cv) override;
+			void ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value) override;
+			void ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv) override;
+			void ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value) override;
 
 			static void ArgumentTypesOfHardwareTypeAndHint(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments, std::string& hint);
 

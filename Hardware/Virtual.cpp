@@ -83,13 +83,13 @@ namespace Hardware
 	// write Märklin Motorola variable
 	void Virtual::ProgramMm(const CvNumber cv, const CvValue value)
 	{
-		logger->Info(Languages::TextProgramMm, static_cast<int>(cv), static_cast<int>(value));
+		logger->Info(Languages::TextProgramMm, cv, static_cast<int>(value));
 	}
 
 	// read DCC CV value
 	void Virtual::ProgramDccRead(const CvNumber cv)
 	{
-		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
+		logger->Info(Languages::TextProgramDccRead, cv);
 		std::async(std::launch::async, Manager::ProgramDccValueStatic, manager, cv, cv & 0xFF);
 	}
 
@@ -99,4 +99,29 @@ namespace Hardware
 		logger->Info(Languages::TextProgramDccWrite, static_cast<int>(cv), static_cast<int>(value));
 	}
 
+	// read POM DCC CV value
+	void Virtual::ProgramDccPomLocoRead(const address_t address, const CvNumber cv)
+	{
+		logger->Info(Languages::TextProgramDccPomLocoRead, address, cv);
+		std::async(std::launch::async, Manager::ProgramDccValueStatic, manager, cv, cv & 0xFF);
+	}
+
+	// write POM DCC CV value
+	void Virtual::ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value)
+	{
+		logger->Info(Languages::TextProgramDccPomLocoWrite, address, cv, static_cast<int>(value));
+	}
+
+	// read POM DCC CV value
+	void Virtual::ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv)
+	{
+		logger->Info(Languages::TextProgramDccPomAccessoryRead, address, cv);
+		std::async(std::launch::async, Manager::ProgramDccValueStatic, manager, cv, cv & 0xFF);
+	}
+
+	// write POM DCC CV value
+	void Virtual::ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value)
+	{
+		logger->Info(Languages::TextProgramDccPomAccessoryWrite, address, cv, static_cast<int>(value));
+	}
 } // namespace
