@@ -543,22 +543,6 @@ namespace WebServer
 			{
 				HandleProgramDccWrite(arguments);
 			}
-			else if (arguments["cmd"].compare("programdccpomlocoread") == 0)
-			{
-				HandleProgramDccPomLocoRead(arguments);
-			}
-			else if (arguments["cmd"].compare("programdccpomlocowrite") == 0)
-			{
-				HandleProgramDccPomLocoWrite(arguments);
-			}
-			else if (arguments["cmd"].compare("programdccpomaccessoryread") == 0)
-			{
-				HandleProgramDccPomAccessoryRead(arguments);
-			}
-			else if (arguments["cmd"].compare("programdccpomaccessorywrite") == 0)
-			{
-				HandleProgramDccPomAccessoryWrite(arguments);
-			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				HandleUpdater(headers);
@@ -3631,19 +3615,12 @@ namespace WebServer
 			mmContent.AddClass("tab_content");
 			mmContent.AddClass("narrow_label");
 			mmContent.AddChildTag(HtmlTagControl("controlmm", controlsMm));
-			for (unsigned int index = 1; index <= 255; ++index)
-			{
-				string indexString = to_string(index);
-				HtmlTag contentObject("div");
-				contentObject.AddAttribute("id", "object_" + indexString);
-				contentObject.AddClass("inline-block");
-				contentObject.AddChildTag(HtmlTagInputIntegerWithLabel("variable_" + indexString, Languages::TextVariable, 0, 0, 255, indexString));
-				HtmlTagButton writeButton(Languages::TextWrite, "program_mm_" + indexString);
-				writeButton.AddAttribute("onclick", "onClickProgramMm(" + indexString + ");return false;");
-				writeButton.AddClass("wide_button");
-				contentObject.AddChildTag(writeButton);
-				mmContent.AddChildTag(contentObject);
-			}
+			mmContent.AddChildTag(HtmlTagInputIntegerWithLabel("registermm", Languages::TextRegister, 1, 1, 256));
+			mmContent.AddChildTag(HtmlTagInputIntegerWithLabel("valuemm", Languages::TextValue, 0, 0, 255));
+			HtmlTagButton writeButton(Languages::TextWrite, "programmm");
+			writeButton.AddAttribute("onclick", "onClickProgramMm();return false;");
+			writeButton.AddClass("wide_button");
+			mmContent.AddChildTag(writeButton);
 			programContent.AddChildTag(mmContent);
 		}
 
@@ -3653,28 +3630,29 @@ namespace WebServer
 			dccContent.AddAttribute("id", "tab_dcc");
 			dccContent.AddClass("tab_content");
 			dccContent.AddClass("narrow_label");
-			if (controlCountMm == 0)
+			if (controlCountMm > 0)
 			{
 				dccContent.AddClass("hidden");
 			}
-			dccContent.AddChildTag(HtmlTagControl("controldcc", controlsMm));
-			for (unsigned int index = 1; index <= 1024; ++index)
-			{
-				string indexString = to_string(index);
-				HtmlTag contentObject("div");
-				contentObject.AddAttribute("id", "object_" + indexString);
-				contentObject.AddClass("inline-block");
-				contentObject.AddChildTag(HtmlTagInputIntegerWithLabel("cv_" + indexString, Languages::TextCV, 0, 0, 255, indexString));
-				HtmlTagButton readButton(Languages::TextRead, "program_dcc_read_" + indexString);
-				readButton.AddAttribute("onclick", "onClickProgramDccRead(" + indexString + ");return false;");
-				readButton.AddClass("wide_button");
-				contentObject.AddChildTag(readButton);
-				HtmlTagButton writeButton(Languages::TextWrite, "program_dcc_write_" + indexString);
-				writeButton.AddAttribute("onclick", "onClickProgramDccWrite(" + indexString + ");return false;");
-				writeButton.AddClass("wide_button");
-				contentObject.AddChildTag(writeButton);
-				dccContent.AddChildTag(contentObject);
-			}
+			dccContent.AddChildTag(HtmlTagControl("controldcc", controlsDcc));
+
+			map<ProgramMode,Languages::textSelector_t> programModeOptions;
+			programModeOptions[ProgramModeDccDirect] = Languages::TextProgramModeDccDirect;
+			programModeOptions[ProgramModeDccPomLoco] = Languages::TextProgramModeDccPomLoco;
+			programModeOptions[ProgramModeDccPomAccessory] = Languages::TextProgramModeDccPomAccessory;
+			dccContent.AddChildTag(HtmlTagSelectWithLabel("modedcc", Languages::TextProgramMode, programModeOptions, ProgramModeDccDirect));
+
+			dccContent.AddChildTag(HtmlTagInputIntegerWithLabel("addressdcc", Languages::TextAddress, 1, 1, 0x4000));
+			dccContent.AddChildTag(HtmlTagInputIntegerWithLabel("cvdcc", Languages::TextCV, 1, 1, 1024));
+			dccContent.AddChildTag(HtmlTagInputIntegerWithLabel("valuedcc", Languages::TextValue, 0, 0, 255));
+			HtmlTagButton readButton(Languages::TextRead, "programdccread");
+			readButton.AddAttribute("onclick", "onClickProgramDccRead();return false;");
+			readButton.AddClass("wide_button");
+			dccContent.AddChildTag(readButton);
+			HtmlTagButton writeButton(Languages::TextWrite, "programdccwrite");
+			writeButton.AddAttribute("onclick", "onClickProgramDccWrite();return false;");
+			writeButton.AddClass("wide_button");
+			dccContent.AddChildTag(writeButton);
 			programContent.AddChildTag(dccContent);
 		}
 
@@ -3687,7 +3665,7 @@ namespace WebServer
 	void WebClient::HandleProgramMm(const map<string, string>& arguments)
 	{
 		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
-		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "variable"));
+		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "register"));
 		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
 		manager.ProgramMm(controlID, cv, value);
 		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramMm, cv, value);
@@ -3696,56 +3674,54 @@ namespace WebServer
 	void WebClient::HandleProgramDccRead(const map<string, string>& arguments)
 	{
 		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
 		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
-		manager.ProgramDccRead(controlID, cv);
+		ProgramMode mode = static_cast<ProgramMode>(Utils::Utils::GetIntegerMapEntry(arguments, "mode"));
+		switch (mode)
+		{
+			case ProgramModeDccDirect:
+				manager.ProgramDccRead(controlID, cv);
+				break;
+
+			case ProgramModeDccPomLoco:
+				manager.ProgramDccPomLocoRead(controlID, address, cv);
+				break;
+
+			case ProgramModeDccPomAccessory:
+				manager.ProgramDccPomAccessoryRead(controlID, address, cv);
+				break;
+
+			default:
+				break;
+		}
 		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccRead, cv);
 	}
 
 	void WebClient::HandleProgramDccWrite(const map<string, string>& arguments)
 	{
 		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
 		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
 		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
-		manager.ProgramDccWrite(controlID, cv, value);
+		ProgramMode mode = static_cast<ProgramMode>(Utils::Utils::GetIntegerMapEntry(arguments, "mode"));
+		switch (mode)
+		{
+			case ProgramModeDccDirect:
+				manager.ProgramDccWrite(controlID, cv, value);
+				break;
+
+			case ProgramModeDccPomLoco:
+				manager.ProgramDccPomLocoWrite(controlID, address, cv, value);
+				break;
+
+			case ProgramModeDccPomAccessory:
+				manager.ProgramDccPomAccessoryWrite(controlID, address, cv, value);
+				break;
+
+			default:
+				break;
+		}
 		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccWrite, cv, value);
-	}
-
-	void WebClient::HandleProgramDccPomLocoRead(const map<string, string>& arguments)
-	{
-		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
-		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
-		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
-		manager.ProgramDccPomLocoRead(controlID, address, cv);
-		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccPomLocoRead, address, cv);
-	}
-
-	void WebClient::HandleProgramDccPomLocoWrite(const map<string, string>& arguments)
-	{
-		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
-		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
-		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
-		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
-		manager.ProgramDccPomLocoWrite(controlID, address, cv, value);
-		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccPomLocoWrite, address, cv, value);
-	}
-
-	void WebClient::HandleProgramDccPomAccessoryRead(const map<string, string>& arguments)
-	{
-		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
-		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
-		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
-		manager.ProgramDccPomAccessoryRead(controlID, address, cv);
-		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccPomAccessoryRead, address, cv);
-	}
-
-	void WebClient::HandleProgramDccPomAccessoryWrite(const map<string, string>& arguments)
-	{
-		controlID_t controlID = static_cast<controlID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
-		address_t address = static_cast<address_t>(Utils::Utils::GetIntegerMapEntry(arguments, "address"));
-		CvNumber cv = static_cast<CvNumber>(Utils::Utils::GetIntegerMapEntry(arguments, "cv"));
-		CvValue value = static_cast<CvValue>(Utils::Utils::GetIntegerMapEntry(arguments, "value"));
-		manager.ProgramDccPomAccessoryWrite(controlID, address, cv, value);
-		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccPomAccessoryWrite, address, cv, value);
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)

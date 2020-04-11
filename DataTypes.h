@@ -213,5 +213,13 @@ enum direction_t : bool
 	DirectionRight = true
 };
 
-typedef unsigned short CvNumber;
-typedef unsigned char CvValue;
+enum ProgramMode : uint8_t
+{
+	ProgramModeMm,
+	ProgramModeDccDirect,
+	ProgramModeDccPomLoco,
+	ProgramModeDccPomAccessory
+};
+
+typedef uint16_t CvNumber;
+typedef uint8_t CvValue;

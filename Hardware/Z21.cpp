@@ -48,7 +48,8 @@ namespace Hardware
 	:	HardwareInterface(params->GetManager(), params->GetControlID(), "Z21 / " + params->GetName() + " at IP " + params->GetArg1()),
 	 	logger(Logger::Logger::GetLogger("Z21 " + params->GetName() + " " + params->GetArg1())),
 	 	run(true),
-	 	connection(logger, params->GetArg1(), Z21Port)
+	 	connection(logger, params->GetArg1(), Z21Port),
+	 	lastProgramMode(ProgramModeMm)
 	{
 		logger->Info(Languages::TextStarting, name);
 
@@ -320,10 +321,11 @@ namespace Hardware
 
 	void Z21::ProgramMm(const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 0xFF)
+		if (cv == 0 || cv > 0x100)
 		{
 			return;
 		}
+		lastProgramMode = ProgramModeMm;
 		logger->Info(Languages::TextProgramMm, static_cast<int>(cv), static_cast<int>(value));
 		const unsigned char zeroBasedCv = static_cast<unsigned char>((cv - 1) & 0xFF);
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0x24, 0xFF, 0x00, zeroBasedCv, value };
@@ -333,10 +335,11 @@ namespace Hardware
 
 	void Z21::ProgramDccRead(const CvNumber cv)
 	{
-		if (cv == 0 || cv > 0x3FFF)
+		if (cv == 0 || cv > 0x4000)
 		{
 			return;
 		}
+		lastProgramMode = ProgramModeDccDirect;
 		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
 		const CvNumber zeroBasedCv = cv - 1;
 		unsigned char buffer[9] = { 0x09, 0x00, 0x40, 0x00, 0x23, 0x11};
@@ -347,10 +350,11 @@ namespace Hardware
 
 	void Z21::ProgramDccWrite(const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 0x3FFF)
+		if (cv == 0 || cv > 0x4000)
 		{
 			return;
 		}
+		lastProgramMode = ProgramModeDccDirect;
 		logger->Info(Languages::TextProgramDccWrite, static_cast<int>(cv), static_cast<int>(value));
 		const CvNumber zeroBasedCv = cv - 1;
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0x24, 0x12};
@@ -360,32 +364,22 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::ProgramDccPomLocoRead(const address_t address, const CvNumber cv)
+	void Z21::ProgramDccPom(const Languages::textSelector_t text, const PomDB0 db0, const PomOption option, const address_t address, const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 0x3FFF)
+		if (cv == 0 || cv > 0x4000)
 		{
 			return;
 		}
-		logger->Info(Languages::TextProgramDccPomLocoRead, address, cv);
-		const CvNumber OptionAndZeroBasedCv = 0xE400 | ((cv - 1) & 0x03FF);
-		unsigned char buffer[12] = { 0x0C, 0x00, 0x40, 0x00, 0xE6, 0x30};
-		Utils::Utils::ShortToDataBigEndian(address, buffer + 6);
-		Utils::Utils::ShortToDataBigEndian(OptionAndZeroBasedCv, buffer + 8);
-		buffer[10] = 0;
-		buffer[11] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8] ^ buffer[9] ^ buffer[10];
-		Send(buffer, sizeof(buffer));
-	}
-
-	void Z21::ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value)
-	{
-		if (cv == 0 || cv > 0x3FFF)
+		lastProgramMode = ProgramModeDccPomLoco;
+		logger->Info(text, address, cv, static_cast<int>(value));
+		address_t internalAddress = address;
+		if (db0 == PomAccessory)
 		{
-			return;
+			internalAddress <<= 4;
 		}
-		logger->Info(Languages::TextProgramDccPomLocoWrite, address, cv, static_cast<int>(value));
-		const CvNumber OptionAndZeroBasedCv = 0xEC00 | ((cv - 1) & 0x03FF);
-		unsigned char buffer[12] = { 0x0C, 0x00, 0x40, 0x00, 0xE6, 0x30};
-		Utils::Utils::ShortToDataBigEndian(address, buffer + 6);
+		const CvNumber OptionAndZeroBasedCv = option | ((cv - 1) & 0x03FF);
+		unsigned char buffer[12] = { 0x0C, 0x00, 0x40, 0x00, 0xE6, db0 };
+		Utils::Utils::ShortToDataBigEndian(internalAddress, buffer + 6);
 		Utils::Utils::ShortToDataBigEndian(OptionAndZeroBasedCv, buffer + 8);
 		buffer[10] = value;
 		buffer[11] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8] ^ buffer[9] ^ buffer[10];
@@ -611,6 +605,11 @@ namespace Hardware
 				if (buffer[5] != 0x14)
 				{
 					logger->Error(Languages::TextCheckSumError);
+					break;
+				}
+				if (lastProgramMode == ProgramModeMm)
+				{
+					break;
 				}
 				const CvNumber cv = Utils::Utils::DataBigEndianToShort(buffer + 6) + 1;
 				const CvValue value = buffer[8];
@@ -685,7 +684,7 @@ namespace Hardware
 				break;
 
 			case DB0CvNack:
-				if (buffer[6] != 0x73)
+				if (buffer[6] != 0x72)
 				{
 					logger->Error(Languages::TextCheckSumError);
 				}

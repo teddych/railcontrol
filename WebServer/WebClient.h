@@ -215,10 +215,6 @@ namespace WebServer
 			void HandleProgramMm(const std::map<std::string,std::string>& arguments);
 			void HandleProgramDccRead(const std::map<std::string,std::string>& arguments);
 			void HandleProgramDccWrite(const std::map<std::string,std::string>& arguments);
-			void HandleProgramDccPomLocoRead(const std::map<std::string,std::string>& arguments);
-			void HandleProgramDccPomLocoWrite(const std::map<std::string,std::string>& arguments);
-			void HandleProgramDccPomAccessoryRead(const std::map<std::string,std::string>& arguments);
-			void HandleProgramDccPomAccessoryWrite(const std::map<std::string,std::string>& arguments);
 			void HandleUpdater(const std::map<std::string,std::string>& headers);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

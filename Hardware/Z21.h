@@ -120,21 +120,28 @@ namespace Hardware
 			void ProgramMm(const CvNumber cv, const CvValue value) override;
 			void ProgramDccRead(const CvNumber cv) override;
 			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
-			void ProgramDccPomLocoRead(const address_t address, const CvNumber cv) override;
-			void ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value) override;
+			void ProgramDccPomLocoRead(const address_t address, const CvNumber cv) override
+			{
+				ProgramDccPom(Languages::TextProgramDccPomLocoRead, PomLoco, PomReadByte, address, cv, 0);
+			}
+
+			void ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value) override
+			{
+				ProgramDccPom(Languages::TextProgramDccPomLocoWrite, PomLoco, PomWriteByte, address, cv, value);
+			}
+
+			void ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv) override
+			{
+				ProgramDccPom(Languages::TextProgramDccPomAccessoryRead, PomAccessory, PomReadByte, address, cv, 0);
+			}
+
+			void ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value) override
+			{
+				ProgramDccPom(Languages::TextProgramDccPomAccessoryWrite, PomAccessory, PomWriteByte, address, cv, value);
+			}
+
 
 		private:
-			Logger::Logger* logger;
-			volatile bool run;
-			Network::UdpConnection connection;
-			std::thread receiverThread;
-			std::thread heartBeatThread;
-			std::thread accessorySenderThread;
-			Z21LocoCache locoCache;
-			Z21TurnoutCache turnoutCache;
-
-			Utils::ThreadSafeQueue<AccessoryQueueEntry> accessoryQueue;
-
 			static const unsigned short Z21Port = 21105;
 			static const unsigned int Z21CommandBufferLength = 1472; // = Max Ethernet MTU
 			static const address_t MaxMMAddress = 255;
@@ -218,6 +225,33 @@ namespace Hardware
 				DB0Version = 0x21,
 				DB0FirmwareVersion = 0x0A
 			};
+
+			enum PomDB0 : uint8_t
+			{
+				PomLoco = 0x30,
+				PomAccessory = 0x31
+			};
+
+			enum PomOption : uint16_t
+			{
+				PomWriteByte = 0xEC00,
+				PomWriteBit = 0xE800,
+				PomReadByte = 0xE400
+			};
+
+			Logger::Logger* logger;
+			volatile bool run;
+			Network::UdpConnection connection;
+			std::thread receiverThread;
+			std::thread heartBeatThread;
+			std::thread accessorySenderThread;
+			Z21LocoCache locoCache;
+			Z21TurnoutCache turnoutCache;
+			ProgramMode lastProgramMode;
+
+			Utils::ThreadSafeQueue<AccessoryQueueEntry> accessoryQueue;
+
+			void ProgramDccPom(const Languages::textSelector_t text, const PomDB0 db0, const PomOption option, const address_t address, const CvNumber cv, const CvValue value);
 
 			void LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction);
 			void AccessorySender();

@@ -415,9 +415,9 @@ namespace Hardware
 
 	void HardwareHandler::ProgramMm(const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 256)
+		if (cv == 0 || cv > 0x100)
 		{
-			return;
+			return; // cvs are one based
 		}
 		if (instance == nullptr)
 		{
@@ -429,9 +429,9 @@ namespace Hardware
 
 	void HardwareHandler::ProgramDccRead(const CvNumber cv)
 	{
-		if (cv == 0)
+		if (cv == 0 || cv > 0x4000)
 		{
-			return; // cv 0 inexistent
+			return; // cvs are one based
 		}
 		if (instance == nullptr)
 		{
@@ -443,9 +443,9 @@ namespace Hardware
 
 	void HardwareHandler::ProgramDccWrite(const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0)
+		if (cv == 0 || cv > 0x4000)
 		{
-			return; // cv 0 is not programmable / inexistent
+			return; // cvs are one based
 		}
 		if (cv == 1 && value == 0)
 		{
@@ -460,9 +460,9 @@ namespace Hardware
 
 	void HardwareHandler::ProgramDccPomLocoRead(const address_t address, const CvNumber cv)
 	{
-		if (cv == 0)
+		if (cv == 0 || cv > 0x4000)
 		{
-			return; // cv 0 inexistent
+			return; // cvs are one based
 		}
 		if (instance == nullptr)
 		{
@@ -474,9 +474,9 @@ namespace Hardware
 
 	void HardwareHandler::ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0)
+		if (cv == 0 || cv > 0x4000)
 		{
-			return; // cv 0 is not programmable / inexistent
+			return; // cvs are one based
 		}
 		if (cv == 1 && value == 0)
 		{
@@ -491,9 +491,9 @@ namespace Hardware
 
 	void HardwareHandler::ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv)
 	{
-		if (cv == 0)
+		if (cv == 0 || cv > 0x800)
 		{
-			return; // cv 0 inexistent
+			return; // cvs are one based
 		}
 		if (instance == nullptr)
 		{
@@ -505,9 +505,9 @@ namespace Hardware
 
 	void HardwareHandler::ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0)
+		if (cv == 0 || cv > 0x800)
 		{
-			return; // cv 0 is not programmable / inexistent
+			return; // cvs are one based
 		}
 		if (cv == 1 && value == 0)
 		{

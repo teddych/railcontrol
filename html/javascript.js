@@ -6,47 +6,97 @@ function onClickProgramDccRead(cv)
 		return false;
 	}
 	var control = controlElement.value;
-	var url = '?cmd=programdccread&cv=' + cv + '&control=' + control;
+
+	var modeElement = document.getElementById('s_modedcc');
+	if (!modeElement)
+	{
+		return false;
+	}
+	var mode = modeElement.value;
+
+	var addressElement = document.getElementById('addressdcc');
+	if (!addressElement)
+	{
+		return false;
+	}
+	var address = addressElement.value;
+
+	var cvElement = document.getElementById('cvdcc');
+	if (!cvElement)
+	{
+		return false;
+	}
+	var cv = cvElement.value;
+
+	var url = '?cmd=programdccread&control=' + control + '&mode=' + mode + '&address=' + address + '&cv=' + cv;
 	fireRequestAndForget(url);
 	return false;
 }
 
-function onClickProgramDccWrite(cv)
+function onClickProgramDccWrite()
 {
-	var valueElementName = 'cv_' + cv;
-	var valueElement = document.getElementById(valueElementName);
-	if (!valueElement)
-	{
-		return false;
-	}
-	var value = valueElement.value;
 	var controlElement = document.getElementById('controldcc');
 	if (!controlElement)
 	{
 		return false;
 	}
 	var control = controlElement.value;
-	var url = '?cmd=programdccwrite&cv=' + cv + '&value=' + value + '&control=' + control;
-	fireRequestAndForget(url);
-	return false;
-}
 
-function onClickProgramMm(variable)
-{
-	var valueElementName = 'variable_' + variable;
-	var valueElement = document.getElementById(valueElementName);
+	var modeElement = document.getElementById('s_modedcc');
+	if (!modeElement)
+	{
+		return false;
+	}
+	var mode = modeElement.value;
+
+	var addressElement = document.getElementById('addressdcc');
+	if (!addressElement)
+	{
+		return false;
+	}
+	var address = addressElement.value;
+
+	var cvElement = document.getElementById('cvdcc');
+	if (!cvElement)
+	{
+		return false;
+	}
+	var cv = cvElement.value;
+
+	var valueElement = document.getElementById('valuedcc');
 	if (!valueElement)
 	{
 		return false;
 	}
 	var value = valueElement.value;
+	var url = '?cmd=programdccwrite&control=' + control + '&mode=' + mode + '&address=' + address + '&cv=' + cv + '&value=' + value;
+	fireRequestAndForget(url);
+	return false;
+}
+
+function onClickProgramMm()
+{
 	var controlElement = document.getElementById('controlmm');
 	if (!controlElement)
 	{
 		return false;
 	}
 	var control = controlElement.value;
-	var url = '?cmd=programmm&variable=' + variable + '&value=' + value + '&control=' + control;
+
+	var registerElement = document.getElementById('registermm');
+	if (!registerElement)
+	{
+		return false;
+	}
+	var register = registerElement.value;
+
+	var valueElement = document.getElementById('valuemm');
+	if (!valueElement)
+	{
+		return false;
+	}
+	var value = valueElement.value;
+	var url = '?cmd=programmm&control=' + control + '&register=' + register + '&value=' + value;
 	fireRequestAndForget(url);
 	return false;
 }
@@ -782,11 +832,11 @@ function dataUpdate(event)
 	{
 		loadLayerSelector();
 	}
-	else if (command == 'dccvalue')
+	else if (command == 'dcccvvalue')
 	{
 		var cv = argumentMap.get('cv');
 		var value = argumentMap.get('value');
-		var elementName = 'cv_' + cv;
+		var elementName = 'valuedcc';
 		var element = document.getElementById(elementName);
 		if (element)
 		{
