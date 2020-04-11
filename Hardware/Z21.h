@@ -262,11 +262,13 @@ namespace Hardware
 			void ParseDB0(unsigned char* buffer);
 			void ParseTurnoutData(unsigned char *buffer);
 			void ParseLocoData(unsigned char* buffer);
+			void ParseDetectorData(unsigned char* buffer);
 
 			void SendGetSerialNumber();
 			void SendGetHardwareInfo();
 			void SendGetStatus();
 			void SendGetCode();
+			void SendGetDetectorState();
 			void SendLogOff();
 			void SendBroadcastFlags();
 			void SendBroadcastFlags(const BroadCastFlag flags);

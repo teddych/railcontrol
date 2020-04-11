@@ -419,6 +419,7 @@ namespace Hardware
 			| BroadCastFlagRBus
 			| BroadCastFlagAllLoco
 			| BroadCastFlagCanDetector));
+		SendGetDetectorState();
 
 		unsigned char buffer[Z21CommandBufferLength];
 		while(run)
@@ -570,7 +571,7 @@ namespace Hardware
 				break;
 
 			case HeaderDetector:
-				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+				ParseDetectorData(buffer);
 				break;
 
 			default:
@@ -831,6 +832,35 @@ namespace Hardware
 		}
 	}
 
+	void Z21::ParseDetectorData(unsigned char* buffer)
+	{
+		feedbackPin_t pin = Utils::Utils::DataLittleEndianToShort(buffer + 6);
+		uint8_t port = buffer[8];
+		--pin;
+		pin <<= 3;
+		pin += port;
+		++pin;
+		uint8_t type = buffer[9];
+		uint16_t value1 = Utils::Utils::DataLittleEndianToShort(buffer + 10);
+		DataModel::Feedback::feedbackState_t state;
+		switch (type)
+		{
+			case 0x01:
+			{
+				value1 >>= 12;
+				value1 &= 0x0001;
+				state = static_cast<DataModel::Feedback::feedbackState_t>(value1);
+				break;
+			}
+
+			default:
+			{
+				state = (value1 > 0 ? DataModel::Feedback::FeedbackStateOccupied : DataModel::Feedback::FeedbackStateFree);
+				break;
+			}
+		}
+		manager->FeedbackState(controlID, pin, state);
+	}
 
 	void Z21::SendGetSerialNumber()
 	{
@@ -853,6 +883,12 @@ namespace Hardware
 	void Z21::SendGetCode()
 	{
 		char buffer[4] = { 0x04, 0x00, 0x18, 0x00 };
+		Send(buffer, sizeof(buffer));
+	}
+
+	void Z21::SendGetDetectorState()
+	{
+		unsigned char buffer[7] = { 0x07, 0x00, 0xC4, 0x00, 0x00, 0x00, 0xD0 };
 		Send(buffer, sizeof(buffer));
 	}
 
