@@ -227,6 +227,7 @@ namespace Hardware
 			Z21LocoCache locoCache;
 			Z21TurnoutCache turnoutCache;
 			ProgramMode lastProgramMode;
+			volatile bool connected;
 
 			Utils::ThreadSafeQueue<AccessoryQueueEntry> accessoryQueue;
 
@@ -247,6 +248,7 @@ namespace Hardware
 			void ParseCvData(const unsigned char* buffer);
 			void ParseDetectorData(const unsigned char* buffer);
 
+			void StartUpConnection();
 			void SendGetSerialNumber();
 			void SendGetHardwareInfo();
 			void SendGetStatus();

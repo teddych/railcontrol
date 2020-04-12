@@ -49,7 +49,8 @@ namespace Hardware
 	 	logger(Logger::Logger::GetLogger("Z21 " + params->GetName() + " " + params->GetArg1())),
 	 	run(true),
 	 	connection(logger, params->GetArg1(), Z21Port),
-	 	lastProgramMode(ProgramModeMm)
+	 	lastProgramMode(ProgramModeMm),
+	 	connected(false)
 	{
 		logger->Info(Languages::TextStarting, name);
 
@@ -417,20 +418,42 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
+	void Z21::StartUpConnection()
+	{
+		SendGetSerialNumber();
+		SendGetHardwareInfo();
+		SendGetCode();
+		SendBroadcastFlags(static_cast<BroadCastFlag>(
+			BroadCastFlagBasic
+			| BroadCastFlagRBus
+			| BroadCastFlagAllLoco
+			| BroadCastFlagCanDetector));
+		SendGetDetectorState();
+	}
+
 	void Z21::HeartBeatSender()
 	{
 		Utils::Utils::SetMinThreadPriority();
 		Utils::Utils::SetThreadName("Z21 Heartbeat Sender");
 		logger->Info(Languages::TextHeartBeatThreadStarted);
-		unsigned int counter = 0;
+		const unsigned int counterMask = 0x07;
+		unsigned int counter = counterMask;
 		while(run)
 		{
 			std::this_thread::sleep_for(std::chrono::seconds(1));
 			++counter;
-			counter &= 0x0F;
-			if (counter != 0)
+			counter &= counterMask;
+			if (counter > 0)
 			{
 				continue;
+			}
+			if (connected)
+			{
+				connected = false;
+			}
+			else
+			{
+				StartUpConnection();
 			}
 			SendGetStatus();
 		}
@@ -441,16 +464,6 @@ namespace Hardware
 	{
 		Utils::Utils::SetThreadName("Z21 Receiver");
 		logger->Info(Languages::TextReceiverThreadStarted);
-
-		SendGetSerialNumber();
-		SendGetHardwareInfo();
-		SendGetCode();
-		SendBroadcastFlags(static_cast<BroadCastFlag>(
-			BroadCastFlagBasic
-			| BroadCastFlagRBus
-			| BroadCastFlagAllLoco
-			| BroadCastFlagCanDetector));
-		SendGetDetectorState();
 
 		unsigned char buffer[Z21CommandBufferLength];
 		while(run)
@@ -614,7 +627,8 @@ namespace Hardware
 
 	void Z21::ParseXHeader(const unsigned char* buffer)
 	{
-		switch (buffer[4])
+		unsigned char xHeader = buffer[4];
+		switch (xHeader)
 		{
 			case XHeaderTurnoutInfo:
 				ParseTurnoutData(buffer);
@@ -625,7 +639,7 @@ namespace Hardware
 				break;
 
 			case XHeaderStatusChanged:
-				// Ignoring State Change 0x62
+				connected = true;
 				break;
 
 			case XHeaderVersion:
