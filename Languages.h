@@ -113,6 +113,7 @@ class Languages
 			TextDeleteTrack,
 			TextDifferentDirections,
 			TextDifferentPushpullTypes,
+			TextDirect,
 			TextDoNotCare,
 			TextDroppingTable,
 			TextDuration,
@@ -464,7 +465,6 @@ class Languages
 			TextZ21Type,
 			TextZ21Unknown,
 			TextZ21White2013,
-			TextRaw,
 			MaxTexts
 		};
 

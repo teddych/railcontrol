@@ -3590,14 +3590,14 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextProgrammer));
 		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(HtmlTagTabMenuItem("raw", Languages::TextRaw, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("raw", Languages::TextDirect, true));
 		if (controlCountMm > 0)
 		{
-			tabMenu.AddChildTag(HtmlTagTabMenuItem("mm", Languages::TextMaerklinMotorola, false));
+			tabMenu.AddChildTag(HtmlTagTabMenuItem("mm", Languages::TextMaerklinMotorola));
 		}
 		if (controlCountDcc > 0)
 		{
-			tabMenu.AddChildTag(HtmlTagTabMenuItem("dcc", Languages::TextDcc, false));
+			tabMenu.AddChildTag(HtmlTagTabMenuItem("dcc", Languages::TextDcc));
 		}
 		content.AddChildTag(tabMenu);
 
