@@ -319,14 +319,63 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingAccessorySenderThread);
 	}
 
+	void Z21::ProgramRead(const ProgramMode mode, const address_t address, const CvNumber cv)
+	{
+		switch (mode)
+		{
+			case ProgramModeDccDirect:
+				logger->Info(Languages::TextProgramDccRead, cv);
+				ProgramDccRead(cv);
+				break;
+
+			case ProgramModeDccPomLoco:
+				logger->Info(Languages::TextProgramDccPomLocoRead, address, cv);
+				ProgramDccPom(PomLoco, PomReadByte, address, cv);
+				break;
+
+			case ProgramModeDccPomAccessory:
+				logger->Info(Languages::TextProgramDccPomAccessoryRead, address, cv);
+				ProgramDccPom(PomAccessory, PomReadByte, address, cv);
+				break;
+
+			default:
+				return;
+		}
+		lastProgramMode = mode;
+	}
+
+	void Z21::ProgramWrite(const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value)
+	{
+		switch (mode)
+		{
+			case ProgramModeMm:
+				logger->Info(Languages::TextProgramMm, cv, static_cast<int>(value));
+				ProgramMm(cv, value);
+				break;
+
+			case ProgramModeDccDirect:
+				logger->Info(Languages::TextProgramDccWrite, cv, static_cast<int>(value));
+				ProgramDccWrite(cv, value);
+				break;
+
+			case ProgramModeDccPomLoco:
+				logger->Info(Languages::TextProgramDccPomLocoWrite, address, cv, value);
+				ProgramDccPom(PomLoco, PomWriteByte, address, cv, value);
+				break;
+
+			case ProgramModeDccPomAccessory:
+				logger->Info(Languages::TextProgramDccPomAccessoryWrite, address, cv, value);
+				ProgramDccPom(PomAccessory, PomWriteByte, address, cv, value);
+				break;
+
+			default:
+				return;
+		}
+		lastProgramMode = mode;
+	}
+
 	void Z21::ProgramMm(const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 0x100)
-		{
-			return;
-		}
-		lastProgramMode = ProgramModeMm;
-		logger->Info(Languages::TextProgramMm, static_cast<int>(cv), static_cast<int>(value));
 		const unsigned char zeroBasedCv = static_cast<unsigned char>((cv - 1) & 0xFF);
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0x24, 0xFF, 0x00, zeroBasedCv, value };
 		buffer[9] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8];
@@ -335,12 +384,6 @@ namespace Hardware
 
 	void Z21::ProgramDccRead(const CvNumber cv)
 	{
-		if (cv == 0 || cv > 0x4000)
-		{
-			return;
-		}
-		lastProgramMode = ProgramModeDccDirect;
-		logger->Info(Languages::TextProgramDccRead, static_cast<int>(cv));
 		const CvNumber zeroBasedCv = cv - 1;
 		unsigned char buffer[9] = { 0x09, 0x00, 0x40, 0x00, 0x23, 0x11};
 		Utils::Utils::ShortToDataBigEndian(zeroBasedCv, buffer + 6);
@@ -350,12 +393,6 @@ namespace Hardware
 
 	void Z21::ProgramDccWrite(const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 0x4000)
-		{
-			return;
-		}
-		lastProgramMode = ProgramModeDccDirect;
-		logger->Info(Languages::TextProgramDccWrite, static_cast<int>(cv), static_cast<int>(value));
 		const CvNumber zeroBasedCv = cv - 1;
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0x24, 0x12};
 		Utils::Utils::ShortToDataBigEndian(zeroBasedCv, buffer + 6);
@@ -364,14 +401,8 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::ProgramDccPom(const Languages::textSelector_t text, const PomDB0 db0, const PomOption option, const address_t address, const CvNumber cv, const CvValue value)
+	void Z21::ProgramDccPom(const PomDB0 db0, const PomOption option, const address_t address, const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 0x4000)
-		{
-			return;
-		}
-		lastProgramMode = ProgramModeDccPomLoco;
-		logger->Info(text, address, cv, static_cast<int>(value));
 		address_t internalAddress = address;
 		if (db0 == PomAccessory)
 		{
@@ -458,7 +489,7 @@ namespace Hardware
 		logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 
-	ssize_t Z21::ParseData(unsigned char* buffer, size_t bufferLength)
+	ssize_t Z21::ParseData(const unsigned char* buffer, size_t bufferLength)
 	{
 		unsigned short dataLength = Utils::Utils::DataLittleEndianToShort(buffer);
 		if (dataLength < 4 || dataLength > bufferLength)
@@ -581,7 +612,7 @@ namespace Hardware
 		return dataLength;
 	}
 
-	void Z21::ParseXHeader(unsigned char* buffer)
+	void Z21::ParseXHeader(const unsigned char* buffer)
 	{
 		switch (buffer[4])
 		{
@@ -602,22 +633,9 @@ namespace Hardware
 				break;
 
 			case XHeaderCvResult:
-				{
-				if (buffer[5] != 0x14)
-				{
-					logger->Error(Languages::TextCheckSumError);
-					break;
-				}
-				if (lastProgramMode == ProgramModeMm)
-				{
-					break;
-				}
-				const CvNumber cv = Utils::Utils::DataBigEndianToShort(buffer + 6) + 1;
-				const CvValue value = buffer[8];
-				logger->Debug(Languages::TextProgramDccReadValue, cv, value);
-				manager->ProgramDccValue(cv, value);
+				ParseCvData(buffer);
 				break;
-			}
+
 			case XHeaderBcStopped:
 				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
 				break;
@@ -635,7 +653,7 @@ namespace Hardware
 		}
 	}
 
-	void Z21::ParseDB0(unsigned char* buffer)
+	void Z21::ParseDB0(const unsigned char* buffer)
 	{
 		switch (buffer[5])
 		{
@@ -672,7 +690,7 @@ namespace Hardware
 					logger->Error(Languages::TextCheckSumError);
 				}
 				logger->Debug(Languages::TextShortCircuit);
-				manager->Booster(ControlTypeHardware, BoosterStop);
+				manager->Booster(ControlTypeInternal, BoosterStop);
 				break;
 
 			case DB0CvShortCircuit:
@@ -681,7 +699,7 @@ namespace Hardware
 					logger->Error(Languages::TextCheckSumError);
 				}
 				logger->Debug(Languages::TextShortCircuit);
-				manager->Booster(ControlTypeHardware, BoosterStop);
+				manager->Booster(ControlTypeInternal, BoosterStop);
 				break;
 
 			case DB0CvNack:
@@ -690,7 +708,6 @@ namespace Hardware
 					logger->Error(Languages::TextCheckSumError);
 				}
 				logger->Debug(Languages::TextNoAnswerFromDecoder);
-				manager->Booster(ControlTypeHardware, BoosterStop);
 				break;
 
 			case DB0UnknownCommand:
@@ -699,7 +716,7 @@ namespace Hardware
 		}
 	}
 
-	void Z21::ParseTurnoutData(unsigned char* buffer)
+	void Z21::ParseTurnoutData(const unsigned char* buffer)
 	{
 		accessoryState_t state;
 		switch (buffer[7])
@@ -721,7 +738,7 @@ namespace Hardware
 		manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 	}
 
-	void Z21::ParseLocoData(unsigned char* buffer)
+	void Z21::ParseLocoData(const unsigned char* buffer)
 	{
 		const address_t address = Utils::Utils::DataBigEndianToShort(buffer + 5) & 0x3FFF;
 		const unsigned char protocolType = buffer[7] & 0x07;
@@ -832,7 +849,24 @@ namespace Hardware
 		}
 	}
 
-	void Z21::ParseDetectorData(unsigned char* buffer)
+	void Z21::ParseCvData(const unsigned char* buffer)
+	{
+		if (buffer[5] != 0x14)
+		{
+			logger->Error(Languages::TextCheckSumError);
+			return;
+		}
+		if (lastProgramMode == ProgramModeMm)
+		{
+			return;
+		}
+		const CvNumber cv = Utils::Utils::DataBigEndianToShort(buffer + 6) + 1;
+		const CvValue value = buffer[8];
+		logger->Debug(Languages::TextProgramDccReadValue, cv, value);
+		manager->ProgramDccValue(cv, value);
+	}
+
+	void Z21::ParseDetectorData(const unsigned char* buffer)
 	{
 		feedbackPin_t pin = Utils::Utils::DataLittleEndianToShort(buffer + 6);
 		uint8_t port = buffer[8];

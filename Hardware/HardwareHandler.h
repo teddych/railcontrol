@@ -82,13 +82,8 @@ namespace Hardware
 			void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions) override;
 			void SwitchState(const controlType_t controlType, const DataModel::Switch* mySwitch, const switchState_t state) override;
 			void SignalState(const controlType_t controlType, const DataModel::Signal* signal, const signalState_t state) override;
-			void ProgramMm(const CvNumber cv, const CvValue value) override;
-			void ProgramDccRead(const CvNumber cv) override;
-			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
-			void ProgramDccPomLocoRead(const address_t address, const CvNumber cv) override;
-			void ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value) override;
-			void ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv) override;
-			void ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value) override;
+			void ProgramRead(const ProgramMode mode, const address_t address, const CvNumber cv) override;
+			void ProgramWrite(const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value) override;
 
 			static void ArgumentTypesOfHardwareTypeAndHint(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments, std::string& hint);
 
@@ -103,6 +98,7 @@ namespace Hardware
 
 			void Init(const HardwareParams* params);
 			void Close();
+			bool ProgramCheckValues(const ProgramMode mode, const CvNumber cv, const CvValue value = 1);
 	};
 }; // namespace Hardware
 

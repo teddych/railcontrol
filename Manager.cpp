@@ -559,43 +559,13 @@ const std::map<controlID_t,std::string> Manager::FeedbackControlListNames() cons
 	return ret;
 }
 
-const std::map<controlID_t,std::string> Manager::ProgramMmControlListNames() const
+const std::map<controlID_t,std::string> Manager::ProgramControlListNames() const
 {
 	std::map<controlID_t,std::string> ret;
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramMm() == false)
-		{
-			continue;
-		}
-		ret[control.first] = control.second->GetName();
-	}
-	return ret;
-}
-
-const std::map<controlID_t,std::string> Manager::ProgramDccPomControlListNames() const
-{
-	std::map<controlID_t,std::string> ret;
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto control : controls)
-	{
-		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramDccPom() == false)
-		{
-			continue;
-		}
-		ret[control.first] = control.second->GetName();
-	}
-	return ret;
-}
-
-const std::map<controlID_t,std::string> Manager::ProgramDccControlListNames() const
-{
-	std::map<controlID_t,std::string> ret;
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto control : controls)
-	{
-		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgramDcc() == false)
+		if (control.second->ControlType() != ControlTypeHardware || control.second->CanHandleProgram() == false)
 		{
 			continue;
 		}
@@ -2915,74 +2885,45 @@ controlID_t Manager::GetControlForFeedback() const
 	return ControlIdNone;
 }
 
-void Manager::ProgramMm(const controlID_t controlID, const CvNumber cv, const CvValue value)
+void Manager::ProgramCheckBooster(const ProgramMode mode)
 {
-	ControlInterface* control = GetControl(controlID);
-	if (control == nullptr)
+	switch (mode)
 	{
-		return;
+		case ProgramModeDccPomLoco:
+		case ProgramModeDccPomAccessory:
+			if (boosterState == BoosterGo)
+			{
+				return;
+			}
+			Booster(ControlTypeInternal, BoosterGo);
+			std::this_thread::sleep_for(std::chrono::milliseconds(100));
+			return;
+
+		default:
+			return;
 	}
-	control->ProgramMm(cv, value);
 }
 
-void Manager::ProgramDccRead(const controlID_t controlID, const CvNumber cv)
+void Manager::ProgramRead(const controlID_t controlID, const ProgramMode mode, const address_t address, const CvNumber cv)
 {
 	ControlInterface* control = GetControl(controlID);
 	if (control == nullptr)
 	{
 		return;
 	}
-	control->ProgramDccRead(cv);
+	ProgramCheckBooster(mode);
+	control->ProgramRead(mode, address, cv);
 }
 
-void Manager::ProgramDccWrite(const controlID_t controlID, const CvNumber cv, const CvValue value)
+void Manager::ProgramWrite(const controlID_t controlID, const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value)
 {
 	ControlInterface* control = GetControl(controlID);
 	if (control == nullptr)
 	{
 		return;
 	}
-	control->ProgramDccWrite(cv, value);
-}
-
-void Manager::ProgramDccPomLocoRead(const controlID_t controlID, const address_t address, const CvNumber cv)
-{
-	ControlInterface* control = GetControl(controlID);
-	if (control == nullptr)
-	{
-		return;
-	}
-	control->ProgramDccPomLocoRead(address, cv);
-}
-
-void Manager::ProgramDccPomLocoWrite(const controlID_t controlID, const address_t address, const CvNumber cv, const CvValue value)
-{
-	ControlInterface* control = GetControl(controlID);
-	if (control == nullptr)
-	{
-		return;
-	}
-	control->ProgramDccPomLocoWrite(address, cv, value);
-}
-
-void Manager::ProgramDccPomAccessoryRead(const controlID_t controlID, const address_t address, const CvNumber cv)
-{
-	ControlInterface* control = GetControl(controlID);
-	if (control == nullptr)
-	{
-		return;
-	}
-	control->ProgramDccPomAccessoryRead(address, cv);
-}
-
-void Manager::ProgramDccPomAccessoryWrite(const controlID_t controlID, const address_t address, const CvNumber cv, const CvValue value)
-{
-	ControlInterface* control = GetControl(controlID);
-	if (control == nullptr)
-	{
-		return;
-	}
-	control->ProgramDccPomAccessoryWrite(address, cv, value);
+	ProgramCheckBooster(mode);
+	control->ProgramWrite(mode, address, cv, value);
 }
 
 void Manager::ProgramDccValue(const CvNumber cv, const CvValue value)

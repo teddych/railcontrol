@@ -67,9 +67,7 @@ class Manager
 		const std::map<controlID_t,std::string> LocoControlListNames() const;
 		const std::map<controlID_t,std::string> AccessoryControlListNames() const;
 		const std::map<controlID_t,std::string> FeedbackControlListNames() const;
-		const std::map<controlID_t,std::string> ProgramMmControlListNames() const;
-		const std::map<controlID_t,std::string> ProgramDccPomControlListNames() const;
-		const std::map<controlID_t,std::string> ProgramDccControlListNames() const;
+		const std::map<controlID_t,std::string> ProgramControlListNames() const;
 		const std::map<std::string,protocol_t> LocoProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeLoco, controlID); }
 		const std::map<std::string,protocol_t> AccessoryProtocolsOfControl(const controlID_t controlID) const { return ProtocolsOfControl(AddressTypeAccessory, controlID); }
 
@@ -261,13 +259,8 @@ class Manager
 		controlID_t GetControlForAccessory() const;
 		controlID_t GetControlForFeedback() const;
 
-		void ProgramMm(const controlID_t controlID, const CvNumber cv, const CvValue value);
-		void ProgramDccRead(const controlID_t controlID, const CvNumber cv);
-		void ProgramDccWrite(const controlID_t controlID, const CvNumber cv, const CvValue value);
-		void ProgramDccPomLocoRead(const controlID_t controlID, const address_t address, const CvNumber cv);
-		void ProgramDccPomLocoWrite(const controlID_t controlID, const address_t address, const CvNumber cv, const CvValue value);
-		void ProgramDccPomAccessoryRead(const controlID_t controlID, const address_t address, const CvNumber cv);
-		void ProgramDccPomAccessoryWrite(const controlID_t controlID, const address_t address, const CvNumber cv, const CvValue value);
+		void ProgramRead(const controlID_t controlID, const ProgramMode mode, const address_t address, const CvNumber cv);
+		void ProgramWrite(const controlID_t controlID, const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value);
 		void ProgramDccValue(const CvNumber cv, const CvValue value);
 		static void ProgramDccValueStatic(Manager* manager, const CvNumber cv, const CvValue value)
 		{
@@ -448,6 +441,8 @@ class Manager
 		}
 
 		void InitLocos();
+
+		void ProgramCheckBooster(const ProgramMode mode);
 
 		Logger::Logger* logger;
 		volatile boosterState_t boosterState;

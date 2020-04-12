@@ -102,14 +102,9 @@ class ControlInterface
 			}
 		}
 
-		virtual void ProgramMm(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
-		virtual void ProgramDccRead(__attribute__((unused))const CvNumber cv) {}
-		virtual void ProgramDccWrite(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+		virtual void ProgramRead(__attribute__((unused)) const ProgramMode mode, __attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv) {}
+		virtual void ProgramWrite(__attribute__((unused)) const ProgramMode mode, __attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 		virtual void ProgramDccValue(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
-		virtual void ProgramDccPomLocoRead(__attribute__((unused)) const address_t address, __attribute__((unused))const CvNumber cv) {}
-		virtual void ProgramDccPomLocoWrite(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
-		virtual void ProgramDccPomAccessoryRead(__attribute__((unused)) const address_t address, __attribute__((unused))const CvNumber cv) {}
-		virtual void ProgramDccPomAccessoryWrite(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 
 	private:
 		controlType_t controlType;

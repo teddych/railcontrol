@@ -413,111 +413,63 @@ namespace Hardware
 		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), state, signal->GetDuration());
 	}
 
-	void HardwareHandler::ProgramMm(const CvNumber cv, const CvValue value)
+	bool HardwareHandler::ProgramCheckValues(const ProgramMode mode, const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 0x100)
+		if (cv == 0)
 		{
-			return; // cvs are one based
-		}
-		if (instance == nullptr)
-		{
-			return;
-		}
-
-		instance->ProgramMm(cv, value);
-	}
-
-	void HardwareHandler::ProgramDccRead(const CvNumber cv)
-	{
-		if (cv == 0 || cv > 0x4000)
-		{
-			return; // cvs are one based
-		}
-		if (instance == nullptr)
-		{
-			return;
-		}
-
-		instance->ProgramDccRead(cv);
-	}
-
-	void HardwareHandler::ProgramDccWrite(const CvNumber cv, const CvValue value)
-	{
-		if (cv == 0 || cv > 0x4000)
-		{
-			return; // cvs are one based
+			return false; // cvs are one based, so cv zero is not allowed
 		}
 		if (cv == 1 && value == 0)
 		{
-			return; // address zero is not allowed for DCC decoders and can not be undone.
+			return false; // loco/accessory address zero is not allowed for DCC decoders and can not be undone. It would destroy some DCC decoders.
 		}
-		if (instance == nullptr)
+		CvNumber maxCv;
+		switch (mode)
 		{
-			return;
+			case ProgramModeMm:
+				maxCv = 0x100;
+				break;
+
+			case ProgramModeDccDirect:
+			case ProgramModeDccPomLoco:
+				maxCv = 0x4000;
+				break;
+
+			case ProgramModeDccPomAccessory:
+				maxCv = 0x800;
+				break;
+
+			default:
+				return false;
 		}
-		instance->ProgramDccWrite(cv, value);
+		return (cv <= maxCv);
 	}
 
-	void HardwareHandler::ProgramDccPomLocoRead(const address_t address, const CvNumber cv)
+	void HardwareHandler::ProgramRead(const ProgramMode mode, const address_t address, const CvNumber cv)
 	{
-		if (cv == 0 || cv > 0x4000)
+		if (ProgramCheckValues(mode, cv) == false)
 		{
-			return; // cvs are one based
+			return;
 		}
 		if (instance == nullptr)
 		{
 			return;
 		}
 
-		instance->ProgramDccPomLocoRead(address, cv);
+		instance->ProgramRead(mode, address, cv);
 	}
 
-	void HardwareHandler::ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value)
+	void HardwareHandler::ProgramWrite(const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value)
 	{
-		if (cv == 0 || cv > 0x4000)
+		if (ProgramCheckValues(mode, cv, value) == false)
 		{
-			return; // cvs are one based
-		}
-		if (cv == 1 && value == 0)
-		{
-			return; // address zero is not allowed for DCC decoders and can not be undone.
+			return;
 		}
 		if (instance == nullptr)
 		{
 			return;
 		}
-		instance->ProgramDccPomLocoWrite(address, cv, value);
-	}
-
-	void HardwareHandler::ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv)
-	{
-		if (cv == 0 || cv > 0x800)
-		{
-			return; // cvs are one based
-		}
-		if (instance == nullptr)
-		{
-			return;
-		}
-
-		instance->ProgramDccPomAccessoryRead(address, cv);
-	}
-
-	void HardwareHandler::ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value)
-	{
-		if (cv == 0 || cv > 0x800)
-		{
-			return; // cvs are one based
-		}
-		if (cv == 1 && value == 0)
-		{
-			return; // address zero is not allowed for DCC decoders and can not be undone.
-		}
-		if (instance == nullptr)
-		{
-			return;
-		}
-		instance->ProgramDccPomAccessoryWrite(address, cv, value);
+		instance->ProgramWrite(mode, address, cv, value);
 	}
 
 	void HardwareHandler::ArgumentTypesOfHardwareTypeAndHint(const hardwareType_t hardwareType, std::map<unsigned char,argumentType_t>& arguments, std::string& hint)

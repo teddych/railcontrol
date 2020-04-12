@@ -57,13 +57,8 @@ namespace Hardware
 			void LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction) override;
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 			void AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
-			void ProgramMm(const CvNumber cv, const CvValue value) override;
-			void ProgramDccRead(const CvNumber cv) override;
-			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
-			void ProgramDccPomLocoRead(const address_t address, const CvNumber cv) override;
-			void ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value) override;
-			void ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv) override;
-			void ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value) override;
+			void ProgramRead(const ProgramMode mode, const address_t address, const CvNumber cv) override;
+			void ProgramWrite(const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value) override;
 
 		private:
 			Logger::Logger* logger;

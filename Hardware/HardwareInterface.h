@@ -110,26 +110,11 @@ namespace Hardware
 				std::async(std::launch::async, AccessoryOnOrOffStatic, this, protocol, address, state, waitTime);
 			};
 
-			// write Märklin Motorola variable
-			virtual void ProgramMm(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+			// read CV value
+			virtual void ProgramRead(__attribute__((unused)) const ProgramMode mode, __attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv) {}
 
-			// read DCC CV value
-			virtual void ProgramDccRead(__attribute__((unused))const CvNumber cv) {}
-
-			// write DCC CV value
-			virtual void ProgramDccWrite(__attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
-
-			// read DCC CV POM loco value
-			virtual void ProgramDccPomLocoRead(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv) {}
-
-			// write DCC CV POM loco value
-			virtual void ProgramDccPomLocoWrite(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
-
-			// read DCC CV POM accessory value
-			virtual void ProgramDccPomAccessoryRead(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv) {}
-
-			// write DCC CV POM accessory value
-			virtual void ProgramDccPomAccessoryWrite(__attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
+			// write CV value
+			virtual void ProgramWrite(__attribute__((unused)) const ProgramMode mode, __attribute__((unused)) const address_t address, __attribute__((unused)) const CvNumber cv, __attribute__((unused)) const CvValue value) {}
 
 		protected:
 			Manager* manager;

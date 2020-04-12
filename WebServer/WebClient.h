@@ -212,9 +212,8 @@ namespace WebServer
 			void HandleTimestamp(const std::map<std::string,std::string>& arguments);
 			void HandleControlArguments(const std::map<std::string,std::string>& arguments);
 			void HandleProgram();
-			void HandleProgramMm(const std::map<std::string,std::string>& arguments);
-			void HandleProgramDccRead(const std::map<std::string,std::string>& arguments);
-			void HandleProgramDccWrite(const std::map<std::string,std::string>& arguments);
+			void HandleProgramRead(const std::map<std::string,std::string>& arguments);
+			void HandleProgramWrite(const std::map<std::string,std::string>& arguments);
 			void HandleUpdater(const std::map<std::string,std::string>& headers);
 			void UrlDecode(std::string& argumentValue);
 			char ConvertHexToInt(char c);

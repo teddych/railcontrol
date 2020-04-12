@@ -464,6 +464,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextZ21Type */ { "Connected to a {0} with firmware version {1}", "Verbunden mit einer {0} mit firmware version {1}", "Conectado a {0} con firmware versión {1}" },
 /* TextZ21Unknown */ { "unknown Z21", "unbekannte Z21", "Z21 desconosido" },
 /* TextZ21White2013 */ { "white z21", "weisse z21", "z21 blanco" },
+/* TextRaw */ { "Raw", "Roh", "Bruto" },
 // /* Text */ { "", "", "" },
 };
 

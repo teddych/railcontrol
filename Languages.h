@@ -464,6 +464,7 @@ class Languages
 			TextZ21Type,
 			TextZ21Unknown,
 			TextZ21White2013,
+			TextRaw,
 			MaxTexts
 		};
 

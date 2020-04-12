@@ -117,29 +117,8 @@ namespace Hardware
 			void LocoSpeedDirectionFunctions(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction, std::vector<bool>& functions) override;
 			void Accessory(const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime) override;
 			void AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
-			void ProgramMm(const CvNumber cv, const CvValue value) override;
-			void ProgramDccRead(const CvNumber cv) override;
-			void ProgramDccWrite(const CvNumber cv, const CvValue value) override;
-			void ProgramDccPomLocoRead(const address_t address, const CvNumber cv) override
-			{
-				ProgramDccPom(Languages::TextProgramDccPomLocoRead, PomLoco, PomReadByte, address, cv, 0);
-			}
-
-			void ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value) override
-			{
-				ProgramDccPom(Languages::TextProgramDccPomLocoWrite, PomLoco, PomWriteByte, address, cv, value);
-			}
-
-			void ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv) override
-			{
-				ProgramDccPom(Languages::TextProgramDccPomAccessoryRead, PomAccessory, PomReadByte, address, cv, 0);
-			}
-
-			void ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value) override
-			{
-				ProgramDccPom(Languages::TextProgramDccPomAccessoryWrite, PomAccessory, PomWriteByte, address, cv, value);
-			}
-
+			void ProgramRead(const ProgramMode mode, const address_t address, const CvNumber cv) override;
+			void ProgramWrite(const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value) override;
 
 		private:
 			static const unsigned short Z21Port = 21105;
@@ -251,18 +230,22 @@ namespace Hardware
 
 			Utils::ThreadSafeQueue<AccessoryQueueEntry> accessoryQueue;
 
-			void ProgramDccPom(const Languages::textSelector_t text, const PomDB0 db0, const PomOption option, const address_t address, const CvNumber cv, const CvValue value);
+			void ProgramMm(const CvNumber cv, const CvValue value);
+			void ProgramDccRead(const CvNumber cv);
+			void ProgramDccWrite(const CvNumber cv, const CvValue value);
+			void ProgramDccPom(const PomDB0 db0, const PomOption option, const address_t address, const CvNumber cv, const CvValue value = 0);
 
 			void LocoSpeedDirection(const protocol_t protocol, const address_t address, const locoSpeed_t speed, const direction_t direction);
 			void AccessorySender();
 			void HeartBeatSender();
 			void Receiver();
-			ssize_t ParseData(unsigned char* buffer, size_t bufferLength);
-			void ParseXHeader(unsigned char* buffer);
-			void ParseDB0(unsigned char* buffer);
-			void ParseTurnoutData(unsigned char *buffer);
-			void ParseLocoData(unsigned char* buffer);
-			void ParseDetectorData(unsigned char* buffer);
+			ssize_t ParseData(const unsigned char* buffer, size_t bufferLength);
+			void ParseXHeader(const unsigned char* buffer);
+			void ParseDB0(const unsigned char* buffer);
+			void ParseTurnoutData(const unsigned char *buffer);
+			void ParseLocoData(const unsigned char* buffer);
+			void ParseCvData(const unsigned char* buffer);
+			void ParseDetectorData(const unsigned char* buffer);
 
 			void SendGetSerialNumber();
 			void SendGetHardwareInfo();

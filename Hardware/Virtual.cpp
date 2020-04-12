@@ -80,48 +80,52 @@ namespace Hardware
 		logger->Info(Languages::TextSettingAccessoryWithProtocol, static_cast<int>(protocol), address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 	}
 
-	// write Märklin Motorola variable
-	void Virtual::ProgramMm(const CvNumber cv, const CvValue value)
+	// read CV value
+	void Virtual::ProgramRead(const ProgramMode mode, const address_t address, const CvNumber cv)
 	{
-		logger->Info(Languages::TextProgramMm, cv, static_cast<int>(value));
-	}
+		switch (mode)
+		{
+			case ProgramModeDccDirect:
+				logger->Info(Languages::TextProgramDccRead, cv);
+				break;
 
-	// read DCC CV value
-	void Virtual::ProgramDccRead(const CvNumber cv)
-	{
-		logger->Info(Languages::TextProgramDccRead, cv);
+			case ProgramModeDccPomLoco:
+				logger->Info(Languages::TextProgramDccPomLocoRead, address, cv);
+				break;
+
+			case ProgramModeDccPomAccessory:
+				logger->Info(Languages::TextProgramDccPomAccessoryRead, address, cv);
+				break;
+
+			default:
+				return;
+		}
 		std::async(std::launch::async, Manager::ProgramDccValueStatic, manager, cv, cv & 0xFF);
 	}
 
 	// write DCC CV value
-	void Virtual::ProgramDccWrite(const CvNumber cv, const CvValue value)
+	void Virtual::ProgramWrite(const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value)
 	{
-		logger->Info(Languages::TextProgramDccWrite, static_cast<int>(cv), static_cast<int>(value));
-	}
+		switch (mode)
+		{
+			case ProgramModeMm:
+				logger->Info(Languages::TextProgramMm, cv, value);
+				break;
 
-	// read POM DCC CV value
-	void Virtual::ProgramDccPomLocoRead(const address_t address, const CvNumber cv)
-	{
-		logger->Info(Languages::TextProgramDccPomLocoRead, address, cv);
-		std::async(std::launch::async, Manager::ProgramDccValueStatic, manager, cv, cv & 0xFF);
-	}
+			case ProgramModeDccDirect:
+				logger->Info(Languages::TextProgramDccWrite, cv, value);
+				break;
 
-	// write POM DCC CV value
-	void Virtual::ProgramDccPomLocoWrite(const address_t address, const CvNumber cv, const CvValue value)
-	{
-		logger->Info(Languages::TextProgramDccPomLocoWrite, address, cv, static_cast<int>(value));
-	}
+			case ProgramModeDccPomLoco:
+				logger->Info(Languages::TextProgramDccPomLocoWrite, address, cv, value);
+				break;
 
-	// read POM DCC CV value
-	void Virtual::ProgramDccPomAccessoryRead(const address_t address, const CvNumber cv)
-	{
-		logger->Info(Languages::TextProgramDccPomAccessoryRead, address, cv);
-		std::async(std::launch::async, Manager::ProgramDccValueStatic, manager, cv, cv & 0xFF);
-	}
+			case ProgramModeDccPomAccessory:
+				logger->Info(Languages::TextProgramDccPomAccessoryWrite, address, cv, value);
+				break;
 
-	// write POM DCC CV value
-	void Virtual::ProgramDccPomAccessoryWrite(const address_t address, const CvNumber cv, const CvValue value)
-	{
-		logger->Info(Languages::TextProgramDccPomAccessoryWrite, address, cv, static_cast<int>(value));
+			default:
+				return;
+		}
 	}
 } // namespace
