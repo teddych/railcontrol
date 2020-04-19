@@ -38,7 +38,7 @@ namespace Hardware
 			params->GetControlID(),
 			Logger::Logger::GetLogger("CC-Schnitte " + params->GetName() + " " + params->GetArg1()),
 			"CC-Schnitte / " + params->GetName() + " at serial port " + params->GetArg1()),
-	 	serialLine(logger, params->GetArg1(), B500000, 8, 'N', 1),
+	 	serialLine(logger, params->GetArg1(), B500000, 8, 'N', 1, true),
 		run(false)
 	{
 		logger->Info(Languages::TextStarting, name);
