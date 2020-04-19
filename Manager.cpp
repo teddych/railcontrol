@@ -266,6 +266,10 @@ void Manager::Booster(const controlType_t controlType, const boosterState_t stat
 		return;
 	}
 	boosterState = state;
+	if (boosterState == BoosterGo && initLocosDone == false)
+	{
+		InitLocos();
+	}
 	{
 		std::lock_guard<std::mutex> guard(controlMutex);
 		for (auto control : controls)
@@ -273,34 +277,26 @@ void Manager::Booster(const controlType_t controlType, const boosterState_t stat
 			control.second->Booster(controlType, state);
 		}
 	}
-	if (boosterState == BoosterStop)
-	{
-		return;
-	}
-	if (!initLocosDone)
+	if (boosterState == BoosterGo && initLocosDone == false)
 	{
 		InitLocos();
+		initLocosDone = true;
 	}
 }
 
 void Manager::InitLocos()
 {
+	std::this_thread::sleep_for(std::chrono::seconds(1));
 	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto loco : locos)
 	{
-		if (boosterState == BoosterStop)
-		{
-			return;
-		}
 		std::lock_guard<std::mutex> guard(controlMutex);
 		for (auto control : controls)
 		{
 			std::vector<bool> functions = loco.second->GetFunctions();
 			control.second->LocoSpeedDirectionFunctions(loco.second, loco.second->Speed(), loco.second->GetDirection(), functions);
 		}
-		std::this_thread::sleep_for(std::chrono::milliseconds(250));
 	}
-	initLocosDone = true;
 }
 
 /***************************
