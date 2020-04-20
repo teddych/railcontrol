@@ -441,6 +441,7 @@ class Manager
 		}
 
 		void InitLocos();
+		static void InitLocosStatic(Manager* manager) { manager->InitLocos(); }
 
 		void ProgramCheckBooster(const ProgramMode mode);
 

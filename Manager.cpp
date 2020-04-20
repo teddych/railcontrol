@@ -190,6 +190,7 @@ Manager::Manager(Config& config)
 	run = true;
 	debounceRun = true;
 	debounceThread = std::thread(&Manager::DebounceWorker, this);
+	std::async(std::launch::async, InitLocosStatic, this);
 }
 
 Manager::~Manager()
@@ -266,10 +267,6 @@ void Manager::Booster(const controlType_t controlType, const boosterState_t stat
 		return;
 	}
 	boosterState = state;
-	if (boosterState == BoosterGo && initLocosDone == false)
-	{
-		InitLocos();
-	}
 	{
 		std::lock_guard<std::mutex> guard(controlMutex);
 		for (auto control : controls)
@@ -277,11 +274,14 @@ void Manager::Booster(const controlType_t controlType, const boosterState_t stat
 			control.second->Booster(controlType, state);
 		}
 	}
-	if (boosterState == BoosterGo && initLocosDone == false)
+
+	if (boosterState != BoosterGo || initLocosDone == true)
 	{
-		InitLocos();
-		initLocosDone = true;
+		return;
 	}
+
+	std::async(std::launch::async, InitLocosStatic, this);
+	initLocosDone = true;
 }
 
 void Manager::InitLocos()
