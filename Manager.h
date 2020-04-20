@@ -37,6 +37,7 @@ along with RailControl; see the file LICENCE. If not see
 class Manager
 {
 	public:
+		Manager() = delete;
 		Manager(Config& config);
 		~Manager();
 

@@ -20,13 +20,13 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <future>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "DataTypes.h"
 #include "Manager.h"
+#include "Utils/Utils.h"
 
 namespace Hardware
 {
@@ -100,13 +100,13 @@ namespace Hardware
 			{
 				// sleeps are necessary to prevent command overflow in command stations (especially Märklin Gleisbox)
 				LocoSpeed(protocol, address, speed);
-				std::this_thread::sleep_for(std::chrono::milliseconds(25));
+				Utils::Utils::SleepForMilliseconds(25);
 				LocoDirection(protocol, address, direction);
-				std::this_thread::sleep_for(std::chrono::milliseconds(25));
+				Utils::Utils::SleepForMilliseconds(25);
 				for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
 				{
 					LocoFunction(protocol, address, functionNr, functions[functionNr]);
-					std::this_thread::sleep_for(std::chrono::milliseconds(25));
+					Utils::Utils::SleepForMilliseconds(25);
 				}
 			}
 
@@ -133,7 +133,7 @@ namespace Hardware
 		private:
 			static void AccessoryOnOrOffStatic(HardwareInterface* hardware, const protocol_t protocol, const address_t address, const accessoryState_t state, const waitTime_t waitTime)
 			{
-				std::this_thread::sleep_for(std::chrono::milliseconds(waitTime));
+				Utils::Utils::SleepForMilliseconds(waitTime);
 				hardware->AccessoryOnOrOff(protocol, address, state, false);
 			}
 	};

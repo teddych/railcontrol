@@ -30,6 +30,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataTypes.h"
 #include "Languages.h"
 #include "RailControl.h"
+#include "Utils/Utils.h"
 #include "WebServer/WebClient.h"
 #include "WebServer/WebServer.h"
 
@@ -68,7 +69,7 @@ namespace WebServer {
 			updates[++updateID] = GetStatus(Languages::TextStoppingRailControl);
 		}
 		TerminateTcpServer();
-		std::this_thread::sleep_for(std::chrono::seconds(1));
+		Utils::Utils::SleepForSeconds(1);
 		run = false;
 
 		// stopping all clients
