@@ -2922,12 +2922,12 @@ void Manager::ProgramWrite(const controlID_t controlID, const ProgramMode mode, 
 	control->ProgramWrite(mode, address, cv, value);
 }
 
-void Manager::ProgramDccValue(const CvNumber cv, const CvValue value)
+void Manager::ProgramValue(const CvNumber cv, const CvValue value)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->ProgramDccValue(cv, value);;
+		control.second->ProgramValue(cv, value);;
 	}
 }
 
@@ -2978,7 +2978,7 @@ bool Manager::CanHandleProgramDccWrite()
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		bool ret = control.second->CanHandleProgramDcc();
+		bool ret = control.second->CanHandleProgramDccDirect();
 		if (ret == true)
 		{
 			return true;

@@ -29,14 +29,18 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	class MaerklinCAN : protected HardwareInterface
+	class ProtocolMaerklinCAN : protected HardwareInterface
 	{
 		public:
-			MaerklinCAN() = delete;
+			ProtocolMaerklinCAN() = delete;
 
 			bool CanHandleLocos() const override { return true; }
 			bool CanHandleAccessories() const override { return true; }
 			bool CanHandleFeedback() const override { return true; }
+			bool CanHandleProgram() const override { return false; }
+			bool CanHandleProgramMm() const override { return true; }
+			bool CanHandleProgramMfx() const override { return true; }
+			bool CanHandleProgramDccDirect() const override { return true; }
 
 			void GetLocoProtocols(std::vector<protocol_t> &protocols) const override
 			{
@@ -66,6 +70,8 @@ namespace Hardware
 			void LocoDirection(const protocol_t protocol, const address_t address, const direction_t direction) override;
 			void LocoFunction(const protocol_t protocol, const address_t address, const function_t function, const bool on) override;
 			void AccessoryOnOrOff(const protocol_t protocol, const address_t address, const accessoryState_t state, const bool on) override;
+			void ProgramRead(const ProgramMode mode, const address_t address, const CvNumber cv) override;
+			void ProgramWrite(const ProgramMode mode, const address_t address, const CvNumber cv, const CvValue value) override;
 
 		protected:
 
@@ -75,6 +81,8 @@ namespace Hardware
 				CanCommandLocoSpeed = 0x04,
 				CanCommandLocoDirection = 0x05,
 				CanCommandLocoFunction = 0x06,
+				CanCommandReadConfig = 0x07,
+				CanCommandWriteConfig = 0x08,
 				CanCommandAccessory = 0x0B,
 				CanCommandS88Event = 0x11
 			};
@@ -92,12 +100,12 @@ namespace Hardware
 			typedef unsigned char CanLength;
 			typedef uint32_t CanAddress;
 
-			MaerklinCAN(Manager* manager, controlID_t controlID, Logger::Logger* logger, std::string name)
+			ProtocolMaerklinCAN(Manager* manager, controlID_t controlID, Logger::Logger* logger, std::string name)
 			:	HardwareInterface(manager, controlID, name),
 			 	logger(logger)
 			{}
 
-			virtual ~MaerklinCAN() {}
+			virtual ~ProtocolMaerklinCAN() {}
 
 			void Parse(const unsigned char* buffer);
 
@@ -108,7 +116,7 @@ namespace Hardware
 		private:
 			static const unsigned short hash = 0x7337;
 
-			void CreateCommandHeader(unsigned char* buffer, const CanPrio prio, const CanCommand command, const CanResponse response, const CanLength length);
+			void CreateCommandHeader(unsigned char* buffer, const CanCommand command, const CanResponse response, const CanLength length);
 			void ParseAddressProtocol(const unsigned char* buffer, CanAddress& address, protocol_t& protocol);
 
 			CanPrio ParsePrio(const unsigned char* buffer)
@@ -141,8 +149,9 @@ namespace Hardware
 				return Utils::Utils::DataBigEndianToInt(buffer + 5);
 			}
 
-			void CreateLocID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
-			void CreateAccessoryID(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
+			void CreateLocalIDLoco(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
+			void CreateLocalIDAccessory(unsigned char* buffer, const protocol_t& protocol, const address_t& address);
+
 			virtual void Send(const unsigned char* buffer) = 0;
 	};
 } // namespace

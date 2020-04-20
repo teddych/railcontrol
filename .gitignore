@@ -13,8 +13,11 @@ Storage/sqlite/sqlite3
 *.so
 *.bak
 test/testloco
+tools/Cc-Schnitte-Sniffer
 gmon.out
 amalgamation.cpp
 .*.swp
 svg/*
 Timestamp.cpp
+.settings/language.settings.xml
+

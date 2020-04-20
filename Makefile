@@ -150,6 +150,9 @@ clean-sqlite-shell:
 test:
 	make -C test
 
+tools:
+	make -C tools
+
 Timestamp.cpp:
 	echo "#include <ctime>" > Timestamp.cpp
 	echo "#include \"Timestamp.h\"" >> Timestamp.cpp

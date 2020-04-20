@@ -876,8 +876,8 @@ namespace Hardware
 		}
 		const CvNumber cv = Utils::Utils::DataBigEndianToShort(buffer + 6) + 1;
 		const CvValue value = buffer[8];
-		logger->Debug(Languages::TextProgramDccReadValue, cv, value);
-		manager->ProgramDccValue(cv, value);
+		logger->Debug(Languages::TextProgramReadValue, cv, value);
+		manager->ProgramValue(cv, value);
 	}
 
 	void Z21::ParseDetectorData(const unsigned char* buffer)
