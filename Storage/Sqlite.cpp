@@ -144,48 +144,49 @@ namespace Storage
 	void SQLite::RemoveOldBackupFiles()
 	{
 		DIR *dir = opendir(".");
-		if (dir != nullptr)
+		if (dir == nullptr)
 		{
-			struct dirent *ent;
-			std::vector<string> fileNames;
-			const string filenameSearch = filename + ".";
-			const size_t filenameSearchLength = filenameSearch.length() + 10;
-			while (true)
+			return;
+		}
+		struct dirent *ent;
+		std::vector<string> fileNames;
+		const string filenameSearch = filename + ".";
+		const size_t filenameSearchLength = filenameSearch.length() + 10;
+		while (true)
+		{
+			ent = readdir(dir);
+			if (ent == nullptr)
 			{
-				ent = readdir(dir);
-				if (ent == nullptr)
-				{
-					break;
-				}
-				string fileName = ent->d_name;
-				if (fileName.length() != filenameSearchLength || fileName.find(filenameSearch) == string::npos)
-				{
-					continue;
-				}
-				fileNames.push_back(ent->d_name);
+				break;
 			}
-			closedir(dir);
-			std::sort(fileNames.begin(), fileNames.end());
+			string fileName = ent->d_name;
+			if (fileName.length() != filenameSearchLength || fileName.find(filenameSearch) == string::npos)
+			{
+				continue;
+			}
+			fileNames.push_back(ent->d_name);
+		}
+		closedir(dir);
+		std::sort(fileNames.begin(), fileNames.end());
 
-			size_t numberOfFiles = fileNames.size();
-			if (numberOfFiles == 0 || numberOfFiles < keepBackups)
+		size_t numberOfFiles = fileNames.size();
+		if (numberOfFiles == 0 || numberOfFiles < keepBackups)
+		{
+			return;
+		}
+
+		unsigned int removeBackups = fileNames.size() - keepBackups;
+		++removeBackups; // at shutdown we create another backupfile
+		for (auto fileName : fileNames)
+		{
+			if (removeBackups == 0)
 			{
 				return;
 			}
 
-			unsigned int removeBackups = fileNames.size() - keepBackups;
-			++removeBackups; // at shutdown we create another backupfile
-			for (auto fileName : fileNames)
-			{
-				if (removeBackups == 0)
-				{
-					continue;
-				}
-
-				--removeBackups;
-				logger->Info(Languages::TextRemoveBackupFile, fileName);
-				remove(fileName.c_str());
-			}
+			--removeBackups;
+			logger->Info(Languages::TextRemoveBackupFile, fileName);
+			remove(fileName.c_str());
 		}
 	}
 
