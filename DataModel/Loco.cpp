@@ -42,7 +42,7 @@ namespace DataModel
 				std::lock_guard<std::mutex> Guard(stateMutex);
 				if (state == LocoStateManual)
 				{
-					return;
+					break;
 				}
 			}
 			logger->Info(Languages::TextWaitingUntilHasStopped, name);
@@ -681,10 +681,11 @@ namespace DataModel
 
 	void Loco::DeleteSlaves()
 	{
-		while (!slaves.empty())
+		while (slaves.size() > 0)
 		{
-			delete slaves.back();
+			Relation* slave = slaves.back();
 			slaves.pop_back();
+			delete slave;
 		}
 	}
 
