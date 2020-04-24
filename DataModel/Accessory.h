@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/HardwareHandle.h"
 #include "DataModel/LayoutItem.h"
 #include "DataModel/LockableItem.h"
+#include "DataModel/TypeAccessory.h"
 #include "Languages.h"
 
 class Manager;
@@ -35,18 +36,7 @@ namespace DataModel
 	class Accessory : public LayoutItem, public LockableItem, public HardwareHandle
 	{
 		public:
-			enum accessoryType : accessoryType_t
-			{
-				AccessoryTypeDefault = 0
-			};
-
-			enum accessoryState : accessoryState_t
-			{
-				AccessoryStateOff = false,
-				AccessoryStateOn = true
-			};
-
-			Accessory(const accessoryID_t accessoryID)
+			Accessory(const AccessoryID accessoryID)
 			:	LayoutItem(accessoryID),
 			 	type(AccessoryTypeDefault),
 			 	state(AccessoryStateOff),
@@ -57,7 +47,7 @@ namespace DataModel
 			{
 			}
 
-			Accessory(__attribute__((unused)) Manager* manager, const accessoryID_t accessoryID)
+			Accessory(__attribute__((unused)) Manager* manager, const AccessoryID accessoryID)
 			:	Accessory(accessoryID)
 			{
 			}
@@ -71,18 +61,18 @@ namespace DataModel
 
 			virtual ~Accessory() {}
 
-			virtual objectType_t GetObjectType() const { return ObjectTypeAccessory; }
+			virtual ObjectType GetObjectType() const { return ObjectTypeAccessory; }
 
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
 			virtual std::string LayoutType() const override { return Languages::GetText(Languages::TextAccessory); }
 
-			void SetType(accessoryType_t type) { this->type = type; }
-			accessoryType_t GetType() const { return type; }
-			void SetState(accessoryState_t state) { this->state = state; lastUsed = time(nullptr); ++counter; }
-			accessoryState_t GetState() const { return state; }
-			void SetDuration(accessoryDuration_t duration) { this->duration = duration; }
-			accessoryDuration_t GetDuration() const { return duration; }
+			void SetType(Type type) { this->type = type; }
+			Type GetType() const { return type; }
+			void SetState(State state) { this->state = state; lastUsed = time(nullptr); ++counter; }
+			State GetState() const { return state; }
+			void SetDuration(Duration duration) { this->duration = duration; }
+			Duration GetDuration() const { return duration; }
 
 			void SetInverted(const bool inverted) { this->inverted = inverted; }
 			bool GetInverted() const { return inverted; }
@@ -93,9 +83,9 @@ namespace DataModel
 			std::string SerializeWithoutType() const;
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 
-			accessoryType_t type;
-			accessoryState_t state;
-			accessoryDuration_t duration; // duration in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
+			Type type;
+			State state;
+			Duration duration; // duration in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
 			bool inverted;
 
 			time_t lastUsed;

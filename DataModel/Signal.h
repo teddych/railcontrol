@@ -34,19 +34,7 @@ namespace DataModel
 	class Signal : public Accessory
 	{
 		public:
-			enum signalType : signalType_t
-			{
-				SignalTypeSimpleLeft = 0,
-				SignalTypeSimpleRight = 1
-			};
-
-			enum signalState : signalState_t
-			{
-				SignalStateRed = false,
-				SignalStateGreen = true
-			};
-
-			Signal(Manager* manager, const signalID_t signalID)
+			Signal(Manager* manager, const SignalID signalID)
 			:	Accessory(manager, signalID),
 			 	manager(manager)
 			{
@@ -58,16 +46,13 @@ namespace DataModel
 				Deserialize(serialized);
 			}
 
-			objectType_t GetObjectType() const { return ObjectTypeSignal; }
+			ObjectType GetObjectType() const { return ObjectTypeSignal; }
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 			std::string LayoutType() const override { return Languages::GetText(Languages::TextSignal); };
 
-			bool Release(Logger::Logger* logger, const locoID_t locoID) override;
-
-			signalState_t GetState() const { return static_cast<signalState_t>(state); }
-			signalType_t GetType() const { return static_cast<signalType_t>(type); }
+			bool Release(Logger::Logger* logger, const LocoID locoID) override;
 
 		private:
 			Manager* manager;

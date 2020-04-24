@@ -90,10 +90,10 @@ namespace DataModel
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
 
-		delay = static_cast<delay_t>(Utils::Utils::GetIntegerMapEntry(arguments, "delay", DefaultDelay));
+		delay = static_cast<Delay>(Utils::Utils::GetIntegerMapEntry(arguments, "delay", DefaultDelay));
 		lastUsed = Utils::Utils::GetIntegerMapEntry(arguments, "lastused", 0);
 		counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 0);
-		automode = static_cast<automode_t>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
+		automode = static_cast<Automode>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		if (automode == AutomodeNo)
 		{
 			fromTrack = TrackNone;
@@ -112,9 +112,9 @@ namespace DataModel
 			return true;
 		}
 		fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
-		fromDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
+		fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
 		toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "toTrack", TrackNone);
-		toDirection = static_cast<direction_t>(Utils::Utils::GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
+		toDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
 		speed = static_cast<Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", SpeedTravel));
 		feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
 		feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdCreep", FeedbackNone);
@@ -122,8 +122,8 @@ namespace DataModel
 		feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdOver", FeedbackNone);
 		pushpull = static_cast<PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", PushpullTypeBoth)); // FIXME: remove later
 		pushpull = static_cast<PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", pushpull));
-		minTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
-		maxTrainLength = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
+		minTrainLength = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
+		maxTrainLength = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
 		return true;
 	}
@@ -153,7 +153,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::FromTrackDirection(Logger::Logger* logger, const trackID_t trackID, const direction_t trackDirection, const Loco* loco, const bool allowLocoTurn)
+	bool Street::FromTrackDirection(Logger::Logger* logger, const TrackID trackID, const Direction trackDirection, const Loco* loco, const bool allowLocoTurn)
 	{
 		if (automode == false)
 		{
@@ -165,7 +165,7 @@ namespace DataModel
 			return false;
 		}
 
-		const length_t locoLength = loco->GetLength();
+		const Length locoLength = loco->GetLength();
 		if (locoLength < minTrainLength)
 		{
 			logger->Debug(Languages::TextTrainIsToShort, GetName());
@@ -202,7 +202,7 @@ namespace DataModel
 	}
 
 
-	bool Street::Execute(Logger::Logger* logger, const locoID_t locoID)
+	bool Street::Execute(Logger::Logger* logger, const LocoID locoID)
 	{
 		bool isInUse = IsInUse();
 		if (isInUse && locoID != GetLoco())
@@ -211,7 +211,7 @@ namespace DataModel
 			return false;
 		}
 
-		if (manager->Booster() == BoosterStop)
+		if (manager->Booster() == BoosterStateStop)
 		{
 			logger->Debug(Languages::TextBoosterIsTurnedOff);
 			return false;
@@ -235,9 +235,9 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::Reserve(Logger::Logger* logger, const locoID_t locoID)
+	bool Street::Reserve(Logger::Logger* logger, const LocoID locoID)
 	{
-		if (manager->Booster() == BoosterStop)
+		if (manager->Booster() == BoosterStateStop)
 		{
 			logger->Debug(Languages::TextBoosterIsTurnedOff);
 			return false;
@@ -277,9 +277,9 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::Lock(Logger::Logger* logger, const locoID_t locoID)
+	bool Street::Lock(Logger::Logger* logger, const LocoID locoID)
 	{
-		if (manager->Booster() == BoosterStop)
+		if (manager->Booster() == BoosterStateStop)
 		{
 			logger->Debug(Languages::TextBoosterIsTurnedOff);
 			return false;
@@ -319,13 +319,13 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::Release(Logger::Logger* logger, const locoID_t locoID)
+	bool Street::Release(Logger::Logger* logger, const LocoID locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		return ReleaseInternal(logger, locoID);
 	}
 
-	bool Street::ReleaseInternal(Logger::Logger* logger, const locoID_t locoID)
+	bool Street::ReleaseInternal(Logger::Logger* logger, const LocoID locoID)
 	{
 		if (executeAtUnlock)
 		{
@@ -342,7 +342,7 @@ namespace DataModel
 		return LockableItem::Release(logger, locoID);
 	}
 
-	void Street::ReleaseInternalWithToTrack(Logger::Logger* logger, const locoID_t locoID)
+	void Street::ReleaseInternalWithToTrack(Logger::Logger* logger, const LocoID locoID)
 	{
 		Track* track = manager->GetTrack(toTrack);
 		if (track != nullptr)

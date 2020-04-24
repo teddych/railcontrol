@@ -31,11 +31,11 @@ namespace WebServer
 	HtmlTagTrack::HtmlTagTrack(const Manager& manager, const DataModel::Track* track)
 	:	HtmlTagLayoutItem()
 	{
-		layoutPosition_t posX;
-		layoutPosition_t posY;
-		layoutPosition_t posZ;
-		layoutItemSize_t w;
-		layoutItemSize_t h;
+		LayoutPosition posX;
+		LayoutPosition posY;
+		LayoutPosition posZ;
+		LayoutItemSize w;
+		LayoutItemSize h;
 		DataModel::LayoutItem::layoutRotation_t r;
 		track->Position(posX, posY, posZ, w, h, r);
 		DataModel::Track::type_t type = track->GetType();
@@ -45,7 +45,7 @@ namespace WebServer
 
 		bool occupied = track->GetFeedbackStateDelayed() == DataModel::Feedback::FeedbackStateOccupied;
 
-		locoID_t locoID = track->GetLocoDelayed();
+		LocoID locoID = track->GetLocoDelayed();
 		bool reserved = locoID != LocoNone;
 
 		bool blocked = track->GetBlocked();
@@ -81,7 +81,7 @@ namespace WebServer
 		div1.AddClass(trackClass);
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
-		layoutItemSize_t trackHeight = track->GetHeight();
+		LayoutItemSize trackHeight = track->GetHeight();
 		const string layoutHeight = to_string(EdgeLength * trackHeight);
 
 		switch (type)

@@ -51,11 +51,11 @@ namespace DataModel
 			bool Deserialize(const std::map<std::string,std::string> arguments);
 
 
-			locoID_t GetLoco() const { return locoID; }
+			LocoID GetLoco() const { return locoID; }
 			lockState_t GetLockState() const { return lockState; }
-			virtual bool Reserve(Logger::Logger* logger, const locoID_t locoID);
-			virtual bool Lock(Logger::Logger* logger, const locoID_t locoID);
-			virtual bool Release(Logger::Logger* logger, const locoID_t locoID);
+			virtual bool Reserve(Logger::Logger* logger, const LocoID locoID);
+			virtual bool Lock(Logger::Logger* logger, const LocoID locoID);
+			virtual bool Release(Logger::Logger* logger, const LocoID locoID);
 
 			bool IsInUse() const { return lockState != LockStateFree || locoID != LocoNone; }
 
@@ -63,7 +63,7 @@ namespace DataModel
 		private:
 			std::mutex lockMutex;
 			lockState_t lockState;
-			locoID_t locoID;
+			LocoID locoID;
 	};
 } // namespace DataModel
 

@@ -60,13 +60,13 @@ namespace DataModel
 		pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin");
 		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted", false);
 		stateCounter = Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
-		trackID = static_cast<trackID_t>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
+		trackID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
 		return true;
 	}
 
-	void Feedback::SetState(const feedbackState_t newState)
+	void Feedback::SetState(const FeedbackState newState)
 	{
-		feedbackState_t state = static_cast<feedbackState_t>(newState != inverted);
+		FeedbackState state = static_cast<FeedbackState>(newState != inverted);
 		{
 			std::lock_guard<std::mutex> Guard(updateMutex);
 			if (state == FeedbackStateFree)
@@ -92,7 +92,7 @@ namespace DataModel
 		UpdateTrackState(FeedbackStateOccupied);
 	}
 
-	void Feedback::UpdateTrackState(const feedbackState_t state)
+	void Feedback::UpdateTrackState(const FeedbackState state)
 	{
 		Track* track = manager->GetTrack(trackID);
 		if (track == nullptr)

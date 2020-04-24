@@ -53,7 +53,7 @@ namespace DataModel
 
 	std::string Loco::Serialize() const
 	{
-		trackID_t trackIdFrom = TrackNone;
+		TrackID trackIdFrom = TrackNone;
 		if (trackFrom != nullptr)
 		{
 			trackIdFrom = trackFrom->GetID();
@@ -84,11 +84,11 @@ namespace DataModel
 			return false;
 		}
 		HardwareHandle::Deserialize(arguments);
-		trackID_t trackIdFrom = Utils::Utils::GetIntegerMapEntry(arguments, "trackID", TrackNone);
+		TrackID trackIdFrom = Utils::Utils::GetIntegerMapEntry(arguments, "trackID", TrackNone);
 		trackFrom = manager->GetTrack(trackIdFrom);
 		functions.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "functions", "0"));
 		direction = (Utils::Utils::GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
-		length = static_cast<length_t>(Utils::Utils::GetIntegerMapEntry(arguments, "length", 0));
+		length = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "length", 0));
 		pushpull = Utils::Utils::GetBoolMapEntry(arguments, "commuter", false);  // FIXME: remove later
 		pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", pushpull);
 		maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
@@ -99,7 +99,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Loco::ToTrack(const trackID_t trackID)
+	bool Loco::ToTrack(const TrackID trackID)
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		// there must not be set a track
@@ -150,7 +150,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Loco::IsRunningFromTrack(const trackID_t trackID) const
+	bool Loco::IsRunningFromTrack(const TrackID trackID) const
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		return trackFirst != nullptr && trackFrom != nullptr && trackFrom->GetID() == trackID;
@@ -244,7 +244,7 @@ namespace DataModel
 				std::lock_guard<std::mutex> Guard(stateMutex);
 				if (feedbackIdsReached.IsEmpty() == false)
 				{
-					feedbackID_t feedbackId = feedbackIdsReached.Dequeue();
+					FeedbackID feedbackId = feedbackIdsReached.Dequeue();
 					if (feedbackId == feedbackIdFirst)
 					{
 						FeedbackIdFirstReached();
@@ -354,7 +354,7 @@ namespace DataModel
 			return;
 		}
 
-		trackID_t newTrackIdFirst = usedStreet->GetToTrack();
+		TrackID newTrackIdFirst = usedStreet->GetToTrack();
 		Track* newTrack = manager->GetTrack(newTrackIdFirst);
 		if (newTrack == nullptr)
 		{
@@ -370,19 +370,19 @@ namespace DataModel
 		feedbackIdOver = streetFirst->GetFeedbackIdOver();
 		wait = streetFirst->GetWaitAfterRelease();
 		bool turnLoco = (trackFrom->GetLocoDirection() != streetFirst->GetFromDirection());
-		direction_t newLocoDirection = static_cast<direction_t>(direction != turnLoco);
+		Direction newLocoDirection = static_cast<Direction>(direction != turnLoco);
 		if (turnLoco)
 		{
 			trackFrom->SetLocoDirection(streetFirst->GetFromDirection());
 			manager->TrackPublishState(trackFrom);
 		}
 		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
-		newTrack->SetLocoDirection(static_cast<direction_t>(!streetFirst->GetToDirection()));
+		newTrack->SetLocoDirection(static_cast<Direction>(!streetFirst->GetToDirection()));
 		logger->Info(Languages::TextHeadingToVia, newTrack->GetName(), streetFirst->GetName());
 
 		// start loco
 		manager->TrackPublishState(newTrack);
-		locoSpeed_t newSpeed;
+		Speed newSpeed;
 		switch (streetFirst->GetSpeed())
 		{
 			case Street::SpeedTravel:
@@ -410,7 +410,7 @@ namespace DataModel
 			return;
 		}
 
-		trackID_t newTrackIdSecond = usedStreet->GetToTrack();
+		TrackID newTrackIdSecond = usedStreet->GetToTrack();
 		Track* newTrack = manager->GetTrack(newTrackIdSecond);
 		if (newTrack == nullptr)
 		{
@@ -443,7 +443,7 @@ namespace DataModel
 		}
 
 		wait = streetSecond->GetWaitAfterRelease();
-		newTrack->SetLocoDirection(static_cast<direction_t>(!streetSecond->GetToDirection()));
+		newTrack->SetLocoDirection(static_cast<Direction>(!streetSecond->GetToDirection()));
 		logger->Info(Languages::TextHeadingToViaVia, newTrack->GetName(), streetFirst->GetName(), streetSecond->GetName());
 
 		// start loco
@@ -453,7 +453,7 @@ namespace DataModel
 
 	Street* Loco::SearchDestination(Track* track, const bool allowLocoTurn)
 	{
-		if (manager->Booster() == BoosterStop)
+		if (manager->Booster() == BoosterStateStop)
 		{
 			return nullptr;
 		}
@@ -512,12 +512,12 @@ namespace DataModel
 		return nullptr;
 	}
 
-	void Loco::LocationReached(const feedbackID_t feedbackID)
+	void Loco::LocationReached(const FeedbackID feedbackID)
 	{
 		if (feedbackID == feedbackIdOver)
 		{
 			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
-			manager->Booster(ControlTypeInternal, BoosterStop);
+			manager->Booster(ControlTypeInternal, BoosterStateStop);
 			logger->Error(Languages::TextHitOverrun, name, manager->GetFeedbackName(feedbackID));
 			return;
 		}
@@ -554,7 +554,7 @@ namespace DataModel
 		}
 	}
 
-	void Loco::Speed(const locoSpeed_t speed, const bool withSlaves)
+	void Loco::SetSpeed(const Speed speed, const bool withSlaves)
 	{
 		this->speed = speed;
 		if (!withSlaves)
@@ -567,7 +567,7 @@ namespace DataModel
 		}
 	}
 
-	void Loco::SetDirection(const direction_t direction)
+	void Loco::SetDirection(const Direction direction)
 	{
 		this->direction = direction;
 		for (auto slave : slaves)
@@ -586,7 +586,7 @@ namespace DataModel
 			return;
 		}
 
-		locoSpeed_t newSpeed;
+		Speed newSpeed;
 		switch (streetFirst->GetSpeed())
 		{
 			case Street::SpeedTravel:

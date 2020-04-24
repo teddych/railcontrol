@@ -60,7 +60,7 @@ namespace DataModel
 				TrackTypeLink = 6
 			};
 
-			Track(Manager* manager, const trackID_t trackID)
+			Track(Manager* manager, const TrackID trackID)
 			:	LayoutItem(trackID),
 			 	LockableItem(),
 			 	manager(manager),
@@ -81,25 +81,25 @@ namespace DataModel
 				Deserialize(serialized);
 			}
 
-			objectType_t GetObjectType() const { return ObjectTypeTrack; }
+			ObjectType GetObjectType() const { return ObjectTypeTrack; }
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 
-			bool Reserve(Logger::Logger* logger, const locoID_t locoID) override;
-			bool ReserveForce(Logger::Logger* logger, const locoID_t locoID);
-			bool Lock(Logger::Logger* logger, const locoID_t locoID) override;
-			bool Release(Logger::Logger* logger, const locoID_t locoID) override;
-			bool ReleaseForce(Logger::Logger* logger, const locoID_t locoID);
+			bool Reserve(Logger::Logger* logger, const LocoID locoID) override;
+			bool ReserveForce(Logger::Logger* logger, const LocoID locoID);
+			bool Lock(Logger::Logger* logger, const LocoID locoID) override;
+			bool Release(Logger::Logger* logger, const LocoID locoID) override;
+			bool ReleaseForce(Logger::Logger* logger, const LocoID locoID);
 
 			std::string LayoutType() const override { return Languages::GetText(Languages::TextTrack); };
 			type_t GetType() const { return type; }
 			void SetType(const type_t type) { this->type = type; }
-			std::vector<feedbackID_t> GetFeedbacks() const { return feedbacks; }
-			void Feedbacks(const std::vector<feedbackID_t>& feedbacks) { this->feedbacks = feedbacks; }
+			std::vector<FeedbackID> GetFeedbacks() const { return feedbacks; }
+			void Feedbacks(const std::vector<FeedbackID>& feedbacks) { this->feedbacks = feedbacks; }
 
-			bool SetFeedbackState(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state);
-			DataModel::Feedback::feedbackState_t GetFeedbackStateDelayed() const { return stateDelayed; };
+			bool SetFeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
+			DataModel::Feedback::FeedbackState GetFeedbackStateDelayed() const { return stateDelayed; };
 
 			bool AddStreet(Street* street);
 			bool RemoveStreet(Street* street);
@@ -108,31 +108,31 @@ namespace DataModel
 			void SetSelectStreetApproach(const selectStreetApproach_t selectStreetApproach) { this->selectStreetApproach = selectStreetApproach; }
 
 			bool GetValidStreets(Logger::Logger* logger, const DataModel::Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const;
-			direction_t GetLocoDirection() const { return locoDirection; }
-			void SetLocoDirection(const direction_t direction) { locoDirection = direction; }
+			Direction GetLocoDirection() const { return locoDirection; }
+			void SetLocoDirection(const Direction direction) { locoDirection = direction; }
 			bool GetBlocked() const { return blocked; }
 			void SetBlocked(const bool blocked) { this->blocked = blocked; }
-			locoID_t GetLocoDelayed() const { return this->locoIdDelayed; }
+			LocoID GetLocoDelayed() const { return this->locoIdDelayed; }
 			bool GetReleaseWhenFree() const { return releaseWhenFree; }
 			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
 
 		private:
-			bool FeedbackStateInternal(const feedbackID_t feedbackID, const DataModel::Feedback::feedbackState_t state);
+			bool FeedbackStateInternal(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
 			void OrderValidStreets(std::vector<DataModel::Street*>& validStreets) const;
 			selectStreetApproach_t GetSelectStreetApproachCalculated() const;
-			bool ReleaseForceUnlocked(Logger::Logger* logger, const locoID_t locoID);
+			bool ReleaseForceUnlocked(Logger::Logger* logger, const LocoID locoID);
 
 			Manager* manager;
 			mutable std::mutex updateMutex;
 			type_t type;
-			std::vector<feedbackID_t> feedbacks;
+			std::vector<FeedbackID> feedbacks;
 			selectStreetApproach_t selectStreetApproach;
-			DataModel::Feedback::feedbackState_t state;
-			DataModel::Feedback::feedbackState_t stateDelayed;
+			DataModel::Feedback::FeedbackState state;
+			DataModel::Feedback::FeedbackState stateDelayed;
 			std::vector<Street*> streets;
-			direction_t locoDirection;
+			Direction locoDirection;
 			bool blocked;
-			locoID_t locoIdDelayed;
+			LocoID locoIdDelayed;
 			bool releaseWhenFree;
 	};
 } // namespace DataModel

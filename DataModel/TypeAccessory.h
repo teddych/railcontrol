@@ -18,18 +18,36 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include "WebServer/HtmlTagInputSliderLocoSpeed.h"
+#pragma once
 
-namespace WebServer
+namespace DataModel
 {
-	HtmlTagInputSliderLocoSpeed::HtmlTagInputSliderLocoSpeed(const std::string& name, const unsigned int min, const unsigned int max, const unsigned int value, const LocoID locoID)
-	: HtmlTagInputSlider(name, min, max, value)
+	enum Type : unsigned char
 	{
-		std::string locoIdString = std::to_string(locoID);
-		std::string reference = "locospeed_" + locoIdString;
-		AddAttribute("id", reference);
-		AddClass("slider");
-		AddAttribute("onchange", "locoSpeedSliderChange(" + locoIdString + "); return false;");
-		AddAttribute("oninput", "locoSpeedSliderChange(" + locoIdString + "); return false;");
+		AccessoryTypeDefault = 0,
+
+		SignalTypeSimpleLeft = 0,
+		SignalTypeSimpleRight = 1,
+
+		SwitchTypeLeft = 0,
+		SwitchTypeRight
 	};
-};
+
+	enum State : bool
+	{
+		DefaultState = false,
+
+		AccessoryStateOff = false,
+		AccessoryStateOn = true,
+
+		SignalStateRed = false,
+		SignalStateGreen = true,
+
+		SwitchStateTurnout = false,
+		SwitchStateStraight = true
+	};
+
+	typedef unsigned short Duration;
+	static const Duration DefaultDuration = 100;
+} // namespace DataModel
+

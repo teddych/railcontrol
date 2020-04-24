@@ -23,6 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
+#include "DataModel/TypeAccessory.h"
 #include "DataTypes.h"
 
 class Languages
@@ -514,14 +515,14 @@ class Languages
 			return GetText(on ? TextOn : TextOff);
 		}
 
-		static const char* GetLeftRight(const direction_t direction)
+		static const char* GetLeftRight(const Direction direction)
 		{
 			return GetText(direction == DirectionRight ? TextRight : TextLeft);
 		}
 
-		static const char* GetGreenRed(const accessoryState_t state)
+		static const char* GetGreenRed(const DataModel::State state)
 		{
-			return GetText(static_cast<bool>(state) ? TextGreen : TextRed);
+			return GetText(state == DataModel::AccessoryStateOn ? TextGreen : TextRed);
 		}
 
 		static const char* languages[MaxTexts][MaxLanguages];

@@ -48,7 +48,7 @@ namespace DataModel
 		return Accessory::Deserialize(arguments);
 	}
 
-	bool Signal::Release(Logger::Logger* logger, const locoID_t locoID)
+	bool Signal::Release(Logger::Logger* logger, const LocoID locoID)
 	{
 		bool ret = LockableItem::Release(logger, locoID);
 		if (ret == false)

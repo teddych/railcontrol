@@ -31,15 +31,15 @@ using std::string;
 
 namespace DataModel
 {
-	bool LayoutItem::MapPosition(const layoutPosition_t posX,
-			const layoutPosition_t posY,
-			const layoutItemSize_t width,
-			const layoutItemSize_t height,
+	bool LayoutItem::MapPosition(const LayoutPosition posX,
+			const LayoutPosition posY,
+			const LayoutItemSize width,
+			const LayoutItemSize height,
 			const layoutRotation_t rotation,
-			layoutPosition_t& x,
-			layoutPosition_t& y,
-			layoutItemSize_t& w,
-			layoutItemSize_t& h)
+			LayoutPosition& x,
+			LayoutPosition& y,
+			LayoutItemSize& w,
+			LayoutItemSize& h)
 	{
 		x = posX;
 		y = posY;
@@ -62,7 +62,7 @@ namespace DataModel
 		}
 	}
 
-	bool LayoutItem::CheckPositionFree(const layoutPosition_t posX, const layoutPosition_t posY, const layoutPosition_t posZ)
+	bool LayoutItem::CheckPositionFree(const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ)
 	{
 		if (this->visible == false)
 		{
@@ -74,19 +74,19 @@ namespace DataModel
 			return true;
 		}
 
-		layoutPosition_t x;
-		layoutPosition_t y;
-		layoutItemSize_t w;
-		layoutItemSize_t h;
+		LayoutPosition x;
+		LayoutPosition y;
+		LayoutItemSize w;
+		LayoutItemSize h;
 		bool ret = MapPosition(this->posX, this->posY, this->width, this->height, this->rotation, x, y, w, h);
 		if (ret == false)
 		{
 			return false;
 		}
 
-		for(layoutPosition_t ix = x; ix < x + w; ix++)
+		for(LayoutPosition ix = x; ix < x + w; ix++)
 		{
-			for(layoutPosition_t iy = y; iy < y + h; iy++)
+			for(LayoutPosition iy = y; iy < y + h; iy++)
 			{
 				if (ix == posX && iy == posY)
 				{
@@ -121,7 +121,7 @@ namespace DataModel
 	bool LayoutItem::Deserialize(const map<string,string>& arguments)
 	{
 		Object::Deserialize(arguments);
-		visible = static_cast<visible_t>(Utils::Utils::GetBoolMapEntry(arguments, "visible"));
+		visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible"));
 		posX = Utils::Utils::GetIntegerMapEntry(arguments, "posX", 0);
 		posY = Utils::Utils::GetIntegerMapEntry(arguments, "posY", 0);
 		posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posZ", 0);

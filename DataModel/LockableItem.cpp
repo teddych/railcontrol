@@ -41,7 +41,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool LockableItem::Reserve(Logger::Logger* logger, const locoID_t locoID)
+	bool LockableItem::Reserve(Logger::Logger* logger, const LocoID locoID)
 	{
 		std::lock_guard<std::mutex> Guard(lockMutex);
 		if (this->locoID == locoID)
@@ -81,7 +81,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool LockableItem::Lock(Logger::Logger* logger, const locoID_t locoID)
+	bool LockableItem::Lock(Logger::Logger* logger, const LocoID locoID)
 	{
 		std::lock_guard<std::mutex> Guard(lockMutex);
 
@@ -113,7 +113,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool LockableItem::Release(__attribute__((unused)) Logger::Logger* logger, const locoID_t locoID)
+	bool LockableItem::Release(__attribute__((unused)) Logger::Logger* logger, const LocoID locoID)
 	{
 		std::lock_guard<std::mutex> Guard(lockMutex);
 		if (this->locoID != locoID && locoID != LocoNone)
