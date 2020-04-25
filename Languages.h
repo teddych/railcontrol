@@ -23,13 +23,13 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
-#include "DataModel/TypeAccessory.h"
+#include "DataModel/AccessoryTypes.h"
 #include "DataTypes.h"
 
 class Languages
 {
 	public:
-		enum textSelector_t : unsigned int
+		enum TextSelector : unsigned int
 		{
 			Text180Deg,
 			Text90DegAntiClockwise,
@@ -475,7 +475,7 @@ class Languages
 			MaxTexts
 		};
 
-		enum language_t : unsigned char
+		enum Language : unsigned char
 		{
 			FirstLanguage = 0,
 			EN = 0,
@@ -484,22 +484,22 @@ class Languages
 			MaxLanguages
 		};
 
-		static void SetDefaultLanguage(language_t language)
+		static void SetDefaultLanguage(Language language)
 		{
 			defaultLanguage = language >= MaxLanguages ? EN : language;
 		}
 
-		static language_t GetDefaultLanguage()
+		static Language GetDefaultLanguage()
 		{
 			return defaultLanguage;
 		}
 
-		static const char* GetText(const textSelector_t selector)
+		static const char* GetText(const TextSelector selector)
 		{
 			return GetText(defaultLanguage, selector);
 		}
 
-		static const char* GetText(const language_t language, const textSelector_t selector)
+		static const char* GetText(const Language language, const TextSelector selector)
 		{
 			if (language >= MaxLanguages || selector >= MaxTexts)
 			{
@@ -520,11 +520,11 @@ class Languages
 			return GetText(direction == DirectionRight ? TextRight : TextLeft);
 		}
 
-		static const char* GetGreenRed(const DataModel::State state)
+		static const char* GetGreenRed(const DataModel::AccessoryState state)
 		{
 			return GetText(state == DataModel::AccessoryStateOn ? TextGreen : TextRed);
 		}
 
 		static const char* languages[MaxTexts][MaxLanguages];
-		static language_t defaultLanguage;
+		static Language defaultLanguage;
 };

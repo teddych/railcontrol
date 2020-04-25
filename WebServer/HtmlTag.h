@@ -59,7 +59,7 @@ namespace WebServer
 			}
 
 			template<typename... Args>
-			HtmlTag AddContent(const Languages::textSelector_t text, Args... args)
+			HtmlTag AddContent(const Languages::TextSelector text, Args... args)
 			{
 				return AddContent(Logger::Logger::Format(Languages::GetText(text), args...));
 			}

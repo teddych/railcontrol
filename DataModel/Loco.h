@@ -43,7 +43,7 @@ namespace DataModel
 	class Loco : public Object, public HardwareHandle
 	{
 		public:
-			enum nrOfTracksToReserve_t : unsigned char
+			enum NrOfTracksToReserve : unsigned char
 			{
 				ReserveOne = 1,
 				ReserveTwo = 2
@@ -164,7 +164,7 @@ namespace DataModel
 			void DeleteSlaves();
 			void ForceManualMode();
 
-			enum locoState_t : unsigned char
+			enum LocoState : unsigned char
 			{
 				LocoStateManual = 0,
 				LocoStateTerminated,
@@ -192,7 +192,7 @@ namespace DataModel
 
 			std::vector<DataModel::Relation*> slaves;
 
-			volatile locoState_t state;
+			volatile LocoState state;
 			volatile bool requestManualMode;
 			Track* trackFrom;
 			Track* trackFirst;

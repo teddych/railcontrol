@@ -29,8 +29,8 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Config.h"
 #include "ControlInterface.h"
+#include "DataModel/AccessoryTypes.h"
 #include "DataModel/DataModel.h"
-#include "DataModel/TypeAccessory.h"
 #include "Hardware/HardwareParams.h"
 #include "Logger/Logger.h"
 #include "Storage/StorageHandler.h"
@@ -109,14 +109,24 @@ class Manager
 		void LocoFunction(const ControlType controlType, const LocoID locoID, const Function function, const DataModel::LocoFunctions::FunctionState on);
 
 		// accessory
-		void AccessoryState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::State state);
-		bool AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::State state, const bool force);
-		void AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::State state, const bool inverted, const bool on);
+		void AccessoryState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryState state);
+		bool AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::AccessoryState state, const bool force);
+		void AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::AccessoryState state, const bool inverted, const bool on);
 		DataModel::Accessory* GetAccessory(const AccessoryID accessoryID) const;
 		const std::string& GetAccessoryName(const AccessoryID accessoryID) const;
 		const std::map<AccessoryID,DataModel::Accessory*>& AccessoryList() const { return accessories; }
 		const std::map<std::string,DataModel::Accessory*> AccessoryListByName() const;
-		bool AccessorySave(const AccessoryID accessoryID, const std::string& name, const LayoutPosition x, const LayoutPosition y, const LayoutPosition z, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::Type type, const DataModel::Duration duration, const bool inverted, std::string& result);
+		bool AccessorySave(const AccessoryID accessoryID,
+			const std::string& name,
+			const DataModel::LayoutItem::LayoutPosition x,
+			const DataModel::LayoutItem::LayoutPosition y,
+			const DataModel::LayoutItem::LayoutPosition z,
+			const ControlID controlID,
+			const Protocol protocol,
+			const Address address,
+			const DataModel::AccessoryType type,
+			const DataModel::AccessoryPulseDuration duration,
+			const bool inverted, std::string& result);
 		bool AccessoryDelete(const AccessoryID accessoryID);
 		bool AccessoryRelease(const AccessoryID accessoryID);
 
@@ -130,7 +140,7 @@ class Manager
 		const std::map<FeedbackID,DataModel::Feedback*>& FeedbackList() const { return feedbacks; }
 		const std::map<std::string,DataModel::Feedback*> FeedbackListByName() const;
 		const std::map<std::string,FeedbackID> FeedbacksOfTrack(const TrackID trackID) const;
-		FeedbackID FeedbackSave(const FeedbackID feedbackID, const std::string& name, const Visible visible, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted,  std::string& result);
+		FeedbackID FeedbackSave(const FeedbackID feedbackID, const std::string& name, const DataModel::LayoutItem::Visible visible, const DataModel::LayoutItem::LayoutPosition posX, const DataModel::LayoutItem::LayoutPosition posY, const DataModel::LayoutItem::LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted,  std::string& result);
 		bool FeedbackDelete(const FeedbackID feedbackID);
 		bool FeedbackExists(const FeedbackID feedbackID) const { return feedbacks.count(feedbackID) == 1; }
 
@@ -142,25 +152,36 @@ class Manager
 		const std::map<std::string,TrackID> TrackListIdByName() const;
 		TrackID TrackSave(const TrackID trackID,
 			const std::string& name,
-			const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
-			const LayoutItemSize width,
-			const DataModel::LayoutItem::layoutRotation_t rotation,
-			const DataModel::Track::type_t trackType,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
+			const DataModel::LayoutItem::LayoutItemSize width,
+			const DataModel::LayoutItem::LayoutRotation rotation,
+			const DataModel::Track::Type trackType,
 			std::vector<FeedbackID> feedbacks,
-			const DataModel::Track::selectStreetApproach_t selectStreetApproach,
+			const DataModel::Track::SelectStreetApproach selectStreetApproach,
 			const bool releaseWhenFree,
 			std::string& result);
 		bool TrackDelete(const TrackID trackID);
 
 		// switch
-		bool SwitchState(const ControlType controlType, const SwitchID switchID, const DataModel::State state, const bool force);
+		bool SwitchState(const ControlType controlType, const SwitchID switchID, const DataModel::AccessoryState state, const bool force);
 		DataModel::Switch* GetSwitch(const SwitchID switchID) const;
 		const std::string& GetSwitchName(const SwitchID switchID) const;
 		const std::map<SwitchID,DataModel::Switch*>& SwitchList() const { return switches; }
 		const std::map<std::string,DataModel::Switch*> SwitchListByName() const;
-		bool SwitchSave(const SwitchID switchID, const std::string& name, const LayoutPosition x, const LayoutPosition y, const LayoutPosition z, const DataModel::LayoutItem::layoutRotation_t rotation, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::Type type, const DataModel::Duration duration, const bool inverted, std::string& result);
+		bool SwitchSave(const SwitchID switchID,
+			const std::string& name,
+			const DataModel::LayoutItem::LayoutPosition x,
+			const DataModel::LayoutItem::LayoutPosition y,
+			const DataModel::LayoutItem::LayoutPosition z,
+			const DataModel::LayoutItem::LayoutRotation rotation,
+			const ControlID controlID,
+			const Protocol protocol,
+			const Address address,
+			const DataModel::AccessoryType type,
+			const DataModel::AccessoryPulseDuration duration,
+			const bool inverted, std::string& result);
 		bool SwitchDelete(const SwitchID switchID);
 		bool SwitchRelease(const SwitchID switchID);
 
@@ -179,10 +200,10 @@ class Manager
 			const Length maxTrainLength,
 			const std::vector<DataModel::Relation*>& relationsAtLock,
 			const std::vector<DataModel::Relation*>& relationsAtUnlock,
-			const Visible visible,
-			const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
+			const DataModel::LayoutItem::Visible visible,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
 			const Automode automode,
 			const TrackID fromTrack,
 			const Direction fromDirection,
@@ -205,23 +226,23 @@ class Manager
 		bool LayerDelete(const LayerID layerID);
 
 		// signal
-		bool SignalState(const ControlType controlType, const SignalID signalID, const DataModel::State state, const bool force);
-		void SignalState(const ControlType controlType, DataModel::Signal* signal, const DataModel::State state, const bool force);
+		bool SignalState(const ControlType controlType, const SignalID signalID, const DataModel::AccessoryState state, const bool force);
+		void SignalState(const ControlType controlType, DataModel::Signal* signal, const DataModel::AccessoryState state, const bool force);
 		DataModel::Signal* GetSignal(const SignalID signalID) const;
 		const std::string& GetSignalName(const SignalID signalID) const;
 		const std::map<SignalID,DataModel::Signal*>& SignalList() const { return signals; }
 		const std::map<std::string,DataModel::Signal*> SignalListByName() const;
 		bool SignalSave(const SignalID signalID,
 			const std::string& name,
-			const LayoutPosition x,
-			const LayoutPosition y,
-			const LayoutPosition z,
-			const DataModel::LayoutItem::layoutRotation_t rotation,
+			const DataModel::LayoutItem::LayoutPosition x,
+			const DataModel::LayoutItem::LayoutPosition y,
+			const DataModel::LayoutItem::LayoutPosition z,
+			const DataModel::LayoutItem::LayoutRotation rotation,
 			const ControlID controlID,
 			const Protocol protocol,
 			const Address address,
-			const DataModel::Type type,
-			const DataModel::Duration duration,
+			const DataModel::AccessoryType type,
+			const DataModel::AccessoryPulseDuration duration,
 			const bool inverted,
 			std::string& result);
 		bool SignalDelete(const SignalID signalID);
@@ -246,16 +267,16 @@ class Manager
 		void StopAllLocosImmediately(const ControlType controlType);
 
 		// settings
-		DataModel::Duration GetDefaultAccessoryDuration() const { return defaultAccessoryDuration; }
+		DataModel::AccessoryPulseDuration GetDefaultAccessoryDuration() const { return defaultAccessoryDuration; }
 		bool GetAutoAddFeedback() const { return autoAddFeedback; }
-		DataModel::Track::selectStreetApproach_t GetSelectStreetApproach() const { return selectStreetApproach; }
-		DataModel::Loco::nrOfTracksToReserve_t GetNrOfTracksToReserve() const { return nrOfTracksToReserve; }
-		bool SaveSettings(const DataModel::Duration duration,
+		DataModel::Track::SelectStreetApproach GetSelectStreetApproach() const { return selectStreetApproach; }
+		DataModel::Loco::NrOfTracksToReserve GetNrOfTracksToReserve() const { return nrOfTracksToReserve; }
+		bool SaveSettings(const DataModel::AccessoryPulseDuration duration,
 			const bool autoAddFeedback,
-			const DataModel::Track::selectStreetApproach_t selectStreetApproach,
-			const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve,
-			const Logger::Logger::logLevel_t logLevel,
-			const Languages::language_t language);
+			const DataModel::Track::SelectStreetApproach selectStreetApproach,
+			const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve,
+			const Logger::Logger::Level logLevel,
+			const Languages::Language language);
 
 		ControlID GetControlForLoco() const;
 		ControlID GetControlForAccessory() const;
@@ -285,63 +306,66 @@ class Manager
 		DataModel::Signal* GetSignal(const ControlID controlID, const Protocol protocol, const Address address) const;
 
 		void LocoFunction(const ControlType controlType, DataModel::Loco* loco, const Function function, const DataModel::LocoFunctions::FunctionState on);
-		void AccessoryState(const ControlType controlType, DataModel::Accessory* accessory, const DataModel::State state, const bool force);
-		void SwitchState(const ControlType controlType, DataModel::Switch* mySwitch, const DataModel::State state, const bool force);
+		void AccessoryState(const ControlType controlType, DataModel::Accessory* accessory, const DataModel::AccessoryState state, const bool force);
+		void SwitchState(const ControlType controlType, DataModel::Switch* mySwitch, const DataModel::AccessoryState state, const bool force);
 		void FeedbackState(DataModel::Feedback* feedback, const DataModel::Feedback::FeedbackState state)  { feedback->SetState(state); }
 
 		// layout
-		bool CheckPositionFree(const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, std::string& result) const;
-		bool CheckPositionFree(const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
-			const LayoutItemSize width,
-			const LayoutItemSize height,
-			const DataModel::LayoutItem::layoutRotation_t rotation,
+		bool CheckPositionFree(const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
+			std::string& result) const;
+		bool CheckPositionFree(const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
+			const DataModel::LayoutItem::LayoutItemSize width,
+			const DataModel::LayoutItem::LayoutItemSize height,
+			const DataModel::LayoutItem::LayoutRotation rotation,
 			std::string& result) const;
 
 		template<class Type>
-		bool CheckLayoutPositionFree(const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
+		bool CheckLayoutPositionFree(const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
 			std::string& result,
 			const std::map<ObjectID, Type*>& layoutVector, std::mutex& mutex) const;
 
 		bool CheckAccessoryPosition(const DataModel::Accessory* accessory,
-			const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
 			std::string& result) const;
 
 		bool CheckSwitchPosition(const DataModel::Switch* mySwitch,
-			const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
 			std::string& result) const;
 
 		bool CheckStreetPosition(const DataModel::Street* street,
-			const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
 			std::string& result) const;
 
 		bool CheckTrackPosition(const DataModel::Track* track,
-			const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
-			const LayoutItemSize height,
-			const DataModel::LayoutItem::layoutRotation_t rotation,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
+			const DataModel::LayoutItem::LayoutItemSize height,
+			const DataModel::LayoutItem::LayoutRotation rotation,
 			std::string& result) const;
 
 		bool CheckFeedbackPosition(const DataModel::Feedback* feedback,
-			const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
 			std::string& result) const;
 
 		bool CheckSignalPosition(const DataModel::Signal* signal,
-			const LayoutPosition posX,
-			const LayoutPosition posY,
-			const LayoutPosition posZ,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
 			std::string& result) const;
 
 		bool CheckAddressLoco(const Protocol protocol, const Address address, std::string& result);
@@ -498,10 +522,10 @@ class Manager
 		// storage
 		Storage::StorageHandler* storage;
 
-		DataModel::Duration defaultAccessoryDuration;
+		DataModel::AccessoryPulseDuration defaultAccessoryDuration;
 		bool autoAddFeedback;
-		DataModel::Track::selectStreetApproach_t selectStreetApproach;
-		DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve;
+		DataModel::Track::SelectStreetApproach selectStreetApproach;
+		DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve;
 
 		volatile bool run;
 		volatile bool debounceRun;

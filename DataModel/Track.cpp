@@ -74,7 +74,7 @@ namespace DataModel
 		{
 			return false;
 		}
-		type = static_cast<type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TrackTypeStraight));
+		type = static_cast<Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TrackTypeStraight));
 		switch (type)
 		{
 			case TrackTypeTurn:
@@ -97,7 +97,7 @@ namespace DataModel
 			}
 			feedbacks.push_back(feedbackID);
 		}
-		selectStreetApproach = static_cast<selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
+		selectStreetApproach = static_cast<SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
 		state = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "state", DataModel::Feedback::FeedbackStateFree));
 		stateDelayed = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "statedelayed", state));
 		locoDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
@@ -291,7 +291,7 @@ namespace DataModel
 		return sizeBefore > sizeAfter;
 	}
 
-	Track::selectStreetApproach_t Track::GetSelectStreetApproachCalculated() const
+	Track::SelectStreetApproach Track::GetSelectStreetApproachCalculated() const
 	{
 		if (selectStreetApproach == SelectStreetSystemDefault)
 		{

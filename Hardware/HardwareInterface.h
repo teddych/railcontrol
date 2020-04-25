@@ -24,7 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 #include <vector>
 
-#include "DataModel/TypeAccessory.h"
+#include "DataModel/AccessoryTypes.h"
 #include "DataTypes.h"
 #include "Manager.h"
 #include "Utils/Utils.h"
@@ -112,7 +112,7 @@ namespace Hardware
 			}
 
 			// accessory command
-			virtual void Accessory(const Protocol protocol, const Address address, const DataModel::State state, const DataModel::Duration duration)
+			virtual void Accessory(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const DataModel::AccessoryPulseDuration duration)
 			{
 				AccessoryOnOrOff(protocol, address, state, true);
 				std::async(std::launch::async, AccessoryOnOrOffStatic, this, protocol, address, state, duration);
@@ -129,10 +129,10 @@ namespace Hardware
 			const ControlID controlID;
 			const std::string name;
 
-			virtual void AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, __attribute__((unused)) const Address address, __attribute__((unused)) const DataModel::State state, __attribute__((unused)) const bool on) {}
+			virtual void AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, __attribute__((unused)) const Address address, __attribute__((unused)) const DataModel::AccessoryState state, __attribute__((unused)) const bool on) {}
 
 		private:
-			static void AccessoryOnOrOffStatic(HardwareInterface* hardware, const Protocol protocol, const Address address, const DataModel::State state, const DataModel::Duration duration)
+			static void AccessoryOnOrOffStatic(HardwareInterface* hardware, const Protocol protocol, const Address address, const DataModel::AccessoryState state, const DataModel::AccessoryPulseDuration duration)
 			{
 				Utils::Utils::SleepForMilliseconds(duration);
 				hardware->AccessoryOnOrOff(protocol, address, state, false);

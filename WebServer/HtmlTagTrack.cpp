@@ -31,14 +31,14 @@ namespace WebServer
 	HtmlTagTrack::HtmlTagTrack(const Manager& manager, const DataModel::Track* track)
 	:	HtmlTagLayoutItem()
 	{
-		LayoutPosition posX;
-		LayoutPosition posY;
-		LayoutPosition posZ;
-		LayoutItemSize w;
-		LayoutItemSize h;
-		DataModel::LayoutItem::layoutRotation_t r;
+		DataModel::LayoutItem::LayoutPosition posX;
+		DataModel::LayoutItem::LayoutPosition posY;
+		DataModel::LayoutItem::LayoutPosition posZ;
+		DataModel::LayoutItem::LayoutItemSize w;
+		DataModel::LayoutItem::LayoutItemSize h;
+		DataModel::LayoutItem::LayoutRotation r;
 		track->Position(posX, posY, posZ, w, h, r);
-		DataModel::Track::type_t type = track->GetType();
+		DataModel::Track::Type type = track->GetType();
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
 		const string& trackName = track->GetName();
@@ -81,7 +81,7 @@ namespace WebServer
 		div1.AddClass(trackClass);
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
-		LayoutItemSize trackHeight = track->GetHeight();
+		DataModel::LayoutItem::LayoutItemSize trackHeight = track->GetHeight();
 		const string layoutHeight = to_string(EdgeLength * trackHeight);
 
 		switch (type)
@@ -143,7 +143,7 @@ namespace WebServer
 		int translate = 0;
 		if (trackHeight > DataModel::LayoutItem::Height1)
 		{
-			DataModel::LayoutItem::layoutRotation_t trackRotation = track->GetRotation();
+			DataModel::LayoutItem::LayoutRotation trackRotation = track->GetRotation();
 			if (trackRotation == DataModel::LayoutItem::Rotation90 || trackRotation == DataModel::LayoutItem::Rotation270)
 			{
 				translate = (((trackHeight - 1) * EdgeLength) / 2);

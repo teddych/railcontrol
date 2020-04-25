@@ -270,7 +270,7 @@ namespace Hardware
 		}
 	}
 
-	void Z21::Accessory(const Protocol protocol, const Address address, const DataModel::State state, const DataModel::Duration duration)
+	void Z21::Accessory(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const DataModel::AccessoryPulseDuration duration)
 	{
 		if (!AccessoryProtocolSupported(protocol))
 		{
@@ -280,17 +280,17 @@ namespace Hardware
 		accessoryQueue.Enqueue(entry);
 	}
 
-	void Z21::AccessoryOn(const Protocol protocol, const Address address, const DataModel::State state)
+	void Z21::AccessoryOn(const Protocol protocol, const Address address, const DataModel::AccessoryState state)
 	{
 		AccessoryOnOrOff(protocol, address, state, true);
 	}
 
-	void Z21::AccessoryOff(const Protocol protocol, const Address address, const DataModel::State state)
+	void Z21::AccessoryOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state)
 	{
 		AccessoryOnOrOff(protocol, address, state, false);
 	}
 
-	void Z21::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::State state, const bool on)
+	void Z21::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on)
 	{
 		const Address zeroBasedAddress = address - 1;
 		unsigned char buffer[9] = { 0x09, 0x00, 0x40, 0x00, 0x53 };
@@ -732,7 +732,7 @@ namespace Hardware
 
 	void Z21::ParseTurnoutData(const unsigned char* buffer)
 	{
-		DataModel::State state;
+		DataModel::AccessoryState state;
 		switch (buffer[7])
 		{
 			case 0x01:

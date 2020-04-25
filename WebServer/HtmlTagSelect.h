@@ -37,7 +37,7 @@ namespace WebServer
 			HtmlTagSelect() = delete;
 
 			HtmlTagSelect(const std::string& name, const std::map<std::string,std::string>& options, const std::string& defaultValue = "");
-			HtmlTagSelect(const std::string& name, const std::map<std::string,Languages::textSelector_t>& options, const std::string& defaultValue = "");
+			HtmlTagSelect(const std::string& name, const std::map<std::string,Languages::TextSelector>& options, const std::string& defaultValue = "");
 
 			template<typename T>
 			HtmlTagSelect(const std::string& name, const std::map<std::string,T>& options, const int defaultValue = 0)
@@ -61,7 +61,7 @@ namespace WebServer
 			}
 
 			template<typename T>
-			HtmlTagSelect(const std::string& name, const std::map<T,Languages::textSelector_t>& options, T defaultValue = 0)
+			HtmlTagSelect(const std::string& name, const std::map<T,Languages::TextSelector>& options, T defaultValue = 0)
 			:	HtmlTag("select"),
 			 	commandID("s_" + name)
 			{

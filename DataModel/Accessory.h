@@ -23,10 +23,10 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 
 #include "DataTypes.h"
+#include "DataModel/AccessoryTypes.h"
 #include "DataModel/HardwareHandle.h"
 #include "DataModel/LayoutItem.h"
 #include "DataModel/LockableItem.h"
-#include "DataModel/TypeAccessory.h"
 #include "Languages.h"
 
 class Manager;
@@ -67,12 +67,12 @@ namespace DataModel
 			virtual bool Deserialize(const std::string& serialized) override;
 			virtual std::string LayoutType() const override { return Languages::GetText(Languages::TextAccessory); }
 
-			void SetType(Type type) { this->type = type; }
-			Type GetType() const { return type; }
-			void SetState(State state) { this->state = state; lastUsed = time(nullptr); ++counter; }
-			State GetState() const { return state; }
-			void SetDuration(Duration duration) { this->duration = duration; }
-			Duration GetDuration() const { return duration; }
+			void SetType(AccessoryType type) { this->type = type; }
+			AccessoryType GetType() const { return type; }
+			void SetState(AccessoryState state) { this->state = state; lastUsed = time(nullptr); ++counter; }
+			AccessoryState GetState() const { return state; }
+			void SetDuration(AccessoryPulseDuration duration) { this->duration = duration; }
+			AccessoryPulseDuration GetDuration() const { return duration; }
 
 			void SetInverted(const bool inverted) { this->inverted = inverted; }
 			bool GetInverted() const { return inverted; }
@@ -83,9 +83,9 @@ namespace DataModel
 			std::string SerializeWithoutType() const;
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 
-			Type type;
-			State state;
-			Duration duration; // duration in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
+			AccessoryType type;
+			AccessoryState state;
+			AccessoryPulseDuration duration; // duration in ms after which the accessory command will be turned off on rails. 0 = no turn off / turn off must be made manually
 			bool inverted;
 
 			time_t lastUsed;

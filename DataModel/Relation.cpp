@@ -68,7 +68,7 @@ namespace DataModel
 		{
 			case ObjectTypeAccessory:
 			{
-				bool ret = manager->AccessoryState(ControlTypeInternal, objectID2, static_cast<State>(data), true);
+				bool ret = manager->AccessoryState(ControlTypeInternal, objectID2, static_cast<AccessoryState>(data), true);
 				if (ret == false)
 				{
 					return false;
@@ -78,7 +78,7 @@ namespace DataModel
 
 			case ObjectTypeSwitch:
 			{
-				bool ret = manager->SwitchState(ControlTypeInternal, objectID2, static_cast<State>(data), true);
+				bool ret = manager->SwitchState(ControlTypeInternal, objectID2, static_cast<AccessoryState>(data), true);
 				if (ret == false)
 				{
 					return false;
@@ -88,7 +88,7 @@ namespace DataModel
 
 			case ObjectTypeSignal:
 			{
-				bool ret = manager->SignalState(ControlTypeInternal, objectID2, static_cast<State>(data), true);
+				bool ret = manager->SignalState(ControlTypeInternal, objectID2, static_cast<AccessoryState>(data), true);
 				if (ret == false)
 				{
 					return false;

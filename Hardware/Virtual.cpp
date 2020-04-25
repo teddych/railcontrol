@@ -75,7 +75,7 @@ namespace Hardware
 	}
 
 	// accessory command
-	void Virtual::AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::State state, const bool on)
+	void Virtual::AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on)
 	{
 		logger->Info(Languages::TextSettingAccessoryWithProtocol, static_cast<int>(protocol), address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 	}

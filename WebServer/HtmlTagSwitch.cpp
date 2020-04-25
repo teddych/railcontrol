@@ -31,8 +31,8 @@ namespace WebServer
 	HtmlTagSwitch::HtmlTagSwitch(const DataModel::Switch* mySwitch)
 	:	HtmlTagLayoutItem()
 	{
-		DataModel::State state = mySwitch->GetState();
-		DataModel::Type type = mySwitch->GetType();
+		DataModel::AccessoryState state = mySwitch->GetState();
+		DataModel::AccessoryType type = mySwitch->GetType();
 
 		unsigned int layoutPosX = mySwitch->GetPosX() * EdgeLength;
 		unsigned int layoutPosY = mySwitch->GetPosY() * EdgeLength;

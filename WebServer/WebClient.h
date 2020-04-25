@@ -25,7 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <thread>
 #include <vector>
 
-#include "DataModel/TypeAccessory.h"
+#include "DataModel/AccessoryTypes.h"
 #include "Manager.h"
 #include "Network/TcpConnection.h"
 #include "WebServer/HtmlResponse.h"
@@ -55,7 +55,7 @@ namespace WebServer
 			int Stop();
 
 		private:
-			enum responseType_t : unsigned char
+			enum ResponseType : unsigned char
 			{
 				ResponseInfo = 'i',
 				ResponseWarning = 'w',
@@ -67,7 +67,7 @@ namespace WebServer
 				connection->Send(HtmlResponse(HtmlTag().AddContent(text)));
 			}
 
-			void ReplyResponse(responseType_t type, std::string& text)
+			void ReplyResponse(ResponseType type, std::string& text)
 			{
 				std::string s(1, static_cast<unsigned char>(type));
 				s.append(text);
@@ -75,7 +75,7 @@ namespace WebServer
 			}
 
 			template<typename... Args>
-			void ReplyResponse(responseType_t type, Languages::textSelector_t text, Args... args)
+			void ReplyResponse(ResponseType type, Languages::TextSelector text, Args... args)
 			{
 				std::string s(1, static_cast<unsigned char>(type));
 				s.append(Logger::Logger::Format(Languages::GetText(text), args...));
@@ -90,7 +90,7 @@ namespace WebServer
 			void ReplyHtmlWithHeaderAndParagraph(const char* content) { ReplyHtmlWithHeaderAndParagraph(std::string(content)); }
 
 			template<typename... Args>
-			void ReplyHtmlWithHeaderAndParagraph(const Languages::textSelector_t text, Args... args)
+			void ReplyHtmlWithHeaderAndParagraph(const Languages::TextSelector text, Args... args)
 			{
 				ReplyHtmlWithHeaderAndParagraph(Logger::Logger::Format(Languages::GetText(text), args...));
 			}
@@ -102,20 +102,20 @@ namespace WebServer
 			HtmlTag HtmlTagProtocol(const std::map<std::string,Protocol>& protocolMap, const Protocol selectedProtocol);
 			HtmlTag HtmlTagProtocolLoco(const ControlID controlID, const Protocol selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const ControlID controlID, const Protocol selectedProtocol);
-			HtmlTag HtmlTagDuration(const DataModel::Duration duration, const Languages::textSelector_t label) const;
-			HtmlTag HtmlTagDuration(const DataModel::Duration duration) const { return HtmlTagDuration(duration, Languages::TextDuration); }
-			HtmlTag HtmlTagPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz);
-			HtmlTag HtmlTagPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz, const Visible visible);
-			HtmlTag HtmlTagRotation(const DataModel::LayoutItem::layoutRotation_t rotation) const;
-			HtmlTag HtmlTagSelectTrack(const std::string& name, const Languages::textSelector_t label, const TrackID trackId, const Direction direction, const std::string& onchange = "") const;
+			HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration, const Languages::TextSelector label) const;
+			HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration) const { return HtmlTagDuration(duration, Languages::TextDuration); }
+			HtmlTag HtmlTagPosition(const DataModel::LayoutItem::LayoutPosition posx, const DataModel::LayoutItem::LayoutPosition posy, const DataModel::LayoutItem::LayoutPosition posz);
+			HtmlTag HtmlTagPosition(const DataModel::LayoutItem::LayoutPosition posx, const DataModel::LayoutItem::LayoutPosition posy, const DataModel::LayoutItem::LayoutPosition posz, const DataModel::LayoutItem::Visible visible);
+			HtmlTag HtmlTagRotation(const DataModel::LayoutItem::LayoutRotation rotation) const;
+			HtmlTag HtmlTagSelectTrack(const std::string& name, const Languages::TextSelector label, const TrackID trackId, const Direction direction, const std::string& onchange = "") const;
 			HtmlTag HtmlTagSelectFeedbacksOfTrack(const TrackID trackId, const FeedbackID feedbackIdReduced, const FeedbackID feedbackIdCreep, const FeedbackID feedbackIdStop, const FeedbackID feedbackIdOver) const;
 			HtmlTag HtmlTagRelation(const std::string& type, const std::string& priority, const ObjectType objectType = ObjectTypeSwitch, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
 			HtmlTag HtmlTagSlave(const std::string& priority, const ObjectID objectId = ObjectNone);
 			HtmlTag HtmlTagRelationObject(const std::string& name, const ObjectType objectType, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
-			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const Languages::textSelector_t buttonValue, const bool selected = false) const;
+			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const Languages::TextSelector buttonValue, const bool selected = false) const;
 			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const TrackID trackID, const FeedbackID feedbackID = FeedbackNone);
-			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault);
-			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve);
+			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::Track::SelectStreetApproach selectStreetApproach, const bool addDefault);
+			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve);
 			static HtmlTag HtmlTagLogLevel();
 			static HtmlTag HtmlTagLanguage();
 			static HtmlTag HtmlTagFeedbackOnControlLayer(const DataModel::Feedback* feedback);

@@ -22,7 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace DataModel
 {
-	enum Type : unsigned char
+	enum AccessoryType : unsigned char
 	{
 		AccessoryTypeDefault = 0,
 
@@ -33,7 +33,7 @@ namespace DataModel
 		SwitchTypeRight
 	};
 
-	enum State : bool
+	enum AccessoryState : bool
 	{
 		DefaultState = false,
 
@@ -47,7 +47,7 @@ namespace DataModel
 		SwitchStateStraight = true
 	};
 
-	typedef unsigned short Duration;
-	static const Duration DefaultDuration = 100;
+	typedef unsigned short AccessoryPulseDuration;
+	static const AccessoryPulseDuration DefaultAccessoryPulseDuration = 100;
 } // namespace DataModel
 

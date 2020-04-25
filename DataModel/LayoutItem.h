@@ -31,12 +31,21 @@ namespace DataModel
 	class LayoutItem : public Object
 	{
 		public:
-			enum layoutRotation_t : unsigned char
+			enum LayoutRotation : unsigned char
 			{
 				Rotation0 = 0,
 				Rotation90,
 				Rotation180,
 				Rotation270
+			};
+
+			typedef unsigned char LayoutItemSize;
+			typedef char LayoutPosition;
+
+			enum Visible : bool
+			{
+				VisibleNo = false,
+				VisibleYes = true
 			};
 
 			static const LayoutItemSize Width1 = 1;
@@ -58,9 +67,9 @@ namespace DataModel
 
 			virtual ~LayoutItem() {}
 
-			static bool MapPosition(const LayoutPosition posX, const LayoutPosition posY, const LayoutItemSize width, const LayoutItemSize height, const layoutRotation_t rotation, LayoutPosition& x, LayoutPosition& y, LayoutItemSize& w, LayoutItemSize& h);
+			static bool MapPosition(const LayoutPosition posX, const LayoutPosition posY, const LayoutItemSize width, const LayoutItemSize height, const LayoutRotation rotation, LayoutPosition& x, LayoutPosition& y, LayoutItemSize& w, LayoutItemSize& h);
 
-			virtual bool Position(LayoutPosition& x, LayoutPosition& y, LayoutPosition& z, LayoutItemSize& w, LayoutItemSize& h, layoutRotation_t& r) const
+			virtual bool Position(LayoutPosition& x, LayoutPosition& y, LayoutPosition& z, LayoutItemSize& w, LayoutItemSize& h, LayoutRotation& r) const
 			{
 				z = posZ;
 				r = rotation;
@@ -87,11 +96,11 @@ namespace DataModel
 			LayoutItemSize GetWidth() const { return width; }
 			void SetHeight(const LayoutItemSize height) { this->height = height; }
 			LayoutItemSize GetHeight() const { return height; }
-			void SetRotation(const layoutRotation_t rotation) { this->rotation = rotation; }
-			layoutRotation_t GetRotation() const { return rotation; }
+			void SetRotation(const LayoutRotation rotation) { this->rotation = rotation; }
+			LayoutRotation GetRotation() const { return rotation; }
 
 			virtual std::string Rotation() const { return Rotation(rotation); }
-			static std::string Rotation(layoutRotation_t rotation);
+			static std::string Rotation(LayoutRotation rotation);
 
 		protected:
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
@@ -103,7 +112,7 @@ namespace DataModel
 			LayoutPosition posZ;
 			LayoutItemSize width;
 			LayoutItemSize height;
-			layoutRotation_t rotation;
+			LayoutRotation rotation;
 	};
 } // namespace DataModel
 

@@ -35,10 +35,6 @@ typedef unsigned short Speed;
 typedef unsigned char Function;
 typedef unsigned int Length;
 
-// layoutItem
-typedef unsigned char LayoutItemSize;
-typedef char LayoutPosition;
-
 // accessory
 typedef ObjectID AccessoryID;
 
@@ -169,12 +165,6 @@ enum HardwareType : unsigned char
 	HardwareTypeEcos = 9,
 	HardwareTypeCS2Tcp = 10,
 	HardwareTypeNumbers
-};
-
-enum Visible : bool
-{
-	VisibleNo = false,
-	VisibleYes = true
 };
 
 enum Automode : bool

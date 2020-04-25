@@ -40,7 +40,7 @@ namespace DataModel
 	class Track : public LayoutItem, public LockableItem
 	{
 		public:
-			enum selectStreetApproach_t : unsigned char
+			enum SelectStreetApproach : unsigned char
 			{
 				SelectStreetSystemDefault = 0,
 				SelectStreetDoNotCare = 1,
@@ -49,7 +49,7 @@ namespace DataModel
 				SelectStreetLongestUnused = 4
 			};
 
-			enum type_t : unsigned char
+			enum Type : unsigned char
 			{
 				TrackTypeStraight = 0,
 				TrackTypeTurn = 1,
@@ -93,8 +93,8 @@ namespace DataModel
 			bool ReleaseForce(Logger::Logger* logger, const LocoID locoID);
 
 			std::string LayoutType() const override { return Languages::GetText(Languages::TextTrack); };
-			type_t GetType() const { return type; }
-			void SetType(const type_t type) { this->type = type; }
+			Type GetType() const { return type; }
+			void SetType(const Type type) { this->type = type; }
 			std::vector<FeedbackID> GetFeedbacks() const { return feedbacks; }
 			void Feedbacks(const std::vector<FeedbackID>& feedbacks) { this->feedbacks = feedbacks; }
 
@@ -104,8 +104,8 @@ namespace DataModel
 			bool AddStreet(Street* street);
 			bool RemoveStreet(Street* street);
 
-			selectStreetApproach_t GetSelectStreetApproach() const { return selectStreetApproach; }
-			void SetSelectStreetApproach(const selectStreetApproach_t selectStreetApproach) { this->selectStreetApproach = selectStreetApproach; }
+			SelectStreetApproach GetSelectStreetApproach() const { return selectStreetApproach; }
+			void SetSelectStreetApproach(const SelectStreetApproach selectStreetApproach) { this->selectStreetApproach = selectStreetApproach; }
 
 			bool GetValidStreets(Logger::Logger* logger, const DataModel::Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const;
 			Direction GetLocoDirection() const { return locoDirection; }
@@ -119,14 +119,14 @@ namespace DataModel
 		private:
 			bool FeedbackStateInternal(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
 			void OrderValidStreets(std::vector<DataModel::Street*>& validStreets) const;
-			selectStreetApproach_t GetSelectStreetApproachCalculated() const;
+			SelectStreetApproach GetSelectStreetApproachCalculated() const;
 			bool ReleaseForceUnlocked(Logger::Logger* logger, const LocoID locoID);
 
 			Manager* manager;
 			mutable std::mutex updateMutex;
-			type_t type;
+			Type type;
 			std::vector<FeedbackID> feedbacks;
-			selectStreetApproach_t selectStreetApproach;
+			SelectStreetApproach selectStreetApproach;
 			DataModel::Feedback::FeedbackState state;
 			DataModel::Feedback::FeedbackState stateDelayed;
 			std::vector<Street*> streets;

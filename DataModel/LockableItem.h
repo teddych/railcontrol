@@ -31,7 +31,7 @@ namespace DataModel
 	class LockableItem
 	{
 		public:
-			enum lockState_t : unsigned char
+			enum LockState : unsigned char
 			{
 				LockStateFree = 0,
 				LockStateReserved,
@@ -52,7 +52,7 @@ namespace DataModel
 
 
 			LocoID GetLoco() const { return locoID; }
-			lockState_t GetLockState() const { return lockState; }
+			LockState GetLockState() const { return lockState; }
 			virtual bool Reserve(Logger::Logger* logger, const LocoID locoID);
 			virtual bool Lock(Logger::Logger* logger, const LocoID locoID);
 			virtual bool Release(Logger::Logger* logger, const LocoID locoID);
@@ -62,7 +62,7 @@ namespace DataModel
 
 		private:
 			std::mutex lockMutex;
-			lockState_t lockState;
+			LockState lockState;
 			LocoID locoID;
 	};
 } // namespace DataModel

@@ -126,7 +126,7 @@ namespace WebServer {
 		AddUpdate(command.str(), state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
 	}
 
-	void WebServer::AccessoryState(__attribute__((unused)) const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::State state)
+	void WebServer::AccessoryState(__attribute__((unused)) const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::AccessoryState state)
 	{
 		stringstream command;
 		command << "accessory;accessory=" << accessory->GetID() << ";state=" << (state == DataModel::AccessoryStateOn ? "green" : "red");
@@ -182,7 +182,7 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextStreetDeleted, name);
 	}
 
-	void WebServer::SwitchState(__attribute__((unused)) const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::State state)
+	void WebServer::SwitchState(__attribute__((unused)) const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state)
 	{
 		stringstream command;
 		command << "switch;switch=" << mySwitch->GetID() << ";state=" << (state ? "straight" : "turnout");
@@ -271,7 +271,7 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextLocoIsOnTrack, locoName, trackName);
 	}
 
-	void WebServer::SignalState(__attribute__((unused)) const ControlType controlType, const DataModel::Signal* signal, const DataModel::State state)
+	void WebServer::SignalState(__attribute__((unused)) const ControlType controlType, const DataModel::Signal* signal, const DataModel::AccessoryState state)
 	{
 		stringstream command;
 		command << "signal;signal=" << signal->GetID() << ";state=" << (state ? "green" : "red");

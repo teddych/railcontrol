@@ -71,7 +71,7 @@ namespace Hardware
 			void LocoSpeed(const Protocol protocol, const Address address, const Speed speed) override;
 			void LocoDirection(const Protocol protocol, const Address address, const Direction direction) override;
 			void LocoFunction(const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
-			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::State state, const bool on) override;
+			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 
 			static const char* const CommandActivateBoosterUpdates;
 			static const char* const CommandQueryLocos;

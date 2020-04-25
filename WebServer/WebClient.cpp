@@ -59,15 +59,10 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/WebClient.h"
 #include "WebServer/WebServer.h"
 
-using DataModel::Accessory;
-using DataModel::Feedback;
-using DataModel::Layer;
-using DataModel::Loco;
-using DataModel::Relation;
-using DataModel::Signal;
-using DataModel::Street;
-using DataModel::Switch;
-using DataModel::Track;
+using namespace DataModel;
+using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
+using LayoutItemSize = DataModel::LayoutItem::LayoutItemSize;
+using Visible = DataModel::LayoutItem::Visible;
 using std::map;
 using std::string;
 using std::thread;
@@ -746,7 +741,7 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagControlArgument(const unsigned char argNr, const ArgumentType type, const string& value)
 	{
-		Languages::textSelector_t argumentName;
+		Languages::TextSelector argumentName;
 		string argumentNumber = "arg" + to_string(argNr);
 		switch (type)
 		{
@@ -1208,7 +1203,7 @@ namespace WebServer
 		return HtmlTagProtocol(protocolMap, selectedProtocol);
 	}
 
-	HtmlTag WebClient::HtmlTagDuration(const DataModel::Duration duration, const Languages::textSelector_t label) const
+	HtmlTag WebClient::HtmlTagDuration(const DataModel::AccessoryPulseDuration duration, const Languages::TextSelector label) const
 	{
 		std::map<string,string> durationOptions;
 		durationOptions["0000"] = "0";
@@ -1237,7 +1232,7 @@ namespace WebServer
 		checkboxVisible.AddAttribute("onchange", "onChangeCheckboxShowHide('visible', 'position');");
 		content.AddChildTag(checkboxVisible);
 		HtmlTag posDiv = HtmlTagPosition(posx, posy, posz);
-		if (visible == VisibleNo)
+		if (visible == DataModel::LayoutItem::VisibleNo)
 		{
 			posDiv.AddAttribute("hidden");
 		}
@@ -1260,10 +1255,10 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", switchOptions, objectId).AddClass("select_relation_id"));
 
-				map<DataModel::State,Languages::textSelector_t> stateOptions;
+				map<DataModel::AccessoryState,Languages::TextSelector> stateOptions;
 				stateOptions[DataModel::SwitchStateStraight] = Languages::TextStraight;
 				stateOptions[DataModel::SwitchStateTurnout] = Languages::TextTurnout;
-				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::State>(data)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::AccessoryState>(data)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1277,10 +1272,10 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", signalOptions, objectId).AddClass("select_relation_id"));
 
-				map<DataModel::State,Languages::textSelector_t> stateOptions;
+				map<DataModel::AccessoryState,Languages::TextSelector> stateOptions;
 				stateOptions[DataModel::SignalStateGreen] = Languages::TextGreen;
 				stateOptions[DataModel::SignalStateRed] = Languages::TextRed;
-				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::State>(data)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::AccessoryState>(data)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1294,10 +1289,10 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", accessoryOptions, objectId).AddClass("select_relation_id"));
 
-				map<DataModel::State,Languages::textSelector_t> stateOptions;
+				map<DataModel::AccessoryState,Languages::TextSelector> stateOptions;
 				stateOptions[DataModel::AccessoryStateOn] = Languages::TextOn;
 				stateOptions[DataModel::AccessoryStateOff] = Languages::TextOff;
-				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::State>(data)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::AccessoryState>(data)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1311,7 +1306,7 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", trackOptions, objectId).AddClass("select_relation_id"));
 
-				map<Direction,Languages::textSelector_t> stateOptions;
+				map<Direction,Languages::TextSelector> stateOptions;
 				stateOptions[DirectionLeft] = Languages::TextLeft;
 				stateOptions[DirectionRight] = Languages::TextRight;
 				content.AddChildTag(HtmlTagSelect("state_" + name, stateOptions, static_cast<Direction>(data)).AddClass("select_relation_state"));
@@ -1339,7 +1334,7 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", functionOptions, Utils::Utils::ToStringWithLeadingZeros(objectId, 2)).AddClass("select_relation_id"));
 
-				map<DataModel::LocoFunctions::FunctionState,Languages::textSelector_t> stateOptions;
+				map<DataModel::LocoFunctions::FunctionState,Languages::TextSelector> stateOptions;
 				stateOptions[DataModel::LocoFunctions::FunctionStateOff] = Languages::TextOff;
 				stateOptions[DataModel::LocoFunctions::FunctionStateOn] = Languages::TextOn;
 				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::LocoFunctions::FunctionState>(data)).AddClass("select_relation_state"));
@@ -1364,7 +1359,7 @@ namespace WebServer
 		deleteButton.AddClass("wide_button");
 		content.AddChildTag(deleteButton);
 
-		map<ObjectType,Languages::textSelector_t> objectTypeOptions;
+		map<ObjectType,Languages::TextSelector> objectTypeOptions;
 		objectTypeOptions[ObjectTypeAccessory] = Languages::TextAccessory;
 		objectTypeOptions[ObjectTypeSignal] = Languages::TextSignal;
 		objectTypeOptions[ObjectTypeSwitch] = Languages::TextSwitch;
@@ -1432,9 +1427,9 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagRotation(const DataModel::LayoutItem::layoutRotation_t rotation) const
+	HtmlTag WebClient::HtmlTagRotation(const DataModel::LayoutItem::LayoutRotation rotation) const
 	{
-		std::map<DataModel::LayoutItem::layoutRotation_t, Languages::textSelector_t> rotationOptions;
+		std::map<DataModel::LayoutItem::LayoutRotation, Languages::TextSelector> rotationOptions;
 		rotationOptions[DataModel::LayoutItem::Rotation0] = Languages::TextNoRotation;
 		rotationOptions[DataModel::LayoutItem::Rotation90] = Languages::Text90DegClockwise;
 		rotationOptions[DataModel::LayoutItem::Rotation180] = Languages::Text180Deg;
@@ -1442,7 +1437,7 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("rotation", Languages::TextRotation, rotationOptions, rotation);
 	}
 
-	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const Languages::textSelector_t label, const TrackID trackId, const Direction direction, const string& onchange) const
+	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const Languages::TextSelector label, const TrackID trackId, const Direction direction, const string& onchange) const
 	{
 		HtmlTag tag;
 		map<string,TrackID> tracks = manager.TrackListIdByName();
@@ -1453,7 +1448,7 @@ namespace WebServer
 			selectTrack.AddAttribute("onchange", onchange);
 		}
 		tag.AddChildTag(selectTrack);
-		map<Direction,Languages::textSelector_t> directions;
+		map<Direction,Languages::TextSelector> directions;
 		directions[DirectionLeft] = Languages::TextLeft;
 		directions[DirectionRight] = Languages::TextRight;
 		tag.AddChildTag(HtmlTagSelect(name + "direction", directions, direction).AddClass("select_direction"));
@@ -1473,7 +1468,7 @@ namespace WebServer
 		return tag;
 	}
 
-	HtmlTag WebClient::HtmlTagTabMenuItem(const std::string& tabName, const Languages::textSelector_t buttonValue, const bool selected) const
+	HtmlTag WebClient::HtmlTagTabMenuItem(const std::string& tabName, const Languages::TextSelector buttonValue, const bool selected) const
 	{
 		HtmlTag button("button");
 		button.AddClass("tab_button");
@@ -1487,9 +1482,9 @@ namespace WebServer
 		return button;
 	}
 
-	HtmlTag WebClient::HtmlTagSelectSelectStreetApproach(const DataModel::Track::selectStreetApproach_t selectStreetApproach, const bool addDefault)
+	HtmlTag WebClient::HtmlTagSelectSelectStreetApproach(const DataModel::Track::SelectStreetApproach selectStreetApproach, const bool addDefault)
 	{
-		map<DataModel::Track::selectStreetApproach_t,Languages::textSelector_t> options;
+		map<DataModel::Track::SelectStreetApproach,Languages::TextSelector> options;
 		if (addDefault)
 		{
 			options[DataModel::Track::SelectStreetSystemDefault] = Languages::TextSystemDefault;
@@ -1501,9 +1496,9 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("selectstreetapproach", Languages::TextSelectStreetBy, options, selectStreetApproach);
 	}
 
-	HtmlTag WebClient::HtmlTagNrOfTracksToReserve(const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve)
+	HtmlTag WebClient::HtmlTagNrOfTracksToReserve(const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve)
 	{
-		map<DataModel::Loco::nrOfTracksToReserve_t,string> options;
+		map<DataModel::Loco::NrOfTracksToReserve,string> options;
 		options[DataModel::Loco::ReserveOne] = "1";
 		options[DataModel::Loco::ReserveTwo] = "2";
 		return HtmlTagSelectWithLabel("nroftrackstoreserve", Languages::TextNrOfTracksToReserve, options, nrOfTracksToReserve);
@@ -1511,7 +1506,7 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagLogLevel()
 	{
-		map<Logger::Logger::logLevel_t,Languages::textSelector_t> options;
+		map<Logger::Logger::Level,Languages::TextSelector> options;
 		options[Logger::Logger::LevelOff] = Languages::TextOff;
 		options[Logger::Logger::LevelError] = Languages::TextError;
 		options[Logger::Logger::LevelWarning] = Languages::TextWarning;
@@ -1522,7 +1517,7 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagLanguage()
 	{
-		map<Languages::language_t,Languages::textSelector_t> options;
+		map<Languages::Language,Languages::TextSelector> options;
 		options[Languages::EN] = Languages::TextEnglish;
 		options[Languages::DE] = Languages::TextGerman;
 		options[Languages::ES] = Languages::TextSpanish;
@@ -1988,7 +1983,7 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		DataModel::Duration duration = manager.GetDefaultAccessoryDuration();
+		DataModel::AccessoryPulseDuration duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (accessoryID > AccessoryNone)
 		{
@@ -2063,7 +2058,7 @@ namespace WebServer
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		DataModel::Duration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
 		if (!manager.AccessorySave(accessoryID, name, posX, posY, posZ, controlId, protocol, address, DataModel::AccessoryTypeDefault, duration, inverted, result))
@@ -2078,7 +2073,7 @@ namespace WebServer
 	void WebClient::HandleAccessoryState(const map<string, string>& arguments)
 	{
 		AccessoryID accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		DataModel::State accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? DataModel::AccessoryStateOff : DataModel::AccessoryStateOn);
+		DataModel::AccessoryState accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? DataModel::AccessoryStateOff : DataModel::AccessoryStateOn);
 
 		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState, false);
 
@@ -2181,9 +2176,9 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::Type type = DataModel::SwitchTypeLeft;
-		DataModel::Duration duration = manager.GetDefaultAccessoryDuration();
+		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		DataModel::AccessoryType type = DataModel::SwitchTypeLeft;
+		DataModel::AccessoryPulseDuration duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (switchID > SwitchNone)
 		{
@@ -2204,7 +2199,7 @@ namespace WebServer
 			}
 		}
 
-		std::map<DataModel::Type,Languages::textSelector_t> typeOptions;
+		std::map<DataModel::AccessoryType,Languages::TextSelector> typeOptions;
 		typeOptions[DataModel::SwitchTypeLeft] = Languages::TextLeft;
 		typeOptions[DataModel::SwitchTypeRight] = Languages::TextRight;
 
@@ -2254,9 +2249,9 @@ namespace WebServer
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::Type type = static_cast<DataModel::Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SwitchTypeLeft));
-		DataModel::Duration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		DataModel::AccessoryType type = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SwitchTypeLeft));
+		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
 		if (!manager.SwitchSave(switchID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
@@ -2271,7 +2266,7 @@ namespace WebServer
 	void WebClient::HandleSwitchState(const map<string, string>& arguments)
 	{
 		SwitchID switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		DataModel::State switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? DataModel::SwitchStateTurnout : DataModel::SwitchStateStraight);
+		DataModel::AccessoryState switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? DataModel::SwitchStateTurnout : DataModel::SwitchStateStraight);
 
 		manager.SwitchState(ControlTypeWebserver, switchID, switchState, false);
 
@@ -2386,9 +2381,9 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::Type type = DataModel::SignalTypeSimpleLeft;
-		DataModel::Duration duration = manager.GetDefaultAccessoryDuration();
+		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		DataModel::AccessoryType type = DataModel::SignalTypeSimpleLeft;
+		DataModel::AccessoryPulseDuration duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (signalID > SignalNone)
 		{
@@ -2409,7 +2404,7 @@ namespace WebServer
 			}
 		}
 
-		std::map<DataModel::Type, Languages::textSelector_t> typeOptions;
+		std::map<DataModel::AccessoryType, Languages::TextSelector> typeOptions;
 		typeOptions[DataModel::SignalTypeSimpleLeft] = Languages::TextSimpleLeft;
 		typeOptions[DataModel::SignalTypeSimpleRight] = Languages::TextSimpleRight;
 
@@ -2459,9 +2454,9 @@ namespace WebServer
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::Type type = static_cast<DataModel::Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SignalTypeSimpleLeft));
-		DataModel::Duration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		DataModel::AccessoryType type = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SignalTypeSimpleLeft));
+		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
 		if (!manager.SignalSave(signalID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
@@ -2476,7 +2471,7 @@ namespace WebServer
 	void WebClient::HandleSignalState(const map<string, string>& arguments)
 	{
 		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		DataModel::State signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? DataModel::SignalStateRed : DataModel::SignalStateGreen);
+		DataModel::AccessoryState signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? DataModel::SignalStateRed : DataModel::SignalStateGreen);
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
 
@@ -2584,7 +2579,7 @@ namespace WebServer
 	{
 		StreetID streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
 		const DataModel::Street* street = manager.GetStreet(streetID);
-		if (street == nullptr || street->GetVisible() == VisibleNo)
+		if (street == nullptr || street->GetVisible() == DataModel::LayoutItem::VisibleNo)
 		{
 			ReplyHtmlWithHeader(HtmlTag());
 			return;
@@ -2606,7 +2601,7 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", streetID == StreetNone && ((posx || posy) && posz >= LayerUndeletable) ? VisibleYes : VisibleNo));
+		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", streetID == StreetNone && ((posx || posy) && posz >= LayerUndeletable) ? DataModel::LayoutItem::VisibleYes : DataModel::LayoutItem::VisibleNo));
 		Automode automode = static_cast<Automode>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		TrackID fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
 		Direction fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
@@ -2740,7 +2735,7 @@ namespace WebServer
 		}
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", Languages::TextFromTrack, fromTrack, fromDirection));
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", Languages::TextToTrack, toTrack, toDirection, "updateFeedbacksOfTrack(); return false;"));
-		map<Street::Speed,Languages::textSelector_t> speedOptions;
+		map<Street::Speed,Languages::TextSelector> speedOptions;
 		speedOptions[Street::SpeedTravel] = Languages::TextTravelSpeed;
 		speedOptions[Street::SpeedReduced] = Languages::TextReducedSpeed;
 		speedOptions[Street::SpeedCreeping] = Languages::TextCreepingSpeed;
@@ -2749,7 +2744,7 @@ namespace WebServer
 		feedbackDiv.AddAttribute("id", "feedbacks");
 		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
 		tracksDiv.AddChildTag(feedbackDiv);
-		map<Street::PushpullType,Languages::textSelector_t> pushpullOptions;
+		map<Street::PushpullType,Languages::TextSelector> pushpullOptions;
 		pushpullOptions[Street::PushpullTypeNo] = Languages::TextNoPushPull;
 		pushpullOptions[Street::PushpullTypeBoth] = Languages::TextAllTrains;
 		pushpullOptions[Street::PushpullTypeOnly] = Languages::TextPushPullOnly;
@@ -2964,10 +2959,10 @@ namespace WebServer
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
-		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::Track::type_t type = DataModel::Track::TrackTypeStraight;
+		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		DataModel::Track::Type type = DataModel::Track::TrackTypeStraight;
 		std::vector<FeedbackID> feedbacks;
-		DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetSystemDefault));
+		DataModel::Track::SelectStreetApproach selectStreetApproach = static_cast<DataModel::Track::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		if (trackID > TrackNone)
 		{
@@ -3010,7 +3005,7 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"));
 		formContent.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
 
-		std::map<DataModel::Track::type_t, Languages::textSelector_t> typeOptions;
+		std::map<DataModel::Track::Type, Languages::TextSelector> typeOptions;
 		typeOptions[DataModel::Track::TrackTypeStraight] = Languages::TextStraight;
 		typeOptions[DataModel::Track::TrackTypeTurn] = Languages::TextTurn;
 		typeOptions[DataModel::Track::TrackTypeEnd] = Languages::TextBufferStop;
@@ -3092,8 +3087,8 @@ namespace WebServer
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = 1;
-		DataModel::LayoutItem::layoutRotation_t rotation = static_cast<DataModel::LayoutItem::layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::Track::type_t type = static_cast<DataModel::Track::type_t>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Track::TrackTypeStraight));
+		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		DataModel::Track::Type type = static_cast<DataModel::Track::Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Track::TrackTypeStraight));
 		switch (type)
 		{
 			case DataModel::Track::TrackTypeTurn:
@@ -3114,7 +3109,7 @@ namespace WebServer
 				feedbacks.push_back(feedbackID);
 			}
 		}
-		DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetSystemDefault));
+		DataModel::Track::SelectStreetApproach selectStreetApproach = static_cast<DataModel::Track::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		string result;
 		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, selectStreetApproach, releaseWhenFree, result) == TrackNone)
@@ -3295,7 +3290,7 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", feedbackID == FeedbackNone && ((posx || posy) && posz >= LayerUndeletable) ? VisibleYes : VisibleNo));
+		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", feedbackID == FeedbackNone && ((posx || posy) && posz >= LayerUndeletable) ? DataModel::LayoutItem::VisibleYes : DataModel::LayoutItem::VisibleNo));
 		if (posz < LayerUndeletable)
 		{
 			if (controlId == ControlNone)
@@ -3365,7 +3360,7 @@ namespace WebServer
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		FeedbackPin pin = static_cast<FeedbackPin>(Utils::Utils::GetIntegerMapEntry(arguments, "pin", FeedbackPinNone));
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
-		Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", VisibleNo));
+		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", DataModel::LayoutItem::VisibleNo));
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
@@ -3489,7 +3484,7 @@ namespace WebServer
 			return;
 		}
 
-		if (layer < LayerNone || feedback->GetVisible() == VisibleNo)
+		if (layer < LayerNone || feedback->GetVisible() == DataModel::LayoutItem::VisibleNo)
 		{
 			ReplyHtmlWithHeader(HtmlTag());
 			return;
@@ -3510,10 +3505,10 @@ namespace WebServer
 
 	void WebClient::HandleSettingsEdit()
 	{
-		const DataModel::Duration defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
+		const DataModel::AccessoryPulseDuration defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
-		const DataModel::Track::selectStreetApproach_t selectStreetApproach = manager.GetSelectStreetApproach();
-		const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
+		const DataModel::Track::SelectStreetApproach selectStreetApproach = manager.GetSelectStreetApproach();
+		const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
 
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSettings));
@@ -3536,12 +3531,12 @@ namespace WebServer
 
 	void WebClient::HandleSettingsSave(const map<string, string>& arguments)
 	{
-		const DataModel::Duration defaultAccessoryDuration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		const DataModel::AccessoryPulseDuration defaultAccessoryDuration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		const bool autoAddFeedback = Utils::Utils::GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
-		const DataModel::Track::selectStreetApproach_t selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetRandom));
-		const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
-		const Logger::Logger::logLevel_t logLevel = static_cast<Logger::Logger::logLevel_t>(Utils::Utils::GetIntegerMapEntry(arguments, "loglevel", Logger::Logger::LevelInfo));
-		const Languages::language_t language = static_cast<Languages::language_t>(Utils::Utils::GetIntegerMapEntry(arguments, "language", Languages::EN));
+		const DataModel::Track::SelectStreetApproach selectStreetApproach = static_cast<DataModel::Track::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetRandom));
+		const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
+		const Logger::Logger::Level logLevel = static_cast<Logger::Logger::Level>(Utils::Utils::GetIntegerMapEntry(arguments, "loglevel", Logger::Logger::LevelInfo));
+		const Languages::Language language = static_cast<Languages::Language>(Utils::Utils::GetIntegerMapEntry(arguments, "language", Languages::EN));
 		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve, logLevel, language);
 		ReplyResponse(ResponseInfo, Languages::TextSettingsSaved);
 	}
@@ -3610,7 +3605,7 @@ namespace WebServer
 		rawContent.AddClass("narrow_label");
 		rawContent.AddChildTag(HtmlTagControl("controlraw", controls));
 
-		map<ProgramMode,Languages::textSelector_t> programModeOptions;
+		map<ProgramMode,Languages::TextSelector> programModeOptions;
 		programModeOptions[ProgramModeMm] = Languages::TextProgramModeMm;
 		//programModeOptions[ProgramModeMmPom] = Languages::TextProgramModeMmPom;
 		programModeOptions[ProgramModeDccDirect] = Languages::TextProgramModeDccDirect;

@@ -388,7 +388,7 @@ namespace Hardware
 		instance->LocoSpeedDirectionFunctions(loco->GetProtocol(), loco->GetAddress(), speed, direction, functions);
 	}
 
-	void HardwareHandler::AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::State state)
+	void HardwareHandler::AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::AccessoryState state)
 	{
 		if (controlType == ControlTypeHardware
 			|| instance == nullptr
@@ -400,7 +400,7 @@ namespace Hardware
 		instance->Accessory(accessory->GetProtocol(), accessory->GetAddress(), state, accessory->GetDuration());
 	}
 
-	void HardwareHandler::SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::State state)
+	void HardwareHandler::SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state)
 	{
 		if (controlType == ControlTypeHardware
 			|| instance == nullptr
@@ -412,7 +412,7 @@ namespace Hardware
 		instance->Accessory(mySwitch->GetProtocol(), mySwitch->GetAddress(), state, mySwitch->GetDuration());
 	}
 
-	void HardwareHandler::SignalState(const ControlType controlType, const DataModel::Signal* signal, const DataModel::State state)
+	void HardwareHandler::SignalState(const ControlType controlType, const DataModel::Signal* signal, const DataModel::AccessoryState state)
 	{
 		if (controlType == ControlTypeHardware
 			|| instance == nullptr

@@ -148,7 +148,7 @@ namespace Hardware
 		SendTwoBytes(functionMM, addressMM);
 	}
 
-	void M6051::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::State state, const bool on)
+	void M6051::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on)
 	{
 		if (!serialLine.IsConnected())
 		{

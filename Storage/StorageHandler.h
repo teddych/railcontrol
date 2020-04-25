@@ -32,8 +32,8 @@ along with RailControl; see the file LICENCE. If not see
 namespace Storage
 {
 	// the types of the class factories
-	typedef Storage::StorageInterface* createStorage_t(const StorageParams* params);
-	typedef void destroyStorage_t(Storage::StorageInterface*);
+	typedef Storage::StorageInterface* CreateStorage(const StorageParams* params);
+	typedef void DestroyStorage(Storage::StorageInterface*);
 
 	class StorageHandler
 	{
@@ -87,8 +87,8 @@ namespace Storage
 
 
 			Manager* manager;
-			createStorage_t* createStorage;
-			destroyStorage_t* destroyStorage;
+			CreateStorage* createStorage;
+			DestroyStorage* destroyStorage;
 			Storage::StorageInterface* instance;
 			void* dlhandle;
 			bool transactionRunning;

@@ -73,10 +73,10 @@ namespace DataModel
 		SetWidth(Width1);
 		SetHeight(Height1);
 		SetVisible(VisibleYes);
-		type = static_cast<Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type"));
-		state = static_cast<State>(Utils::Utils::GetIntegerMapEntry(arguments, "state"));
-		duration = static_cast<Duration>(Utils::Utils::GetIntegerMapEntry(arguments, "timeout", DefaultDuration)); // FIXME: remove in later versions, is only here for conversion
-		duration = static_cast<Duration>(Utils::Utils::GetIntegerMapEntry(arguments, "duration", DefaultDuration));
+		type = static_cast<AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type"));
+		state = static_cast<AccessoryState>(Utils::Utils::GetIntegerMapEntry(arguments, "state"));
+		duration = static_cast<AccessoryPulseDuration>(Utils::Utils::GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryPulseDuration)); // FIXME: remove in later versions, is only here for conversion
+		duration = static_cast<AccessoryPulseDuration>(Utils::Utils::GetIntegerMapEntry(arguments, "duration", DefaultAccessoryPulseDuration));
 		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		lastUsed = Utils::Utils::GetIntegerMapEntry(arguments, "lastused", 0);
 		counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 0);

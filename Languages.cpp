@@ -474,4 +474,4 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 // /* Text */ { "", "", "" },
 };
 
-Languages::language_t Languages::defaultLanguage = Languages::EN;
+Languages::Language Languages::defaultLanguage = Languages::EN;

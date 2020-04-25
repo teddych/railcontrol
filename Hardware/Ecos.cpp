@@ -21,7 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <cstring>
 #include <vector>
 
-#include "DataModel/TypeAccessory.h"
+#include "DataModel/AccessoryTypes.h"
 #include "Hardware/Ecos.h"
 #include "Utils/Utils.h"
 
@@ -105,7 +105,7 @@ namespace Hardware
 		Send(command.c_str());
 	}
 
-	void Ecos::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::State state, const bool on)
+	void Ecos::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on)
 	{
 		const unsigned int accessoryId = address + OffsetAccessoryAddress;
 		if (on == false)
@@ -502,7 +502,7 @@ namespace Hardware
 
 		if (option.compare("state") == 0)
 		{
-			DataModel::State state = (value == 0 ? DataModel::AccessoryStateOn : DataModel::AccessoryStateOff);
+			DataModel::AccessoryState state = (value == 0 ? DataModel::AccessoryStateOn : DataModel::AccessoryStateOff);
 			manager->AccessoryState(ControlTypeHardware, controlID, ProtocolServer, address, state);
 			return;
 		}

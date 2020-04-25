@@ -32,15 +32,10 @@ along with RailControl; see the file LICENCE. If not see
 #include "Utils/Utils.h"
 #include "WebServer/WebServer.h"
 
-using DataModel::Accessory;
-using DataModel::Track;
-using DataModel::Feedback;
-using DataModel::Layer;
-using DataModel::LayoutItem;
-using DataModel::Loco;
-using DataModel::Signal;
-using DataModel::Street;
-using DataModel::Switch;
+using namespace DataModel;
+using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
+using LayoutItemSize = DataModel::LayoutItem::LayoutItemSize;
+using Visible = DataModel::LayoutItem::Visible;
 using Hardware::HardwareHandler;
 using Hardware::HardwareParams;
 using std::map;
@@ -54,7 +49,7 @@ Manager::Manager(Config& config)
 :	logger(Logger::Logger::GetLogger(Languages::GetText(Languages::TextManager))),
  	boosterState(BoosterStateStop),
 	storage(nullptr),
-	defaultAccessoryDuration(DataModel::DefaultDuration),
+	defaultAccessoryDuration(DataModel::DefaultAccessoryPulseDuration),
 	autoAddFeedback(false),
 	selectStreetApproach(DataModel::Track::SelectStreetRandom),
 	nrOfTracksToReserve(DataModel::Loco::ReserveOne),
@@ -81,12 +76,12 @@ Manager::Manager(Config& config)
 		return;
 	}
 
-	Logger::Logger::SetLogLevel(static_cast<Logger::Logger::logLevel_t>(Utils::Utils::StringToInteger(storage->GetSetting("LogLevel"), Logger::Logger::LevelInfo)));
-	Languages::SetDefaultLanguage(static_cast<Languages::language_t>(Utils::Utils::StringToInteger(storage->GetSetting("Language"), Languages::EN)));
+	Logger::Logger::SetLogLevel(static_cast<Logger::Logger::Level>(Utils::Utils::StringToInteger(storage->GetSetting("LogLevel"), Logger::Logger::LevelInfo)));
+	Languages::SetDefaultLanguage(static_cast<Languages::Language>(Utils::Utils::StringToInteger(storage->GetSetting("Language"), Languages::EN)));
 	defaultAccessoryDuration = Utils::Utils::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"), 250);
 	autoAddFeedback = Utils::Utils::StringToBool(storage->GetSetting("AutoAddFeedback"));
-	selectStreetApproach = static_cast<DataModel::Track::selectStreetApproach_t>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
-	nrOfTracksToReserve = static_cast<DataModel::Loco::nrOfTracksToReserve_t>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve"), 2));
+	selectStreetApproach = static_cast<DataModel::Track::SelectStreetApproach>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
+	nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve"), 2));
 
 
 	controls[ControlIdWebserver] = new WebServer::WebServer(*this, config.getValue("webserverport", 80));
@@ -909,7 +904,7 @@ void Manager::LocoFunction(const ControlType controlType, Loco* loco, const Func
 * Accessory                *
 ***************************/
 
-void Manager::AccessoryState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::State state)
+void Manager::AccessoryState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryState state)
 {
 	Accessory* accessory = GetAccessory(controlID, protocol, address);
 	if (accessory != nullptr)
@@ -933,7 +928,7 @@ void Manager::AccessoryState(const ControlType controlType, const ControlID cont
 	}
 }
 
-bool Manager::AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::State state, const bool force)
+bool Manager::AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::AccessoryState state, const bool force)
 {
 	if (boosterState == BoosterStateStop)
 	{
@@ -944,7 +939,7 @@ bool Manager::AccessoryState(const ControlType controlType, const AccessoryID ac
 	return true;
 }
 
-void Manager::AccessoryState(const ControlType controlType, Accessory* accessory, const DataModel::State state, const bool force)
+void Manager::AccessoryState(const ControlType controlType, Accessory* accessory, const DataModel::AccessoryState state, const bool force)
 {
 	if (accessory == nullptr)
 	{
@@ -963,7 +958,7 @@ void Manager::AccessoryState(const ControlType controlType, Accessory* accessory
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		DataModel::State tempState;
+		DataModel::AccessoryState tempState;
 		if (control.first < ControlIdFirstHardware || inverted == false)
 		{
 			tempState = state;
@@ -1025,7 +1020,7 @@ bool Manager::CheckAccessoryPosition(const Accessory* accessory, const LayoutPos
 	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 }
 
-bool Manager::AccessorySave(const AccessoryID accessoryID, const string& name, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::Type type, const DataModel::Duration duration, const bool inverted, string& result)
+bool Manager::AccessorySave(const AccessoryID accessoryID, const string& name, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryType type, const DataModel::AccessoryPulseDuration duration, const bool inverted, string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
@@ -1146,7 +1141,7 @@ void Manager::FeedbackState(const ControlID controlID, const FeedbackPin pin, co
 	logger->Info(Languages::TextAddingFeedback, name);
 	string result;
 
-	FeedbackSave(FeedbackNone, name, VisibleNo, 0, 0, 0, controlID, pin, false, result);
+	FeedbackSave(FeedbackNone, name, DataModel::LayoutItem::VisibleNo, 0, 0, 0, controlID, pin, false, result);
 }
 
 void Manager::FeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state)
@@ -1224,7 +1219,7 @@ bool Manager::CheckFeedbackPosition(const Feedback* feedback, const LayoutPositi
 		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 	}
 
-	if (feedback->GetVisible() == VisibleNo)
+	if (feedback->GetVisible() == DataModel::LayoutItem::VisibleNo)
 	{
 		return true;
 	}
@@ -1393,7 +1388,7 @@ bool Manager::CheckTrackPosition(const Track* track,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
 	const LayoutItemSize height,
-	const DataModel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::LayoutItem::LayoutRotation rotation,
 	string& result) const
 {
 	LayoutPosition x1;
@@ -1488,10 +1483,10 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
 	const LayoutItemSize height,
-	const DataModel::LayoutItem::layoutRotation_t rotation,
-	const DataModel::Track::type_t type,
+	const DataModel::LayoutItem::LayoutRotation rotation,
+	const DataModel::Track::Type type,
 	std::vector<FeedbackID> newFeedbacks,
-	const DataModel::Track::selectStreetApproach_t selectStreetApproach,
+	const DataModel::Track::SelectStreetApproach selectStreetApproach,
 	const bool releaseWhenFree,
 	string& result)
 {
@@ -1575,7 +1570,7 @@ bool Manager::TrackDelete(const TrackID trackID)
 * Switch                   *
 ***************************/
 
-bool Manager::SwitchState(const ControlType controlType, const SwitchID switchID, const DataModel::State state, const bool force)
+bool Manager::SwitchState(const ControlType controlType, const SwitchID switchID, const DataModel::AccessoryState state, const bool force)
 {
 	if (boosterState == BoosterStateStop)
 	{
@@ -1587,7 +1582,7 @@ bool Manager::SwitchState(const ControlType controlType, const SwitchID switchID
 	return true;
 }
 
-void Manager::SwitchState(const ControlType controlType, Switch* mySwitch, const DataModel::State state, const bool force)
+void Manager::SwitchState(const ControlType controlType, Switch* mySwitch, const DataModel::AccessoryState state, const bool force)
 {
 	if (mySwitch == nullptr)
 	{
@@ -1606,7 +1601,7 @@ void Manager::SwitchState(const ControlType controlType, Switch* mySwitch, const
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		DataModel::State tempState;
+		DataModel::AccessoryState tempState;
 		if (control.first < ControlIdFirstHardware || inverted == false)
 		{
 			tempState = state;
@@ -1672,12 +1667,12 @@ bool Manager::SwitchSave(const SwitchID switchID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
-	const DataModel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::LayoutItem::LayoutRotation rotation,
 	const ControlID controlID,
 	const Protocol protocol,
 	const Address address,
-	const DataModel::Type type,
-	const DataModel::Duration duration,
+	const DataModel::AccessoryType type,
+	const DataModel::AccessoryPulseDuration duration,
 	const bool inverted, string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
@@ -1831,7 +1826,7 @@ bool Manager::CheckStreetPosition(const Street* street, const LayoutPosition pos
 		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 	}
 
-	if (street->GetVisible() == VisibleNo)
+	if (street->GetVisible() == DataModel::LayoutItem::VisibleNo)
 	{
 		return true;
 	}
@@ -2108,7 +2103,7 @@ bool Manager::LayerDelete(const LayerID layerID)
 * Signal                   *
 ***************************/
 
-bool Manager::SignalState(const ControlType controlType, const SignalID signalID, const DataModel::State state, const bool force)
+bool Manager::SignalState(const ControlType controlType, const SignalID signalID, const DataModel::AccessoryState state, const bool force)
 {
 	if (boosterState == BoosterStateStop)
 	{
@@ -2119,7 +2114,7 @@ bool Manager::SignalState(const ControlType controlType, const SignalID signalID
 	return true;
 }
 
-void Manager::SignalState(const ControlType controlType, Signal* signal, const DataModel::State state, const bool force)
+void Manager::SignalState(const ControlType controlType, Signal* signal, const DataModel::AccessoryState state, const bool force)
 {
 	if (signal == nullptr)
 	{
@@ -2138,7 +2133,7 @@ void Manager::SignalState(const ControlType controlType, Signal* signal, const D
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		DataModel::State tempState;
+		DataModel::AccessoryState tempState;
 		if (control.first < ControlIdFirstHardware || inverted == false)
 		{
 			tempState = state;
@@ -2205,12 +2200,12 @@ bool Manager::SignalSave(const SignalID signalID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
-	const DataModel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::LayoutItem::LayoutRotation rotation,
 	const ControlID controlID,
 	const Protocol protocol,
 	const Address address,
-	const DataModel::Type type,
-	const DataModel::Duration duration,
+	const DataModel::AccessoryType type,
+	const DataModel::AccessoryPulseDuration duration,
 	const bool inverted,
 	string& result)
 {
@@ -2633,7 +2628,7 @@ bool Manager::CheckPositionFree(const LayoutPosition posX,
 	const LayoutPosition posZ,
 	const LayoutItemSize width,
 	const LayoutItemSize height,
-	const DataModel::LayoutItem::layoutRotation_t rotation,
+	const DataModel::LayoutItem::LayoutRotation rotation,
 	string& result) const
 {
 	if (width == 0)
@@ -2803,12 +2798,12 @@ bool Manager::CheckControlProtocolAddress(const AddressType type, const ControlI
 	}
 }
 
-bool Manager::SaveSettings(const DataModel::Duration duration,
+bool Manager::SaveSettings(const DataModel::AccessoryPulseDuration duration,
 	const bool autoAddFeedback,
-	const DataModel::Track::selectStreetApproach_t selectStreetApproach,
-	const DataModel::Loco::nrOfTracksToReserve_t nrOfTracksToReserve,
-	const Logger::Logger::logLevel_t logLevel,
-	const Languages::language_t language)
+	const DataModel::Track::SelectStreetApproach selectStreetApproach,
+	const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve,
+	const Logger::Logger::Level logLevel,
+	const Languages::Language language)
 {
 	this->defaultAccessoryDuration = duration;
 	this->autoAddFeedback = autoAddFeedback;

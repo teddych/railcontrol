@@ -25,7 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 #include <thread>
 
-#include "DataModel/TypeAccessory.h"
+#include "DataModel/AccessoryTypes.h"
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Hardware/Z21LocoCache.h"
@@ -44,10 +44,10 @@ namespace Hardware
 			:	protocol(ProtocolNone),
 			 	address(AddressNone),
 			 	state(DataModel::DefaultState),
-			 	duration(DataModel::DefaultDuration)
+			 	duration(DataModel::DefaultAccessoryPulseDuration)
 			{}
 
-			AccessoryQueueEntry(const Protocol protocol, const Address address, const DataModel::State state, const DataModel::Duration duration)
+			AccessoryQueueEntry(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const DataModel::AccessoryPulseDuration duration)
 			:	protocol(protocol),
 			 	address(address),
 			 	state(state),
@@ -56,8 +56,8 @@ namespace Hardware
 
 			Protocol protocol;
 			Address address;
-			DataModel::State state;
-			DataModel::Duration duration;
+			DataModel::AccessoryState state;
+			DataModel::AccessoryPulseDuration duration;
 	};
 
 	class Z21 : HardwareInterface
@@ -116,8 +116,8 @@ namespace Hardware
 			void LocoDirection(const Protocol protocol, const Address address, const Direction direction) override;
 			void LocoFunction(const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
 			void LocoSpeedDirectionFunctions(const Protocol protocol, const Address address, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
-			void Accessory(const Protocol protocol, const Address address, const DataModel::State state, const DataModel::Duration duration) override;
-			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::State state, const bool on) override;
+			void Accessory(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const DataModel::AccessoryPulseDuration duration) override;
+			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
@@ -265,8 +265,8 @@ namespace Hardware
 			void SendSetTurnoutMode(const Address address, const Protocol protocol);
 			void SendSetTurnoutModeMM(const Address address);
 			void SendSetTurnoutModeDCC(const Address address);
-			void AccessoryOn(const Protocol protocol, const Address address, const DataModel::State state);
-			void AccessoryOff(const Protocol protocol, const Address address, const DataModel::State state);
+			void AccessoryOn(const Protocol protocol, const Address address, const DataModel::AccessoryState state);
+			void AccessoryOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state);
 			int Send(const unsigned char* buffer, const size_t bufferLength);
 			int Send(const char* buffer, const size_t bufferLength) { return Send(reinterpret_cast<const unsigned char*>(buffer), bufferLength); }
 

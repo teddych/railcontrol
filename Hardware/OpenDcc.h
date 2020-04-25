@@ -62,7 +62,7 @@ namespace Hardware
 			void LocoDirection(const Protocol protocol, const Address address, const Direction direction) override;
 			void LocoFunction(const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
 			void LocoSpeedDirectionFunctions(const Protocol protocol, const Address address, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
-			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::State state, const bool on) override;
+			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 
 		private:
 			enum Commands : unsigned char

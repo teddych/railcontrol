@@ -28,7 +28,7 @@ using std::to_string;
 
 namespace WebServer
 {
-	HtmlTagFeedback::HtmlTagFeedback(const DataModel::Feedback* feedback, LayoutPosition posX, LayoutPosition posY)
+	HtmlTagFeedback::HtmlTagFeedback(const DataModel::Feedback* feedback, DataModel::LayoutItem::LayoutPosition posX, DataModel::LayoutItem::LayoutPosition posY)
 	:	HtmlTagLayoutItem()
 	{
 		DataModel::Feedback::FeedbackState state = feedback->GetState();

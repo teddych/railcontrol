@@ -138,7 +138,7 @@ namespace Hardware
 		Send(buffer);
 	}
 
-	void ProtocolMaerklinCAN::AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::State state, const bool on)
+	void ProtocolMaerklinCAN::AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on)
 	{
 		unsigned char buffer[CANCommandBufferLength];
 		logger->Info(Languages::TextSettingAccessoryWithProtocol, static_cast<int>(protocol), address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
@@ -335,7 +335,7 @@ namespace Hardware
 			CanAddress address;
 			Protocol protocol;
 			ParseAddressProtocol(buffer, address, protocol);
-			DataModel::State state = (buffer[9] ? DataModel::AccessoryStateOn : DataModel::AccessoryStateOff);
+			DataModel::AccessoryState state = (buffer[9] ? DataModel::AccessoryStateOn : DataModel::AccessoryStateOff);
 			// GUI-address is 1-based, protocol-address is 0-based
 			++address;
 			logger->Info(Languages::TextReceivedAccessoryCommand, protocol, address, state);

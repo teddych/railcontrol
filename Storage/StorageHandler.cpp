@@ -69,7 +69,7 @@ namespace Storage
 
 		// look for symbol create_*
 		string createSymbol = "create_" + params->module;
-		createStorage_t* newCreateStorage = (createStorage_t*) dlsym(dlhandle, createSymbol.c_str());
+		CreateStorage* newCreateStorage = (CreateStorage*) dlsym(dlhandle, createSymbol.c_str());
 		error = dlerror();
 		if (error)
 		{
@@ -79,7 +79,7 @@ namespace Storage
 
 		// look for symbol destroy_*
 		string destroySymbol = "destroy_" + params->module;
-		destroyStorage_t* newDestroyStorage = (destroyStorage_t*) dlsym(dlhandle, destroySymbol.c_str());
+		DestroyStorage* newDestroyStorage = (DestroyStorage*) dlsym(dlhandle, destroySymbol.c_str());
 		error = dlerror();
 		if (error)
 		{

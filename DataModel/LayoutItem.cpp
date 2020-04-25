@@ -35,7 +35,7 @@ namespace DataModel
 			const LayoutPosition posY,
 			const LayoutItemSize width,
 			const LayoutItemSize height,
-			const layoutRotation_t rotation,
+			const LayoutRotation rotation,
 			LayoutPosition& x,
 			LayoutPosition& y,
 			LayoutItemSize& w,
@@ -127,7 +127,7 @@ namespace DataModel
 		posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posZ", 0);
 		width = Utils::Utils::GetIntegerMapEntry(arguments, "width", Width1);
 		height = Utils::Utils::GetIntegerMapEntry(arguments, "height", Height1);
-		rotation = static_cast<layoutRotation_t>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
+		rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", Rotation0));
 		if (rotation > Rotation270)
 		{
 			rotation = Rotation0;
@@ -135,7 +135,7 @@ namespace DataModel
 		return true;
 	}
 
-	std::string LayoutItem::Rotation(layoutRotation_t rotation)
+	std::string LayoutItem::Rotation(LayoutRotation rotation)
 	{
 		switch (rotation)
 		{

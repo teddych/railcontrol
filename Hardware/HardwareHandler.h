@@ -65,7 +65,7 @@ namespace Hardware
 
 			void AccessoryProtocols(std::vector<Protocol>& protocols) const override;
 			bool AccessoryProtocolSupported(Protocol protocol) const override;
-			void AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::State state) override;
+			void AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::AccessoryState state) override;
 
 			void Booster(const ControlType controlType, BoosterState status) override;
 			bool CanHandleAccessories() const override;
@@ -82,8 +82,8 @@ namespace Hardware
 			bool LocoProtocolSupported(Protocol protocol) const override;
 			void LocoSpeed(const ControlType controlType, const DataModel::Loco* loco, const Speed speed) override;
 			void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
-			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::State state) override;
-			void SignalState(const ControlType controlType, const DataModel::Signal* signal, const DataModel::State state) override;
+			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state) override;
+			void SignalState(const ControlType controlType, const DataModel::Signal* signal, const DataModel::AccessoryState state) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
