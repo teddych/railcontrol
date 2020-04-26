@@ -92,7 +92,6 @@ namespace DataModel
 			bool Release(Logger::Logger* logger, const LocoID locoID) override;
 			bool ReleaseForce(Logger::Logger* logger, const LocoID locoID);
 
-			std::string LayoutType() const override { return Languages::GetText(Languages::TextTrack); };
 			Type GetType() const { return type; }
 			void SetType(const Type type) { this->type = type; }
 			std::vector<FeedbackID> GetFeedbacks() const { return feedbacks; }
@@ -115,6 +114,7 @@ namespace DataModel
 			LocoID GetLocoDelayed() const { return this->locoIdDelayed; }
 			bool GetReleaseWhenFree() const { return releaseWhenFree; }
 			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
+			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextTrack); };
 
 		private:
 			bool FeedbackStateInternal(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);

@@ -95,7 +95,7 @@ namespace DataModel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string LayoutType() const override { return Languages::GetText(Languages::TextStreet); };
+			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextStreet); };
 
 			void DeleteRelationsAtLock() { DeleteRelations(relationsAtLock); };
 			void DeleteRelationsAtUnlock() { DeleteRelations(relationsAtUnlock); };

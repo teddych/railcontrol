@@ -2675,7 +2675,7 @@ bool Manager::CheckLayoutPositionFree(const LayoutPosition posX, const LayoutPos
 		{
 			continue;
 		}
-		result.assign(Logger::Logger::Format(Languages::GetText(Languages::TextPositionAlreadyInUse), static_cast<int>(posX), static_cast<int>(posY), static_cast<int>(posZ), layout.second->LayoutType(), layout.second->GetName()));
+		result.assign(Logger::Logger::Format(Languages::GetText(Languages::TextPositionAlreadyInUse), static_cast<int>(posX), static_cast<int>(posY), static_cast<int>(posZ), layout.second->GetLayoutType(), layout.second->GetName()));
 		return false;
 	}
 	return true;

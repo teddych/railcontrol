@@ -80,7 +80,7 @@ namespace DataModel
 			virtual bool CheckPositionFree(const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ);
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
-			virtual std::string LayoutType() const = 0;
+			virtual std::string GetLayoutType() const = 0;
 
 			void SetVisible(const Visible visible) { this->visible = visible; }
 			Visible GetVisible() const { return visible; }

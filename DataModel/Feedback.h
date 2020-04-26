@@ -62,7 +62,7 @@ namespace DataModel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string LayoutType() const override { return Languages::GetText(Languages::TextFeedback); };
+			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextFeedback); };
 
 			void SetInverted(const bool inverted) { this->inverted = inverted; }
 			bool GetInverted() const { return inverted; }

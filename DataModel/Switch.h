@@ -46,7 +46,7 @@ namespace DataModel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string LayoutType() const override { return Languages::GetText(Languages::TextSwitch); };
+			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextSwitch); };
 	};
 
 } // namespace DataModel

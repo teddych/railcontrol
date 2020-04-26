@@ -65,7 +65,7 @@ namespace DataModel
 
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
-			virtual std::string LayoutType() const override { return Languages::GetText(Languages::TextAccessory); }
+			virtual std::string GetLayoutType() const override { return Languages::GetText(Languages::TextAccessory); }
 
 			void SetType(AccessoryType type) { this->type = type; }
 			AccessoryType GetType() const { return type; }
