@@ -19,5 +19,5 @@ amalgamation.cpp
 .*.swp
 svg/*
 Timestamp.cpp
-.settings/language.settings.xml
+.settings/
 
