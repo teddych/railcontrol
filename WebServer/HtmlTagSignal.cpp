@@ -31,7 +31,7 @@ namespace WebServer
 	HtmlTagSignal::HtmlTagSignal(const DataModel::Signal* signal)
 	:	HtmlTagLayoutItem()
 	{
-		DataModel::AccessoryState state = signal->GetState();
+		DataModel::AccessoryState state = signal->GetAccessoryState();
 		DataModel::AccessoryType type = signal->GetType();
 
 		unsigned int layoutPosX = signal->GetPosX() * EdgeLength;

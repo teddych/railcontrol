@@ -397,7 +397,7 @@ namespace Hardware
 		{
 			return;
 		}
-		instance->Accessory(accessory->GetProtocol(), accessory->GetAddress(), state, accessory->GetDuration());
+		instance->Accessory(accessory->GetProtocol(), accessory->GetAddress(), state, accessory->GetAccessoryPulseDuration());
 	}
 
 	void HardwareHandler::SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state)
@@ -409,7 +409,7 @@ namespace Hardware
 		{
 			return;
 		}
-		instance->Accessory(mySwitch->GetProtocol(), mySwitch->GetAddress(), state, mySwitch->GetDuration());
+		instance->Accessory(mySwitch->GetProtocol(), mySwitch->GetAddress(), state, mySwitch->GetAccessoryPulseDuration());
 	}
 
 	void HardwareHandler::SignalState(const ControlType controlType, const DataModel::Signal* signal, const DataModel::AccessoryState state)
@@ -421,7 +421,7 @@ namespace Hardware
 		{
 			return;
 		}
-		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), state, signal->GetDuration());
+		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), state, signal->GetAccessoryPulseDuration());
 	}
 
 	bool HardwareHandler::ProgramCheckValues(const ProgramMode mode, const CvNumber cv, const CvValue value)

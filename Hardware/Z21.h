@@ -25,7 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 #include <thread>
 
-#include "DataModel/AccessoryTypes.h"
+#include "DataModel/AccessoryBase.h"
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Hardware/Z21LocoCache.h"

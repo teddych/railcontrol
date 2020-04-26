@@ -36,13 +36,6 @@ namespace DataModel
 		return ss.str();
 	}
 
-	bool HardwareHandle::Deserialize(const std::string& serialized)
-	{
-		map<string,string> arguments;
-		ParseArguments(serialized, arguments);
-		return Deserialize(arguments);
-	}
-
 	bool HardwareHandle::Deserialize(const map<string,string>& arguments)
 	{
 		controlID = Utils::Utils::GetIntegerMapEntry(arguments, "controlID", ControlIdNone);

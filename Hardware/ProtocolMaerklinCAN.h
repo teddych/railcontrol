@@ -20,7 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include "DataModel/AccessoryTypes.h"
+#include "DataModel/AccessoryBase.h"
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
 #include "Logger/Logger.h"

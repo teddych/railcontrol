@@ -25,7 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <thread>
 #include <vector>
 
-#include "DataModel/AccessoryTypes.h"
+#include "DataModel/AccessoryBase.h"
 #include "Manager.h"
 #include "Network/TcpConnection.h"
 #include "WebServer/HtmlResponse.h"

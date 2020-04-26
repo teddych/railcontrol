@@ -51,7 +51,8 @@ namespace DataModel
 
 			Loco(Manager* manager, const LocoID locoID)
 			:	Object(locoID),
-			 	manager(manager),
+				HardwareHandle(),
+				manager(manager),
 				speed(MinSpeed),
 				direction(DirectionRight),
 				state(LocoStateManual),
@@ -75,6 +76,7 @@ namespace DataModel
 
 			Loco(Manager* manager, const std::string& serialized)
 			:	Object(LocoNone),
+				HardwareHandle(),
 			 	manager(manager),
 				speed(MinSpeed),
 				direction(DirectionRight),

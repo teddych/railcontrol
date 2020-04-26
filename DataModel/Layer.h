@@ -24,7 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 
 #include "DataTypes.h"
-#include "DataModel/Serializable.h"
+#include "DataModel/Object.h"
 
 class Manager;
 

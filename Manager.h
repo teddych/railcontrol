@@ -29,7 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Config.h"
 #include "ControlInterface.h"
-#include "DataModel/AccessoryTypes.h"
+#include "DataModel/AccessoryBase.h"
 #include "DataModel/DataModel.h"
 #include "Hardware/HardwareParams.h"
 #include "Logger/Logger.h"

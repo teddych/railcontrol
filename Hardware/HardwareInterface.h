@@ -24,7 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 #include <vector>
 
-#include "DataModel/AccessoryTypes.h"
+#include "DataModel/AccessoryBase.h"
 #include "DataTypes.h"
 #include "Manager.h"
 #include "Utils/Utils.h"

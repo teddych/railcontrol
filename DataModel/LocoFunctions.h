@@ -25,7 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace DataModel
 {
-	class LocoFunctions : Serializable
+	class LocoFunctions : private Serializable
 	{
 		public:
 			enum FunctionState : unsigned char

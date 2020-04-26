@@ -41,14 +41,9 @@ namespace DataModel
 	{
 		stringstream ss;
 		ss << LayoutItem::Serialize()
-			<< ";" << LockableItem::Serialize()
-			<< ";" << HardwareHandle::Serialize()
-			<< ";type=" << static_cast<int>(type)
-			<< ";state=" << static_cast<int>(state)
-			<< ";duration=" << static_cast<int>(duration)
-			<< ";inverted=" << static_cast<int>(inverted)
-			<< ";lastused=" << lastUsed
-			<< ";counter=" << counter;
+			<< ";" << AccessoryBase::Serialize()
+			<< ";" << LayoutItem::Serialize()
+			<< ";" << LockableItem::Serialize();
 		return ss.str();
 	}
 
@@ -67,19 +62,12 @@ namespace DataModel
 
 	bool Accessory::Deserialize(const map<string,string>& arguments)
 	{
+		AccessoryBase::Deserialize(arguments);
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
-		HardwareHandle::Deserialize(arguments);
 		SetWidth(Width1);
 		SetHeight(Height1);
 		SetVisible(VisibleYes);
-		type = static_cast<AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type"));
-		state = static_cast<AccessoryState>(Utils::Utils::GetIntegerMapEntry(arguments, "state"));
-		duration = static_cast<AccessoryPulseDuration>(Utils::Utils::GetIntegerMapEntry(arguments, "timeout", DefaultAccessoryPulseDuration)); // FIXME: remove in later versions, is only here for conversion
-		duration = static_cast<AccessoryPulseDuration>(Utils::Utils::GetIntegerMapEntry(arguments, "duration", DefaultAccessoryPulseDuration));
-		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
-		lastUsed = Utils::Utils::GetIntegerMapEntry(arguments, "lastused", 0);
-		counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 0);
 		return true;
 	}
 } // namespace DataModel

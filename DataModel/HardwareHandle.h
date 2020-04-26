@@ -28,27 +28,16 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace DataModel
 {
-	class HardwareHandle : protected Serializable
+	class HardwareHandle
 	{
 		public:
-			HardwareHandle(const ControlID controlID,
-				const Protocol protocol,
-				const Address address)
-			:	controlID(controlID),
-				protocol(protocol),
-				address(address)
-			{
-			}
+			HardwareHandle()
+			:	controlID(ControlNone),
+			 	protocol(ProtocolNone),
+			 	address(AddressNone)
+			{}
 
-			HardwareHandle(const std::string& serialized)
-			{
-				Deserialize(serialized);
-			}
-
-			HardwareHandle() {}
-
-			virtual std::string Serialize() const override;
-			virtual bool Deserialize(const std::string& serialized) override;
+			virtual ~HardwareHandle() {}
 
 			void SetControlID(ControlID controlID) { this->controlID = controlID; }
 			ControlID GetControlID() const { return controlID; }
@@ -58,6 +47,7 @@ namespace DataModel
 			Address GetAddress() const { return address; }
 
 		protected:
+			virtual std::string Serialize() const;
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 
 		private:

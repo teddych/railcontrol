@@ -23,7 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
-#include "DataModel/AccessoryTypes.h"
+#include "DataModel/AccessoryBase.h"
 #include "DataTypes.h"
 
 class Languages

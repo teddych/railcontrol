@@ -24,7 +24,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 
 #include "DataModel/Feedback.h"
-#include "DataModel/Serializable.h"
 #include "Logger/Logger.h"
 
 namespace DataModel
@@ -60,9 +59,6 @@ namespace DataModel
 
 			ObjectType GetObjectType() const { return ObjectTypeTrack; }
 
-			std::string Serialize() const;
-			bool Deserialize(const std::map<std::string, std::string> arguments);
-
 			std::vector<FeedbackID> GetFeedbacks() const { return feedbacks; }
 			void Feedbacks(const std::vector<FeedbackID>& feedbacks) { this->feedbacks = feedbacks; }
 
@@ -85,6 +81,9 @@ namespace DataModel
 			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
 
 		protected:
+			std::string Serialize() const;
+			bool Deserialize(const std::map<std::string, std::string> arguments);
+
 			bool BaseReserve(Logger::Logger* logger, const LocoID locoID);
 			bool BaseReserveForce(Logger::Logger* logger, const LocoID locoID);
 			bool BaseLock(Logger::Logger* logger, const LocoID locoID);

@@ -31,7 +31,7 @@ namespace WebServer
 	HtmlTagAccessory::HtmlTagAccessory(const DataModel::Accessory* accessory)
 	:	HtmlTagLayoutItem()
 	{
-		DataModel::AccessoryState state = accessory->GetState();
+		DataModel::AccessoryState state = accessory->GetAccessoryState();
 
 		unsigned int layoutPosX = accessory->GetPosX() * EdgeLength;
 		unsigned int layoutPosY = accessory->GetPosY() * EdgeLength;

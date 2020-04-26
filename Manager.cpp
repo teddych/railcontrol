@@ -952,7 +952,7 @@ void Manager::AccessoryState(const ControlType controlType, Accessory* accessory
 		return;
 	}
 
-	accessory->SetState(state);
+	accessory->SetAccessoryState(state);
 	const bool inverted = accessory->GetInverted();
 
 	std::lock_guard<std::mutex> guard(controlMutex);
@@ -1053,7 +1053,7 @@ bool Manager::AccessorySave(const AccessoryID accessoryID, const string& name, c
 	accessory->SetProtocol(protocol);
 	accessory->SetAddress(address);
 	accessory->SetType(type);
-	accessory->SetDuration(duration);
+	accessory->SetAccessoryPulseDuration(duration);
 	accessory->SetInverted(inverted);
 
 	// save in db
@@ -1595,7 +1595,7 @@ void Manager::SwitchState(const ControlType controlType, Switch* mySwitch, const
 		return;
 	}
 
-	mySwitch->SetState(state);
+	mySwitch->SetAccessoryState(state);
 	bool inverted = mySwitch->GetInverted();
 
 	std::lock_guard<std::mutex> guard(controlMutex);
@@ -1707,7 +1707,7 @@ bool Manager::SwitchSave(const SwitchID switchID,
 	mySwitch->SetProtocol(protocol);
 	mySwitch->SetAddress(address);
 	mySwitch->SetType(type);
-	mySwitch->SetDuration(duration);
+	mySwitch->SetAccessoryPulseDuration(duration);
 	mySwitch->SetInverted(inverted);
 
 	// save in db
@@ -2127,7 +2127,7 @@ void Manager::SignalState(const ControlType controlType, Signal* signal, const D
 		return;
 	}
 
-	signal->SetState(state);
+	signal->SetAccessoryState(state);
 	bool inverted = signal->GetInverted();
 
 	std::lock_guard<std::mutex> guard(controlMutex);
@@ -2240,7 +2240,7 @@ bool Manager::SignalSave(const SignalID signalID,
 	signal->SetProtocol(protocol);
 	signal->SetAddress(address);
 	signal->SetType(type);
-	signal->SetDuration(duration);
+	signal->SetAccessoryPulseDuration(duration);
 	signal->SetInverted(inverted);
 
 	// save in db

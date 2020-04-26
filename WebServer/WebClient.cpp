@@ -1997,7 +1997,7 @@ namespace WebServer
 				posx = accessory->GetPosX();
 				posy = accessory->GetPosY();
 				posz = accessory->GetPosZ();
-				duration = accessory->GetDuration();
+				duration = accessory->GetAccessoryPulseDuration();
 				inverted = accessory->GetInverted();
 			}
 		}
@@ -2194,7 +2194,7 @@ namespace WebServer
 				posz = mySwitch->GetPosZ();
 				rotation = mySwitch->GetRotation();
 				type = mySwitch->GetType();
-				duration = mySwitch->GetDuration();
+				duration = mySwitch->GetAccessoryPulseDuration();
 				inverted = mySwitch->GetInverted();
 			}
 		}
@@ -2399,7 +2399,7 @@ namespace WebServer
 				posz = signal->GetPosZ();
 				rotation = signal->GetRotation();
 				type = signal->GetType();
-				duration = signal->GetDuration();
+				duration = signal->GetAccessoryPulseDuration();
 				inverted = signal->GetInverted();
 			}
 		}
