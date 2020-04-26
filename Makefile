@@ -20,6 +20,7 @@ OBJ= \
 	ArgumentHandler.o \
 	Config.o \
 	DataModel/Accessory.o \
+	DataModel/AccessoryBase.o \
 	DataModel/Feedback.o \
 	DataModel/HardwareHandle.o \
 	DataModel/LayoutItem.o \
