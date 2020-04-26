@@ -32,6 +32,7 @@ OBJ= \
 	DataModel/Street.o \
 	DataModel/Switch.o \
 	DataModel/Track.o \
+	DataModel/TrackBase.o \
 	Hardware/HardwareHandler.o \
 	Languages.o \
 	Logger/Logger.o \
