@@ -38,7 +38,7 @@ namespace WebServer
 		DataModel::LayoutItem::LayoutItemSize h;
 		DataModel::LayoutItem::LayoutRotation r;
 		track->Position(posX, posY, posZ, w, h, r);
-		DataModel::Track::Type type = track->GetType();
+		DataModel::Track::TrackType type = track->GetTrackType();
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
 		const string& trackName = track->GetName();

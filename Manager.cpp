@@ -1484,7 +1484,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	const LayoutPosition posZ,
 	const LayoutItemSize height,
 	const DataModel::LayoutItem::LayoutRotation rotation,
-	const DataModel::Track::Type type,
+	const DataModel::Track::TrackType type,
 	std::vector<FeedbackID> newFeedbacks,
 	const DataModel::Track::SelectStreetApproach selectStreetApproach,
 	const bool releaseWhenFree,
@@ -1514,7 +1514,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	track->SetPosX(posX);
 	track->SetPosY(posY);
 	track->SetPosZ(posZ);
-	track->SetType(type);
+	track->SetTrackType(type);
 	track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
 	track->SetSelectStreetApproach(selectStreetApproach);
 	track->SetReleaseWhenFree(releaseWhenFree);

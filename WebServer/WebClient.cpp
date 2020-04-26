@@ -2960,7 +2960,7 @@ namespace WebServer
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
 		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::Track::Type type = DataModel::Track::TrackTypeStraight;
+		DataModel::Track::TrackType type = DataModel::Track::TrackTypeStraight;
 		std::vector<FeedbackID> feedbacks;
 		DataModel::Track::SelectStreetApproach selectStreetApproach = static_cast<DataModel::Track::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
@@ -2975,7 +2975,7 @@ namespace WebServer
 				posz = track->GetPosZ();
 				height = track->GetHeight();
 				rotation = track->GetRotation();
-				type = track->GetType();
+				type = track->GetTrackType();
 				feedbacks = track->GetFeedbacks();
 				selectStreetApproach = track->GetSelectStreetApproach();
 				releaseWhenFree = track->GetReleaseWhenFree();
@@ -3005,7 +3005,7 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"));
 		formContent.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
 
-		std::map<DataModel::Track::Type, Languages::TextSelector> typeOptions;
+		std::map<DataModel::Track::TrackType, Languages::TextSelector> typeOptions;
 		typeOptions[DataModel::Track::TrackTypeStraight] = Languages::TextStraight;
 		typeOptions[DataModel::Track::TrackTypeTurn] = Languages::TextTurn;
 		typeOptions[DataModel::Track::TrackTypeEnd] = Languages::TextBufferStop;
@@ -3088,7 +3088,7 @@ namespace WebServer
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = 1;
 		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::Track::Type type = static_cast<DataModel::Track::Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Track::TrackTypeStraight));
+		DataModel::Track::TrackType type = static_cast<DataModel::Track::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Track::TrackTypeStraight));
 		switch (type)
 		{
 			case DataModel::Track::TrackTypeTurn:
