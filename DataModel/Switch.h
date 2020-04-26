@@ -20,33 +20,40 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <mutex>
 #include <string>
-#include <vector>
 
-#include "DataModel/Accessory.h"
+#include "DataModel/AccessoryBase.h"
+#include "DataModel/LayoutItem.h"
+#include "DataModel/LockableItem.h"
 #include "DataTypes.h"
+
+class Manager;
 
 namespace DataModel
 {
-	class Switch : public Accessory
+	class Switch : public AccessoryBase, public LayoutItem, public LockableItem
 	{
 		public:
-			Switch(Manager* manager, const SwitchID switchID)
-			:	Accessory(manager, switchID)
-			{
-			}
+			Switch(const SwitchID switchID)
+			:	AccessoryBase(),
+				LayoutItem(switchID),
+				LockableItem()
+			{}
+
+			Switch(__attribute__((unused)) Manager* manager, const SwitchID switchID)
+			:	Switch(switchID)
+			{}
 
 			Switch(const std::string& serialized)
 			{
 				Deserialize(serialized);
 			}
 
-			ObjectType GetObjectType() const { return ObjectTypeSwitch; }
+			ObjectType GetObjectType() const override { return ObjectTypeSwitch; }
+			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextSwitch); };
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextSwitch); };
 	};
 
 } // namespace DataModel

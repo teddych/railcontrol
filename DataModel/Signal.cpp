@@ -32,7 +32,12 @@ namespace DataModel
 {
 	std::string Signal::Serialize() const
 	{
-		return "objectType=Signal;" + Accessory::SerializeWithoutType();
+		stringstream ss;
+		ss << "objectType=Signal;"
+			<< ";" << AccessoryBase::Serialize()
+			<< ";" << LayoutItem::Serialize()
+			<< ";" << LockableItem::Serialize();
+		return ss.str();
 	}
 
 	bool Signal::Deserialize(const std::string& serialized)
@@ -45,7 +50,13 @@ namespace DataModel
 			return false;
 		}
 
-		return Accessory::Deserialize(arguments);
+		AccessoryBase::Deserialize(arguments);
+		LayoutItem::Deserialize(arguments);
+		LockableItem::Deserialize(arguments);
+		SetWidth(Width1);
+		SetHeight(Height1);
+		SetVisible(VisibleYes);
+		return true;
 	}
 
 	bool Signal::Release(Logger::Logger* logger, const LocoID locoID)

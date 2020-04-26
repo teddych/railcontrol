@@ -20,37 +20,39 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <mutex>
 #include <string>
-#include <vector>
 
-#include "DataModel/Accessory.h"
+#include "DataModel/AccessoryBase.h"
+#include "DataModel/LayoutItem.h"
+#include "DataModel/LockableItem.h"
 #include "DataTypes.h"
 
 class Manager;
 
 namespace DataModel
 {
-	class Signal : public Accessory
+	class Signal : public AccessoryBase, public LayoutItem, public LockableItem
 	{
 		public:
 			Signal(Manager* manager, const SignalID signalID)
-			:	Accessory(manager, signalID),
+			:	AccessoryBase(),
+				LayoutItem(signalID),
+				LockableItem(),
 			 	manager(manager)
 			{
 			}
 
 			Signal(Manager* manager, const std::string& serialized)
-			:	manager(manager)
+			:	Signal(manager, SignalNone)
 			{
 				Deserialize(serialized);
 			}
 
-			ObjectType GetObjectType() const { return ObjectTypeSignal; }
+			ObjectType GetObjectType() const override { return ObjectTypeSignal; }
+			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextSignal); };
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextSignal); };
 
 			bool Release(Logger::Logger* logger, const LocoID locoID) override;
 

@@ -56,15 +56,11 @@ namespace DataModel
 
 			virtual ~Accessory() {}
 
-			virtual ObjectType GetObjectType() const { return ObjectTypeAccessory; }
+			virtual ObjectType GetObjectType() const override { return ObjectTypeAccessory; }
 			virtual std::string GetLayoutType() const override { return Languages::GetText(Languages::TextAccessory); }
 
 			virtual std::string Serialize() const override;
 			virtual bool Deserialize(const std::string& serialized) override;
-
-		protected:
-			std::string SerializeWithoutType() const;
-			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
 	};
 } // namespace DataModel
 
