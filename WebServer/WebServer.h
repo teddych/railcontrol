@@ -76,7 +76,7 @@ namespace WebServer
 			void TrackState(const TrackID trackID, const std::string& name, const bool occupied, const bool blocked, const Direction direction, const std::string& locoName) override;
 			void SignalDelete(const SignalID signalID, const std::string& name) override;
 			void SignalSettings(const SignalID signalID, const std::string& name) override;
-			void SignalState(const ControlType controlType, const DataModel::Signal* signal, const DataModel::AccessoryState state) override;
+			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
 			void ProgramValue(const CvNumber cv, const CvValue value) override;
 
 		private:

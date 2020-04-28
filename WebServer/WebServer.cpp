@@ -271,9 +271,10 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextLocoIsOnTrack, locoName, trackName);
 	}
 
-	void WebServer::SignalState(__attribute__((unused)) const ControlType controlType, const DataModel::Signal* signal, const DataModel::AccessoryState state)
+	void WebServer::SignalState(__attribute__((unused)) const ControlType controlType, const DataModel::Signal* signal)
 	{
 		stringstream command;
+		DataModel::AccessoryState state = signal->GetAccessoryState();
 		command << "signal;signal=" << signal->GetID() << ";state=" << (state ? "green" : "red");
 		AddUpdate(command.str(), state ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, signal->GetName());
 	}

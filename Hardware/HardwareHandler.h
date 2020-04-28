@@ -83,7 +83,7 @@ namespace Hardware
 			void LocoSpeed(const ControlType controlType, const DataModel::Loco* loco, const Speed speed) override;
 			void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state) override;
-			void SignalState(const ControlType controlType, const DataModel::Signal* signal, const DataModel::AccessoryState state) override;
+			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 

@@ -93,7 +93,7 @@ class ControlInterface
 		virtual void TrackState(__attribute__((unused)) const TrackID trackID, __attribute__((unused)) const std::string& name, __attribute__((unused)) const bool occupied, __attribute__((unused)) const bool blocked, __attribute__((unused)) const Direction direction, __attribute__((unused)) const std::string& locoName) {};
 		virtual void SignalDelete(__attribute__((unused)) const SignalID signalID, __attribute__((unused)) const std::string& name) {};
 		virtual void SignalSettings(__attribute__((unused)) const SignalID signalID, __attribute__((unused)) const std::string& name) {};
-		virtual void SignalState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Signal* signal, __attribute__((unused)) const DataModel::AccessoryState state) {};
+		virtual void SignalState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Signal* signal) {};
 
 		virtual void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions)
 		{

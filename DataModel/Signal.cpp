@@ -35,6 +35,7 @@ namespace DataModel
 		stringstream ss;
 		ss << "objectType=Signal;"
 			<< ";" << AccessoryBase::Serialize()
+			<< ";" << TrackBase::Serialize()
 			<< ";" << LayoutItem::Serialize()
 			<< ";" << LockableItem::Serialize();
 		return ss.str();
@@ -51,6 +52,7 @@ namespace DataModel
 		}
 
 		AccessoryBase::Deserialize(arguments);
+		TrackBase::Deserialize(arguments);
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
 		SetWidth(Width1);
@@ -59,15 +61,22 @@ namespace DataModel
 		return true;
 	}
 
-	bool Signal::Release(Logger::Logger* logger, const LocoID locoID)
+	bool Signal::ReleaseInternal(Logger::Logger* logger, const LocoID locoID)
 	{
 		bool ret = LockableItem::Release(logger, locoID);
 		if (ret == false)
 		{
 			return false;
 		}
-		manager->SignalState(ControlTypeInternal, this, SignalStateRed, true);
+
+		SetAccessoryState(SignalStateRed);
+		PublishState();
 		return true;
+	}
+
+	void Signal::PublishState() const
+	{
+		manager->SignalPublishState(ControlTypeInternal, this);
 	}
 } // namespace DataModel
 

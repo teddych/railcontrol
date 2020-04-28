@@ -93,7 +93,7 @@ namespace DataModel
 			virtual bool ReserveInternal(Logger::Logger* logger, const LocoID locoID) = 0;
 			virtual bool LockInternal(Logger::Logger* logger, const LocoID locoID) = 0;
 			virtual bool ReleaseInternal(Logger::Logger* logger, const LocoID locoID) = 0;
-			virtual void PublishTrackState() const = 0;
+			virtual void PublishState() const = 0;
 			virtual ObjectID GetMyID() const = 0;
 			virtual const std::string& GetMyName() const = 0;
 			virtual LocoID GetLockedLoco() const = 0;

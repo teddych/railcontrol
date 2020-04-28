@@ -2128,21 +2128,16 @@ void Manager::SignalState(const ControlType controlType, Signal* signal, const D
 	}
 
 	signal->SetAccessoryState(state);
-	bool inverted = signal->GetInverted();
 
+	SignalPublishState(controlType, signal);
+}
+
+void Manager::SignalPublishState(const ControlType controlType, const DataModel::Signal* signal)
+{
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		DataModel::AccessoryState tempState;
-		if (control.first < ControlIdFirstHardware || inverted == false)
-		{
-			tempState = state;
-		}
-		else
-		{
-			tempState = (state == DataModel::SignalStateGreen ? DataModel::SignalStateRed : DataModel::SignalStateGreen);
-		}
-		control.second->SignalState(controlType, signal, tempState);
+		control.second->SignalState(controlType, signal);
 	}
 }
 

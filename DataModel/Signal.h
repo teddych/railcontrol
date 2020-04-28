@@ -31,14 +31,14 @@ class Manager;
 
 namespace DataModel
 {
-	class Signal : public AccessoryBase, public LayoutItem, public LockableItem
+	class Signal : public AccessoryBase, public TrackBase, public LayoutItem, public LockableItem
 	{
 		public:
 			Signal(Manager* manager, const SignalID signalID)
 			:	AccessoryBase(),
+				TrackBase(manager),
 				LayoutItem(signalID),
-				LockableItem(),
-			 	manager(manager)
+				LockableItem()
 			{
 			}
 
@@ -54,10 +54,60 @@ namespace DataModel
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
 
-			bool Release(Logger::Logger* logger, const LocoID locoID) override;
+			bool Reserve(Logger::Logger* logger, const LocoID locoID) override
+			{
+				return BaseReserve(logger, locoID);
+			}
 
-		private:
-			Manager* manager;
+			bool ReserveForce(Logger::Logger* logger, const LocoID locoID)
+			{
+				return BaseReserveForce(logger, locoID);
+			}
+
+			bool Lock(Logger::Logger* logger, const LocoID locoID) override
+			{
+				return BaseLock(logger, locoID);
+			}
+
+			bool Release(Logger::Logger* logger, const LocoID locoID) override
+			{
+				return BaseRelease(logger, locoID);
+			}
+
+			bool ReleaseForce(Logger::Logger* logger, const LocoID locoID)
+			{
+				return BaseReleaseForce(logger, locoID);
+			}
+
+		protected:
+			bool ReserveInternal(Logger::Logger* logger, const LocoID locoID) override
+			{
+				return LockableItem::Reserve(logger, locoID);
+			}
+
+			bool LockInternal(Logger::Logger* logger, const LocoID locoID) override
+			{
+				return LockableItem::Lock(logger, locoID);
+			}
+
+			bool ReleaseInternal(Logger::Logger* logger, const LocoID locoID) override;
+
+			void PublishState() const override;
+
+			ObjectID GetMyID() const override
+			{
+				return GetID();
+			}
+
+			const std::string& GetMyName() const override
+			{
+				return GetName();
+			}
+
+			LocoID GetLockedLoco() const override
+			{
+				return GetLoco();
+			}
 	};
 } // namespace DataModel
 

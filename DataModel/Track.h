@@ -117,7 +117,7 @@ namespace DataModel
 				return LockableItem::Release(logger, locoID);
 			}
 
-			void PublishTrackState() const override;
+			void PublishState() const override;
 
 			ObjectID GetMyID() const override
 			{

@@ -247,6 +247,7 @@ class Manager
 			std::string& result);
 		bool SignalDelete(const SignalID signalID);
 		bool SignalRelease(const SignalID signalID);
+		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
 
 		// automode
 		bool LocoIntoTrack(Logger::Logger* logger, const LocoID locoID, const TrackID trackID);

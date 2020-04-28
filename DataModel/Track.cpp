@@ -68,7 +68,7 @@ namespace DataModel
 		return true;
 	}
 
-	void Track::PublishTrackState() const
+	void Track::PublishState() const
 	{
 		manager->TrackPublishState(this);
 	}

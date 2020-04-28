@@ -126,7 +126,7 @@ namespace DataModel
 		bool ret = LockInternal(logger, locoID);
 		if (ret)
 		{
-			PublishTrackState();
+			PublishState();
 		}
 		return ret;
 	}
@@ -147,7 +147,7 @@ namespace DataModel
 			this->locoIdDelayed = LocoNone;
 			this->trackStateDelayed = DataModel::Feedback::FeedbackStateFree;
 		}
-		PublishTrackState();
+		PublishState();
 		return true;
 	}
 
@@ -158,7 +158,7 @@ namespace DataModel
 			std::lock_guard<std::mutex> Guard(updateMutex);
 			ret = BaseReleaseForceUnlocked(logger, locoID);
 		}
-		PublishTrackState();
+		PublishState();
 		return ret;
 	}
 
@@ -187,7 +187,7 @@ namespace DataModel
 				return true;
 			}
 		}
-		PublishTrackState();
+		PublishState();
 		return true;
 	}
 
@@ -235,7 +235,7 @@ namespace DataModel
 			if (loco != nullptr && loco->IsRunningFromTrack(GetMyID()))
 			{
 				bool ret = BaseReleaseForceUnlocked(loco->GetLogger(), locoID);
-				PublishTrackState();
+				PublishState();
 				return ret;
 			}
 		}

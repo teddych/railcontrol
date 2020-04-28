@@ -412,7 +412,7 @@ namespace Hardware
 		instance->Accessory(mySwitch->GetProtocol(), mySwitch->GetAddress(), state, mySwitch->GetAccessoryPulseDuration());
 	}
 
-	void HardwareHandler::SignalState(const ControlType controlType, const DataModel::Signal* signal, const DataModel::AccessoryState state)
+	void HardwareHandler::SignalState(const ControlType controlType, const DataModel::Signal* signal)
 	{
 		if (controlType == ControlTypeHardware
 			|| instance == nullptr
@@ -420,6 +420,12 @@ namespace Hardware
 			|| signal->GetControlID() != this->GetControlID())
 		{
 			return;
+		}
+		bool inverted = signal->GetInverted();
+		DataModel::AccessoryState state = signal->GetAccessoryState();
+		if (inverted)
+		{
+			state = (state == DataModel::SignalStateRed ? DataModel::SignalStateGreen : DataModel::SignalStateGreen);
 		}
 		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), state, signal->GetAccessoryPulseDuration());
 	}
