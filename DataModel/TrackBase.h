@@ -43,17 +43,19 @@ namespace DataModel
 				SelectStreetLongestUnused = 4
 			};
 
+			static const LayoutItem::LayoutItemSize MinLength = 1;
+			static const LayoutItem::LayoutItemSize MaxLength = 100;
+
 			TrackBase(Manager* manager)
 			:	manager(manager),
-			 	selectStreetApproach(SelectStreetSystemDefault),
+				selectStreetApproach(SelectStreetSystemDefault),
 				trackState(DataModel::Feedback::FeedbackStateFree),
 				trackStateDelayed(DataModel::Feedback::FeedbackStateFree),
-			 	locoDirection(DirectionRight),
-			 	blocked(false),
-			 	locoIdDelayed(LocoNone),
-			 	releaseWhenFree(false)
-			{
-			}
+				locoDirection(DirectionRight),
+				blocked(false),
+				locoIdDelayed(LocoNone),
+				releaseWhenFree(false)
+			{}
 
 			virtual ~TrackBase() {}
 
@@ -80,6 +82,9 @@ namespace DataModel
 			bool GetReleaseWhenFree() const { return releaseWhenFree; }
 			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
 
+			virtual ObjectID GetMyID() const = 0;
+			virtual const std::string& GetMyName() const = 0;
+
 		protected:
 			std::string Serialize() const;
 			bool Deserialize(const std::map<std::string, std::string> arguments);
@@ -94,8 +99,6 @@ namespace DataModel
 			virtual bool LockInternal(Logger::Logger* logger, const LocoID locoID) = 0;
 			virtual bool ReleaseInternal(Logger::Logger* logger, const LocoID locoID) = 0;
 			virtual void PublishState() const = 0;
-			virtual ObjectID GetMyID() const = 0;
-			virtual const std::string& GetMyName() const = 0;
 			virtual LocoID GetLockedLoco() const = 0;
 
 			Manager* manager;

@@ -21,14 +21,20 @@ along with RailControl; see the file LICENCE. If not see
 #include <sstream>
 
 #include "DataModel/Loco.h"
-#include "WebServer/HtmlTagTrack.h"
+#include "DataModel/Track.h"
+#include "DataModel/TrackBase.h"
+#include "Manager.h"
+#include "WebServer/HtmlTagTrackBase.h"
 
 using std::string;
 using std::to_string;
 
 namespace WebServer
 {
-	HtmlTagTrack::HtmlTagTrack(const Manager& manager, const DataModel::Track* track)
+	HtmlTagTrackBase::HtmlTagTrackBase(const Manager& manager,
+		const DataModel::Track::TrackType trackType,
+		const DataModel::TrackBase* track,
+		const DataModel::LayoutItem* layout)
 	:	HtmlTagLayoutItem()
 	{
 		DataModel::LayoutItem::LayoutPosition posX;
@@ -37,11 +43,9 @@ namespace WebServer
 		DataModel::LayoutItem::LayoutItemSize w;
 		DataModel::LayoutItem::LayoutItemSize h;
 		DataModel::LayoutItem::LayoutRotation r;
-		track->Position(posX, posY, posZ, w, h, r);
-		DataModel::Track::TrackType type = track->GetTrackType();
+		layout->Position(posX, posY, posZ, w, h, r);
 		unsigned int layoutPosX = posX * EdgeLength;
 		unsigned int layoutPosY = posY * EdgeLength;
-		const string& trackName = track->GetName();
 
 		bool occupied = track->GetFeedbackStateDelayed() == DataModel::Feedback::FeedbackStateOccupied;
 
@@ -51,7 +55,7 @@ namespace WebServer
 		bool blocked = track->GetBlocked();
 
 		HtmlTag div1("div");
-		string trackIdString = to_string(track->GetID());
+		string trackIdString = to_string(track->GetMyID());
 		string id("t_" + trackIdString);
 		div1.AddAttribute("id", id);
 		div1.AddClass("layout_item");
@@ -81,10 +85,10 @@ namespace WebServer
 		div1.AddClass(trackClass);
 		div1.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		std::string image;
-		DataModel::LayoutItem::LayoutItemSize trackHeight = track->GetHeight();
+		DataModel::LayoutItem::LayoutItemSize trackHeight = layout->GetHeight();
 		const string layoutHeight = to_string(EdgeLength * trackHeight);
 
-		switch (type)
+		switch (trackType)
 		{
 			case DataModel::Track::TrackTypeTurn:
 				image = "<polygon class=\"track\" points=\"0,22 0,14 22,36 14,36\"/>";
@@ -136,14 +140,14 @@ namespace WebServer
 				const string textPositionX = to_string(EdgeLength * trackHeight - 1);
 				image = "<polygon class=\"track\" points=\"14,0 22,0 22," + layoutHeight + " 14," + layoutHeight + "\"/>";
 				image += "<text class=\"loconame\" x=\"-" + textPositionX + "\" y=\"11\" id=\"" + id + "_text_loconame\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + locoName + "</text>";
-				image += "<text class=\"trackname\" x=\"-" + textPositionX + "\" y=\"33\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + track->GetName() + "</text>";
+				image += "<text class=\"trackname\" x=\"-" + textPositionX + "\" y=\"33\" id=\"" + id + "_text_trackname\" transform=\"rotate(270 0,0)\" font-size=\"14\">" + track->GetMyName() + "</text>";
 				break;
 		}
 
 		int translate = 0;
 		if (trackHeight > DataModel::LayoutItem::Height1)
 		{
-			DataModel::LayoutItem::LayoutRotation trackRotation = track->GetRotation();
+			DataModel::LayoutItem::LayoutRotation trackRotation = layout->GetRotation();
 			if (trackRotation == DataModel::LayoutItem::Rotation90 || trackRotation == DataModel::LayoutItem::Rotation270)
 			{
 				translate = (((trackHeight - 1) * EdgeLength) / 2);
@@ -154,9 +158,11 @@ namespace WebServer
 			}
 		}
 
-		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(track->GetRotation()) + "deg) translate(" + to_string(translate) + "px," + to_string(translate) + "px);\">" + image + "</svg>"));
+		const string& trackName = track->GetMyName();
+		div1.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + id + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(layout->GetRotation()) + "deg) translate(" + to_string(translate) + "px," + to_string(translate) + "px);\">" + image + "</svg>"));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(trackName));
 		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
+		div1.AddChildTag(AdditionalContent());
 		AddChildTag(div1);
 
 		HtmlTag div2("div");
@@ -179,6 +185,7 @@ namespace WebServer
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("track_stop_loco").AddContent(Languages::TextStopLoco).AddAttribute("onClick", "fireRequestAndForget('/?cmd=trackstoploco&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextEditTrack).AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=" + trackIdString + "');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::TextDeleteTrack).AddAttribute("onClick", "loadPopup('/?cmd=trackaskdelete&track=" + trackIdString + "');"))
+			.AddChildTag(AdditionalMenu())
 			);
 		AddChildTag(div2);
 	}

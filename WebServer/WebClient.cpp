@@ -62,6 +62,7 @@ along with RailControl; see the file LICENCE. If not see
 using namespace DataModel;
 using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
 using LayoutItemSize = DataModel::LayoutItem::LayoutItemSize;
+using LayoutRotation = DataModel::LayoutItem::LayoutRotation;
 using Visible = DataModel::LayoutItem::Visible;
 using std::map;
 using std::string;
@@ -1427,9 +1428,9 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagRotation(const DataModel::LayoutItem::LayoutRotation rotation) const
+	HtmlTag WebClient::HtmlTagRotation(const LayoutRotation rotation) const
 	{
-		std::map<DataModel::LayoutItem::LayoutRotation, Languages::TextSelector> rotationOptions;
+		std::map<LayoutRotation, Languages::TextSelector> rotationOptions;
 		rotationOptions[DataModel::LayoutItem::Rotation0] = Languages::TextNoRotation;
 		rotationOptions[DataModel::LayoutItem::Rotation90] = Languages::Text90DegClockwise;
 		rotationOptions[DataModel::LayoutItem::Rotation180] = Languages::Text180Deg;
@@ -2176,7 +2177,7 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::AccessoryType type = DataModel::SwitchTypeLeft;
 		DataModel::AccessoryPulseDuration duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
@@ -2249,7 +2250,7 @@ namespace WebServer
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::AccessoryType type = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SwitchTypeLeft));
 		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
@@ -2381,7 +2382,8 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+//		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
+		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::AccessoryType type = DataModel::SignalTypeSimpleLeft;
 		DataModel::AccessoryPulseDuration duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
@@ -2397,6 +2399,7 @@ namespace WebServer
 				posx = signal->GetPosX();
 				posy = signal->GetPosY();
 				posz = signal->GetPosZ();
+//				height = signal->GetHeight();
 				rotation = signal->GetRotation();
 				type = signal->GetType();
 				duration = signal->GetAccessoryPulseDuration();
@@ -2423,6 +2426,7 @@ namespace WebServer
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
+//		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Signal::MinLength, DataModel::Signal::MaxLength));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "signal", signalID));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
@@ -2454,12 +2458,13 @@ namespace WebServer
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
+		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::AccessoryType type = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SignalTypeSimpleLeft));
 		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.SignalSave(signalID, name, posX, posY, posZ, rotation, controlId, protocol, address, type, duration, inverted, result))
+		if (!manager.SignalSave(signalID, name, posX, posY, posZ, height, rotation, controlId, protocol, address, type, duration, inverted, result))
 		{
 			ReplyResponse(ResponseError, result);
 			return;
@@ -2959,7 +2964,7 @@ namespace WebServer
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
-		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::Track::TrackType type = DataModel::Track::TrackTypeStraight;
 		std::vector<FeedbackID> feedbacks;
 		DataModel::Track::SelectStreetApproach selectStreetApproach = static_cast<DataModel::Track::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::Track::SelectStreetSystemDefault));
@@ -3021,7 +3026,7 @@ namespace WebServer
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type).AddAttribute("onchange", "onChangeTrackType();return false;"));
 		HtmlTag i_length("div");
 		i_length.AddAttribute("id", "i_length");
-		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, 1, 100));
+		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Track::MinLength, DataModel::Track::MaxLength));
 		switch (type)
 		{
 			case DataModel::Track::TrackTypeTurn:
@@ -3087,7 +3092,7 @@ namespace WebServer
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = 1;
-		DataModel::LayoutItem::LayoutRotation rotation = static_cast<DataModel::LayoutItem::LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::Track::TrackType type = static_cast<DataModel::Track::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::Track::TrackTypeStraight));
 		switch (type)
 		{

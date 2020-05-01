@@ -34,7 +34,7 @@ namespace DataModel
 	{
 		stringstream ss;
 		ss << "objectType=Signal;"
-			<< ";" << AccessoryBase::Serialize()
+			<< AccessoryBase::Serialize()
 			<< ";" << TrackBase::Serialize()
 			<< ";" << LayoutItem::Serialize()
 			<< ";" << LockableItem::Serialize();
@@ -56,7 +56,6 @@ namespace DataModel
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
 		SetWidth(Width1);
-		SetHeight(Height1);
 		SetVisible(VisibleYes);
 		return true;
 	}

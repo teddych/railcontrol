@@ -237,6 +237,7 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition x,
 			const DataModel::LayoutItem::LayoutPosition y,
 			const DataModel::LayoutItem::LayoutPosition z,
+			const DataModel::LayoutItem::LayoutItemSize height,
 			const DataModel::LayoutItem::LayoutRotation rotation,
 			const ControlID controlID,
 			const Protocol protocol,

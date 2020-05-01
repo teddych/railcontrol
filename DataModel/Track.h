@@ -54,15 +54,12 @@ namespace DataModel
 			Track(Manager* manager, const TrackID trackID)
 			:	TrackBase(manager),
 				LayoutItem(trackID),
-			 	LockableItem(),
-			 	trackType(TrackTypeStraight)
-			{
-			}
+				LockableItem(),
+				trackType(TrackTypeStraight)
+			{}
 
 			Track(Manager* manager, const std::string& serialized)
-			:	TrackBase(manager),
-				LayoutItem(TrackNone),
-			 	LockableItem()
+			:	Track(manager, TrackNone)
 			{
 				Deserialize(serialized);
 			}
@@ -73,6 +70,7 @@ namespace DataModel
 			bool Deserialize(const std::string& serialized) override;
 
 			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextTrack); };
+
 			TrackType GetTrackType() const { return trackType; }
 			void SetTrackType(const TrackType type) { this->trackType = type; }
 
@@ -101,6 +99,16 @@ namespace DataModel
 				return BaseReleaseForce(logger, locoID);
 			}
 
+			ObjectID GetMyID() const override
+			{
+				return GetID();
+			}
+
+			const std::string& GetMyName() const override
+			{
+				return GetName();
+			}
+
 		protected:
 			bool ReserveInternal(Logger::Logger* logger, const LocoID locoID) override
 			{
@@ -118,16 +126,6 @@ namespace DataModel
 			}
 
 			void PublishState() const override;
-
-			ObjectID GetMyID() const override
-			{
-				return GetID();
-			}
-
-			const std::string& GetMyName() const override
-			{
-				return GetName();
-			}
 
 			LocoID GetLockedLoco() const override
 			{

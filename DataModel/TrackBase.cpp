@@ -46,8 +46,7 @@ namespace DataModel
 			feedbackString += std::to_string(feedback);
 		}
 		std::stringstream ss;
-		ss << "objectType=Track"
-			<< ";feedbacks=" << feedbackString
+		ss << "feedbacks=" << feedbackString
 			<< ";selectstreetapproach=" << static_cast<int>(selectStreetApproach)
 			<< ";trackstate=" << static_cast<int>(trackState)
 			<< ";trackstatedelayed=" << static_cast<int>(trackStateDelayed)

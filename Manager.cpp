@@ -35,6 +35,7 @@ along with RailControl; see the file LICENCE. If not see
 using namespace DataModel;
 using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
 using LayoutItemSize = DataModel::LayoutItem::LayoutItemSize;
+using LayoutRotation = DataModel::LayoutItem::LayoutRotation;
 using Visible = DataModel::LayoutItem::Visible;
 using Hardware::HardwareHandler;
 using Hardware::HardwareParams;
@@ -1388,7 +1389,7 @@ bool Manager::CheckTrackPosition(const Track* track,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
 	const LayoutItemSize height,
-	const DataModel::LayoutItem::LayoutRotation rotation,
+	const LayoutRotation rotation,
 	string& result) const
 {
 	LayoutPosition x1;
@@ -1483,8 +1484,8 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
 	const LayoutItemSize height,
-	const DataModel::LayoutItem::LayoutRotation rotation,
-	const DataModel::Track::TrackType type,
+	const LayoutRotation rotation,
+	const DataModel::Track::TrackType trackType,
 	std::vector<FeedbackID> newFeedbacks,
 	const DataModel::Track::SelectStreetApproach selectStreetApproach,
 	const bool releaseWhenFree,
@@ -1514,7 +1515,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	track->SetPosX(posX);
 	track->SetPosY(posY);
 	track->SetPosZ(posZ);
-	track->SetTrackType(type);
+	track->SetTrackType(trackType);
 	track->Feedbacks(CleanupAndCheckFeedbacks(trackID, newFeedbacks));
 	track->SetSelectStreetApproach(selectStreetApproach);
 	track->SetReleaseWhenFree(releaseWhenFree);
@@ -1667,7 +1668,7 @@ bool Manager::SwitchSave(const SwitchID switchID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
-	const DataModel::LayoutItem::LayoutRotation rotation,
+	const LayoutRotation rotation,
 	const ControlID controlID,
 	const Protocol protocol,
 	const Address address,
@@ -2195,7 +2196,8 @@ bool Manager::SignalSave(const SignalID signalID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
-	const DataModel::LayoutItem::LayoutRotation rotation,
+	const LayoutItemSize height,
+	const LayoutRotation rotation,
 	const ControlID controlID,
 	const Protocol protocol,
 	const Address address,
@@ -2230,6 +2232,7 @@ bool Manager::SignalSave(const SignalID signalID,
 	signal->SetPosX(posX);
 	signal->SetPosY(posY);
 	signal->SetPosZ(posZ);
+	signal->SetHeight(height);
 	signal->SetRotation(rotation);
 	signal->SetControlID(controlID);
 	signal->SetProtocol(protocol);
@@ -2623,7 +2626,7 @@ bool Manager::CheckPositionFree(const LayoutPosition posX,
 	const LayoutPosition posZ,
 	const LayoutItemSize width,
 	const LayoutItemSize height,
-	const DataModel::LayoutItem::LayoutRotation rotation,
+	const LayoutRotation rotation,
 	string& result) const
 {
 	if (width == 0)

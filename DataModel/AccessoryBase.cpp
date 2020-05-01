@@ -33,7 +33,7 @@ namespace DataModel
 	std::string AccessoryBase::Serialize() const
 	{
 		stringstream ss;
-		ss << ";" << HardwareHandle::Serialize()
+		ss << HardwareHandle::Serialize()
 			<< ";type=" << static_cast<int>(accessoryType)
 			<< ";state=" << static_cast<int>(accessoryState)
 			<< ";duration=" << static_cast<int>(duration)

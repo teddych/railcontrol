@@ -38,10 +38,10 @@ namespace DataModel
 	{
 		std::stringstream ss;
 		ss << "objectType=Track;"
-			<< LayoutItem::Serialize()
+			<< TrackBase::Serialize()
+			<< ";" << LayoutItem::Serialize()
 			<< ";" << LockableItem::Serialize()
-			<< ";" << TrackBase::Serialize()
-			<< ";type=" << static_cast<int>(trackType);
+			<< ";tracktype=" << static_cast<int>(trackType);
 		return ss.str();
 	}
 
@@ -54,7 +54,8 @@ namespace DataModel
 		TrackBase::Deserialize(arguments);
 		SetWidth(Width1);
 		SetVisible(VisibleYes);
-		trackType = static_cast<TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TrackTypeStraight));
+		trackType = static_cast<TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TrackTypeStraight)); // FIXME: remove later
+		trackType = static_cast<TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "tracktype", trackType));
 		switch (trackType)
 		{
 			case TrackTypeTurn:
