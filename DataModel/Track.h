@@ -40,17 +40,6 @@ namespace DataModel
 	class Track : public TrackBase, public LayoutItem, public LockableItem
 	{
 		public:
-			enum TrackType : unsigned char
-			{
-				TrackTypeStraight = 0,
-				TrackTypeTurn = 1,
-				TrackTypeEnd = 2,
-				TrackTypeBridge = 3,
-				TrackTypeTunnel = 4,
-				TrackTypeTunnelEnd = 5,
-				TrackTypeLink = 6
-			};
-
 			Track(Manager* manager, const TrackID trackID)
 			:	TrackBase(manager),
 				LayoutItem(trackID),

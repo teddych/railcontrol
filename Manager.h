@@ -157,9 +157,9 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition posZ,
 			const DataModel::LayoutItem::LayoutItemSize width,
 			const DataModel::LayoutItem::LayoutRotation rotation,
-			const DataModel::Track::TrackType trackType,
+			const DataModel::TrackType trackType,
 			std::vector<FeedbackID> feedbacks,
-			const DataModel::Track::SelectStreetApproach selectStreetApproach,
+			const DataModel::SelectStreetApproach selectStreetApproach,
 			const bool releaseWhenFree,
 			std::string& result);
 		bool TrackDelete(const TrackID trackID);
@@ -248,15 +248,21 @@ class Manager
 			std::string& result);
 		bool SignalDelete(const SignalID signalID);
 		bool SignalRelease(const SignalID signalID);
+		void SignalBlock(const SignalID signalID, const bool blocked);
+		void SignalSetLocoDirection(const SignalID signalID, const Direction direction);
 		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
 
 		// automode
 		bool LocoIntoTrack(Logger::Logger* logger, const LocoID locoID, const TrackID trackID);
+		bool LocoIntoSignal(Logger::Logger* logger, const LocoID locoID, const SignalID signalID);
 		bool LocoRelease(const LocoID locoID);
 		bool TrackRelease(const TrackID trackID);
 		bool LocoReleaseInTrack(const TrackID trackID);
+		bool LocoReleaseInSignal(const SignalID signalID);
 		bool TrackStartLoco(const TrackID trackID);
 		bool TrackStopLoco(const TrackID trackID);
+		bool SignalStartLoco(const TrackID trackID);
+		bool SignalStopLoco(const TrackID trackID);
 		void TrackBlock(const TrackID trackID, const bool blocked);
 		void TrackSetLocoDirection(const TrackID trackID, const Direction direction);
 		void TrackPublishState(const DataModel::Track* track);
@@ -271,11 +277,11 @@ class Manager
 		// settings
 		DataModel::AccessoryPulseDuration GetDefaultAccessoryDuration() const { return defaultAccessoryDuration; }
 		bool GetAutoAddFeedback() const { return autoAddFeedback; }
-		DataModel::Track::SelectStreetApproach GetSelectStreetApproach() const { return selectStreetApproach; }
+		DataModel::SelectStreetApproach GetSelectStreetApproach() const { return selectStreetApproach; }
 		DataModel::Loco::NrOfTracksToReserve GetNrOfTracksToReserve() const { return nrOfTracksToReserve; }
 		bool SaveSettings(const DataModel::AccessoryPulseDuration duration,
 			const bool autoAddFeedback,
-			const DataModel::Track::SelectStreetApproach selectStreetApproach,
+			const DataModel::SelectStreetApproach selectStreetApproach,
 			const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve,
 			const Logger::Logger::Level logLevel,
 			const Languages::Language language);
@@ -468,6 +474,8 @@ class Manager
 			}
 		}
 
+		bool LocoIntoTrackBase(Logger::Logger *logger, DataModel::Loco* loco, const ObjectType objectType, DataModel::TrackBase* track);
+
 		void InitLocos();
 		static void InitLocosStatic(Manager* manager) { manager->InitLocos(); }
 
@@ -526,7 +534,7 @@ class Manager
 
 		DataModel::AccessoryPulseDuration defaultAccessoryDuration;
 		bool autoAddFeedback;
-		DataModel::Track::SelectStreetApproach selectStreetApproach;
+		DataModel::SelectStreetApproach selectStreetApproach;
 		DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve;
 
 		volatile bool run;

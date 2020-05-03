@@ -49,6 +49,11 @@ namespace DataModel
 	{
 		map<string, string> arguments;
 		ParseArguments(serialized, arguments);
+		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
+		if (objectType.compare("Track") != 0)
+		{
+			return false;
+		}
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
 		TrackBase::Deserialize(arguments);

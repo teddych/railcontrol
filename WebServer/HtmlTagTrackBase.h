@@ -22,15 +22,10 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <string>
 
-#include "DataModel/Track.h"
+#include "DataModel/TrackBase.h"
 #include "WebServer/HtmlTagLayoutItem.h"
 
 class Manager;
-
-namespace DataModel
-{
-	class TrackBase;
-}
 
 namespace WebServer
 {
@@ -46,14 +41,33 @@ namespace WebServer
 		protected:
 			HtmlTagTrackBase() = delete;
 			HtmlTagTrackBase(const Manager& manager,
-				const DataModel::Track::TrackType trackType,
+				const ObjectType objectType,
+				const DataModel::TrackType trackType,
 				const DataModel::TrackBase* track,
 				const DataModel::LayoutItem* layout);
 
 			virtual ~HtmlTagTrackBase() {}
 
-			HtmlTag AdditionalContent() { return HtmlTag(); }
-			HtmlTag AdditionalMenu() { return HtmlTag(); }
+			void FinishInit();
+			void AddContextMenuEntry(const std::string& text);
+			void AddContextMenuEntry(const Languages::TextSelector text, const std::string& onClick, const std::string& className = "");
+
+			void AddToolTip(const std::string& toolTip)
+			{
+				imageDiv.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(toolTip));
+			}
+
+			const ObjectType objectType;
+			const ObjectID id;
+			const DataModel::TrackBase* track;
+			const DataModel::LayoutItem* layout;
+
+			std::string image;
+			HtmlTag imageDiv;
+			HtmlTag menuDiv;
+			HtmlTag menuContentDiv;
+			std::string identifier;
+			std::string urlIdentifier;
 	};
 }; // namespace WebServer
 

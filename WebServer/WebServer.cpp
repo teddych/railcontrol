@@ -203,16 +203,27 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextSwitchDeleted, name);
 	}
 
-	void WebServer::TrackState(const TrackID trackID, const std::string& name, const bool occupied, const bool blocked, const Direction direction, const std::string& locoName)
+	void WebServer::TrackState(const DataModel::Track* track)
 	{
 		stringstream command;
+		command << "trackstate;track=" << track->GetID();
+		TrackBaseState(command, dynamic_cast<const DataModel::TrackBase*>(track));
+	}
+
+	void WebServer::TrackBaseState(stringstream& command, const DataModel::TrackBase* track)
+	{
+		const DataModel::Loco* loco = manager.GetLoco(track->GetLocoDelayed());
+		const bool reserved = loco != nullptr;
+		const string& trackName = track->GetMyName();
+		const string& locoName = reserved ? loco->GetName() : "";
+		const bool occupied = track->GetFeedbackStateDelayed() == DataModel::Feedback::FeedbackStateOccupied;
+		const bool blocked = track->GetBlocked();
+		const Direction direction = track->GetLocoDirection();
 		const string occupiedText = (occupied ? "true" : "false");
 		const string blockedText = (blocked ? "true" : "false");
-		const bool reserved = locoName.length() > 0;
 		const string reservedText = (reserved ? "true" : "false");
 		const string directionText = (direction ? "true" : "false");
-		command << "trackstate;track=" << trackID
-			<< ";occupied=" << occupiedText
+		command << ";occupied=" << occupiedText
 			<< ";reserved=" << reservedText
 			<< ";blocked=" << blockedText
 			<< ";direction=" << directionText
@@ -220,32 +231,32 @@ namespace WebServer {
 
 		if (blocked)
 		{
-			if (occupied)
+			if (reserved)
 			{
-				AddUpdate(command.str(), Languages::TextTrackStatusIsBlockedAndOccupied, name, locoName);
+				AddUpdate(command.str(), Languages::TextTrackStatusIsBlockedAndReserved, trackName, locoName);
 			}
-			else if (reserved)
+			else if (occupied)
 			{
-				AddUpdate(command.str(), Languages::TextTrackStatusIsBlockedAndReserved, name, locoName);;
+				AddUpdate(command.str(), Languages::TextTrackStatusIsBlockedAndOccupied, trackName);
 			}
 			else
 			{
-				AddUpdate(command.str(), Languages::TextTrackStatusIsBlocked, name);
+				AddUpdate(command.str(), Languages::TextTrackStatusIsBlocked, trackName);
 			}
 		}
 		else
 		{
-			if (occupied)
+			if (reserved)
 			{
-				AddUpdate(command.str(), Languages::TextTrackStatusIsOccupied, name, locoName);
+				AddUpdate(command.str(), Languages::TextTrackStatusIsReserved, trackName, locoName);;
 			}
-			else if (reserved)
+			else if (occupied)
 			{
-				AddUpdate(command.str(), Languages::TextTrackStatusIsReserved, name, locoName);;
+				AddUpdate(command.str(), Languages::TextTrackStatusIsOccupied, trackName);
 			}
 			else
 			{
-				AddUpdate(command.str(), Languages::TextTrackStatusIsFree, name);
+				AddUpdate(command.str(), Languages::TextTrackStatusIsFree, trackName);
 			}
 		}
 	}
@@ -264,19 +275,15 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextTrackDeleted, name);
 	}
 
-	void WebServer::LocoIntoTrack(const LocoID locoID, const TrackID trackID, const string& locoName, const string& trackName)
-	{
-		stringstream command;
-		command << "locointotrack;loco=" << locoID << ";track=" << trackID;
-		AddUpdate(command.str(), Languages::TextLocoIsOnTrack, locoName, trackName);
-	}
-
 	void WebServer::SignalState(__attribute__((unused)) const ControlType controlType, const DataModel::Signal* signal)
 	{
 		stringstream command;
 		DataModel::AccessoryState state = signal->GetAccessoryState();
 		command << "signal;signal=" << signal->GetID() << ";state=" << (state ? "green" : "red");
 		AddUpdate(command.str(), state ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, signal->GetName());
+		stringstream command2;
+		command2 << "trackstate;signal=" << signal->GetID();
+		TrackBaseState(command2, dynamic_cast<const DataModel::TrackBase*>(signal));
 	}
 
 	void WebServer::SignalSettings(const SignalID signalID, const std::string& name)

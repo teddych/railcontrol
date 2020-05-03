@@ -31,18 +31,29 @@ namespace DataModel
 	class Loco;
 	class Street;
 
+	enum TrackType : unsigned char
+	{
+		TrackTypeStraight = 0,
+		TrackTypeTurn = 1,
+		TrackTypeEnd = 2,
+		TrackTypeBridge = 3,
+		TrackTypeTunnel = 4,
+		TrackTypeTunnelEnd = 5,
+		TrackTypeLink = 6
+	};
+
+	enum SelectStreetApproach : unsigned char
+	{
+		SelectStreetSystemDefault = 0,
+		SelectStreetDoNotCare = 1,
+		SelectStreetRandom = 2,
+		SelectStreetMinTrackLength = 3,
+		SelectStreetLongestUnused = 4
+	};
+
 	class TrackBase
 	{
 		public:
-			enum SelectStreetApproach : unsigned char
-			{
-				SelectStreetSystemDefault = 0,
-				SelectStreetDoNotCare = 1,
-				SelectStreetRandom = 2,
-				SelectStreetMinTrackLength = 3,
-				SelectStreetLongestUnused = 4
-			};
-
 			static const LayoutItem::LayoutItemSize MinLength = 1;
 			static const LayoutItem::LayoutItemSize MaxLength = 100;
 
@@ -85,15 +96,15 @@ namespace DataModel
 			virtual ObjectID GetMyID() const = 0;
 			virtual const std::string& GetMyName() const = 0;
 
-		protected:
-			std::string Serialize() const;
-			bool Deserialize(const std::map<std::string, std::string> arguments);
-
 			bool BaseReserve(Logger::Logger* logger, const LocoID locoID);
 			bool BaseReserveForce(Logger::Logger* logger, const LocoID locoID);
 			bool BaseLock(Logger::Logger* logger, const LocoID locoID);
 			bool BaseRelease(Logger::Logger* logger, const LocoID locoID);
 			bool BaseReleaseForce(Logger::Logger* logger, const LocoID locoID);
+
+		protected:
+			std::string Serialize() const;
+			bool Deserialize(const std::map<std::string, std::string> arguments);
 
 			virtual bool ReserveInternal(Logger::Logger* logger, const LocoID locoID) = 0;
 			virtual bool LockInternal(Logger::Logger* logger, const LocoID locoID) = 0;

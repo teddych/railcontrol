@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <map>
 #include <mutex>
+#include <sstream>
 #include <vector>
 
 #include "ControlInterface.h"
@@ -59,7 +60,6 @@ namespace WebServer
 			void LocoDestinationReached(const LocoID locoID, const StreetID streetID, const TrackID trackID) override;
 			void LocoDirection(const ControlType controlType, const DataModel::Loco* loco, const Direction direction) override;
 			void LocoFunction(const ControlType controlType, const DataModel::Loco* loco, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
-			void LocoIntoTrack(const LocoID locoID, const TrackID trackID, const std::string& locoName, const std::string& trackName) override;
 			void LocoRelease(const LocoID locoID) override;
 			void LocoSettings(const LocoID locoID, const std::string& name) override;
 			void LocoSpeed(const ControlType controlType, const DataModel::Loco* loco, const Speed speed) override;
@@ -73,7 +73,7 @@ namespace WebServer
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state) override;
 			void TrackDelete(const TrackID trackID, const std::string& name) override;
 			void TrackSettings(const TrackID trackID, const std::string& name) override;
-			void TrackState(const TrackID trackID, const std::string& name, const bool occupied, const bool blocked, const Direction direction, const std::string& locoName) override;
+			void TrackState(const DataModel::Track* track) override;
 			void SignalDelete(const SignalID signalID, const std::string& name) override;
 			void SignalSettings(const SignalID signalID, const std::string& name) override;
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
@@ -86,6 +86,8 @@ namespace WebServer
 			}
 			void AddUpdate(const std::string& command, const std::string& status);
 			std::string GetStatus(Languages::TextSelector status) { return updateStatus + Languages::GetText(status); }
+
+			void TrackBaseState(std::stringstream& command, const DataModel::TrackBase* track);
 
 			volatile bool run;
 			unsigned int lastClientID;

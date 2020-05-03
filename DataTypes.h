@@ -175,6 +175,7 @@ enum Automode : bool
 
 enum ObjectType : unsigned char
 {
+	ObjectTypeNone = 0,
 	ObjectTypeLoco = 1,
 	ObjectTypeTrack = 2,
 	ObjectTypeFeedback = 3,

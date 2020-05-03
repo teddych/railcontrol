@@ -35,6 +35,7 @@ namespace DataModel
 	class Loco;
 	class Signal;
 	class Switch;
+	class Track;
 }
 
 namespace Hardware
@@ -74,7 +75,6 @@ class ControlInterface
 		virtual void LocoDestinationReached(__attribute__((unused)) const LocoID locoID, __attribute__((unused)) const StreetID streetID, __attribute__((unused)) const TrackID trackID) {};
 		virtual void LocoDirection(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const Direction direction) {};
 		virtual void LocoFunction(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const Function function, __attribute__((unused)) const DataModel::LocoFunctions::FunctionState on) {};
-		virtual void LocoIntoTrack(__attribute__((unused)) const LocoID locoID, __attribute__((unused)) const TrackID trackID, __attribute__((unused)) const std::string& locoName, __attribute__((unused)) const std::string& trackName) {};
 		virtual void LocoProtocols(__attribute__((unused)) std::vector<Protocol>& protocols) const {};
 		virtual bool LocoProtocolSupported(__attribute__((unused)) Protocol protocol) const { return false; };
 		virtual void LocoRelease(__attribute__((unused)) const LocoID locoID) {};
@@ -90,7 +90,7 @@ class ControlInterface
 		virtual void SwitchState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Switch* mySwitch, __attribute__((unused)) const DataModel::AccessoryState state) {};
 		virtual void TrackDelete(__attribute__((unused)) const TrackID trackID, __attribute__((unused)) const std::string& name) {};
 		virtual void TrackSettings(__attribute__((unused)) const TrackID trackID, __attribute__((unused)) const std::string& name) {};
-		virtual void TrackState(__attribute__((unused)) const TrackID trackID, __attribute__((unused)) const std::string& name, __attribute__((unused)) const bool occupied, __attribute__((unused)) const bool blocked, __attribute__((unused)) const Direction direction, __attribute__((unused)) const std::string& locoName) {};
+		virtual void TrackState(__attribute__((unused)) const DataModel::Track* track) {}
 		virtual void SignalDelete(__attribute__((unused)) const SignalID signalID, __attribute__((unused)) const std::string& name) {};
 		virtual void SignalSettings(__attribute__((unused)) const SignalID signalID, __attribute__((unused)) const std::string& name) {};
 		virtual void SignalState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Signal* signal) {};

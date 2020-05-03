@@ -64,9 +64,12 @@ namespace WebServer
 				return AddContent(Logger::Logger::Format(Languages::GetText(text), args...));
 			}
 
-			virtual HtmlTag AddClass(const std::string& _class)
+			virtual HtmlTag AddClass(const std::string& className)
 			{
-				classes.push_back(_class);
+				if (className.length() > 0)
+				{
+					classes.push_back(className);
+				}
 				return *this;
 			}
 

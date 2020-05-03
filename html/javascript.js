@@ -469,6 +469,139 @@ function updateTrack(trackID)
 	requestUpdateLayoutItem(elementName, url);
 }
 
+function updateTrackState(argumentMap)
+{
+	var trackID = argumentMap.get('track');
+	var signalID = argumentMap.get('signal');
+	if (trackID > 0)
+	{
+		elementName = 't_' + trackID;
+	}
+	else if (signalID > 0)
+	{
+		elementName = 'si_' + signalID;
+	}
+	var element = document.getElementById(elementName);
+	if (element)
+	{
+		var reserved = false;
+		var occupied = false;
+		var blocked = false;
+		var error = false;
+		var direction = true;
+
+		if (argumentMap.has('occupied'))
+		{
+			occupied = argumentMap.get('occupied') == 'true';
+		}
+
+		if (argumentMap.has('reserved'))
+		{
+			reserved = argumentMap.get('reserved') == 'true';
+		}
+
+		if (argumentMap.has('blocked'))
+		{
+			blocked = argumentMap.get('blocked') == 'true';
+		}
+
+		element.classList.remove('track_free');
+		element.classList.remove('track_reserved');
+		element.classList.remove('track_reserved_occupied');
+		element.classList.remove('track_occupied');
+		element.classList.remove('track_error');
+		element.classList.remove('track_blocked');
+
+		if (reserved && occupied)
+		{
+			element.classList.add('track_reserved_occupied');
+		}
+		else if (reserved)
+		{
+			element.classList.add('track_reserved');
+		}
+		else if (occupied)
+		{
+			element.classList.add('track_occupied');
+		}
+		else if (blocked)
+		{
+			element.classList.add('track_blocked');
+		}
+		else
+		{
+			element.classList.add('track_free');
+		}
+
+		if (error)
+		{
+			element.classList.add('track_error');
+		}
+
+		if (argumentMap.has('direction'))
+		{
+			direction = argumentMap.get('direction') == 'true';
+		}
+
+		var contextElement = document.getElementById(elementName + '_context');
+		if (contextElement)
+		{
+			if (reserved == true)
+			{
+				element.classList.remove('loco_unknown');
+				element.classList.add('loco_known');
+				contextElement.classList.remove('loco_unknown');
+				contextElement.classList.add('loco_known');
+			}
+			else
+			{
+				element.classList.remove('loco_known');
+				element.classList.add('loco_unknown');
+				contextElement.classList.remove('loco_known');
+				contextElement.classList.add('loco_unknown');
+			}
+
+			if (blocked == true)
+			{
+				contextElement.classList.remove('track_unblocked');
+				contextElement.classList.add('track_blocked');
+			}
+			else
+			{
+				contextElement.classList.remove('track_blocked');
+				contextElement.classList.add('track_unblocked');
+			}
+
+			if (direction == true)
+			{
+				contextElement.classList.remove('direction_left');
+				contextElement.classList.add('direction_right');
+			}
+			else
+			{
+				contextElement.classList.remove('direction_right');
+				contextElement.classList.add('direction_left');
+			}
+		}
+
+		var locoElement = document.getElementById(elementName + '_text_loconame');
+		if (locoElement)
+		{
+			var directionArrow = direction ? '&rarr; ' : '&larr; ';
+			var locoName = argumentMap.has('loconame') ? argumentMap.get('loconame') : '';
+			locoElement.innerHTML = directionArrow + locoName;
+		}
+	}
+}
+
+function updateSignal(signalID)
+{
+	elementName = 'si_' + signalID;
+	var url = '/?cmd=signalget';
+	url += '&signal=' + signalID;
+	requestUpdateLayoutItem(elementName, url);
+}
+
 function dataUpdate(event)
 {
 	var status = document.getElementById('status');
@@ -607,11 +740,7 @@ function dataUpdate(event)
 	}
 	else if (command == 'signalsettings')
 	{
-		var signalID = argumentMap.get('signal');
-		elementName = 'si_' + signalID;
-		var url = '/?cmd=signalget';
-		url += '&signal=' + signalID;
-		requestUpdateLayoutItem(elementName, url);
+		updateSignal(argumentMap.get('signal'));
 	}
 	else if (command == 'signaldelete')
 	{
@@ -633,124 +762,9 @@ function dataUpdate(event)
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}
-	else if (command == 'locointotrack')
-	{
-		updateTrack(argumentMap.get('track'));
-	}
 	else if (command == 'trackstate')
 	{
-		elementName = 't_' + argumentMap.get('track');
-		var element = document.getElementById(elementName);
-		if (element)
-		{
-			var reserved = false;
-			var occupied = false;
-			var blocked = false;
-			var error = false;
-			var direction = true;
-
-			if (argumentMap.has('occupied'))
-			{
-				occupied = argumentMap.get('occupied') == 'true';
-			}
-
-			if (argumentMap.has('reserved'))
-			{
-				reserved = argumentMap.get('reserved') == 'true';
-			}
-
-			if (argumentMap.has('blocked'))
-			{
-				blocked = argumentMap.get('blocked') == 'true';
-			}
-
-			element.classList.remove('track_free');
-			element.classList.remove('track_reserved');
-			element.classList.remove('track_reserved_occupied');
-			element.classList.remove('track_occupied');
-			element.classList.remove('track_error');
-			element.classList.remove('track_blocked');
-
-			if (reserved && occupied)
-			{
-				element.classList.add('track_reserved_occupied');
-			}
-			else if (reserved)
-			{
-				element.classList.add('track_reserved');
-			}
-			else if (occupied)
-			{
-				element.classList.add('track_occupied');
-			}
-			else if (blocked)
-			{
-				element.classList.add('track_blocked');
-			}
-			else
-			{
-				element.classList.add('track_free');
-			}
-
-			if (error)
-			{
-				element.classList.add('track_error');
-			}
-
-			if (argumentMap.has('direction'))
-			{
-				direction = argumentMap.get('direction') == 'true';
-			}
-
-			var contextElement = document.getElementById(elementName + '_context');
-			if (contextElement)
-			{
-				if (reserved == true)
-				{
-					element.classList.remove('loco_unknown');
-					element.classList.add('loco_known');
-					contextElement.classList.remove('loco_unknown');
-					contextElement.classList.add('loco_known');
-				}
-				else
-				{
-					element.classList.remove('loco_known');
-					element.classList.add('loco_unknown');
-					contextElement.classList.remove('loco_known');
-					contextElement.classList.add('loco_unknown');
-				}
-
-				if (blocked == true)
-				{
-					contextElement.classList.remove('track_unblocked');
-					contextElement.classList.add('track_blocked');
-				}
-				else
-				{
-					contextElement.classList.remove('track_blocked');
-					contextElement.classList.add('track_unblocked');
-				}
-
-				if (direction == true)
-				{
-					contextElement.classList.remove('direction_left');
-					contextElement.classList.add('direction_right');
-				}
-				else
-				{
-					contextElement.classList.remove('direction_right');
-					contextElement.classList.add('direction_left');
-				}
-			}
-
-			var locoElement = document.getElementById(elementName + '_text_loconame');
-			if (locoElement)
-			{
-				var directionArrow = direction ? '&rarr; ' : '&larr; ';
-				var locoName = argumentMap.has('loconame') ? argumentMap.get('loconame') : '';
-				locoElement.innerHTML = directionArrow + locoName;
-			}
-		}
+		updateTrackState(argumentMap);
 	}
 	else if (command == 'tracksettings')
 	{

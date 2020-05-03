@@ -52,7 +52,7 @@ Manager::Manager(Config& config)
 	storage(nullptr),
 	defaultAccessoryDuration(DataModel::DefaultAccessoryPulseDuration),
 	autoAddFeedback(false),
-	selectStreetApproach(DataModel::Track::SelectStreetRandom),
+	selectStreetApproach(DataModel::SelectStreetRandom),
 	nrOfTracksToReserve(DataModel::Loco::ReserveOne),
 	run(false),
 	debounceRun(false),
@@ -81,7 +81,7 @@ Manager::Manager(Config& config)
 	Languages::SetDefaultLanguage(static_cast<Languages::Language>(Utils::Utils::StringToInteger(storage->GetSetting("Language"), Languages::EN)));
 	defaultAccessoryDuration = Utils::Utils::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"), 250);
 	autoAddFeedback = Utils::Utils::StringToBool(storage->GetSetting("AutoAddFeedback"));
-	selectStreetApproach = static_cast<DataModel::Track::SelectStreetApproach>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
+	selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::StringToInteger(storage->GetSetting("SelectStreetApproach")));
 	nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve"), 2));
 
 
@@ -1485,9 +1485,9 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	const LayoutPosition posZ,
 	const LayoutItemSize height,
 	const LayoutRotation rotation,
-	const DataModel::Track::TrackType trackType,
+	const DataModel::TrackType trackType,
 	std::vector<FeedbackID> newFeedbacks,
-	const DataModel::Track::SelectStreetApproach selectStreetApproach,
+	const DataModel::SelectStreetApproach selectStreetApproach,
 	const bool releaseWhenFree,
 	string& result)
 {
@@ -2133,6 +2133,28 @@ void Manager::SignalState(const ControlType controlType, Signal* signal, const D
 	SignalPublishState(controlType, signal);
 }
 
+void Manager::SignalBlock(const SignalID signalID, const bool blocked)
+{
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		return;
+	}
+	signal->SetBlocked(blocked);
+	SignalPublishState(ControlTypeInternal, signal);
+}
+
+void Manager::SignalSetLocoDirection(const SignalID signalID, const Direction direction)
+{
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		return;
+	}
+	signal->SetLocoDirection(direction);
+	SignalPublishState(ControlTypeInternal, signal);
+}
+
 void Manager::SignalPublishState(const ControlType controlType, const DataModel::Signal* signal)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
@@ -2323,8 +2345,30 @@ bool Manager::LocoIntoTrack(Logger::Logger* logger, const LocoID locoID, const T
 	{
 		return false;
 	}
+	return LocoIntoTrackBase(logger, loco, ObjectTypeTrack, dynamic_cast<TrackBase*>(track));
+}
 
-	bool reserved = track->ReserveForce(logger, locoID);
+bool Manager::LocoIntoSignal(Logger::Logger* logger, const LocoID locoID, const SignalID signalID)
+{
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		return false;
+	}
+
+	Loco* loco = GetLoco(locoID);
+	if (loco == nullptr)
+	{
+		return false;
+	}
+	return LocoIntoTrackBase(logger, loco, ObjectTypeSignal, dynamic_cast<TrackBase*>(signal));
+}
+
+bool Manager::LocoIntoTrackBase(Logger::Logger *logger, Loco* loco, const ObjectType objectType, TrackBase* track)
+{
+	const LocoID locoID = loco->GetID();
+	const TrackID trackID = track->GetMyID();
+	bool reserved = track->BaseReserveForce(logger, locoID);
 	if (reserved == false)
 	{
 		return false;
@@ -2333,26 +2377,34 @@ bool Manager::LocoIntoTrack(Logger::Logger* logger, const LocoID locoID, const T
 	reserved = loco->ToTrack(trackID);
 	if (reserved == false)
 	{
-		track->Release(logger, locoID);
+		track->BaseRelease(logger, locoID);
 		return false;
 	}
 
-	reserved = track->Lock(logger, locoID);
+	reserved = track->BaseLock(logger, locoID);
 	if (reserved == false)
 	{
 		loco->Release();
-		track->Release(logger, locoID);
+		track->BaseRelease(logger, locoID);
 		return false;
 	}
 
-	string locoName = GetLocoName(locoID);
-	string trackName = GetTrackName(trackID);
+	const string& locoName = loco->GetName();
+	const string& trackName = track->GetMyName();
 	logger->Info(Languages::TextLocoIsOnTrack, locoName, trackName);
 
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto control : controls)
+	switch (objectType)
 	{
-		control.second->LocoIntoTrack(locoID, trackID, locoName, trackName);
+		case ObjectTypeTrack:
+			TrackPublishState(dynamic_cast<const Track*>(track));
+			break;
+
+		case ObjectTypeSignal:
+			SignalPublishState(ControlTypeInternal, dynamic_cast<const Signal*>(track));
+			break;
+
+		default:
+			break;
 	}
 	return true;
 }
@@ -2412,6 +2464,23 @@ bool Manager::LocoReleaseInTrack(const TrackID trackID)
 	return LocoReleaseInternal(loco);
 }
 
+bool Manager::LocoReleaseInSignal(const SignalID signalID)
+{
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		return false;
+	}
+	LocoID locoID = signal->GetLoco();
+	signal->ReleaseForce(logger, locoID);
+	Loco* loco = GetLoco(locoID);
+	if (loco == nullptr)
+	{
+		return false;
+	}
+	return LocoReleaseInternal(loco);
+}
+
 bool Manager::TrackStartLoco(const TrackID trackID)
 {
 	Track* track = GetTrack(trackID);
@@ -2422,7 +2491,27 @@ bool Manager::TrackStartLoco(const TrackID trackID)
 	return LocoStart(track->GetLoco());
 }
 
+bool Manager::SignalStartLoco(const TrackID trackID)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return false;
+	}
+	return LocoStart(track->GetLoco());
+}
+
 bool Manager::TrackStopLoco(const TrackID trackID)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return false;
+	}
+	return LocoStop(track->GetLoco());
+}
+
+bool Manager::SignalStopLoco(const TrackID trackID)
 {
 	Track* track = GetTrack(trackID);
 	if (track == nullptr)
@@ -2456,18 +2545,10 @@ void Manager::TrackSetLocoDirection(const TrackID trackID, const Direction direc
 
 void Manager::TrackPublishState(const DataModel::Track* track)
 {
-	const Loco* loco = GetLoco(track->GetLocoDelayed());
-	const bool hasLoco = loco != nullptr;
-	const string& locoName = hasLoco ? loco->GetName() : "";
-	const string& trackName = track->GetName();
-	const TrackID trackID = track->GetID();
-	const bool occupied = track->GetFeedbackStateDelayed() == DataModel::Feedback::FeedbackStateOccupied;
-	const bool blocked = track->GetBlocked();
-	const Direction direction = track->GetLocoDirection();
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->TrackState(trackID, trackName, occupied, blocked, direction, locoName);
+		control.second->TrackState(track);
 	}
 }
 
@@ -2798,7 +2879,7 @@ bool Manager::CheckControlProtocolAddress(const AddressType type, const ControlI
 
 bool Manager::SaveSettings(const DataModel::AccessoryPulseDuration duration,
 	const bool autoAddFeedback,
-	const DataModel::Track::SelectStreetApproach selectStreetApproach,
+	const DataModel::SelectStreetApproach selectStreetApproach,
 	const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve,
 	const Logger::Logger::Level logLevel,
 	const Languages::Language language)

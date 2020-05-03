@@ -22,16 +22,12 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <string>
 
+#include "DataModel/Track.h"
+#include "DataModel/TrackBase.h"
+#include "DataModel/LayoutItem.h"
 #include "WebServer/HtmlTagTrackBase.h"
 
 class Manager;
-
-namespace DataModel
-{
-	class LayoutItem;
-	class Track;
-	class TrackBase;
-}
 
 namespace WebServer
 {
@@ -40,8 +36,13 @@ namespace WebServer
 		public:
 			HtmlTagTrack() = delete;
 			HtmlTagTrack(const Manager& manager, const DataModel::Track* track)
-			:	HtmlTagTrackBase(manager, track->GetTrackType(), dynamic_cast<const DataModel::TrackBase*>(track), dynamic_cast<const DataModel::LayoutItem*>(track))
-			{}
+			:	HtmlTagTrackBase(manager, ObjectTypeTrack, track->GetTrackType(), dynamic_cast<const DataModel::TrackBase*>(track), dynamic_cast<const DataModel::LayoutItem*>(track))
+			{
+				AddContextMenuEntry(Languages::TextEditTrack, "loadPopup('/?cmd=trackedit&" + urlIdentifier + "');");
+				AddContextMenuEntry(Languages::TextDeleteTrack, "loadPopup('/?cmd=trackaskdelete&" + urlIdentifier + "');");
+				AddToolTip(track->GetName());
+				FinishInit();
+			}
 
 			virtual ~HtmlTagTrack() {}
 	};

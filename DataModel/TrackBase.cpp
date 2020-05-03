@@ -59,11 +59,6 @@ namespace DataModel
 
 	bool TrackBase::Deserialize(const map<string, string> arguments)
 	{
-		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
-		if (objectType.compare("Track") != 0)
-		{
-			return false;
-		}
 		string feedbackStrings = Utils::Utils::GetStringMapEntry(arguments, "feedbacks");
 		vector<string> feedbackStringVector;
 		Utils::Utils::SplitString(feedbackStrings, ",", feedbackStringVector);
@@ -272,7 +267,7 @@ namespace DataModel
 		return sizeBefore > sizeAfter;
 	}
 
-	Track::SelectStreetApproach TrackBase::GetSelectStreetApproachCalculated() const
+	SelectStreetApproach TrackBase::GetSelectStreetApproachCalculated() const
 	{
 		if (selectStreetApproach == SelectStreetSystemDefault)
 		{
@@ -300,19 +295,19 @@ namespace DataModel
 		switch (GetSelectStreetApproachCalculated())
 		{
 
-			case Track::SelectStreetRandom:
+			case SelectStreetRandom:
 				std::random_shuffle(validStreets.begin(), validStreets.end());
 				break;
 
-			case Track::SelectStreetMinTrackLength:
+			case SelectStreetMinTrackLength:
 				std::sort(validStreets.begin(), validStreets.end(), Street::CompareShortest);
 				break;
 
-			case Track::SelectStreetLongestUnused:
+			case SelectStreetLongestUnused:
 				std::sort(validStreets.begin(), validStreets.end(), Street::CompareLastUsed);
 				break;
 
-			case Track::SelectStreetDoNotCare:
+			case SelectStreetDoNotCare:
 			default:
 				// do nothing
 				break;
