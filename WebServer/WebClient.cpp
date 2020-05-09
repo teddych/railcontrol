@@ -1408,7 +1408,7 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagSelectFeedbackForTrack(const unsigned int counter, const TrackID trackID, const FeedbackID feedbackID)
+	HtmlTag WebClient::HtmlTagSelectFeedbackForTrack(const unsigned int counter, const TrackID trackID, const SignalID signalID, const FeedbackID feedbackID)
 	{
 		string counterString = to_string(counter);
 		HtmlTag content("div");
@@ -1423,10 +1423,13 @@ namespace WebServer
 		for (auto feedback : feedbacks)
 		{
 			const TrackID trackIDOfFeedback = feedback.second->GetTrack();
-			if (trackIDOfFeedback == TrackNone || trackIDOfFeedback == trackID)
+			const SignalID signalIDOfFeedback = feedback.second->GetSignal();
+			if ((trackIDOfFeedback != TrackNone && trackIDOfFeedback != trackID)
+				|| (signalIDOfFeedback != SignalNone && signalIDOfFeedback != signalID))
 			{
-				feedbackOptions[feedback.first] = feedback.second->GetID();
+				continue;
 			}
+			feedbackOptions[feedback.first] = feedback.second->GetID();
 		}
 		content.AddChildTag(HtmlTagSelect("feedback_" + counterString, feedbackOptions, feedbackID));
 		content.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(counter + 1)));
@@ -1572,7 +1575,8 @@ namespace WebServer
 	{
 		unsigned int counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 1);
 		TrackID trackID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
-		ReplyHtmlWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID));
+		SignalID signalID = static_cast<SignalID>(Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone));
+		ReplyHtmlWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID, signalID));
 	}
 
 	void WebClient::HandleProtocolSwitch(const map<string, string>& arguments)
@@ -2029,12 +2033,7 @@ namespace WebServer
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
-		HtmlTag positionContent("div");
-		positionContent.AddAttribute("id", "tab_position");
-		positionContent.AddClass("tab_content");
-		positionContent.AddClass("hidden");
-		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
-		formContent.AddChildTag(positionContent);
+		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -2231,13 +2230,7 @@ namespace WebServer
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
-		HtmlTag positionContent("div");
-		positionContent.AddAttribute("id", "tab_position");
-		positionContent.AddClass("tab_content");
-		positionContent.AddClass("hidden");
-		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
-		positionContent.AddChildTag(HtmlTagRotation(rotation));
-		formContent.AddChildTag(positionContent);
+		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -2387,11 +2380,14 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-//		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
+		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::AccessoryType type = DataModel::SignalTypeSimpleLeft;
+		DataModel::AccessoryType signalType = DataModel::SignalTypeSimpleLeft;
 		DataModel::AccessoryPulseDuration duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
+		std::vector<FeedbackID> feedbacks;
+		DataModel::SelectStreetApproach selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::SelectStreetSystemDefault));
+		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		if (signalID > SignalNone)
 		{
 			const DataModel::Signal* signal = manager.GetSignal(signalID);
@@ -2404,22 +2400,27 @@ namespace WebServer
 				posx = signal->GetPosX();
 				posy = signal->GetPosY();
 				posz = signal->GetPosZ();
-//				height = signal->GetHeight();
+				height = signal->GetHeight();
 				rotation = signal->GetRotation();
-				type = signal->GetType();
+				signalType = signal->GetType();
 				duration = signal->GetAccessoryPulseDuration();
 				inverted = signal->GetInverted();
+				feedbacks = signal->GetFeedbacks();
+				selectStreetApproach = signal->GetSelectStreetApproach();
+				releaseWhenFree = signal->GetReleaseWhenFree();
 			}
 		}
 
-		std::map<DataModel::AccessoryType, Languages::TextSelector> typeOptions;
-		typeOptions[DataModel::SignalTypeSimpleLeft] = Languages::TextSimpleLeft;
-		typeOptions[DataModel::SignalTypeSimpleRight] = Languages::TextSimpleRight;
+		std::map<DataModel::AccessoryType, Languages::TextSelector> signalTypeOptions;
+		signalTypeOptions[DataModel::SignalTypeSimpleLeft] = Languages::TextSimpleLeft;
+		signalTypeOptions[DataModel::SignalTypeSimpleRight] = Languages::TextSimpleRight;
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("feedback", Languages::TextFeedbacks));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent;
@@ -2430,8 +2431,8 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
-//		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Signal::MinLength, DataModel::Signal::MaxLength));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("signaltype", Languages::TextType, signalTypeOptions, signalType));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Signal::MinLength, DataModel::Signal::MaxLength));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "signal", signalID));
 		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
@@ -2439,13 +2440,11 @@ namespace WebServer
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
-		HtmlTag positionContent("div");
-		positionContent.AddAttribute("id", "tab_position");
-		positionContent.AddClass("tab_content");
-		positionContent.AddClass("hidden");
-		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
-		positionContent.AddChildTag(HtmlTagRotation(rotation));
-		formContent.AddChildTag(positionContent);
+		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation));
+
+		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, TrackNone, signalID));
+
+		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectStreetApproach, releaseWhenFree));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -2465,11 +2464,39 @@ namespace WebServer
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::AccessoryType type = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SignalTypeSimpleLeft));
+		vector<FeedbackID> feedbacks;
+		unsigned int feedbackCounter = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcounter", 1);
+		for (unsigned int feedback = 1; feedback <= feedbackCounter; ++feedback)
+		{
+			FeedbackID feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback_" + to_string(feedback), FeedbackNone);
+			if (feedbackID != FeedbackNone)
+			{
+				feedbacks.push_back(feedbackID);
+			}
+		}
+		DataModel::SelectStreetApproach selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::SelectStreetSystemDefault));
+		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
+		DataModel::AccessoryType signalType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "signaltype", DataModel::SignalTypeSimpleLeft));
 		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
-		if (!manager.SignalSave(signalID, name, posX, posY, posZ, height, rotation, controlId, protocol, address, type, duration, inverted, result))
+		if (!manager.SignalSave(signalID,
+			name,
+			posX,
+			posY,
+			posZ,
+			height,
+			rotation,
+			feedbacks,
+			selectStreetApproach,
+			releaseWhenFree,
+			controlId,
+			protocol,
+			address,
+			signalType,
+			duration,
+			inverted,
+			result))
 		{
 			ReplyResponse(ResponseError, result);
 			return;
@@ -2720,12 +2747,7 @@ namespace WebServer
 		relationContentAtUnlock.AddChildTag(HtmlTag("br"));
 		formContent.AddChildTag(relationContentAtUnlock);
 
-		HtmlTag positionContent("div");
-		positionContent.AddAttribute("id", "tab_position");
-		positionContent.AddClass("tab_content");
-		positionContent.AddClass("hidden");
-		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz, visible));
-		formContent.AddChildTag(positionContent);
+		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, visible));
 
 		HtmlTag automodeContent("div");
 		automodeContent.AddAttribute("id", "tab_automode");
@@ -2960,6 +2982,63 @@ namespace WebServer
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Street released" : "Street not released");
 	}
 
+	HtmlTag WebClient::HtmlTagTabPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz, const LayoutRotation rotation, const Visible visible)
+	{
+		HtmlTag positionContent("div");
+		positionContent.AddAttribute("id", "tab_position");
+		positionContent.AddClass("tab_content");
+		positionContent.AddClass("hidden");
+		if (visible == DataModel::LayoutItem::VisibleNotRelevant)
+		{
+			positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
+		}
+		else
+		{
+			positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz, visible));
+		}
+		if (rotation != DataModel::LayoutItem::RotationNotRelevant)
+		{
+			positionContent.AddChildTag(HtmlTagRotation(rotation));
+		}
+		return positionContent;
+	}
+
+	HtmlTag WebClient::HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const TrackID trackID, const SignalID signalID)
+	{
+		unsigned int feedbackCounter = 0;
+		HtmlTag existingFeedbacks("div");
+		existingFeedbacks.AddAttribute("id", "feedbackcontent");
+		for (auto feedbackID : feedbacks)
+		{
+			existingFeedbacks.AddChildTag(HtmlTagSelectFeedbackForTrack(++feedbackCounter, trackID, signalID, feedbackID));
+		}
+		existingFeedbacks.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(feedbackCounter + 1)));
+
+		HtmlTag feedbackContent("div");
+		feedbackContent.AddAttribute("id", "tab_feedback");
+		feedbackContent.AddClass("tab_content");
+		feedbackContent.AddClass("hidden");
+		feedbackContent.AddChildTag(HtmlTagInputHidden("feedbackcounter", to_string(feedbackCounter)));
+		feedbackContent.AddChildTag(existingFeedbacks);
+		HtmlTagButton newButton(Languages::TextNew, "newfeedback");
+		newButton.AddAttribute("onclick", "addFeedback();return false;");
+		newButton.AddClass("wide_button");
+		feedbackContent.AddChildTag(newButton);
+		feedbackContent.AddChildTag(HtmlTag("br"));
+		return feedbackContent;
+	}
+
+	HtmlTag WebClient::HtmlTagTabTrackAutomode(DataModel::SelectStreetApproach selectStreetApproach, bool releaseWhenFree)
+	{
+		HtmlTag automodeContent("div");
+		automodeContent.AddAttribute("id", "tab_automode");
+		automodeContent.AddClass("tab_content");
+		automodeContent.AddClass("hidden");
+		automodeContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach));
+		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("releasewhenfree", Languages::TextReleaseWhenFree, "true", releaseWhenFree));
+		return automodeContent;
+	}
+
 	void WebClient::HandleTrackEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
@@ -3045,43 +3124,11 @@ namespace WebServer
 		mainContent.AddChildTag(i_length);
 		formContent.AddChildTag(mainContent);
 
-		HtmlTag positionContent("div");
-		positionContent.AddAttribute("id", "tab_position");
-		positionContent.AddClass("tab_content");
-		positionContent.AddClass("hidden");
-		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz));
-		positionContent.AddChildTag(HtmlTagRotation(rotation));
-		formContent.AddChildTag(positionContent);
+		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation));
 
-		HtmlTag automodeContent("div");
-		automodeContent.AddAttribute("id", "tab_automode");
-		automodeContent.AddClass("tab_content");
-		automodeContent.AddClass("hidden");
-		automodeContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, true));
-		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("releasewhenfree", Languages::TextReleaseWhenFree, "true", releaseWhenFree));
-		formContent.AddChildTag(automodeContent);
+		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, trackID, SignalNone));
 
-		unsigned int feedbackCounter = 0;
-		HtmlTag existingFeedbacks("div");
-		existingFeedbacks.AddAttribute("id", "feedbackcontent");
-		for (auto feedbackID : feedbacks)
-		{
-			existingFeedbacks.AddChildTag(HtmlTagSelectFeedbackForTrack(++feedbackCounter, trackID, feedbackID));
-		}
-		existingFeedbacks.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(feedbackCounter + 1)));
-
-		HtmlTag feedbackContent("div");
-		feedbackContent.AddAttribute("id", "tab_feedback");
-		feedbackContent.AddClass("tab_content");
-		feedbackContent.AddClass("hidden");
-		feedbackContent.AddChildTag(HtmlTagInputHidden("feedbackcounter", to_string(feedbackCounter)));
-		feedbackContent.AddChildTag(existingFeedbacks);
-		HtmlTagButton newButton(Languages::TextNew, "newfeedback");
-		newButton.AddAttribute("onclick", "addFeedback();return false;");
-		newButton.AddClass("wide_button");
-		feedbackContent.AddChildTag(newButton);
-		feedbackContent.AddChildTag(HtmlTag("br"));
-		formContent.AddChildTag(feedbackContent);
+		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectStreetApproach, releaseWhenFree));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -3098,7 +3145,7 @@ namespace WebServer
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = 1;
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::TrackType type = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::TrackTypeStraight));
+		DataModel::TrackType type = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "tracktype", DataModel::TrackTypeStraight));
 		switch (type)
 		{
 			case DataModel::TrackTypeTurn:
@@ -3122,7 +3169,18 @@ namespace WebServer
 		DataModel::SelectStreetApproach selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::SelectStreetSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		string result;
-		if (manager.TrackSave(trackID, name, posX, posY, posZ, height, rotation, type, feedbacks, selectStreetApproach, releaseWhenFree, result) == TrackNone)
+		if (manager.TrackSave(trackID,
+			name,
+			posX,
+			posY,
+			posZ,
+			height,
+			rotation,
+			type,
+			feedbacks,
+			selectStreetApproach,
+			releaseWhenFree,
+			result) == TrackNone)
 		{
 			ReplyResponse(ResponseError, result);
 			return;
@@ -3460,12 +3518,7 @@ namespace WebServer
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
-		HtmlTag positionContent("div");
-		positionContent.AddAttribute("id", "tab_position");
-		positionContent.AddClass("tab_content");
-		positionContent.AddClass("hidden");
-		positionContent.AddChildTag(HtmlTagPosition(posx, posy, posz, visible));
-		formContent.AddChildTag(positionContent);
+		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, visible));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());

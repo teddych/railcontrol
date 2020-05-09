@@ -36,16 +36,18 @@ namespace DataModel
 				Rotation0 = 0,
 				Rotation90,
 				Rotation180,
-				Rotation270
+				Rotation270,
+				RotationNotRelevant
 			};
 
 			typedef unsigned char LayoutItemSize;
 			typedef char LayoutPosition;
 
-			enum Visible : bool
+			enum Visible : unsigned char
 			{
-				VisibleNo = false,
-				VisibleYes = true
+				VisibleNo = 0,
+				VisibleYes,
+				VisibleNotRelevant
 			};
 
 			static const LayoutItemSize Width1 = 1;

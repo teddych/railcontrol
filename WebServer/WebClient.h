@@ -113,8 +113,8 @@ namespace WebServer
 			HtmlTag HtmlTagSlave(const std::string& priority, const ObjectID objectId = ObjectNone);
 			HtmlTag HtmlTagRelationObject(const std::string& name, const ObjectType objectType, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const Languages::TextSelector buttonValue, const bool selected = false) const;
-			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const TrackID trackID, const FeedbackID feedbackID = FeedbackNone);
-			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::SelectStreetApproach selectStreetApproach, const bool addDefault);
+			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const TrackID trackID, const SignalID signalID, const FeedbackID feedbackID = FeedbackNone);
+			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::SelectStreetApproach selectStreetApproach, const bool addDefault = true);
 			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve);
 			static HtmlTag HtmlTagLogLevel();
 			static HtmlTag HtmlTagLanguage();
@@ -125,6 +125,20 @@ namespace WebServer
 			HtmlTag HtmlTagControlLoco(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			HtmlTag HtmlTagControlAccessory(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			HtmlTag HtmlTagControlFeedback(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
+			static HtmlTag HtmlTagTabTrackAutomode(DataModel::SelectStreetApproach selectStreetApproach, bool releaseWhenFree);
+			HtmlTag HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const TrackID trackID, const SignalID signalID);
+			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
+				const DataModel::LayoutItem::LayoutPosition posy,
+				const DataModel::LayoutItem::LayoutPosition posz,
+				const DataModel::LayoutItem::LayoutRotation rotation = DataModel::LayoutItem::RotationNotRelevant,
+				const DataModel::LayoutItem::Visible visible = DataModel::LayoutItem::VisibleNotRelevant);
+			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
+				const DataModel::LayoutItem::LayoutPosition posy,
+				const DataModel::LayoutItem::LayoutPosition posz,
+				const DataModel::LayoutItem::Visible visible)
+			{
+				return HtmlTagTabPosition(posx, posy, posz, DataModel::LayoutItem::RotationNotRelevant, visible);
+			}
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void HandleLayerSave(const std::map<std::string, std::string>& arguments);

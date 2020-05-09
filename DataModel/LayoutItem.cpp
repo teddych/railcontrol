@@ -121,7 +121,11 @@ namespace DataModel
 	bool LayoutItem::Deserialize(const map<string,string>& arguments)
 	{
 		Object::Deserialize(arguments);
-		visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible"));
+		visible = static_cast<Visible>(Utils::Utils::GetIntegerMapEntry(arguments, "visible"));
+		if (visible > VisibleYes)
+		{
+			visible = VisibleYes;
+		}
 		posX = Utils::Utils::GetIntegerMapEntry(arguments, "posX", 0);
 		posY = Utils::Utils::GetIntegerMapEntry(arguments, "posY", 0);
 		posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posZ", 0);

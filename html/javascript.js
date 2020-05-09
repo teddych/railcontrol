@@ -167,14 +167,28 @@ function addFeedback()
 		return false;
 	}
 
+	var identifier = '';
 	var track = document.getElementById('track');
-	if (!track)
+	if (track)
+	{
+		identifier = '&track=' + track.value;
+	}
+	else
+	{
+		var signal = document.getElementById('signal');
+		if (signal)
+		{
+			identifier = '&signal=' + signal.value;
+		}
+	}
+
+	if (identifier.length == 0)
 	{
 		return false;
 	}
 
 	feedbackCounter.value++;
-	var url = '/?cmd=feedbackadd&counter=' + feedbackCounter.value + '&track=' + track.value;
+	var url = '/?cmd=feedbackadd&counter=' + feedbackCounter.value + identifier;
 	requestUpdateItem('div_feedback_' + feedbackCounter.value, url);
 	return false;
 }

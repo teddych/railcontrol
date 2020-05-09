@@ -158,7 +158,7 @@ class Manager
 			const DataModel::LayoutItem::LayoutItemSize width,
 			const DataModel::LayoutItem::LayoutRotation rotation,
 			const DataModel::TrackType trackType,
-			std::vector<FeedbackID> feedbacks,
+			const std::vector<FeedbackID>& feedbacks,
 			const DataModel::SelectStreetApproach selectStreetApproach,
 			const bool releaseWhenFree,
 			std::string& result);
@@ -239,6 +239,9 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition z,
 			const DataModel::LayoutItem::LayoutItemSize height,
 			const DataModel::LayoutItem::LayoutRotation rotation,
+			const std::vector<FeedbackID>& newFeedbacks,
+			const DataModel::SelectStreetApproach selectStreetApproach,
+			const bool releaseWhenFree,
 			const ControlID controlID,
 			const Protocol protocol,
 			const Address address,
@@ -409,7 +412,8 @@ class Manager
 			}
 		}
 
-		const std::vector<FeedbackID> CleanupAndCheckFeedbacks(TrackID trackID, std::vector<FeedbackID>& newFeedbacks);
+		const std::vector<FeedbackID> CleanupAndCheckFeedbacksForTrack(const TrackID trackID, const std::vector<FeedbackID>& newFeedbacks);
+		const std::vector<FeedbackID> CleanupAndCheckFeedbacksForSignal(const SignalID signalID, const std::vector<FeedbackID>& newFeedbacks);
 		void DebounceWorker();
 
 		template<class ID, class T>

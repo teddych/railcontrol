@@ -48,6 +48,7 @@ namespace DataModel
 			 	manager(manager),
 			 	inverted(false),
 			 	trackID(TrackNone),
+			 	signalID(SignalNone),
 				stateCounter(0)
 			{
 			}
@@ -74,8 +75,10 @@ namespace DataModel
 			ControlID GetControlID() const { return controlID; }
 			void SetPin(const FeedbackPin pin) { this->pin = pin; }
 			FeedbackPin GetPin() const { return pin; }
-			void SetTrack(const TrackID trackID) { this->trackID = trackID; }
+			void SetTrack(const TrackID trackID) { signalID = SignalNone; this->trackID = trackID; }
 			TrackID GetTrack() const { return trackID; }
+			void SetSignal(const SignalID signalID) { trackID = TrackNone; this->signalID = signalID; }
+			TrackID GetSignal() const { return signalID; }
 
 		private:
 			ControlID controlID;
@@ -86,6 +89,7 @@ namespace DataModel
 			Manager* manager;
 			bool inverted;
 			TrackID trackID;
+			SignalID signalID;
 			unsigned char stateCounter;
 			static const unsigned char MaxStateCounter = 10;
 			mutable std::mutex updateMutex;

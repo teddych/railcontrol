@@ -39,7 +39,8 @@ namespace DataModel
 			<< ";pin=" << static_cast<int>(pin)
 			<< ";inverted=" << static_cast<int>(inverted)
 			<< ";state=" << static_cast<int>(stateCounter > 0)
-			<< ";track=" << static_cast<int>(trackID);
+			<< ";track=" << static_cast<int>(trackID)
+			<< ";signal=" << static_cast<int>(signalID);
 		return ss.str();
 	}
 
@@ -61,6 +62,7 @@ namespace DataModel
 		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted", false);
 		stateCounter = Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
 		trackID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
+		signalID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone));
 		return true;
 	}
 
@@ -95,11 +97,17 @@ namespace DataModel
 	void Feedback::UpdateTrackState(const FeedbackState state)
 	{
 		Track* track = manager->GetTrack(trackID);
-		if (track == nullptr)
+		if (track != nullptr)
 		{
+			track->SetFeedbackState(GetID(), state);
 			return;
 		}
-		track->SetFeedbackState(objectID, state);
+		Signal* signal = manager->GetSignal(signalID);
+		if (signal != nullptr)
+		{
+			signal->SetFeedbackState(GetID(), state);
+			return;
+		}
 		return;
 	}
 
