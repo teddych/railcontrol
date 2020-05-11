@@ -29,6 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <unistd.h>
 
 #include "DataModel/DataModel.h"
+#include "DataModel/ObjectIdentifier.h"
 #include "Hardware/HardwareHandler.h"
 #include "RailControl.h"
 #include "Timestamp.h"
@@ -1408,7 +1409,7 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagSelectFeedbackForTrack(const unsigned int counter, const TrackID trackID, const SignalID signalID, const FeedbackID feedbackID)
+	HtmlTag WebClient::HtmlTagSelectFeedbackForTrack(const unsigned int counter, const ObjectIdentifier& objectIdentifier, const FeedbackID feedbackID)
 	{
 		string counterString = to_string(counter);
 		HtmlTag content("div");
@@ -1422,10 +1423,7 @@ namespace WebServer
 		map<string, FeedbackID> feedbackOptions;
 		for (auto feedback : feedbacks)
 		{
-			const TrackID trackIDOfFeedback = feedback.second->GetTrack();
-			const SignalID signalIDOfFeedback = feedback.second->GetSignal();
-			if ((trackIDOfFeedback != TrackNone && trackIDOfFeedback != trackID)
-				|| (signalIDOfFeedback != SignalNone && signalIDOfFeedback != signalID))
+			if (feedback.second->IsRelatedObjectSet() && !feedback.second->CompareRelatedObject(objectIdentifier))
 			{
 				continue;
 			}
@@ -1576,7 +1574,18 @@ namespace WebServer
 		unsigned int counter = Utils::Utils::GetIntegerMapEntry(arguments, "counter", 1);
 		TrackID trackID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
 		SignalID signalID = static_cast<SignalID>(Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone));
-		ReplyHtmlWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID, signalID));
+		ObjectIdentifier identifier;
+		if (trackID != TrackNone)
+		{
+			identifier = ObjectTypeTrack;
+			identifier = static_cast<ObjectID>(trackID);
+		}
+		else if (signalID != SignalNone)
+		{
+			identifier = ObjectTypeSignal;
+			identifier = static_cast<ObjectID>(signalID);
+		}
+		ReplyHtmlWithHeader(HtmlTagSelectFeedbackForTrack(counter, identifier));
 	}
 
 	void WebClient::HandleProtocolSwitch(const map<string, string>& arguments)
@@ -2442,7 +2451,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation));
 
-		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, TrackNone, signalID));
+		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, ObjectIdentifier(ObjectTypeSignal, signalID)));
 
 		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectStreetApproach, releaseWhenFree));
 
@@ -3003,14 +3012,14 @@ namespace WebServer
 		return positionContent;
 	}
 
-	HtmlTag WebClient::HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const TrackID trackID, const SignalID signalID)
+	HtmlTag WebClient::HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const ObjectIdentifier& objectIdentifier)
 	{
 		unsigned int feedbackCounter = 0;
 		HtmlTag existingFeedbacks("div");
 		existingFeedbacks.AddAttribute("id", "feedbackcontent");
 		for (auto feedbackID : feedbacks)
 		{
-			existingFeedbacks.AddChildTag(HtmlTagSelectFeedbackForTrack(++feedbackCounter, trackID, signalID, feedbackID));
+			existingFeedbacks.AddChildTag(HtmlTagSelectFeedbackForTrack(++feedbackCounter, objectIdentifier, feedbackID));
 		}
 		existingFeedbacks.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(feedbackCounter + 1)));
 
@@ -3126,7 +3135,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation));
 
-		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, trackID, SignalNone));
+		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, ObjectIdentifier(ObjectTypeTrack, trackID)));
 
 		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectStreetApproach, releaseWhenFree));
 

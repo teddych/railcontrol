@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 
 #include "DataTypes.h"
+#include "DataModel/ObjectIdentifier.h"
 #include "DataModel/LayoutItem.h"
 #include "Languages.h"
 
@@ -31,6 +32,8 @@ class Manager;
 
 namespace DataModel
 {
+	class TrackBase;
+
 	class Feedback : public LayoutItem
 	{
 		public:
@@ -44,17 +47,18 @@ namespace DataModel
 				const FeedbackID feedbackID)
 			:	LayoutItem(feedbackID),
 			 	controlID(ControlIdNone),
-			 	pin(0),
+			 	pin(FeedbackPinNone),
 			 	manager(manager),
 			 	inverted(false),
-			 	trackID(TrackNone),
-			 	signalID(SignalNone),
+			 	relatedObject(),
+			 	track(nullptr),
 				stateCounter(0)
 			{
 			}
 
 			Feedback(Manager* manager, const std::string& serialized)
-			:	manager(manager)
+			:	manager(manager),
+				track(nullptr)
 			{
 				Deserialize(serialized);
 			}
@@ -75,10 +79,11 @@ namespace DataModel
 			ControlID GetControlID() const { return controlID; }
 			void SetPin(const FeedbackPin pin) { this->pin = pin; }
 			FeedbackPin GetPin() const { return pin; }
-			void SetTrack(const TrackID trackID) { signalID = SignalNone; this->trackID = trackID; }
-			TrackID GetTrack() const { return trackID; }
-			void SetSignal(const SignalID signalID) { trackID = TrackNone; this->signalID = signalID; }
-			TrackID GetSignal() const { return signalID; }
+			inline void ClearRelatedObject() { relatedObject.Clear(); track = nullptr; }
+			inline bool IsRelatedObjectSet() const { return relatedObject.IsSet(); }
+			inline void SetRelatedObject(const ObjectIdentifier& relatedObject) { this->relatedObject = relatedObject; track = nullptr; }
+			inline ObjectIdentifier GetRelatedObject() const { return relatedObject; }
+			inline bool CompareRelatedObject(const ObjectIdentifier& compare) const { return relatedObject == compare; }
 
 		private:
 			ControlID controlID;
@@ -88,8 +93,8 @@ namespace DataModel
 
 			Manager* manager;
 			bool inverted;
-			TrackID trackID;
-			SignalID signalID;
+			ObjectIdentifier relatedObject;
+			TrackBase* track;
 			unsigned char stateCounter;
 			static const unsigned char MaxStateCounter = 10;
 			mutable std::mutex updateMutex;

@@ -26,9 +26,15 @@ along with RailControl; see the file LICENCE. If not see
 #include <vector>
 
 #include "DataModel/AccessoryBase.h"
+#include "DataModel/ObjectIdentifier.h"
 #include "Manager.h"
 #include "Network/TcpConnection.h"
 #include "WebServer/HtmlResponse.h"
+
+namespace DataModel
+{
+	class ObjectIdentifier;
+};
 
 namespace WebServer
 {
@@ -113,7 +119,7 @@ namespace WebServer
 			HtmlTag HtmlTagSlave(const std::string& priority, const ObjectID objectId = ObjectNone);
 			HtmlTag HtmlTagRelationObject(const std::string& name, const ObjectType objectType, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const Languages::TextSelector buttonValue, const bool selected = false) const;
-			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const TrackID trackID, const SignalID signalID, const FeedbackID feedbackID = FeedbackNone);
+			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const DataModel::ObjectIdentifier& identifier, const FeedbackID feedbackID = FeedbackNone);
 			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::SelectStreetApproach selectStreetApproach, const bool addDefault = true);
 			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve);
 			static HtmlTag HtmlTagLogLevel();
@@ -126,7 +132,7 @@ namespace WebServer
 			HtmlTag HtmlTagControlAccessory(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			HtmlTag HtmlTagControlFeedback(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			static HtmlTag HtmlTagTabTrackAutomode(DataModel::SelectStreetApproach selectStreetApproach, bool releaseWhenFree);
-			HtmlTag HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const TrackID trackID, const SignalID signalID);
+			HtmlTag HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const DataModel::ObjectIdentifier& objectIdentifier);
 			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
 				const DataModel::LayoutItem::LayoutPosition posy,
 				const DataModel::LayoutItem::LayoutPosition posz,

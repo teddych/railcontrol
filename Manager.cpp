@@ -1441,19 +1441,18 @@ bool Manager::CheckTrackPosition(const Track* track,
 	return true;
 }
 
-const std::vector<FeedbackID> Manager::CleanupAndCheckFeedbacksForTrack(const TrackID trackID, const std::vector<FeedbackID>& newFeedbacks)
+const std::vector<FeedbackID> Manager::CleanupAndCheckFeedbacksForTrack(const ObjectIdentifier& identifier, const std::vector<FeedbackID>& newFeedbacks)
 {
 	{
 		std::lock_guard<std::mutex> feedbackguard(feedbackMutex);
 		for (auto feedback : feedbacks)
 		{
-			const TrackID trackIdOfFeedback = feedback.second->GetTrack();
-			if (trackIdOfFeedback != trackID)
+			if (feedback.second->CompareRelatedObject(identifier) == false)
 			{
 				continue;
 			}
 
-			feedback.second->SetTrack(TrackNone);
+			feedback.second->ClearRelatedObject();
 			if (storage != nullptr)
 			{
 				storage->Save(*feedback.second);
@@ -1469,54 +1468,12 @@ const std::vector<FeedbackID> Manager::CleanupAndCheckFeedbacksForTrack(const Tr
 		{
 			continue;
 		}
-		if (feedback->GetTrack() != TrackNone || feedback->GetSignal() != SignalNone)
+		if (feedback->IsRelatedObjectSet())
 		{
 			continue;
 		}
 		checkedFeedbacks.push_back(feedbackID);
-		feedback->SetTrack(trackID);
-		if (storage != nullptr)
-		{
-			storage->Save(*feedback);
-		}
-	}
-	return checkedFeedbacks;
-}
-
-const std::vector<FeedbackID> Manager::CleanupAndCheckFeedbacksForSignal(const SignalID signalID, const std::vector<FeedbackID>& newFeedbacks)
-{
-	{
-		std::lock_guard<std::mutex> feedbackguard(feedbackMutex);
-		for (auto feedback : feedbacks)
-		{
-			const SignalID signalIdOfFeedback = feedback.second->GetSignal();
-			if (signalIdOfFeedback != signalID)
-			{
-				continue;
-			}
-
-			feedback.second->SetSignal(SignalNone);
-			if (storage != nullptr)
-			{
-				storage->Save(*feedback.second);
-			}
-		}
-	}
-
-	std::vector<FeedbackID> checkedFeedbacks;
-	for (auto feedbackID : newFeedbacks)
-	{
-		Feedback* feedback = GetFeedback(feedbackID);
-		if (feedback == nullptr)
-		{
-			continue;
-		}
-		if (feedback->GetTrack() != TrackNone || feedback->GetSignal() != SignalNone)
-		{
-			continue;
-		}
-		checkedFeedbacks.push_back(feedbackID);
-		feedback->SetSignal(signalID);
+		feedback->SetRelatedObject(identifier);
 		if (storage != nullptr)
 		{
 			storage->Save(*feedback);
@@ -1563,7 +1520,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	track->SetPosY(posY);
 	track->SetPosZ(posZ);
 	track->SetTrackType(trackType);
-	track->Feedbacks(CleanupAndCheckFeedbacksForTrack(trackID, newFeedbacks));
+	track->Feedbacks(CleanupAndCheckFeedbacksForTrack(ObjectIdentifier(ObjectTypeTrack, trackID), newFeedbacks));
 	track->SetSelectStreetApproach(selectStreetApproach);
 	track->SetReleaseWhenFree(releaseWhenFree);
 
@@ -2306,7 +2263,7 @@ bool Manager::SignalSave(const SignalID signalID,
 	signal->SetPosZ(posZ);
 	signal->SetHeight(height);
 	signal->SetRotation(rotation);
-	signal->Feedbacks(CleanupAndCheckFeedbacksForSignal(signalID, newFeedbacks));
+	signal->Feedbacks(CleanupAndCheckFeedbacksForTrack(ObjectIdentifier(ObjectTypeSignal, signalID), newFeedbacks));
 	signal->SetSelectStreetApproach(selectStreetApproach);
 	signal->SetReleaseWhenFree(releaseWhenFree);
 	signal->SetControlID(controlID);

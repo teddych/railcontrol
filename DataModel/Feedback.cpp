@@ -26,25 +26,24 @@ along with RailControl; see the file LICENCE. If not see
 #include "Utils/Utils.h"
 
 using std::map;
-using std::stringstream;
 using std::string;
+using std::to_string;
 
 namespace DataModel
 {
-	std::string Feedback::Serialize() const
+	string Feedback::Serialize() const
 	{
-		stringstream ss;
-		ss << "objectType=Feedback;" << LayoutItem::Serialize()
-			<< ";controlID=" << static_cast<int>(controlID)
-			<< ";pin=" << static_cast<int>(pin)
-			<< ";inverted=" << static_cast<int>(inverted)
-			<< ";state=" << static_cast<int>(stateCounter > 0)
-			<< ";track=" << static_cast<int>(trackID)
-			<< ";signal=" << static_cast<int>(signalID);
-		return ss.str();
+		string str;
+		str = "objectType=Feedback;" + LayoutItem::Serialize();
+		str += ";controlID=" + to_string(controlID);
+		str += ";pin=" + to_string(pin);
+		str += ";inverted=" + to_string(inverted);
+		str += ";state=" + to_string(stateCounter > 0);
+		str += ";" + relatedObject.Serialize();
+		return str;
 	}
 
-	bool Feedback::Deserialize(const std::string& serialized)
+	bool Feedback::Deserialize(const string& serialized)
 	{
 		map<string, string> arguments;
 		ParseArguments(serialized, arguments);
@@ -61,8 +60,7 @@ namespace DataModel
 		pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin");
 		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted", false);
 		stateCounter = Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
-		trackID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
-		signalID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone));
+		relatedObject.Deserialize(arguments);
 		return true;
 	}
 
@@ -96,19 +94,27 @@ namespace DataModel
 
 	void Feedback::UpdateTrackState(const FeedbackState state)
 	{
-		Track* track = manager->GetTrack(trackID);
-		if (track != nullptr)
+		if (track == nullptr)
 		{
-			track->SetFeedbackState(GetID(), state);
+			switch (relatedObject.GetObjectType())
+			{
+				case ObjectTypeTrack:
+					track = dynamic_cast<TrackBase*>(manager->GetTrack(relatedObject.GetObjectID()));
+					break;
+
+				case ObjectTypeSignal:
+					track = dynamic_cast<TrackBase*>(manager->GetSignal(relatedObject.GetObjectID()));
+					break;
+
+				default:
+					return;
+			}
+		}
+		if (track == nullptr)
+		{
 			return;
 		}
-		Signal* signal = manager->GetSignal(signalID);
-		if (signal != nullptr)
-		{
-			signal->SetFeedbackState(GetID(), state);
-			return;
-		}
-		return;
+		track->SetFeedbackState(GetID(), state);
 	}
 
 	void Feedback::Debounce()

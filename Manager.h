@@ -31,6 +31,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "ControlInterface.h"
 #include "DataModel/AccessoryBase.h"
 #include "DataModel/DataModel.h"
+#include "DataModel/ObjectIdentifier.h"
 #include "Hardware/HardwareParams.h"
 #include "Logger/Logger.h"
 #include "Storage/StorageHandler.h"
@@ -412,8 +413,7 @@ class Manager
 			}
 		}
 
-		const std::vector<FeedbackID> CleanupAndCheckFeedbacksForTrack(const TrackID trackID, const std::vector<FeedbackID>& newFeedbacks);
-		const std::vector<FeedbackID> CleanupAndCheckFeedbacksForSignal(const SignalID signalID, const std::vector<FeedbackID>& newFeedbacks);
+		const std::vector<FeedbackID> CleanupAndCheckFeedbacksForTrack(const DataModel::ObjectIdentifier& identifier, const std::vector<FeedbackID>& newFeedbacks);
 		void DebounceWorker();
 
 		template<class ID, class T>
