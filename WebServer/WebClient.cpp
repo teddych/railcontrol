@@ -1316,7 +1316,7 @@ namespace WebServer
 				map<Direction,Languages::TextSelector> stateOptions;
 				stateOptions[DirectionLeft] = Languages::TextLeft;
 				stateOptions[DirectionRight] = Languages::TextRight;
-				content.AddChildTag(HtmlTagSelect("state_" + name, stateOptions, static_cast<Direction>(data)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<Direction>(data)).AddClass("select_relation_state"));
 				return content;
 			}
 
