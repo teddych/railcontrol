@@ -377,7 +377,7 @@ namespace DataModel
 			manager->TrackPublishState(trackFrom);
 		}
 		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
-		newTrack->SetLocoDirection(static_cast<Direction>(!streetFirst->GetToDirection()));
+		newTrack->SetLocoDirection(static_cast<Direction>(streetFirst->GetToDirection()));
 		logger->Info(Languages::TextHeadingToVia, newTrack->GetName(), streetFirst->GetName());
 
 		// start loco
@@ -443,7 +443,7 @@ namespace DataModel
 		}
 
 		wait = streetSecond->GetWaitAfterRelease();
-		newTrack->SetLocoDirection(static_cast<Direction>(!streetSecond->GetToDirection()));
+		newTrack->SetLocoDirection(static_cast<Direction>(streetSecond->GetToDirection()));
 		logger->Info(Languages::TextHeadingToViaVia, newTrack->GetName(), streetFirst->GetName(), streetSecond->GetName());
 
 		// start loco

@@ -217,7 +217,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLocoEventDetected */ { "Locomotive event detected (ignored)", "Lokomotivevent erkannt (wird ignoriert)", "Evento de locomotora detectado (ignorando)" },
 /* TextLocoFunctionIsOff */ { "F{1} of {0} is now off", "F{1} von {0} ist aus", "F{1} de {0} está apagado" },
 /* TextLocoFunctionIsOn */ { "F{1} of {0} is now on", "F{1} von {0} ist an", "F{1} de {0} está encendido" },
-/* TextLocoHasReachedDestination */ { "{0} has reached destination track {1} via {2}", "{1} hat das Zeilgleis {1} über {2} erreicht.", "{0} ha llegado a su vía destino {1} vía {2}" },
+/* TextLocoHasReachedDestination */ { "{0} has reached destination track {1} via {2}", "{0} hat das Zielgleis {1} über {2} erreicht.", "{0} ha llegado a su vía destino {1} vía {2}" },
 /* TextLocoIsInAutoMode */ { "{0} is in auto mode", "{0} ist im Automatik-Betrieb", "{0} está en el modo automático" },
 /* TextLocoIsInManualMode */ { "{0} is in manual mode", "{0} ist im manuellen Betrieb", "{0} está en el modo manual" },
 /* TextLocoIsOnTrack */ { "{0} is on track {1}", "{0} ist auf Gleis {1}", "{0} está sobre vía {1}" } ,

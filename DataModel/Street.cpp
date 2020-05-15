@@ -19,7 +19,7 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include <map>
-#include <sstream>
+#include <string>
 
 #include "DataModel/Loco.h"
 #include "DataModel/Relation.h"
@@ -28,8 +28,8 @@ along with RailControl; see the file LICENCE. If not see
 #include "Utils/Utils.h"
 
 using std::map;
-using std::stringstream;
 using std::string;
+using std::to_string;
 
 namespace DataModel
 {
@@ -49,32 +49,32 @@ namespace DataModel
 
 	std::string Street::Serialize() const
 	{
-		stringstream ss;
-		ss << "objectType=Street;"
-			<< LayoutItem::Serialize()
-			<< ";" << LockableItem::Serialize()
-			<< ";delay=" << static_cast<int>(delay)
-			<< ";lastused=" << lastUsed
-			<< ";counter=" << counter
-			<< ";automode=" << static_cast<int>(automode);
+		std::string str;
+		str = "objectType=Street;";
+		str += LayoutItem::Serialize();
+		str += ";" + LockableItem::Serialize();
+		str += ";delay=" + to_string(delay);
+		str += ";lastused=" + to_string(lastUsed);
+		str += ";counter=" + to_string(counter);
+		str += ";automode=" + to_string(automode);
 		if (automode == AutomodeNo)
 		{
-			return ss.str();
+			return str;
 		}
-		ss << ";fromTrack=" << static_cast<int>(fromTrack)
-			<< ";fromDirection=" << static_cast<int>(fromDirection)
-			<< ";toTrack=" << static_cast<int>(toTrack)
-			<< ";toDirection=" << static_cast<int>(toDirection)
-			<< ";speed=" << static_cast<int>(speed)
-			<< ";feedbackIdReduced=" << static_cast<int>(feedbackIdReduced)
-			<< ";feedbackIdCreep=" << static_cast<int>(feedbackIdCreep)
-			<< ";feedbackIdStop=" << static_cast<int>(feedbackIdStop)
-			<< ";feedbackIdOver=" << static_cast<int>(feedbackIdOver)
-			<< ";pushpull=" << static_cast<int>(pushpull)
-			<< ";mintrainlength=" << static_cast<int>(minTrainLength)
-			<< ";maxtrainlength=" << static_cast<int>(maxTrainLength)
-			<< ";waitafterrelease=" << static_cast<int>(waitAfterRelease);
-		return ss.str();
+		str += ";fromTrack=" + to_string(fromTrack);
+		str += ";fromDirection=" + to_string(fromDirection);
+		str += ";toTrack=" + to_string(toTrack);
+		str += ";toDirection=" + string(toDirection == DirectionLeft ? "left" : "right"); // FIXME: change later to int (like fromDirection)
+		str += ";speed=" + to_string(speed);
+		str += ";feedbackIdReduced=" + to_string(feedbackIdReduced);
+		str += ";feedbackIdCreep=" + to_string(feedbackIdCreep);
+		str += ";feedbackIdStop=" + to_string(feedbackIdStop);
+		str += ";feedbackIdOver=" + to_string(feedbackIdOver);
+		str += ";pushpull=" + to_string(pushpull);
+		str += ";mintrainlength=" + to_string(minTrainLength);
+		str += ";maxtrainlength=" + to_string(maxTrainLength);
+		str += ";waitafterrelease=" + to_string(waitAfterRelease);
+		return str;
 	}
 
 	bool Street::Deserialize(const std::string& serialized)
@@ -114,7 +114,27 @@ namespace DataModel
 		fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
 		fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
 		toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "toTrack", TrackNone);
-		toDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "toDirection", DirectionLeft));
+		std::string directionString = Utils::Utils::GetStringMapEntry(arguments, "toDirection");
+		if (directionString.compare("left") == 0)
+		{
+			toDirection = DirectionLeft;
+		}
+		else if (directionString.compare("right") == 0)
+		{
+			toDirection = DirectionRight;
+		}
+		else if (directionString.compare("0") == 0)
+		{
+			toDirection = DirectionRight; // FIXME: change later to left and serialize with int
+		}
+		else if (directionString.compare("1") == 0)
+		{
+			toDirection = DirectionLeft; // FIXME: change later to right and serialize with int
+		}
+		else
+		{
+			toDirection = DirectionRight;
+		}
 		speed = static_cast<Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", SpeedTravel));
 		feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
 		feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdCreep", FeedbackNone);
