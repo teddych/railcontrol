@@ -20,7 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <algorithm>
 #include <map>
-#include <sstream>
+#include <string>
 
 #include "DataModel/Loco.h"
 #include "DataModel/Track.h"
@@ -28,8 +28,8 @@ along with RailControl; see the file LICENCE. If not see
 #include "Utils/Utils.h"
 
 using std::map;
-using std::stringstream;
 using std::string;
+using std::to_string;
 using std::vector;
 
 namespace DataModel
@@ -53,25 +53,33 @@ namespace DataModel
 
 	std::string Loco::Serialize() const
 	{
-		TrackID trackIdFrom = TrackNone;
+		string str;
+		str += "objectType=Loco;";
+		str += Object::Serialize();
+		str += ";";
+		str += HardwareHandle::Serialize();
+		str += ";functions=";
+		str += functions.Serialize();
+		str += ";direction=";
+		str += (direction == DirectionRight ? "right" : "left");
 		if (trackFrom != nullptr)
 		{
-			trackIdFrom = trackFrom->GetMyID();
+			str += ";track=";
+			str += trackFrom->GetObjectIdentifier();
 		}
-		stringstream ss;
-		ss << "objectType=Loco"
-			<< ";" << Object::Serialize()
-			<< ";" << HardwareHandle::Serialize()
-			<< ";functions=" << functions.Serialize()
-			<< ";direction=" << (direction == DirectionRight ? "right" : "left")
-			<< ";trackID=" << static_cast<int>(trackIdFrom)
-			<< ";length=" << length
-			<< ";pushpull=" << static_cast<int>(pushpull)
-			<< ";maxspeed=" << maxSpeed
-			<< ";travelspeed=" << travelSpeed
-			<< ";reducedspeed=" << reducedSpeed
-			<< ";creepingspeed=" << creepingSpeed;
-		return ss.str();
+		str += ";length=";
+		str += to_string(length);
+		str += ";pushpull=";
+		str += to_string(pushpull);
+		str += ";maxspeed=";
+		str += to_string(maxSpeed);
+		str += ";travelspeed=";
+		str += to_string(travelSpeed);
+		str += ";reducedspeed=";
+		str += to_string(reducedSpeed);
+		str += ";creepingspeed=";
+		str += to_string(creepingSpeed);
+		return str;
 	}
 
 	bool Loco::Deserialize(const std::string& serialized)
@@ -84,8 +92,16 @@ namespace DataModel
 			return false;
 		}
 		HardwareHandle::Deserialize(arguments);
-		TrackID trackIdFrom = Utils::Utils::GetIntegerMapEntry(arguments, "trackID", TrackNone);
-		trackFrom = manager->GetTrack(trackIdFrom);
+		ObjectIdentifier trackIdentifier = Utils::Utils::GetStringMapEntry(arguments, "track");
+		if (trackIdentifier.GetObjectID() == ObjectNone)
+		{
+			trackIdentifier = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "trackID", TrackNone));
+			if (trackIdentifier.GetObjectID() != ObjectNone)
+			{
+				trackIdentifier = ObjectTypeTrack;
+			}
+		}
+		trackFrom = manager->GetTrackBase(trackIdentifier);
 		functions.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "functions", "0"));
 		direction = (Utils::Utils::GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
 		length = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "length", 0));
