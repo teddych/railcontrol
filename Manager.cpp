@@ -2177,26 +2177,30 @@ bool Manager::SignalState(const ControlType controlType, const SignalID signalID
 		return false;
 	}
 	Signal* signal = GetSignal(signalID);
-	SignalState(controlType, signal, state, force);
-	return true;
+	if (signal == nullptr)
+	{
+		return false;
+	}
+	return SignalState(controlType, signal, state, force);
 }
 
-void Manager::SignalState(const ControlType controlType, Signal* signal, const DataModel::AccessoryState state, const bool force)
+bool Manager::SignalState(const ControlType controlType, Signal* signal, const DataModel::AccessoryState state, const bool force)
 {
 	if (signal == nullptr)
 	{
-		return;
+		return false;
 	}
 
 	if (force == false && signal->IsInUse())
 	{
 		logger->Warning(Languages::TextSignalIsLocked, signal->GetName());
-		return;
+		return false;
 	}
 
 	signal->SetAccessoryState(state);
 
 	SignalPublishState(controlType, signal);
+	return true;
 }
 
 void Manager::SignalBlock(const SignalID signalID, const bool blocked)

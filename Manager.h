@@ -231,8 +231,8 @@ class Manager
 		bool LayerDelete(const LayerID layerID);
 
 		// signal
-		bool SignalState(const ControlType controlType, const SignalID signalID, const DataModel::AccessoryState state, const bool force);
-		void SignalState(const ControlType controlType, DataModel::Signal* signal, const DataModel::AccessoryState state, const bool force);
+		bool SignalState(const ControlType controlType, const SignalID signalID, const DataModel::AccessoryState state, const bool force = false);
+		bool SignalState(const ControlType controlType, DataModel::Signal* signal, const DataModel::AccessoryState state, const bool force = false);
 		DataModel::Signal* GetSignal(const SignalID signalID) const;
 		const std::string& GetSignalName(const SignalID signalID) const;
 		const std::map<SignalID,DataModel::Signal*>& SignalList() const { return signals; }

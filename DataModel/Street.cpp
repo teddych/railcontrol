@@ -252,6 +252,10 @@ namespace DataModel
 		{
 			executeAtUnlock = true;
 		}
+		if (fromTrack.GetObjectType() == ObjectTypeSignal)
+		{
+			return manager->SignalState(ControlTypeInternal, fromTrack.GetObjectID(), SignalStateGreen, true);
+		}
 		return true;
 	}
 
@@ -355,10 +359,17 @@ namespace DataModel
 			}
 			executeAtUnlock = false;
 		}
+
 		for (auto relation : relationsAtLock)
 		{
 			relation->Release(logger, locoID);
 		}
+
+		if (fromTrack.GetObjectType() == ObjectTypeSignal)
+		{
+			manager->SignalState(ControlTypeInternal, fromTrack.GetObjectID(), SignalStateRed, true);
+		}
+
 		return LockableItem::Release(logger, locoID);
 	}
 
