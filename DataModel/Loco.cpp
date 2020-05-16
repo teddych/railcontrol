@@ -56,7 +56,7 @@ namespace DataModel
 		TrackID trackIdFrom = TrackNone;
 		if (trackFrom != nullptr)
 		{
-			trackIdFrom = trackFrom->GetID();
+			trackIdFrom = trackFrom->GetMyID();
 		}
 		stringstream ss;
 		ss << "objectType=Loco"
@@ -99,7 +99,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Loco::ToTrack(const TrackID trackID)
+	bool Loco::SetTrack(const ObjectIdentifier& identifier)
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		// there must not be set a track
@@ -107,7 +107,7 @@ namespace DataModel
 		{
 			return false;
 		}
-		this->trackFrom = manager->GetTrack(trackID);
+		this->trackFrom = manager->GetTrackBase(identifier);
 		return true;
 	}
 
@@ -129,17 +129,17 @@ namespace DataModel
 		}
 		if (trackFrom != nullptr)
 		{
-			trackFrom->Release(logger, objectID);
+			trackFrom->BaseRelease(logger, objectID);
 			trackFrom = nullptr;
 		}
 		if (trackFirst != nullptr)
 		{
-			trackFirst->Release(logger, objectID);
+			trackFirst->BaseRelease(logger, objectID);
 			trackFirst = nullptr;
 		}
 		if (trackSecond != nullptr)
 		{
-			trackSecond->Release(logger, objectID);
+			trackSecond->BaseRelease(logger, objectID);
 			trackSecond = nullptr;
 		}
 		feedbackIdOver = FeedbackNone;
@@ -153,7 +153,7 @@ namespace DataModel
 	bool Loco::IsRunningFromTrack(const TrackID trackID) const
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		return trackFirst != nullptr && trackFrom != nullptr && trackFrom->GetID() == trackID;
+		return trackFirst != nullptr && trackFrom != nullptr && trackFrom->GetMyID() == trackID;
 	}
 
 	bool Loco::GoToAutoMode()
@@ -354,8 +354,8 @@ namespace DataModel
 			return;
 		}
 
-		TrackID newTrackIdFirst = usedStreet->GetToTrack();
-		Track* newTrack = manager->GetTrack(newTrackIdFirst);
+		const ObjectIdentifier& newTrackIdentifierFirst = usedStreet->GetToTrack();
+		TrackBase* newTrack = manager->GetTrackBase(newTrackIdentifierFirst);
 		if (newTrack == nullptr)
 		{
 			return;
@@ -374,14 +374,14 @@ namespace DataModel
 		if (turnLoco)
 		{
 			trackFrom->SetLocoDirection(streetFirst->GetFromDirection());
-			manager->TrackPublishState(trackFrom);
+			manager->TrackBasePublishState(trackFrom);
 		}
 		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
 		newTrack->SetLocoDirection(static_cast<Direction>(streetFirst->GetToDirection()));
-		logger->Info(Languages::TextHeadingToVia, newTrack->GetName(), streetFirst->GetName());
+		logger->Info(Languages::TextHeadingToVia, newTrack->GetMyName(), streetFirst->GetName());
 
 		// start loco
-		manager->TrackPublishState(newTrack);
+		manager->TrackBasePublishState(newTrack);
 		Speed newSpeed;
 		switch (streetFirst->GetSpeed())
 		{
@@ -410,8 +410,8 @@ namespace DataModel
 			return;
 		}
 
-		TrackID newTrackIdSecond = usedStreet->GetToTrack();
-		Track* newTrack = manager->GetTrack(newTrackIdSecond);
+		const ObjectIdentifier& newTrackIdentifierSecond = usedStreet->GetToTrack();
+		TrackBase* newTrack = manager->GetTrackBase(newTrackIdentifierSecond);
 		if (newTrack == nullptr)
 		{
 			return;
@@ -444,20 +444,20 @@ namespace DataModel
 
 		wait = streetSecond->GetWaitAfterRelease();
 		newTrack->SetLocoDirection(static_cast<Direction>(streetSecond->GetToDirection()));
-		logger->Info(Languages::TextHeadingToViaVia, newTrack->GetName(), streetFirst->GetName(), streetSecond->GetName());
+		logger->Info(Languages::TextHeadingToViaVia, newTrack->GetMyName(), streetFirst->GetName(), streetSecond->GetName());
 
 		// start loco
-		manager->TrackPublishState(newTrack);
+		manager->TrackBasePublishState(newTrack);
 		state = LocoStateRunning;
 	}
 
-	Street* Loco::SearchDestination(Track* track, const bool allowLocoTurn)
+	Street* Loco::SearchDestination(TrackBase* track, const bool allowLocoTurn)
 	{
 		if (manager->Booster() == BoosterStateStop)
 		{
 			return nullptr;
 		}
-		logger->Debug(Languages::TextLookingForDestination, track->GetName());
+		logger->Debug(Languages::TextLookingForDestination, track->GetMyName());
 		if (streetSecond != nullptr)
 		{
 			state = LocoStateError;
@@ -472,10 +472,11 @@ namespace DataModel
 			return nullptr;
 		}
 
-		if (track->GetLoco() != objectID)
+		LocoID locoIdOfTrack = track->GetMyLoco();
+		if (locoIdOfTrack != GetID())
 		{
 			state = LocoStateError;
-			logger->Error(Languages::TextIsOnOcupiedTrack, name, track->GetName(), manager->GetLocoName(track->GetLoco()));
+			logger->Error(Languages::TextIsOnOcupiedTrack, name, track->GetMyName(), manager->GetLocoName(locoIdOfTrack));
 			return nullptr;
 		}
 
@@ -613,7 +614,7 @@ namespace DataModel
 		streetFirst = streetSecond;
 		streetSecond = nullptr;
 
-		trackFrom->Release(logger, objectID);
+		trackFrom->BaseRelease(logger, objectID);
 		trackFrom = trackFirst;
 		trackFirst = trackSecond;
 		trackSecond = nullptr;
@@ -648,11 +649,11 @@ namespace DataModel
 			return;
 		}
 
-		manager->LocoDestinationReached(objectID, streetFirst->GetID(), trackFrom->GetID());
+		manager->LocoDestinationReached(this, streetFirst, trackFrom);
 		streetFirst->Release(logger, objectID);
 		streetFirst = nullptr;
 
-		trackFrom->Release(logger, objectID);
+		trackFrom->BaseRelease(logger, objectID);
 		trackFrom = trackFirst;
 		trackFirst = nullptr;
 		logger->Info(Languages::TextReachedItsDestination, name);

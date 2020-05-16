@@ -1444,11 +1444,11 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("rotation", Languages::TextRotation, rotationOptions, rotation);
 	}
 
-	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const Languages::TextSelector label, const TrackID trackId, const Direction direction, const string& onchange) const
+	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const Languages::TextSelector label, const ObjectIdentifier& identifier, const Direction direction, const string& onchange) const
 	{
 		HtmlTag tag;
-		map<string,TrackID> tracks = manager.TrackListIdByName();
-		HtmlTagSelectWithLabel selectTrack(name + "track", label, tracks, trackId);
+		map<string,ObjectIdentifier> tracks = manager.TrackBaseListIdentifierByName();
+		HtmlTagSelectWithLabel selectTrack(name + "track", label, tracks, identifier);
 		selectTrack.AddClass("select_track");
 		if (onchange.size() > 0)
 		{
@@ -1462,10 +1462,10 @@ namespace WebServer
 		return tag;
 	}
 
-	HtmlTag WebClient::HtmlTagSelectFeedbacksOfTrack(const TrackID trackId, const FeedbackID feedbackIdReduced, const FeedbackID feedbackIdCreep, const FeedbackID feedbackIdStop, const FeedbackID feedbackIdOver) const
+	HtmlTag WebClient::HtmlTagSelectFeedbacksOfTrack(const ObjectIdentifier& identifier, const FeedbackID feedbackIdReduced, const FeedbackID feedbackIdCreep, const FeedbackID feedbackIdStop, const FeedbackID feedbackIdOver) const
 	{
 		HtmlTag tag;
-		map<string,FeedbackID> feedbacks = manager.FeedbacksOfTrack(trackId);
+		map<string,FeedbackID> feedbacks = manager.FeedbacksOfTrack(identifier);
 		map<string,FeedbackID> feedbacksWithNone = feedbacks;
 		feedbacksWithNone["-"] = FeedbackNone;
 		tag.AddChildTag(HtmlTagSelectWithLabel("feedbackreduced", Languages::TextReducedSpeedAt, feedbacksWithNone, feedbackIdReduced).AddClass("select_feedback"));
@@ -2649,10 +2649,10 @@ namespace WebServer
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
 		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", streetID == StreetNone && ((posx || posy) && posz >= LayerUndeletable) ? DataModel::LayoutItem::VisibleYes : DataModel::LayoutItem::VisibleNo));
 		Automode automode = static_cast<Automode>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
-		TrackID fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
+		ObjectIdentifier fromTrack = Utils::Utils::GetStringMapEntry(arguments, "fromtrack");
 		Direction fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
-		TrackID toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "totrack", TrackNone);
-		Direction toDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		ObjectIdentifier toTrack = Utils::Utils::GetStringMapEntry(arguments, "totrack");
+		Direction toDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionRight));
 		Street::Speed speed = static_cast<Street::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Street::SpeedTravel));
 		FeedbackID feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
 		FeedbackID feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
@@ -2804,8 +2804,8 @@ namespace WebServer
 
 	void WebClient::HandleFeedbacksOfTrack(const map<string, string>& arguments)
 	{
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		ReplyHtmlWithHeader(HtmlTagSelectFeedbacksOfTrack(trackID, FeedbackNone, FeedbackNone, FeedbackNone, FeedbackNone));
+		ObjectIdentifier identifier = Utils::Utils::GetStringMapEntry(arguments, "track");
+		ReplyHtmlWithHeader(HtmlTagSelectFeedbacksOfTrack(identifier, FeedbackNone, FeedbackNone, FeedbackNone, FeedbackNone));
 	}
 
 	void WebClient::HandleStreetSave(const map<string, string>& arguments)
@@ -2821,10 +2821,10 @@ namespace WebServer
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		Automode automode = static_cast<Automode>(Utils::Utils::GetBoolMapEntry(arguments, "automode"));
-		TrackID fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromtrack", TrackNone);
+		ObjectIdentifier fromTrack = Utils::Utils::GetStringMapEntry(arguments, "fromtrack");
 		Direction fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
-		TrackID toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "totrack", TrackNone);
-		Direction toDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionLeft));
+		ObjectIdentifier toTrack = Utils::Utils::GetStringMapEntry(arguments, "totrack");
+		Direction toDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionRight));
 		Street::Speed speed = static_cast<Street::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Street::SpeedTravel));
 		FeedbackID feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
 		FeedbackID feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
@@ -3291,91 +3291,35 @@ namespace WebServer
 	void WebClient::HandleTrackSetLoco(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		ObjectType objectType = ObjectTypeNone;
-		ObjectID objectID = ObjectNone;
-		string objectName;
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		DataModel::Track* track = nullptr;
-		DataModel::Signal* signal = nullptr;
-		if (trackID > 0)
+		ObjectIdentifier identifier(Utils::Utils::GetStringMapEntry(arguments, "track"), Utils::Utils::GetStringMapEntry(arguments, "signal"));
+		TrackBase* track = manager.GetTrackBase(identifier);
+		if (track == nullptr)
 		{
-			objectType = ObjectTypeTrack;
-			track = manager.GetTrack(trackID);
-			if (track == nullptr)
-			{
-				ReplyResponse(ResponseError, Languages::TextTrackDoesNotExist);
-				return;
-			}
-			objectName = manager.GetTrackName(trackID);
-			objectID = trackID;
+			ReplyResponse(ResponseError, identifier.GetObjectType() == ObjectTypeTrack ? Languages::TextTrackDoesNotExist : Languages::TextSignalDoesNotExist);
+			return;
 		}
-		else if (signalID > 0)
+
+
+		if (track->IsTrackInUse())
 		{
-			objectType = ObjectTypeSignal;
-			signal = manager.GetSignal(signalID);
-			if (signal == nullptr)
-			{
-				ReplyResponse(ResponseError, Languages::TextSignalDoesNotExist);
-				return;
-			}
-			objectName = manager.GetSignalName(signalID);
-			objectID = signalID;
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextTrackIsInUse, track->GetMyName());
+			return;
 		}
 
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoID != LocoNone)
 		{
-			bool ret = false;
-
-			switch (objectType)
-			{
-				case ObjectTypeTrack:
-					ret = manager.LocoIntoTrack(logger, locoID, trackID);
-					break;
-
-				case ObjectTypeSignal:
-					ret = manager.LocoIntoSignal(logger, locoID, signalID);
-					break;
-
-				default:
-					break;
-			}
-			ret ? ReplyResponse(ResponseInfo, Languages::TextLocoIsOnTrack, manager.GetLocoName(locoID), objectName)
-				: ReplyResponse(ResponseError, Languages::TextUnableToAddLocoToTrack, manager.GetLocoName(locoID), objectName);
+			bool ret = manager.LocoIntoTrackBase(logger, locoID, identifier);
+			string trackName = track->GetMyName();
+			ret ? ReplyResponse(ResponseInfo, Languages::TextLocoIsOnTrack, manager.GetLocoName(locoID), trackName)
+				: ReplyResponse(ResponseError, Languages::TextUnableToAddLocoToTrack, manager.GetLocoName(locoID), trackName);
 			return;
 		}
 
-		string objectTypeString;
-		switch (objectType)
-		{
-			case ObjectTypeTrack:
-				if (track->IsInUse())
-				{
-					ReplyHtmlWithHeaderAndParagraph(Languages::TextTrackIsInUse, objectName);
-					return;
-				}
-				objectTypeString = "track";
-				break;
-
-			case ObjectTypeSignal:
-				if (signal->IsInUse())
-				{
-					ReplyHtmlWithHeaderAndParagraph(Languages::TextTrackIsInUse, objectName);
-					return;
-				}
-				objectTypeString = "signal";
-				break;
-
-			default:
-				ReplyHtmlWithHeaderAndParagraph(Languages::TextUnknownObjectType);
-				return;
-		}
-
 		map<string,LocoID> locos = manager.LocoListFree();
-		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSelectLocoForTrack, objectName));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSelectLocoForTrack, track->GetMyName()));
 		content.AddChildTag(HtmlTagInputHidden("cmd", "tracksetloco"));
-		content.AddChildTag(HtmlTagInputHidden(objectTypeString, to_string(objectID)));
+		content.AddChildTag(HtmlTagInputHidden(identifier));
 		content.AddChildTag(HtmlTagSelectWithLabel("loco", Languages::TextLoco, locos));
 		content.AddChildTag(HtmlTag("br"));
 		content.AddChildTag(HtmlTagButtonCancel());

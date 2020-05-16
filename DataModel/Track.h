@@ -88,16 +88,6 @@ namespace DataModel
 				return BaseReleaseForce(logger, locoID);
 			}
 
-			ObjectID GetMyID() const override
-			{
-				return GetID();
-			}
-
-			const std::string& GetMyName() const override
-			{
-				return GetName();
-			}
-
 		protected:
 			bool ReserveInternal(Logger::Logger* logger, const LocoID locoID) override
 			{
@@ -115,6 +105,31 @@ namespace DataModel
 			}
 
 			void PublishState() const override;
+
+			ObjectIdentifier GetObjectIdentifier() const override
+			{
+				return ObjectIdentifier(ObjectTypeTrack, GetID());
+			}
+
+			ObjectID GetMyID() const override
+			{
+				return GetID();
+			}
+
+			const std::string& GetMyName() const override
+			{
+				return GetName();
+			}
+
+			LocoID GetMyLoco() const override
+			{
+				return GetLoco();
+			}
+
+			bool IsTrackInUse() const override
+			{
+				return IsInUse();
+			}
 
 			LocoID GetLockedLoco() const override
 			{

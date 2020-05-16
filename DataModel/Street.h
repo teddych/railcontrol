@@ -27,6 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataTypes.h"
 #include "DataModel/LayoutItem.h"
 #include "DataModel/LockableItem.h"
+#include "DataModel/ObjectIdentifier.h"
 #include "Logger/Logger.h"
 
 class Manager;
@@ -68,9 +69,9 @@ namespace DataModel
 				minTrainLength(0),
 				maxTrainLength(0),
 				automode(AutomodeNo),
-				fromTrack(TrackNone),
+				fromTrack(),
 				fromDirection(DirectionRight),
-				toTrack(TrackNone),
+				toTrack(),
 				toDirection(DirectionRight),
 				speed(SpeedTravel),
 				feedbackIdReduced(FeedbackNone),
@@ -110,7 +111,7 @@ namespace DataModel
 			const std::vector<DataModel::Relation*>& GetRelationsAtLock() const { return relationsAtLock; };
 			const std::vector<DataModel::Relation*>& GetRelationsAtUnlock() const { return relationsAtUnlock; };
 
-			bool FromTrackDirection(Logger::Logger* logger, const TrackID trackID, const Direction trackDirection, const DataModel::Loco* loco, const bool allowLocoTurn);
+			bool FromTrackDirection(Logger::Logger* logger, const DataModel::ObjectIdentifier& identifier, const Direction trackDirection, const DataModel::Loco* loco, const bool allowLocoTurn);
 
 			bool Execute(Logger::Logger* logger, const LocoID locoID);
 			static bool ExecuteStatic(Logger::Logger* logger, Street* street) { return street->Execute(logger, LocoNone); }
@@ -130,12 +131,12 @@ namespace DataModel
 			time_t GetLastUsed() const { return lastUsed; }
 			void SetAutomode(const Automode automode) { this->automode = automode; }
 			Automode GetAutomode() const { return automode; }
-			void SetFromTrack(const TrackID fromTrack) { this->fromTrack = fromTrack; }
-			TrackID GetFromTrack() const { return fromTrack; }
+			void SetFromTrack(const ObjectIdentifier& fromTrack) { this->fromTrack = fromTrack; }
+			const ObjectIdentifier& GetFromTrack() const { return fromTrack; }
 			void SetFromDirection(const Direction fromDirection) { this->fromDirection = fromDirection; }
 			Direction GetFromDirection() const { return fromDirection; }
-			void SetToTrack(const TrackID toTrack) { this->toTrack = toTrack; }
-			TrackID GetToTrack() const { return toTrack; };
+			void SetToTrack(const ObjectIdentifier& toTrack) { this->toTrack = toTrack; }
+			const ObjectIdentifier& GetToTrack() const { return toTrack; };
 			void SetToDirection(const Direction toDirection) { this->toDirection = toDirection; }
 			Direction GetToDirection() const { return toDirection; }
 			void SetSpeed(Speed startSpeed) { this->speed = startSpeed; }
@@ -171,9 +172,9 @@ namespace DataModel
 			Length minTrainLength;
 			Length maxTrainLength;
 			Automode automode;
-			TrackID fromTrack;
+			ObjectIdentifier fromTrack;
 			Direction fromDirection;
-			TrackID toTrack;
+			ObjectIdentifier toTrack;
 			Direction toDirection;
 
 			Speed speed;

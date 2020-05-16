@@ -1285,10 +1285,10 @@ const map<string,DataModel::Feedback*> Manager::FeedbackListByName() const
 	return out;
 }
 
-const map<string,FeedbackID> Manager::FeedbacksOfTrack(const TrackID trackID) const
+const map<string,FeedbackID> Manager::FeedbacksOfTrack(const ObjectIdentifier& identifier) const
 {
 	map<string,FeedbackID> out;
-	Track* track = GetTrack(trackID);
+	TrackBase* track = GetTrackBase(identifier);
 	if (track == nullptr)
 	{
 		return out;
@@ -1343,6 +1343,21 @@ bool Manager::FeedbackDelete(const FeedbackID feedbackID)
 * Track                    *
 ***************************/
 
+TrackBase* Manager::GetTrackBase(const ObjectIdentifier& identifier) const
+{
+	switch (identifier.GetObjectType())
+	{
+		case ObjectTypeTrack:
+			return GetTrack(identifier.GetObjectID());
+
+		case ObjectTypeSignal:
+			return GetSignal(identifier.GetObjectID());
+
+		default:
+			return nullptr;
+	}
+}
+
 Track* Manager::GetTrack(const TrackID trackID) const
 {
 	std::lock_guard<std::mutex> guard(trackMutex);
@@ -1380,6 +1395,26 @@ const map<string,TrackID> Manager::TrackListIdByName() const
 	for(auto track : tracks)
 	{
 		out[track.second->GetName()] = track.second->GetID();
+	}
+	return out;
+}
+
+const map<string,ObjectIdentifier> Manager::TrackBaseListIdentifierByName() const
+{
+	map<string,ObjectIdentifier> out;
+	{
+		std::lock_guard<std::mutex> guard(trackMutex);
+		for (auto track : tracks)
+		{
+			out[track.second->GetName()] = ObjectIdentifier(ObjectTypeTrack, track.second->GetID());
+		}
+	}
+	{
+		std::lock_guard<std::mutex> guard(signalMutex);
+		for (auto signal : signals)
+		{
+			out[signal.second->GetName()] = ObjectIdentifier(ObjectTypeSignal, signal.second->GetID());
+		}
 	}
 	return out;
 }
@@ -1856,9 +1891,9 @@ bool Manager::StreetSave(const StreetID streetID,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
 	const Automode automode,
-	const TrackID fromTrack,
+	const ObjectIdentifier& fromTrack,
 	const Direction fromDirection,
-	const TrackID toTrack,
+	const ObjectIdentifier& toTrack,
 	const Direction toDirection,
 	const Street::Speed speed,
 	const FeedbackID feedbackIdReduced,
@@ -1887,13 +1922,26 @@ bool Manager::StreetSave(const StreetID streetID,
 	}
 
 	// remove street from old track
-	Track* track = GetTrack(street->GetFromTrack());
-	if (track != nullptr)
+	ObjectIdentifier oldFromTrack = street->GetFromTrack();
+	TrackBase* oldTrack = GetTrackBase(oldFromTrack);
+	if (oldTrack != nullptr)
 	{
-		track->RemoveStreet(street);
-		if (storage)
+		oldTrack->RemoveStreet(street);
+		if (storage == nullptr)
 		{
-			storage->Save(*track);
+			switch (oldFromTrack.GetObjectType())
+			{
+				case ObjectTypeTrack:
+					storage->Save(*dynamic_cast<Track*>(oldTrack));
+					break;
+
+				case ObjectTypeSignal:
+					storage->Save(*dynamic_cast<Signal*>(oldTrack));
+					break;
+
+				default:
+					break;
+			}
 		}
 	}
 
@@ -1925,9 +1973,9 @@ bool Manager::StreetSave(const StreetID streetID,
 	}
 	else
 	{
-		street->SetFromTrack(TrackNone);
+		street->SetFromTrack(ObjectIdentifier());
 		street->SetFromDirection(DirectionRight);
-		street->SetToTrack(TrackNone);
+		street->SetToTrack(ObjectIdentifier());
 		street->SetToDirection(DirectionLeft);
 		street->SetSpeed(Street::SpeedTravel);
 		street->SetFeedbackIdReduced(FeedbackNone);
@@ -1941,15 +1989,29 @@ bool Manager::StreetSave(const StreetID streetID,
 	}
 
 	//Add new street
-	track = GetTrack(fromTrack);
-	if (track != nullptr)
+	ObjectIdentifier newFromTrack = street->GetFromTrack();
+	TrackBase* newTrack = GetTrackBase(newFromTrack);
+	if (newTrack != nullptr)
 	{
-		track->AddStreet(street);
-		if (storage)
+		newTrack->AddStreet(street);
+		if (storage == nullptr)
 		{
-			storage->Save(*track);
+			switch (newFromTrack.GetObjectType())
+			{
+				case ObjectTypeTrack:
+					storage->Save(*dynamic_cast<Track*>(newTrack));
+					break;
+
+				case ObjectTypeSignal:
+					storage->Save(*dynamic_cast<Signal*>(newTrack));
+					break;
+
+				default:
+					break;
+			}
 		}
 	}
+
 	// save in db
 	if (storage)
 	{
@@ -2342,9 +2404,9 @@ bool Manager::SignalRelease(const StreetID signalID)
 * Automode                 *
 ***************************/
 
-bool Manager::LocoIntoTrack(Logger::Logger* logger, const LocoID locoID, const TrackID trackID)
+bool Manager::LocoIntoTrackBase(Logger::Logger* logger, const LocoID locoID, const ObjectIdentifier& trackIdentifier)
 {
-	Track* track = GetTrack(trackID);
+	TrackBase* track = GetTrackBase(trackIdentifier);
 	if (track == nullptr)
 	{
 		return false;
@@ -2355,36 +2417,14 @@ bool Manager::LocoIntoTrack(Logger::Logger* logger, const LocoID locoID, const T
 	{
 		return false;
 	}
-	return LocoIntoTrackBase(logger, loco, ObjectTypeTrack, dynamic_cast<TrackBase*>(track));
-}
 
-bool Manager::LocoIntoSignal(Logger::Logger* logger, const LocoID locoID, const SignalID signalID)
-{
-	Signal* signal = GetSignal(signalID);
-	if (signal == nullptr)
-	{
-		return false;
-	}
-
-	Loco* loco = GetLoco(locoID);
-	if (loco == nullptr)
-	{
-		return false;
-	}
-	return LocoIntoTrackBase(logger, loco, ObjectTypeSignal, dynamic_cast<TrackBase*>(signal));
-}
-
-bool Manager::LocoIntoTrackBase(Logger::Logger *logger, Loco* loco, const ObjectType objectType, TrackBase* track)
-{
-	const LocoID locoID = loco->GetID();
-	const TrackID trackID = track->GetMyID();
 	bool reserved = track->BaseReserveForce(logger, locoID);
 	if (reserved == false)
 	{
 		return false;
 	}
 
-	reserved = loco->ToTrack(trackID);
+	reserved = loco->SetTrack(trackIdentifier);
 	if (reserved == false)
 	{
 		track->BaseRelease(logger, locoID);
@@ -2403,19 +2443,7 @@ bool Manager::LocoIntoTrackBase(Logger::Logger *logger, Loco* loco, const Object
 	const string& trackName = track->GetMyName();
 	logger->Info(Languages::TextLocoIsOnTrack, locoName, trackName);
 
-	switch (objectType)
-	{
-		case ObjectTypeTrack:
-			TrackPublishState(dynamic_cast<const Track*>(track));
-			break;
-
-		case ObjectTypeSignal:
-			SignalPublishState(ControlTypeInternal, dynamic_cast<const Signal*>(track));
-			break;
-
-		default:
-			break;
-	}
+	TrackBasePublishState(track);
 	return true;
 }
 
@@ -2553,6 +2581,23 @@ void Manager::TrackSetLocoDirection(const TrackID trackID, const Direction direc
 	TrackPublishState(track);
 }
 
+void Manager::TrackBasePublishState(const DataModel::TrackBase* trackBase)
+{
+	const Track* track = dynamic_cast<const Track*>(trackBase);
+	if (track != nullptr)
+	{
+		TrackPublishState(track);
+		return;
+	}
+
+	const Signal* signal = dynamic_cast<const Signal*>(trackBase);
+	if (signal != nullptr)
+	{
+		SignalPublishState(ControlTypeInternal, signal);
+		return;
+	}
+}
+
 void Manager::TrackPublishState(const DataModel::Track* track)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
@@ -2573,12 +2618,12 @@ bool Manager::StreetRelease(const StreetID streetID)
 	return street->Release(logger, locoID);
 }
 
-bool Manager::LocoDestinationReached(const LocoID locoID, const StreetID streetID, const TrackID trackID)
+bool Manager::LocoDestinationReached(const Loco* loco, const Street* street, const TrackBase* track)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoDestinationReached(locoID, streetID, trackID);
+		control.second->LocoDestinationReached(loco, street, track);
 	}
 	return true;
 }

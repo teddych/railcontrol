@@ -95,6 +95,11 @@ namespace DataModel
 
 			void PublishState() const override;
 
+			ObjectIdentifier GetObjectIdentifier() const override
+			{
+				return ObjectIdentifier(ObjectTypeSignal, GetID());
+			}
+
 			ObjectID GetMyID() const override
 			{
 				return GetID();
@@ -103,6 +108,16 @@ namespace DataModel
 			const std::string& GetMyName() const override
 			{
 				return GetName();
+			}
+
+			LocoID GetMyLoco() const override
+			{
+				return GetLoco();
+			}
+
+			bool IsTrackInUse() const override
+			{
+				return IsInUse();
 			}
 
 			LocoID GetLockedLoco() const override

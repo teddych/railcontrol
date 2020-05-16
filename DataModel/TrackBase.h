@@ -93,8 +93,11 @@ namespace DataModel
 			bool GetReleaseWhenFree() const { return releaseWhenFree; }
 			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
 
+			virtual ObjectIdentifier GetObjectIdentifier() const = 0;
 			virtual ObjectID GetMyID() const = 0;
 			virtual const std::string& GetMyName() const = 0;
+			virtual LocoID GetMyLoco() const = 0;
+			virtual bool IsTrackInUse() const = 0;
 
 			bool BaseReserve(Logger::Logger* logger, const LocoID locoID);
 			bool BaseReserveForce(Logger::Logger* logger, const LocoID locoID);

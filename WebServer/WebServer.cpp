@@ -38,7 +38,12 @@ using std::map;
 using std::thread;
 using std::string;
 using std::stringstream;
+using std::to_string;
 using std::vector;
+
+using DataModel::Loco;
+using DataModel::Street;
+using DataModel::TrackBase;
 
 namespace WebServer {
 
@@ -314,11 +319,15 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextStreetIsReleased, manager.GetStreetName(streetID));
 	}
 
-	void WebServer::LocoDestinationReached(const LocoID locoID, const StreetID streetID, const TrackID trackID)
+	void WebServer::LocoDestinationReached(const Loco* loco, const Street* street, const TrackBase* track)
 	{
-		stringstream command;
-		command << "locoDestinationReached;loco=" << locoID << ";street=" << streetID << ";track=" << trackID;
-		AddUpdate(command.str(), Languages::TextLocoHasReachedDestination, manager.GetLocoName(locoID), manager.GetTrackName(trackID), manager.GetStreetName(streetID));
+		string command("locoDestinationReached;loco=");
+		command += to_string(loco->GetID());
+		command += ";street=";
+		command += to_string(street->GetID());
+		command += ";";
+		command += track->GetObjectIdentifier();
+		AddUpdate(command, Languages::TextLocoHasReachedDestination, loco->GetName(), track->GetMyName(), street->GetName());
 	}
 
 	void WebServer::LocoStart(const LocoID locoID, const std::string& name)

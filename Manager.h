@@ -74,6 +74,9 @@ class Manager
 		const std::map<std::string,Protocol> LocoProtocolsOfControl(const ControlID controlID) const { return ProtocolsOfControl(AddressTypeLoco, controlID); }
 		const std::map<std::string,Protocol> AccessoryProtocolsOfControl(const ControlID controlID) const { return ProtocolsOfControl(AddressTypeAccessory, controlID); }
 
+		DataModel::TrackBase* GetTrackBase(const DataModel::ObjectIdentifier& identifier) const;
+		void TrackBasePublishState(const DataModel::TrackBase* trackBase);
+
 		// loco
 		DataModel::Loco* GetLoco(const LocoID locoID) const;
 		const std::string& GetLocoName(const LocoID locoID) const;
@@ -140,7 +143,7 @@ class Manager
 		const std::string& GetFeedbackName(const FeedbackID feedbackID) const;
 		const std::map<FeedbackID,DataModel::Feedback*>& FeedbackList() const { return feedbacks; }
 		const std::map<std::string,DataModel::Feedback*> FeedbackListByName() const;
-		const std::map<std::string,FeedbackID> FeedbacksOfTrack(const TrackID trackID) const;
+		const std::map<std::string,FeedbackID> FeedbacksOfTrack(const DataModel::ObjectIdentifier& identifier) const;
 		FeedbackID FeedbackSave(const FeedbackID feedbackID, const std::string& name, const DataModel::LayoutItem::Visible visible, const DataModel::LayoutItem::LayoutPosition posX, const DataModel::LayoutItem::LayoutPosition posY, const DataModel::LayoutItem::LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted,  std::string& result);
 		bool FeedbackDelete(const FeedbackID feedbackID);
 		bool FeedbackExists(const FeedbackID feedbackID) const { return feedbacks.count(feedbackID) == 1; }
@@ -164,6 +167,7 @@ class Manager
 			const bool releaseWhenFree,
 			std::string& result);
 		bool TrackDelete(const TrackID trackID);
+		const std::map<std::string,DataModel::ObjectIdentifier> TrackBaseListIdentifierByName() const;
 
 		// switch
 		bool SwitchState(const ControlType controlType, const SwitchID switchID, const DataModel::AccessoryState state, const bool force);
@@ -206,9 +210,9 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition posY,
 			const DataModel::LayoutItem::LayoutPosition posZ,
 			const Automode automode,
-			const TrackID fromTrack,
+			const DataModel::ObjectIdentifier& fromTrack,
 			const Direction fromDirection,
-			const TrackID toTrack,
+			const DataModel::ObjectIdentifier& toTrack,
 			const Direction toDirection,
 			const DataModel::Street::Speed speed,
 			const FeedbackID feedbackIdReduced,
@@ -257,8 +261,7 @@ class Manager
 		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
 
 		// automode
-		bool LocoIntoTrack(Logger::Logger* logger, const LocoID locoID, const TrackID trackID);
-		bool LocoIntoSignal(Logger::Logger* logger, const LocoID locoID, const SignalID signalID);
+		bool LocoIntoTrackBase(Logger::Logger* logger, const LocoID locoID, const DataModel::ObjectIdentifier& trackIdentifier);
 		bool LocoRelease(const LocoID locoID);
 		bool TrackRelease(const TrackID trackID);
 		bool LocoReleaseInTrack(const TrackID trackID);
@@ -271,7 +274,7 @@ class Manager
 		void TrackSetLocoDirection(const TrackID trackID, const Direction direction);
 		void TrackPublishState(const DataModel::Track* track);
 		bool StreetRelease(const StreetID streetID);
-		bool LocoDestinationReached(const LocoID locoID, const StreetID streetID, const TrackID trackID);
+		bool LocoDestinationReached(const DataModel::Loco* loco, const DataModel::Street* street, const DataModel::TrackBase* track);
 		bool LocoStart(const LocoID locoID);
 		bool LocoStop(const LocoID locoID);
 		bool LocoStartAll();

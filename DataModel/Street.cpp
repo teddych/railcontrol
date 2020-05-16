@@ -39,7 +39,7 @@ namespace DataModel
 	 	executeAtUnlock(false)
 	{
 		Deserialize(serialized);
-		Track* track = manager->GetTrack(fromTrack);
+		TrackBase* track = manager->GetTrackBase(fromTrack);
 		if (track == nullptr)
 		{
 			return;
@@ -61,9 +61,11 @@ namespace DataModel
 		{
 			return str;
 		}
-		str += ";fromTrack=" + to_string(fromTrack);
+		str += ";fromTrack=";
+		str += fromTrack;
 		str += ";fromDirection=" + to_string(fromDirection);
-		str += ";toTrack=" + to_string(toTrack);
+		str += ";toTrack=";
+		str += toTrack;
 		str += ";toDirection=" + string(toDirection == DirectionLeft ? "left" : "right"); // FIXME: change later to int (like fromDirection)
 		str += ";speed=" + to_string(speed);
 		str += ";feedbackIdReduced=" + to_string(feedbackIdReduced);
@@ -111,9 +113,9 @@ namespace DataModel
 			waitAfterRelease = 0;
 			return true;
 		}
-		fromTrack = Utils::Utils::GetIntegerMapEntry(arguments, "fromTrack", TrackNone);
+		fromTrack = Utils::Utils::GetStringMapEntry(arguments, "fromTrack");
 		fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
-		toTrack = Utils::Utils::GetIntegerMapEntry(arguments, "toTrack", TrackNone);
+		toTrack = Utils::Utils::GetStringMapEntry(arguments, "toTrack");
 		std::string directionString = Utils::Utils::GetStringMapEntry(arguments, "toDirection");
 		if (directionString.compare("left") == 0)
 		{
@@ -173,14 +175,14 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::FromTrackDirection(Logger::Logger* logger, const TrackID trackID, const Direction trackDirection, const Loco* loco, const bool allowLocoTurn)
+	bool Street::FromTrackDirection(Logger::Logger* logger, const ObjectIdentifier& identifier, const Direction trackDirection, const Loco* loco, const bool allowLocoTurn)
 	{
 		if (automode == false)
 		{
 			return false;
 		}
 
-		if (fromTrack != trackID)
+		if (fromTrack != identifier)
 		{
 			return false;
 		}
@@ -214,11 +216,9 @@ namespace DataModel
 		{
 			return true;
 		}
-		else
-		{
-			logger->Debug(Languages::TextDifferentDirections, GetName());
-			return false;
-		}
+
+		logger->Debug(Languages::TextDifferentDirections, GetName());
+		return false;
 	}
 
 
@@ -272,13 +272,13 @@ namespace DataModel
 
 		if (automode == AutomodeYes)
 		{
-			Track* track = manager->GetTrack(toTrack);
+			TrackBase* track = manager->GetTrackBase(toTrack);
 			if (track == nullptr)
 			{
 				ReleaseInternal(logger, locoID);
 				return false;
 			}
-			if (track->Reserve(logger, locoID) == false)
+			if (track->BaseReserve(logger, locoID) == false)
 			{
 				ReleaseInternal(logger, locoID);
 				return false;
@@ -314,13 +314,13 @@ namespace DataModel
 
 		if (automode == AutomodeYes)
 		{
-			Track* track = manager->GetTrack(toTrack);
+			TrackBase* track = manager->GetTrackBase(toTrack);
 			if (track == nullptr)
 			{
 				ReleaseInternal(logger, locoID);
 				return false;
 			}
-			if (track->Lock(logger, locoID) == false)
+			if (track->BaseLock(logger, locoID) == false)
 			{
 				ReleaseInternal(logger, locoID);
 				return false;
@@ -364,10 +364,10 @@ namespace DataModel
 
 	void Street::ReleaseInternalWithToTrack(Logger::Logger* logger, const LocoID locoID)
 	{
-		Track* track = manager->GetTrack(toTrack);
+		TrackBase* track = manager->GetTrackBase(toTrack);
 		if (track != nullptr)
 		{
-			track->Release(logger, locoID);
+			track->BaseRelease(logger, locoID);
 		}
 		ReleaseInternal(logger, locoID);
 	}

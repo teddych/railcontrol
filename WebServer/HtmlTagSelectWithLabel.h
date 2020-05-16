@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <string>
 
+#include "DataModel/ObjectIdentifier.h"
 #include "WebServer/HtmlTag.h"
 #include "WebServer/HtmlTagLabel.h"
 #include "WebServer/HtmlTagSelect.h"
@@ -34,6 +35,13 @@ namespace WebServer
 			HtmlTagSelectWithLabel() = delete;
 
 			HtmlTagSelectWithLabel(const std::string& name, const Languages::TextSelector label, const std::map<std::string,Languages::TextSelector>& options, const std::string& defaultValue = "")
+			:	HtmlTag()
+			{
+				AddChildTag(HtmlTagLabel(label, "s_" + name));
+				AddChildTag(HtmlTagSelect(name, options, defaultValue));
+			}
+
+			HtmlTagSelectWithLabel(const std::string& name, const Languages::TextSelector label, const std::map<std::string,DataModel::ObjectIdentifier>& options, const DataModel::ObjectIdentifier& defaultValue = DataModel::ObjectIdentifier())
 			:	HtmlTag()
 			{
 				AddChildTag(HtmlTagLabel(label, "s_" + name));

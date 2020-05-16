@@ -37,8 +37,9 @@ class Manager;
 
 namespace DataModel
 {
+	class ObjectIdentifier;
 	class Street;
-	class Track;
+	class TrackBase;
 
 	class Loco : public Object, public HardwareHandle
 	{
@@ -118,7 +119,7 @@ namespace DataModel
 			void RequestManualMode();
 			bool GoToManualMode();
 
-			bool ToTrack(const TrackID trackID);
+			bool SetTrack(const DataModel::ObjectIdentifier& identifier);
 			bool Release();
 			bool IsRunningFromTrack(const TrackID trackID) const;
 
@@ -160,7 +161,7 @@ namespace DataModel
 			void AutoMode();
 			void SearchDestinationFirst();
 			void SearchDestinationSecond();
-			DataModel::Street* SearchDestination(DataModel::Track* oldToTrack, const bool allowLocoTurn);
+			DataModel::Street* SearchDestination(DataModel::TrackBase* oldToTrack, const bool allowLocoTurn);
 			void FeedbackIdFirstReached();
 			void FeedbackIdStopReached();
 			void DeleteSlaves();
@@ -196,9 +197,9 @@ namespace DataModel
 
 			volatile LocoState state;
 			volatile bool requestManualMode;
-			Track* trackFrom;
-			Track* trackFirst;
-			Track* trackSecond;
+			TrackBase* trackFrom;
+			TrackBase* trackFirst;
+			TrackBase* trackSecond;
 			Street* streetFirst;
 			Street* streetSecond;
 			volatile FeedbackID feedbackIdFirst;
