@@ -1150,7 +1150,7 @@ namespace WebServer
 
 	void WebClient::HandleLocoRelease(const map<string, string>& arguments)
 	{
-		bool ret;
+		bool ret = false;
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
