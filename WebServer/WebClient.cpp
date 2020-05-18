@@ -1141,11 +1141,11 @@ namespace WebServer
 	{
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		Function function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
-		DataModel::LocoFunctions::FunctionState on = static_cast<DataModel::LocoFunctions::FunctionState>(Utils::Utils::GetIntegerMapEntry(arguments, "on"));
+		DataModel::LocoFunctions::FunctionState state = static_cast<DataModel::LocoFunctions::FunctionState>(Utils::Utils::GetBoolMapEntry(arguments, "on"));
 
-		manager.LocoFunction(ControlTypeWebserver, locoID, function, on);
+		manager.LocoFunction(ControlTypeWebserver, locoID, function, state);
 
-		ReplyHtmlWithHeaderAndParagraph(on ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, manager.GetLocoName(locoID), function);
+		ReplyHtmlWithHeaderAndParagraph(state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, manager.GetLocoName(locoID), function);
 	}
 
 	void WebClient::HandleLocoRelease(const map<string, string>& arguments)
