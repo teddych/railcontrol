@@ -382,8 +382,8 @@ function onChangeCheckboxShowHide(checkboxId, divId)
 
 function onChangeTrackType()
 {
-	var typeSelect = document.getElementById('s_type');
-	if (!typeSelect)
+	var trackType = document.getElementById('s_tracktype');
+	if (!trackType)
 	{
 		return;
 	}
@@ -392,8 +392,8 @@ function onChangeTrackType()
 	{
 		return;
 	}
-	var typeValue = typeSelect.value;
-	length.hidden = (typeValue == 1 || typeValue == 5)
+	var trackTypeValue = trackType.value;
+	length.hidden = (trackTypeValue == 1 || trackTypeValue == 5)
 }
 
 function updateLayoutItem(elementName, data)

@@ -3116,7 +3116,7 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type).AddAttribute("onchange", "onChangeTrackType();return false;"));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("tracktype", Languages::TextType, typeOptions, type).AddAttribute("onchange", "onChangeTrackType();return false;"));
 		HtmlTag i_length("div");
 		i_length.AddAttribute("id", "i_length");
 		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Track::MinLength, DataModel::Track::MaxLength));
@@ -3154,7 +3154,8 @@ namespace WebServer
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = 1;
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		DataModel::TrackType type = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "tracktype", DataModel::TrackTypeStraight));
+		int typeInt = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::TrackTypeStraight)); // FIXME: remove later
+		DataModel::TrackType type = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "tracktype", typeInt));
 		switch (type)
 		{
 			case DataModel::TrackTypeTurn:
