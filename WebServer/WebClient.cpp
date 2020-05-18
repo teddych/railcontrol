@@ -1097,7 +1097,7 @@ namespace WebServer
 	void WebClient::HandleControlList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent("Controls"));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextControls));
 		HtmlTag table("table");
 		const map<string,Hardware::HardwareParams*> hardwareList = manager.ControlListByName();
 		map<string,string> hardwareArgument;
