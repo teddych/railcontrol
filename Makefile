@@ -68,7 +68,6 @@ OBJ= \
 	WebServer/HtmlTagSignal.o \
 	WebServer/HtmlTagStreet.o \
 	WebServer/HtmlTagSwitch.o \
-	WebServer/HtmlTagTrack.o \
 	WebServer/HtmlTagTrackBase.o \
 	WebServer/Response.o \
 	WebServer/WebServer.o
