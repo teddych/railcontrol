@@ -45,16 +45,24 @@ namespace DataModel
 			}
 			feedbackString += std::to_string(feedback);
 		}
-		std::stringstream ss;
-		ss << "feedbacks=" << feedbackString
-			<< ";selectstreetapproach=" << static_cast<int>(selectStreetApproach)
-			<< ";trackstate=" << static_cast<int>(trackState)
-			<< ";trackstatedelayed=" << static_cast<int>(trackStateDelayed)
-			<< ";locoDirection=" << static_cast<int>(locoDirection)
-			<< ";blocked=" << static_cast<int>(blocked)
-			<< ";locodelayed=" << static_cast<int>(locoIdDelayed)
-			<< ";releasewhenfree=" << static_cast<int>(releaseWhenFree);
-		return ss.str();
+		std::string str;
+		str = "feedbacks=";
+		str += feedbackString;
+		str += ";selectstreetapproach=";
+		str += static_cast<int>(selectStreetApproach);
+		str += ";trackstate=";
+		str += static_cast<int>(trackState);
+		str += ";trackstatedelayed=";
+		str += static_cast<int>(trackStateDelayed);
+		str += ";locoorientation=";
+		str += static_cast<int>(locoOrientation);
+		str += ";blocked=";
+		str += static_cast<int>(blocked);
+		str += ";locodelayed=";
+		str += static_cast<int>(locoIdDelayed);
+		str += ";releasewhenfree=";
+		str += static_cast<int>(releaseWhenFree);
+		return str;
 	}
 
 	bool TrackBase::Deserialize(const map<string, string> arguments)
@@ -76,7 +84,8 @@ namespace DataModel
 		trackState = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "trackstate", trackState));
 		trackStateDelayed = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "statedelayed", trackState)); // FIXME: remove later
 		trackStateDelayed = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "trackstatedelayed", trackStateDelayed));
-		locoDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "locoDirection", DirectionRight));
+		locoOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "locoDirection", OrientationRight)); // FIXME: remove later
+		locoOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "locoorientation", locoOrientation));
 		blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked", false);
 		locoIdDelayed = static_cast<LocoID>(Utils::Utils::GetIntegerMapEntry(arguments, "locodelayed", GetLockedLoco()));
 		releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
@@ -281,7 +290,7 @@ namespace DataModel
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto street : streets)
 		{
-			if (street->FromTrackDirection(logger, GetObjectIdentifier(), locoDirection, loco, allowLocoTurn))
+			if (street->FromTrackOrientation(logger, GetObjectIdentifier(), locoOrientation, loco, allowLocoTurn))
 			{
 				validStreets.push_back(street);
 			}

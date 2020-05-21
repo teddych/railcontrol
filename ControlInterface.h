@@ -74,7 +74,7 @@ class ControlInterface
 		virtual void LayerSettings(__attribute__((unused)) const LayerID layerID, __attribute__((unused)) const std::string& name) {};
 		virtual void LocoDelete(__attribute__((unused)) const LocoID locoID, __attribute__((unused)) const std::string& name) {};
 		virtual void LocoDestinationReached(__attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const DataModel::Street* street, __attribute__((unused)) const DataModel::TrackBase* track) {};
-		virtual void LocoDirection(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const Direction direction) {};
+		virtual void LocoOrientation(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const Orientation orientation) {};
 		virtual void LocoFunction(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const Function function, __attribute__((unused)) const DataModel::LocoFunctions::FunctionState on) {};
 		virtual void LocoProtocols(__attribute__((unused)) std::vector<Protocol>& protocols) const {};
 		virtual bool LocoProtocolSupported(__attribute__((unused)) Protocol protocol) const { return false; };
@@ -96,10 +96,10 @@ class ControlInterface
 		virtual void SignalSettings(__attribute__((unused)) const SignalID signalID, __attribute__((unused)) const std::string& name) {};
 		virtual void SignalState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Signal* signal) {};
 
-		virtual void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions)
+		virtual void LocoSpeedOrientationFunctions(const DataModel::Loco* loco, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::FunctionState>& functions)
 		{
 			LocoSpeed(ControlTypeInternal, loco, speed);
-			LocoDirection(ControlTypeInternal, loco, direction);
+			LocoOrientation(ControlTypeInternal, loco, orientation);
 			for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
 			{
 				LocoFunction(ControlTypeInternal, loco, functionNr, functions[functionNr]);

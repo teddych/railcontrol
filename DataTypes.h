@@ -186,10 +186,10 @@ enum ObjectType : unsigned char
 	ObjectTypeSignal = 8
 };
 
-enum Direction : bool
+enum Orientation : bool
 {
-	DirectionLeft = false,
-	DirectionRight = true
+	OrientationLeft = false,
+	OrientationRight = true
 };
 
 enum ProgramMode : uint8_t

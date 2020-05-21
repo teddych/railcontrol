@@ -291,7 +291,7 @@ void Manager::InitLocos()
 		for (auto control : controls)
 		{
 			std::vector<DataModel::LocoFunctions::FunctionState> functions = loco.second->GetFunctions();
-			control.second->LocoSpeedDirectionFunctions(loco.second, loco.second->GetSpeed(), loco.second->GetDirection(), functions);
+			control.second->LocoSpeedOrientationFunctions(loco.second, loco.second->GetSpeed(), loco.second->GetOrientation(), functions);
 		}
 	}
 }
@@ -838,34 +838,34 @@ Speed Manager::LocoSpeed(const LocoID locoID) const
 	return loco->GetSpeed();
 }
 
-void Manager::LocoDirection(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Direction direction)
+void Manager::LocoOrientation(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Orientation orientation)
 {
 	Loco* loco = GetLoco(controlID, protocol, address);
 	if (loco == nullptr)
 	{
 		return;
 	}
-	LocoDirection(controlType, loco, direction);
+	LocoOrientation(controlType, loco, orientation);
 }
 
-void Manager::LocoDirection(const ControlType controlType, const LocoID locoID, const Direction direction)
+void Manager::LocoOrientation(const ControlType controlType, const LocoID locoID, const Orientation orientation)
 {
 	Loco* loco = GetLoco(locoID);
-	LocoDirection(controlType, loco, direction);
+	LocoOrientation(controlType, loco, orientation);
 }
 
-void Manager::LocoDirection(const ControlType controlType, Loco* loco, const Direction direction)
+void Manager::LocoOrientation(const ControlType controlType, Loco* loco, const Orientation orientation)
 {
 	if (loco == nullptr)
 	{
 		return;
 	}
-	loco->SetDirection(direction);
-	logger->Info(direction ? Languages::TextLocoDirectionIsRight : Languages::TextLocoDirectionIsLeft, loco->GetName());
+	loco->SetOrientation(orientation);
+	logger->Info(orientation ? Languages::TextLocoDirectionOfTravelIsRight : Languages::TextLocoDirectionOfTravelIsLeft, loco->GetName());
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoDirection(controlType, loco, direction);
+		control.second->LocoOrientation(controlType, loco, orientation);
 	}
 }
 
@@ -1892,9 +1892,9 @@ bool Manager::StreetSave(const StreetID streetID,
 	const LayoutPosition posZ,
 	const Automode automode,
 	const ObjectIdentifier& fromTrack,
-	const Direction fromDirection,
+	const Orientation fromOrientation,
 	const ObjectIdentifier& toTrack,
-	const Direction toDirection,
+	const Orientation toOrientation,
 	const Street::Speed speed,
 	const FeedbackID feedbackIdReduced,
 	const FeedbackID feedbackIdCreep,
@@ -1958,9 +1958,9 @@ bool Manager::StreetSave(const StreetID streetID,
 	if (automode == AutomodeYes)
 	{
 		street->SetFromTrack(fromTrack);
-		street->SetFromDirection(fromDirection);
+		street->SetFromOrientation(fromOrientation);
 		street->SetToTrack(toTrack);
-		street->SetToDirection(toDirection);
+		street->SetToOrientation(toOrientation);
 		street->SetSpeed(speed);
 		street->SetFeedbackIdReduced(feedbackIdReduced);
 		street->SetFeedbackIdCreep(feedbackIdCreep);
@@ -1974,9 +1974,9 @@ bool Manager::StreetSave(const StreetID streetID,
 	else
 	{
 		street->SetFromTrack(ObjectIdentifier());
-		street->SetFromDirection(DirectionRight);
+		street->SetFromOrientation(OrientationRight);
 		street->SetToTrack(ObjectIdentifier());
-		street->SetToDirection(DirectionLeft);
+		street->SetToOrientation(OrientationLeft);
 		street->SetSpeed(Street::SpeedTravel);
 		street->SetFeedbackIdReduced(FeedbackNone);
 		street->SetFeedbackIdCreep(FeedbackNone);
@@ -2214,14 +2214,14 @@ void Manager::SignalBlock(const SignalID signalID, const bool blocked)
 	SignalPublishState(ControlTypeInternal, signal);
 }
 
-void Manager::SignalSetLocoDirection(const SignalID signalID, const Direction direction)
+void Manager::SignalSetLocoOrientation(const SignalID signalID, const Orientation orientation)
 {
 	Signal* signal = GetSignal(signalID);
 	if (signal == nullptr)
 	{
 		return;
 	}
-	signal->SetLocoDirection(direction);
+	signal->SetLocoOrientation(orientation);
 	SignalPublishState(ControlTypeInternal, signal);
 }
 
@@ -2285,7 +2285,7 @@ bool Manager::CheckSignalPosition(const Signal* signal, const LayoutPosition pos
 
 bool Manager::SignalSave(const SignalID signalID,
 	const string& name,
-	const Direction signalDirection,
+	const Orientation signalOrientation,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
@@ -2325,7 +2325,7 @@ bool Manager::SignalSave(const SignalID signalID,
 	}
 
 	signal->SetName(CheckObjectName(signals, signalMutex, signalID, name.size() == 0 ? "S" : name));
-	signal->SetSignalDirection(signalDirection);
+	signal->SetSignalOrientation(signalOrientation);
 	signal->SetPosX(posX);
 	signal->SetPosY(posY);
 	signal->SetPosZ(posZ);
@@ -2576,14 +2576,14 @@ void Manager::TrackBlock(const TrackID trackID, const bool blocked)
 	TrackPublishState(track);
 }
 
-void Manager::TrackSetLocoDirection(const TrackID trackID, const Direction direction)
+void Manager::TrackSetLocoOrientation(const TrackID trackID, const Orientation orientation)
 {
 	Track* track = GetTrack(trackID);
 	if (track == nullptr)
 	{
 		return;
 	}
-	track->SetLocoDirection(direction);
+	track->SetLocoOrientation(orientation);
 	TrackPublishState(track);
 }
 

@@ -70,9 +70,9 @@ namespace DataModel
 				maxTrainLength(0),
 				automode(AutomodeNo),
 				fromTrack(),
-				fromDirection(DirectionRight),
+				fromOrientation(OrientationRight),
 				toTrack(),
-				toDirection(DirectionRight),
+				toOrientation(OrientationRight),
 				speed(SpeedTravel),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
@@ -111,7 +111,7 @@ namespace DataModel
 			const std::vector<DataModel::Relation*>& GetRelationsAtLock() const { return relationsAtLock; };
 			const std::vector<DataModel::Relation*>& GetRelationsAtUnlock() const { return relationsAtUnlock; };
 
-			bool FromTrackDirection(Logger::Logger* logger, const DataModel::ObjectIdentifier& identifier, const Direction trackDirection, const DataModel::Loco* loco, const bool allowLocoTurn);
+			bool FromTrackOrientation(Logger::Logger* logger, const DataModel::ObjectIdentifier& identifier, const Orientation trackOrientation, const DataModel::Loco* loco, const bool allowLocoTurn);
 
 			bool Execute(Logger::Logger* logger, const LocoID locoID);
 			static bool ExecuteStatic(Logger::Logger* logger, Street* street) { return street->Execute(logger, LocoNone); }
@@ -133,12 +133,12 @@ namespace DataModel
 			Automode GetAutomode() const { return automode; }
 			void SetFromTrack(const ObjectIdentifier& fromTrack) { this->fromTrack = fromTrack; }
 			const ObjectIdentifier& GetFromTrack() const { return fromTrack; }
-			void SetFromDirection(const Direction fromDirection) { this->fromDirection = fromDirection; }
-			Direction GetFromDirection() const { return fromDirection; }
+			void SetFromOrientation(const Orientation fromOrientation) { this->fromOrientation = fromOrientation; }
+			Orientation GetFromOrientation() const { return fromOrientation; }
 			void SetToTrack(const ObjectIdentifier& toTrack) { this->toTrack = toTrack; }
 			const ObjectIdentifier& GetToTrack() const { return toTrack; };
-			void SetToDirection(const Direction toDirection) { this->toDirection = toDirection; }
-			Direction GetToDirection() const { return toDirection; }
+			void SetToOrientation(const Orientation toOrientation) { this->toOrientation = toOrientation; }
+			Orientation GetToOrientation() const { return toOrientation; }
 			void SetSpeed(Speed startSpeed) { this->speed = startSpeed; }
 			Speed GetSpeed() const { return speed; }
 			void SetFeedbackIdReduced(const FeedbackID feedbackIdReduced) { this->feedbackIdReduced = feedbackIdReduced; }
@@ -173,9 +173,9 @@ namespace DataModel
 			Length maxTrainLength;
 			Automode automode;
 			ObjectIdentifier fromTrack;
-			Direction fromDirection;
+			Orientation fromOrientation;
 			ObjectIdentifier toTrack;
-			Direction toDirection;
+			Orientation toOrientation;
 
 			Speed speed;
 			FeedbackID feedbackIdReduced;

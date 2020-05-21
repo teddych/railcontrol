@@ -60,8 +60,8 @@ namespace DataModel
 		str += HardwareHandle::Serialize();
 		str += ";functions=";
 		str += functions.Serialize();
-		str += ";direction=";
-		str += (direction == DirectionRight ? "right" : "left");
+		str += ";orientation=";
+		str += to_string(orientation);
 		if (trackFrom != nullptr)
 		{
 			str += ";track=";
@@ -103,7 +103,8 @@ namespace DataModel
 		}
 		trackFrom = manager->GetTrackBase(trackIdentifier);
 		functions.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "functions", "0"));
-		direction = (Utils::Utils::GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? DirectionRight : DirectionLeft);
+		orientation = (Utils::Utils::GetStringMapEntry(arguments, "direction", "right").compare("right") == 0 ? OrientationRight : OrientationLeft); // FIXME: remove later
+		orientation = (static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "orientation", orientation)));
 		length = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "length", 0));
 		pushpull = Utils::Utils::GetBoolMapEntry(arguments, "commuter", false);  // FIXME: remove later
 		pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", pushpull);
@@ -385,15 +386,15 @@ namespace DataModel
 		feedbackIdStop = streetFirst->GetFeedbackIdStop();
 		feedbackIdOver = streetFirst->GetFeedbackIdOver();
 		wait = streetFirst->GetWaitAfterRelease();
-		bool turnLoco = (trackFrom->GetLocoDirection() != streetFirst->GetFromDirection());
-		Direction newLocoDirection = static_cast<Direction>(direction != turnLoco);
+		bool turnLoco = (trackFrom->GetLocoOrientation() != streetFirst->GetFromOrientation());
+		Orientation newLocoOrientation = static_cast<Orientation>(orientation != turnLoco);
 		if (turnLoco)
 		{
-			trackFrom->SetLocoDirection(streetFirst->GetFromDirection());
+			trackFrom->SetLocoOrientation(streetFirst->GetFromOrientation());
 			manager->TrackBasePublishState(trackFrom);
 		}
-		manager->LocoDirection(ControlTypeInternal, this, newLocoDirection);
-		newTrack->SetLocoDirection(static_cast<Direction>(streetFirst->GetToDirection()));
+		manager->LocoOrientation(ControlTypeInternal, this, newLocoOrientation);
+		newTrack->SetLocoOrientation(static_cast<Orientation>(streetFirst->GetToOrientation()));
 		logger->Info(Languages::TextHeadingToVia, newTrack->GetMyName(), streetFirst->GetName());
 
 		// start loco
@@ -459,7 +460,7 @@ namespace DataModel
 		}
 
 		wait = streetSecond->GetWaitAfterRelease();
-		newTrack->SetLocoDirection(static_cast<Direction>(streetSecond->GetToDirection()));
+		newTrack->SetLocoOrientation(static_cast<Orientation>(streetSecond->GetToOrientation()));
 		logger->Info(Languages::TextHeadingToViaVia, newTrack->GetMyName(), streetFirst->GetName(), streetSecond->GetName());
 
 		// start loco
@@ -518,7 +519,7 @@ namespace DataModel
 				continue;
 			}
 
-			if (!allowLocoTurn && track->GetLocoDirection() != street->GetFromDirection())
+			if (!allowLocoTurn && track->GetLocoOrientation() != street->GetFromOrientation())
 			{
 				continue;
 			}
@@ -584,12 +585,12 @@ namespace DataModel
 		}
 	}
 
-	void Loco::SetDirection(const Direction direction)
+	void Loco::SetOrientation(const Orientation orientation)
 	{
-		this->direction = direction;
+		this->orientation = orientation;
 		for (auto slave : slaves)
 		{
-			manager->LocoDirection(ControlTypeInternal, slave->ObjectID2(), direction);
+			manager->LocoOrientation(ControlTypeInternal, slave->ObjectID2(), orientation);
 		}
 	}
 

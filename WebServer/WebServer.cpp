@@ -117,11 +117,11 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextLocoSpeedIs, loco->GetName(), speed);
 	}
 
-	void WebServer::LocoDirection(__attribute__((unused)) const ControlType controlType, const DataModel::Loco* loco, const Direction direction)
+	void WebServer::LocoOrientation(__attribute__((unused)) const ControlType controlType, const DataModel::Loco* loco, const Orientation orientation)
 	{
 		stringstream command;
-		command << "locodirection;loco=" << loco->GetID() << ";direction=" << (direction ? "true" : "false");
-		AddUpdate(command.str(), direction ? Languages::TextLocoDirectionIsRight : Languages::TextLocoDirectionIsLeft, loco->GetName());
+		command << "locoorientation;loco=" << loco->GetID() << ";orientation=" << (orientation ? "true" : "false");
+		AddUpdate(command.str(), orientation ? Languages::TextLocoDirectionOfTravelIsRight : Languages::TextLocoDirectionOfTravelIsLeft, loco->GetName());
 	}
 
 	void WebServer::LocoFunction(__attribute__((unused)) const ControlType controlType, const DataModel::Loco* loco, const Function function, const DataModel::LocoFunctions::FunctionState state)
@@ -223,15 +223,15 @@ namespace WebServer {
 		const string& locoName = reserved ? loco->GetName() : "";
 		const bool occupied = track->GetFeedbackStateDelayed() == DataModel::Feedback::FeedbackStateOccupied;
 		const bool blocked = track->GetBlocked();
-		const Direction direction = track->GetLocoDirection();
+		const Orientation orientation = track->GetLocoOrientation();
 		const string occupiedText = (occupied ? "true" : "false");
 		const string blockedText = (blocked ? "true" : "false");
 		const string reservedText = (reserved ? "true" : "false");
-		const string directionText = (direction ? "true" : "false");
+		const string orientationText = (orientation ? "true" : "false");
 		command << ";occupied=" << occupiedText
 			<< ";reserved=" << reservedText
 			<< ";blocked=" << blockedText
-			<< ";direction=" << directionText
+			<< ";orientation=" << orientationText
 			<< ";loconame=" << locoName;
 
 		if (blocked)

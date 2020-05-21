@@ -39,7 +39,7 @@ namespace WebServer
 		imageDiv.AddClass("signal_item");
 		imageDiv.AddClass(signalState == DataModel::SignalStateRed ? "signal_red" : "signal_green");
 		image += "<g";
-		if (signal->GetSignalDirection() == DirectionLeft)
+		if (signal->GetSignalOrientation() == OrientationLeft)
 		{
 			image += " transform=\"rotate(180 18 ";
 			image += to_string(EdgeLength * signal->GetHeight() / 2);

@@ -39,8 +39,8 @@ namespace DataModel
 		str += LayoutItem::Serialize();
 		str += ";";
 		str += LockableItem::Serialize();
-		str += ";signaldirection=";
-		str += std::to_string(signalDirection);
+		str += ";signalorientation=";
+		str += std::to_string(signalOrientation);
 		return str;
 	}
 
@@ -60,7 +60,7 @@ namespace DataModel
 		LockableItem::Deserialize(arguments);
 		SetWidth(Width1);
 		SetVisible(VisibleYes);
-		signalDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "signaldirection", DirectionRight));
+		signalOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "signalorientation", OrientationRight));
 		return true;
 	}
 

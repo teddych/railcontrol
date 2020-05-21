@@ -286,8 +286,8 @@ body {
 .track_occupied .loconame,
 .track_blocked .loconame,
 .track_error .loconame,
-.direction_left .track_left,
-.direction_right .track_right,
+.orientation_left .track_left,
+.orientation_right .track_right,
 .feedback_layer .real_layer_only {
 	display: none;
 }
@@ -341,7 +341,7 @@ label {
 	width: 150px;
 }
 
-.select_direction {
+.select_orientation {
 	width: 100px;
 }
 
@@ -408,11 +408,11 @@ button:active {
 	background-color: red;
 }
 
-.button_direction.button_on {
+.button_orientation.button_on {
 	background-color: lightgray;
 }
 
-.button_direction.button_off {
+.button_orientation.button_off {
 	background-color: lightgray;
 	transform: rotate(180deg);
 }

@@ -55,7 +55,7 @@ namespace DataModel
 				HardwareHandle(),
 				manager(manager),
 				speed(MinSpeed),
-				direction(DirectionRight),
+				orientation(OrientationRight),
 				state(LocoStateManual),
 				requestManualMode(false),
 				trackFrom(nullptr),
@@ -80,7 +80,7 @@ namespace DataModel
 				HardwareHandle(),
 			 	manager(manager),
 				speed(MinSpeed),
-				direction(DirectionRight),
+				orientation(OrientationRight),
 				state(LocoStateManual),
 				requestManualMode(false),
 				trackFrom(nullptr),
@@ -133,8 +133,8 @@ namespace DataModel
 			std::vector<DataModel::LocoFunctions::FunctionState> GetFunctions() const { return functions.GetFunctions(); }
 			void SetNrOfFunctions(const Function nr) { functions.SetNrOfFunctions(nr); }
 			Function GetNrOfFunctions() const { return functions.GetNrOfFunctions(); }
-			void SetDirection(const Direction direction);
-			Direction GetDirection() const { return direction; }
+			void SetOrientation(const Orientation orientation);
+			Orientation GetOrientation() const { return orientation; }
 
 			bool IsInManualMode() const { return this->state == LocoStateManual; }
 			bool IsInAutoMode() const { return this->state != LocoStateManual && this->state != LocoStateTerminated; }
@@ -191,7 +191,7 @@ namespace DataModel
 			Speed creepingSpeed;
 
 			Speed speed;
-			Direction direction;
+			Orientation orientation;
 
 			std::vector<DataModel::Relation*> slaves;
 

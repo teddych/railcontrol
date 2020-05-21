@@ -63,9 +63,9 @@ namespace Hardware
 	}
 
 	// set the direction of a loco
-	void Virtual::LocoDirection(const Protocol protocol, const Address address, const Direction direction)
+	void Virtual::LocoOrientation(const Protocol protocol, const Address address, const Orientation orientation)
 	{
-		logger->Info(Languages::TextSettingDirectionWithProtocol, protocol, address, Languages::GetLeftRight(direction));
+		logger->Info(Languages::TextSettingDirectionOfTravelWithProtocol, protocol, address, Languages::GetLeftRight(orientation));
 	}
 
 	// set loco function

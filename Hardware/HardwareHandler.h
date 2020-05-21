@@ -76,12 +76,12 @@ namespace Hardware
 			bool CanHandleProgramMfx() const override;
 			bool CanHandleProgramDccDirect() const override;
 			bool CanHandleProgramDccPom() const override;
-			void LocoDirection(const ControlType controlType, const DataModel::Loco* loco, const Direction direction) override;
+			void LocoOrientation(const ControlType controlType, const DataModel::Loco* loco, const Orientation orientation) override;
 			void LocoFunction(const ControlType controlType, const DataModel::Loco* loco, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
 			void LocoProtocols(std::vector<Protocol>& protocols) const override;
 			bool LocoProtocolSupported(Protocol protocol) const override;
 			void LocoSpeed(const ControlType controlType, const DataModel::Loco* loco, const Speed speed) override;
-			void LocoSpeedDirectionFunctions(const DataModel::Loco* loco, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
+			void LocoSpeedOrientationFunctions(const DataModel::Loco* loco, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state) override;
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;

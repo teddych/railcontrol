@@ -52,8 +52,8 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagInputIntegerWithLabel.h"
 #include "WebServer/HtmlTagInputSliderLocoSpeed.h"
 #include "WebServer/HtmlTagInputTextWithLabel.h"
-#include "WebServer/HtmlTagSelectDirection.h"
-#include "WebServer/HtmlTagSelectDirectionWithLabel.h"
+#include "WebServer/HtmlTagSelectOrientation.h"
+#include "WebServer/HtmlTagSelectOrientationWithLabel.h"
 #include "WebServer/HtmlTagSelectWithLabel.h"
 #include "WebServer/HtmlTagSignal.h"
 #include "WebServer/HtmlTagStreet.h"
@@ -218,9 +218,9 @@ namespace WebServer
 			{
 				HandleLocoSpeed(arguments);
 			}
-			else if (arguments["cmd"].compare("locodirection") == 0)
+			else if (arguments["cmd"].compare("locoorientation") == 0)
 			{
-				HandleLocoDirection(arguments);
+				HandleLocoOrientation(arguments);
 			}
 			else if (arguments["cmd"].compare("locofunction") == 0)
 			{
@@ -422,9 +422,9 @@ namespace WebServer
 			{
 				HandleTrackBlock(arguments);
 			}
-			else if (arguments["cmd"].compare("trackdirection") == 0)
+			else if (arguments["cmd"].compare("trackorientation") == 0)
 			{
-				HandleTrackDirection(arguments);
+				HandleTrackOrientation(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbackedit") == 0)
 			{
@@ -1129,14 +1129,14 @@ namespace WebServer
 		ReplyHtmlWithHeaderAndParagraph(Languages::TextLocoSpeedIs, manager.GetLocoName(locoID), speed);
 	}
 
-	void WebClient::HandleLocoDirection(const map<string, string>& arguments)
+	void WebClient::HandleLocoOrientation(const map<string, string>& arguments)
 	{
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		Direction direction = (Utils::Utils::GetBoolMapEntry(arguments, "on") ? DirectionRight : DirectionLeft);
+		Orientation orientation = (Utils::Utils::GetBoolMapEntry(arguments, "on") ? OrientationRight : OrientationLeft);
 
-		manager.LocoDirection(ControlTypeWebserver, locoID, direction);
+		manager.LocoOrientation(ControlTypeWebserver, locoID, orientation);
 
-		ReplyHtmlWithHeaderAndParagraph(direction == DirectionLeft ? Languages::TextLocoDirectionIsLeft : Languages::TextLocoDirectionIsRight, manager.GetLocoName(locoID));
+		ReplyHtmlWithHeaderAndParagraph(orientation == OrientationLeft ? Languages::TextLocoDirectionOfTravelIsLeft : Languages::TextLocoDirectionOfTravelIsRight, manager.GetLocoName(locoID));
 	}
 
 	void WebClient::HandleLocoFunction(const map<string, string>& arguments)
@@ -1315,7 +1315,7 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", trackOptions, objectId).AddClass("select_relation_id"));
 
-				content.AddChildTag(HtmlTagSelectDirection(name + "_state", static_cast<Direction>(data)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelectOrientation(name + "_state", static_cast<Orientation>(data)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1443,7 +1443,7 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("rotation", Languages::TextRotation, rotationOptions, rotation);
 	}
 
-	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const Languages::TextSelector label, const ObjectIdentifier& identifier, const Direction direction, const string& onchange) const
+	HtmlTag WebClient::HtmlTagSelectTrack(const std::string& name, const Languages::TextSelector label, const ObjectIdentifier& identifier, const Orientation orientation, const string& onchange) const
 	{
 		HtmlTag tag;
 		map<string,ObjectIdentifier> tracks = manager.TrackBaseListIdentifierByName();
@@ -1454,7 +1454,7 @@ namespace WebServer
 			selectTrack.AddAttribute("onchange", onchange);
 		}
 		tag.AddChildTag(selectTrack);
-		tag.AddChildTag(HtmlTagSelectDirection(name + "direction", direction).AddClass("select_direction"));
+		tag.AddChildTag(HtmlTagSelectOrientation(name + "orientation", orientation).AddClass("select_orientation"));
 		return tag;
 	}
 
@@ -2382,7 +2382,7 @@ namespace WebServer
 		Protocol protocol = ProtocolNone;
 		Address address = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
-		Direction signalDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "signaldirection", DirectionRight));
+		Orientation signalOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "signalorientation", OrientationRight));
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
@@ -2403,7 +2403,7 @@ namespace WebServer
 				protocol = signal->GetProtocol();
 				address = signal->GetAddress();
 				name = signal->GetName();
-				signalDirection = signal->GetSignalDirection();
+				signalOrientation = signal->GetSignalOrientation();
 				posx = signal->GetPosX();
 				posy = signal->GetPosY();
 				posz = signal->GetPosZ();
@@ -2438,7 +2438,7 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectDirectionWithLabel("signaldirection", Languages::TextOrientation, signalDirection));
+		mainContent.AddChildTag(HtmlTagSelectOrientationWithLabel("signalorientation", Languages::TextOrientation, signalOrientation));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("signaltype", Languages::TextType, signalTypeOptions, signalType));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Signal::MinLength, DataModel::Signal::MaxLength));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "signal", signalID));
@@ -2464,7 +2464,7 @@ namespace WebServer
 	{
 		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
-		Direction signalDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "signaldirection", DirectionRight));
+		Orientation signalOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "signalorientation", OrientationRight));
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
@@ -2491,7 +2491,7 @@ namespace WebServer
 		string result;
 		if (!manager.SignalSave(signalID,
 			name,
-			signalDirection,
+			signalOrientation,
 			posX,
 			posY,
 			posZ,
@@ -2651,9 +2651,9 @@ namespace WebServer
 		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", streetID == StreetNone && ((posx || posy) && posz >= LayerUndeletable) ? DataModel::LayoutItem::VisibleYes : DataModel::LayoutItem::VisibleNo));
 		Automode automode = static_cast<Automode>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		ObjectIdentifier fromTrack = Utils::Utils::GetStringMapEntry(arguments, "fromtrack");
-		Direction fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
+		Orientation fromOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "fromorientation", OrientationRight));
 		ObjectIdentifier toTrack = Utils::Utils::GetStringMapEntry(arguments, "totrack");
-		Direction toDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionRight));
+		Orientation toOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "toorientation", OrientationRight));
 		Street::Speed speed = static_cast<Street::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Street::SpeedTravel));
 		FeedbackID feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
 		FeedbackID feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
@@ -2678,9 +2678,9 @@ namespace WebServer
 				posz = street->GetPosZ();
 				automode = street->GetAutomode();
 				fromTrack = street->GetFromTrack();
-				fromDirection = street->GetFromDirection();
+				fromOrientation = street->GetFromOrientation();
 				toTrack = street->GetToTrack();
-				toDirection = street->GetToDirection();
+				toOrientation = street->GetToOrientation();
 				speed = street->GetSpeed();
 				feedbackIdReduced = street->GetFeedbackIdReduced();
 				feedbackIdCreep = street->GetFeedbackIdCreep();
@@ -2775,8 +2775,8 @@ namespace WebServer
 		{
 			tracksDiv.AddAttribute("hidden");
 		}
-		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", Languages::TextStartSignalTrack, fromTrack, fromDirection));
-		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", Languages::TextDestinationSignalTrack, toTrack, toDirection, "updateFeedbacksOfTrack(); return false;"));
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", Languages::TextStartSignalTrack, fromTrack, fromOrientation));
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", Languages::TextDestinationSignalTrack, toTrack, toOrientation, "updateFeedbacksOfTrack(); return false;"));
 		map<Street::Speed,Languages::TextSelector> speedOptions;
 		speedOptions[Street::SpeedTravel] = Languages::TextTravelSpeed;
 		speedOptions[Street::SpeedReduced] = Languages::TextReducedSpeed;
@@ -2823,9 +2823,9 @@ namespace WebServer
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		Automode automode = static_cast<Automode>(Utils::Utils::GetBoolMapEntry(arguments, "automode"));
 		ObjectIdentifier fromTrack = Utils::Utils::GetStringMapEntry(arguments, "fromtrack");
-		Direction fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromdirection", DirectionRight));
+		Orientation fromOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "fromorientation", OrientationRight));
 		ObjectIdentifier toTrack = Utils::Utils::GetStringMapEntry(arguments, "totrack");
-		Direction toDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "todirection", DirectionRight));
+		Orientation toOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "toorientation", OrientationRight));
 		Street::Speed speed = static_cast<Street::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Street::SpeedTravel));
 		FeedbackID feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
 		FeedbackID feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
@@ -2883,9 +2883,9 @@ namespace WebServer
 			posz,
 			automode,
 			fromTrack,
-			fromDirection,
+			fromOrientation,
 			toTrack,
-			toDirection,
+			toOrientation,
 			speed,
 			feedbackIdReduced,
 			feedbackIdCreep,
@@ -3397,20 +3397,20 @@ namespace WebServer
 		ReplyHtmlWithHeaderAndParagraph("Block/unblock received");
 	}
 
-	void WebClient::HandleTrackDirection(const map<string, string>& arguments)
+	void WebClient::HandleTrackOrientation(const map<string, string>& arguments)
 	{
-		Direction direction = (Utils::Utils::GetBoolMapEntry(arguments, "direction") ? DirectionRight : DirectionLeft);
+		Orientation orientation = (Utils::Utils::GetBoolMapEntry(arguments, "orientation") ? OrientationRight : OrientationLeft);
 		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		if (trackID != TrackNone)
 		{
-			manager.TrackSetLocoDirection(trackID, direction);
+			manager.TrackSetLocoOrientation(trackID, orientation);
 		}
 		else if (signalID != TrackNone)
 		{
-			manager.SignalSetLocoDirection(signalID, direction);
+			manager.SignalSetLocoOrientation(signalID, orientation);
 		}
-		ReplyHtmlWithHeaderAndParagraph("Loco direction of track set");
+		ReplyHtmlWithHeaderAndParagraph("Loco orientation of track set");
 	}
 
 	void WebClient::HandleFeedbackEdit(const map<string, string>& arguments)
@@ -3921,8 +3921,8 @@ namespace WebServer
 		id = "locoedit_" + to_string(locoID);
 		container.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><circle r=\"7\" cx=\"14\" cy=\"14\" fill=\"black\" /><line x1=\"14\" y1=\"5\" x2=\"14\" y2=\"23\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"9.5\" y1=\"6.2\" x2=\"18.5\" y2=\"21.8\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"6.2\" y1=\"9.5\" x2=\"21.8\" y2=\"18.5\" stroke-width=\"2\" stroke=\"black\" /><line y1=\"14\" x1=\"5\" y2=\"14\" x2=\"23\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"9.5\" y1=\"21.8\" x2=\"18.5\" y2=\"6.2\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"6.2\" y1=\"18.5\" x2=\"21.8\" y2=\"9.5\" stroke-width=\"2\" stroke=\"black\" /><circle r=\"5\" cx=\"14\" cy=\"14\" fill=\"white\" /><circle r=\"4\" cx=\"24\" cy=\"24\" fill=\"black\" /><line x1=\"18\" y1=\"24\" x2=\"30\" y2=\"24\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"28.2\" y1=\"28.2\" x2=\"19.8\" y2=\"19.8\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"24\" y1=\"18\" x2=\"24\" y2=\"30\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"19.8\" y1=\"28.2\" x2=\"28.2\" y2=\"19.8\" stroke-width=\"2\" stroke=\"black\" /><circle r=\"2\" cx=\"24\" cy=\"24\" fill=\"white\" /></svg>", id, buttonArguments));
 
-		id = "locodirection_" + to_string(locoID);
-		container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><polyline points=\"3,14 20,14 20,3 36,19 20,35 20,23 3,23\" stroke=\"black\" stroke-width=\"1\" g></svg>", id, loco->GetDirection(), buttonArguments).AddClass("button_direction"));
+		id = "locoorientation_" + to_string(locoID);
+		container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><polyline points=\"3,14 20,14 20,3 36,19 20,35 20,23 3,23\" stroke=\"black\" stroke-width=\"1\" g></svg>", id, loco->GetOrientation(), buttonArguments).AddClass("button_orientation"));
 
 		id = "locofunction_" + to_string(locoID);
 		Function nrOfFunctions = loco->GetNrOfFunctions();

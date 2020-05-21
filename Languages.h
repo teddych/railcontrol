@@ -113,7 +113,7 @@ class Languages
 			TextDeleteSwitch,
 			TextDeleteTrack,
 			TextDestinationSignalTrack,
-			TextDifferentDirections,
+			TextDifferentOrientations,
 			TextDifferentPushpullTypes,
 			TextDirect,
 			TextDoNotCare,
@@ -212,8 +212,8 @@ class Languages
 			TextLocoAddressDccTooHigh,
 			TextLocoAddressMmTooHigh,
 			TextLocoDeleted,
-			TextLocoDirectionIsLeft,
-			TextLocoDirectionIsRight,
+			TextLocoDirectionOfTravelIsLeft,
+			TextLocoDirectionOfTravelIsRight,
 			TextLocoDoesNotExist,
 			TextLocoEventDetected,
 			TextLocoFunctionIsOff,
@@ -330,15 +330,15 @@ class Languages
 			TextSetLoco,
 			TextSettingAccessory,
 			TextSettingAccessoryWithProtocol,
-			TextSettingDirection,
-			TextSettingDirectionWithProtocol,
+			TextSettingDirectionOfTravel,
+			TextSettingDirectionOfTravelWithProtocol,
 			TextSettingFunction,
 			TextSettingFunctionWithProtocol,
 			TextSettingFunctions17_28,
 			TextSettingFunctions1_8,
 			TextSettingFunctions9_16,
 			TextSettingSpeed,
-			TextSettingSpeedDirectionLight,
+			TextSettingSpeedOrientationLight,
 			TextSettingSpeedWithProtocol,
 			TextSettings,
 			TextSettingsSaved,
@@ -516,9 +516,9 @@ class Languages
 			return GetText(on ? TextOn : TextOff);
 		}
 
-		static const char* GetLeftRight(const Direction direction)
+		static const char* GetLeftRight(const Orientation direction)
 		{
-			return GetText(direction == DirectionRight ? TextRight : TextLeft);
+			return GetText(direction == OrientationRight ? TextRight : TextLeft);
 		}
 
 		static const char* GetGreenRed(const DataModel::AccessoryState state)

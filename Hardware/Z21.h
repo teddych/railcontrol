@@ -113,9 +113,9 @@ namespace Hardware
 
 			void Booster(const BoosterState status) override;
 			void LocoSpeed(const Protocol protocol, const Address address, const Speed speed) override;
-			void LocoDirection(const Protocol protocol, const Address address, const Direction direction) override;
+			void LocoOrientation(const Protocol protocol, const Address address, const Orientation orientation) override;
 			void LocoFunction(const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
-			void LocoSpeedDirectionFunctions(const Protocol protocol, const Address address, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
+			void LocoSpeedOrientationFunctions(const Protocol protocol, const Address address, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
 			void Accessory(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const DataModel::AccessoryPulseDuration duration) override;
 			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
@@ -237,7 +237,7 @@ namespace Hardware
 			void ProgramDccWrite(const CvNumber cv, const CvValue value);
 			void ProgramDccPom(const PomDB0 db0, const PomOption option, const Address address, const CvNumber cv, const CvValue value = 0);
 
-			void LocoSpeedDirection(const Protocol protocol, const Address address, const Speed speed, const Direction direction);
+			void LocoSpeedOrientation(const Protocol protocol, const Address address, const Speed speed, const Orientation orientation);
 			void AccessorySender();
 			void HeartBeatSender();
 			void Receiver();

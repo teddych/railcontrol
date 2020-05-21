@@ -63,10 +63,10 @@ namespace DataModel
 		}
 		str += ";fromTrack=";
 		str += fromTrack;
-		str += ";fromDirection=" + to_string(fromDirection);
+		str += ";fromorientation=" + to_string(fromOrientation);
 		str += ";toTrack=";
 		str += toTrack;
-		str += ";toDirection=" + string(toDirection == DirectionLeft ? "left" : "right"); // FIXME: change later to int (like fromDirection)
+		str += ";toorientation=" + to_string(toOrientation);
 		str += ";speed=" + to_string(speed);
 		str += ";feedbackIdReduced=" + to_string(feedbackIdReduced);
 		str += ";feedbackIdCreep=" + to_string(feedbackIdCreep);
@@ -99,9 +99,9 @@ namespace DataModel
 		if (automode == AutomodeNo)
 		{
 			fromTrack = TrackNone;
-			fromDirection = DirectionRight;
+			fromOrientation = OrientationRight;
 			toTrack = TrackNone;
-			toDirection = DirectionLeft;
+			toOrientation = OrientationLeft;
 			speed = SpeedTravel;
 			feedbackIdReduced = FeedbackNone;
 			feedbackIdCreep = FeedbackNone;
@@ -114,29 +114,31 @@ namespace DataModel
 			return true;
 		}
 		fromTrack = Utils::Utils::GetStringMapEntry(arguments, "fromTrack");
-		fromDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", DirectionRight));
+		fromOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "fromDirection", OrientationRight));
+		fromOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "fromorientation", fromOrientation));
 		toTrack = Utils::Utils::GetStringMapEntry(arguments, "toTrack");
-		std::string directionString = Utils::Utils::GetStringMapEntry(arguments, "toDirection");
-		if (directionString.compare("left") == 0)
+		std::string orientationString = Utils::Utils::GetStringMapEntry(arguments, "toDirection");
+		if (orientationString.compare("left") == 0)
 		{
-			toDirection = DirectionLeft;
+			toOrientation = OrientationLeft;
 		}
-		else if (directionString.compare("right") == 0)
+		else if (orientationString.compare("right") == 0)
 		{
-			toDirection = DirectionRight;
+			toOrientation = OrientationRight;
 		}
-		else if (directionString.compare("0") == 0)
+		else if (orientationString.compare("0") == 0)
 		{
-			toDirection = DirectionRight; // FIXME: change later to left and serialize with int
+			toOrientation = OrientationRight; // FIXME: change later to left and serialize with int
 		}
-		else if (directionString.compare("1") == 0)
+		else if (orientationString.compare("1") == 0)
 		{
-			toDirection = DirectionLeft; // FIXME: change later to right and serialize with int
+			toOrientation = OrientationLeft; // FIXME: change later to right and serialize with int
 		}
 		else
 		{
-			toDirection = DirectionRight;
+			toOrientation = OrientationRight;
 		}
+		toOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "toorientation", toOrientation));
 		speed = static_cast<Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", SpeedTravel));
 		feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
 		feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdCreep", FeedbackNone);
@@ -175,7 +177,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::FromTrackDirection(Logger::Logger* logger, const ObjectIdentifier& identifier, const Direction trackDirection, const Loco* loco, const bool allowLocoTurn)
+	bool Street::FromTrackOrientation(Logger::Logger* logger, const ObjectIdentifier& identifier, const Orientation trackOrientation, const Loco* loco, const bool allowLocoTurn)
 	{
 		if (automode == false)
 		{
@@ -211,12 +213,12 @@ namespace DataModel
 			return true;
 		}
 
-		if (fromDirection == trackDirection)
+		if (fromOrientation == trackOrientation)
 		{
 			return true;
 		}
 
-		logger->Debug(Languages::TextDifferentDirections, GetName());
+		logger->Debug(Languages::TextDifferentOrientations, GetName());
 		return false;
 	}
 
@@ -255,7 +257,7 @@ namespace DataModel
 		if (fromTrack.GetObjectType() == ObjectTypeSignal)
 		{
 			Signal *signal = dynamic_cast<Signal*>(manager->GetTrackBase(fromTrack));
-			if (signal != nullptr && signal->GetLocoDirection() == signal->GetSignalDirection())
+			if (signal != nullptr && signal->GetLocoOrientation() == signal->GetSignalOrientation())
 			{
 				return manager->SignalState(ControlTypeInternal, signal, SignalStateGreen, true);
 			}
@@ -373,7 +375,7 @@ namespace DataModel
 		if (fromTrack.GetObjectType() == ObjectTypeSignal)
 		{
 			Signal *signal = dynamic_cast<Signal*>(manager->GetTrackBase(fromTrack));
-			if (signal != nullptr && signal->GetLocoDirection() == signal->GetSignalDirection())
+			if (signal != nullptr && signal->GetLocoOrientation() == signal->GetSignalOrientation())
 			{
 				manager->SignalState(ControlTypeInternal, signal, SignalStateRed, true);
 			}

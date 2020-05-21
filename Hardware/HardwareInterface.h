@@ -90,19 +90,19 @@ namespace Hardware
 			// set loco speed
 			virtual void LocoSpeed(__attribute__((unused)) const Protocol protocol, __attribute__((unused)) const Address address, __attribute__((unused)) const Speed speed) {};
 
-			// set loco direction
-			virtual void LocoDirection(__attribute__((unused)) const Protocol protocol, __attribute__((unused)) const Address address, __attribute__((unused)) const Direction direction) {};
+			// set loco orientation
+			virtual void LocoOrientation(__attribute__((unused)) const Protocol protocol, __attribute__((unused)) const Address address, __attribute__((unused)) const Orientation orientation) {};
 
 			// set loco function
 			virtual void LocoFunction(__attribute__((unused)) const Protocol protocol, __attribute__((unused)) const Address address, __attribute__((unused)) const Function function, __attribute__((unused)) const DataModel::LocoFunctions::FunctionState on) {};
 
 			// set loco
-			virtual void LocoSpeedDirectionFunctions(const Protocol protocol, const Address address, const Speed speed, const Direction direction, std::vector<DataModel::LocoFunctions::FunctionState>& functions)
+			virtual void LocoSpeedOrientationFunctions(const Protocol protocol, const Address address, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::FunctionState>& functions)
 			{
 				// sleeps are necessary to prevent command overflow in command stations (especially Märklin Gleisbox)
 				LocoSpeed(protocol, address, speed);
 				Utils::Utils::SleepForMilliseconds(25);
-				LocoDirection(protocol, address, direction);
+				LocoOrientation(protocol, address, orientation);
 				Utils::Utils::SleepForMilliseconds(25);
 				for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
 				{

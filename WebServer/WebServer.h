@@ -58,7 +58,7 @@ namespace WebServer
 			void LayerSettings(const LayerID layerID, const std::string& name) override;
 			void LocoDelete(const LocoID locoID, const std::string& name) override;
 			void LocoDestinationReached(const DataModel::Loco* loco, const DataModel::Street* street, const DataModel::TrackBase* track) override;
-			void LocoDirection(const ControlType controlType, const DataModel::Loco* loco, const Direction direction) override;
+			void LocoOrientation(const ControlType controlType, const DataModel::Loco* loco, const Orientation direction) override;
 			void LocoFunction(const ControlType controlType, const DataModel::Loco* loco, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
 			void LocoRelease(const LocoID locoID) override;
 			void LocoSettings(const LocoID locoID, const std::string& name) override;

@@ -106,9 +106,9 @@ class Manager
 		bool LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed, const bool withSlaves = true);
 		bool LocoSpeed(const ControlType controlType, DataModel::Loco* loco, const Speed speed, const bool withSlaves = true);
 		Speed LocoSpeed(const LocoID locoID) const;
-		void LocoDirection(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Direction direction);
-		void LocoDirection(const ControlType controlType, const LocoID locoID, const Direction direction);
-		void LocoDirection(const ControlType controlType, DataModel::Loco* loco, const Direction direction);
+		void LocoOrientation(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Orientation orientation);
+		void LocoOrientation(const ControlType controlType, const LocoID locoID, const Orientation orientation);
+		void LocoOrientation(const ControlType controlType, DataModel::Loco* loco, const Orientation orientation);
 		void LocoFunction(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on);
 		void LocoFunction(const ControlType controlType, const LocoID locoID, const Function function, const DataModel::LocoFunctions::FunctionState on);
 
@@ -211,9 +211,9 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition posZ,
 			const Automode automode,
 			const DataModel::ObjectIdentifier& fromTrack,
-			const Direction fromDirection,
+			const Orientation fromOrientation,
 			const DataModel::ObjectIdentifier& toTrack,
-			const Direction toDirection,
+			const Orientation toOrientation,
 			const DataModel::Street::Speed speed,
 			const FeedbackID feedbackIdReduced,
 			const FeedbackID feedbackIdCreep,
@@ -239,7 +239,7 @@ class Manager
 		const std::map<std::string,DataModel::Signal*> SignalListByName() const;
 		bool SignalSave(const SignalID signalID,
 			const std::string& name,
-			const Direction signalDirection,
+			const Orientation signalOrientation,
 			const DataModel::LayoutItem::LayoutPosition x,
 			const DataModel::LayoutItem::LayoutPosition y,
 			const DataModel::LayoutItem::LayoutPosition z,
@@ -258,7 +258,7 @@ class Manager
 		bool SignalDelete(const SignalID signalID);
 		bool SignalRelease(const SignalID signalID);
 		void SignalBlock(const SignalID signalID, const bool blocked);
-		void SignalSetLocoDirection(const SignalID signalID, const Direction direction);
+		void SignalSetLocoOrientation(const SignalID signalID, const Orientation orientation);
 		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
 
 		// automode
@@ -272,7 +272,7 @@ class Manager
 		bool SignalStartLoco(const TrackID trackID);
 		bool SignalStopLoco(const TrackID trackID);
 		void TrackBlock(const TrackID trackID, const bool blocked);
-		void TrackSetLocoDirection(const TrackID trackID, const Direction direction);
+		void TrackSetLocoOrientation(const TrackID trackID, const Orientation orientation);
 		void TrackPublishState(const DataModel::Track* track);
 		bool StreetRelease(const StreetID streetID);
 		bool LocoDestinationReached(const DataModel::Loco* loco, const DataModel::Street* street, const DataModel::TrackBase* track);

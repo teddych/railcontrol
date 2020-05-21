@@ -20,35 +20,38 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <string>
+#include <map>
 
+#include "Languages.h"
 #include "WebServer/HtmlTag.h"
-#include "WebServer/HtmlTagLabel.h"
-#include "WebServer/HtmlTagSelectDirection.h"
+#include "WebServer/HtmlTagSelect.h"
 
 namespace WebServer
 {
-	class HtmlTagSelectDirectionWithLabel : public HtmlTag
+	class HtmlTagSelectOrientation : public HtmlTag
 	{
 		public:
-			HtmlTagSelectDirectionWithLabel(const std::string& name, const Languages::TextSelector label, const Direction defaultValue = DirectionRight)
-			:	HtmlTag()
+			HtmlTagSelectOrientation() = delete;
+
+			HtmlTagSelectOrientation(const std::string& name, const Orientation defaultValue)
 			{
-				AddChildTag(HtmlTagLabel(label, "s_" + name));
-				AddChildTag(HtmlTagSelectDirection(name, defaultValue));
+				std::map<Orientation,Languages::TextSelector> orientations;
+				orientations[OrientationLeft] = Languages::TextLeft;
+				orientations[OrientationRight] = Languages::TextRight;
+				AddChildTag(HtmlTagSelect(name, orientations, defaultValue));
 			}
 
-			virtual ~HtmlTagSelectDirectionWithLabel() {}
+			virtual ~HtmlTagSelectOrientation() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{
-				childTags[1].AddAttribute(name, value);
+				childTags[0].AddAttribute(name, value);
 				return *this;
 			}
 
-			virtual HtmlTag AddClass(const std::string& _class) override
+			virtual HtmlTag AddClass(const std::string& className) override
 			{
-				childTags[1].AddClass(_class);
+				childTags[0].AddClass(className);
 				return *this;
 			}
 	};

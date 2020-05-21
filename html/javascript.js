@@ -502,7 +502,7 @@ function updateTrackState(argumentMap)
 		var occupied = false;
 		var blocked = false;
 		var error = false;
-		var direction = true;
+		var orientation = true;
 
 		if (argumentMap.has('occupied'))
 		{
@@ -552,9 +552,9 @@ function updateTrackState(argumentMap)
 			element.classList.add('track_error');
 		}
 
-		if (argumentMap.has('direction'))
+		if (argumentMap.has('orientation'))
 		{
-			direction = argumentMap.get('direction') == 'true';
+			orientation = argumentMap.get('orientation') == 'true';
 		}
 
 		var contextElement = document.getElementById(elementName + '_context');
@@ -586,24 +586,24 @@ function updateTrackState(argumentMap)
 				contextElement.classList.add('track_unblocked');
 			}
 
-			if (direction == true)
+			if (orientation == true)
 			{
-				contextElement.classList.remove('direction_left');
-				contextElement.classList.add('direction_right');
+				contextElement.classList.remove('orientation_left');
+				contextElement.classList.add('orientation_right');
 			}
 			else
 			{
-				contextElement.classList.remove('direction_right');
-				contextElement.classList.add('direction_left');
+				contextElement.classList.remove('orientation_right');
+				contextElement.classList.add('orientation_left');
 			}
 		}
 
 		var locoElement = document.getElementById(elementName + '_text_loconame');
 		if (locoElement)
 		{
-			var directionArrow = direction ? '&rarr; ' : '&larr; ';
+			var orientationArrow = orientation ? '&rarr; ' : '&larr; ';
 			var locoName = argumentMap.has('loconame') ? argumentMap.get('loconame') : '';
-			locoElement.innerHTML = directionArrow + locoName;
+			locoElement.innerHTML = orientationArrow + locoName;
 		}
 	}
 }
@@ -658,10 +658,10 @@ function dataUpdate(event)
 		var on = argumentMap.get('on');
 		setToggleButton(elementName, on);
 	}
-	else if (command == 'locodirection')
+	else if (command == 'locoorientation')
 	{
-		elementName = 'b_locodirection_' + argumentMap.get('loco');
-		var on = argumentMap.get('direction');
+		elementName = 'b_locoorientation_' + argumentMap.get('loco');
+		var on = argumentMap.get('orientation');
 		setToggleButton(elementName, on);
 	}
 	else if (command == 'accessory')

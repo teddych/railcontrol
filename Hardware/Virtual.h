@@ -54,7 +54,7 @@ namespace Hardware
 
 			void Booster(const BoosterState status) override;
 			void LocoSpeed(const Protocol protocol, const Address address, const Speed speed) override;
-			void LocoDirection(const Protocol protocol, const Address address, const Direction direction) override;
+			void LocoOrientation(const Protocol protocol, const Address address, const Orientation orientation) override;
 			void LocoFunction(const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
 			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;

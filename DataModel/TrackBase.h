@@ -62,7 +62,7 @@ namespace DataModel
 				selectStreetApproach(SelectStreetSystemDefault),
 				trackState(DataModel::Feedback::FeedbackStateFree),
 				trackStateDelayed(DataModel::Feedback::FeedbackStateFree),
-				locoDirection(DirectionRight),
+				locoOrientation(OrientationRight),
 				blocked(false),
 				locoIdDelayed(LocoNone),
 				releaseWhenFree(false)
@@ -85,8 +85,8 @@ namespace DataModel
 			void SetSelectStreetApproach(const SelectStreetApproach selectStreetApproach) { this->selectStreetApproach = selectStreetApproach; }
 
 			bool GetValidStreets(Logger::Logger* logger, const DataModel::Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const;
-			Direction GetLocoDirection() const { return locoDirection; }
-			void SetLocoDirection(const Direction direction) { locoDirection = direction; }
+			Orientation GetLocoOrientation() const { return locoOrientation; }
+			void SetLocoOrientation(const Orientation orientation) { locoOrientation = orientation; }
 			bool GetBlocked() const { return blocked; }
 			void SetBlocked(const bool blocked) { this->blocked = blocked; }
 			LocoID GetLocoDelayed() const { return this->locoIdDelayed; }
@@ -129,7 +129,7 @@ namespace DataModel
 			DataModel::Feedback::FeedbackState trackState;
 			DataModel::Feedback::FeedbackState trackStateDelayed;
 			std::vector<Street*> streets;
-			Direction locoDirection;
+			Orientation locoOrientation;
 			bool blocked;
 			LocoID locoIdDelayed;
 			bool releaseWhenFree;
