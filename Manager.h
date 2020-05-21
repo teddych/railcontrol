@@ -239,6 +239,7 @@ class Manager
 		const std::map<std::string,DataModel::Signal*> SignalListByName() const;
 		bool SignalSave(const SignalID signalID,
 			const std::string& name,
+			const Direction signalDirection,
 			const DataModel::LayoutItem::LayoutPosition x,
 			const DataModel::LayoutItem::LayoutPosition y,
 			const DataModel::LayoutItem::LayoutPosition z,

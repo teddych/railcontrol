@@ -39,7 +39,8 @@ namespace DataModel
 			:	AccessoryBase(),
 				TrackBase(manager),
 				LayoutItem(signalID),
-				LockableItem()
+				LockableItem(),
+				signalDirection(DirectionRight)
 			{
 			}
 
@@ -54,6 +55,9 @@ namespace DataModel
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
+
+			inline Direction GetSignalDirection() const { return signalDirection; }
+			inline void SetSignalDirection(const Direction direction) { signalDirection = direction; }
 
 			bool Reserve(Logger::Logger* logger, const LocoID locoID) override
 			{
@@ -124,6 +128,8 @@ namespace DataModel
 			{
 				return GetLoco();
 			}
+
+			Direction signalDirection;
 	};
 } // namespace DataModel
 

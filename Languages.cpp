@@ -254,6 +254,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextOff */ { "off", "aus", "apagado" },
 /* TextOn */ { "on", "ein", "encendido" },
 /* TextOpeningSQLite */ { "Opening SQLite database with filename {0}", "Öffne SQLite Datenbank mit Dateiname {0}", "Abriendo base de datos SQLite con nombre {0}" },
+/* TextOrientation */ { "Orientation", "Ausrichtung", "Orientaciõn" },
 /* TextOverrunAt */ { "Overrun at", "Überfahrt bei", "Pasar a" },
 /* TextParameterFoundInConfigFile */ { "Parameter found in config file: {0} = {1}", "Parameter gefunden in Konfigurationsdate: {0} = {1}", "Parametro encontrado en fila de configuración: {0} = {1}" },
 /* TextPin */ { "Pin", "Anschluss", "Contacto" },

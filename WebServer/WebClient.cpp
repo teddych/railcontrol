@@ -52,6 +52,8 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagInputIntegerWithLabel.h"
 #include "WebServer/HtmlTagInputSliderLocoSpeed.h"
 #include "WebServer/HtmlTagInputTextWithLabel.h"
+#include "WebServer/HtmlTagSelectDirection.h"
+#include "WebServer/HtmlTagSelectDirectionWithLabel.h"
 #include "WebServer/HtmlTagSelectWithLabel.h"
 #include "WebServer/HtmlTagSignal.h"
 #include "WebServer/HtmlTagStreet.h"
@@ -1313,10 +1315,7 @@ namespace WebServer
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", trackOptions, objectId).AddClass("select_relation_id"));
 
-				map<Direction,Languages::TextSelector> stateOptions;
-				stateOptions[DirectionLeft] = Languages::TextLeft;
-				stateOptions[DirectionRight] = Languages::TextRight;
-				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<Direction>(data)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagSelectDirection(name + "_state", static_cast<Direction>(data)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1455,10 +1454,7 @@ namespace WebServer
 			selectTrack.AddAttribute("onchange", onchange);
 		}
 		tag.AddChildTag(selectTrack);
-		map<Direction,Languages::TextSelector> directions;
-		directions[DirectionLeft] = Languages::TextLeft;
-		directions[DirectionRight] = Languages::TextRight;
-		tag.AddChildTag(HtmlTagSelect(name + "direction", directions, direction).AddClass("select_direction"));
+		tag.AddChildTag(HtmlTagSelectDirection(name + "direction", direction).AddClass("select_direction"));
 		return tag;
 	}
 
@@ -2386,6 +2382,7 @@ namespace WebServer
 		Protocol protocol = ProtocolNone;
 		Address address = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
+		Direction signalDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "signaldirection", DirectionRight));
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
@@ -2406,6 +2403,7 @@ namespace WebServer
 				protocol = signal->GetProtocol();
 				address = signal->GetAddress();
 				name = signal->GetName();
+				signalDirection = signal->GetSignalDirection();
 				posx = signal->GetPosX();
 				posy = signal->GetPosY();
 				posz = signal->GetPosZ();
@@ -2440,6 +2438,7 @@ namespace WebServer
 		mainContent.AddAttribute("id", "tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
+		mainContent.AddChildTag(HtmlTagSelectDirectionWithLabel("signaldirection", Languages::TextOrientation, signalDirection));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("signaltype", Languages::TextType, signalTypeOptions, signalType));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Signal::MinLength, DataModel::Signal::MaxLength));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "signal", signalID));
@@ -2465,6 +2464,7 @@ namespace WebServer
 	{
 		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		Direction signalDirection = static_cast<Direction>(Utils::Utils::GetBoolMapEntry(arguments, "signaldirection", DirectionRight));
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
@@ -2491,6 +2491,7 @@ namespace WebServer
 		string result;
 		if (!manager.SignalSave(signalID,
 			name,
+			signalDirection,
 			posX,
 			posY,
 			posZ,

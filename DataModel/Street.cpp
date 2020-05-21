@@ -211,8 +211,7 @@ namespace DataModel
 			return true;
 		}
 
-		bool equalDirection = (fromDirection == trackDirection);
-		if (equalDirection)
+		if (fromDirection == trackDirection)
 		{
 			return true;
 		}
@@ -256,7 +255,7 @@ namespace DataModel
 		if (fromTrack.GetObjectType() == ObjectTypeSignal)
 		{
 			Signal *signal = dynamic_cast<Signal*>(manager->GetTrackBase(fromTrack));
-			if (signal != nullptr && signal->GetLocoDirection() == DirectionRight)
+			if (signal != nullptr && signal->GetLocoDirection() == signal->GetSignalDirection())
 			{
 				return manager->SignalState(ControlTypeInternal, signal, SignalStateGreen, true);
 			}
@@ -374,7 +373,7 @@ namespace DataModel
 		if (fromTrack.GetObjectType() == ObjectTypeSignal)
 		{
 			Signal *signal = dynamic_cast<Signal*>(manager->GetTrackBase(fromTrack));
-			if (signal != nullptr && signal->GetLocoDirection() == DirectionRight)
+			if (signal != nullptr && signal->GetLocoDirection() == signal->GetSignalDirection())
 			{
 				manager->SignalState(ControlTypeInternal, signal, SignalStateRed, true);
 			}

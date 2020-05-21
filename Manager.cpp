@@ -2285,6 +2285,7 @@ bool Manager::CheckSignalPosition(const Signal* signal, const LayoutPosition pos
 
 bool Manager::SignalSave(const SignalID signalID,
 	const string& name,
+	const Direction signalDirection,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
@@ -2324,6 +2325,7 @@ bool Manager::SignalSave(const SignalID signalID,
 	}
 
 	signal->SetName(CheckObjectName(signals, signalMutex, signalID, name.size() == 0 ? "S" : name));
+	signal->SetSignalDirection(signalDirection);
 	signal->SetPosX(posX);
 	signal->SetPosY(posY);
 	signal->SetPosZ(posZ);

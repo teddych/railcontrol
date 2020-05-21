@@ -255,6 +255,7 @@ class Languages
 			TextOff,
 			TextOn,
 			TextOpeningSQLite,
+			TextOrientation,
 			TextOverrunAt,
 			TextParameterFoundInConfigFile,
 			TextPin,
