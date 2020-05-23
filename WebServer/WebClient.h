@@ -120,7 +120,7 @@ namespace WebServer
 			HtmlTag HtmlTagRelationObject(const std::string& name, const ObjectType objectType, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
 			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const Languages::TextSelector buttonValue, const bool selected = false) const;
 			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const DataModel::ObjectIdentifier& identifier, const FeedbackID feedbackID = FeedbackNone);
-			static HtmlTag HtmlTagSelectSelectStreetApproach(const DataModel::SelectStreetApproach selectStreetApproach, const bool addDefault = true);
+			static HtmlTag HtmlTagSelectSelectRouteApproach(const DataModel::SelectRouteApproach selectRouteApproach, const bool addDefault = true);
 			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve);
 			static HtmlTag HtmlTagLogLevel();
 			static HtmlTag HtmlTagLanguage();
@@ -131,7 +131,7 @@ namespace WebServer
 			HtmlTag HtmlTagControlLoco(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			HtmlTag HtmlTagControlAccessory(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			HtmlTag HtmlTagControlFeedback(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
-			static HtmlTag HtmlTagTabTrackAutomode(DataModel::SelectStreetApproach selectStreetApproach, bool releaseWhenFree);
+			static HtmlTag HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach, bool releaseWhenFree);
 			HtmlTag HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const DataModel::ObjectIdentifier& objectIdentifier);
 			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
 				const DataModel::LayoutItem::LayoutPosition posy,
@@ -194,14 +194,14 @@ namespace WebServer
 			void HandleSignalDelete(const std::map<std::string,std::string>& arguments);
 			void HandleSignalGet(const std::map<std::string,std::string>& arguments);
 			void HandleSignalRelease(const std::map<std::string,std::string>& arguments);
-			void HandleStreetEdit(const std::map<std::string,std::string>& arguments);
-			void HandleStreetSave(const std::map<std::string,std::string>& arguments);
-			void HandleStreetList();
-			void HandleStreetAskDelete(const std::map<std::string,std::string>& arguments);
-			void HandleStreetDelete(const std::map<std::string,std::string>& arguments);
-			void HandleStreetGet(const std::map<std::string,std::string>& arguments);
-			void HandleStreetExecute(const std::map<std::string,std::string>& arguments);
-			void HandleStreetRelease(const std::map<std::string,std::string>& arguments);
+			void HandleRouteEdit(const std::map<std::string,std::string>& arguments);
+			void HandleRouteSave(const std::map<std::string,std::string>& arguments);
+			void HandleRouteList();
+			void HandleRouteAskDelete(const std::map<std::string,std::string>& arguments);
+			void HandleRouteDelete(const std::map<std::string,std::string>& arguments);
+			void HandleRouteGet(const std::map<std::string,std::string>& arguments);
+			void HandleRouteExecute(const std::map<std::string,std::string>& arguments);
+			void HandleRouteRelease(const std::map<std::string,std::string>& arguments);
 			void HandleTrackEdit(const std::map<std::string,std::string>& arguments);
 			void HandleTrackSave(const std::map<std::string,std::string>& arguments);
 			void HandleTrackList();

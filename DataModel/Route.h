@@ -37,7 +37,7 @@ namespace DataModel
 	class Loco;
 	class Relation;
 
-	class Street : public LayoutItem, public LockableItem
+	class Route : public LayoutItem, public LockableItem
 	{
 		public:
 			static const Delay DefaultDelay = 250;
@@ -57,10 +57,10 @@ namespace DataModel
 				SpeedCreeping = 0
 			};
 
-			Street() = delete;
+			Route() = delete;
 
-			Street(Manager* manager, const StreetID streetID)
-			:	LayoutItem(streetID),
+			Route(Manager* manager, const RouteID routeID)
+			:	LayoutItem(routeID),
 			 	LockableItem(),
 			 	manager(manager),
 				executeAtUnlock(false),
@@ -84,19 +84,19 @@ namespace DataModel
 			{
 			}
 
-			Street(Manager* manager, const std::string& serialized);
+			Route(Manager* manager, const std::string& serialized);
 
-			~Street()
+			~Route()
 			{
 				DeleteRelations(relationsAtLock);
 				DeleteRelations(relationsAtUnlock);
 			}
 
-			ObjectType GetObjectType() const { return ObjectTypeStreet; }
+			ObjectType GetObjectType() const { return ObjectTypeRoute; }
 
 			std::string Serialize() const override;
 			bool Deserialize(const std::string& serialized) override;
-			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextStreet); };
+			std::string GetLayoutType() const override { return Languages::GetText(Languages::TextRoute); };
 
 			void DeleteRelationsAtLock() { DeleteRelations(relationsAtLock); };
 			void DeleteRelationsAtUnlock() { DeleteRelations(relationsAtUnlock); };
@@ -114,7 +114,7 @@ namespace DataModel
 			bool FromTrackOrientation(Logger::Logger* logger, const DataModel::ObjectIdentifier& identifier, const Orientation trackOrientation, const DataModel::Loco* loco, const bool allowLocoTurn);
 
 			bool Execute(Logger::Logger* logger, const LocoID locoID);
-			static bool ExecuteStatic(Logger::Logger* logger, Street* street) { return street->Execute(logger, LocoNone); }
+			static bool ExecuteStatic(Logger::Logger* logger, Route* route) { return route->Execute(logger, LocoNone); }
 
 			bool Reserve(Logger::Logger* logger, const LocoID locoID) override;
 			bool Lock(Logger::Logger* logger, const LocoID locoID) override;
@@ -152,8 +152,8 @@ namespace DataModel
 			void SetWaitAfterRelease(const Pause wait) { this->waitAfterRelease = wait; }
 			Pause GetWaitAfterRelease() const { return waitAfterRelease; }
 
-			static bool CompareShortest(const Street* s1, const Street* s2) { return s1->GetMinTrainLength() < s2->GetMinTrainLength(); }
-			static bool CompareLastUsed(const Street* s1, const Street* s2) { return s1->GetLastUsed() < s2->GetLastUsed(); }
+			static bool CompareShortest(const Route* s1, const Route* s2) { return s1->GetMinTrainLength() < s2->GetMinTrainLength(); }
+			static bool CompareLastUsed(const Route* s1, const Route* s2) { return s1->GetLastUsed() < s2->GetLastUsed(); }
 
 		private:
 			bool ReleaseInternal(Logger::Logger* logger, const LocoID locoID);

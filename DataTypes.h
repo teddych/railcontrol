@@ -51,8 +51,8 @@ typedef AccessoryID SwitchID;
 // signal
 typedef AccessoryID SignalID;
 
-// street
-typedef ObjectID StreetID;
+// route
+typedef ObjectID RouteID;
 typedef unsigned short Delay;
 
 // layer
@@ -71,7 +71,7 @@ static const FeedbackID FeedbackNone = 0;
 static const FeedbackPin FeedbackPinNone = 0;
 static const TrackID TrackNone = 0;
 static const SwitchID SwitchNone = 0;
-static const StreetID StreetNone = 0;
+static const RouteID RouteNone = 0;
 static const ControlID ControlNone = 0;
 static const LayerID LayerNone = 0;
 static const LayerID LayerUndeletable = 1;
@@ -181,7 +181,7 @@ enum ObjectType : unsigned char
 	ObjectTypeFeedback = 3,
 	ObjectTypeAccessory = 4,
 	ObjectTypeSwitch = 5,
-	ObjectTypeStreet = 6,
+	ObjectTypeRoute = 6,
 	ObjectTypeLayer = 7,
 	ObjectTypeSignal = 8
 };

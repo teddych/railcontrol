@@ -56,7 +56,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagSelectOrientationWithLabel.h"
 #include "WebServer/HtmlTagSelectWithLabel.h"
 #include "WebServer/HtmlTagSignal.h"
-#include "WebServer/HtmlTagStreet.h"
+#include "WebServer/HtmlTagRoute.h"
 #include "WebServer/HtmlTagSwitch.h"
 #include "WebServer/HtmlTagTrack.h"
 #include "WebServer/WebClient.h"
@@ -346,37 +346,37 @@ namespace WebServer
 			{
 				HandleSignalRelease(arguments);
 			}
-			else if (arguments["cmd"].compare("streetedit") == 0)
+			else if (arguments["cmd"].compare("routeedit") == 0)
 			{
-				HandleStreetEdit(arguments);
+				HandleRouteEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("streetsave") == 0)
+			else if (arguments["cmd"].compare("routesave") == 0)
 			{
-				HandleStreetSave(arguments);
+				HandleRouteSave(arguments);
 			}
-			else if (arguments["cmd"].compare("streetlist") == 0)
+			else if (arguments["cmd"].compare("routelist") == 0)
 			{
-				HandleStreetList();
+				HandleRouteList();
 			}
-			else if (arguments["cmd"].compare("streetaskdelete") == 0)
+			else if (arguments["cmd"].compare("routeaskdelete") == 0)
 			{
-				HandleStreetAskDelete(arguments);
+				HandleRouteAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("streetdelete") == 0)
+			else if (arguments["cmd"].compare("routedelete") == 0)
 			{
-				HandleStreetDelete(arguments);
+				HandleRouteDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("streetget") == 0)
+			else if (arguments["cmd"].compare("routeget") == 0)
 			{
-				HandleStreetGet(arguments);
+				HandleRouteGet(arguments);
 			}
-			else if (arguments["cmd"].compare("streetexecute") == 0)
+			else if (arguments["cmd"].compare("routeexecute") == 0)
 			{
-				HandleStreetExecute(arguments);
+				HandleRouteExecute(arguments);
 			}
-			else if (arguments["cmd"].compare("streetrelease") == 0)
+			else if (arguments["cmd"].compare("routerelease") == 0)
 			{
-				HandleStreetRelease(arguments);
+				HandleRouteRelease(arguments);
 			}
 			else if (arguments["cmd"].compare("trackedit") == 0)
 			{
@@ -1319,15 +1319,15 @@ namespace WebServer
 				return content;
 			}
 
-			case ObjectTypeStreet:
+			case ObjectTypeRoute:
 			{
-				std::map<string, Street*> streets = manager.StreetListByName();
-				map<string, StreetID> streetOptions;
-				for (auto track : streets)
+				std::map<string, Route*> routes = manager.RouteListByName();
+				map<string, RouteID> routeOptions;
+				for (auto track : routes)
 				{
-					streetOptions[track.first] = track.second->GetID();
+					routeOptions[track.first] = track.second->GetID();
 				}
-				content.AddChildTag(HtmlTagSelect(name + "_id", streetOptions, objectId).AddClass("select_relation_id"));
+				content.AddChildTag(HtmlTagSelect(name + "_id", routeOptions, objectId).AddClass("select_relation_id"));
 				return content;
 			}
 
@@ -1370,7 +1370,7 @@ namespace WebServer
 		objectTypeOptions[ObjectTypeSignal] = Languages::TextSignal;
 		objectTypeOptions[ObjectTypeSwitch] = Languages::TextSwitch;
 		objectTypeOptions[ObjectTypeTrack] = Languages::TextTrack;
-		objectTypeOptions[ObjectTypeStreet] = Languages::TextStreet;
+		objectTypeOptions[ObjectTypeRoute] = Languages::TextRoute;
 		objectTypeOptions[ObjectTypeLoco] = Languages::TextLoco;
 		HtmlTagSelect select(name + "_type", objectTypeOptions, objectType);
 		select.AddClass("select_relation_objecttype");
@@ -1485,18 +1485,18 @@ namespace WebServer
 		return button;
 	}
 
-	HtmlTag WebClient::HtmlTagSelectSelectStreetApproach(const DataModel::SelectStreetApproach selectStreetApproach, const bool addDefault)
+	HtmlTag WebClient::HtmlTagSelectSelectRouteApproach(const DataModel::SelectRouteApproach selectRouteApproach, const bool addDefault)
 	{
-		map<DataModel::SelectStreetApproach,Languages::TextSelector> options;
+		map<DataModel::SelectRouteApproach,Languages::TextSelector> options;
 		if (addDefault)
 		{
-			options[DataModel::SelectStreetSystemDefault] = Languages::TextSystemDefault;
+			options[DataModel::SelectRouteSystemDefault] = Languages::TextSystemDefault;
 		}
-		options[DataModel::SelectStreetDoNotCare] = Languages::TextDoNotCare;
-		options[DataModel::SelectStreetRandom] = Languages::TextRandom;
-		options[DataModel::SelectStreetMinTrackLength] = Languages::TextMinTrackLength;
-		options[DataModel::SelectStreetLongestUnused] = Languages::TextLongestUnused;
-		return HtmlTagSelectWithLabel("selectstreetapproach", Languages::TextSelectStreetBy, options, selectStreetApproach);
+		options[DataModel::SelectRouteDoNotCare] = Languages::TextDoNotCare;
+		options[DataModel::SelectRouteRandom] = Languages::TextRandom;
+		options[DataModel::SelectRouteMinTrackLength] = Languages::TextMinTrackLength;
+		options[DataModel::SelectRouteLongestUnused] = Languages::TextLongestUnused;
+		return HtmlTagSelectWithLabel("selectrouteapproach", Languages::TextSelectRouteBy, options, selectRouteApproach);
 	}
 
 	HtmlTag WebClient::HtmlTagNrOfTracksToReserve(const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve)
@@ -1908,14 +1908,14 @@ namespace WebServer
 			content.AddChildTag(HtmlTagTrack(manager, track.second));
 		}
 
-		const map<StreetID,DataModel::Street*>& streets = manager.StreetList();
-		for (auto street : streets)
+		const map<RouteID,DataModel::Route*>& routes = manager.RouteList();
+		for (auto route : routes)
 		{
-			if (street.second->IsVisibleOnLayer(layer) == false)
+			if (route.second->IsVisibleOnLayer(layer) == false)
 			{
 				continue;
 			}
-			content.AddChildTag(HtmlTagStreet(street.second));
+			content.AddChildTag(HtmlTagRoute(route.second));
 		}
 
 		const map<FeedbackID,Feedback*>& feedbacks = manager.FeedbackList();
@@ -2392,7 +2392,7 @@ namespace WebServer
 		DataModel::AccessoryPulseDuration duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		std::vector<FeedbackID> feedbacks;
-		DataModel::SelectStreetApproach selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::SelectStreetSystemDefault));
+		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		if (signalID > SignalNone)
 		{
@@ -2413,7 +2413,7 @@ namespace WebServer
 				duration = signal->GetAccessoryPulseDuration();
 				inverted = signal->GetInverted();
 				feedbacks = signal->GetFeedbacks();
-				selectStreetApproach = signal->GetSelectStreetApproach();
+				selectRouteApproach = signal->GetSelectRouteApproach();
 				releaseWhenFree = signal->GetReleaseWhenFree();
 			}
 		}
@@ -2452,7 +2452,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, ObjectIdentifier(ObjectTypeSignal, signalID)));
 
-		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectStreetApproach, releaseWhenFree));
+		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, releaseWhenFree));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -2483,7 +2483,7 @@ namespace WebServer
 				feedbacks.push_back(feedbackID);
 			}
 		}
-		DataModel::SelectStreetApproach selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::SelectStreetSystemDefault));
+		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		DataModel::AccessoryType signalType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "signaltype", DataModel::SignalTypeSimpleLeft));
 		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
@@ -2498,7 +2498,7 @@ namespace WebServer
 			height,
 			rotation,
 			feedbacks,
-			selectStreetApproach,
+			selectRouteApproach,
 			releaseWhenFree,
 			controlId,
 			protocol,
@@ -2622,25 +2622,25 @@ namespace WebServer
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Signal released" : "Signal not released");
 	}
 
-	void WebClient::HandleStreetGet(const map<string, string>& arguments)
+	void WebClient::HandleRouteGet(const map<string, string>& arguments)
 	{
-		StreetID streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
-		const DataModel::Street* street = manager.GetStreet(streetID);
-		if (street == nullptr || street->GetVisible() == DataModel::LayoutItem::VisibleNo)
+		RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route");
+		const DataModel::Route* route = manager.GetRoute(routeID);
+		if (route == nullptr || route->GetVisible() == DataModel::LayoutItem::VisibleNo)
 		{
 			ReplyHtmlWithHeader(HtmlTag());
 			return;
 		}
-		ReplyHtmlWithHeader(HtmlTagStreet(street));
+		ReplyHtmlWithHeader(HtmlTagRoute(route));
 	}
 
-	void WebClient::HandleStreetEdit(const map<string, string>& arguments)
+	void WebClient::HandleRouteEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		StreetID streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
+		RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
 		string name = Languages::GetText(Languages::TextNew);
-		Delay delay = Street::DefaultDelay;
-		Street::PushpullType pushpull = Street::PushpullTypeBoth;
+		Delay delay = Route::DefaultDelay;
+		Route::PushpullType pushpull = Route::PushpullTypeBoth;
 		Length minTrainLength = 0;
 		Length maxTrainLength = 0;
 		vector<Relation*> relationsAtLock;
@@ -2648,45 +2648,45 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
-		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", streetID == StreetNone && ((posx || posy) && posz >= LayerUndeletable) ? DataModel::LayoutItem::VisibleYes : DataModel::LayoutItem::VisibleNo));
+		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", routeID == RouteNone && ((posx || posy) && posz >= LayerUndeletable) ? DataModel::LayoutItem::VisibleYes : DataModel::LayoutItem::VisibleNo));
 		Automode automode = static_cast<Automode>(Utils::Utils::GetBoolMapEntry(arguments, "automode", AutomodeNo));
 		ObjectIdentifier fromTrack = Utils::Utils::GetStringMapEntry(arguments, "fromtrack");
 		Orientation fromOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "fromorientation", OrientationRight));
 		ObjectIdentifier toTrack = Utils::Utils::GetStringMapEntry(arguments, "totrack");
 		Orientation toOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "toorientation", OrientationRight));
-		Street::Speed speed = static_cast<Street::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Street::SpeedTravel));
+		Route::Speed speed = static_cast<Route::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Route::SpeedTravel));
 		FeedbackID feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
 		FeedbackID feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
 		FeedbackID feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
 		FeedbackID feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackover", FeedbackNone);
 		Pause waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
-		if (streetID > StreetNone)
+		if (routeID > RouteNone)
 		{
-			const DataModel::Street* street = manager.GetStreet(streetID);
-			if (street != nullptr)
+			const DataModel::Route* route = manager.GetRoute(routeID);
+			if (route != nullptr)
 			{
-				name = street->GetName();
-				delay = street->GetDelay();
-				pushpull = street->GetPushpull();
-				minTrainLength = street->GetMinTrainLength();
-				maxTrainLength = street->GetMaxTrainLength();
-				relationsAtLock = street->GetRelationsAtLock();
-				relationsAtUnlock = street->GetRelationsAtUnlock();
-				visible = street->GetVisible();
-				posx = street->GetPosX();
-				posy = street->GetPosY();
-				posz = street->GetPosZ();
-				automode = street->GetAutomode();
-				fromTrack = street->GetFromTrack();
-				fromOrientation = street->GetFromOrientation();
-				toTrack = street->GetToTrack();
-				toOrientation = street->GetToOrientation();
-				speed = street->GetSpeed();
-				feedbackIdReduced = street->GetFeedbackIdReduced();
-				feedbackIdCreep = street->GetFeedbackIdCreep();
-				feedbackIdStop = street->GetFeedbackIdStop();
-				feedbackIdOver = street->GetFeedbackIdOver();
-				waitAfterRelease = street->GetWaitAfterRelease();
+				name = route->GetName();
+				delay = route->GetDelay();
+				pushpull = route->GetPushpull();
+				minTrainLength = route->GetMinTrainLength();
+				maxTrainLength = route->GetMaxTrainLength();
+				relationsAtLock = route->GetRelationsAtLock();
+				relationsAtUnlock = route->GetRelationsAtUnlock();
+				visible = route->GetVisible();
+				posx = route->GetPosX();
+				posy = route->GetPosY();
+				posz = route->GetPosZ();
+				automode = route->GetAutomode();
+				fromTrack = route->GetFromTrack();
+				fromOrientation = route->GetFromOrientation();
+				toTrack = route->GetToTrack();
+				toOrientation = route->GetToOrientation();
+				speed = route->GetSpeed();
+				feedbackIdReduced = route->GetFeedbackIdReduced();
+				feedbackIdCreep = route->GetFeedbackIdCreep();
+				feedbackIdStop = route->GetFeedbackIdStop();
+				feedbackIdOver = route->GetFeedbackIdOver();
+				waitAfterRelease = route->GetWaitAfterRelease();
 			}
 		}
 
@@ -2701,8 +2701,8 @@ namespace WebServer
 
 		HtmlTag formContent("form");
 		formContent.AddAttribute("id", "editform");
-		formContent.AddChildTag(HtmlTagInputHidden("cmd", "streetsave"));
-		formContent.AddChildTag(HtmlTagInputHidden("street", to_string(streetID)));
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "routesave"));
+		formContent.AddChildTag(HtmlTagInputHidden("route", to_string(routeID)));
 
 		HtmlTag basicContent("div");
 		basicContent.AddAttribute("id", "tab_basic");
@@ -2777,19 +2777,19 @@ namespace WebServer
 		}
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", Languages::TextStartSignalTrack, fromTrack, fromOrientation));
 		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", Languages::TextDestinationSignalTrack, toTrack, toOrientation, "updateFeedbacksOfTrack(); return false;"));
-		map<Street::Speed,Languages::TextSelector> speedOptions;
-		speedOptions[Street::SpeedTravel] = Languages::TextTravelSpeed;
-		speedOptions[Street::SpeedReduced] = Languages::TextReducedSpeed;
-		speedOptions[Street::SpeedCreeping] = Languages::TextCreepingSpeed;
+		map<Route::Speed,Languages::TextSelector> speedOptions;
+		speedOptions[Route::SpeedTravel] = Languages::TextTravelSpeed;
+		speedOptions[Route::SpeedReduced] = Languages::TextReducedSpeed;
+		speedOptions[Route::SpeedCreeping] = Languages::TextCreepingSpeed;
 		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("speed", Languages::TextSpeed, speedOptions, speed));
 		HtmlTag feedbackDiv("div");
 		feedbackDiv.AddAttribute("id", "feedbacks");
 		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
 		tracksDiv.AddChildTag(feedbackDiv);
-		map<Street::PushpullType,Languages::TextSelector> pushpullOptions;
-		pushpullOptions[Street::PushpullTypeNo] = Languages::TextNoPushPull;
-		pushpullOptions[Street::PushpullTypeBoth] = Languages::TextAllTrains;
-		pushpullOptions[Street::PushpullTypeOnly] = Languages::TextPushPullOnly;
+		map<Route::PushpullType,Languages::TextSelector> pushpullOptions;
+		pushpullOptions[Route::PushpullTypeNo] = Languages::TextNoPushPull;
+		pushpullOptions[Route::PushpullTypeBoth] = Languages::TextAllTrains;
+		pushpullOptions[Route::PushpullTypeOnly] = Languages::TextPushPullOnly;
 		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("pushpull", Languages::TextAllowedTrains, pushpullOptions, pushpull));
 		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("mintrainlength", Languages::TextMinTrainLength, minTrainLength, 0, 99999));
 		tracksDiv.AddChildTag(HtmlTagInputIntegerWithLabel("maxtrainlength", Languages::TextMaxTrainLength, maxTrainLength, 0, 99999));
@@ -2809,12 +2809,12 @@ namespace WebServer
 		ReplyHtmlWithHeader(HtmlTagSelectFeedbacksOfTrack(identifier, FeedbackNone, FeedbackNone, FeedbackNone, FeedbackNone));
 	}
 
-	void WebClient::HandleStreetSave(const map<string, string>& arguments)
+	void WebClient::HandleRouteSave(const map<string, string>& arguments)
 	{
-		StreetID streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
+		RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		Delay delay = static_cast<Delay>(Utils::Utils::GetIntegerMapEntry(arguments, "delay"));
-		Street::PushpullType pushpull = static_cast<Street::PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", Street::PushpullTypeBoth));
+		Route::PushpullType pushpull = static_cast<Route::PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", Route::PushpullTypeBoth));
 		Length mintrainlength = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
 		Length maxtrainlength = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible"));
@@ -2826,7 +2826,7 @@ namespace WebServer
 		Orientation fromOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "fromorientation", OrientationRight));
 		ObjectIdentifier toTrack = Utils::Utils::GetStringMapEntry(arguments, "totrack");
 		Orientation toOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "toorientation", OrientationRight));
-		Street::Speed speed = static_cast<Street::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Street::SpeedTravel));
+		Route::Speed speed = static_cast<Route::Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", Route::SpeedTravel));
 		FeedbackID feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackreduced", FeedbackNone);
 		FeedbackID feedbackIdCreep = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackcreep", FeedbackNone);
 		FeedbackID feedbackIdStop = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackstop", FeedbackNone);
@@ -2848,7 +2848,7 @@ namespace WebServer
 			{
 				continue;
 			}
-			relationsAtLock.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtLock, priorityAtLock, state));
+			relationsAtLock.push_back(new Relation(&manager, ObjectTypeRoute, routeID, objectType, objectId, Relation::TypeRouteAtLock, priorityAtLock, state));
 			++priorityAtLock;
 		}
 
@@ -2864,12 +2864,12 @@ namespace WebServer
 			{
 				continue;
 			}
-			relationsAtUnlock.push_back(new Relation(&manager, ObjectTypeStreet, streetID, objectType, objectId, Relation::TypeStreetAtUnlock, priorityAtUnlock, state));
+			relationsAtUnlock.push_back(new Relation(&manager, ObjectTypeRoute, routeID, objectType, objectId, Relation::TypeRouteAtUnlock, priorityAtUnlock, state));
 			++priorityAtUnlock;
 		}
 
 		string result;
-		if (!manager.StreetSave(streetID,
+		if (!manager.RouteSave(routeID,
 			name,
 			delay,
 			pushpull,
@@ -2897,99 +2897,99 @@ namespace WebServer
 			ReplyResponse(ResponseError, result);
 			return;
 		}
-		ReplyResponse(ResponseInfo, Languages::TextStreetSaved, name);
+		ReplyResponse(ResponseInfo, Languages::TextRouteSaved, name);
 	}
 
-	void WebClient::HandleStreetAskDelete(const map<string, string>& arguments)
+	void WebClient::HandleRouteAskDelete(const map<string, string>& arguments)
 	{
-		StreetID streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
+		RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
 
-		if (streetID == StreetNone)
+		if (routeID == RouteNone)
 		{
-			ReplyHtmlWithHeaderAndParagraph(Languages::TextStreetDoesNotExist);
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextRouteDoesNotExist);
 			return;
 		}
 
-		const DataModel::Street* street = manager.GetStreet(streetID);
-		if (street == nullptr)
+		const DataModel::Route* route = manager.GetRoute(routeID);
+		if (route == nullptr)
 		{
-			ReplyHtmlWithHeaderAndParagraph(Languages::TextStreetDoesNotExist);
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextRouteDoesNotExist);
 			return;
 		}
 
 		HtmlTag content;
-		const string& streetName = street->GetName();
-		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteStreet));
-		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, streetName));
+		const string& routeName = route->GetName();
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteRoute));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, routeName));
 		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
-			.AddContent(HtmlTagInputHidden("cmd", "streetdelete"))
-			.AddContent(HtmlTagInputHidden("street", to_string(streetID))
+			.AddContent(HtmlTagInputHidden("cmd", "routedelete"))
+			.AddContent(HtmlTagInputHidden("route", to_string(routeID))
 			));
 		content.AddContent(HtmlTagButtonCancel());
 		content.AddContent(HtmlTagButtonOK());
 		ReplyHtmlWithHeader(content);
 	}
 
-	void WebClient::HandleStreetDelete(const map<string, string>& arguments)
+	void WebClient::HandleRouteDelete(const map<string, string>& arguments)
 	{
-		StreetID streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
-		const DataModel::Street* street = manager.GetStreet(streetID);
-		if (street == nullptr)
+		RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
+		const DataModel::Route* route = manager.GetRoute(routeID);
+		if (route == nullptr)
 		{
-			ReplyResponse(ResponseError, Languages::TextStreetDoesNotExist);
+			ReplyResponse(ResponseError, Languages::TextRouteDoesNotExist);
 			return;
 		}
 
-		string name = street->GetName();
+		string name = route->GetName();
 
-		if (!manager.StreetDelete(streetID))
+		if (!manager.RouteDelete(routeID))
 		{
-			ReplyResponse(ResponseError, Languages::TextStreetDoesNotExist);
+			ReplyResponse(ResponseError, Languages::TextRouteDoesNotExist);
 			return;
 		}
 
-		ReplyResponse(ResponseInfo, Languages::TextStreetDeleted, name);
+		ReplyResponse(ResponseInfo, Languages::TextRouteDeleted, name);
 	}
 
-	void WebClient::HandleStreetList()
+	void WebClient::HandleRouteList()
 	{
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextStreets));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextRoutes));
 		HtmlTag table("table");
-		const map<string,DataModel::Street*> streetList = manager.StreetListByName();
-		map<string,string> streetArgument;
-		for (auto street : streetList)
+		const map<string,DataModel::Route*> routeList = manager.RouteListByName();
+		map<string,string> routeArgument;
+		for (auto route : routeList)
 		{
 			HtmlTag row("tr");
-			row.AddChildTag(HtmlTag("td").AddContent(street.first));
-			string streetIdString = to_string(street.second->GetID());
-			streetArgument["street"] = streetIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "streetedit_list_" + streetIdString, streetArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "streetaskdelete_" + streetIdString, streetArgument)));
-			if (street.second->IsInUse())
+			row.AddChildTag(HtmlTag("td").AddContent(route.first));
+			string routeIdString = to_string(route.second->GetID());
+			routeArgument["route"] = routeIdString;
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "routeedit_list_" + routeIdString, routeArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "routeaskdelete_" + routeIdString, routeArgument)));
+			if (route.second->IsInUse())
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "streetrelease_" + streetIdString, streetArgument, "hideElement('b_streetrelease_" + streetIdString + "');")));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "routerelease_" + routeIdString, routeArgument, "hideElement('b_routerelease_" + routeIdString + "');")));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "streetedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "routeedit_0"));
 		ReplyHtmlWithHeader(content);
 	}
 
-	void WebClient::HandleStreetExecute(const map<string, string>& arguments)
+	void WebClient::HandleRouteExecute(const map<string, string>& arguments)
 	{
-		StreetID streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street", StreetNone);
-		manager.StreetExecuteAsync(logger, streetID);
-		ReplyHtmlWithHeaderAndParagraph("Street executed");
+		RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
+		manager.RouteExecuteAsync(logger, routeID);
+		ReplyHtmlWithHeaderAndParagraph("Route executed");
 	}
 
-	void WebClient::HandleStreetRelease(const map<string, string>& arguments)
+	void WebClient::HandleRouteRelease(const map<string, string>& arguments)
 	{
-		StreetID streetID = Utils::Utils::GetIntegerMapEntry(arguments, "street");
-		bool ret = manager.StreetRelease(streetID);
-		ReplyHtmlWithHeaderAndParagraph(ret ? "Street released" : "Street not released");
+		RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route");
+		bool ret = manager.RouteRelease(routeID);
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Route released" : "Route not released");
 	}
 
 	HtmlTag WebClient::HtmlTagTabPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz, const LayoutRotation rotation, const Visible visible)
@@ -3038,13 +3038,13 @@ namespace WebServer
 		return feedbackContent;
 	}
 
-	HtmlTag WebClient::HtmlTagTabTrackAutomode(DataModel::SelectStreetApproach selectStreetApproach, bool releaseWhenFree)
+	HtmlTag WebClient::HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach, bool releaseWhenFree)
 	{
 		HtmlTag automodeContent("div");
 		automodeContent.AddAttribute("id", "tab_automode");
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
-		automodeContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach));
+		automodeContent.AddChildTag(HtmlTagSelectSelectRouteApproach(selectRouteApproach));
 		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("releasewhenfree", Languages::TextReleaseWhenFree, "true", releaseWhenFree));
 		return automodeContent;
 	}
@@ -3061,7 +3061,7 @@ namespace WebServer
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::TrackType type = DataModel::TrackTypeStraight;
 		std::vector<FeedbackID> feedbacks;
-		DataModel::SelectStreetApproach selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::SelectStreetSystemDefault));
+		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		if (trackID > TrackNone)
 		{
@@ -3076,7 +3076,7 @@ namespace WebServer
 				rotation = track->GetRotation();
 				type = track->GetTrackType();
 				feedbacks = track->GetFeedbacks();
-				selectStreetApproach = track->GetSelectStreetApproach();
+				selectRouteApproach = track->GetSelectRouteApproach();
 				releaseWhenFree = track->GetReleaseWhenFree();
 			}
 		}
@@ -3138,7 +3138,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, ObjectIdentifier(ObjectTypeTrack, trackID)));
 
-		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectStreetApproach, releaseWhenFree));
+		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, releaseWhenFree));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -3177,7 +3177,7 @@ namespace WebServer
 				feedbacks.push_back(feedbackID);
 			}
 		}
-		DataModel::SelectStreetApproach selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::SelectStreetSystemDefault));
+		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		string result;
 		if (manager.TrackSave(trackID,
@@ -3189,7 +3189,7 @@ namespace WebServer
 			rotation,
 			type,
 			feedbacks,
-			selectStreetApproach,
+			selectRouteApproach,
 			releaseWhenFree,
 			result) == TrackNone)
 		{
@@ -3635,7 +3635,7 @@ namespace WebServer
 	{
 		const DataModel::AccessoryPulseDuration defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
-		const DataModel::SelectStreetApproach selectStreetApproach = manager.GetSelectStreetApproach();
+		const DataModel::SelectRouteApproach selectRouteApproach = manager.GetSelectRouteApproach();
 		const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
 
 		HtmlTag content;
@@ -3646,7 +3646,7 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "settingssave"));
 		formContent.AddChildTag(HtmlTagDuration(defaultAccessoryDuration, Languages::TextDefaultSwitchingDuration));
 		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", Languages::TextAutomaticallyAddUnknownFeedbacks, "autoaddfeedback", autoAddFeedback));
-		formContent.AddChildTag(HtmlTagSelectSelectStreetApproach(selectStreetApproach, false));
+		formContent.AddChildTag(HtmlTagSelectSelectRouteApproach(selectRouteApproach, false));
 		formContent.AddChildTag(HtmlTagNrOfTracksToReserve(nrOfTracksToReserve));
 		formContent.AddChildTag(HtmlTagLogLevel());
 		formContent.AddChildTag(HtmlTagLanguage());
@@ -3661,11 +3661,11 @@ namespace WebServer
 	{
 		const DataModel::AccessoryPulseDuration defaultAccessoryDuration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		const bool autoAddFeedback = Utils::Utils::GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
-		const DataModel::SelectStreetApproach selectStreetApproach = static_cast<DataModel::SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", DataModel::SelectStreetRandom));
+		const DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteRandom));
 		const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
 		const Logger::Logger::Level logLevel = static_cast<Logger::Logger::Level>(Utils::Utils::GetIntegerMapEntry(arguments, "loglevel", Logger::Logger::LevelInfo));
 		const Languages::Language language = static_cast<Languages::Language>(Utils::Utils::GetIntegerMapEntry(arguments, "language", Languages::EN));
-		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectStreetApproach, nrOfTracksToReserve, logLevel, language);
+		manager.SaveSettings(defaultAccessoryDuration, autoAddFeedback, selectRouteApproach, nrOfTracksToReserve, logLevel, language);
 		ReplyResponse(ResponseInfo, Languages::TextSettingsSaved);
 	}
 
@@ -3967,7 +3967,7 @@ namespace WebServer
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,20 7.1,19.5 13,17.9 18.5,15.3 23.5,11.8 27.8,7.5\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"1,28 8.5,27.3 15.7,25.4 22.5,22.2 28.6,17.9 33.9,12.6\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"1,20 35,20\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,28 35,28\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,18 3,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,18 6,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,17 9,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,16 12,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,15 15,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,13 18,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,12 21,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,9 24,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,17 27,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,18 30,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,18 33,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,9 32,17\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"26,7 34,15\" stroke=\"black\" stroke-width=\"1\"/></svg>", "switchlist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polygon points=\"17,36 17,28 15,28 10,23 10,5 15,0 21,0 26,5 26,23 21,28 19,28 19,36\" fill=\"black\" /><circle cx=\"18\" cy=\"8\" r=\"4\" fill=\"red\" /><circle cx=\"18\" cy=\"20\" r=\"4\" fill=\"green\" /></svg>", "signallist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,20 10,20 30,15\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"28,17 28,20 34,20\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></svg>", "accessorylist"));
-		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"5,34 15,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"31,34 21,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,34 18,30\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,24 18,20\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,14 18,10\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,4 18,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></svg>", "streetlist"));
+		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"5,34 15,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"31,34 21,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,34 18,30\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,24 18,20\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,14 18,10\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"18,4 18,1\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></svg>", "routelist"));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,25 35,25\" fill=\"none\" stroke=\"black\"/><polygon points=\"4,25 4,23 8,23 8,25\" fill=\"black\" stroke=\"black\"/><polygon points=\"35,22 16,22 15,19 18,10 35,10\" stroke=\"black\" fill=\"black\"/><polygon points=\"20,12 25,12 25,15 19,15\" fill=\"white\"/><polyline points=\"26,10 30,8 26,6\" stroke=\"black\" fill=\"none\"/><circle cx=\"22\" cy=\"22\" r=\"3\"/><circle cx=\"30\" cy=\"22\" r=\"3\"/></svg>", "feedbacklist"));
 		if (manager.CanHandleProgram())
 		{
@@ -3993,7 +3993,7 @@ namespace WebServer
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("real_layer_only").AddContent(Languages::GetText(Languages::TextAddSwitch)).AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("real_layer_only").AddContent(Languages::GetText(Languages::TextAddSignal)).AddAttribute("onClick", "loadPopup('/?cmd=signaledit&signal=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("real_layer_only").AddContent(Languages::GetText(Languages::TextAddAccessory)).AddAttribute("onClick", "loadPopup('/?cmd=accessoryedit&accessory=0');"))
-			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("real_layer_only").AddContent(Languages::GetText(Languages::TextAddStreet)).AddAttribute("onClick", "loadPopup('/?cmd=streetedit&street=0');"))
+			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("real_layer_only").AddContent(Languages::GetText(Languages::TextAddRoute)).AddAttribute("onClick", "loadPopup('/?cmd=routeedit&route=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddContent(Languages::GetText(Languages::TextAddFeedback)).AddAttribute("onClick", "loadPopup('/?cmd=feedbackedit&feedback=0');"))
 			));
 

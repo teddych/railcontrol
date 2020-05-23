@@ -48,8 +48,8 @@ namespace DataModel
 		std::string str;
 		str = "feedbacks=";
 		str += feedbackString;
-		str += ";selectstreetapproach=";
-		str += static_cast<int>(selectStreetApproach);
+		str += ";selectrouteapproach=";
+		str += static_cast<int>(selectRouteApproach);
 		str += ";trackstate=";
 		str += static_cast<int>(trackState);
 		str += ";trackstatedelayed=";
@@ -79,7 +79,7 @@ namespace DataModel
 			}
 			feedbacks.push_back(feedbackID);
 		}
-		selectStreetApproach = static_cast<SelectStreetApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectstreetapproach", SelectStreetSystemDefault));
+		selectRouteApproach = static_cast<SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", SelectRouteSystemDefault));
 		trackState = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "state", DataModel::Feedback::FeedbackStateFree)); // FIXME: remove later
 		trackState = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "trackstate", trackState));
 		trackStateDelayed = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "statedelayed", trackState)); // FIXME: remove later
@@ -253,70 +253,70 @@ namespace DataModel
 		return true;
 	}
 
-	bool TrackBase::AddStreet(Street* street)
+	bool TrackBase::AddRoute(Route* route)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		for (auto s : streets)
+		for (auto s : routes)
 		{
-			if (s == street)
+			if (s == route)
 			{
 				return false;
 			}
 		}
-		streets.push_back(street);
+		routes.push_back(route);
 		return true;
 	}
 
-	bool TrackBase::RemoveStreet(Street* street)
+	bool TrackBase::RemoveRoute(Route* route)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		size_t sizeBefore = streets.size();
-		streets.erase(std::remove(streets.begin(), streets.end(), street), streets.end());
-		size_t sizeAfter = streets.size();
+		size_t sizeBefore = routes.size();
+		routes.erase(std::remove(routes.begin(), routes.end(), route), routes.end());
+		size_t sizeAfter = routes.size();
 		return sizeBefore > sizeAfter;
 	}
 
-	SelectStreetApproach TrackBase::GetSelectStreetApproachCalculated() const
+	SelectRouteApproach TrackBase::GetSelectRouteApproachCalculated() const
 	{
-		if (selectStreetApproach == SelectStreetSystemDefault)
+		if (selectRouteApproach == SelectRouteSystemDefault)
 		{
-			return manager->GetSelectStreetApproach();
+			return manager->GetSelectRouteApproach();
 		}
-		return selectStreetApproach;
+		return selectRouteApproach;
 	}
 
-	bool TrackBase::GetValidStreets(Logger::Logger* logger, const Loco* loco, const bool allowLocoTurn, std::vector<Street*>& validStreets) const
+	bool TrackBase::GetValidRoutes(Logger::Logger* logger, const Loco* loco, const bool allowLocoTurn, std::vector<Route*>& validRoutes) const
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		for (auto street : streets)
+		for (auto route : routes)
 		{
-			if (street->FromTrackOrientation(logger, GetObjectIdentifier(), locoOrientation, loco, allowLocoTurn))
+			if (route->FromTrackOrientation(logger, GetObjectIdentifier(), locoOrientation, loco, allowLocoTurn))
 			{
-				validStreets.push_back(street);
+				validRoutes.push_back(route);
 			}
 		}
-		OrderValidStreets(validStreets);
+		OrderValidRoutes(validRoutes);
 		return true;
 	}
 
-	void TrackBase::OrderValidStreets(vector<Street*>& validStreets) const
+	void TrackBase::OrderValidRoutes(vector<Route*>& validRoutes) const
 	{
-		switch (GetSelectStreetApproachCalculated())
+		switch (GetSelectRouteApproachCalculated())
 		{
 
-			case SelectStreetRandom:
-				std::random_shuffle(validStreets.begin(), validStreets.end());
+			case SelectRouteRandom:
+				std::random_shuffle(validRoutes.begin(), validRoutes.end());
 				break;
 
-			case SelectStreetMinTrackLength:
-				std::sort(validStreets.begin(), validStreets.end(), Street::CompareShortest);
+			case SelectRouteMinTrackLength:
+				std::sort(validRoutes.begin(), validRoutes.end(), Route::CompareShortest);
 				break;
 
-			case SelectStreetLongestUnused:
-				std::sort(validStreets.begin(), validStreets.end(), Street::CompareLastUsed);
+			case SelectRouteLongestUnused:
+				std::sort(validRoutes.begin(), validRoutes.end(), Route::CompareLastUsed);
 				break;
 
-			case SelectStreetDoNotCare:
+			case SelectRouteDoNotCare:
 			default:
 				// do nothing
 				break;

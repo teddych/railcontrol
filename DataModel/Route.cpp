@@ -23,7 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataModel/Loco.h"
 #include "DataModel/Relation.h"
-#include "DataModel/Street.h"
+#include "DataModel/Route.h"
 #include "Manager.h"
 #include "Utils/Utils.h"
 
@@ -33,7 +33,7 @@ using std::to_string;
 
 namespace DataModel
 {
-	Street::Street(Manager* manager, const std::string& serialized)
+	Route::Route(Manager* manager, const std::string& serialized)
 	:	LockableItem(),
 	 	manager(manager),
 	 	executeAtUnlock(false)
@@ -44,13 +44,13 @@ namespace DataModel
 		{
 			return;
 		}
-		track->AddStreet(this);
+		track->AddRoute(this);
 	}
 
-	std::string Street::Serialize() const
+	std::string Route::Serialize() const
 	{
 		std::string str;
-		str = "objectType=Street;";
+		str = "objectType=Route;";
 		str += LayoutItem::Serialize();
 		str += ";" + LockableItem::Serialize();
 		str += ";delay=" + to_string(delay);
@@ -79,12 +79,12 @@ namespace DataModel
 		return str;
 	}
 
-	bool Street::Deserialize(const std::string& serialized)
+	bool Route::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
 		ParseArguments(serialized, arguments);
 		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
-		if (objectType.compare("Street") != 0)
+		if (objectType.compare("Route") != 0 && objectType.compare("Street")) // FIXME: remove street later
 		{
 			return false;
 		}
@@ -152,7 +152,7 @@ namespace DataModel
 		return true;
 	}
 
-	void Street::DeleteRelations(std::vector<DataModel::Relation*>& relations)
+	void Route::DeleteRelations(std::vector<DataModel::Relation*>& relations)
 	{
 		while (!relations.empty())
 		{
@@ -161,7 +161,7 @@ namespace DataModel
 		}
 	}
 
-	bool Street::AssignRelations(std::vector<DataModel::Relation*>& relations, const std::vector<DataModel::Relation*>& newRelations)
+	bool Route::AssignRelations(std::vector<DataModel::Relation*>& relations, const std::vector<DataModel::Relation*>& newRelations)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (GetLockState() != LockStateFree)
@@ -177,7 +177,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::FromTrackOrientation(Logger::Logger* logger, const ObjectIdentifier& identifier, const Orientation trackOrientation, const Loco* loco, const bool allowLocoTurn)
+	bool Route::FromTrackOrientation(Logger::Logger* logger, const ObjectIdentifier& identifier, const Orientation trackOrientation, const Loco* loco, const bool allowLocoTurn)
 	{
 		if (automode == false)
 		{
@@ -223,12 +223,12 @@ namespace DataModel
 	}
 
 
-	bool Street::Execute(Logger::Logger* logger, const LocoID locoID)
+	bool Route::Execute(Logger::Logger* logger, const LocoID locoID)
 	{
 		bool isInUse = IsInUse();
 		if (isInUse && locoID != GetLoco())
 		{
-			logger->Info(Languages::TextStreetIsLocked, GetName());
+			logger->Info(Languages::TextRouteIsLocked, GetName());
 			return false;
 		}
 
@@ -266,7 +266,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::Reserve(Logger::Logger* logger, const LocoID locoID)
+	bool Route::Reserve(Logger::Logger* logger, const LocoID locoID)
 	{
 		if (manager->Booster() == BoosterStateStop)
 		{
@@ -308,7 +308,7 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::Lock(Logger::Logger* logger, const LocoID locoID)
+	bool Route::Lock(Logger::Logger* logger, const LocoID locoID)
 	{
 		if (manager->Booster() == BoosterStateStop)
 		{
@@ -350,13 +350,13 @@ namespace DataModel
 		return true;
 	}
 
-	bool Street::Release(Logger::Logger* logger, const LocoID locoID)
+	bool Route::Release(Logger::Logger* logger, const LocoID locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		return ReleaseInternal(logger, locoID);
 	}
 
-	bool Street::ReleaseInternal(Logger::Logger* logger, const LocoID locoID)
+	bool Route::ReleaseInternal(Logger::Logger* logger, const LocoID locoID)
 	{
 		if (executeAtUnlock)
 		{
@@ -384,7 +384,7 @@ namespace DataModel
 		return LockableItem::Release(logger, locoID);
 	}
 
-	void Street::ReleaseInternalWithToTrack(Logger::Logger* logger, const LocoID locoID)
+	void Route::ReleaseInternalWithToTrack(Logger::Logger* logger, const LocoID locoID)
 	{
 		TrackBase* track = manager->GetTrackBase(toTrack);
 		if (track != nullptr)

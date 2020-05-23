@@ -57,7 +57,7 @@ namespace WebServer
 			void LayerDelete(const LayerID layerID, const std::string& name) override;
 			void LayerSettings(const LayerID layerID, const std::string& name) override;
 			void LocoDelete(const LocoID locoID, const std::string& name) override;
-			void LocoDestinationReached(const DataModel::Loco* loco, const DataModel::Street* street, const DataModel::TrackBase* track) override;
+			void LocoDestinationReached(const DataModel::Loco* loco, const DataModel::Route* route, const DataModel::TrackBase* track) override;
 			void LocoOrientation(const ControlType controlType, const DataModel::Loco* loco, const Orientation direction) override;
 			void LocoFunction(const ControlType controlType, const DataModel::Loco* loco, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
 			void LocoRelease(const LocoID locoID) override;
@@ -65,9 +65,9 @@ namespace WebServer
 			void LocoSpeed(const ControlType controlType, const DataModel::Loco* loco, const Speed speed) override;
 			void LocoStart(const LocoID locoID, const std::string& name) override;
 			void LocoStop(const LocoID locoID, const std::string& name) override;
-			void StreetDelete(const StreetID streetID, const std::string& name) override;
-			void StreetRelease(const StreetID streetID) override;
-			void StreetSettings(const StreetID streetID, const std::string& name) override;
+			void RouteDelete(const RouteID routeID, const std::string& name) override;
+			void RouteRelease(const RouteID routeID) override;
+			void RouteSettings(const RouteID routeID, const std::string& name) override;
 			void SwitchDelete(const SwitchID switchID, const std::string& name) override;
 			void SwitchSettings(const SwitchID switchID, const std::string& name) override;
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state) override;

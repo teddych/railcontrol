@@ -38,7 +38,7 @@ class Manager;
 namespace DataModel
 {
 	class ObjectIdentifier;
-	class Street;
+	class Route;
 	class TrackBase;
 
 	class Loco : public Object, public HardwareHandle
@@ -61,8 +61,8 @@ namespace DataModel
 				trackFrom(nullptr),
 				trackFirst(nullptr),
 				trackSecond(nullptr),
-				streetFirst(nullptr),
-				streetSecond(nullptr),
+				routeFirst(nullptr),
+				routeSecond(nullptr),
 				feedbackIdFirst(FeedbackNone),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
@@ -86,8 +86,8 @@ namespace DataModel
 				trackFrom(nullptr),
 				trackFirst(nullptr),
 				trackSecond(nullptr),
-				streetFirst(nullptr),
-				streetSecond(nullptr),
+				routeFirst(nullptr),
+				routeSecond(nullptr),
 				feedbackIdFirst(FeedbackNone),
 				feedbackIdReduced(FeedbackNone),
 				feedbackIdCreep(FeedbackNone),
@@ -138,7 +138,7 @@ namespace DataModel
 
 			bool IsInManualMode() const { return this->state == LocoStateManual; }
 			bool IsInAutoMode() const { return this->state != LocoStateManual && this->state != LocoStateTerminated; }
-			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackFrom != nullptr || this->streetFirst != nullptr; }
+			bool IsInUse() const { return this->speed > 0 || this->state != LocoStateManual || this->trackFrom != nullptr || this->routeFirst != nullptr; }
 
 			bool GetPushpull() const { return pushpull; }
 			Length GetLength() const { return length; }
@@ -161,7 +161,7 @@ namespace DataModel
 			void AutoMode();
 			void SearchDestinationFirst();
 			void SearchDestinationSecond();
-			DataModel::Street* SearchDestination(DataModel::TrackBase* oldToTrack, const bool allowLocoTurn);
+			DataModel::Route* SearchDestination(DataModel::TrackBase* oldToTrack, const bool allowLocoTurn);
 			void FeedbackIdFirstReached();
 			void FeedbackIdStopReached();
 			void DeleteSlaves();
@@ -200,8 +200,8 @@ namespace DataModel
 			TrackBase* trackFrom;
 			TrackBase* trackFirst;
 			TrackBase* trackSecond;
-			Street* streetFirst;
-			Street* streetSecond;
+			Route* routeFirst;
+			Route* routeSecond;
 			volatile FeedbackID feedbackIdFirst;
 			volatile FeedbackID feedbackIdReduced;
 			volatile FeedbackID feedbackIdCreep;

@@ -282,11 +282,11 @@ function onClickAccessory(accessoryID)
 	return false;
 }
 
-function onClickStreet(streetID)
+function onClickRoute(routeID)
 {
-	var element = document.getElementById('st_' + streetID);
-	var url = '/?cmd=streetexecute';
-	url += '&street=' + streetID;
+	var element = document.getElementById('r_' + routeID);
+	var url = '/?cmd=routeexecute';
+	url += '&route=' + routeID;
 	fireRequestAndForget(url);
 	return false;
 }
@@ -762,17 +762,17 @@ function dataUpdate(event)
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}
-	else if (command == 'streetsettings')
+	else if (command == 'routesettings')
 	{
-		var streetID = argumentMap.get('street');
-		elementName = 'st_' + streetID;
-		var url = '/?cmd=streetget';
-		url += '&street=' + streetID;
+		var routeID = argumentMap.get('route');
+		elementName = 'r_' + routeID;
+		var url = '/?cmd=routeget';
+		url += '&route=' + routeID;
 		requestUpdateLayoutItem(elementName, url);
 	}
-	else if (command == 'streetdelete')
+	else if (command == 'routedelete')
 	{
-		elementName = 'st_' + argumentMap.get('street');
+		elementName = 'r_' + argumentMap.get('route');
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
 	}

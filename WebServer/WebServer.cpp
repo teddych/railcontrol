@@ -42,7 +42,7 @@ using std::to_string;
 using std::vector;
 
 using DataModel::Loco;
-using DataModel::Street;
+using DataModel::Route;
 using DataModel::TrackBase;
 
 namespace WebServer {
@@ -173,18 +173,18 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextFeedbackDeleted, name);
 	}
 
-	void WebServer::StreetSettings(const StreetID streetID, const std::string& name)
+	void WebServer::RouteSettings(const RouteID routeID, const std::string& name)
 	{
 		stringstream command;
-		command << "streetsettings;street=" << streetID;
-		AddUpdate(command.str(), Languages::TextStreetUpdated, name);
+		command << "routesettings;route=" << routeID;
+		AddUpdate(command.str(), Languages::TextRouteUpdated, name);
 	}
 
-	void WebServer::StreetDelete(const StreetID streetID, const std::string& name)
+	void WebServer::RouteDelete(const RouteID routeID, const std::string& name)
 	{
 		stringstream command;
-		command << "streetdelete;street=" << streetID;
-		AddUpdate(command.str(), Languages::TextStreetDeleted, name);
+		command << "routedelete;route=" << routeID;
+		AddUpdate(command.str(), Languages::TextRouteDeleted, name);
 	}
 
 	void WebServer::SwitchState(__attribute__((unused)) const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state)
@@ -312,22 +312,22 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextLocoIsReleased, manager.GetLocoName(locoID));
 	}
 
-	void WebServer::StreetRelease(const StreetID streetID)
+	void WebServer::RouteRelease(const RouteID routeID)
 	{
 		stringstream command;
-		command << "streetRelease;street=" << streetID;
-		AddUpdate(command.str(), Languages::TextStreetIsReleased, manager.GetStreetName(streetID));
+		command << "routeRelease;route=" << routeID;
+		AddUpdate(command.str(), Languages::TextRouteIsReleased, manager.GetRouteName(routeID));
 	}
 
-	void WebServer::LocoDestinationReached(const Loco* loco, const Street* street, const TrackBase* track)
+	void WebServer::LocoDestinationReached(const Loco* loco, const Route* route, const TrackBase* track)
 	{
 		string command("locoDestinationReached;loco=");
 		command += to_string(loco->GetID());
-		command += ";street=";
-		command += to_string(street->GetID());
+		command += ";route=";
+		command += to_string(route->GetID());
 		command += ";";
 		command += track->GetObjectIdentifier();
-		AddUpdate(command, Languages::TextLocoHasReachedDestination, loco->GetName(), track->GetMyName(), street->GetName());
+		AddUpdate(command, Languages::TextLocoHasReachedDestination, loco->GetName(), track->GetMyName(), route->GetName());
 	}
 
 	void WebServer::LocoStart(const LocoID locoID, const std::string& name)

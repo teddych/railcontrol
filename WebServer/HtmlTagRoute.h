@@ -26,18 +26,18 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace DataModel
 {
-	class Street;
+	class Route;
 }
 
 namespace WebServer
 {
-	class HtmlTagStreet : public HtmlTagLayoutItem
+	class HtmlTagRoute : public HtmlTagLayoutItem
 	{
 		public:
-			HtmlTagStreet() = delete;
-			HtmlTagStreet(const DataModel::Street* street);
+			HtmlTagRoute() = delete;
+			HtmlTagRoute(const DataModel::Route* route);
 
-			virtual ~HtmlTagStreet() {}
+			virtual ~HtmlTagRoute() {}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{
