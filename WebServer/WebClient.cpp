@@ -2843,11 +2843,19 @@ namespace WebServer
 			string priorityString = to_string(relationId);
 			ObjectType objectType = static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_type"));
 			ObjectID objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_id", SwitchNone);
-			unsigned char state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_state");
 			if (objectId == 0 && objectType != ObjectTypeLoco)
 			{
 				continue;
 			}
+			if (objectId == fromTrack.GetObjectID() && objectType == fromTrack.GetObjectType())
+			{
+				continue;
+			}
+			if (objectId == toTrack.GetObjectID() && objectType == toTrack.GetObjectType())
+			{
+				continue;
+			}
+			unsigned char state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_state");
 			relationsAtLock.push_back(new Relation(&manager, ObjectTypeRoute, routeID, objectType, objectId, Relation::TypeRouteAtLock, priorityAtLock, state));
 			++priorityAtLock;
 		}
@@ -2859,11 +2867,19 @@ namespace WebServer
 			string priorityString = to_string(relationId);
 			ObjectType objectType = static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_type"));
 			ObjectID objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_id", SwitchNone);
-			unsigned char state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_state");
 			if (objectId == 0 && objectType != ObjectTypeLoco)
 			{
 				continue;
 			}
+			if (objectId == fromTrack.GetObjectID() && objectType == fromTrack.GetObjectType())
+			{
+				continue;
+			}
+			if (objectId == toTrack.GetObjectID() && objectType == toTrack.GetObjectType())
+			{
+				continue;
+			}
+			unsigned char state = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_state");
 			relationsAtUnlock.push_back(new Relation(&manager, ObjectTypeRoute, routeID, objectType, objectId, Relation::TypeRouteAtUnlock, priorityAtUnlock, state));
 			++priorityAtUnlock;
 		}
