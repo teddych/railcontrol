@@ -196,19 +196,29 @@ body {
 	border: 0px;
 }
 
+.button .tooltip {
+	top: 30px;
+}
+
+.layout_item .tooltip {
+	top: 32px;
+	left: 32px;
+}
+
+.button .tooltip,
 .layout_item .tooltip {
 	line-height: 1;
 	white-space: nowrap;
-	top: 25px;
 	visibility: hidden;
 	background-color: yellow;
 	border: solid 1px black;
-	border-radius: 5px;
+	border-radius: 0px 10px 10px 10px;
 	padding: 5px;
 	position: absolute;
 	z-index: 1;
 }
 
+.button:hover .tooltip,
 .layout_item:hover .tooltip {
 	visibility: visible;
 }

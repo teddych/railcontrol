@@ -31,10 +31,14 @@ namespace WebServer
 	{
 		public:
 			HtmlTagButton() = delete;
-			HtmlTagButton(const std::string& value, const std::string& command);
+			HtmlTagButton(const std::string& value,
+				const std::string& command,
+				const std::string& tooltipText = "");
 
-			HtmlTagButton(const Languages::TextSelector value, const std::string& command)
-			:	HtmlTagButton(Languages::GetText(value), command)
+			HtmlTagButton(const Languages::TextSelector value,
+				const std::string& command,
+				const std::string& tooltipText = "")
+			:	HtmlTagButton(Languages::GetText(value), command, tooltipText)
 			{}
 
 			virtual ~HtmlTagButton() {}

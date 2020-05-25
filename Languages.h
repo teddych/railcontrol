@@ -120,15 +120,26 @@ class Languages
 			TextDroppingTable,
 			TextDuration,
 			TextEdit,
+			TextEditAccessories,
 			TextEditAccessory,
+			TextEditControls,
 			TextEditFeedback,
+			TextEditFeedbacks,
+			TextEditLayers,
+			TextEditLocos,
 			TextEditRoute,
+			TextEditRoutes,
+			TextEditSettings,
 			TextEditSignal,
+			TextEditSignals,
 			TextEditSwitch,
+			TextEditSwitches,
 			TextEditTrack,
+			TextEditTracks,
 			TextEnglish,
 			TextError,
 			TextExecutingRoute,
+			TextExitRailControl,
 			TextFeedback,
 			TextFeedbackChange,
 			TextFeedbackDeleted,
@@ -335,6 +346,8 @@ class Languages
 			TextSenderSocketCreated,
 			TextSerialNumberIs,
 			TextSerialPort,
+			TextSetAllLocosToAutomode,
+			TextSetAllLocosToManualMode,
 			TextSetLoco,
 			TextSettingAccessory,
 			TextSettingAccessoryWithProtocol,
@@ -367,6 +380,7 @@ class Languages
 			TextStartLoco,
 			TextStartSignalTrack,
 			TextStarting,
+			TextStopAllLocos,
 			TextStopAt,
 			TextStopLoco,
 			TextStoppingRailControl,
@@ -416,6 +430,7 @@ class Languages
 			TextTurnDirectionOfTravelToRight,
 			TextTurningBoosterOff,
 			TextTurningBoosterOn,
+			TextTurningBoosterOnOrOff,
 			TextTurnout,
 			TextType,
 			TextUnabelToStoreLibraryAddress,
@@ -504,7 +519,7 @@ class Languages
 		{
 			if (language >= MaxLanguages || selector >= MaxTexts)
 			{
-				static const char* unknownText = "Unknown Text";
+				static const char* unknownText = "";
 				return unknownText;
 			}
 
