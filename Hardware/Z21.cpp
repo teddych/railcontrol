@@ -595,7 +595,7 @@ namespace Hardware
 				break;
 
 			case HeaderRmBusData:
-				logger->Warning(Languages::TextNotImplemented, __FILE__, __LINE__);
+				ParseRmBusData(buffer);
 				break;
 
 			case HeaderSystemData:
@@ -880,7 +880,40 @@ namespace Hardware
 		manager->ProgramValue(cv, value);
 	}
 
-	void Z21::ParseDetectorData(const unsigned char* buffer)
+	void Z21::ParseRmBusData(const unsigned char* buffer)
+	{
+		if (buffer[4] > 1)
+		{
+			return;
+		}
+		unsigned char moduleShift = buffer[4] * 10;
+		for (unsigned char index = 0; index < 10; ++index)
+		{
+			const unsigned char module = index + moduleShift;
+			const unsigned char newData = buffer[5 + index];
+			const unsigned char oldData = feedbackCache.Get(module);
+			if (newData == oldData)
+			{
+				continue;
+			}
+			const unsigned char diff = newData ^ oldData;
+			for (unsigned char pinOnModule = 0; pinOnModule < 8; ++pinOnModule)
+			{
+				const unsigned char pinDiff = (diff >> pinOnModule) & 0x01;
+				if (pinDiff == 0)
+				{
+					continue;
+				}
+				const unsigned char pinData = newData >> pinOnModule;
+				const unsigned char pin = module * 8 + pinOnModule + 1;
+				logger->Info(Languages::TextFeedbackChange, pin, module, Languages::GetOnOff(static_cast<DataModel::Feedback::FeedbackState>(pinData)));
+				manager->FeedbackState(controlID, pin, static_cast<DataModel::Feedback::FeedbackState>(pinData));
+			}
+			feedbackCache.Set(module, newData);
+		}
+	}
+
+	void Z21::ParseDetectorData(const unsigned char *buffer)
 	{
 		FeedbackPin pin = Utils::Utils::DataLittleEndianToShort(buffer + 6);
 		uint8_t port = buffer[8];

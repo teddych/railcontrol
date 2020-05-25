@@ -28,6 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/AccessoryBase.h"
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
+#include "Hardware/Z21FeedbackCache.h"
 #include "Hardware/Z21LocoCache.h"
 #include "Hardware/Z21TurnoutCache.h"
 #include "Logger/Logger.h"
@@ -227,6 +228,7 @@ namespace Hardware
 			std::thread accessorySenderThread;
 			Z21LocoCache locoCache;
 			Z21TurnoutCache turnoutCache;
+			Z21FeedbackCache feedbackCache;
 			ProgramMode lastProgramMode;
 			volatile bool connected;
 
@@ -247,6 +249,7 @@ namespace Hardware
 			void ParseTurnoutData(const unsigned char *buffer);
 			void ParseLocoData(const unsigned char* buffer);
 			void ParseCvData(const unsigned char* buffer);
+			void ParseRmBusData(const unsigned char* buffer);
 			void ParseDetectorData(const unsigned char* buffer);
 
 			void StartUpConnection();
