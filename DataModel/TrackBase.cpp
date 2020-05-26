@@ -20,7 +20,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <algorithm>
 #include <map>
-#include <sstream>
 #include <string>
 
 #include "DataModel/Feedback.h"
@@ -30,6 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 
 using std::map;
 using std::string;
+using std::to_string;
 using std::vector;
 
 namespace DataModel
@@ -49,19 +49,19 @@ namespace DataModel
 		str = "feedbacks=";
 		str += feedbackString;
 		str += ";selectrouteapproach=";
-		str += static_cast<int>(selectRouteApproach);
+		str += to_string(selectRouteApproach);
 		str += ";trackstate=";
-		str += static_cast<int>(trackState);
+		str += to_string(trackState);
 		str += ";trackstatedelayed=";
-		str += static_cast<int>(trackStateDelayed);
+		str += to_string(trackStateDelayed);
 		str += ";locoorientation=";
-		str += static_cast<int>(locoOrientation);
+		str += to_string(locoOrientation);
 		str += ";blocked=";
-		str += static_cast<int>(blocked);
+		str += to_string(blocked);
 		str += ";locodelayed=";
-		str += static_cast<int>(locoIdDelayed);
+		str += to_string(locoIdDelayed);
 		str += ";releasewhenfree=";
-		str += static_cast<int>(releaseWhenFree);
+		str += to_string(releaseWhenFree);
 		return str;
 	}
 
