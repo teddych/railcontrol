@@ -910,21 +910,21 @@ void Manager::AccessoryState(const ControlType controlType, const ControlID cont
 	Accessory* accessory = GetAccessory(controlID, protocol, address);
 	if (accessory != nullptr)
 	{
-		AccessoryState(controlType, accessory, state, true);
+		AccessoryState(controlType, accessory, accessory->CalculateInvertedAccessoryState(state), true);
 		return;
 	}
 
 	Switch* mySwitch = GetSwitch(controlID, protocol, address);
 	if (mySwitch != nullptr)
 	{
-		SwitchState(controlType, mySwitch, state, true);
+		SwitchState(controlType, mySwitch, mySwitch->CalculateInvertedAccessoryState(state), true);
 		return;
 	}
 
 	Signal* signal = GetSignal(controlID, protocol, address);
 	if (signal != nullptr)
 	{
-		SignalState(controlType, signal, state, true);
+		SignalState(controlType, signal, signal->CalculateInvertedAccessoryState(state), true);
 		return;
 	}
 }
@@ -954,21 +954,11 @@ void Manager::AccessoryState(const ControlType controlType, Accessory* accessory
 	}
 
 	accessory->SetAccessoryState(state);
-	const bool inverted = accessory->GetInverted();
 
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		DataModel::AccessoryState tempState;
-		if (control.first < ControlIdFirstHardware || inverted == false)
-		{
-			tempState = state;
-		}
-		else
-		{
-			tempState = (state == DataModel::AccessoryStateOn ? DataModel::AccessoryStateOff : DataModel::AccessoryStateOn);
-		}
-		control.second->AccessoryState(controlType, accessory, tempState);
+		control.second->AccessoryState(controlType, accessory);
 	}
 }
 
@@ -1636,21 +1626,11 @@ void Manager::SwitchState(const ControlType controlType, Switch* mySwitch, const
 	}
 
 	mySwitch->SetAccessoryState(state);
-	bool inverted = mySwitch->GetInverted();
 
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		DataModel::AccessoryState tempState;
-		if (control.first < ControlIdFirstHardware || inverted == false)
-		{
-			tempState = state;
-		}
-		else
-		{
-			tempState = (state == DataModel::SwitchStateStraight ? DataModel::SwitchStateTurnout : DataModel::SwitchStateStraight);
-		}
-		control.second->SwitchState(controlType, mySwitch, tempState);
+		control.second->SwitchState(controlType, mySwitch);
 	}
 }
 

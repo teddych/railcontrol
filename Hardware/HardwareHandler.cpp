@@ -388,7 +388,7 @@ namespace Hardware
 		instance->LocoSpeedOrientationFunctions(loco->GetProtocol(), loco->GetAddress(), speed, orientation, functions);
 	}
 
-	void HardwareHandler::AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::AccessoryState state)
+	void HardwareHandler::AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory)
 	{
 		if (controlType == ControlTypeHardware
 			|| instance == nullptr
@@ -397,10 +397,10 @@ namespace Hardware
 		{
 			return;
 		}
-		instance->Accessory(accessory->GetProtocol(), accessory->GetAddress(), state, accessory->GetAccessoryPulseDuration());
+		instance->Accessory(accessory->GetProtocol(), accessory->GetAddress(), accessory->GetInvertedAccessoryState(), accessory->GetAccessoryPulseDuration());
 	}
 
-	void HardwareHandler::SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state)
+	void HardwareHandler::SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch)
 	{
 		if (controlType == ControlTypeHardware
 			|| instance == nullptr
@@ -409,7 +409,7 @@ namespace Hardware
 		{
 			return;
 		}
-		instance->Accessory(mySwitch->GetProtocol(), mySwitch->GetAddress(), state, mySwitch->GetAccessoryPulseDuration());
+		instance->Accessory(mySwitch->GetProtocol(), mySwitch->GetAddress(), mySwitch->GetInvertedAccessoryState(), mySwitch->GetAccessoryPulseDuration());
 	}
 
 	void HardwareHandler::SignalState(const ControlType controlType, const DataModel::Signal* signal)
@@ -421,13 +421,7 @@ namespace Hardware
 		{
 			return;
 		}
-		bool inverted = signal->GetInverted();
-		DataModel::AccessoryState state = signal->GetAccessoryState();
-		if (inverted)
-		{
-			state = (state == DataModel::SignalStateRed ? DataModel::SignalStateGreen : DataModel::SignalStateGreen);
-		}
-		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), state, signal->GetAccessoryPulseDuration());
+		instance->Accessory(signal->GetProtocol(), signal->GetAddress(), signal->GetInvertedAccessoryState(), signal->GetAccessoryPulseDuration());
 	}
 
 	bool HardwareHandler::ProgramCheckValues(const ProgramMode mode, const CvNumber cv, const CvValue value)

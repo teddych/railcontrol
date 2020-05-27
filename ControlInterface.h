@@ -56,7 +56,7 @@ class ControlInterface
 		virtual void AccessoryProtocols(__attribute__((unused)) std::vector<Protocol>& protocols) const {};
 		virtual bool AccessoryProtocolSupported(__attribute__((unused)) Protocol protocol) const { return false; };
 		virtual void AccessorySettings(__attribute__((unused)) const AccessoryID accessoryID, __attribute__((unused)) const std::string& name) {}
-		virtual void AccessoryState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Accessory* accessory, __attribute__((unused)) const DataModel::AccessoryState state) {};
+		virtual void AccessoryState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Accessory* accessory) {};
 		virtual void ArgumentTypes(__attribute__((unused)) std::map<unsigned char,ArgumentType>& argumentTypes) const {}
 		virtual void Booster(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const BoosterState state) {};
 		virtual bool CanHandleAccessories() const { return false; }
@@ -88,7 +88,7 @@ class ControlInterface
 		virtual void RouteSettings(__attribute__((unused)) const RouteID routeID, __attribute__((unused)) const std::string& name) {};
 		virtual void SwitchDelete(__attribute__((unused)) const SwitchID switchID, __attribute__((unused)) const std::string& name) {};
 		virtual void SwitchSettings(__attribute__((unused)) const SwitchID switchID, __attribute__((unused)) const std::string& name) {};
-		virtual void SwitchState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Switch* mySwitch, __attribute__((unused)) const DataModel::AccessoryState state) {};
+		virtual void SwitchState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Switch* mySwitch) {};
 		virtual void TrackDelete(__attribute__((unused)) const TrackID trackID, __attribute__((unused)) const std::string& name) {};
 		virtual void TrackSettings(__attribute__((unused)) const TrackID trackID, __attribute__((unused)) const std::string& name) {};
 		virtual void TrackState(__attribute__((unused)) const DataModel::Track* track) {}

@@ -131,9 +131,10 @@ namespace WebServer {
 		AddUpdate(command.str(), state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
 	}
 
-	void WebServer::AccessoryState(__attribute__((unused)) const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::AccessoryState state)
+	void WebServer::AccessoryState(__attribute__((unused)) const ControlType controlType, const DataModel::Accessory* accessory)
 	{
 		stringstream command;
+		const DataModel::AccessoryState state = accessory->GetInvertedAccessoryState();
 		command << "accessory;accessory=" << accessory->GetID() << ";state=" << (state == DataModel::AccessoryStateOn ? "green" : "red");
 		AddUpdate(command.str(), state ? Languages::TextAccessoryStateIsGreen : Languages::TextAccessoryStateIsRed, accessory->GetName());
 	}
@@ -187,9 +188,10 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextRouteDeleted, name);
 	}
 
-	void WebServer::SwitchState(__attribute__((unused)) const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state)
+	void WebServer::SwitchState(__attribute__((unused)) const ControlType controlType, const DataModel::Switch* mySwitch)
 	{
 		stringstream command;
+		const DataModel::AccessoryState state = mySwitch->GetAccessoryState();
 		command << "switch;switch=" << mySwitch->GetID() << ";state=" << (state ? "straight" : "turnout");
 		AddUpdate(command.str(), state ? Languages::TextSwitchStateIsStraight : Languages::TextSwitchStateIsTurnout, mySwitch->GetName());
 	}
@@ -283,7 +285,7 @@ namespace WebServer {
 	void WebServer::SignalState(__attribute__((unused)) const ControlType controlType, const DataModel::Signal* signal)
 	{
 		stringstream command;
-		DataModel::AccessoryState state = signal->GetAccessoryState();
+		const DataModel::AccessoryState state = signal->GetInvertedAccessoryState();
 		command << "signal;signal=" << signal->GetID() << ";state=" << (state ? "green" : "red");
 		AddUpdate(command.str(), state ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, signal->GetName());
 		stringstream command2;

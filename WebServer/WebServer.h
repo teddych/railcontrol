@@ -49,7 +49,7 @@ namespace WebServer
 			const std::string GetName() const override { return "Webserver"; }
 			void AccessoryDelete(const AccessoryID accessoryID, const std::string& name) override;
 			void AccessorySettings(const AccessoryID accessoryID, const std::string& name) override;
-			void AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory, const DataModel::AccessoryState state) override;
+			void AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory) override;
 			void Booster(const ControlType controlType, const BoosterState status) override;
 			void FeedbackDelete(const FeedbackID feedbackID, const std::string& name) override;
 			void FeedbackSettings(const FeedbackID feedbackID, const std::string& name) override;
@@ -70,7 +70,7 @@ namespace WebServer
 			void RouteSettings(const RouteID routeID, const std::string& name) override;
 			void SwitchDelete(const SwitchID switchID, const std::string& name) override;
 			void SwitchSettings(const SwitchID switchID, const std::string& name) override;
-			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch, const DataModel::AccessoryState state) override;
+			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch) override;
 			void TrackDelete(const TrackID trackID, const std::string& name) override;
 			void TrackSettings(const TrackID trackID, const std::string& name) override;
 			void TrackState(const DataModel::Track* track) override;
