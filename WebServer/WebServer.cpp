@@ -134,7 +134,7 @@ namespace WebServer {
 	void WebServer::AccessoryState(__attribute__((unused)) const ControlType controlType, const DataModel::Accessory* accessory)
 	{
 		stringstream command;
-		const DataModel::AccessoryState state = accessory->GetInvertedAccessoryState();
+		const DataModel::AccessoryState state = accessory->GetAccessoryState();
 		command << "accessory;accessory=" << accessory->GetID() << ";state=" << (state == DataModel::AccessoryStateOn ? "green" : "red");
 		AddUpdate(command.str(), state ? Languages::TextAccessoryStateIsGreen : Languages::TextAccessoryStateIsRed, accessory->GetName());
 	}
@@ -285,7 +285,7 @@ namespace WebServer {
 	void WebServer::SignalState(__attribute__((unused)) const ControlType controlType, const DataModel::Signal* signal)
 	{
 		stringstream command;
-		const DataModel::AccessoryState state = signal->GetInvertedAccessoryState();
+		const DataModel::AccessoryState state = signal->GetAccessoryState();
 		command << "signal;signal=" << signal->GetID() << ";state=" << (state ? "green" : "red");
 		AddUpdate(command.str(), state ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, signal->GetName());
 		stringstream command2;
