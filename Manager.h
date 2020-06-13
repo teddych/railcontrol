@@ -307,6 +307,7 @@ class Manager
 		}
 
 		bool CanHandle(const Hardware::Capabilities capability) const;
+		Hardware::Capabilities GetCapabilities(const ControlID controlID) const;
 
 	private:
 		bool ControlIsOfHardwareType(const ControlID controlID, const HardwareType hardwareType);

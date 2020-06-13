@@ -530,6 +530,10 @@ namespace WebServer
 			{
 				HandleProgram();
 			}
+			else if (arguments["cmd"].compare("programmodeselector") == 0)
+			{
+				HandleProgramModeSelector(arguments);
+			}
 			else if (arguments["cmd"].compare("programread") == 0)
 			{
 				HandleProgramRead(arguments);
@@ -1963,11 +1967,12 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagControl(const string& name, const std::map<ControlID,string>& controls)
 	{
+		ControlID controlIdFirst = controls.begin()->first;
 		if (controls.size() == 1)
 		{
-			return HtmlTagInputHidden(name, to_string(controls.begin()->first));
+			return HtmlTagInputHidden("s_" + name, to_string(controlIdFirst));
 		}
-		return HtmlTagSelectWithLabel(name, Languages::TextControl, controls, ControlNone);
+		return HtmlTagSelectWithLabel(name, Languages::TextControl, controls, controlIdFirst).AddAttribute("onchange", "loadProgramModeSelector();");
 	}
 
 	HtmlTag WebClient::HtmlTagControlLoco(const ControlID controlID, const string& objectType, const ObjectID objectID)
@@ -3722,9 +3727,56 @@ namespace WebServer
 		ReplyHtmlWithHeader(HtmlTagControlArguments(hardwareType));
 	}
 
+	HtmlTag WebClient::HtmlTagProgramModeSelector(const ControlID controlID, ProgramMode& mode) const
+	{
+		Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);
+		map<ProgramMode, Languages::TextSelector> programModeOptions;
+		if (capabilities & Hardware::CapabilityProgramMmWrite)
+		{
+			programModeOptions[ProgramModeMm] = Languages::TextProgramModeMm;
+			if (mode == ProgramModeNone)
+			{
+				mode = ProgramModeMm;
+			}
+		}
+		if (capabilities & Hardware::CapabilityProgramMmPomWrite)
+		{
+			programModeOptions[ProgramModeMmPom] = Languages::TextProgramModeMmPom;
+			if (mode == ProgramModeNone)
+			{
+				mode = ProgramModeMm;
+			}
+		}
+		if (capabilities & (Hardware::CapabilityProgramMfxRead | Hardware::CapabilityProgramMfxWrite))
+		{
+			programModeOptions[ProgramModeMfx] = Languages::TextProgramModeMfx;
+			if (mode == ProgramModeNone)
+			{
+				mode = ProgramModeMfx;
+			}
+		}
+		if (capabilities & (Hardware::CapabilityProgramDccDirectRead | Hardware::CapabilityProgramDccDirectWrite))
+		{
+			programModeOptions[ProgramModeDccDirect] = Languages::TextProgramModeDccDirect;
+			if (mode == ProgramModeNone)
+			{
+				mode = ProgramModeDccDirect;
+			}
+		}
+		if (capabilities & (Hardware::CapabilityProgramDccPomRead | Hardware::CapabilityProgramDccPomWrite))
+		{
+			programModeOptions[ProgramModeDccPomLoco] = Languages::TextProgramModeDccPomLoco;
+			programModeOptions[ProgramModeDccPomAccessory] = Languages::TextProgramModeDccPomAccessory;
+			if (mode == ProgramModeNone)
+			{
+				mode = ProgramModeDccPomLoco;
+			}
+		}
+		return HtmlTagSelectWithLabel("moderaw", Languages::TextProgramMode, programModeOptions, mode).AddAttribute("onchange", "onChangeProgramModeSelector();");
+	}
+
 	void WebClient::HandleProgram()
 	{
-		std::map<ControlID,string> controls = manager.ProgramControlListNames();
 		unsigned int controlCountMm = 0;
 		unsigned int controlCountDcc = 0;
 		HtmlTag content;
@@ -3745,20 +3797,40 @@ namespace WebServer
 		programContent.AddClass("popup_content");
 
 		HtmlTag rawContent("div");
-		rawContent.AddAttribute("id", "tab_raw");
+		rawContent.AddId("tab_raw");
 		rawContent.AddClass("tab_content");
 		rawContent.AddClass("narrow_label");
-		rawContent.AddChildTag(HtmlTagControl("controlraw", controls));
+		std::map<ControlID,string> controls = manager.ProgramControlListNames();
+		if (controls.size() == 0)
+		{
+			ReplyHtmlWithHeader(HtmlTag("p").AddContent(Languages::TextNoControlSupportsProgramming));
+		}
+		HtmlTag controlSelector = HtmlTagControl("controlraw", controls);
+		rawContent.AddChildTag(controlSelector);
 
-		map<ProgramMode,Languages::TextSelector> programModeOptions;
-		programModeOptions[ProgramModeMm] = Languages::TextProgramModeMm;
-		//programModeOptions[ProgramModeMmPom] = Languages::TextProgramModeMmPom;
-		programModeOptions[ProgramModeDccDirect] = Languages::TextProgramModeDccDirect;
-		programModeOptions[ProgramModeDccPomLoco] = Languages::TextProgramModeDccPomLoco;
-		programModeOptions[ProgramModeDccPomAccessory] = Languages::TextProgramModeDccPomAccessory;
-		rawContent.AddChildTag(HtmlTagSelectWithLabel("moderaw", Languages::TextProgramMode, programModeOptions, ProgramModeDccDirect));
+		ControlID controlIdFirst = controls.begin()->first;
+		HtmlTag programModeSelector("div");
+		programModeSelector.AddId("program_mode_selector");
+		ProgramMode programMode = ProgramModeNone;
+		programModeSelector.AddChildTag(HtmlTagProgramModeSelector(controlIdFirst, programMode));
+		rawContent.AddChildTag(programModeSelector);
 
-		rawContent.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0x4000));
+		HtmlTag addressSelector("div");
+		addressSelector.AddId("address_selector");
+		addressSelector.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0x4000));
+		switch(programMode)
+		{
+			case ProgramModeMmPom:
+			case ProgramModeMfx:
+			case ProgramModeDccPomLoco:
+			case ProgramModeDccPomAccessory:
+				break;
+
+			default:
+				addressSelector.AddClass("hidden");
+				break;
+		}
+		rawContent.AddChildTag(addressSelector);
 		rawContent.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 1, 1, 1024));
 		rawContent.AddChildTag(HtmlTagInputIntegerWithLabel("valueraw", Languages::TextValue, 0, 0, 255));
 		HtmlTagButton readButton(Languages::TextRead, "programread");
@@ -3788,6 +3860,13 @@ namespace WebServer
 		content.AddChildTag(programContent);
 		content.AddChildTag(HtmlTagButtonCancel());
 		ReplyHtmlWithHeader(content);
+	}
+
+	void WebClient::HandleProgramModeSelector(const map<string, string>& arguments)
+	{
+		ControlID controlID = static_cast<ControlID>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		ProgramMode mode = static_cast<ProgramMode>(Utils::Utils::GetIntegerMapEntry(arguments, "mode"));
+		return ReplyHtmlWithHeader(HtmlTagProgramModeSelector(controlID, mode));
 	}
 
 	void WebClient::HandleProgramRead(const map<string, string>& arguments)

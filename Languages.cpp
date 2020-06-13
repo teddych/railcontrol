@@ -253,6 +253,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextNetworkUnreachable */ { "Network of {0}:{1} unreachable", "Netzwerk von {0}:{1} nicht erreichbar", "Red de {0}:{1} inaccesible" },
 /* TextNew */ { "New", "Neu", "Nuevo" },
 /* TextNoAnswerFromDecoder */ { "No answer from decoder", "Keine Antwort vom Decoder", "Ninguna respuesta del decoder" },
+/* TextNoControlSupportsProgramming */ { "No control supports decoder programming", "Keine Zentrale unterstützt die Decoder-Programmierung", "Ningun control está soportando la programación de decoders" },
 /* TextNoPushPull */ { "no push-pull trains", "keine Wendezüge", "ningunos push-pull trenes" },
 /* TextNoRotation */ { "No rotation", "Keine Drehung", "Ninguna rotación" },
 /* TextNoS88Modules */ { "No S88 modules configured", "Keine S88 Module konfiguriert", "No hay módulos S88 configurado" },

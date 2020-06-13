@@ -24,14 +24,16 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	enum Capabilities : uint32_t
+	typedef uint32_t Capability;
+	enum Capabilities : Capability
 	{
 		CapabilityNone                    = 0x00000000,
 		CapabilityLoco                    = 0x00000001,
 		CapabilityAccessory               = 0x00000002,
 		CapabilityFeedback                = 0x00000004,
-		CapabilityProgram                 = 0x00000010,
-		CapabilityProgramMmWrite          = 0x00000020,
+		CapabilityProgram                 = 0x00000008,
+		CapabilityProgramMmWrite          = 0x00000010,
+		CapabilityProgramMmPomWrite       = 0x00000020,
 		CapabilityProgramMfxRead          = 0x00000040,
 		CapabilityProgramMfxWrite         = 0x00000080,
 		CapabilityProgramDccRegisterRead  = 0x00000100,
@@ -42,8 +44,13 @@ namespace Hardware
 		CapabilityProgramDccPomWrite      = 0x00002000,
 	};
 
+	inline Capabilities operator& (const Capabilities c1, const Capabilities c2)
+	{
+		return static_cast<Capabilities>(static_cast<Capability>(c1) & static_cast<Capability>(c2));
+	}
+
 	inline Capabilities operator| (const Capabilities c1, const Capabilities c2)
 	{
-		return static_cast<Capabilities>(static_cast<uint32_t>(c1) | static_cast<uint32_t>(c2));
+		return static_cast<Capabilities>(static_cast<Capability>(c1) | static_cast<Capability>(c2));
 	}
-};
+}

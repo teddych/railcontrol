@@ -1,6 +1,6 @@
 function onClickProgramRead(cv)
 {
-	var controlElement = document.getElementById('controlraw');
+	var controlElement = document.getElementById('s_controlraw');
 	if (!controlElement)
 	{
 		return false;
@@ -35,7 +35,7 @@ function onClickProgramRead(cv)
 
 function onClickProgramWrite()
 {
-	var controlElement = document.getElementById('controlraw');
+	var controlElement = document.getElementById('s_controlraw');
 	if (!controlElement)
 	{
 		return false;
@@ -72,6 +72,58 @@ function onClickProgramWrite()
 	var url = '?cmd=programwrite&control=' + control + '&mode=' + mode + '&address=' + address + '&cv=' + cv + '&value=' + value;
 	fireRequestAndForget(url);
 	return false;
+}
+
+function loadProgramModeSelector()
+{
+	var selectControl = document.getElementById('s_controlraw');
+	if (!selectControl)
+	{
+		return;
+	}
+	var control = selectControl.value;
+
+	var modeElement = document.getElementById('s_moderaw');
+	if (!modeElement)
+	{
+		return false;
+	}
+	var mode = modeElement.value;
+
+	var elementName = 'program_mode_selector';
+	var url = '/?cmd=programmodeselector';
+	url += '&control=' + control;
+	url += '&mode=' + mode;
+	requestUpdateItem(elementName, url);
+}
+
+function onChangeProgramModeSelector()
+{
+	var modeElement = document.getElementById('s_moderaw');
+	if (!modeElement)
+	{
+		return false;
+	}
+	var mode = modeElement.value;
+
+	var addressElement = document.getElementById('address_selector');
+	if (!addressElement)
+	{
+		return false;
+	}
+	switch (mode)
+	{
+		case "2": // MM POM
+		case "3": // mfx
+		case "5": // DCC POM loco
+		case "6": // DCC POM accessory
+			addressElement.classList.remove("hidden");
+			break;
+
+		default:
+			addressElement.classList.add("hidden");
+			break;
+	}
 }
 
 function updateName()

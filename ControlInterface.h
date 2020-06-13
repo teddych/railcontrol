@@ -61,7 +61,11 @@ class ControlInterface
 		virtual void ArgumentTypes(__attribute__((unused)) std::map<unsigned char,ArgumentType>& argumentTypes) const {}
 		virtual void Booster(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const BoosterState state) {};
 		virtual Hardware::Capabilities GetCapabilities() const { return Hardware::CapabilityNone; }
-		virtual bool CanHandle(const Hardware::Capabilities capability) const { return capability == (GetCapabilities() & capability); }
+		inline bool CanHandle(const Hardware::Capabilities capability) const
+		{
+			Hardware::Capabilities hardwareCapabilities = GetCapabilities();
+			return capability == (hardwareCapabilities & capability);
+		}
 		virtual void FeedbackDelete(__attribute__((unused)) const FeedbackID feedbackID, __attribute__((unused)) const std::string& name) {}
 		virtual void FeedbackSettings(__attribute__((unused)) const FeedbackID feedbackID, __attribute__((unused)) const std::string& name) {}
 		virtual void FeedbackState(__attribute__((unused)) const std::string& name, __attribute__((unused)) const FeedbackID feedbackID, __attribute__((unused)) const DataModel::Feedback::FeedbackState state) {};

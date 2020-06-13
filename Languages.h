@@ -253,6 +253,7 @@ class Languages
 			TextNetworkUnreachable,
 			TextNew,
 			TextNoAnswerFromDecoder,
+			TextNoControlSupportsProgramming,
 			TextNoPushPull,
 			TextNoRotation,
 			TextNoS88Modules,

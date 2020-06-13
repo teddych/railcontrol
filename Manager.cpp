@@ -558,7 +558,11 @@ const std::map<ControlID,std::string> Manager::ProgramControlListNames() const
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (control.second->GetControlType() != ControlTypeHardware || control.second->CanHandle(Hardware::CapabilityProgram) == false)
+		if (control.second->GetControlType() != ControlTypeHardware)
+		{
+			continue;
+		}
+		if (control.second->CanHandle(Hardware::CapabilityProgram) == false)
 		{
 			continue;
 		}
@@ -3084,6 +3088,17 @@ bool Manager::CanHandle(const Hardware::Capabilities capability) const
 	}
 	return false;
 }
+
+Hardware::Capabilities Manager::GetCapabilities(const ControlID controlID) const
+{
+	ControlInterface* control = GetControl(controlID);
+	if (control == nullptr)
+	{
+		return Hardware::CapabilityNone;
+	}
+	return control->GetCapabilities();
+}
+
 
 Hardware::HardwareParams* Manager::CreateAndAddControl()
 {

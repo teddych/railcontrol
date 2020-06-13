@@ -329,14 +329,18 @@ label {
 	display: inline-block;
 }
 
+.input_select_with_label,
 .input_integer_with_label {
 	min-width: 320px;
 	display: inline-block;
 }
 
-.narrow_label label
-{
+.narrow_label label {
 	width: 120px;
+}
+
+.narrow_label select {
+	width: 450px;
 }
 
 .integer {
