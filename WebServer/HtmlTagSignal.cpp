@@ -66,4 +66,4 @@ namespace WebServer
 		AddContextMenuEntry(Languages::TextDeleteSignal, "loadPopup('/?cmd=signalaskdelete&" + urlIdentifier + "');");
 		FinishInit();
 	}
-};
+} // namespace WebServer

@@ -34,7 +34,7 @@ along with RailControl; see the file LICENCE. If not see
 namespace DataModel
 {
 	class ObjectIdentifier;
-};
+}
 
 namespace WebServer
 {
@@ -253,5 +253,5 @@ namespace WebServer
 			unsigned int buttonID;
 	};
 
-}; // namespace webserver
+} // namespace WebServer
 

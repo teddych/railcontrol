@@ -100,5 +100,5 @@ namespace WebServer
 			const unsigned int MaxUpdates = 10;
 			const std::string updateStatus = "data: status=";
 	};
-}; // namespace webserver
+} // namespace WebServer
 

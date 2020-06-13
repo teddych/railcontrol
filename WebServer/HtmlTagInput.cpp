@@ -33,4 +33,4 @@ namespace WebServer
 			AddAttribute("value", value);
 		}
 	}
-};
+} // namespace WebServer

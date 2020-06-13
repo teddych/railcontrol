@@ -2,7 +2,7 @@
 CCRASPI=aarch64-linux-gcc
 CXXRASPI=aarch64-linux-g++
 
-CXXFLAGS=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
+CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -std=c++11
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
 CXXFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
 LDFLAGS=-g -Wl,--export-dynamic

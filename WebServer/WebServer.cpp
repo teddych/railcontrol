@@ -408,4 +408,4 @@ namespace WebServer {
 		return false;
 	}
 
-}; // namespace WebServer
+} // namespace WebServer

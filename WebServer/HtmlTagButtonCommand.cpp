@@ -44,4 +44,4 @@ namespace WebServer
 		ss << "return false;";
 		AddAttribute("onclick", ss.str());
 	}
-};
+} // namespace WebServer

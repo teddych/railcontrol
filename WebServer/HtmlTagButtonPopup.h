@@ -58,4 +58,4 @@ namespace WebServer
 			:	HtmlTagButtonPopup(value, command, std::map<std::string,std::string>(), Languages::GetText(tooltip))
 			{}
 	};
-};
+} // namespace WebServer

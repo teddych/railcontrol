@@ -40,5 +40,5 @@ namespace WebServer
 				AddChildTag(HtmlTagJavascript(content));
 			}
 	};
-};
+} // namespace WebServer
 

@@ -61,4 +61,4 @@ namespace WebServer
 			AddChildTag(optionTag);
 		}
 	}
-};
+} // namespace WebServer

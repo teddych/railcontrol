@@ -65,4 +65,4 @@ namespace WebServer
 			:	HtmlTagButtonCommand(value, command, std::map<std::string,std::string>(), tooltip)
 			{}
 	};
-};
+} // namespace WebServer

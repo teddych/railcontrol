@@ -123,5 +123,5 @@ namespace WebServer
 				}
 			}
 	};
-};
+} // namespace WebServer
 

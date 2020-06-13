@@ -63,4 +63,4 @@ namespace WebServer
 		protected:
 			const std::string commandID;
 	};
-};
+} // namespace WebServer

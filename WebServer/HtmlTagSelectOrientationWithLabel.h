@@ -52,5 +52,5 @@ namespace WebServer
 				return *this;
 			}
 	};
-};
+} // namespace WebServer
 

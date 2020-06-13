@@ -43,4 +43,4 @@ namespace WebServer
 			:	HtmlTagButtonCommandToggle(value, command, on, std::map<std::string,std::string>(), Languages::GetText(tooltip))
 			{}
 	};
-};
+} // namespace WebServer

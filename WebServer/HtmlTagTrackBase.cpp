@@ -238,4 +238,4 @@ namespace WebServer
 		menuContentDiv.AddChildTag(li);
 	}
 
-};
+} // namespace WebServer

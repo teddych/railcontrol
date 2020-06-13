@@ -4095,4 +4095,4 @@ namespace WebServer
 
 		connection->Send(HtmlFullResponse("RailControl", body));
 	}
-}; // namespace webserver
+} // namespace WebServer

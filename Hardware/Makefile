@@ -1,5 +1,5 @@
 
-CXXFLAGS=-I. -I.. -g -fpic -O2 -Wall -Wextra -Werror -std=c++11
+CXXFLAGS=-I. -I.. -g -fpic -O2 -Wall -Wextra -pedantic -Werror -std=c++11
 LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \

@@ -93,5 +93,5 @@ namespace WebServer
 
 			friend std::ostream& operator<<(std::ostream& stream, const HtmlTag& tag);
 	};
-}; // namespace WebServer
+} // namespace WebServer
 

@@ -37,5 +37,5 @@ namespace WebServer
 				AddContent(javascript);
 			};
 	};
-};
+}
 

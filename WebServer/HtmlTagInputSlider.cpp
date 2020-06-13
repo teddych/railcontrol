@@ -31,4 +31,4 @@ namespace WebServer
 		inputTag.AddAttribute("value", std::to_string(value));
 		AddChildTag(inputTag);
 	}
-};
+} // namespace WebServer

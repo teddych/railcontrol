@@ -41,4 +41,4 @@ namespace WebServer
 		}
 		AddChildTag(buttonTag);
 	}
-};
+} // namespace WebServer

@@ -95,5 +95,5 @@ namespace Hardware
 			void Close();
 			bool ProgramCheckValues(const ProgramMode mode, const CvNumber cv, const CvValue value = 1);
 	};
-}; // namespace Hardware
+} // namespace Hardware
 

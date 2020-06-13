@@ -31,5 +31,5 @@ namespace WebServer
 		AddClass("slider");
 		AddAttribute("onchange", "locoSpeedSliderChange(" + locoIdString + "); return false;");
 		AddAttribute("oninput", "locoSpeedSliderChange(" + locoIdString + "); return false;");
-	};
-};
+	}
+} // namespace WebServer

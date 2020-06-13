@@ -32,5 +32,5 @@ namespace WebServer
 			HtmlTagInputInteger() = delete;
 			HtmlTagInputInteger(const std::string& name, const int value, const int min, const int max);
 	};
-};
+} // namespace WebServer
 

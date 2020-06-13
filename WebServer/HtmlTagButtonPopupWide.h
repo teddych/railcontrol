@@ -38,4 +38,4 @@ namespace WebServer
 				AddClass("wide_button");
 			}
 	};
-};
+} // namespace WebServer
