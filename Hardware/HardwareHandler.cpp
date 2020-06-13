@@ -223,84 +223,14 @@ namespace Hardware
 		return instance->GetName();
 	}
 
-	bool HardwareHandler::CanHandleLocos() const
+	Hardware::Capabilities HardwareHandler::GetCapabilities() const
 	{
 		if (instance == nullptr)
 		{
-			return false;
+			return Hardware::CapabilityNone;
 		}
 
-		return instance->CanHandleLocos();
-	}
-
-	bool HardwareHandler::CanHandleAccessories() const
-	{
-		if (instance == nullptr)
-		{
-			return false;
-		}
-
-		return instance->CanHandleAccessories();
-	}
-
-	bool HardwareHandler::CanHandleFeedbacks() const
-	{
-		if (instance == nullptr)
-		{
-			return false;
-		}
-
-		return instance->CanHandleFeedback();
-	}
-
-	bool HardwareHandler::CanHandleProgram() const
-	{
-		if (instance == nullptr)
-		{
-			return false;
-		}
-
-		return instance->CanHandleProgram();
-	}
-
-	bool HardwareHandler::CanHandleProgramMm() const
-	{
-		if (instance == nullptr)
-		{
-			return false;
-		}
-
-		return instance->CanHandleProgramMm();
-	}
-
-	bool HardwareHandler::CanHandleProgramMfx() const
-	{
-		if (instance == nullptr)
-		{
-			return false;
-		}
-
-		return instance->CanHandleProgramMfx();
-	}
-
-	bool HardwareHandler::CanHandleProgramDccDirect() const
-	{
-		if (instance == nullptr)
-		{
-			return false;
-		}
-
-		return instance->CanHandleProgramDccDirect();
-	}
-
-	bool HardwareHandler::CanHandleProgramDccPom() const
-	{
-		if (instance == nullptr)
-		{
-			return false;
-		}
-
-		return instance->CanHandleProgramDccPom();
+		return instance->GetCapabilities();
 	}
 
 	void HardwareHandler::LocoProtocols(std::vector<Protocol>& protocols) const

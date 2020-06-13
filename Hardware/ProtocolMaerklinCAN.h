@@ -23,6 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/AccessoryBase.h"
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
+#include "Hardware/Capabilities.h"
 #include "Logger/Logger.h"
 #include "Utils/Utils.h"
 
@@ -35,13 +36,19 @@ namespace Hardware
 		public:
 			ProtocolMaerklinCAN() = delete;
 
-			bool CanHandleLocos() const override { return true; }
-			bool CanHandleAccessories() const override { return true; }
-			bool CanHandleFeedback() const override { return true; }
-			bool CanHandleProgram() const override { return false; }
-			bool CanHandleProgramMm() const override { return true; }
-			bool CanHandleProgramMfx() const override { return true; }
-			bool CanHandleProgramDccDirect() const override { return true; }
+			inline Hardware::Capabilities GetCapabilities() const override
+			{
+				return Hardware::CapabilityLoco
+					| Hardware::CapabilityAccessory
+					| Hardware::CapabilityFeedback
+					//| Hardware::CapabilityProgram
+					| Hardware::CapabilityProgramMmWrite
+					| Hardware::CapabilityProgramMfxRead
+					| Hardware::CapabilityProgramMfxWrite
+					| Hardware::CapabilityProgramDccDirectRead
+					| Hardware::CapabilityProgramDccDirectWrite
+					| Hardware::CapabilityProgramDccPomWrite;
+			}
 
 			void GetLocoProtocols(std::vector<Protocol> &protocols) const override
 			{

@@ -33,9 +33,12 @@ namespace Hardware
 			Ecos(const HardwareParams* params);
 			~Ecos();
 
-			bool CanHandleLocos() const override { return true; }
-			bool CanHandleAccessories() const override { return true; }
-			bool CanHandleFeedback() const override { return true; }
+			inline Hardware::Capabilities GetCapabilities() const override
+			{
+				return Hardware::CapabilityLoco
+					| Hardware::CapabilityAccessory
+					| Hardware::CapabilityFeedback;
+			}
 
 			void GetLocoProtocols(std::vector<Protocol>& protocols) const override
 			{

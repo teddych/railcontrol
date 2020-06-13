@@ -35,9 +35,12 @@ namespace Hardware
 			M6051(const HardwareParams* params);
 			~M6051();
 
-			bool CanHandleLocos() const override { return true; }
-			bool CanHandleAccessories() const override { return true; }
-			bool CanHandleFeedback() const override { return true; }
+			inline Hardware::Capabilities GetCapabilities() const override
+			{
+				return Hardware::CapabilityLoco
+					| Hardware::CapabilityAccessory
+					| Hardware::CapabilityFeedback;
+			}
 
 			void GetLocoProtocols(std::vector<Protocol>& protocols) const override { protocols.push_back(ProtocolMM2); }
 

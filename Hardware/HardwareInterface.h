@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataModel/AccessoryBase.h"
 #include "DataTypes.h"
+#include "Hardware/Capabilities.h"
 #include "Manager.h"
 #include "Utils/Utils.h"
 
@@ -48,29 +49,8 @@ namespace Hardware
 			// get the name of the hardware
 			const std::string GetName() const { return name; }
 
-			// can this control handle locos
-			virtual bool CanHandleLocos() const { return false; }
-
-			// can this control handle accessories, switches, ...
-			virtual bool CanHandleAccessories() const { return false; }
-
-			// can this control handle feedback
-			virtual bool CanHandleFeedback() const { return false; }
-
-			// can this control handle program
-			virtual bool CanHandleProgram() const { return false; }
-
-			// can this control handle program Märklin Motorola
-			virtual bool CanHandleProgramMm() const { return false; }
-
-			// can this control handle program mfx
-			virtual bool CanHandleProgramMfx() const { return false; }
-
-			// can this control handle programming DCC CV
-			virtual bool CanHandleProgramDccDirect() const { return false; }
-
-			// can this control handle programming DCC CV POM
-			virtual bool CanHandleProgramDccPom() const { return false; }
+			// get hardware capabilities
+			virtual Hardware::Capabilities GetCapabilities() const = 0;
 
 			// get available loco protocols of this control
 			virtual void GetLocoProtocols(__attribute__((unused)) std::vector<Protocol>& protocols) const {};

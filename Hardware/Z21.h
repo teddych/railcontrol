@@ -67,13 +67,18 @@ namespace Hardware
 			Z21(const HardwareParams* params);
 			~Z21();
 
-			bool CanHandleLocos() const override { return true; }
-			bool CanHandleAccessories() const override { return true; }
-			bool CanHandleFeedback() const override { return true; }
-			bool CanHandleProgram() const override { return true; }
-			bool CanHandleProgramMm() const override { return true; }
-			bool CanHandleProgramDccDirect() const override { return true; }
-			bool CanHandleProgramDccPom() const override { return true; }
+			inline Hardware::Capabilities GetCapabilities() const override
+			{
+				return Hardware::CapabilityLoco
+					| Hardware::CapabilityAccessory
+					| Hardware::CapabilityFeedback
+					| Hardware::CapabilityProgram
+					| Hardware::CapabilityProgramMmWrite
+					| Hardware::CapabilityProgramDccDirectRead
+					| Hardware::CapabilityProgramDccDirectWrite
+					| Hardware::CapabilityProgramDccPomRead
+					| Hardware::CapabilityProgramDccPomWrite;
+			}
 
 			void GetLocoProtocols(std::vector<Protocol>& protocols) const override
 			{

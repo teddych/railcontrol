@@ -306,10 +306,7 @@ class Manager
 			manager->ProgramValue(cv, value);
 		}
 
-		bool CanHandleProgram();
-		bool CanHandleProgramMm();
-		bool CanHandleProgramDccRead();
-		bool CanHandleProgramDccWrite();
+		bool CanHandle(const Hardware::Capabilities capability) const;
 
 	private:
 		bool ControlIsOfHardwareType(const ControlID controlID, const HardwareType hardwareType);

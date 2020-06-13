@@ -507,7 +507,7 @@ const std::map<ControlID,std::string> Manager::LocoControlListNames() const
 			continue;
 		}
 		ControlInterface* c = controls.at(hardware.second->GetControlID());
-		if (c->CanHandleLocos() == false)
+		if (c->CanHandle(Hardware::CapabilityLoco) == false)
 		{
 			continue;
 		}
@@ -528,7 +528,7 @@ const std::map<ControlID,std::string> Manager::AccessoryControlListNames() const
 			continue;
 		}
 		ControlInterface* c = controls.at(hardware.second->GetControlID());
-		if (c->CanHandleAccessories() == false)
+		if (c->CanHandle(Hardware::CapabilityAccessory) == false)
 		{
 			continue;
 		}
@@ -543,7 +543,7 @@ const std::map<ControlID,std::string> Manager::FeedbackControlListNames() const
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (control.second->GetControlType() != ControlTypeHardware || control.second->CanHandleFeedbacks() == false)
+		if (control.second->GetControlType() != ControlTypeHardware || control.second->CanHandle(Hardware::CapabilityFeedback) == false)
 		{
 			continue;
 		}
@@ -558,7 +558,7 @@ const std::map<ControlID,std::string> Manager::ProgramControlListNames() const
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (control.second->GetControlType() != ControlTypeHardware || control.second->CanHandleProgram() == false)
+		if (control.second->GetControlType() != ControlTypeHardware || control.second->CanHandle(Hardware::CapabilityProgram) == false)
 		{
 			continue;
 		}
@@ -2072,7 +2072,7 @@ const map<string,LayerID> Manager::LayerListByNameWithFeedback() const
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		if (!control.second->CanHandleFeedbacks())
+		if (!control.second->CanHandle(Hardware::CapabilityFeedback))
 		{
 			continue;
 		}
@@ -2989,7 +2989,7 @@ ControlID Manager::GetControlForLoco() const
 {
 	for (auto control : controls)
 	{
-		if (control.second->CanHandleLocos())
+		if (control.second->CanHandle(Hardware::CapabilityLoco))
 		{
 			return control.first;
 		}
@@ -3001,7 +3001,7 @@ ControlID Manager::GetControlForAccessory() const
 {
 	for (auto control : controls)
 	{
-		if (control.second->CanHandleAccessories())
+		if (control.second->CanHandle(Hardware::CapabilityAccessory))
 		{
 			return control.first;
 		}
@@ -3013,7 +3013,7 @@ ControlID Manager::GetControlForFeedback() const
 {
 	for (auto control : controls)
 	{
-		if (control.second->CanHandleFeedbacks())
+		if (control.second->CanHandle(Hardware::CapabilityFeedback))
 		{
 			return control.first;
 		}
@@ -3071,54 +3071,12 @@ void Manager::ProgramValue(const CvNumber cv, const CvValue value)
 	}
 }
 
-bool Manager::CanHandleProgram()
+bool Manager::CanHandle(const Hardware::Capabilities capability) const
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		bool ret = control.second->CanHandleProgram();
-		if (ret == true)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-bool Manager::CanHandleProgramMm()
-{
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto control : controls)
-	{
-		bool ret = control.second->CanHandleProgramMm();
-		if (ret == true)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-bool Manager::CanHandleProgramDccRead()
-{
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto control : controls)
-	{
-		bool ret = control.second->CanHandleProgramDccPom();
-		if (ret == true)
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
-bool Manager::CanHandleProgramDccWrite()
-{
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto control : controls)
-	{
-		bool ret = control.second->CanHandleProgramDccDirect();
+		bool ret = control.second->CanHandle(capability);
 		if (ret == true)
 		{
 			return true;

@@ -68,14 +68,7 @@ namespace Hardware
 			void AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory) override;
 
 			void Booster(const ControlType controlType, BoosterState status) override;
-			bool CanHandleAccessories() const override;
-			bool CanHandleFeedbacks() const override;
-			bool CanHandleLocos() const override;
-			bool CanHandleProgram() const override;
-			bool CanHandleProgramMm() const override;
-			bool CanHandleProgramMfx() const override;
-			bool CanHandleProgramDccDirect() const override;
-			bool CanHandleProgramDccPom() const override;
+			Hardware::Capabilities GetCapabilities() const override;
 			void LocoOrientation(const ControlType controlType, const DataModel::Loco* loco, const Orientation orientation) override;
 			void LocoFunction(const ControlType controlType, const DataModel::Loco* loco, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
 			void LocoProtocols(std::vector<Protocol>& protocols) const override;
