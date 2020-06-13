@@ -83,7 +83,7 @@ namespace WebServer
 		menuDiv.AddClass(reserved ? "loco_known" : "loco_unknown");
 		menuDiv.AddClass(blocked ? "track_blocked" : "track_unblocked");
 		menuDiv.AddClass(track->GetLocoOrientation() == OrientationRight ? "orientation_right" : "orientation_left");
-		menuDiv.AddAttribute("id", identifier + "_context");
+		menuDiv.AddId(identifier + "_context");
 		menuDiv.AddAttribute("style", "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;");
 
 		const string& trackName = track->GetMyName();
@@ -100,7 +100,7 @@ namespace WebServer
 		AddContextMenuEntry(Languages::TextStartLoco, "fireRequestAndForget('/?cmd=trackstartloco&" + urlIdentifier + "');", "track_start_loco");
 		AddContextMenuEntry(Languages::TextStopLoco, "fireRequestAndForget('/?cmd=trackstoploco&" + urlIdentifier + "');", "track_stop_loco");
 
-		imageDiv.AddAttribute("id", identifier);
+		imageDiv.AddId(identifier);
 		imageDiv.AddClass("layout_item");
 		imageDiv.AddClass("track_item");
 		string trackClass;

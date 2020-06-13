@@ -27,7 +27,7 @@ namespace WebServer
 	{
 		std::string locoIdString = std::to_string(locoID);
 		std::string reference = "locospeed_" + locoIdString;
-		AddAttribute("id", reference);
+		AddId(reference);
 		AddClass("slider");
 		AddAttribute("onchange", "locoSpeedSliderChange(" + locoIdString + "); return false;");
 		AddAttribute("oninput", "locoSpeedSliderChange(" + locoIdString + "); return false;");

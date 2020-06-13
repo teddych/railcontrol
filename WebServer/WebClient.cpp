@@ -802,9 +802,9 @@ namespace WebServer
 			}
 		}
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag form("form");
-		form.AddAttribute("id", "editform");
+		form.AddId("editform");
 		form.AddChildTag(HtmlTagInputHidden("cmd", "layersave"));
 		form.AddChildTag(HtmlTagInputHidden("layer", to_string(layerID)));
 		form.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
@@ -855,7 +855,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteLayer));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, layer->GetName()));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "layerdelete"))
 			.AddContent(HtmlTagInputHidden("layer", to_string(layerID))
 			));
@@ -1004,9 +1004,9 @@ namespace WebServer
 
 		const std::map<string,HardwareType> hardwareOptions = ListHardwareNames();
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag form("form");
-		form.AddAttribute("id", "editform");
+		form.AddId("editform");
 		form.AddChildTag(HtmlTagInputHidden("cmd", "controlsave"));
 		form.AddChildTag(HtmlTagInputHidden("control", to_string(controlID)));
 		form.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
@@ -1016,7 +1016,7 @@ namespace WebServer
 		form.AddChildTag(selectHardwareType);
 
 		HtmlTag controlArguments("div");
-		controlArguments.AddAttribute("id", "controlarguments");
+		controlArguments.AddId("controlarguments");
 		controlArguments.AddChildTag(HtmlTagControlArguments(hardwareType, arg1, arg2, arg3, arg4, arg5));
 		form.AddChildTag(controlArguments);
 
@@ -1067,7 +1067,7 @@ namespace WebServer
 		HtmlTag content;
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteControl));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, control->GetName()));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "controldelete"))
 			.AddContent(HtmlTagInputHidden("control", to_string(controlID))
 			));
@@ -1226,7 +1226,7 @@ namespace WebServer
 	HtmlTag WebClient::HtmlTagPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz)
 	{
 		HtmlTag content("div");
-		content.AddAttribute("id", "position");;
+		content.AddId("position");;
 		content.AddChildTag(HtmlTagInputIntegerWithLabel("posx", Languages::TextPosX, posx, 0, 255));
 		content.AddChildTag(HtmlTagInputIntegerWithLabel("posy", Languages::TextPosY, posy, 0, 255));
 		map<string,LayerID> layerList = manager.LayerListByName();
@@ -1238,7 +1238,7 @@ namespace WebServer
 	{
 		HtmlTag content;
 		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", Languages::TextVisible, "visible", static_cast<bool>(visible));
-		checkboxVisible.AddAttribute("id", "visible");
+		checkboxVisible.AddId("visible");
 		checkboxVisible.AddAttribute("onchange", "onChangeCheckboxShowHide('visible', 'position');");
 		content.AddChildTag(checkboxVisible);
 		HtmlTag posDiv = HtmlTagPosition(posx, posy, posz);
@@ -1360,7 +1360,7 @@ namespace WebServer
 	{
 		HtmlTag content("div");
 		string name = "relation_" + type + "_" + priority;
-		content.AddAttribute("id", name);
+		content.AddId(name);
 		HtmlTagButton deleteButton(Languages::TextDelete, "delete_" + name);
 		deleteButton.AddAttribute("onclick", "deleteElement('" + name + "');return false;");
 		deleteButton.AddClass("wide_button");
@@ -1378,7 +1378,7 @@ namespace WebServer
 		select.AddAttribute("onchange", "loadRelationObject('" + type + "', " + priority + ");return false;");
 		content.AddChildTag(select);
 		HtmlTag contentObject("div");
-		contentObject.AddAttribute("id", name + "_object");
+		contentObject.AddId(name + "_object");
 		contentObject.AddClass("inline-block");
 		contentObject.AddChildTag(HtmlTagRelationObject(name, objectType, objectId, state));
 		content.AddChildTag(contentObject);
@@ -1388,14 +1388,14 @@ namespace WebServer
 	HtmlTag WebClient::HtmlTagSlave(const string& priority, const ObjectID objectId)
 	{
 		HtmlTag content("div");
-		content.AddAttribute("id", "priority_" + priority);
+		content.AddId("priority_" + priority);
 		HtmlTagButton deleteButton(Languages::TextDelete, "delete_slave_" + priority);
 		deleteButton.AddAttribute("onclick", "deleteElement('priority_" + priority + "');return false;");
 		deleteButton.AddClass("wide_button");
 		content.AddChildTag(deleteButton);
 
 		HtmlTag contentObject("div");
-		contentObject.AddAttribute("id", "slave_object_" + priority);
+		contentObject.AddId("slave_object_" + priority);
 		contentObject.AddClass("inline-block");
 
 		std::map<string, Loco*> locos = manager.LocoListByName();
@@ -1413,7 +1413,7 @@ namespace WebServer
 	{
 		string counterString = to_string(counter);
 		HtmlTag content("div");
-		content.AddAttribute("id", "feedback_container_" + counterString);
+		content.AddId("feedback_container_" + counterString);
 		HtmlTagButton deleteButton(Languages::TextDelete, "delete_feedback_" + counterString);
 		deleteButton.AddAttribute("onclick", "deleteElement('feedback_container_" + counterString + "');return false;");
 		deleteButton.AddClass("wide_button");
@@ -1430,7 +1430,7 @@ namespace WebServer
 			feedbackOptions[feedback.first] = feedback.second->GetID();
 		}
 		content.AddChildTag(HtmlTagSelect("feedback_" + counterString, feedbackOptions, feedbackID));
-		content.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(counter + 1)));
+		content.AddChildTag(HtmlTag("div").AddId("div_feedback_" + to_string(counter + 1)));
 		return content;
 	}
 
@@ -1476,7 +1476,7 @@ namespace WebServer
 	{
 		HtmlTag button("button");
 		button.AddClass("tab_button");
-		button.AddAttribute("id", "tab_button_" + tabName);
+		button.AddId("tab_button_" + tabName);
 		button.AddAttribute("onclick", "ShowTab('" + tabName + "');");
 		button.AddContent(buttonValue);
 		if (selected)
@@ -1552,7 +1552,7 @@ namespace WebServer
 		Priority priority = Utils::Utils::StringToInteger(priorityString, 1);
 		HtmlTag container;
 		container.AddChildTag(HtmlTagRelation(type, priorityString));
-		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_" + type + "_priority_" + to_string(priority + 1)));
+		container.AddChildTag(HtmlTag("div").AddId("new_" + type + "_priority_" + to_string(priority + 1)));
 		ReplyHtmlWithHeader(container);
 	}
 
@@ -1562,7 +1562,7 @@ namespace WebServer
 		Priority priority = Utils::Utils::StringToInteger(priorityString, 1);
 		HtmlTag container;
 		container.AddChildTag(HtmlTagSlave(priorityString));
-		container.AddChildTag(HtmlTag("div").AddAttribute("id", "new_slave_" + to_string(priority + 1)));
+		container.AddChildTag(HtmlTag("div").AddId("new_slave_" + to_string(priority + 1)));
 		ReplyHtmlWithHeader(container);
 	}
 
@@ -1644,7 +1644,7 @@ namespace WebServer
 			}
 		}
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("slaves", Languages::TextMultipleUnit));
@@ -1656,11 +1656,11 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)));
 
 		HtmlTag basicContent("div");
-		basicContent.AddAttribute("id", "tab_basic");
+		basicContent.AddId("tab_basic");
 		basicContent.AddClass("tab_content");
 		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		basicContent.AddChildTag(HtmlTagControlLoco(controlID, "loco", locoID));
-		basicContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
+		basicContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", Languages::TextNrOfFunctions, nrOfFunctions, 0, DataModel::LocoFunctions::MaxFunctions));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
@@ -1668,7 +1668,7 @@ namespace WebServer
 
 		HtmlTag slavesDiv("div");
 		slavesDiv.AddChildTag(HtmlTagInputHidden("slavecounter", to_string(slaves.size())));
-		slavesDiv.AddAttribute("id", "slaves");
+		slavesDiv.AddId("slaves");
 		unsigned int slavecounter = 1;
 		for (auto slave : slaves)
 		{
@@ -1680,9 +1680,9 @@ namespace WebServer
 			slavesDiv.AddChildTag(HtmlTagSlave(to_string(slavecounter), slaveID));
 			++slavecounter;
 		}
-		slavesDiv.AddChildTag(HtmlTag("div").AddAttribute("id", "new_slave_" + to_string(slavecounter)));
+		slavesDiv.AddChildTag(HtmlTag("div").AddId("new_slave_" + to_string(slavecounter)));
 		HtmlTag relationContent("div");
-		relationContent.AddAttribute("id", "tab_slaves");
+		relationContent.AddId("tab_slaves");
 		relationContent.AddClass("tab_content");
 		relationContent.AddClass("hidden");
 		relationContent.AddChildTag(slavesDiv);
@@ -1694,7 +1694,7 @@ namespace WebServer
 		formContent.AddChildTag(relationContent);
 
 		HtmlTag automodeContent("div");
-		automodeContent.AddAttribute("id", "tab_automode");
+		automodeContent.AddId("tab_automode");
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
 		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("pushpull", Languages::TextPushPullTrain, "pushpull", pushpull));
@@ -1704,7 +1704,7 @@ namespace WebServer
 		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("creepingspeed", Languages::TextCreepingSpeed, creepingSpeed, 0, MaxSpeed));
 		formContent.AddChildTag(automodeContent);
 
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddId("editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		ReplyHtmlWithHeader(content);
@@ -1822,7 +1822,7 @@ namespace WebServer
 		const string& locoName = loco->GetName();
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteLoco));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, locoName));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "locodelete"))
 			.AddContent(HtmlTagInputHidden("loco", to_string(locoID))
 			));
@@ -2018,7 +2018,7 @@ namespace WebServer
 			}
 		}
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
@@ -2029,11 +2029,11 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)));
 
 		HtmlTag mainContent("div");
-		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "accessory", accessoryID));
-		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
+		mainContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(HtmlTagDuration(duration));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
@@ -2041,7 +2041,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz));
 
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddId("editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		ReplyHtmlWithHeader(content);
@@ -2139,7 +2139,7 @@ namespace WebServer
 		const string& accessoryName = accessory->GetName();
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteAccessory));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, accessoryName));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "accessorydelete"))
 			.AddContent(HtmlTagInputHidden("accessory", to_string(accessoryID))
 			));
@@ -2214,7 +2214,7 @@ namespace WebServer
 		typeOptions[DataModel::SwitchTypeLeft] = Languages::TextLeft;
 		typeOptions[DataModel::SwitchTypeRight] = Languages::TextRight;
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
@@ -2225,12 +2225,12 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputHidden("switch", to_string(switchID)));
 
 		HtmlTag mainContent("div");
-		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextType, typeOptions, type));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "switch", switchID));
-		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
+		mainContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(HtmlTagDuration(duration));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
@@ -2238,7 +2238,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation));
 
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddId("editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		ReplyHtmlWithHeader(content);
@@ -2326,7 +2326,7 @@ namespace WebServer
 		const string& switchName = mySwitch->GetName();
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteSwitch));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, switchName));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "switchdelete"))
 			.AddContent(HtmlTagInputHidden("switch", to_string(switchID))
 			));
@@ -2423,7 +2423,7 @@ namespace WebServer
 		signalTypeOptions[DataModel::SignalTypeSimpleLeft] = Languages::TextSimpleLeft;
 		signalTypeOptions[DataModel::SignalTypeSimpleRight] = Languages::TextSimpleRight;
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
@@ -2436,14 +2436,14 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagInputHidden("signal", to_string(signalID)));
 
 		HtmlTag mainContent("div");
-		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagSelectOrientationWithLabel("signalorientation", Languages::TextOrientation, signalOrientation));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("signaltype", Languages::TextType, signalTypeOptions, signalType));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Signal::MinLength, DataModel::Signal::MaxLength));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlID, "signal", signalID));
-		mainContent.AddChildTag(HtmlTag("div").AddAttribute("id", "select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
+		mainContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagProtocolAccessory(controlID, protocol)));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(HtmlTagDuration(duration));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
@@ -2455,7 +2455,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, releaseWhenFree));
 
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(formContent)));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddId("editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		ReplyHtmlWithHeader(content);
@@ -2574,7 +2574,7 @@ namespace WebServer
 		const string& signalName = signal->GetName();
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteSignal));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, signalName));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "signaldelete"))
 			.AddContent(HtmlTagInputHidden("signal", to_string(signalID))
 			));
@@ -2691,7 +2691,7 @@ namespace WebServer
 			}
 		}
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("relationatlock", Languages::TextAtLock));
@@ -2701,19 +2701,19 @@ namespace WebServer
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
-		formContent.AddAttribute("id", "editform");
+		formContent.AddId("editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "routesave"));
 		formContent.AddChildTag(HtmlTagInputHidden("route", to_string(routeID)));
 
 		HtmlTag basicContent("div");
-		basicContent.AddAttribute("id", "tab_basic");
+		basicContent.AddId("tab_basic");
 		basicContent.AddClass("tab_content");
 		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("delay", Languages::TextWaitingTimeBetweenMembers, delay, 1, USHRT_MAX));
 		formContent.AddChildTag(basicContent);
 
 		HtmlTag relationDivAtLock("div");
-		relationDivAtLock.AddAttribute("id", "relationatlock");
+		relationDivAtLock.AddId("relationatlock");
 		Priority priorityAtLock = 1;
 		for (auto relation : relationsAtLock)
 		{
@@ -2721,10 +2721,10 @@ namespace WebServer
 			priorityAtLock = relation->GetPriority() + 1;
 		}
 		relationDivAtLock.AddChildTag(HtmlTagInputHidden("relationcounteratlock", to_string(priorityAtLock)));
-		relationDivAtLock.AddChildTag(HtmlTag("div").AddAttribute("id", "new_atlock_priority_" + to_string(priorityAtLock)));
+		relationDivAtLock.AddChildTag(HtmlTag("div").AddId("new_atlock_priority_" + to_string(priorityAtLock)));
 
 		HtmlTag relationContentAtLock("div");
-		relationContentAtLock.AddAttribute("id", "tab_relationatlock");
+		relationContentAtLock.AddId("tab_relationatlock");
 		relationContentAtLock.AddClass("tab_content");
 		relationContentAtLock.AddClass("hidden");
 		relationContentAtLock.AddChildTag(relationDivAtLock);
@@ -2736,7 +2736,7 @@ namespace WebServer
 		formContent.AddChildTag(relationContentAtLock);
 
 		HtmlTag relationDivAtUnlock("div");
-		relationDivAtUnlock.AddAttribute("id", "relationatunlock");
+		relationDivAtUnlock.AddId("relationatunlock");
 		Priority priorityAtUnlock = 1;
 		for (auto relation : relationsAtUnlock)
 		{
@@ -2744,10 +2744,10 @@ namespace WebServer
 			priorityAtUnlock = relation->GetPriority() + 1;
 		}
 		relationDivAtUnlock.AddChildTag(HtmlTagInputHidden("relationcounteratunlock", to_string(priorityAtUnlock)));
-		relationDivAtUnlock.AddChildTag(HtmlTag("div").AddAttribute("id", "new_atunlock_priority_" + to_string(priorityAtUnlock)));
+		relationDivAtUnlock.AddChildTag(HtmlTag("div").AddId("new_atunlock_priority_" + to_string(priorityAtUnlock)));
 
 		HtmlTag relationContentAtUnlock("div");
-		relationContentAtUnlock.AddAttribute("id", "tab_relationatunlock");
+		relationContentAtUnlock.AddId("tab_relationatunlock");
 		relationContentAtUnlock.AddClass("tab_content");
 		relationContentAtUnlock.AddClass("hidden");
 		relationContentAtUnlock.AddChildTag(relationDivAtUnlock);
@@ -2761,17 +2761,17 @@ namespace WebServer
 		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, visible));
 
 		HtmlTag automodeContent("div");
-		automodeContent.AddAttribute("id", "tab_automode");
+		automodeContent.AddId("tab_automode");
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
 
 		HtmlTagInputCheckboxWithLabel checkboxAutomode("automode", Languages::TextAutomode, "automode", static_cast<bool>(automode));
-		checkboxAutomode.AddAttribute("id", "automode");
+		checkboxAutomode.AddId("automode");
 		checkboxAutomode.AddAttribute("onchange", "onChangeCheckboxShowHide('automode', 'tracks');");
 		automodeContent.AddChildTag(checkboxAutomode);
 
 		HtmlTag tracksDiv("div");
-		tracksDiv.AddAttribute("id", "tracks");
+		tracksDiv.AddId("tracks");
 		if (automode == AutomodeNo)
 		{
 			tracksDiv.AddAttribute("hidden");
@@ -2784,7 +2784,7 @@ namespace WebServer
 		speedOptions[Route::SpeedCreeping] = Languages::TextCreepingSpeed;
 		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("speed", Languages::TextSpeed, speedOptions, speed));
 		HtmlTag feedbackDiv("div");
-		feedbackDiv.AddAttribute("id", "feedbacks");
+		feedbackDiv.AddId("feedbacks");
 		feedbackDiv.AddChildTag(HtmlTagSelectFeedbacksOfTrack(toTrack, feedbackIdReduced, feedbackIdCreep, feedbackIdStop, feedbackIdOver));
 		tracksDiv.AddChildTag(feedbackDiv);
 		map<Route::PushpullType,Languages::TextSelector> pushpullOptions;
@@ -2938,7 +2938,7 @@ namespace WebServer
 		const string& routeName = route->GetName();
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteRoute));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, routeName));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "routedelete"))
 			.AddContent(HtmlTagInputHidden("route", to_string(routeID))
 			));
@@ -3012,7 +3012,7 @@ namespace WebServer
 	HtmlTag WebClient::HtmlTagTabPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz, const LayoutRotation rotation, const Visible visible)
 	{
 		HtmlTag positionContent("div");
-		positionContent.AddAttribute("id", "tab_position");
+		positionContent.AddId("tab_position");
 		positionContent.AddClass("tab_content");
 		positionContent.AddClass("hidden");
 		if (visible == DataModel::LayoutItem::VisibleNotRelevant)
@@ -3034,15 +3034,15 @@ namespace WebServer
 	{
 		unsigned int feedbackCounter = 0;
 		HtmlTag existingFeedbacks("div");
-		existingFeedbacks.AddAttribute("id", "feedbackcontent");
+		existingFeedbacks.AddId("feedbackcontent");
 		for (auto feedbackID : feedbacks)
 		{
 			existingFeedbacks.AddChildTag(HtmlTagSelectFeedbackForTrack(++feedbackCounter, objectIdentifier, feedbackID));
 		}
-		existingFeedbacks.AddChildTag(HtmlTag("div").AddAttribute("id", "div_feedback_" + to_string(feedbackCounter + 1)));
+		existingFeedbacks.AddChildTag(HtmlTag("div").AddId("div_feedback_" + to_string(feedbackCounter + 1)));
 
 		HtmlTag feedbackContent("div");
-		feedbackContent.AddAttribute("id", "tab_feedback");
+		feedbackContent.AddId("tab_feedback");
 		feedbackContent.AddClass("tab_content");
 		feedbackContent.AddClass("hidden");
 		feedbackContent.AddChildTag(HtmlTagInputHidden("feedbackcounter", to_string(feedbackCounter)));
@@ -3058,7 +3058,7 @@ namespace WebServer
 	HtmlTag WebClient::HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach, bool releaseWhenFree)
 	{
 		HtmlTag automodeContent("div");
-		automodeContent.AddAttribute("id", "tab_automode");
+		automodeContent.AddId("tab_automode");
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
 		automodeContent.AddChildTag(HtmlTagSelectSelectRouteApproach(selectRouteApproach));
@@ -3108,7 +3108,7 @@ namespace WebServer
 				break;
 		}
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("position", Languages::TextPosition));
@@ -3117,7 +3117,7 @@ namespace WebServer
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
-		formContent.AddAttribute("id", "editform");
+		formContent.AddId("editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "tracksave"));
 		formContent.AddChildTag(HtmlTagInputHidden("track", to_string(trackID)));
 
@@ -3131,12 +3131,12 @@ namespace WebServer
 		typeOptions[DataModel::TrackTypeLink] = Languages::TextLink;
 
 		HtmlTag mainContent("div");
-		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("tracktype", Languages::TextType, typeOptions, type).AddAttribute("onchange", "onChangeTrackType();return false;"));
 		HtmlTag i_length("div");
-		i_length.AddAttribute("id", "i_length");
+		i_length.AddId("i_length");
 		i_length.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextLength, height, DataModel::Track::MinLength, DataModel::Track::MaxLength));
 		switch (type)
 		{
@@ -3238,7 +3238,7 @@ namespace WebServer
 		const string& trackName = track->GetName();
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteTrack));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, trackName));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "trackdelete"))
 			.AddContent(HtmlTagInputHidden("track", to_string(trackID))
 			));
@@ -3343,7 +3343,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("br"));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		ReplyHtmlWithHeader(HtmlTag("form").AddAttribute("id", "editform").AddChildTag(content));
+		ReplyHtmlWithHeader(HtmlTag("form").AddId("editform").AddChildTag(content));
 	}
 
 	void WebClient::HandleTrackRelease(const map<string, string>& arguments)
@@ -3469,7 +3469,7 @@ namespace WebServer
 			}
 		}
 
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddAttribute("id", "popup_title"));
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("main", Languages::TextBasic, true));
@@ -3477,12 +3477,12 @@ namespace WebServer
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
-		formContent.AddAttribute("id", "editform");
+		formContent.AddId("editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "feedbacksave"));
 		formContent.AddChildTag(HtmlTagInputHidden("feedback", to_string(feedbackID)));
 
 		HtmlTag mainContent("div");
-		mainContent.AddAttribute("id", "tab_main");
+		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagControlFeedback(controlId, "feedback", feedbackID));
@@ -3573,7 +3573,7 @@ namespace WebServer
 		const string& feedbackName = feedback->GetName();
 		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteFeedback));
 		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, feedbackName));
-		content.AddContent(HtmlTag("form").AddAttribute("id", "editform")
+		content.AddContent(HtmlTag("form").AddId("editform")
 			.AddContent(HtmlTagInputHidden("cmd", "feedbackdelete"))
 			.AddContent(HtmlTagInputHidden("feedback", to_string(feedbackID))
 			));
@@ -3659,7 +3659,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSettings));
 
 		HtmlTag formContent("form");
-		formContent.AddAttribute("id", "editform");
+		formContent.AddId("editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "settingssave"));
 		formContent.AddChildTag(HtmlTagDuration(defaultAccessoryDuration, Languages::TextDefaultSwitchingDuration));
 		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", Languages::TextAutomaticallyAddUnknownFeedbacks, "autoaddfeedback", autoAddFeedback));
@@ -3772,14 +3772,14 @@ namespace WebServer
 		programContent.AddChildTag(rawContent);
 
 		HtmlTag mmContent("div");
-		mmContent.AddAttribute("id", "tab_mm");
+		mmContent.AddId("tab_mm");
 		mmContent.AddClass("tab_content");
 		mmContent.AddClass("hidden");
 		mmContent.AddContent("MM");
 		programContent.AddChildTag(mmContent);
 
 		HtmlTag dccContent("div");
-		dccContent.AddAttribute("id", "tab_dcc");
+		dccContent.AddId("tab_dcc");
 		dccContent.AddClass("tab_content");
 		dccContent.AddClass("hidden");
 		dccContent.AddContent("DCC");
@@ -3957,7 +3957,7 @@ namespace WebServer
 		// handle base request
 		HtmlTag body("body");
 		body.AddAttribute("onload", "startUp();");
-		body.AddAttribute("id", "body");
+		body.AddId("body");
 
 		map<string,string> buttonArguments;
 
@@ -3995,16 +3995,16 @@ namespace WebServer
 		menu.AddChildTag(menuAdd);
 		body.AddChildTag(menu);
 
-		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddAttribute("id", "loco_selector").AddChildTag(HtmlTagLocoSelector()));
-		body.AddChildTag(HtmlTag("div").AddClass("layer_selector").AddAttribute("id", "layer_selector").AddChildTag(HtmlTagLayerSelector()));
-		body.AddChildTag(HtmlTag("div").AddClass("loco").AddAttribute("id", "loco"));
-		body.AddChildTag(HtmlTag("div").AddClass("clock").AddAttribute("id", "clock").AddContent("<object data=\"/station-clock.svg\" class=\"clock2\" type=\"image/svg+xml\"><param name=\"secondHand\" value=\"din 41071.1\"/><param name=\"minuteHandBehavior\" value=\"sweeping\"/><param name=\"secondHandBehavior\" value=\"steeping\"/><param name=\"axisCoverRadius\" value=\"0\"/><param name=\"updateInterval\" value=\"250\"/></object>"));
-		body.AddChildTag(HtmlTag("div").AddClass("layout").AddAttribute("id", "layout").AddAttribute("oncontextmenu", "return loadLayoutContext(event);"));
-		body.AddChildTag(HtmlTag("div").AddClass("popup").AddAttribute("id", "popup"));
-		body.AddChildTag(HtmlTag("div").AddClass("status").AddAttribute("id", "status"));
-		body.AddChildTag(HtmlTag("div").AddClass("responses").AddAttribute("id", "responses"));
+		body.AddChildTag(HtmlTag("div").AddClass("loco_selector").AddId("loco_selector").AddChildTag(HtmlTagLocoSelector()));
+		body.AddChildTag(HtmlTag("div").AddClass("layer_selector").AddId("layer_selector").AddChildTag(HtmlTagLayerSelector()));
+		body.AddChildTag(HtmlTag("div").AddClass("loco").AddId("loco"));
+		body.AddChildTag(HtmlTag("div").AddClass("clock").AddId("clock").AddContent("<object data=\"/station-clock.svg\" class=\"clock2\" type=\"image/svg+xml\"><param name=\"secondHand\" value=\"din 41071.1\"/><param name=\"minuteHandBehavior\" value=\"sweeping\"/><param name=\"secondHandBehavior\" value=\"steeping\"/><param name=\"axisCoverRadius\" value=\"0\"/><param name=\"updateInterval\" value=\"250\"/></object>"));
+		body.AddChildTag(HtmlTag("div").AddClass("layout").AddId("layout").AddAttribute("oncontextmenu", "return loadLayoutContext(event);"));
+		body.AddChildTag(HtmlTag("div").AddClass("popup").AddId("popup"));
+		body.AddChildTag(HtmlTag("div").AddClass("status").AddId("status"));
+		body.AddChildTag(HtmlTag("div").AddClass("responses").AddId("responses"));
 
-		body.AddChildTag(HtmlTag("div").AddClass("contextmenu").AddAttribute("id", "layout_context")
+		body.AddChildTag(HtmlTag("div").AddClass("contextmenu").AddId("layout_context")
 			.AddChildTag(HtmlTag("ul").AddClass("contextentries")
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("real_layer_only").AddContent(Languages::GetText(Languages::TextAddTrack)).AddAttribute("onClick", "loadPopup('/?cmd=trackedit&track=0');"))
 			.AddChildTag(HtmlTag("li").AddClass("contextentry").AddClass("real_layer_only").AddContent(Languages::GetText(Languages::TextAddSwitch)).AddAttribute("onClick", "loadPopup('/?cmd=switchedit&switch=0');"))
