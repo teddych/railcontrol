@@ -1,12 +1,10 @@
 
-CC=gcc
-CPP=g++
 CCRASPI=aarch64-linux-gcc
-CPPRASPI=aarch64-linux-g++
+CXXRASPI=aarch64-linux-g++
 
-CPPFLAGS=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
-CPPFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
-CPPFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
+CXXFLAGS=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
+CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
+CXXFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 LIBSAMALGAMATION=-lpthread -ldl
@@ -15,8 +13,6 @@ TMPDIR=RailControl
 TMPDIRCYGWIN=/RailControl
 
 OBJ= \
-	WebServer/WebClient.o \
-	Manager.o \
 	ArgumentHandler.o \
 	Config.o \
 	DataModel/Accessory.o \
@@ -38,6 +34,7 @@ OBJ= \
 	Languages.o \
 	Logger/Logger.o \
 	Logger/LoggerServer.o \
+	Manager.o \
 	Network/Serial.o \
 	Network/TcpClient.o \
 	Network/TcpConnection.o \
@@ -45,7 +42,6 @@ OBJ= \
 	Network/UdpConnection.o \
 	RailControl.o \
 	Storage/StorageHandler.o \
-	Timestamp.o \
 	Utils/Utils.o \
 	WebServer/HtmlFullResponse.o \
 	WebServer/HtmlResponse.o \
@@ -70,13 +66,18 @@ OBJ= \
 	WebServer/HtmlTagSwitch.o \
 	WebServer/HtmlTagTrackBase.o \
 	WebServer/Response.o \
+	WebServer/WebClient.o \
 	WebServer/WebServer.o
 
-all: $(OBJ)
+CXXUNSORTED= $(shell echo $(OBJ)|sed "s/\.o//g"|sed "s/ /.cpp /g").cpp
+CXXSORTED= $(shell ls -S $(CXXUNSORTED))
+OBJSORTED= Timestamp.o $(shell echo $(CXXSORTED)|sed "s/\.cpp//g"|sed "s/ /.o /g").o
+
+all: $(OBJSORTED)
 	+make -C Hardware
 	+make -C Storage
-	$(CPP) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 	rm Timestamp.cpp
+	$(CXX) $(LDFLAGS) $(OBJSORTED) -o railcontrol $(LIBS)
 	rm Timestamp.o
 
 dist: all
@@ -116,18 +117,18 @@ dist-cygwin: amalgamation
 
 amalgamation: Timestamp.cpp
 	./amalgamation.bash
-	$(CPP) $(CPPFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
+	$(CXX) $(CXXFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C Storage amalgamation
-	$(CPP) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBSAMALGAMATION)
+	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 	rm Timestamp.cpp
 
 raspi: Timestamp.cpp
 	./amalgamation.bash
-	$(CPPRASPI) $(CPPFLAGSRASPI) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
+	$(CXXRASPI) $(CXXFLAGSRASPI) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C Storage raspi
-	$(CPPRASPI) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBSAMALGAMATION)
+	$(CXXRASPI) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 	rm Timestamp.cpp
@@ -136,10 +137,10 @@ sqlite-shell:
 	make -C Storage/sqlite
 
 Timestamp.o: Timestamp.cpp Timestamp.h
-	$(CPP) $(CPPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 %.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
-	$(CPP) $(CPPFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
 	make -C Hardware clean

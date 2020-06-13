@@ -1,9 +1,5 @@
 
-CC=gcc
-CPP=g++
-
-#CPPFLAGS=-g -fpic -O0 -Wall -std=c++11
-CPPFLAGS=-I. -I.. -g -fpic -O2 -Wall -Wextra -Werror -std=c++11
+CXXFLAGS=-I. -I.. -g -fpic -O2 -Wall -Wextra -Werror -std=c++11
 LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \
@@ -21,19 +17,19 @@ LIBS= \
 all: $(LIBS)
 
 CS2Tcp.so: CS2Tcp.o ProtocolMaerklinCAN.o *.h ../Manager.h ../Languages.h
-	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
+	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
 
 CS2Udp.so: CS2Udp.o ProtocolMaerklinCAN.o *.h ../Manager.h ../Languages.h
-	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
+	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
 
 CcSchnitte.so: CcSchnitte.o ProtocolMaerklinCAN.o *.h ../Manager.h ../Languages.h
-	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
+	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
 
 %.so: %.o *.h ../Manager.h ../Languages.h
-	$(CPP) $(CPPFLAGS) $(LDFLAGS)$@ -o $@ $<
+	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ $<
 
-%.o: %.cpp *.h ../*.h ../Logger/*.h ../Languages.h
-	$(CPP) $(CPPFLAGS) -c -o $@ $<
+%.o: %.CXX *.h ../*.h ../Logger/*.h ../Languages.h
+	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
 	rm -f *.so *.o
