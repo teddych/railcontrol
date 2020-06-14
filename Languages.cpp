@@ -292,7 +292,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextProgramModeDccPomLoco */ { "DCC POM locomotive (main track)", "DCC POM Lokomotive (Hauptgleis)", "DCC POM locomotora (vía principal)" },
 /* TextProgramModeMfx */ { "Märklin mfx (program and main track)", "Märklin mfx (Programmier- und Hauptgleis)", "Märklin mfx (vía de programación y principal)" },
 /* TextProgramModeMm */ { "Märklin Motorola (program track, all decoders)", "Märklin Motorola (Programmiergleis, alle Decoder)", "Märklin Motorola (vía de programación, todos los decoders)" },
-/* TextProgramModeMmPom */ { "Märklin Motorola (main track)", "Märklin Motorola (Hauptgleis)", "Märklin Motorola (vía principal)" },
+/* TextProgramModeMmPom */ { "Märklin Motorola POM (main track)", "Märklin Motorola POM (Hauptgleis)", "Märklin Motorola POM (vía principal)" },
 /* TextProgramReadValue */ { "CV {0} has value {1}", "CV {0} hat den Wert {1}", "CV {0} tiene valor {1}" },
 /* TextProgrammer */ { "Programmer", "Programmierer", "Programador" },
 /* TextProgrammingMode */ { "Programming mode", "Programmiermodus", "Modo programador" },

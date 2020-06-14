@@ -3744,7 +3744,7 @@ namespace WebServer
 			programModeOptions[ProgramModeMmPom] = Languages::TextProgramModeMmPom;
 			if (mode == ProgramModeNone)
 			{
-				mode = ProgramModeMm;
+				mode = ProgramModeMmPom;
 			}
 		}
 		if (capabilities & (Hardware::CapabilityProgramMfxRead | Hardware::CapabilityProgramMfxWrite))

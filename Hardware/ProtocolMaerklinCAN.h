@@ -41,7 +41,7 @@ namespace Hardware
 				return Hardware::CapabilityLoco
 					| Hardware::CapabilityAccessory
 					| Hardware::CapabilityFeedback
-					//| Hardware::CapabilityProgram
+					| Hardware::CapabilityProgram
 					| Hardware::CapabilityProgramMmWrite
 					| Hardware::CapabilityProgramMfxRead
 					| Hardware::CapabilityProgramMfxWrite
