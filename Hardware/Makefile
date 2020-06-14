@@ -28,7 +28,7 @@ CcSchnitte.so: CcSchnitte.o ProtocolMaerklinCAN.o *.h ../Manager.h ../Languages.
 %.so: %.o *.h ../Manager.h ../Languages.h
 	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ $<
 
-%.o: %.CXX *.h ../*.h ../Logger/*.h ../Languages.h
+%.o: %.cpp *.h ../*.h ../Logger/*.h ../Languages.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
