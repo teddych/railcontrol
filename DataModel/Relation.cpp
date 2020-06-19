@@ -97,7 +97,7 @@ namespace DataModel
 			}
 
 			case ObjectTypeTrack:
-				manager->TrackSetLocoOrientation(objectID2, static_cast<Orientation>(data));
+				manager->TrackBaseSetLocoOrientation(ObjectIdentifier(ObjectTypeTrack, objectID2), static_cast<Orientation>(data));
 				return true;
 
 

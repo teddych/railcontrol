@@ -1159,19 +1159,14 @@ namespace WebServer
 	{
 		bool ret = false;
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
 		if (locoID != LocoNone)
 		{
 			ret = manager.LocoRelease(locoID);
 		}
-		else if (trackID != TrackNone)
+		else
 		{
-			ret = manager.LocoReleaseInTrack(trackID);
-		}
-		else if (signalID != SignalNone)
-		{
-			ret = manager.LocoReleaseInSignal(signalID);
+			ObjectIdentifier identifier(Utils::Utils::GetStringMapEntry(arguments, "track"), Utils::Utils::GetStringMapEntry(arguments, "signal"));
+			ret = manager.LocoReleaseOnTrackBase(identifier);
 		}
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Loco released" : "Loco not released");
 	}
@@ -2623,8 +2618,8 @@ namespace WebServer
 
 	void WebClient::HandleSignalRelease(const map<string, string>& arguments)
 	{
-		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal");
-		bool ret = manager.SignalRelease(signalID);
+		const ObjectIdentifier identifier(ObjectTypeSignal, Utils::Utils::GetIntegerMapEntry(arguments, "signal"));
+		bool ret = manager.TrackBaseRelease(identifier);
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Signal released" : "Signal not released");
 	}
 
@@ -3353,85 +3348,38 @@ namespace WebServer
 
 	void WebClient::HandleTrackRelease(const map<string, string>& arguments)
 	{
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		bool ret = false;
-		if (trackID != TrackNone)
-		{
-
-			ret = manager.TrackRelease(trackID);
-		}
-		else if (signalID != TrackNone)
-		{
-			ret = manager.SignalRelease(signalID);
-		}
+		ObjectIdentifier identifier(ObjectTypeTrack, Utils::Utils::GetIntegerMapEntry(arguments, "track"));
+		bool ret = manager.TrackBaseRelease(identifier);
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Track released" : "Track not released");
 	}
 
 	void WebClient::HandleTrackStartLoco(const map<string, string>& arguments)
 	{
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		bool ret = false;
-		if (trackID != TrackNone)
-		{
-
-			ret = manager.TrackStartLoco(trackID);
-		}
-		else if (signalID != TrackNone)
-		{
-			ret = manager.SignalStartLoco(signalID);
-		}
+		ObjectIdentifier identifier(Utils::Utils::GetStringMapEntry(arguments, "track"), Utils::Utils::GetStringMapEntry(arguments, "signal"));
+		bool ret = manager.TrackBaseStartLoco(identifier);
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Loco started" : "Loco not started");
 	}
 
 	void WebClient::HandleTrackStopLoco(const map<string, string>& arguments)
 	{
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		bool ret = false;
-		if (trackID != TrackNone)
-		{
-
-			ret = manager.TrackStopLoco(trackID);
-		}
-		else if (signalID != TrackNone)
-		{
-			ret = manager.SignalStopLoco(signalID);
-		}
+		ObjectIdentifier identifier(Utils::Utils::GetStringMapEntry(arguments, "track"), Utils::Utils::GetStringMapEntry(arguments, "signal"));
+		bool ret = manager.TrackBaseStopLoco(identifier);
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Loco stopped" : "Loco not stopped");
 	}
 
 	void WebClient::HandleTrackBlock(const map<string, string>& arguments)
 	{
 		bool blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked");
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		if (trackID != TrackNone)
-		{
-
-			manager.TrackBlock(trackID, blocked);
-		}
-		else if (signalID != TrackNone)
-		{
-			manager.SignalBlock(signalID, blocked);
-		}
-		ReplyHtmlWithHeaderAndParagraph("Block/unblock received");
+		ObjectIdentifier identifier(Utils::Utils::GetStringMapEntry(arguments, "track"), Utils::Utils::GetStringMapEntry(arguments, "signal"));
+		manager.TrackBaseBlock(identifier, blocked);
+		ReplyHtmlWithHeaderAndParagraph(blocked ? "Block received" : "Unblock received");
 	}
 
 	void WebClient::HandleTrackOrientation(const map<string, string>& arguments)
 	{
 		Orientation orientation = (Utils::Utils::GetBoolMapEntry(arguments, "orientation") ? OrientationRight : OrientationLeft);
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		if (trackID != TrackNone)
-		{
-			manager.TrackSetLocoOrientation(trackID, orientation);
-		}
-		else if (signalID != TrackNone)
-		{
-			manager.SignalSetLocoOrientation(signalID, orientation);
-		}
+		ObjectIdentifier identifier(Utils::Utils::GetStringMapEntry(arguments, "track"), Utils::Utils::GetStringMapEntry(arguments, "signal"));
+		manager.TrackBaseSetLocoOrientation(identifier, orientation);
 		ReplyHtmlWithHeaderAndParagraph("Loco orientation of track set");
 	}
 

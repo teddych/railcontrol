@@ -256,23 +256,17 @@ class Manager
 			const bool inverted,
 			std::string& result);
 		bool SignalDelete(const SignalID signalID);
-		bool SignalRelease(const SignalID signalID);
-		void SignalBlock(const SignalID signalID, const bool blocked);
-		void SignalSetLocoOrientation(const SignalID signalID, const Orientation orientation);
 		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
 
 		// automode
 		bool LocoIntoTrackBase(Logger::Logger* logger, const LocoID locoID, const DataModel::ObjectIdentifier& trackIdentifier);
 		bool LocoRelease(const LocoID locoID);
-		bool TrackRelease(const TrackID trackID);
-		bool LocoReleaseInTrack(const TrackID trackID);
-		bool LocoReleaseInSignal(const SignalID signalID);
-		bool TrackStartLoco(const TrackID trackID);
-		bool TrackStopLoco(const TrackID trackID);
-		bool SignalStartLoco(const TrackID trackID);
-		bool SignalStopLoco(const TrackID trackID);
-		void TrackBlock(const TrackID trackID, const bool blocked);
-		void TrackSetLocoOrientation(const TrackID trackID, const Orientation orientation);
+		bool TrackBaseRelease(const DataModel::ObjectIdentifier& objectIdentifier);
+		bool LocoReleaseOnTrackBase(const DataModel::ObjectIdentifier& objectIdentifier);
+		bool TrackBaseStartLoco(const DataModel::ObjectIdentifier& objectIdentifier);
+		bool TrackBaseStopLoco(const DataModel::ObjectIdentifier& objectIdentifier);
+		void TrackBaseBlock(const DataModel::ObjectIdentifier& objectIdentifier, const bool blocked);
+		void TrackBaseSetLocoOrientation(const DataModel::ObjectIdentifier& objectIdentifier, const Orientation orientation);
 		void TrackPublishState(const DataModel::Track* track);
 		bool RouteRelease(const RouteID routeID);
 		bool LocoDestinationReached(const DataModel::Loco* loco, const DataModel::Route* route, const DataModel::TrackBase* track);

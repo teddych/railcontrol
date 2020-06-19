@@ -2187,28 +2187,6 @@ bool Manager::SignalState(const ControlType controlType, Signal* signal, const D
 	return true;
 }
 
-void Manager::SignalBlock(const SignalID signalID, const bool blocked)
-{
-	Signal* signal = GetSignal(signalID);
-	if (signal == nullptr)
-	{
-		return;
-	}
-	signal->SetBlocked(blocked);
-	SignalPublishState(ControlTypeInternal, signal);
-}
-
-void Manager::SignalSetLocoOrientation(const SignalID signalID, const Orientation orientation)
-{
-	Signal* signal = GetSignal(signalID);
-	if (signal == nullptr)
-	{
-		return;
-	}
-	signal->SetLocoOrientation(orientation);
-	SignalPublishState(ControlTypeInternal, signal);
-}
-
 void Manager::SignalPublishState(const ControlType controlType, const DataModel::Signal* signal)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
@@ -2379,17 +2357,6 @@ const map<string,DataModel::Signal*> Manager::SignalListByName() const
 	return out;
 }
 
-bool Manager::SignalRelease(const RouteID signalID)
-{
-	Signal* signal = GetSignal(signalID);
-	if (signal == nullptr)
-	{
-		return false;
-	}
-	LocoID locoID = signal->GetLoco();
-	return signal->Release(logger, locoID);
-}
-
 /***************************
 * Automode                 *
 ***************************/
@@ -2465,25 +2432,25 @@ bool Manager::LocoReleaseInternal(Loco* loco)
 	return true;
 }
 
-bool Manager::TrackRelease(const TrackID trackID)
+bool Manager::TrackBaseRelease(const ObjectIdentifier& identifier)
 {
-	Track* track = GetTrack(trackID);
+	TrackBase* track = GetTrackBase(identifier);
 	if (track == nullptr)
 	{
 		return false;
 	}
-	return track->ReleaseForce(logger, LocoNone);
+	return track->BaseReleaseForce(logger, LocoNone);
 }
 
-bool Manager::LocoReleaseInTrack(const TrackID trackID)
+bool Manager::LocoReleaseOnTrackBase(const ObjectIdentifier& identifier)
 {
-	Track* track = GetTrack(trackID);
+	TrackBase* track = GetTrackBase(identifier);
 	if (track == nullptr)
 	{
 		return false;
 	}
-	LocoID locoID = track->GetLoco();
-	track->ReleaseForce(logger, locoID);
+	LocoID locoID = track->GetMyLoco();
+	track->BaseReleaseForce(logger, locoID);
 	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
@@ -2492,83 +2459,46 @@ bool Manager::LocoReleaseInTrack(const TrackID trackID)
 	return LocoReleaseInternal(loco);
 }
 
-bool Manager::LocoReleaseInSignal(const SignalID signalID)
+bool Manager::TrackBaseStartLoco(const ObjectIdentifier& identifier)
 {
-	Signal* signal = GetSignal(signalID);
-	if (signal == nullptr)
-	{
-		return false;
-	}
-	LocoID locoID = signal->GetLoco();
-	signal->ReleaseForce(logger, locoID);
-	Loco* loco = GetLoco(locoID);
-	if (loco == nullptr)
-	{
-		return false;
-	}
-	return LocoReleaseInternal(loco);
-}
-
-bool Manager::TrackStartLoco(const TrackID trackID)
-{
-	Track* track = GetTrack(trackID);
+	TrackBase* track = GetTrackBase(identifier);
 	if (track == nullptr)
 	{
 		return false;
 	}
-	return LocoStart(track->GetLoco());
+	return LocoStart(track->GetMyLoco());
 }
 
-bool Manager::SignalStartLoco(const TrackID trackID)
+bool Manager::TrackBaseStopLoco(const ObjectIdentifier& identifier)
 {
-	Track* track = GetTrack(trackID);
+	TrackBase* track = GetTrackBase(identifier);
 	if (track == nullptr)
 	{
 		return false;
 	}
-	return LocoStart(track->GetLoco());
+	return LocoStop(track->GetMyLoco());
 }
 
-bool Manager::TrackStopLoco(const TrackID trackID)
+void Manager::TrackBaseBlock(const ObjectIdentifier& identifier, const bool blocked)
 {
-	Track* track = GetTrack(trackID);
-	if (track == nullptr)
-	{
-		return false;
-	}
-	return LocoStop(track->GetLoco());
-}
-
-bool Manager::SignalStopLoco(const TrackID trackID)
-{
-	Track* track = GetTrack(trackID);
-	if (track == nullptr)
-	{
-		return false;
-	}
-	return LocoStop(track->GetLoco());
-}
-
-void Manager::TrackBlock(const TrackID trackID, const bool blocked)
-{
-	Track* track = GetTrack(trackID);
+	TrackBase* track = GetTrackBase(identifier);
 	if (track == nullptr)
 	{
 		return;
 	}
 	track->SetBlocked(blocked);
-	TrackPublishState(track);
+	TrackBasePublishState(track);
 }
 
-void Manager::TrackSetLocoOrientation(const TrackID trackID, const Orientation orientation)
+void Manager::TrackBaseSetLocoOrientation(const ObjectIdentifier& identifier, const Orientation orientation)
 {
-	Track* track = GetTrack(trackID);
+	TrackBase* track = GetTrackBase(identifier);
 	if (track == nullptr)
 	{
 		return;
 	}
 	track->SetLocoOrientation(orientation);
-	TrackPublishState(track);
+	TrackBasePublishState(track);
 }
 
 void Manager::TrackBasePublishState(const DataModel::TrackBase* trackBase)
