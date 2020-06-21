@@ -23,7 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
-#include "WebServer/HtmlTagJavascript.h"
+#include "WebServer/HtmlTag.h"
 
 namespace WebServer
 {
@@ -42,11 +42,6 @@ namespace WebServer
 			{}
 
 			virtual ~HtmlTagButton() {}
-
-			HtmlTag AddJavaScript(const std::string& content)
-			{
-				return AddChildTag(HtmlTagJavascript(content));
-			}
 
 			virtual HtmlTag AddAttribute(const std::string& name, const std::string& value) override
 			{
