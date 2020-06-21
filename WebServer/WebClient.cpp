@@ -542,6 +542,10 @@ namespace WebServer
 			{
 				HandleProgramWrite(arguments);
 			}
+			else if (arguments["cmd"].compare("getcvfields") == 0)
+			{
+				HandleCvFields(arguments);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				HandleUpdater(headers);
@@ -3723,6 +3727,88 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("moderaw", Languages::TextProgramMode, programModeOptions, mode).AddAttribute("onchange", "onChangeProgramModeSelector();");
 	}
 
+	HtmlTag WebClient::HtmlTagCvFields(const ControlID controlID, const ProgramMode programMode) const
+	{
+		HtmlTag content("div");
+		content.AddId("cv_fields");
+		switch (programMode)
+		{
+			case ProgramModeMmPom:
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0xFF));
+				break;
+
+			case ProgramModeMfx:
+			case ProgramModeDccPomLoco:
+			case ProgramModeDccPomAccessory:
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0x4000));
+				break;
+
+			default:
+				content.AddChildTag(HtmlTagInputHidden("addressraw", "0"));
+				break;
+		}
+
+		switch (programMode)
+		{
+			case ProgramModeMfx:
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("indexraw", Languages::TextIndex, 0, 0, 0x3F));
+				break;
+
+			default:
+				content.AddChildTag(HtmlTagInputHidden("indexraw", "0"));
+				break;
+		}
+
+		switch (programMode)
+		{
+			case ProgramModeMm:
+			case ProgramModeMmPom:
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 1, 1, 256));
+				break;
+
+			default:
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 1, 1, 1024));
+				break;
+		}
+
+		Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);
+		if (((programMode == ProgramModeMfx) && (capabilities & Hardware::CapabilityProgramMfxRead))
+			|| ((programMode == ProgramModeDccRegister) && (capabilities & Hardware::CapabilityProgramDccRegisterRead))
+			|| ((programMode == ProgramModeDccDirect) && (capabilities & Hardware::CapabilityProgramDccDirectRead))
+			|| ((programMode == ProgramModeDccPomLoco) && (capabilities & Hardware::CapabilityProgramDccPomRead))
+			|| ((programMode == ProgramModeDccPomAccessory) && (capabilities & Hardware::CapabilityProgramDccPomRead)))
+		{
+			HtmlTagButton readButton(Languages::TextRead, "programread");
+			readButton.AddAttribute("onclick", "onClickProgramRead();return false;");
+			readButton.AddClass("wide_button");
+			content.AddChildTag(readButton);
+		}
+
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("valueraw", Languages::TextValue, 0, 0, 255));
+
+		if (((programMode == ProgramModeMm) && (capabilities & Hardware::CapabilityProgramMmWrite))
+			|| ((programMode == ProgramModeMmPom) && (capabilities & Hardware::CapabilityProgramMmPomWrite))
+			|| ((programMode == ProgramModeMfx) && (capabilities & Hardware::CapabilityProgramMfxWrite))
+			|| ((programMode == ProgramModeDccRegister) && (capabilities & Hardware::CapabilityProgramDccRegisterWrite))
+			|| ((programMode == ProgramModeDccDirect) && (capabilities & Hardware::CapabilityProgramDccDirectWrite))
+			|| ((programMode == ProgramModeDccPomLoco) && (capabilities & Hardware::CapabilityProgramDccPomWrite))
+			|| ((programMode == ProgramModeDccPomAccessory) && (capabilities & Hardware::CapabilityProgramDccPomWrite)))
+		{
+			HtmlTagButton writeButton(Languages::TextWrite, "programwrite");
+			writeButton.AddAttribute("onclick", "onClickProgramWrite();return false;");
+			writeButton.AddClass("wide_button");
+			content.AddChildTag(writeButton);
+		}
+		return content;
+	}
+
+	void WebClient::HandleCvFields(const map<string, string>& arguments)
+	{
+		ControlID controlID = static_cast<ControlID>(Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone));
+		ProgramMode programMode = static_cast<ProgramMode>(Utils::Utils::GetIntegerMapEntry(arguments, "mode", ProgramModeNone));
+		ReplyHtmlWithHeader(HtmlTagCvFields(controlID, programMode));
+	}
+
 	void WebClient::HandleProgram()
 	{
 		unsigned int controlCountMm = 0;
@@ -3752,6 +3838,7 @@ namespace WebServer
 		if (controls.size() == 0)
 		{
 			ReplyHtmlWithHeader(HtmlTag("p").AddContent(Languages::TextNoControlSupportsProgramming));
+			return;
 		}
 		HtmlTag controlSelector = HtmlTagControl("controlraw", controls);
 		rawContent.AddChildTag(controlSelector);
@@ -3762,33 +3849,7 @@ namespace WebServer
 		ProgramMode programMode = ProgramModeNone;
 		programModeSelector.AddChildTag(HtmlTagProgramModeSelector(controlIdFirst, programMode));
 		rawContent.AddChildTag(programModeSelector);
-
-		HtmlTag addressSelector("div");
-		addressSelector.AddId("address_selector");
-		addressSelector.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0x4000));
-		switch(programMode)
-		{
-			case ProgramModeMmPom:
-			case ProgramModeMfx:
-			case ProgramModeDccPomLoco:
-			case ProgramModeDccPomAccessory:
-				break;
-
-			default:
-				addressSelector.AddClass("hidden");
-				break;
-		}
-		rawContent.AddChildTag(addressSelector);
-		rawContent.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 1, 1, 1024));
-		rawContent.AddChildTag(HtmlTagInputIntegerWithLabel("valueraw", Languages::TextValue, 0, 0, 255));
-		HtmlTagButton readButton(Languages::TextRead, "programread");
-		readButton.AddAttribute("onclick", "onClickProgramRead();return false;");
-		readButton.AddClass("wide_button");
-		rawContent.AddChildTag(readButton);
-		HtmlTagButton writeButton(Languages::TextWrite, "programwrite");
-		writeButton.AddAttribute("onclick", "onClickProgramWrite();return false;");
-		writeButton.AddClass("wide_button");
-		rawContent.AddChildTag(writeButton);
+		rawContent.AddChildTag(HtmlTagCvFields(controlIdFirst, programMode));
 		programContent.AddChildTag(rawContent);
 
 		HtmlTag mmContent("div");

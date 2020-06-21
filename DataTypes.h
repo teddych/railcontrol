@@ -194,11 +194,11 @@ enum Orientation : bool
 
 enum ProgramMode : uint8_t
 {
-	// these parameters are also used in html/javascript.js
 	ProgramModeNone,
 	ProgramModeMm,
 	ProgramModeMmPom,
 	ProgramModeMfx,
+	ProgramModeDccRegister,
 	ProgramModeDccDirect,
 	ProgramModeDccPomLoco,
 	ProgramModeDccPomAccessory

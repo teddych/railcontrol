@@ -180,6 +180,7 @@ class Languages
 			TextHttpConnectionOpen,
 			TextHttpConnectionRequest,
 			TextIPAddress,
+			TextIndex,
 			TextInfo,
 			TextInvalidControlID,
 			TextInvalidDataReceived,

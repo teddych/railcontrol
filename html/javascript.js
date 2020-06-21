@@ -21,12 +21,19 @@ function onClickProgramRead(cv)
 	}
 	var address = addressElement.value;
 
+	var indexElement = document.getElementById('indexraw');
+	if (!indexElement)
+	{
+		return false;
+	}
+	var index = indexElement.value;
+
 	var cvElement = document.getElementById('cvraw');
 	if (!cvElement)
 	{
 		return false;
 	}
-	var cv = cvElement.value;
+	var cv = parseInt(cvElement.value) + (parseInt(index) * 1024);
 
 	var url = '?cmd=programread&control=' + control + '&mode=' + mode + '&address=' + address + '&cv=' + cv;
 	fireRequestAndForget(url);
@@ -56,12 +63,19 @@ function onClickProgramWrite()
 	}
 	var address = addressElement.value;
 
+	var indexElement = document.getElementById('indexraw');
+	if (!indexElement)
+	{
+		return false;
+	}
+	var index = indexElement.value;
+
 	var cvElement = document.getElementById('cvraw');
 	if (!cvElement)
 	{
 		return false;
 	}
-	var cv = cvElement.value;
+	var cv = parseInt(cvElement.value) + (parseInt(index) * 1024);
 
 	var valueElement = document.getElementById('valueraw');
 	if (!valueElement)
@@ -99,6 +113,13 @@ function loadProgramModeSelector()
 
 function onChangeProgramModeSelector()
 {
+	var selectControl = document.getElementById('s_controlraw');
+	if (!selectControl)
+	{
+		return;
+	}
+	var control = selectControl.value;
+
 	var modeElement = document.getElementById('s_moderaw');
 	if (!modeElement)
 	{
@@ -106,24 +127,11 @@ function onChangeProgramModeSelector()
 	}
 	var mode = modeElement.value;
 
-	var addressElement = document.getElementById('address_selector');
-	if (!addressElement)
-	{
-		return false;
-	}
-	switch (mode)
-	{
-		case "2": // MM POM
-		case "3": // mfx
-		case "5": // DCC POM loco
-		case "6": // DCC POM accessory
-			addressElement.classList.remove("hidden");
-			break;
-
-		default:
-			addressElement.classList.add("hidden");
-			break;
-	}
+	var elementName = 'cv_fields';
+	var url = '/?cmd=getcvfields';
+	url += '&control=' + control;
+	url += '&mode=' + mode;
+	requestUpdateItem(elementName, url);
 }
 
 function updateName()
@@ -516,6 +524,7 @@ function updateItem(elementName, data)
 
 function requestUpdateItem(elementName, url)
 {
+	updateItem(elementName, "Loading...");
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.onreadystatechange = function() {
 		if (xmlHttp.readyState == 4 && xmlHttp.status == 200)

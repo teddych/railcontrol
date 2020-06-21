@@ -146,6 +146,7 @@ namespace WebServer
 				return HtmlTagTabPosition(posx, posy, posz, DataModel::LayoutItem::RotationNotRelevant, visible);
 			}
 			HtmlTag HtmlTagProgramModeSelector(const ControlID controlID, ProgramMode& mode) const;
+			HtmlTag HtmlTagCvFields(const ControlID controlID, const ProgramMode programMode) const;
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void HandleLayerSave(const std::map<std::string, std::string>& arguments);
@@ -237,9 +238,10 @@ namespace WebServer
 			void HandleProgramModeSelector(const std::map<std::string,std::string>& arguments);
 			void HandleProgramRead(const std::map<std::string,std::string>& arguments);
 			void HandleProgramWrite(const std::map<std::string,std::string>& arguments);
+			void HandleCvFields(const std::map<std::string,std::string>& arguments);
 			void HandleUpdater(const std::map<std::string,std::string>& headers);
-			void UrlDecode(std::string& argumentValue);
-			char ConvertHexToInt(char c);
+			static void UrlDecode(std::string& argumentValue);
+			static char ConvertHexToInt(char c);
 			void WorkerImpl();
 
 			Logger::Logger* logger;
