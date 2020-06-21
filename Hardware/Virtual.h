@@ -41,6 +41,7 @@ namespace Hardware
 					| Hardware::CapabilityFeedback
 					| Hardware::CapabilityProgram
 					| Hardware::CapabilityProgramMmWrite
+					| Hardware::CapabilityProgramMmPomWrite
 					| Hardware::CapabilityProgramMfxRead
 					| Hardware::CapabilityProgramMfxWrite
 					| Hardware::CapabilityProgramDccDirectRead
