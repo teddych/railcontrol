@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataTypes.h"
 #include "WebServer/HtmlTagInputSlider.h"
+#include "WebServer/HtmlTagJavascript.h"
 
 namespace WebServer
 {
