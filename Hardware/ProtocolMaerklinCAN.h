@@ -142,7 +142,9 @@ namespace Hardware
 				CanDeviceConnect6021 = 0x0020,
 				CanDeviceMs2 = 0x0030,
 				CanDeviceMs2_2 = 0x0032,
+				CanDeviceCs2Slave_2 = 0xeeee,
 				CanDeviceWireless = 0xffe0,
+				CanDeviceCs2Slave = 0xfff0,
 				CanDeviceCs2Master = 0xffff
 			};
 

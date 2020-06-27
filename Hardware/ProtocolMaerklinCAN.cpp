@@ -285,8 +285,6 @@ namespace Hardware
 		SendInternal(buffer);
 	}
 
-	}
-
 	void ProtocolMaerklinCAN::Parse(const unsigned char* buffer)
 	{
 		CanResponse response = ParseResponse(buffer);
@@ -451,9 +449,8 @@ namespace Hardware
 		CreateCommandHeader(sendBuffer, CanCommandPing, CanResponseResponse, 8);
 		Utils::Utils::IntToDataBigEndian(uid, sendBuffer + 5);
 		sendBuffer[9] = 3;
-		sendBuffer[10] = 55;
-		sendBuffer[11] = 0;
-		sendBuffer[12] = 0x32;
+		sendBuffer[10] = 9;
+		Utils::Utils::ShortToDataBigEndian(hasCs2Master ? CanDeviceCs2Master : CanDeviceCs2Slave, sendBuffer + 11);
 		SendInternal(sendBuffer);
 	}
 
@@ -486,6 +483,11 @@ namespace Hardware
 
 			case CanDeviceCs2Master:
 				deviceString = const_cast<char*>("CS2 Master");
+				break;
+
+			case CanDeviceCs2Slave:
+			case CanDeviceCs2Slave_2:
+				deviceString = const_cast<char*>("CS2 Slave");
 				break;
 
 			default:
