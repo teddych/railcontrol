@@ -38,7 +38,6 @@ namespace Hardware
 			params->GetControlID(),
 			Logger::Logger::GetLogger("CS2UDP " + params->GetName() + " " + params->GetArg1()),
 			"Maerklin Central Station 2 (CS2) UDP / " + params->GetName() + " at IP " + params->GetArg1()),
-	 	run(true),
 	 	senderConnection(logger, params->GetArg1(), CS2SenderPort),
 	 	receiverConnection(logger, "0.0.0.0", CS2ReceiverPort)
 	{
@@ -57,19 +56,12 @@ namespace Hardware
 
 	CS2Udp::~CS2Udp()
 	{
-		if (run == false)
-		{
-			return;
-		}
-		run = false;
 		receiverConnection.Terminate();
-		receiverThread.join();
 		logger->Info(Languages::TextTerminatingSenderSocket);
 	}
 
 	void CS2Udp::Send(const unsigned char* buffer)
 	{
-		logger->Hex(buffer, CANCommandBufferLength);
 		if (senderConnection.Send(buffer, CANCommandBufferLength) == -1)
 		{
 			logger->Error(Languages::TextUnableToSendDataToControl);
@@ -78,6 +70,7 @@ namespace Hardware
 
 	void CS2Udp::Receiver()
 	{
+		run = true;
 		Utils::Utils::SetThreadName("CS2Udp");
 		logger->Info(Languages::TextReceiverThreadStarted);
 		if (!receiverConnection.IsConnected())
@@ -112,7 +105,6 @@ namespace Hardware
 				logger->Error(Languages::TextInvalidDataReceived);
 				continue;
 			}
-			logger->Hex(buffer, datalen);
 			Parse(buffer);
 		}
 		receiverConnection.Terminate();

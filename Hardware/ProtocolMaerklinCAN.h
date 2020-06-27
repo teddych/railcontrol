@@ -57,18 +57,18 @@ namespace Hardware
 				protocols.push_back(ProtocolDCC);
 			}
 
-			bool LocoProtocolSupported(Protocol protocol) const override
+			inline bool LocoProtocolSupported(Protocol protocol) const override
 			{
 				return (protocol == ProtocolMM || protocol == ProtocolMFX || protocol == ProtocolDCC);
 			}
 
-			void GetAccessoryProtocols(std::vector<Protocol> &protocols) const override
+			inline void GetAccessoryProtocols(std::vector<Protocol> &protocols) const override
 			{
 				protocols.push_back(ProtocolMM);
 				protocols.push_back(ProtocolDCC);
 			}
 
-			bool AccessoryProtocolSupported(Protocol protocol) const override
+			inline bool AccessoryProtocolSupported(Protocol protocol) const override
 			{
 				return (protocol == ProtocolMM || protocol == ProtocolDCC);
 			}
@@ -82,7 +82,31 @@ namespace Hardware
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
 		protected:
+			ProtocolMaerklinCAN(Manager* manager, ControlID controlID, Logger::Logger* logger, std::string name)
+			:	HardwareInterface(manager, controlID, name),
+			 	logger(logger),
+				run(false),
+			 	hasCs2Master(false)
+			{
+				GenerateUidHash();
+			}
 
+			void Init();
+
+			virtual ~ProtocolMaerklinCAN();
+
+			void Parse(const unsigned char* buffer);
+
+			void Ping();
+
+			virtual void Receiver() = 0;
+
+			static const unsigned char CANCommandBufferLength = 13;
+
+			Logger::Logger* logger;
+			volatile bool run;
+
+		private:
 			enum CanCommand : unsigned char
 			{
 				CanCommandSystem = 0x00,
@@ -92,75 +116,109 @@ namespace Hardware
 				CanCommandReadConfig = 0x07,
 				CanCommandWriteConfig = 0x08,
 				CanCommandAccessory = 0x0B,
-				CanCommandS88Event = 0x11
+				CanCommandS88Event = 0x11,
+				CanCommandPing = 0x18,
+				CanCommandRequestConfigData = 0x20,
+				CanCommandConfigData = 0x21,
+				CanCommandHello = 0x42
 			};
+
 			enum CanSubCommand : unsigned char
 			{
 				CanSubCommandStop = 0x00,
 				CanSubCommandGo = 0x01
 			};
+
 			enum CanResponse : unsigned char
 			{
 				CanResponseCommand = 0x00,
 				CanResponseResponse = 0x01
 			};
+
+			enum CanDeviceType : uint16_t
+			{
+				CanDeviceGfp = 0x0000,
+				CanDeviceGleisbox = 0x0010,
+				CanDeviceConnect6021 = 0x0020,
+				CanDeviceMs2 = 0x0030,
+				CanDeviceMs2_2 = 0x0032,
+				CanDeviceWireless = 0xffe0,
+				CanDeviceCs2Master = 0xffff
+			};
+
 			typedef unsigned char CanPrio;
 			typedef unsigned char CanLength;
 			typedef uint32_t CanAddress;
+			typedef uint32_t CanUid;
+			typedef uint16_t CanHash;
 
-			ProtocolMaerklinCAN(Manager* manager, ControlID controlID, Logger::Logger* logger, std::string name)
-			:	HardwareInterface(manager, controlID, name),
-			 	logger(logger)
-			{}
+			void CreateCommandHeader(unsigned char* const buffer, const CanCommand command, const CanResponse response, const CanLength length);
+			void ParseAddressProtocol(const unsigned char* const buffer, CanAddress& address, Protocol& protocol);
 
-			virtual ~ProtocolMaerklinCAN() {}
-
-			void Parse(const unsigned char* buffer);
-
-			static const unsigned char CANCommandBufferLength = 13;
-
-			Logger::Logger* logger;
-
-		private:
-			static const unsigned short hash = 0x7337;
-
-			void CreateCommandHeader(unsigned char* buffer, const CanCommand command, const CanResponse response, const CanLength length);
-			void ParseAddressProtocol(const unsigned char* buffer, CanAddress& address, Protocol& protocol);
-
-			CanPrio ParsePrio(const unsigned char* buffer)
+			inline CanPrio ParsePrio(const unsigned char* const buffer)
 			{
 				return buffer[0] >> 1;
 			}
 
-			CanCommand ParseCommand(const unsigned char* buffer)
+			inline CanCommand ParseCommand(const unsigned char* const buffer)
 			{
 				return static_cast<CanCommand>((CanCommand)(buffer[0]) << 7 | (CanCommand)(buffer[1]) >> 1);
 			}
 
-			CanSubCommand ParseSubCommand(const unsigned char* buffer)
+			inline CanSubCommand ParseSubCommand(const unsigned char* const buffer)
 			{
 				return static_cast<CanSubCommand>(buffer[9]);
 			}
 
-			CanResponse ParseResponse(const unsigned char* buffer)
+			inline CanResponse ParseResponse(const unsigned char* const buffer)
 			{
 				return static_cast<CanResponse>(buffer[1] & 0x01);
 			}
 
-			CanLength ParseLength(const unsigned char* buffer)
+			inline CanLength ParseLength(const unsigned char* const buffer)
 			{
 				return buffer[4];
 			}
 
-			CanAddress ParseAddress(const unsigned char* buffer)
+			inline CanAddress ParseAddress(const unsigned char* const buffer)
 			{
 				return Utils::Utils::DataBigEndianToInt(buffer + 5);
 			}
 
+			inline CanHash ParseHash(const unsigned char* const buffer)
+			{
+				return Utils::Utils::DataBigEndianToShort(buffer + 2);
+			}
+
+			inline CanUid ParseUid(const unsigned char* const buffer)
+			{
+				return Utils::Utils::DataBigEndianToInt(buffer + 5);
+			}
+
+			void ParsePingCommand(const unsigned char* const buffer);
+			void ParsePingResponse(const unsigned char* const buffer);
+
+			static CanHash CalcHash(const CanUid uid);
+			void GenerateUidHash();
+
 			void CreateLocalIDLoco(unsigned char* buffer, const Protocol& protocol, const Address& address);
 			void CreateLocalIDAccessory(unsigned char* buffer, const Protocol& protocol, const Address& address);
 
+			void Wait(const unsigned int duration) const;
+			void Cs2MasterThread();
+
+			inline void SendInternal(const unsigned char* buffer)
+			{
+				logger->Hex(buffer, 5 + ParseLength(buffer));
+				Send(buffer);
+			}
 			virtual void Send(const unsigned char* buffer) = 0;
+
+			CanUid uid;
+			CanHash hash;
+			bool hasCs2Master;
+			std::thread receiverThread;
+			std::thread cs2MasterThread;
 	};
 } // namespace
 

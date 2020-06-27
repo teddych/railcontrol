@@ -31,7 +31,6 @@ namespace Hardware
 	{
 		public:
 			CcSchnitte(const HardwareParams* params);
-			~CcSchnitte();
 
 			static void GetArgumentTypesAndHint(std::map<unsigned char,ArgumentType>& argumentTypes, std::string& hint)
 			{
@@ -41,11 +40,9 @@ namespace Hardware
 
 		private:
 			Network::Serial serialLine;
-			volatile bool run;
-			std::thread receiverThread;
 
 			void Send(const unsigned char* buffer) override;
-			void Receiver();
+			void Receiver() override;
 	};
 
 	extern "C" CcSchnitte* create_CcSchnitte(const HardwareParams *params);

@@ -25,6 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <cstring>    // memset
 #include <dirent.h>
 #include <fstream>
+#include <iomanip>
 #include <iostream>   // cout
 #include <sstream>
 #include <string>
@@ -233,6 +234,32 @@ namespace Utils
 		return output;
 	}
 
+	std::string Utils::IntegerToHex(const unsigned int input, const unsigned int size)
+	{
+		if (input == 0)
+		{
+			return "0";
+		}
+		std::string output;
+
+		unsigned int decimal = input;
+		unsigned int internalSize = 0;
+		while (decimal)
+		{
+			std::stringstream part;
+			part << std::setfill('0') << std::setw(1) << std::hex << (decimal & 0xF);
+			output = part.str() + output;
+			decimal >>= 4;
+			++internalSize;
+		}
+		while (internalSize < size)
+		{
+			++internalSize;
+			output = "0" + output;
+		}
+		return output;
+	}
+
 	void Utils::CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to)
 	{
 		logger->Info(Languages::TextCopyingFromTo, from, to);
@@ -309,4 +336,11 @@ namespace Utils
 		return true;
 	}
 #endif
+
+	unsigned int Utils::RandInt()
+	{
+		struct timeval timestamp;
+		gettimeofday(&timestamp, NULL);
+		return static_cast<unsigned int>((timestamp.tv_sec << 20) | (timestamp.tv_usec & 0xFFFFF));
+	}
 }

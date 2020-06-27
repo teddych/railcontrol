@@ -40,13 +40,12 @@ namespace Hardware
 			}
 
 		private:
-			volatile bool run;
 			Network::UdpConnection senderConnection;
 			Network::UdpConnection receiverConnection;
 			std::thread receiverThread;
 
 			void Send(const unsigned char* buffer) override;
-			void Receiver();
+			void Receiver() override;
 
 			static const unsigned short CS2SenderPort = 15731;
 			static const unsigned short CS2ReceiverPort = 15730;

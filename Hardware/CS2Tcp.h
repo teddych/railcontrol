@@ -31,7 +31,6 @@ namespace Hardware
 	{
 		public:
 			CS2Tcp(const HardwareParams* params);
-			~CS2Tcp();
 
 			static void GetArgumentTypesAndHint(std::map<unsigned char,ArgumentType>& argumentTypes, std::string& hint)
 			{
@@ -40,12 +39,11 @@ namespace Hardware
 			}
 
 		private:
-			volatile bool run;
 			Network::TcpConnection connection;
 			std::thread receiverThread;
 
 			void Send(const unsigned char* buffer) override;
-			void Receiver();
+			void Receiver() override;
 
 			static const unsigned short CS2Port = 15731;
 	};

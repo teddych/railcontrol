@@ -22,7 +22,45 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	void ProtocolMaerklinCAN::CreateCommandHeader(unsigned char* buffer, const CanCommand command, const CanResponse response, const CanLength length)
+	void ProtocolMaerklinCAN::Init()
+	{
+		receiverThread = std::thread(&ProtocolMaerklinCAN::Receiver, this);
+		cs2MasterThread = std::thread(&ProtocolMaerklinCAN::Cs2MasterThread, this);
+	}
+
+	ProtocolMaerklinCAN::~ProtocolMaerklinCAN()
+	{
+		if (run == false)
+		{
+			return;
+		}
+		run = false;
+		receiverThread.join();
+		cs2MasterThread.join();
+	}
+
+	void ProtocolMaerklinCAN::Wait(const unsigned int duration) const
+	{
+		unsigned int wait = duration;
+		while (run && wait)
+		{
+			Utils::Utils::SleepForSeconds(1);
+			--wait;
+		}
+	}
+
+	void ProtocolMaerklinCAN::Cs2MasterThread()
+	{
+		run = true;
+		Wait(15);
+		while (run && hasCs2Master == false)
+		{
+			Ping();
+			Wait(15);
+		}
+	}
+
+	void ProtocolMaerklinCAN::CreateCommandHeader(unsigned char* const buffer, const CanCommand command, const CanResponse response, const CanLength length)
 	{
 		const CanPrio prio = 0;
 		buffer[0] = (prio << 1) | (command >> 7);
@@ -33,7 +71,7 @@ namespace Hardware
 		*data = 0L;
 	}
 
-	void ProtocolMaerklinCAN::ParseAddressProtocol(const unsigned char* buffer, CanAddress& address, Protocol& protocol)
+	void ProtocolMaerklinCAN::ParseAddressProtocol(const unsigned char* const buffer, CanAddress& address, Protocol& protocol)
 	{
 		address = Utils::Utils::DataBigEndianToInt(buffer + 5);
 		CanAddress maskedAddress = address & 0x0000FC00;
@@ -67,6 +105,21 @@ namespace Hardware
 
 		protocol = ProtocolNone;
 		address = 0;
+	}
+
+	ProtocolMaerklinCAN::CanHash ProtocolMaerklinCAN::CalcHash(const CanUid uid)
+	{
+		CanHash calc = (uid >> 16) ^ (uid & 0xFFFF);
+		CanHash out = ((calc << 3) | 0x0300) & 0xFF00;
+		out |= (calc & 0x007F);
+		return out;
+	}
+
+	void ProtocolMaerklinCAN::GenerateUidHash()
+	{
+		uid = Utils::Utils::RandInt();
+		hash = CalcHash(uid);
+		logger->Debug("UID: {0} Hash: {1}", Utils::Utils::IntegerToHex(uid), Utils::Utils::IntegerToHex(hash));
 	}
 
 	void ProtocolMaerklinCAN::CreateLocalIDLoco(unsigned char* buffer, const Protocol& protocol, const Address& address)
@@ -104,7 +157,7 @@ namespace Hardware
 		logger->Info(status ? Languages::TextTurningBoosterOn : Languages::TextTurningBoosterOff);
 		CreateCommandHeader(buffer, CanCommandSystem, CanResponseCommand, 5);
 		buffer[9] = status;
-		Send(buffer);
+		SendInternal(buffer);
 	}
 
 	void ProtocolMaerklinCAN::LocoSpeed(const Protocol protocol, const Address address, const Speed speed)
@@ -114,7 +167,7 @@ namespace Hardware
 		CreateCommandHeader(buffer, CanCommandLocoSpeed, CanResponseCommand, 6);
 		CreateLocalIDLoco(buffer, protocol, address);
 		Utils::Utils::ShortToDataBigEndian(speed, buffer + 9);
-		Send(buffer);
+		SendInternal(buffer);
 	}
 
 	void ProtocolMaerklinCAN::LocoOrientation(const Protocol protocol, const Address address, const Orientation orientation)
@@ -124,7 +177,7 @@ namespace Hardware
 		CreateCommandHeader(buffer, CanCommandLocoDirection, CanResponseCommand, 5);
 		CreateLocalIDLoco(buffer, protocol, address);
 		buffer[9] = (orientation ? 1 : 2);
-		Send(buffer);
+		SendInternal(buffer);
 	}
 
 	void ProtocolMaerklinCAN::LocoFunction(const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on)
@@ -135,7 +188,7 @@ namespace Hardware
 		CreateLocalIDLoco(buffer, protocol, address);
 		buffer[9] = function;
 		buffer[10] = (on == DataModel::LocoFunctions::FunctionStateOn);
-		Send(buffer);
+		SendInternal(buffer);
 	}
 
 	void ProtocolMaerklinCAN::AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on)
@@ -146,7 +199,7 @@ namespace Hardware
 		CreateLocalIDAccessory(buffer, protocol, address);
 		buffer[9] = state & 0x03;
 		buffer[10] = static_cast<unsigned char>(on);
-		Send(buffer);
+		SendInternal(buffer);
 	}
 
 	void ProtocolMaerklinCAN::ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv)
@@ -173,7 +226,7 @@ namespace Hardware
 		CreateLocalIDLoco(buffer, protocol, addressInternal);
 		Utils::Utils::ShortToDataBigEndian(cv, buffer + 9);
 		buffer[11] = 1;
-		Send(buffer);
+		SendInternal(buffer);
 	}
 
 	void ProtocolMaerklinCAN::ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value)
@@ -222,7 +275,16 @@ namespace Hardware
 		Utils::Utils::ShortToDataBigEndian(cv, buffer + 9);
 		buffer[11] = value;
 		buffer[12] = controlFlags;
-		Send(buffer);
+		SendInternal(buffer);
+	}
+
+	void ProtocolMaerklinCAN::Ping()
+	{
+		unsigned char buffer[CANCommandBufferLength];
+		CreateCommandHeader(buffer, CanCommandPing, CanResponseCommand, 0);
+		SendInternal(buffer);
+	}
+
 	}
 
 	void ProtocolMaerklinCAN::Parse(const unsigned char* buffer)
@@ -230,6 +292,20 @@ namespace Hardware
 		CanResponse response = ParseResponse(buffer);
 		CanCommand command = ParseCommand(buffer);
 		CanLength length = ParseLength(buffer);
+		logger->Hex(buffer, 5 + length);
+		const CanHash receivedHash = ParseHash(buffer);
+		if (receivedHash == hash)
+		{
+			uint16_t deviceType = Utils::Utils::DataBigEndianToShort(buffer + 11);
+			if (command == CanCommandPing && response == true && deviceType == CanDeviceCs2Master)
+			{
+				hasCs2Master = true;
+			}
+			else
+			{
+				GenerateUidHash();
+			}
+		}
 		if (response == true)
 		{
 			switch (command)
@@ -265,6 +341,20 @@ namespace Hardware
 					CvValue value = buffer[11];
 					logger->Info(Languages::TextProgramReadValue, cv, value);
 					manager->ProgramValue(cv, value);
+					return;
+				}
+
+				case CanCommandConfigData:
+					if (length < 6)
+					{
+						return;
+					}
+					logger->Hex(buffer, CANCommandBufferLength);
+					return;
+
+				case CanCommandPing:
+				{
+					ParsePingResponse(buffer);
 					return;
 				}
 
@@ -342,5 +432,69 @@ namespace Hardware
 			manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
 			return;
 		}
+
+		if (command == CanCommandPing)
+		{
+			logger->Debug("Ping received");
+			ParsePingCommand(buffer);
+			return;
+		}
+	}
+
+	void ProtocolMaerklinCAN::ParsePingCommand(const unsigned char* const buffer)
+	{
+		if (buffer[4] == 8 && Utils::Utils::DataBigEndianToInt(buffer + 5) != uid)
+		{
+			return;
+		}
+		unsigned char sendBuffer[CANCommandBufferLength];
+		CreateCommandHeader(sendBuffer, CanCommandPing, CanResponseResponse, 8);
+		Utils::Utils::IntToDataBigEndian(uid, sendBuffer + 5);
+		sendBuffer[9] = 3;
+		sendBuffer[10] = 55;
+		sendBuffer[11] = 0;
+		sendBuffer[12] = 0x32;
+		SendInternal(sendBuffer);
+	}
+
+	void ProtocolMaerklinCAN::ParsePingResponse(const unsigned char* const buffer)
+	{
+		const uint16_t deviceType = Utils::Utils::DataBigEndianToShort(buffer + 11);
+		char* deviceString = nullptr;
+		switch (deviceType)
+		{
+			case CanDeviceGfp:
+				deviceString = const_cast<char*>("Gleisformat Prozessor");
+				break;
+
+			case CanDeviceGleisbox:
+				deviceString = const_cast<char*>("Gleisbox");
+				break;
+
+			case CanDeviceConnect6021:
+				deviceString = const_cast<char*>("Connect 6021");
+				break;
+
+			case CanDeviceMs2:
+			case CanDeviceMs2_2:
+				deviceString = const_cast<char*>("MS2");
+				break;
+
+			case CanDeviceWireless:
+				deviceString = const_cast<char*>("Wireless");
+				break;
+
+			case CanDeviceCs2Master:
+				deviceString = const_cast<char*>("CS2 Master");
+				break;
+
+			default:
+				deviceString = const_cast<char*>("unknown");
+				break;
+		}
+		const std::string hash = Utils::Utils::IntegerToHex(Utils::Utils::DataBigEndianToShort(buffer + 2));
+		const unsigned char majorVersion = buffer[9];
+		const unsigned char minorVersion = buffer[10];
+		logger->Info(Languages::TextDeviceOnCanBus, deviceString, hash, majorVersion, minorVersion);
 	}
 } // namespace

@@ -56,6 +56,7 @@ namespace Utils
 			static void ShortToDataLittleEndian(const uint16_t i, unsigned char* buffer);
 			static uint16_t DataLittleEndianToShort(const unsigned char* buffer);
 			static std::string IntegerToBCD(const unsigned int input);
+			static std::string IntegerToHex(const unsigned int input, const unsigned int size = 1);
 			static void CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to);
 			static void RenameFile(Logger::Logger* logger, const std::string& from, const std::string& to);
 			static void SetThreadName(const std::string& name) { SetThreadName(name.c_str()); }
@@ -75,5 +76,6 @@ namespace Utils
 		public:
 			static bool GetComPorts(std::vector<unsigned char>& comPorts);
 #endif
+			static unsigned int RandInt();
 	};
 }

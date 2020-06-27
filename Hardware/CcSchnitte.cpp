@@ -38,8 +38,7 @@ namespace Hardware
 			params->GetControlID(),
 			Logger::Logger::GetLogger("CC-Schnitte " + params->GetName() + " " + params->GetArg1()),
 			"CC-Schnitte / " + params->GetName() + " at serial port " + params->GetArg1()),
-	 	serialLine(logger, params->GetArg1(), B500000, 8, 'N', 1, true),
-		run(false)
+	 	serialLine(logger, params->GetArg1(), B500000, 8, 'N', 1, true)
 	{
 		logger->Info(Languages::TextStarting, name);
 
@@ -48,17 +47,7 @@ namespace Hardware
 			return;
 		}
 
-		receiverThread = std::thread(&Hardware::CcSchnitte::Receiver, this);
-	}
-
-	CcSchnitte::~CcSchnitte()
-	{
-		if (run == false)
-		{
-			return;
-		}
-		run = false;
-		receiverThread.join();
+		Init();
 	}
 
 	void CcSchnitte::Send(const unsigned char* buffer)
@@ -67,7 +56,6 @@ namespace Hardware
 		{
 			return;
 		}
-		logger->Hex(buffer, CANCommandBufferLength);
 		if (serialLine.Send(buffer, CANCommandBufferLength) == -1)
 		{
 			logger->Error(Languages::TextUnableToSendDataToControl);
@@ -76,9 +64,10 @@ namespace Hardware
 
 	void CcSchnitte::Receiver()
 	{
+		run = true;
 		Utils::Utils::SetThreadName("CC-Schnitte");
 		logger->Info(Languages::TextReceiverThreadStarted);
-		run = true;
+
 		while (run)
 		{
 			if (!serialLine.IsConnected())
@@ -101,7 +90,6 @@ namespace Hardware
 				logger->Error(Languages::TextInvalidDataReceived);
 				continue;
 			}
-			logger->Hex(buffer, sizeof(buffer));
 			Parse(buffer);
 		}
 		logger->Info(Languages::TextTerminatingReceiverThread);

@@ -113,6 +113,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextDeleteSwitch */ { "Delete switch", "Weiche löschen", "Eliminar desvío" },
 /* TextDeleteTrack */ { "Delete track", "Gleis löschen", "Eliminar vía" },
 /* TextDestinationSignalTrack */ { "Destination signal or track", "Zielsignal oder -gleis", "Señal o vía de destino" },
+/* TextDeviceOnCanBus */ { "CAN-device {0} with hash {1} and software version {2}.{3} found.", "CAN-Gerät {0} mit Hash {1} und Softwareversion {2}.{3} gefunden.", "Encontrado dispositivo {0} con hash {1} y version {2}.{3}." },
 /* TextDifferentOrientations */ { "Locomotive and route {0} have different running directions", "Lokomotive und Fahrstrasse {0} haben verschiedene Fahrtrichtungen", "Tren e itinerario tienen sentidos de la marcha differentes" },
 /* TextDifferentPushpullTypes */ { "Locomotive and route {0} have different push-pull types", "Lokomotive und Fahrstrasse {0} haben verschiedene Wendezugeinstellungen", "Tren e itinerario tienen ajustes de push-pull differentes" },
 /* TextDirect */ { "Direct", "Direkt", "Directo" },

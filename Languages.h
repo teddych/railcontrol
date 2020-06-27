@@ -113,6 +113,7 @@ class Languages
 			TextDeleteSwitch,
 			TextDeleteTrack,
 			TextDestinationSignalTrack,
+			TextDeviceOnCanBus,
 			TextDifferentOrientations,
 			TextDifferentPushpullTypes,
 			TextDirect,
