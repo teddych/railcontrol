@@ -23,19 +23,18 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	extern "C" CS2Tcp* create_CS2Tcp(const HardwareParams* params)
+	extern "C" CS2Tcp* create_CS2Tcp(HardwareParams* const params)
 	{
 		return new CS2Tcp(params);
 	}
 
-	extern "C" void destroy_CS2Tcp(CS2Tcp* cs2Tcp)
+	extern "C" void destroy_CS2Tcp(CS2Tcp* const cs2Tcp)
 	{
 		delete(cs2Tcp);
 	}
 
-	CS2Tcp::CS2Tcp(const HardwareParams* params)
-	:	ProtocolMaerklinCAN(params->GetManager(),
-			params->GetControlID(),
+	CS2Tcp::CS2Tcp(HardwareParams* const params)
+	:	ProtocolMaerklinCAN(params,
 			Logger::Logger::GetLogger("CS2TCP " + params->GetName() + " " + params->GetArg1()),
 			"Maerklin Central Station 2 (CS2) TCP / " + params->GetName() + " at IP " + params->GetArg1()),
 	 	connection(Network::TcpClient::GetTcpClientConnection(logger, params->GetArg1(), CS2Port))

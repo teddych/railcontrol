@@ -23,19 +23,18 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	extern "C" CS2Udp* create_CS2Udp(const HardwareParams* params)
+	extern "C" CS2Udp* create_CS2Udp(HardwareParams* const params)
 	{
 		return new CS2Udp(params);
 	}
 
-	extern "C" void destroy_CS2Udp(CS2Udp* cs2Udp)
+	extern "C" void destroy_CS2Udp(CS2Udp* const cs2Udp)
 	{
 		delete(cs2Udp);
 	}
 
-	CS2Udp::CS2Udp(const HardwareParams* params)
-	:	ProtocolMaerklinCAN(params->GetManager(),
-			params->GetControlID(),
+	CS2Udp::CS2Udp(HardwareParams* const params)
+	:	ProtocolMaerklinCAN(params,
 			Logger::Logger::GetLogger("CS2UDP " + params->GetName() + " " + params->GetArg1()),
 			"Maerklin Central Station 2 (CS2) UDP / " + params->GetName() + " at IP " + params->GetArg1()),
 	 	senderConnection(logger, params->GetArg1(), CS2SenderPort),

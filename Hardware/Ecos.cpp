@@ -386,7 +386,7 @@ namespace Hardware
 	{
 		string stringValue;
 		ParseOption(option, stringValue);
-		value = Utils::Utils::StringToInteger(stringValue, 0, true);
+		value = Utils::Utils::HexToInteger(stringValue, 0);
 	}
 
 	void Ecos::ParseEvent()

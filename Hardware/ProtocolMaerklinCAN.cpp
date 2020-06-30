@@ -30,6 +30,11 @@ namespace Hardware
 
 	ProtocolMaerklinCAN::~ProtocolMaerklinCAN()
 	{
+		if (canFileData != nullptr)
+		{
+			free(canFileData);
+			canFileData = nullptr;
+		}
 		if (run == false)
 		{
 			return;
@@ -42,7 +47,7 @@ namespace Hardware
 	void ProtocolMaerklinCAN::Wait(const unsigned int duration) const
 	{
 		unsigned int wait = duration;
-		while (run && wait)
+		while (run && !hasCs2Master && wait)
 		{
 			Utils::Utils::SleepForSeconds(1);
 			--wait;
@@ -52,11 +57,16 @@ namespace Hardware
 	void ProtocolMaerklinCAN::Cs2MasterThread()
 	{
 		run = true;
-		Wait(15);
-		while (run && hasCs2Master == false)
+		Wait(30);
+
+		while (run && !hasCs2Master)
 		{
 			Ping();
-			Wait(15);
+			Wait(10);
+		}
+		if (hasCs2Master)
+		{
+			RequestLoks();
 		}
 	}
 
@@ -118,8 +128,10 @@ namespace Hardware
 	void ProtocolMaerklinCAN::GenerateUidHash()
 	{
 		uid = Utils::Utils::RandInt();
+		std::string uidString = Utils::Utils::IntegerToHex(uid);
+		params->SetArg5(uidString);
 		hash = CalcHash(uid);
-		logger->Debug("UID: {0} Hash: {1}", Utils::Utils::IntegerToHex(uid), Utils::Utils::IntegerToHex(hash));
+		logger->Debug("UID: {0} Hash: {1}", uidString, Utils::Utils::IntegerToHex(hash));
 	}
 
 	void ProtocolMaerklinCAN::CreateLocalIDLoco(unsigned char* buffer, const Protocol& protocol, const Address& address)
@@ -285,6 +297,21 @@ namespace Hardware
 		SendInternal(buffer);
 	}
 
+	void ProtocolMaerklinCAN::RequestLoks()
+	{
+		unsigned char buffer[CANCommandBufferLength];
+		CreateCommandHeader(buffer, CanCommandRequestConfigData, CanResponseCommand, 8);
+		buffer[5] = 'l';
+		buffer[6] = 'o';
+		buffer[7] = 'k';
+		buffer[8] = 's';
+		buffer[9] = 0;
+		buffer[10] = 0;
+		buffer[11] = 0;
+		buffer[12] = 0;
+		SendInternal(buffer);
+	}
+
 	void ProtocolMaerklinCAN::Parse(const unsigned char* buffer)
 	{
 		CanResponse response = ParseResponse(buffer);
@@ -295,11 +322,15 @@ namespace Hardware
 		if (receivedHash == hash)
 		{
 			uint16_t deviceType = Utils::Utils::DataBigEndianToShort(buffer + 11);
-			if (command == CanCommandPing && response == true && deviceType == CanDeviceCs2Master)
+			if (command == CanCommandPing && response == true)
 			{
-				hasCs2Master = true;
+				if (deviceType == CanDeviceCs2Master)
+				{
+					hasCs2Master = true;
+					logger->Debug("CS2 Master found");
+				}
 			}
-			else
+			else if (command != CanCommandConfigData)
 			{
 				GenerateUidHash();
 			}
@@ -342,13 +373,21 @@ namespace Hardware
 					return;
 				}
 
-				case CanCommandConfigData:
-					if (length < 6)
+				case CanCommandRequestConfigData:
+				{
+					if (length != 8)
 					{
 						return;
 					}
-					logger->Hex(buffer, CANCommandBufferLength);
+					std::string fileName(reinterpret_cast<const char*>(buffer + 5), 4);
+					if (fileName.compare("loks") == 0)
+					{
+						canFileType = CanFileTypeLoks;
+						return;
+					}
+
 					return;
+				}
 
 				case CanCommandPing:
 				{
@@ -437,6 +476,46 @@ namespace Hardware
 			ParsePingCommand(buffer);
 			return;
 		}
+
+		if (command == CanCommandConfigData)
+		{
+			switch (length)
+			{
+				case 6:
+				case 7:
+					if (canFileData != nullptr)
+					{
+						free(canFileData);
+						canFileData = nullptr;
+					}
+					canFileLength = Utils::Utils::DataBigEndianToInt(buffer + 5);
+					canFileCrc = Utils::Utils::DataBigEndianToShort(buffer + 9);
+					logger->Debug("will receive {0} bytes with crc {1}", canFileLength, canFileCrc);
+					canFileData = reinterpret_cast<unsigned char*>(malloc(canFileLength + 8));
+					canFileDataPointer = canFileData;
+					return;
+
+				case 8:
+					*(reinterpret_cast<uint64_t*>(canFileDataPointer)) = *(reinterpret_cast<const uint64_t*>(buffer + 5));
+					logger->Debug("data");
+					canFileDataPointer += 8;
+					if (canFileLength > static_cast<size_t>(canFileDataPointer - canFileData))
+					{
+						return;
+					}
+					if (canFileType == CanFileTypeLoks)
+					{
+						logger->Debug("Loks file received");
+						return;
+					}
+					logger->Debug("Unknown file received");
+					return;
+
+				default:
+					return;
+			}
+			return;
+		}
 	}
 
 	void ProtocolMaerklinCAN::ParsePingCommand(const unsigned char* const buffer)
@@ -448,9 +527,12 @@ namespace Hardware
 		unsigned char sendBuffer[CANCommandBufferLength];
 		CreateCommandHeader(sendBuffer, CanCommandPing, CanResponseResponse, 8);
 		Utils::Utils::IntToDataBigEndian(uid, sendBuffer + 5);
+		// version 3.8
 		sendBuffer[9] = 3;
-		sendBuffer[10] = 9;
-		Utils::Utils::ShortToDataBigEndian(hasCs2Master ? CanDeviceCs2Master : CanDeviceCs2Slave, sendBuffer + 11);
+		sendBuffer[10] = 8;
+		// device type CS2 Slave
+		sendBuffer[11] = 0xff;
+		sendBuffer[12] = 0xf0;
 		SendInternal(sendBuffer);
 	}
 
@@ -462,6 +544,7 @@ namespace Hardware
 		{
 			case CanDeviceGfp:
 				deviceString = const_cast<char*>("Gleisformat Prozessor");
+				hasCs2Master = true;
 				break;
 
 			case CanDeviceGleisbox:

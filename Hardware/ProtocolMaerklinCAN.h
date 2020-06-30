@@ -82,13 +82,26 @@ namespace Hardware
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
 		protected:
-			ProtocolMaerklinCAN(Manager* manager, ControlID controlID, Logger::Logger* logger, std::string name)
-			:	HardwareInterface(manager, controlID, name),
+			ProtocolMaerklinCAN(HardwareParams* const params, Logger::Logger* logger, std::string name)
+			:	HardwareInterface(params->GetManager(), params->GetControlID(), name),
 			 	logger(logger),
 				run(false),
-			 	hasCs2Master(false)
+				params(params),
+			 	uid(Utils::Utils::HexToInteger(params->GetArg5(), 0)),
+			 	hasCs2Master(false),
+			 	canFileType(CanFileTypeNone),
+			 	canFileLength(0),
+			 	canFileData(nullptr)
 			{
-				GenerateUidHash();
+				if (uid == 0)
+				{
+					GenerateUidHash();
+				}
+				else
+				{
+					hash = CalcHash(uid);
+					logger->Debug("UID: {0} Hash: {1}", params->GetArg5(), Utils::Utils::IntegerToHex(hash));
+				}
 			}
 
 			void Init();
@@ -98,6 +111,7 @@ namespace Hardware
 			void Parse(const unsigned char* buffer);
 
 			void Ping();
+			void RequestLoks();
 
 			virtual void Receiver() = 0;
 
@@ -148,11 +162,32 @@ namespace Hardware
 				CanDeviceCs2Master = 0xffff
 			};
 
+			enum CanFileType : uint8_t
+			{
+				CanFileTypeNone,
+				CanFileTypeLokinfo,
+				CanFileTypeLoknamen,
+				CanFileTypeMaginfo,
+				CanFileTypeLokdb,
+				CanFileTypeLang,
+				CanFileTypeLdbver,
+				CanFileTypeLangver,
+				CanFileTypeLoks,
+				CanFileTypeMags,
+				CanFileTypeGbs,
+				CanFileTypeFs,
+				CanFileTypeLokstat,
+				CanFileTypeMagstat,
+				CanFileTypeGbsstat,
+				CanFileTypeFsstat
+			};
+
 			typedef unsigned char CanPrio;
 			typedef unsigned char CanLength;
 			typedef uint32_t CanAddress;
 			typedef uint32_t CanUid;
 			typedef uint16_t CanHash;
+			typedef uint16_t CanFileCrc;
 
 			void CreateCommandHeader(unsigned char* const buffer, const CanCommand command, const CanResponse response, const CanLength length);
 			void ParseAddressProtocol(const unsigned char* const buffer, CanAddress& address, Protocol& protocol);
@@ -216,11 +251,18 @@ namespace Hardware
 			}
 			virtual void Send(const unsigned char* buffer) = 0;
 
+			HardwareParams* const params;
 			CanUid uid;
 			CanHash hash;
 			bool hasCs2Master;
 			std::thread receiverThread;
 			std::thread cs2MasterThread;
+
+			CanFileType canFileType;
+			size_t canFileLength;
+			CanFileCrc canFileCrc;
+			unsigned char* canFileData;
+			unsigned char* canFileDataPointer;
 	};
 } // namespace
 

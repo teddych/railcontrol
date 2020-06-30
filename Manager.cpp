@@ -225,6 +225,11 @@ Manager::~Manager()
 			logger->Info(Languages::TextUnloadingControl, controlID, params->GetName());
 			delete control.second;
 			hardwareParams.erase(controlID);
+			if (storage != nullptr)
+			{
+				logger->Info(Languages::TextSaving, params->GetName());
+				storage->Save(*params);
+			}
 			delete params;
 		}
 	}

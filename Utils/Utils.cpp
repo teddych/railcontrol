@@ -112,7 +112,7 @@ namespace Utils
 		return out;
 	}
 
-	int Utils::StringToInteger(const std::string& value, const int defaultValue, const bool hex)
+	int Utils::StringToInteger(const std::string& value, const int defaultValue)
 	{
 		size_t valueSize = value.length();
 		if (valueSize == 0)
@@ -122,7 +122,7 @@ namespace Utils
 
 		char* end;
 		const char* start = value.c_str();
-		long longValue = std::strtol(start, &end, hex ? 16 : 10);
+		long longValue = std::strtol(start, &end, 10);
 		if (errno == ERANGE || start == end)
 		{
 			return defaultValue;
@@ -149,6 +149,24 @@ namespace Utils
 		}
 
 		return intValue;
+	}
+
+	long Utils::HexToInteger(const std::string& value, const long defaultValue)
+	{
+		size_t valueSize = value.length();
+		if (valueSize == 0)
+		{
+			return defaultValue;
+		}
+
+		char* end;
+		const char* start = value.c_str();
+		long longValue = std::strtol(start, &end, 16);
+		if (errno == ERANGE || start == end)
+		{
+			return defaultValue;
+		}
+		return longValue;
 	}
 
 	bool Utils::StringToBool(const std::string& value)
