@@ -1,5 +1,6 @@
 
 CXXFLAGS=-I. -I.. -g -fpic -O2 -Wall -Wextra -pedantic -Werror -std=c++11
+CFLAGSZLIB=-g -fpic -O2 -Wno-implicit-function-declaration
 LDFLAGS=-g -shared -Wl,-soname,
 
 LIBS= \
@@ -14,16 +15,39 @@ LIBS= \
 	Virtual.so \
 	Z21.so
 
+OBJZLIB=zlib/adler32.o \
+	zlib/compress.o \
+	zlib/crc32.o \
+	zlib/deflate.o \
+	zlib/gzclose.o \
+	zlib/gzlib.o \
+	zlib/gzread.o \
+	zlib/gzwrite.o \
+	zlib/infback.o \
+	zlib/inffast.o \
+	zlib/inflate.o \
+	zlib/inftrees.o \
+	zlib/trees.o \
+	zlib/uncompr.o \
+	zlib/zutil.o \
+	ZLib.o
 all: $(LIBS)
 
-CS2Tcp.so: CS2Tcp.o ProtocolMaerklinCAN.o *.h ../Manager.h ../Languages.h
-	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
+zlib: $(OBJZLIB)
 
-CS2Udp.so: CS2Udp.o ProtocolMaerklinCAN.o *.h ../Manager.h ../Languages.h
-	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
+amalgamation: zlib
 
-CcSchnitte.so: CcSchnitte.o ProtocolMaerklinCAN.o *.h ../Manager.h ../Languages.h
-	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $<
+zlib/%.o: zlib/%.c zlib/*.h
+	$(CC) $(CFLAGSZLIB) -c -o $@ $<
+
+CS2Tcp.so: CS2Tcp.o ProtocolMaerklinCAN.o $(OBJZLIB) *.h ../Manager.h ../Languages.h
+	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $(OBJZLIB) $<
+
+CS2Udp.so: CS2Udp.o ProtocolMaerklinCAN.o ZLib.o *.h ../Manager.h ../Languages.h
+	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $(OBJZLIB) $<
+
+CcSchnitte.so: CcSchnitte.o ProtocolMaerklinCAN.o ZLib.o *.h ../Manager.h ../Languages.h
+	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ ProtocolMaerklinCAN.o $(OBJZLIB) $<
 
 %.so: %.o *.h ../Manager.h ../Languages.h
 	$(CXX) $(CXXFLAGS) $(LDFLAGS)$@ -o $@ $<
@@ -32,5 +56,5 @@ CcSchnitte.so: CcSchnitte.o ProtocolMaerklinCAN.o *.h ../Manager.h ../Languages.
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	rm -f *.so *.o
+	rm -f *.so *.o zlib/*.o
 

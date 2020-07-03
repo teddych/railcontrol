@@ -90,8 +90,9 @@ namespace Hardware
 			 	uid(Utils::Utils::HexToInteger(params->GetArg5(), 0)),
 			 	hasCs2Master(false),
 			 	canFileType(CanFileTypeNone),
-			 	canFileLength(0),
-			 	canFileData(nullptr)
+			 	canFileDataSize(0),
+			 	canFileData(nullptr),
+			 	canFileDataPointer(nullptr)
 			{
 				if (uid == 0)
 				{
@@ -259,7 +260,7 @@ namespace Hardware
 			std::thread cs2MasterThread;
 
 			CanFileType canFileType;
-			size_t canFileLength;
+			size_t canFileDataSize;
 			CanFileCrc canFileCrc;
 			unsigned char* canFileData;
 			unsigned char* canFileDataPointer;

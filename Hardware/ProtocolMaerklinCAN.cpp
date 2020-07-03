@@ -19,6 +19,7 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include "Hardware/ProtocolMaerklinCAN.h"
+#include "Hardware/ZLib.h"
 
 namespace Hardware
 {
@@ -486,29 +487,45 @@ namespace Hardware
 					if (canFileData != nullptr)
 					{
 						free(canFileData);
-						canFileData = nullptr;
 					}
-					canFileLength = Utils::Utils::DataBigEndianToInt(buffer + 5);
+					canFileDataSize = Utils::Utils::DataBigEndianToInt(buffer + 5);
 					canFileCrc = Utils::Utils::DataBigEndianToShort(buffer + 9);
-					logger->Debug("will receive {0} bytes with crc {1}", canFileLength, canFileCrc);
-					canFileData = reinterpret_cast<unsigned char*>(malloc(canFileLength + 8));
+					logger->Debug("will receive {0} bytes of data with crc {1}", canFileDataSize, canFileCrc);
+					canFileData = reinterpret_cast<unsigned char*>(malloc(canFileDataSize + 8));
 					canFileDataPointer = canFileData;
 					return;
 
 				case 8:
-					*(reinterpret_cast<uint64_t*>(canFileDataPointer)) = *(reinterpret_cast<const uint64_t*>(buffer + 5));
+					if (canFileData == nullptr)
+					{
+						logger->Debug("No known file to receive!");
+						return;
+					}
+
 					logger->Debug("data");
+					*(reinterpret_cast<uint64_t*>(canFileDataPointer)) = *(reinterpret_cast<const uint64_t*>(buffer + 5));
 					canFileDataPointer += 8;
-					if (canFileLength > static_cast<size_t>(canFileDataPointer - canFileData))
+					if (canFileDataSize > static_cast<size_t>(canFileDataPointer - canFileData))
 					{
 						return;
 					}
 					if (canFileType == CanFileTypeLoks)
 					{
 						logger->Debug("Loks file received");
-						return;
+						size_t canFileUncompressedSize = Utils::Utils::DataBigEndianToInt(canFileData);
+						logger->Debug("Uncompressed data takes {0} bytes", canFileUncompressedSize);
+						std::string loksFile = ZLib::UnCompress(reinterpret_cast<char*>(canFileData + 4), canFileDataSize, canFileUncompressedSize);
+						logger->Debug(loksFile);
 					}
-					logger->Debug("Unknown file received");
+					else
+					{
+						logger->Debug("Unknown file received");
+					}
+					free(canFileData);
+				 	canFileType = CanFileTypeNone;
+				 	canFileDataSize = 0;
+				 	canFileData = nullptr;
+				 	canFileDataPointer = nullptr;
 					return;
 
 				default:

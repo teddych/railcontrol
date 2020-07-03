@@ -118,8 +118,9 @@ dist-cygwin: amalgamation
 amalgamation: Timestamp.cpp
 	./amalgamation.bash
 	$(CXX) $(CXXFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
+	make -C Hardware amalgamation
 	make -C Storage amalgamation
-	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBSAMALGAMATION)
+	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o Hardware/zlib/*.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 	rm Timestamp.cpp
