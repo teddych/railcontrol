@@ -458,21 +458,9 @@ namespace WebServer
 			{
 				HandleFeedbacksOfTrack(arguments);
 			}
-			else if (arguments["cmd"].compare("protocolloco") == 0)
+			else if (arguments["cmd"].compare("protocol") == 0)
 			{
-				HandleProtocolLoco(arguments);
-			}
-			else if (arguments["cmd"].compare("protocolaccessory") == 0)
-			{
-				HandleProtocolAccessory(arguments);
-			}
-			else if (arguments["cmd"].compare("protocolswitch") == 0)
-			{
-				HandleProtocolSwitch(arguments);
-			}
-			else if (arguments["cmd"].compare("protocolsignal") == 0)
-			{
-				HandleProtocolSignal(arguments);
+				HandleProtocol(arguments);
 			}
 			else if (arguments["cmd"].compare("feedbackadd") == 0)
 			{
@@ -1201,7 +1189,13 @@ namespace WebServer
 		return HtmlTagProtocol(protocolMap, selectedProtocol);
 	}
 
-	void WebClient::HandleProtocolLoco(const map<string, string>& arguments)
+	HtmlTag WebClient::HtmlTagProtocolAccessory(const ControlID controlID, const Protocol selectedProtocol)
+	{
+		map<string,Protocol> protocolMap = manager.AccessoryProtocolsOfControl(controlID);
+		return HtmlTagProtocol(protocolMap, selectedProtocol);
+	}
+
+	void WebClient::HandleProtocol(const map<string, string>& arguments)
 	{
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		if (controlId == ControlIdNone)
@@ -1210,14 +1204,33 @@ namespace WebServer
 			return;
 		}
 		LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		Loco* loco = manager.GetLoco(locoId);
-		ReplyHtmlWithHeader(HtmlTagProtocolLoco(controlId, loco == nullptr ? ProtocolNone : loco->GetProtocol()));
-	}
-
-	HtmlTag WebClient::HtmlTagProtocolAccessory(const ControlID controlID, const Protocol selectedProtocol)
-	{
-		map<string,Protocol> protocolMap = manager.AccessoryProtocolsOfControl(controlID);
-		return HtmlTagProtocol(protocolMap, selectedProtocol);
+		if (locoId != LocoNone)
+		{
+			Loco *loco = manager.GetLoco(locoId);
+			ReplyHtmlWithHeader(HtmlTagProtocolLoco(controlId, loco == nullptr ? ProtocolNone : loco->GetProtocol()));
+			return;
+		}
+		AccessoryID accessoryId = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		if (accessoryId != AccessoryNone)
+		{
+			Accessory *accessory = manager.GetAccessory(accessoryId);
+			ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, accessory == nullptr ? ProtocolNone : accessory->GetProtocol()));
+			return;
+		}
+		SwitchID switchId = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		if (switchId != SwitchNone)
+		{
+			Switch *mySwitch = manager.GetSwitch(switchId);
+			ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch == nullptr ? ProtocolNone : mySwitch->GetProtocol()));
+			return;
+		}
+		SignalID signalId = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
+		if (signalId != SignalNone)
+		{
+			Signal *signal = manager.GetSignal(signalId);
+			ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, signal == nullptr ? ProtocolNone : signal->GetProtocol()));
+			return;
+		}
 	}
 
 	HtmlTag WebClient::HtmlTagDuration(const DataModel::AccessoryPulseDuration duration, const Languages::TextSelector label) const
@@ -1535,19 +1548,6 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("language", Languages::TextLanguage, options, Languages::GetDefaultLanguage());
 	}
 
-	void WebClient::HandleProtocolAccessory(const map<string, string>& arguments)
-	{
-		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		if (controlId == ControlIdNone)
-		{
-			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
-			return;
-		}
-		AccessoryID accessoryId = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		Accessory* accessory = manager.GetAccessory(accessoryId);
-		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, accessory == nullptr ? ProtocolNone : accessory->GetProtocol()));
-	}
-
 	void WebClient::HandleRelationAdd(const map<string, string>& arguments)
 	{
 		string priorityString = Utils::Utils::GetStringMapEntry(arguments, "priority", "1");
@@ -1590,32 +1590,6 @@ namespace WebServer
 			identifier = static_cast<ObjectID>(signalID);
 		}
 		ReplyHtmlWithHeader(HtmlTagSelectFeedbackForTrack(counter, identifier));
-	}
-
-	void WebClient::HandleProtocolSwitch(const map<string, string>& arguments)
-	{
-		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		if (controlId == ControlIdNone)
-		{
-			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
-			return;
-		}
-		SwitchID switchId = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		Switch* mySwitch = manager.GetSwitch(switchId);
-		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch == nullptr ? ProtocolNone : mySwitch->GetProtocol()));
-	}
-
-	void WebClient::HandleProtocolSignal(const map<string, string>& arguments)
-	{
-		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		if (controlId == ControlIdNone)
-		{
-			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
-			return;
-		}
-		SignalID signalId = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		Signal* signal = manager.GetSignal(signalId);
-		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, signal == nullptr ? ProtocolNone : signal->GetProtocol()));
 	}
 
 	void WebClient::HandleRelationObject(const map<string, string>& arguments)

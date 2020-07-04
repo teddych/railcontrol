@@ -1019,7 +1019,7 @@ function loadProtocol(type, ID)
 		return;
 	}
 	var elementName = 'select_protocol';
-	var url = '/?cmd=protocol' + type;
+	var url = '/?cmd=protocol';
 	url += '&control=' + controlID;
 	url += '&' + type + '=' + ID;
 	requestUpdateItem(elementName, url);
