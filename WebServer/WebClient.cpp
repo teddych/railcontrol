@@ -470,6 +470,10 @@ namespace WebServer
 			{
 				HandleProtocolSwitch(arguments);
 			}
+			else if (arguments["cmd"].compare("protocolsignal") == 0)
+			{
+				HandleProtocolSignal(arguments);
+			}
 			else if (arguments["cmd"].compare("feedbackadd") == 0)
 			{
 				HandleFeedbackAdd(arguments);
@@ -1599,6 +1603,19 @@ namespace WebServer
 		SwitchID switchId = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
 		Switch* mySwitch = manager.GetSwitch(switchId);
 		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, mySwitch == nullptr ? ProtocolNone : mySwitch->GetProtocol()));
+	}
+
+	void WebClient::HandleProtocolSignal(const map<string, string>& arguments)
+	{
+		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		if (controlId == ControlIdNone)
+		{
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
+			return;
+		}
+		SignalID signalId = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
+		Signal* signal = manager.GetSignal(signalId);
+		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, signal == nullptr ? ProtocolNone : signal->GetProtocol()));
 	}
 
 	void WebClient::HandleRelationObject(const map<string, string>& arguments)
