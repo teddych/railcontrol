@@ -101,7 +101,7 @@ namespace Hardware
 				else
 				{
 					hash = CalcHash(uid);
-					logger->Debug("UID: {0} Hash: {1}", params->GetArg5(), Utils::Utils::IntegerToHex(hash));
+					logger->Debug(Languages::TextMyUidHash, params->GetArg5(), Utils::Utils::IntegerToHex(hash));
 				}
 			}
 

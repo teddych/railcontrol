@@ -127,9 +127,9 @@ namespace Hardware
 	ProtocolMaerklinCAN::CanHash ProtocolMaerklinCAN::CalcHash(const CanUid uid)
 	{
 		CanHash calc = (uid >> 16) ^ (uid & 0xFFFF);
-		CanHash out = ((calc << 3) | 0x0300) & 0xFF00;
-		out |= (calc & 0x007F);
-		return out;
+		CanHash hash = ((calc << 3) | 0x0300) & 0xFF00;
+		hash |= (calc & 0x007F);
+		return hash;
 	}
 
 	void ProtocolMaerklinCAN::GenerateUidHash()
@@ -550,10 +550,6 @@ namespace Hardware
 		deque<string> lines;
 		Utils::Utils::SplitString(file, "\n", lines);
 		ParseCs2File(lines);
-		for (string line : lines)
-		{
-			logger->Hex(reinterpret_cast<const unsigned char*>(line.c_str()), line.size());
-		}
 
 		free(canFileData);
 	 	canFileDataSize = 0;
@@ -640,7 +636,7 @@ namespace Hardware
 		const string hash = Utils::Utils::IntegerToHex(Utils::Utils::DataBigEndianToShort(buffer + 2));
 		const unsigned char majorVersion = buffer[9];
 		const unsigned char minorVersion = buffer[10];
-		logger->Info(Languages::TextDeviceOnCanBus, deviceString, hash, majorVersion, minorVersion);
+		logger->Debug(Languages::TextDeviceOnCanBus, deviceString, hash, majorVersion, minorVersion);
 	}
 
 	bool ProtocolMaerklinCAN::ParseCs2FileKeyValue(const string& line, string& key, string& value)
@@ -685,7 +681,7 @@ namespace Hardware
 			}
 			else if (key.compare("typ") == 0)
 			{
-				std::cout << " Funktion: " << nr << " Typ: " << value << std::endl;
+				logger->Info(Languages::TextCs2MasterLocoFunctionType, nr, value);
 			}
 			lines.pop_front();
 		}
@@ -719,7 +715,6 @@ namespace Hardware
 				Protocol protocol = ProtocolNone;
 				ParseAddressProtocol(input, address, protocol);
 				logger->Info(Languages::TextCs2MasterLocoAddressProtocol, address, protocol);
-				std::cout << "Address: " << address << std::endl << "Protocol: " << protocol << std::endl;
 			}
 			else if (key.compare("funktionen") == 0)
 			{
@@ -743,10 +738,7 @@ namespace Hardware
 			{
 				return;
 			}
-			if (key.compare("id") == 0)
-			{
-				std::cout << "Session ID: " << value << std::endl;
-			}
+			// we do not parse any data in session
 			lines.pop_front();
 		}
 	}
@@ -764,9 +756,9 @@ namespace Hardware
 			{
 				return;
 			}
-			if (key.compare("minor") == 0)
+			if (key.compare("minor") == 0 && value.compare("4") != 0)
 			{
-				std::cout << "Minor version: " << value << std::endl;
+				logger->Warning(Languages::TextCs2MinorVersionIsNot4);
 			}
 			lines.pop_front();
 		}
