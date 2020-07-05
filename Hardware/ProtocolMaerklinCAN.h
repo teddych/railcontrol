@@ -50,7 +50,7 @@ namespace Hardware
 					| Hardware::CapabilityProgramDccPomWrite;
 			}
 
-			void GetLocoProtocols(std::vector<Protocol> &protocols) const override
+			void GetLocoProtocols(std::vector<Protocol>& protocols) const override
 			{
 				protocols.push_back(ProtocolMM);
 				protocols.push_back(ProtocolMFX);
@@ -62,7 +62,7 @@ namespace Hardware
 				return (protocol == ProtocolMM || protocol == ProtocolMFX || protocol == ProtocolDCC);
 			}
 
-			inline void GetAccessoryProtocols(std::vector<Protocol> &protocols) const override
+			inline void GetAccessoryProtocols(std::vector<Protocol>& protocols) const override
 			{
 				protocols.push_back(ProtocolMM);
 				protocols.push_back(ProtocolDCC);
@@ -83,16 +83,16 @@ namespace Hardware
 
 		protected:
 			ProtocolMaerklinCAN(HardwareParams* const params, Logger::Logger* logger, std::string name)
-			:	HardwareInterface(params->GetManager(), params->GetControlID(), name),
-			 	logger(logger),
+			:	HardwareInterface(params->GetManager(),
+				params->GetControlID(), name),
+				logger(logger),
 				run(false),
 				params(params),
-			 	uid(Utils::Utils::HexToInteger(params->GetArg5(), 0)),
-			 	hasCs2Master(false),
-			 	canFileType(CanFileTypeNone),
-			 	canFileDataSize(0),
-			 	canFileData(nullptr),
-			 	canFileDataPointer(nullptr)
+				uid(Utils::Utils::HexToInteger(params->GetArg5(), 0)),
+				hasCs2Master(false),
+				canFileDataSize(0),
+				canFileData(nullptr),
+				canFileDataPointer(nullptr)
 			{
 				if (uid == 0)
 				{
@@ -163,78 +163,101 @@ namespace Hardware
 				CanDeviceCs2Master = 0xffff
 			};
 
-			enum CanFileType : uint8_t
-			{
-				CanFileTypeNone,
-				CanFileTypeLokinfo,
-				CanFileTypeLoknamen,
-				CanFileTypeMaginfo,
-				CanFileTypeLokdb,
-				CanFileTypeLang,
-				CanFileTypeLdbver,
-				CanFileTypeLangver,
-				CanFileTypeLoks,
-				CanFileTypeMags,
-				CanFileTypeGbs,
-				CanFileTypeFs,
-				CanFileTypeLokstat,
-				CanFileTypeMagstat,
-				CanFileTypeGbsstat,
-				CanFileTypeFsstat
-			};
+//			enum CanFileType : uint8_t
+//			{
+//				CanFileTypeNone,
+//				CanFileTypeLokinfo,
+//				CanFileTypeLoknamen,
+//				CanFileTypeMaginfo,
+//				CanFileTypeLokdb,
+//				CanFileTypeLang,
+//				CanFileTypeLdbver,
+//				CanFileTypeLangver,
+//				CanFileTypeLoks,
+//				CanFileTypeMags,
+//				CanFileTypeGbs,
+//				CanFileTypeFs,
+//				CanFileTypeLokstat,
+//				CanFileTypeMagstat,
+//				CanFileTypeGbsstat,
+//				CanFileTypeFsstat
+//			};
 
 			typedef unsigned char CanPrio;
 			typedef unsigned char CanLength;
-			typedef uint32_t CanAddress;
 			typedef uint32_t CanUid;
 			typedef uint16_t CanHash;
 			typedef uint16_t CanFileCrc;
 
 			void CreateCommandHeader(unsigned char* const buffer, const CanCommand command, const CanResponse response, const CanLength length);
-			void ParseAddressProtocol(const unsigned char* const buffer, CanAddress& address, Protocol& protocol);
+			inline void ParseAddressProtocol(const unsigned char* const buffer, Address& address, Protocol& protocol)
+			{
+				Address input = ParseAddress(buffer);
+				ParseAddressProtocol(input, address, protocol);
+			}
+			static void ParseAddressProtocol(const Address input, Address& address, Protocol& protocol);
 
-			inline CanPrio ParsePrio(const unsigned char* const buffer)
+			static inline CanPrio ParsePrio(const unsigned char* const buffer)
 			{
 				return buffer[0] >> 1;
 			}
 
-			inline CanCommand ParseCommand(const unsigned char* const buffer)
+			static inline CanCommand ParseCommand(const unsigned char* const buffer)
 			{
-				return static_cast<CanCommand>((CanCommand)(buffer[0]) << 7 | (CanCommand)(buffer[1]) >> 1);
+				return static_cast<CanCommand>((buffer[0] << 7) | (buffer[1] >> 1));
 			}
 
-			inline CanSubCommand ParseSubCommand(const unsigned char* const buffer)
+			static inline CanSubCommand ParseSubCommand(const unsigned char* const buffer)
 			{
 				return static_cast<CanSubCommand>(buffer[9]);
 			}
 
-			inline CanResponse ParseResponse(const unsigned char* const buffer)
+			static inline CanResponse ParseResponse(const unsigned char* const buffer)
 			{
 				return static_cast<CanResponse>(buffer[1] & 0x01);
 			}
 
-			inline CanLength ParseLength(const unsigned char* const buffer)
+			static inline CanLength ParseLength(const unsigned char* const buffer)
 			{
 				return buffer[4];
 			}
 
-			inline CanAddress ParseAddress(const unsigned char* const buffer)
+			static inline Address ParseAddress(const unsigned char* const buffer)
 			{
-				return Utils::Utils::DataBigEndianToInt(buffer + 5);
+				return static_cast<Address>(Utils::Utils::DataBigEndianToInt(buffer + 5));
 			}
 
-			inline CanHash ParseHash(const unsigned char* const buffer)
+			static inline CanHash ParseHash(const unsigned char* const buffer)
 			{
 				return Utils::Utils::DataBigEndianToShort(buffer + 2);
 			}
 
-			inline CanUid ParseUid(const unsigned char* const buffer)
+			static inline CanUid ParseUid(const unsigned char* const buffer)
 			{
 				return Utils::Utils::DataBigEndianToInt(buffer + 5);
 			}
 
-			void ParsePingCommand(const unsigned char* const buffer);
-			void ParsePingResponse(const unsigned char* const buffer);
+			void ParseCommandSystem(const unsigned char* const buffer);
+			void ParseCommandLocoSpeed(const unsigned char* const buffer);
+			void ParseCommandLocoDirection(const unsigned char* const buffer);
+			void ParseCommandLocoFunction(const unsigned char* const buffer);
+			void ParseCommandAccessory(const unsigned char* const buffer);
+			void ParseCommandPing(const unsigned char* const buffer);
+			void ParseCommandConfigData(const unsigned char* const buffer);
+			void ParseCommandConfigDataFirst(const unsigned char* const buffer);
+			void ParseCommandConfigDataNext(const unsigned char* const buffer);
+			void ParseResponseS88Event(const unsigned char* const buffer);
+			void ParseResponseReadConfig(const unsigned char* const buffer);
+			void ParseResponsePing(const unsigned char* const buffer);
+
+			bool ParseCs2FileKeyValue(const std::string& line, std::string& key, std::string& value);
+			bool ParseCs2FileSubkeyValue(const std::string& line, std::string& key, std::string& value);
+			void ParseCs2FileLocomotiveFunction(std::deque<std::string>& lines);
+			void ParseCs2FileLocomotive(std::deque<std::string>& lines);
+			void ParseCs2FileLocomotivesSession(std::deque<std::string>& lines);
+			void ParseCs2FileLocomotivesVersion(std::deque<std::string>& lines);
+			void ParseCs2FileLocomotives(std::deque<std::string>& lines);
+			void ParseCs2File(std::deque<std::string>& lines);
 
 			static CanHash CalcHash(const CanUid uid);
 			void GenerateUidHash();
@@ -259,7 +282,6 @@ namespace Hardware
 			std::thread receiverThread;
 			std::thread cs2MasterThread;
 
-			CanFileType canFileType;
 			size_t canFileDataSize;
 			CanFileCrc canFileCrc;
 			unsigned char* canFileData;

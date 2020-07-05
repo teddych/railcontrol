@@ -67,6 +67,7 @@ using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
 using LayoutItemSize = DataModel::LayoutItem::LayoutItemSize;
 using LayoutRotation = DataModel::LayoutItem::LayoutRotation;
 using Visible = DataModel::LayoutItem::Visible;
+using std::deque;
 using std::map;
 using std::string;
 using std::thread;
@@ -124,7 +125,7 @@ namespace WebServer
 				Utils::Utils::ReplaceString(s, string("\r"), string("\n"));
 			}
 
-			vector<string> lines;
+			deque<string> lines;
 			Utils::Utils::SplitString(s, string("\n"), lines);
 
 			if (lines.size() <= 1)
@@ -598,7 +599,7 @@ namespace WebServer
 		}
 	}
 
-	void WebClient::InterpretClientRequest(const vector<string>& lines, string& method, string& uri, string& protocol, map<string,string>& arguments, map<string,string>& headers)
+	void WebClient::InterpretClientRequest(const deque<string>& lines, string& method, string& uri, string& protocol, map<string,string>& arguments, map<string,string>& headers)
 	{
 		if (lines.size() == 0)
 		{
@@ -609,7 +610,7 @@ namespace WebServer
 		{
 			if (line.find("HTTP/1.") == string::npos)
 			{
-				vector<string> list;
+				deque<string> list;
 				Utils::Utils::SplitString(line, string(": "), list);
 				if (list.size() == 2)
 				{
@@ -618,7 +619,7 @@ namespace WebServer
 				continue;
 			}
 
-			vector<string> list;
+			deque<string> list;
 			Utils::Utils::SplitString(line, string(" "), list);
 			if (list.size() != 3)
 			{
@@ -638,24 +639,25 @@ namespace WebServer
 			protocol = list[2];
 
 			// read GET-arguments from uri
-			vector<string> uri_parts;
-			Utils::Utils::SplitString(uri, "?", uri_parts);
-			if (uri_parts.size() != 2)
+			deque<string> uriParts;
+			Utils::Utils::SplitString(uri, "?", uriParts);
+			if (uriParts.size() != 2)
 			{
 				continue;
 			}
 
-			vector<string> argumentStrings;
-			Utils::Utils::SplitString(uri_parts[1], "&", argumentStrings);
+			deque<string> argumentStrings;
+			Utils::Utils::SplitString(uriParts[1], "&", argumentStrings);
 			for (auto argument : argumentStrings)
 			{
 				if (argument.length() == 0)
 				{
 					continue;
 				}
-				vector<string> argumentParts;
-				Utils::Utils::SplitString(argument, "=", argumentParts);
-				arguments[argumentParts[0]] = argumentParts[1];
+				string key;
+				string value;
+				Utils::Utils::SplitString(argument, "=", key, value);
+				arguments[key] = value;
 			}
 		}
 	}

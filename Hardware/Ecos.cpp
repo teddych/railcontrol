@@ -18,17 +18,17 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
+#include <deque>
 #include <cstring>
-#include <vector>
 
 #include "DataModel/AccessoryBase.h"
 #include "Hardware/Ecos.h"
 #include "Utils/Utils.h"
 
+using std::deque;
 using std::string;
 using std::strlen;
 using std::to_string;
-using std::vector;
 
 namespace Hardware
 {
@@ -479,7 +479,7 @@ namespace Hardware
 
 		if (option.compare("func") == 0)
 		{
-			vector<string> valueList;
+			deque<string> valueList;
 			Utils::Utils::SplitString(value, ",", valueList);
 			if (valueList.size() < 2)
 			{

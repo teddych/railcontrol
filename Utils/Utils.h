@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include <climits>
+#include <deque>
 #include <future>
 #include <map>
 #include <string>
@@ -37,7 +38,9 @@ namespace Utils
 	{
 		public:
 			static void ReplaceString(std::string& str, const std::string& from, const std::string& to);
-			static void SplitString(const std::string& str, const std::string& delimiter, std::vector<std::string>& list);
+			static void SplitString(const std::string& str, const std::string& delimiter, std::deque<std::string>& list);
+			static void SplitString(const std::string& input, const std::string& delimiter, std::string& first, std::string& second);
+			static std::string StringBeforeDelimiter(const std::string& input, const std::string& delimiter);
 			static const std::string& GetStringMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const std::string& defaultValue = "");
 			static int GetIntegerMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const int defaultValue = 0);
 			static bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const bool defaultValue = false);
@@ -45,7 +48,7 @@ namespace Utils
 			static int StringToInteger(const std::string& value) { return StringToInteger(value, 0, INT_MAX); }
 			static int StringToInteger(const std::string& value, const int defaultValue);
 			static int StringToInteger(const std::string& value, const int min, const int max);
-			static long HexToInteger(const std::string& value, const long defaultValue);
+			static long HexToInteger(const std::string& value, const long defaultValue = 0);
 			static bool StringToBool(const std::string& value);
 			static void StringToUpper(std::string& s) { for (auto& c : s) c = toupper(c); }
 			static void IntToDataBigEndian(const uint32_t i, unsigned char* buffer);
@@ -78,5 +81,9 @@ namespace Utils
 			static bool GetComPorts(std::vector<unsigned char>& comPorts);
 #endif
 			static unsigned int RandInt();
+			static inline void Copy8Bytes(const unsigned char* const from, unsigned char* const to)
+			{
+				*(reinterpret_cast<uint64_t*>(to)) = *(reinterpret_cast<const uint64_t*>(from));
+			}
 	};
 }

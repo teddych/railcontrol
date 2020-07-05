@@ -37,6 +37,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Utils/Utils.h"
 
 using std::cout;
+using std::deque;
 using std::endl;
 using std::string;
 using std::stringstream;
@@ -58,20 +59,36 @@ namespace Utils
 		}
 	}
 
-	void Utils::SplitString(const std::string& str_in, const std::string &delimiter, std::vector<string> &list)
+	void Utils::SplitString(const string& input, const string& delimiter, deque<string>& list)
 	{
-		size_t length_delim = delimiter.length();
-		string str(str_in);
+		size_t delimiterLength = delimiter.length();
+		string workingString(input);
 		while (true)
 		{
-			size_t pos = str.find(delimiter);
-			list.push_back(str.substr(0, pos));
+			size_t pos = workingString.find(delimiter);
+			list.push_back(workingString.substr(0, pos));
 			if (pos == string::npos)
 			{
 				return;
 			}
-			str = string(str.substr(pos + length_delim, string::npos));
+			workingString = string(workingString.substr(pos + delimiterLength, string::npos));
 		}
+	}
+
+	void Utils::SplitString(const string& input, const string& delimiter, string& first, string& second)
+	{
+		size_t delimiterLength = delimiter.length();
+		size_t pos = input.find(delimiter);
+		first = input.substr(0, pos);
+		second = input.substr(pos + delimiterLength);
+	}
+
+	std::string Utils::StringBeforeDelimiter(const std::string& input, const std::string& delimiter)
+	{
+		std::string ret;
+		std::string unused;
+		SplitString(input, delimiter, ret, unused);
+		return ret;
 	}
 
 	const std::string& Utils::GetStringMapEntry(const std::map<std::string, std::string>& map, const std::string& key, const std::string& defaultValue)

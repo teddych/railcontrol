@@ -18,8 +18,14 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
+#include <deque>
+
 #include "Hardware/ProtocolMaerklinCAN.h"
 #include "Hardware/ZLib.h"
+
+using std::deque;
+using std::string;
+using std::vector;
 
 namespace Hardware
 {
@@ -82,10 +88,10 @@ namespace Hardware
 		*data = 0L;
 	}
 
-	void ProtocolMaerklinCAN::ParseAddressProtocol(const unsigned char* const buffer, CanAddress& address, Protocol& protocol)
+	void ProtocolMaerklinCAN::ParseAddressProtocol(const Address input, Address& address, Protocol& protocol)
 	{
-		address = Utils::Utils::DataBigEndianToInt(buffer + 5);
-		CanAddress maskedAddress = address & 0x0000FC00;
+		address = input;
+		Address maskedAddress = address & 0xFC00;
 
 		if (maskedAddress == 0x0000 || maskedAddress == 0x3000)
 		{
@@ -101,7 +107,7 @@ namespace Hardware
 			return;
 		}
 
-		maskedAddress = address & 0x0000C000;
+		maskedAddress = address & 0xC000;
 		address &= 0x3FFF;
 		if (maskedAddress == 0x4000)
 		{
@@ -129,10 +135,10 @@ namespace Hardware
 	void ProtocolMaerklinCAN::GenerateUidHash()
 	{
 		uid = Utils::Utils::RandInt();
-		std::string uidString = Utils::Utils::IntegerToHex(uid);
+		string uidString = Utils::Utils::IntegerToHex(uid);
 		params->SetArg5(uidString);
 		hash = CalcHash(uid);
-		logger->Debug("UID: {0} Hash: {1}", uidString, Utils::Utils::IntegerToHex(hash));
+		logger->Info(Languages::TextMyUidHash, uidString, Utils::Utils::IntegerToHex(hash));
 	}
 
 	void ProtocolMaerklinCAN::CreateLocalIDLoco(unsigned char* buffer, const Protocol& protocol, const Address& address)
@@ -328,7 +334,7 @@ namespace Hardware
 				if (deviceType == CanDeviceCs2Master)
 				{
 					hasCs2Master = true;
-					logger->Debug("CS2 Master found");
+					logger->Info(Languages::TextCs2MasterFound);
 				}
 			}
 			else if (command != CanCommandConfigData)
@@ -341,201 +347,140 @@ namespace Hardware
 			switch (command)
 			{
 				case CanCommandS88Event:
-					{
-					// s88 event
-					const char *onOff;
-					DataModel::Feedback::FeedbackState state;
-					if (buffer[10])
-					{
-						onOff = Languages::GetText(Languages::TextOn);
-						state = DataModel::Feedback::FeedbackStateOccupied;
-					}
-					else
-					{
-						onOff = Languages::GetText(Languages::TextOff);
-						state = DataModel::Feedback::FeedbackStateFree;
-					}
-					CanAddress address = ParseAddress(buffer);
-					logger->Info(Languages::TextFeedbackChange, address & 0x000F, address >> 4, onOff);
-					manager->FeedbackState(controlID, address, state);
+					ParseResponseS88Event(buffer);
 					return;
-				}
 
 				case CanCommandReadConfig:
-				{
-					if (length != 7)
-					{
-						return;
-					}
-					CvNumber cv = Utils::Utils::DataBigEndianToShort(buffer + 9);
-					CvValue value = buffer[11];
-					logger->Info(Languages::TextProgramReadValue, cv, value);
-					manager->ProgramValue(cv, value);
+					ParseResponseReadConfig(buffer);
 					return;
-				}
-
-				case CanCommandRequestConfigData:
-				{
-					if (length != 8)
-					{
-						return;
-					}
-					std::string fileName(reinterpret_cast<const char*>(buffer + 5), 4);
-					if (fileName.compare("loks") == 0)
-					{
-						canFileType = CanFileTypeLoks;
-						return;
-					}
-
-					return;
-				}
 
 				case CanCommandPing:
-				{
-					ParsePingResponse(buffer);
-					return;
-				}
-
-				default:
-					return;
-			}
-		}
-
-		if (command == CanCommandSystem && length == 5)
-		{
-			CanSubCommand subcmd = ParseSubCommand(buffer);
-			switch (subcmd)
-			{
-				case CanSubCommandStop:
-					// system stop
-					manager->Booster(ControlTypeHardware, BoosterStateStop);
-					break;
-
-				case CanSubCommandGo:
-					// system go
-					manager->Booster(ControlTypeHardware, BoosterStateGo);
-					break;
-			}
-			return;
-		}
-
-		if (command == CanCommandLocoSpeed && length == 6)
-		{
-			// loco speed event
-			CanAddress address;
-			Protocol protocol;
-			ParseAddressProtocol(buffer, address, protocol);
-			Speed speed = Utils::Utils::DataBigEndianToShort(buffer + 9);
-			logger->Info(Languages::TextReceivedSpeedCommand, protocol, address, speed);
-			manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<Address>(address), speed);
-			return;
-		}
-
-		if (command == CanCommandLocoDirection && length == 5)
-		{
-			// loco direction event (implies speed=0)
-			CanAddress address;
-			Protocol protocol;
-			ParseAddressProtocol(buffer, address, protocol);
-			Orientation orientation = (buffer[9] == 1 ? OrientationRight : OrientationLeft);
-			logger->Info(Languages::TextReceivedDirectionCommand, protocol, address, orientation);
-			manager->LocoSpeed(ControlTypeHardware, controlID, protocol, static_cast<Address>(address), MinSpeed);
-			manager->LocoOrientation(ControlTypeHardware, controlID, protocol, static_cast<Address>(address), orientation);
-			return;
-		}
-
-		if (command == CanCommandLocoFunction && length == 6)
-		{
-			// loco function event
-			CanAddress address;
-			Protocol protocol;
-			ParseAddressProtocol(buffer, address, protocol);
-			Function function = buffer[9];
-			DataModel::LocoFunctions::FunctionState on = (buffer[10] != 0 ? DataModel::LocoFunctions::FunctionStateOn : DataModel::LocoFunctions::FunctionStateOff);
-			logger->Info(Languages::TextReceivedFunctionCommand, protocol, address, function, on);
-			manager->LocoFunction(ControlTypeHardware, controlID, protocol, static_cast<Address>(address), function, on);
-			return;
-		}
-
-		if (command == CanCommandAccessory && length == 6 && buffer[10] == 1)
-		{
-			// accessory event
-			CanAddress address;
-			Protocol protocol;
-			ParseAddressProtocol(buffer, address, protocol);
-			DataModel::AccessoryState state = (buffer[9] ? DataModel::AccessoryStateOn : DataModel::AccessoryStateOff);
-			// GUI-address is 1-based, protocol-address is 0-based
-			++address;
-			logger->Info(Languages::TextReceivedAccessoryCommand, protocol, address, state);
-			manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
-			return;
-		}
-
-		if (command == CanCommandPing)
-		{
-			logger->Debug("Ping received");
-			ParsePingCommand(buffer);
-			return;
-		}
-
-		if (command == CanCommandConfigData)
-		{
-			switch (length)
-			{
-				case 6:
-				case 7:
-					if (canFileData != nullptr)
-					{
-						free(canFileData);
-					}
-					canFileDataSize = Utils::Utils::DataBigEndianToInt(buffer + 5);
-					canFileCrc = Utils::Utils::DataBigEndianToShort(buffer + 9);
-					logger->Debug("will receive {0} bytes of data with crc {1}", canFileDataSize, canFileCrc);
-					canFileData = reinterpret_cast<unsigned char*>(malloc(canFileDataSize + 8));
-					canFileDataPointer = canFileData;
-					return;
-
-				case 8:
-					if (canFileData == nullptr)
-					{
-						logger->Debug("No known file to receive!");
-						return;
-					}
-
-					logger->Debug("data");
-					*(reinterpret_cast<uint64_t*>(canFileDataPointer)) = *(reinterpret_cast<const uint64_t*>(buffer + 5));
-					canFileDataPointer += 8;
-					if (canFileDataSize > static_cast<size_t>(canFileDataPointer - canFileData))
-					{
-						return;
-					}
-					if (canFileType == CanFileTypeLoks)
-					{
-						logger->Debug("Loks file received");
-						size_t canFileUncompressedSize = Utils::Utils::DataBigEndianToInt(canFileData);
-						logger->Debug("Uncompressed data takes {0} bytes", canFileUncompressedSize);
-						std::string loksFile = ZLib::UnCompress(reinterpret_cast<char*>(canFileData + 4), canFileDataSize, canFileUncompressedSize);
-						logger->Debug(loksFile);
-					}
-					else
-					{
-						logger->Debug("Unknown file received");
-					}
-					free(canFileData);
-				 	canFileType = CanFileTypeNone;
-				 	canFileDataSize = 0;
-				 	canFileData = nullptr;
-				 	canFileDataPointer = nullptr;
+					ParseResponsePing(buffer);
 					return;
 
 				default:
 					return;
 			}
-			return;
+		}
+
+		switch (command)
+		{
+			case CanCommandSystem:
+				ParseCommandSystem(buffer);
+				return;
+
+			case CanCommandLocoSpeed:
+				ParseCommandLocoSpeed(buffer);
+				return;
+
+			case CanCommandLocoDirection:
+				ParseCommandLocoDirection(buffer);
+				return;
+
+			case CanCommandLocoFunction:
+				ParseCommandLocoFunction(buffer);
+				return;
+
+			case CanCommandAccessory:
+				ParseCommandAccessory(buffer);
+				return;
+
+			case CanCommandPing:
+				ParseCommandPing(buffer);
+				return;
+
+			case CanCommandConfigData:
+				ParseCommandConfigData(buffer);
+				return;
+
+			default:
+				return;
 		}
 	}
 
-	void ProtocolMaerklinCAN::ParsePingCommand(const unsigned char* const buffer)
+	void ProtocolMaerklinCAN::ParseCommandSystem(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 5)
+		{
+			return;
+		}
+		CanSubCommand subcmd = ParseSubCommand(buffer);
+		switch (subcmd)
+		{
+			case CanSubCommandStop:
+				// system stop
+				manager->Booster(ControlTypeHardware, BoosterStateStop);
+				return;
+
+			case CanSubCommandGo:
+				// system go
+				manager->Booster(ControlTypeHardware, BoosterStateGo);
+				return;
+		}
+	}
+
+	void ProtocolMaerklinCAN::ParseCommandLocoSpeed(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 6)
+		{
+			return;
+		}
+		Address address;
+		Protocol protocol;
+		ParseAddressProtocol(buffer, address, protocol);
+		Speed speed = Utils::Utils::DataBigEndianToShort(buffer + 9);
+		logger->Info(Languages::TextReceivedSpeedCommand, protocol, address, speed);
+		manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, speed);
+	}
+
+	void ProtocolMaerklinCAN::ParseCommandLocoDirection(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 5)
+		{
+			return;
+		}
+		Address address;
+		Protocol protocol;
+		ParseAddressProtocol(buffer, address, protocol);
+		Orientation orientation = (buffer[9] == 1 ? OrientationRight : OrientationLeft);
+		logger->Info(Languages::TextReceivedDirectionCommand, protocol, address, orientation);
+		// changing direction implies speed = 0
+		manager->LocoSpeed(ControlTypeHardware, controlID, protocol, address, MinSpeed);
+		manager->LocoOrientation(ControlTypeHardware, controlID, protocol, address, orientation);
+	}
+
+	void ProtocolMaerklinCAN::ParseCommandLocoFunction(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 6)
+		{
+			return;
+		}
+		Address address;
+		Protocol protocol;
+		ParseAddressProtocol(buffer, address, protocol);
+		Function function = buffer[9];
+		DataModel::LocoFunctions::FunctionState on = (buffer[10] != 0 ? DataModel::LocoFunctions::FunctionStateOn : DataModel::LocoFunctions::FunctionStateOff);
+		logger->Info(Languages::TextReceivedFunctionCommand, protocol, address, function, on);
+		manager->LocoFunction(ControlTypeHardware, controlID, protocol, address, function, on);
+	}
+
+	void ProtocolMaerklinCAN::ParseCommandAccessory(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 6 || buffer[10] != 1)
+		{
+			return;
+		}
+		Address address;
+		Protocol protocol;
+		ParseAddressProtocol(buffer, address, protocol);
+		DataModel::AccessoryState state = (buffer[9] ? DataModel::AccessoryStateOn : DataModel::AccessoryStateOff);
+		// GUI-address is 1-based, protocol-address is 0-based
+		++address;
+		logger->Info(Languages::TextReceivedAccessoryCommand, protocol, address, state);
+		manager->AccessoryState(ControlTypeHardware, controlID, protocol, address, state);
+	}
+
+	void ProtocolMaerklinCAN::ParseCommandPing(const unsigned char* const buffer)
 	{
 		if (buffer[4] == 8 && Utils::Utils::DataBigEndianToInt(buffer + 5) != uid)
 		{
@@ -553,7 +498,105 @@ namespace Hardware
 		SendInternal(sendBuffer);
 	}
 
-	void ProtocolMaerklinCAN::ParsePingResponse(const unsigned char* const buffer)
+	void ProtocolMaerklinCAN::ParseCommandConfigData(const unsigned char* const buffer)
+	{
+		CanLength length = ParseLength(buffer);
+		switch (length)
+		{
+			case 6:
+			case 7:
+				ParseCommandConfigDataFirst(buffer);
+				return;
+
+			case 8:
+				ParseCommandConfigDataNext(buffer);
+				return;
+
+			default:
+				return;
+		}
+		return;
+	}
+
+	void ProtocolMaerklinCAN::ParseCommandConfigDataFirst(const unsigned char* const buffer)
+	{
+		if (canFileData != nullptr)
+		{
+			free(canFileData);
+		}
+		canFileDataSize = Utils::Utils::DataBigEndianToInt(buffer + 5);
+		canFileCrc = Utils::Utils::DataBigEndianToShort(buffer + 9);
+		canFileData = reinterpret_cast<unsigned char*>(malloc(canFileDataSize + 8));
+		canFileDataPointer = canFileData;
+	}
+
+	void ProtocolMaerklinCAN::ParseCommandConfigDataNext(const unsigned char* const buffer)
+	{
+		if (canFileData == nullptr)
+		{
+			return;
+		}
+
+		Utils::Utils::Copy8Bytes(buffer + 5, canFileDataPointer);
+		canFileDataPointer += 8;
+		if (canFileDataSize > static_cast<size_t>(canFileDataPointer - canFileData))
+		{
+			return;
+		}
+
+		size_t canFileUncompressedSize = Utils::Utils::DataBigEndianToInt(canFileData);
+		logger->Info(Languages::TextConfigFileReceivedWithSize, canFileUncompressedSize);
+		string file = ZLib::UnCompress(reinterpret_cast<char*>(canFileData + 4), canFileDataSize, canFileUncompressedSize);
+		deque<string> lines;
+		Utils::Utils::SplitString(file, "\n", lines);
+		ParseCs2File(lines);
+		for (string line : lines)
+		{
+			logger->Hex(reinterpret_cast<const unsigned char*>(line.c_str()), line.size());
+		}
+
+		free(canFileData);
+	 	canFileDataSize = 0;
+	 	canFileData = nullptr;
+	 	canFileDataPointer = nullptr;
+	}
+
+	void ProtocolMaerklinCAN::ParseResponseS88Event(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 8)
+		{
+			return;
+		}
+		const char *onOff;
+		DataModel::Feedback::FeedbackState state;
+		if (buffer[10])
+		{
+			onOff = Languages::GetText(Languages::TextOn);
+			state = DataModel::Feedback::FeedbackStateOccupied;
+		}
+		else
+		{
+			onOff = Languages::GetText(Languages::TextOff);
+			state = DataModel::Feedback::FeedbackStateFree;
+		}
+		Address address = ParseAddress(buffer);
+		logger->Info(Languages::TextFeedbackChange, address & 0x000F, address >> 4, onOff);
+		manager->FeedbackState(controlID, address, state);
+	}
+
+	void ProtocolMaerklinCAN::ParseResponseReadConfig(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 7)
+		{
+			return;
+		}
+		CvNumber cv = Utils::Utils::DataBigEndianToShort(buffer + 9);
+		CvValue value = buffer[11];
+		logger->Info(Languages::TextProgramReadValue, cv, value);
+		manager->ProgramValue(cv, value);
+	}
+
+	void ProtocolMaerklinCAN::ParseResponsePing(const unsigned char* const buffer)
 	{
 		const uint16_t deviceType = Utils::Utils::DataBigEndianToShort(buffer + 11);
 		char* deviceString = nullptr;
@@ -594,9 +637,185 @@ namespace Hardware
 				deviceString = const_cast<char*>("unknown");
 				break;
 		}
-		const std::string hash = Utils::Utils::IntegerToHex(Utils::Utils::DataBigEndianToShort(buffer + 2));
+		const string hash = Utils::Utils::IntegerToHex(Utils::Utils::DataBigEndianToShort(buffer + 2));
 		const unsigned char majorVersion = buffer[9];
 		const unsigned char minorVersion = buffer[10];
 		logger->Info(Languages::TextDeviceOnCanBus, deviceString, hash, majorVersion, minorVersion);
+	}
+
+	bool ProtocolMaerklinCAN::ParseCs2FileKeyValue(const string& line, string& key, string& value)
+	{
+		if (line.length() < 4 || line[0] != ' ' || line[1] != '.')
+		{
+			return false;
+		}
+		const string stripedLine = line.substr(2);
+		Utils::Utils::SplitString(stripedLine, "=", key, value);
+		return (key.compare(stripedLine) != 0);
+	}
+
+	bool ProtocolMaerklinCAN::ParseCs2FileSubkeyValue(const string& line, string& key, string& value)
+	{
+		if (line.length() < 5 || line[0] != ' ' || line[1] != '.' || line[2] != '.')
+		{
+			return false;
+		}
+		const string stripedLine = line.substr(3);
+		Utils::Utils::SplitString(stripedLine, "=", key, value);
+		return (key.compare(stripedLine) != 0);
+	}
+
+	void ProtocolMaerklinCAN::ParseCs2FileLocomotiveFunction(deque<string>& lines)
+	{
+		lines.pop_front();
+		int nr = 0;
+		while (lines.size())
+		{
+			string& line = lines.front();
+			string key;
+			string value;
+			bool ok = ParseCs2FileSubkeyValue(line, key, value);
+			if (ok == false)
+			{
+				return;
+			}
+			if (key.compare("nr") == 0)
+			{
+				nr = Utils::Utils::StringToInteger(value);
+			}
+			else if (key.compare("typ") == 0)
+			{
+				std::cout << " Funktion: " << nr << " Typ: " << value << std::endl;
+			}
+			lines.pop_front();
+		}
+	}
+
+	void ProtocolMaerklinCAN::ParseCs2FileLocomotive(deque<string>& lines)
+	{
+		lines.pop_front();
+		while (lines.size())
+		{
+			string& line = lines.front();
+			string key;
+			string value;
+			if (line.length() == 0 || line[0] != ' ')
+			{
+				return;
+			}
+			ParseCs2FileKeyValue(line, key, value);
+			if (key.compare("name") == 0)
+			{
+				logger->Info(Languages::TextCs2MasterLocoName, value);
+			}
+			if (key.compare("vorname") == 0)
+			{
+				logger->Info(Languages::TextCs2MasterLocoOldName, value);
+			}
+			else if (key.compare("uid") == 0)
+			{
+				Address input = Utils::Utils::HexToInteger(value);
+				Address address = AddressNone;
+				Protocol protocol = ProtocolNone;
+				ParseAddressProtocol(input, address, protocol);
+				logger->Info(Languages::TextCs2MasterLocoAddressProtocol, address, protocol);
+				std::cout << "Address: " << address << std::endl << "Protocol: " << protocol << std::endl;
+			}
+			else if (key.compare("funktionen") == 0)
+			{
+				ParseCs2FileLocomotiveFunction(lines);
+				continue;
+			}
+			lines.pop_front();
+		}
+	}
+
+	void ProtocolMaerklinCAN::ParseCs2FileLocomotivesSession(deque<string>& lines)
+	{
+		lines.pop_front();
+		while (lines.size())
+		{
+			string& line = lines.front();
+			string key;
+			string value;
+			bool ok = ParseCs2FileKeyValue(line, key, value);
+			if (ok == false)
+			{
+				return;
+			}
+			if (key.compare("id") == 0)
+			{
+				std::cout << "Session ID: " << value << std::endl;
+			}
+			lines.pop_front();
+		}
+	}
+
+	void ProtocolMaerklinCAN::ParseCs2FileLocomotivesVersion(deque<string>& lines)
+	{
+		lines.pop_front();
+		while (lines.size())
+		{
+			string& line = lines.front();
+			string key;
+			string value;
+			bool ok = ParseCs2FileKeyValue(line, key, value);
+			if (ok == false)
+			{
+				return;
+			}
+			if (key.compare("minor") == 0)
+			{
+				std::cout << "Minor version: " << value << std::endl;
+			}
+			lines.pop_front();
+		}
+	}
+
+	void ProtocolMaerklinCAN::ParseCs2FileLocomotives(deque<string>& lines)
+	{
+		lines.pop_front();
+		while (lines.size())
+		{
+			string& line = lines.front();
+			if (line.length() == 0)
+			{
+				return;
+			}
+			if (line.compare("version") == 0)
+			{
+				ParseCs2FileLocomotivesVersion(lines);
+				continue;
+			}
+			else if (line.compare("session") == 0)
+			{
+				ParseCs2FileLocomotivesSession(lines);
+				continue;
+			}
+			else if (line.compare("lokomotive") == 0)
+			{
+				ParseCs2FileLocomotive(lines);
+				continue;
+			}
+			return;
+		}
+	}
+
+	void ProtocolMaerklinCAN::ParseCs2File(deque<string>& lines)
+	{
+		while (lines.size())
+		{
+			string& line = lines.front();
+			if (line.length() == 0 || line[0] != '[')
+			{
+				return;
+			}
+			if (line.compare("[lokomotive]") == 0)
+			{
+				ParseCs2FileLocomotives(lines);
+				continue;
+			}
+			return;
+		}
 	}
 } // namespace
