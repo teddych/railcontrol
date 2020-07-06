@@ -897,12 +897,17 @@ function dataUpdate(event)
 	else if (command == 'dcccvvalue')
 	{
 		var cv = argumentMap.get('cv');
-		var value = argumentMap.get('value');
-		var elementName = 'valueraw';
-		var element = document.getElementById(elementName);
-		if (element)
+		var cvElementName = 'cvraw';
+		var cvElement = document.getElementById(cvElementName);
+		if (cvElement &&  cvElement.value == cv)
 		{
-			element.value = value;
+			var value = argumentMap.get('value');
+			var valueElementName = 'valueraw';
+			var valueElement = document.getElementById(valueElementName);
+			if (valueElement)
+			{
+				valueElement.value = value;
+			}
 		}
 	}
 }
