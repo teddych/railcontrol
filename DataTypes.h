@@ -63,6 +63,8 @@ typedef uint16_t Priority;
 
 typedef uint8_t Pause;
 
+typedef uint16_t ExternalID;
+
 static const Address AddressNone = 0;
 static const LocoID LocoNone = 0;
 static const ObjectID ObjectNone = 0;
@@ -206,3 +208,94 @@ enum ProgramMode : uint8_t
 
 typedef uint16_t CvNumber;
 typedef uint8_t CvValue;
+
+enum LocoFunctionType : uint8_t
+{
+	LocoFunctionTypeNone = 0,
+	LocoFunctionTypePermanent = 1,
+	LocoFunctionTypeFlash = 2,
+	LocoFunctionTypeTimer = 3
+};
+
+enum LocoFunctionIcon : uint8_t
+{
+	LocoFunctionIconNone = 0,
+	LocoFunctionIconDefault = 1,
+	// logical functions
+	LocoFunctionIconShuntingMode = 2,
+	LocoFunctionIconInertia,
+	// light functions
+	LocoFunctionIconHeadlightLowBeam = 32,
+	LocoFunctionIconHeadlightHighBeam,
+	LocoFunctionIconRearLight,
+	LocoFunctionIconFrontLight,
+	LocoFunctionIconBackLight,
+	LocoFunctionIconFlashingLigh,
+	LocoFunctionIconInteriorLight1,
+	LocoFunctionIconInteriorLight2,
+	LocoFunctionIconTableLight1,
+	LocoFunctionIconTableLight2,
+	LocoFunctionIconTableLight3,
+	LocoFunctionIconCabLight1,
+	LocoFunctionIconCabLight2,
+	LocoFunctionIconCabLight12,
+	LocoFunctionIconTrainDestinationIndicator,
+	LocoFunctionIconTrainNumberIndicator,
+	LocoFunctionIconEngineLight,
+	LocoFunctionIconFireBox,
+	LocoFunctionIconStairsLight,
+	// mechanical functions
+	LocoFunctionIconSmokeGenerator = 64,
+	LocoFunctionIconTelex1,
+	LocoFunctionIconTelex2,
+	LocoFunctionIconTelex12,
+	LocoFunctionIconPanto1,
+	LocoFunctionIconPanto2,
+	LocoFunctionIconPanto12,
+	LocoFunctionIconUp,
+	LocoFunctionIconDown,
+	LocoFunctionIconUpDown1,
+	LocoFunctionIconUpDown2,
+	LocoFunctionIconLeft,
+	LocoFunctionIconRight,
+	LocoFunctionIconLeftRight3,
+	LocoFunctionIconTurnLeft,
+	LocoFunctionIconTurnRight,
+	LocoFunctionIconCrane,
+	LocoFunctionIconMagnet,
+	LocoFunctionIconCraneHook,
+	// sound functions
+	LocoFunctionIconNoSound = 96,
+	LocoFunctionIconSoundGeneral,
+	LocoFunctionIconSoundRunning1,
+	LocoFunctionIconSoundRunning2,
+	LocoFunctionIconSoundBreaking,
+	LocoFunctionIconHorn1,
+	LocoFunctionIconHorn25,
+	LocoFunctionIconWhistle1,
+	LocoFunctionIconWhistle2,
+	LocoFunctionIconBell,
+	LocoFunctionIconEngineSound,
+	LocoFunctionIconGenerator,
+	LocoFunctionIconGearBox,
+	LocoFunctionIconStationAnnouncement1,
+	LocoFunctionIconStationAnnouncement2,
+	LocoFunctionIconShovelCoal,
+	LocoFunctionIconOpenDoor,
+	LocoFunctionIconCloseDoor,
+	LocoFunctionIconFan1,
+	LocoFunctionIconFan2,
+	LocoFunctionIconFan3,
+	LocoFunctionIconRailJoint,
+	LocoFunctionIconCouple,
+	LocoFunctionIconBufferPush,
+	LocoFunctionIconCompressedAir,
+	LocoFunctionIconBlowOutCylinder,
+	LocoFunctionIconFillWater,
+	LocoFunctionIconFillDiesel,
+	LocoFunctionIconFillGas,
+	LocoFunctionIconSpeak,
+	LocoFunctionIconShakingRust
+};
+
+typedef uint8_t LocoFunctionTimer;

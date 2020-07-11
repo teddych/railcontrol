@@ -549,6 +549,10 @@ namespace Hardware
 		string file = ZLib::UnCompress(reinterpret_cast<char*>(canFileData + 4), canFileDataSize, canFileUncompressedSize);
 		deque<string> lines;
 		Utils::Utils::SplitString(file, "\n", lines);
+		for(std::string& line : lines)
+		{
+			logger->Debug(line);
+		}
 		ParseCs2File(lines);
 
 		free(canFileData);
@@ -661,10 +665,13 @@ namespace Hardware
 		return (key.compare(stripedLine) != 0);
 	}
 
-	void ProtocolMaerklinCAN::ParseCs2FileLocomotiveFunction(deque<string>& lines)
+	void ProtocolMaerklinCAN::ParseCs2FileLocomotiveFunction(deque<string>& lines, LocoCacheEntry& cacheEntry)
 	{
 		lines.pop_front();
-		int nr = 0;
+		Function nr = 0;
+		LocoFunctionType type = LocoFunctionTypeNone;
+		LocoFunctionIcon icon = LocoFunctionIconNone;
+		LocoFunctionTimer timer = 0;
 		while (lines.size())
 		{
 			string& line = lines.front();
@@ -673,7 +680,7 @@ namespace Hardware
 			bool ok = ParseCs2FileSubkeyValue(line, key, value);
 			if (ok == false)
 			{
-				return;
+				break;
 			}
 			if (key.compare("nr") == 0)
 			{
@@ -681,15 +688,41 @@ namespace Hardware
 			}
 			else if (key.compare("typ") == 0)
 			{
-				logger->Info(Languages::TextCs2MasterLocoFunctionType, nr, value);
+				uint8_t valueInt = Utils::Utils::StringToInteger(value);
+				icon = static_cast<LocoFunctionIcon>(valueInt & 0x7F);
+				type = static_cast<LocoFunctionType>((valueInt >> 7) + 1);
+			}
+			else if (key.compare("dauer") == 0)
+			{
+				type = LocoFunctionTypeTimer;
+				timer = Utils::Utils::StringToInteger(value);
 			}
 			lines.pop_front();
+		}
+		if (type == LocoFunctionTypeNone)
+		{
+			icon = LocoFunctionIconNone;
+			timer = 0;
+			cacheEntry.ClearFunction(nr);
+			return;
+		}
+		cacheEntry.SetFunction(nr, type, icon, timer);
+		if (type == LocoFunctionTypeTimer)
+		{
+			logger->Info(Languages::TextCs2MasterLocoFunctionIconTypeTimer, nr, icon, timer);
+		}
+		else
+		{
+			logger->Info(Languages::TextCs2MasterLocoFunctionIconType, nr, icon, type);
 		}
 	}
 
 	void ProtocolMaerklinCAN::ParseCs2FileLocomotive(deque<string>& lines)
 	{
 		lines.pop_front();
+		LocoCacheEntry cacheEntry;
+		std::string oldName;
+		bool remove = false;
 		while (lines.size())
 		{
 			string& line = lines.front();
@@ -702,11 +735,17 @@ namespace Hardware
 			ParseCs2FileKeyValue(line, key, value);
 			if (key.compare("name") == 0)
 			{
+				cacheEntry.SetName(value);
 				logger->Info(Languages::TextCs2MasterLocoName, value);
 			}
-			if (key.compare("vorname") == 0)
+			else if (key.compare("vorname") == 0)
 			{
+				oldName = value;
 				logger->Info(Languages::TextCs2MasterLocoOldName, value);
+			}
+			else if (key.compare("toRemove") == 0)
+			{
+				remove = true;
 			}
 			else if (key.compare("uid") == 0)
 			{
@@ -714,14 +753,29 @@ namespace Hardware
 				Address address = AddressNone;
 				Protocol protocol = ProtocolNone;
 				ParseAddressProtocol(input, address, protocol);
+				cacheEntry.SetAddress(address);
+				cacheEntry.SetProtocol(protocol);
 				logger->Info(Languages::TextCs2MasterLocoAddressProtocol, address, protocol);
 			}
 			else if (key.compare("funktionen") == 0)
 			{
-				ParseCs2FileLocomotiveFunction(lines);
+				ParseCs2FileLocomotiveFunction(lines, cacheEntry);
 				continue;
 			}
 			lines.pop_front();
+		}
+		if (remove)
+		{
+			logger->Info(Languages::TextCs2MasterLocoRemove, name);
+			locoCache.Delete(name);
+		}
+		else if (oldName.size() > 0)
+		{
+			locoCache.Replace(cacheEntry, oldName);
+		}
+		else
+		{
+			locoCache.Insert(cacheEntry);
 		}
 	}
 
@@ -810,4 +864,7 @@ namespace Hardware
 			return;
 		}
 	}
+
+	const LocoFunctionIcon ProtocolMaerklinCAN::LocoFunctionMapCs2ToRailControl[] = { LocoFunctionIconNone };
+
 } // namespace

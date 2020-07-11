@@ -21,9 +21,10 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include "DataModel/AccessoryBase.h"
+#include "Hardware/Capabilities.h"
+#include "Hardware/LocoCache.h"
 #include "HardwareInterface.h"
 #include "HardwareParams.h"
-#include "Hardware/Capabilities.h"
 #include "Logger/Logger.h"
 #include "Utils/Utils.h"
 
@@ -252,12 +253,17 @@ namespace Hardware
 
 			bool ParseCs2FileKeyValue(const std::string& line, std::string& key, std::string& value);
 			bool ParseCs2FileSubkeyValue(const std::string& line, std::string& key, std::string& value);
-			void ParseCs2FileLocomotiveFunction(std::deque<std::string>& lines);
+			void ParseCs2FileLocomotiveFunction(std::deque<std::string>& lines, LocoCacheEntry& cacheEntry);
 			void ParseCs2FileLocomotive(std::deque<std::string>& lines);
 			void ParseCs2FileLocomotivesSession(std::deque<std::string>& lines);
 			void ParseCs2FileLocomotivesVersion(std::deque<std::string>& lines);
 			void ParseCs2FileLocomotives(std::deque<std::string>& lines);
 			void ParseCs2File(std::deque<std::string>& lines);
+
+			static inline LocoFunctionIcon MapLocoFunctionCs2ToRailControl(const LocoFunctionIcon input)
+			{
+				return LocoFunctionMapCs2ToRailControl[input];
+			}
 
 			static CanHash CalcHash(const CanUid uid);
 			void GenerateUidHash();
@@ -286,6 +292,10 @@ namespace Hardware
 			CanFileCrc canFileCrc;
 			unsigned char* canFileData;
 			unsigned char* canFileDataPointer;
+
+			LocoCache locoCache;
+
+			static const LocoFunctionIcon LocoFunctionMapCs2ToRailControl[];
 	};
 } // namespace
 
