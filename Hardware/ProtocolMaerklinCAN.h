@@ -295,7 +295,8 @@ namespace Hardware
 
 			LocoCache locoCache;
 
-			static const LocoFunctionIcon LocoFunctionMapCs2ToRailControl[];
+			static const uint8_t NrOfFunctionIcons = 128;
+			static const LocoFunctionIcon LocoFunctionMapCs2ToRailControl[NrOfFunctionIcons];
 	};
 } // namespace
 
