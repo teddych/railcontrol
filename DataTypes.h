@@ -287,7 +287,6 @@ enum LocoFunctionIcon : uint8_t
 	LocoFunctionIconWhistle1,
 	LocoFunctionIconWhistle2,
 	LocoFunctionIconBell,
-	LocoFunctionIconEngineSound,
 	LocoFunctionIconGenerator,
 	LocoFunctionIconGearBox,
 	LocoFunctionIconGearUp,

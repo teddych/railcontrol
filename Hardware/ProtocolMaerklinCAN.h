@@ -184,6 +184,93 @@ namespace Hardware
 //				CanFileTypeFsstat
 //			};
 
+			enum LocoFunctionCs2Icon : uint8_t
+			{
+				LocoFunctionCs2IconNone = 0,
+				LocoFunctionCs2IconLight,
+				LocoFunctionCs2IconInteriorLight1,
+				LocoFunctionCs2IconBackLightForward,
+				LocoFunctionCs2IconHeadlightHighBeam,
+				LocoFunctionCs2IconSoundGeneral,
+				LocoFunctionCs2IconPanto12,
+				LocoFunctionCs2IconSmokeGenerator,
+				LocoFunctionCs2IconShuntingMode,
+				LocoFunctionCs2IconTelex12,
+				LocoFunctionCs2IconHorn1,
+				LocoFunctionCs2IconWhistle1,
+				LocoFunctionCs2IconWhistle2,
+				LocoFunctionCs2IconBell,
+				LocoFunctionCs2IconLeftRight,
+				LocoFunctionCs2IconUpDown1,
+				LocoFunctionCs2IconTurnLeft,
+				LocoFunctionCs2IconUpDown2,
+				LocoFunctionCs2IconInertia,
+				LocoFunctionCs2IconFan2,
+				LocoFunctionCs2IconBreak1,
+				LocoFunctionCs2IconGearBox,
+				LocoFunctionCs2IconGenerator,
+				LocoFunctionCs2IconRunning1,
+				LocoFunctionCs2IconEngine1,
+				LocoFunctionCs2IconStationAnnouncement1,
+				LocoFunctionCs2IconShovelCoal,
+				LocoFunctionCs2IconCloseDoor,
+				LocoFunctionCs2IconOpenDoor,
+				LocoFunctionCs2IconFan1,
+				LocoFunctionCs2IconFan,
+				LocoFunctionCs2IconFireBox,
+				LocoFunctionCs2IconInteriorLight2,
+				LocoFunctionCs2IconTableLight3,
+				LocoFunctionCs2IconTableLight2,
+				LocoFunctionCs2IconTableLight1,
+				LocoFunctionCs2IconShakingRust,
+				LocoFunctionCs2IconRailJoint,
+				LocoFunctionCs2IconTrainNumberIndicator,
+				LocoFunctionCs2IconMusic1,
+				LocoFunctionCs2IconTrainDestinationIndicator,
+				LocoFunctionCs2IconCabLight2,
+				LocoFunctionCs2IconCabLight1,
+				LocoFunctionCs2IconCoupler,
+				LocoFunctionCs2IconBufferPush,
+				LocoFunctionCs2IconStationAnnouncement3,
+				LocoFunctionCs2IconCraneHook,
+				LocoFunctionCs2IconBlinkingLight,
+				LocoFunctionCs2IconCabLight12,
+				LocoFunctionCs2IconCompressedAir,
+				LocoFunctionCs2IconDefault,
+
+				LocoFunctionCs2IconTelex2 = 82,
+				LocoFunctionCs2IconTelex1,
+				LocoFunctionCs2IconPanto2,
+				LocoFunctionCs2IconPanto1,
+				LocoFunctionCs2IconHeadlightReverse,
+				LocoFunctionCs2IconHeadlightForward,
+				LocoFunctionCs2IconUp2,
+				LocoFunctionCs2IconFan3,
+				LocoFunctionCs2IconEngineLight,
+				LocoFunctionCs2IconSteamBlowOut,
+				LocoFunctionCs2IconSteamBlow,
+				LocoFunctionCs2IconCrane,
+				LocoFunctionCs2IconUp1,
+				LocoFunctionCs2IconDown,
+				LocoFunctionCs2IconLeft,
+				LocoFunctionCs2IconRight,
+				LocoFunctionCs2IconTurnRight,
+				LocoFunctionCs2IconMagnet,
+
+				LocoFunctionCs2IconPanto = 101,
+
+				LocoFunctionCs2IconRadio = 103,
+				LocoFunctionCs2IconStationAnnouncement2,
+				LocoFunctionCs2IconBackLightReverse,
+				LocoFunctionCs2IconAirPump,
+				LocoFunctionCs2IconSpeak,
+				LocoFunctionCs2IconEngine2,
+				LocoFunctionCs2IconNoSound,
+				LocoFunctionCs2IconStairsLight,
+				LocoFunctionCs2IconFillWater,
+				LocoFunctionCs2IconBreak2
+			};
+
 			typedef unsigned char CanPrio;
 			typedef unsigned char CanLength;
 			typedef uint32_t CanUid;
@@ -281,6 +368,16 @@ namespace Hardware
 			}
 			virtual void Send(const unsigned char* buffer) = 0;
 
+			static inline LocoFunctionCs2Icon CalculateCs2Icon(const Function nr, const LocoFunctionIcon railcontrolIcon)
+			{
+				LocoFunctionCs2Icon icon = LocoFunctionMapRailControlToCs2[railcontrolIcon];
+				if (icon == LocoFunctionCs2IconDefault)
+				{
+					icon = static_cast<LocoFunctionCs2Icon>(icon + nr);
+				}
+				return icon;
+			}
+
 			HardwareParams* const params;
 			CanUid uid;
 			CanHash hash;
@@ -297,7 +394,7 @@ namespace Hardware
 
 			static const uint8_t MaxNrOfCs2FunctionIcons = 128;
 			static const LocoFunctionIcon LocoFunctionMapCs2ToRailControl[MaxNrOfCs2FunctionIcons];
-			static const uint8_t LocoFunctionMapRailControlToCs2[MaxLocoFunctionIcons];
+			static const ProtocolMaerklinCAN::LocoFunctionCs2Icon LocoFunctionMapRailControlToCs2[MaxLocoFunctionIcons];
 	};
 } // namespace
 
