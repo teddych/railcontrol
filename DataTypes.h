@@ -220,6 +220,9 @@ enum LocoFunctionType : uint8_t
 
 enum LocoFunctionIcon : uint8_t
 {
+	// Do not change numbers!
+	// Only add numbers!
+	// If you add numbers, add them also in ProtocolMaerklin.cpp too
 	LocoFunctionIconNone = 0,
 	LocoFunctionIconDefault = 1,
 	// logical functions
@@ -233,7 +236,7 @@ enum LocoFunctionIcon : uint8_t
 	LocoFunctionIconHeadlightReverse,
 	LocoFunctionIconBackLightForward,
 	LocoFunctionIconBackLightReverse,
-	LocoFunctionIconFlashingLight,
+	LocoFunctionIconBlinkingLight,
 	LocoFunctionIconInteriorLight1,
 	LocoFunctionIconInteriorLight2,
 	LocoFunctionIconTableLight1,
@@ -242,6 +245,7 @@ enum LocoFunctionIcon : uint8_t
 	LocoFunctionIconCabLight1,
 	LocoFunctionIconCabLight2,
 	LocoFunctionIconCabLight12,
+	LocoFunctionIconDriversDeskLight,
 	LocoFunctionIconTrainDestinationIndicator,
 	LocoFunctionIconTrainNumberIndicator,
 	LocoFunctionIconEngineLight,
@@ -277,14 +281,17 @@ enum LocoFunctionIcon : uint8_t
 	LocoFunctionIconEngine2,
 	LocoFunctionIconBreak1,
 	LocoFunctionIconBreak2,
+	LocoFunctionIconCurve,
 	LocoFunctionIconHorn1,
-	LocoFunctionIconHorn25,
+	LocoFunctionIconHorn2,
 	LocoFunctionIconWhistle1,
 	LocoFunctionIconWhistle2,
 	LocoFunctionIconBell,
 	LocoFunctionIconEngineSound,
 	LocoFunctionIconGenerator,
 	LocoFunctionIconGearBox,
+	LocoFunctionIconGearUp,
+	LocoFunctionIconGearDown,
 	LocoFunctionIconStationAnnouncement1,
 	LocoFunctionIconStationAnnouncement2,
 	LocoFunctionIconStationAnnouncement3,
@@ -296,20 +303,26 @@ enum LocoFunctionIcon : uint8_t
 	LocoFunctionIconFan3,
 	LocoFunctionIconCompressedAir,
 	LocoFunctionIconReliefValve,
-	LocoFunctionIconBlowOutCylinder,
-	LocoFunctionIconCompressAir,
+	LocoFunctionIconSteamBlowOut,
+	LocoFunctionIconSteamBlow,
+	LocoFunctionIconDrainValve,
+	LocoFunctionIconAirPump,
+	LocoFunctionIconWaterPump,
 	LocoFunctionIconRailJoint,
-	LocoFunctionIconCouple,
+	LocoFunctionIconCoupler,
 	LocoFunctionIconBufferPush,
 	LocoFunctionIconFillWater,
 	LocoFunctionIconFillDiesel,
 	LocoFunctionIconFillGas,
 	LocoFunctionIconSpeak,
 	LocoFunctionIconShakingRust,
+	LocoFunctionIconSand,
 	LocoFunctionIconMusic1,
 	LocoFunctionIconMusic2,
 	LocoFunctionIconPanto,
-	LocoFunctionIconRadio
+	LocoFunctionIconRadio,
+
+	MaxLocoFunctionIcons
 };
 
 typedef uint8_t LocoFunctionTimer;
