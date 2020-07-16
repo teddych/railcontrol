@@ -25,6 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 
 #include "DataTypes.h"
+#include "DataModel/LocoFunctions.h"
 
 namespace Hardware
 {
@@ -82,7 +83,10 @@ namespace Hardware
 				this->address = address;
 			}
 
-			inline void SetFunction(const Function nr, const LocoFunctionType type, const LocoFunctionIcon icon, const LocoFunctionTimer timer)
+			inline void SetFunction(const DataModel::LocoFunctions::LocoFunctionNr nr,
+				const DataModel::LocoFunctions::LocoFunctionType type,
+				const DataModel::LocoFunctions::LocoFunctionIcon icon,
+				const DataModel::LocoFunctions::LocoFunctionTimer timer)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
@@ -93,36 +97,36 @@ namespace Hardware
 				functionTimers[nr] = timer;
 			}
 
-			inline void ClearFunction(const Function nr)
+			inline void ClearFunction(const DataModel::LocoFunctions::LocoFunctionNr nr)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
 					return;
 				}
-				functionTypes[nr] = LocoFunctionTypeNone;
-				functionIcons[nr] = LocoFunctionIconNone;
+				functionTypes[nr] = DataModel::LocoFunctions::LocoFunctionTypeNone;
+				functionIcons[nr] = DataModel::LocoFunctions::LocoFunctionIconNone;
 				functionTimers[nr] = 0;
 			}
 
-			inline LocoFunctionType GetFunctionType(const Function nr)
+			inline DataModel::LocoFunctions::LocoFunctionType GetFunctionType(const DataModel::LocoFunctions::LocoFunctionNr nr)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
-					return LocoFunctionTypeNone;
+					return DataModel::LocoFunctions::LocoFunctionTypeNone;
 				}
 				return functionTypes[nr];
 			}
 
-			inline LocoFunctionIcon GetFunctionIcon(const Function nr)
+			inline DataModel::LocoFunctions::LocoFunctionIcon GetFunctionIcon(const DataModel::LocoFunctions::LocoFunctionNr nr)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
-					return LocoFunctionIconNone;
+					return DataModel::LocoFunctions::LocoFunctionIconNone;
 				}
 				return functionIcons[nr];
 			}
 
-			inline LocoFunctionTimer GetFunctionTimer(const Function nr)
+			inline DataModel::LocoFunctions::LocoFunctionTimer GetFunctionTimer(const DataModel::LocoFunctions::LocoFunctionNr nr)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
@@ -138,9 +142,9 @@ namespace Hardware
 			std::string name;
 			Protocol protocol;
 			Address address;
-			LocoFunctionType functionTypes[MaxFunctionsIncludingZero];
-			LocoFunctionIcon functionIcons[MaxFunctionsIncludingZero];
-			LocoFunctionTimer functionTimers[MaxFunctionsIncludingZero];
+			DataModel::LocoFunctions::LocoFunctionType functionTypes[MaxFunctionsIncludingZero];
+			DataModel::LocoFunctions::LocoFunctionIcon functionIcons[MaxFunctionsIncludingZero];
+			DataModel::LocoFunctions::LocoFunctionTimer functionTimers[MaxFunctionsIncludingZero];
 	};
 
 	class LocoCache

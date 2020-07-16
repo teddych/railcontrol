@@ -295,7 +295,7 @@ void Manager::InitLocos()
 		std::lock_guard<std::mutex> guard(controlMutex);
 		for (auto control : controls)
 		{
-			std::vector<DataModel::LocoFunctions::FunctionState> functions = loco.second->GetFunctions();
+			std::vector<DataModel::LocoFunctions::LocoFunctionState> functions = loco.second->GetFunctions();
 			control.second->LocoSpeedOrientationFunctions(loco.second, loco.second->GetSpeed(), loco.second->GetOrientation(), functions);
 		}
 	}
@@ -691,7 +691,7 @@ bool Manager::LocoSave(const LocoID locoID,
 	const ControlID controlID,
 	const Protocol protocol,
 	const Address address,
-	const Function nrOfFunctions,
+	const DataModel::LocoFunctions::LocoFunctionNr nrOfFunctions,
 	const Length length,
 	const bool pushpull,
 	const Speed maxSpeed,
@@ -878,7 +878,7 @@ void Manager::LocoOrientation(const ControlType controlType, Loco* loco, const O
 	}
 }
 
-void Manager::LocoFunction(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on)
+void Manager::LocoFunction(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
 {
 	Loco* loco = GetLoco(controlID, protocol, address);
 	if (loco == nullptr)
@@ -888,13 +888,13 @@ void Manager::LocoFunction(const ControlType controlType, const ControlID contro
 	LocoFunction(controlType, loco, function, on);
 }
 
-void Manager::LocoFunction(const ControlType controlType, const LocoID locoID, const Function function, const DataModel::LocoFunctions::FunctionState on)
+void Manager::LocoFunction(const ControlType controlType, const LocoID locoID, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
 {
 	Loco* loco = GetLoco(locoID);
 	LocoFunction(controlType, loco, function, on);
 }
 
-void Manager::LocoFunction(const ControlType controlType, Loco* loco, const Function function, const DataModel::LocoFunctions::FunctionState on)
+void Manager::LocoFunction(const ControlType controlType, Loco* loco, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
 {
 	if (loco == nullptr)
 	{

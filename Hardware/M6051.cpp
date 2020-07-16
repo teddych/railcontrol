@@ -117,7 +117,7 @@ namespace Hardware
 		SendTwoBytes(speedMM, addressMM);
 	}
 
-	void M6051::LocoFunction(__attribute__((unused)) const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on)
+	void M6051::LocoFunction(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
 	{
 		if (function > 4)
 		{
@@ -142,7 +142,7 @@ namespace Hardware
 		unsigned char functionMM = GetFunctionMapEntry(address);
 		unsigned char position = function - 1;
 		functionMM &= (~(1 << position)); // mask out related function
-		functionMM |= (static_cast<unsigned char>(on == DataModel::LocoFunctions::FunctionStateOn) << position); // add related function
+		functionMM |= (static_cast<unsigned char>(on == DataModel::LocoFunctions::LocoFunctionStateOn) << position); // add related function
 		functionMap[address] = functionMM;
 		functionMM += 64;
 		SendTwoBytes(functionMM, addressMM);

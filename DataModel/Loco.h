@@ -128,11 +128,32 @@ namespace DataModel
 			void SetSpeed(const Speed speed, const bool withSlaves);
 			Speed GetSpeed() const { return speed; }
 
-			void SetFunction(const Function nr, const DataModel::LocoFunctions::FunctionState state) { functions.SetFunction(nr, state); }
-			DataModel::LocoFunctions::FunctionState GetFunction(const Function nr) const { return functions.GetFunction(nr); }
-			std::vector<DataModel::LocoFunctions::FunctionState> GetFunctions() const { return functions.GetFunctions(); }
-			void SetNrOfFunctions(const Function nr) { functions.SetNrOfFunctions(nr); }
-			Function GetNrOfFunctions() const { return functions.GetNrOfFunctions(); }
+			void SetFunction(const DataModel::LocoFunctions::LocoFunctionNr nr,
+				const DataModel::LocoFunctions::LocoFunctionState state)
+			{
+				functions.SetFunction(nr, state);
+			}
+
+			DataModel::LocoFunctions::LocoFunctionState GetFunction(const DataModel::LocoFunctions::LocoFunctionNr nr) const
+			{
+				return functions.GetFunction(nr);
+			}
+
+			std::vector<DataModel::LocoFunctions::LocoFunctionState> GetFunctions() const
+			{
+				return functions.GetFunctions();
+			}
+
+			void SetNrOfFunctions(const DataModel::LocoFunctions::LocoFunctionNr nr)
+			{
+				functions.SetNrOfFunctions(nr);
+			}
+
+			DataModel::LocoFunctions::LocoFunctionNr GetNrOfFunctions() const
+			{
+				return functions.GetNrOfFunctions();
+			}
+
 			void SetOrientation(const Orientation orientation);
 			Orientation GetOrientation() const { return orientation; }
 

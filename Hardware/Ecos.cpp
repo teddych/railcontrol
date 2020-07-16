@@ -97,11 +97,11 @@ namespace Hardware
 		Send(command.c_str());
 	}
 
-	void Ecos::LocoFunction(__attribute__((unused)) const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on)
+	void Ecos::LocoFunction(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
 	{
 		const unsigned int locoId = address + OffsetLocoAddress;
 		SendGetHandle(locoId);
-		const string command = "set(" + to_string(locoId) + ",func[" + to_string(function) + "," + (on == DataModel::LocoFunctions::FunctionStateOn ? "1" : "0") + "])\n";
+		const string command = "set(" + to_string(locoId) + ",func[" + to_string(function) + "," + (on == DataModel::LocoFunctions::LocoFunctionStateOn ? "1" : "0") + "])\n";
 		Send(command.c_str());
 	}
 
@@ -486,8 +486,8 @@ namespace Hardware
 				logger->Error(Languages::TextInvalidDataReceived);
 				return;
 			}
-			Function function = Utils::Utils::StringToInteger(valueList[0], 0);
-			DataModel::LocoFunctions::FunctionState on = Utils::Utils::StringToBool(valueList[1]) ? DataModel::LocoFunctions::FunctionStateOn : DataModel::LocoFunctions::FunctionStateOff;
+			DataModel::LocoFunctions::LocoFunctionNr function = Utils::Utils::StringToInteger(valueList[0], 0);
+			DataModel::LocoFunctions::LocoFunctionState on = Utils::Utils::StringToBool(valueList[1]) ? DataModel::LocoFunctions::LocoFunctionStateOn : DataModel::LocoFunctions::LocoFunctionStateOff;
 			manager->LocoFunction(ControlTypeHardware, controlID, ProtocolServer, address, function, on);
 			return;
 		}

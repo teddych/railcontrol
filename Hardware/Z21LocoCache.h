@@ -100,7 +100,7 @@ namespace Hardware
 				cache[address] = entry;
 			}
 
-			void SetFunction(const Address address, const Function function, const bool on)
+			void SetFunction(const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const bool on)
 			{
 				Z21LocoCacheEntry entry = GetData(address);
 				uint32_t mask = ~(1 << function);

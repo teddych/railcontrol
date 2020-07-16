@@ -120,8 +120,8 @@ namespace Hardware
 			void Booster(const BoosterState status) override;
 			void LocoSpeed(const Protocol protocol, const Address address, const Speed speed) override;
 			void LocoOrientation(const Protocol protocol, const Address address, const Orientation orientation) override;
-			void LocoFunction(const Protocol protocol, const Address address, const Function function, const DataModel::LocoFunctions::FunctionState on) override;
-			void LocoSpeedOrientationFunctions(const Protocol protocol, const Address address, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::FunctionState>& functions) override;
+			void LocoFunction(const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on) override;
+			void LocoSpeedOrientationFunctions(const Protocol protocol, const Address address, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::LocoFunctionState>& functions) override;
 			void Accessory(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const DataModel::AccessoryPulseDuration duration) override;
 			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
