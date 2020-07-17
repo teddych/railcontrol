@@ -488,7 +488,7 @@ namespace Hardware
 			}
 			DataModel::LocoFunctions::LocoFunctionNr function = Utils::Utils::StringToInteger(valueList[0], 0);
 			DataModel::LocoFunctions::LocoFunctionState on = Utils::Utils::StringToBool(valueList[1]) ? DataModel::LocoFunctions::LocoFunctionStateOn : DataModel::LocoFunctions::LocoFunctionStateOff;
-			manager->LocoFunction(ControlTypeHardware, controlID, ProtocolServer, address, function, on);
+			manager->LocoFunctionState(ControlTypeHardware, controlID, ProtocolServer, address, function, on);
 			return;
 		}
 	}

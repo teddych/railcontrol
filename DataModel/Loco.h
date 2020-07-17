@@ -128,28 +128,28 @@ namespace DataModel
 			void SetSpeed(const Speed speed, const bool withSlaves);
 			Speed GetSpeed() const { return speed; }
 
-			void SetFunction(const DataModel::LocoFunctions::LocoFunctionNr nr,
+			inline void SetFunctionState(const DataModel::LocoFunctions::LocoFunctionNr nr,
 				const DataModel::LocoFunctions::LocoFunctionState state)
 			{
-				functions.SetFunction(nr, state);
+				functions.SetFunctionState(nr, state);
 			}
 
-			DataModel::LocoFunctions::LocoFunctionState GetFunction(const DataModel::LocoFunctions::LocoFunctionNr nr) const
+			inline DataModel::LocoFunctions::LocoFunctionState GetFunctionState(const DataModel::LocoFunctions::LocoFunctionNr nr) const
 			{
-				return functions.GetFunction(nr);
+				return functions.GetFunctionState(nr);
 			}
 
-			std::vector<DataModel::LocoFunctions::LocoFunctionState> GetFunctions() const
+			inline std::vector<DataModel::LocoFunctions::LocoFunctionState> GetFunctions() const
 			{
-				return functions.GetFunctions();
+				return functions.GetFunctionStates();
 			}
 
-			void SetNrOfFunctions(const DataModel::LocoFunctions::LocoFunctionNr nr)
+			inline void SetNrOfFunctions(const DataModel::LocoFunctions::LocoFunctionNr nr)
 			{
 				functions.SetNrOfFunctions(nr);
 			}
 
-			DataModel::LocoFunctions::LocoFunctionNr GetNrOfFunctions() const
+			inline DataModel::LocoFunctions::LocoFunctionNr GetNrOfFunctions() const
 			{
 				return functions.GetNrOfFunctions();
 			}

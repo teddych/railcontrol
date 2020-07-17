@@ -461,7 +461,7 @@ namespace Hardware
 		DataModel::LocoFunctions::LocoFunctionNr function = buffer[9];
 		DataModel::LocoFunctions::LocoFunctionState on = (buffer[10] != 0 ? DataModel::LocoFunctions::LocoFunctionStateOn : DataModel::LocoFunctions::LocoFunctionStateOff);
 		logger->Info(Languages::TextReceivedFunctionCommand, protocol, address, function, on);
-		manager->LocoFunction(ControlTypeHardware, controlID, protocol, address, function, on);
+		manager->LocoFunctionState(ControlTypeHardware, controlID, protocol, address, function, on);
 	}
 
 	void ProtocolMaerklinCAN::ParseCommandAccessory(const unsigned char* const buffer)

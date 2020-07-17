@@ -859,7 +859,7 @@ namespace Hardware
 			}
 			const DataModel::LocoFunctions::LocoFunctionState newState = ((newFunctions >> function) & 0x01 ? DataModel::LocoFunctions::LocoFunctionStateOn : DataModel::LocoFunctions::LocoFunctionStateOff);
 			locoCache.SetFunction(address, function, newState);
-			manager->LocoFunction(ControlTypeHardware, controlID, protocol, address, function, newState);
+			manager->LocoFunctionState(ControlTypeHardware, controlID, protocol, address, function, newState);
 		}
 	}
 

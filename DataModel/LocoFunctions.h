@@ -153,19 +153,23 @@ namespace DataModel
 			};
 
 			typedef uint8_t LocoFunctionTimer;
-			LocoFunctions()
+
+			inline LocoFunctions()
 			:	count(1),
-			 	states{LocoFunctionStateOff}
+			 	states{LocoFunctionStateOff},
+			 	types{LocoFunctionTypeNone},
+			 	icons{LocoFunctionIconNone},
+			 	timers{0}
 			{
 			}
 
-			LocoFunctions(const std::string& serialized)
+			inline LocoFunctions(const std::string& serialized)
 			: LocoFunctions()
 			{
 				Deserialize(serialized);
 			}
 
-			void SetFunction(const LocoFunctionNr nr, const LocoFunctionState state)
+			inline void SetFunctionState(const LocoFunctionNr nr, const LocoFunctionState state)
 			{
 				if (nr >= MaxCount)
 				{
@@ -174,7 +178,7 @@ namespace DataModel
 				states[nr] = state;
 			}
 
-			LocoFunctionState GetFunction(const LocoFunctionNr nr) const
+			inline LocoFunctionState GetFunctionState(const LocoFunctionNr nr) const
 			{
 				if (nr >= MaxCount)
 				{
@@ -184,7 +188,7 @@ namespace DataModel
 				return out;
 			}
 
-			std::vector<LocoFunctionState> GetFunctions() const
+			inline std::vector<LocoFunctionState> GetFunctionStates() const
 			{
 				std::vector<LocoFunctionState> out;
 				for (LocoFunctionNr i = 0; i < count; ++i)
@@ -194,57 +198,75 @@ namespace DataModel
 				return out;
 			}
 
-			void SetNrOfFunctions(const LocoFunctionNr nr)
+			inline void SetNrOfFunctions(const LocoFunctionNr nr)
 			{
 				// externally we count the functions additional to F0
 				// internally we count all the functions including F0
+				if (nr + 1 > count)
+				{
+					for (LocoFunctionNr i = count; i <= nr; ++i)
+					{
+						states[i] = LocoFunctionStateOff;
+						types[i] = LocoFunctionTypePermanent;
+						icons[i] = LocoFunctionIconDefault;
+					}
+				}
+				if (nr + 1 < count)
+				{
+					for (LocoFunctionNr i = nr + 1; i <= count; ++i)
+					{
+						states[i] = LocoFunctionStateOff;
+						types[i] = LocoFunctionTypeNone;
+						icons[i] = LocoFunctionIconNone;
+					}
+				}
 				count = nr + 1;
 			}
 
-			LocoFunctionNr GetNrOfFunctions() const
+			inline LocoFunctionNr GetNrOfFunctions() const
 			{
 				return count - 1;
 			}
 
-			std::string Serialize() const override
+			inline void ConfigureFunction(const LocoFunctionNr nr,
+				const LocoFunctionType type,
+				const LocoFunctionIcon icon,
+				const LocoFunctionTimer timer)
 			{
-				std::string out;
-				for (LocoFunctionNr i = 0; i < count; ++i)
+				if (nr > MaxFunctions)
 				{
-					out += (states[i] ? "1" : "0");
+					return;
 				}
-				return out;
+				if (count == (nr + 1) && type == LocoFunctionTypeNone)
+				{
+					--count;
+				}
+				else if (count == nr && type != LocoFunctionTypeNone)
+				{
+					++count;
+				}
+				types[nr] = type;
+				icons[nr] = icon;
+				timers[nr] = (type == LocoFunctionTypeTimer ? timer : 0);
 			}
 
-			bool Deserialize(const std::string& serialized) override
-			{
-				count = serialized.size();
-				if (count > MaxCount)
-				{
-					count = MaxCount;
-				}
-				for (LocoFunctionNr i = 0; i < count; ++i)
-				{
-					switch(serialized[i])
-					{
-						case '1':
-							states[i] = LocoFunctionStateOn;
-							break;
+			std::string Serialize() const override;
 
-						case '0':
-						default:
-							states[i] = LocoFunctionStateOff;
-							break;
-					}
-				}
-				return true;
-			}
+			bool Deserialize(const std::string& serialized) override;
 
 			static const LocoFunctionNr MaxFunctions = 32;
 
 		private:
+			bool DeserializeNew(__attribute__((unused)) const std::string& serialized);
+
+			// FIXME: remove later
+			bool DeserializeOld(const std::string& serialized);
+
 			static const LocoFunctionNr MaxCount = MaxFunctions + 1; // f0 - f32 = 33
 			LocoFunctionNr count;
 			LocoFunctionState states[MaxCount];
+			LocoFunctionType types[MaxCount];
+			LocoFunctionIcon icons[MaxCount];
+			LocoFunctionTimer timers[MaxCount];
 	};
 } // namespace DataModel

@@ -878,30 +878,30 @@ void Manager::LocoOrientation(const ControlType controlType, Loco* loco, const O
 	}
 }
 
-void Manager::LocoFunction(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
+void Manager::LocoFunctionState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
 {
 	Loco* loco = GetLoco(controlID, protocol, address);
 	if (loco == nullptr)
 	{
 		return;
 	}
-	LocoFunction(controlType, loco, function, on);
+	LocoFunctionState(controlType, loco, function, on);
 }
 
-void Manager::LocoFunction(const ControlType controlType, const LocoID locoID, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
+void Manager::LocoFunctionState(const ControlType controlType, const LocoID locoID, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
 {
 	Loco* loco = GetLoco(locoID);
-	LocoFunction(controlType, loco, function, on);
+	LocoFunctionState(controlType, loco, function, on);
 }
 
-void Manager::LocoFunction(const ControlType controlType, Loco* loco, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
+void Manager::LocoFunctionState(const ControlType controlType, Loco* loco, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
 {
 	if (loco == nullptr)
 	{
 		return;
 	}
 
-	loco->SetFunction(function, on);
+	loco->SetFunctionState(function, on);
 	logger->Info(on ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)

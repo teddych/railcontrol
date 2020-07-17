@@ -1148,7 +1148,7 @@ namespace WebServer
 		DataModel::LocoFunctions::LocoFunctionNr function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
 		DataModel::LocoFunctions::LocoFunctionState state = static_cast<DataModel::LocoFunctions::LocoFunctionState>(Utils::Utils::GetBoolMapEntry(arguments, "on"));
 
-		manager.LocoFunction(ControlTypeWebserver, locoID, function, state);
+		manager.LocoFunctionState(ControlTypeWebserver, locoID, function, state);
 
 		ReplyHtmlWithHeaderAndParagraph(state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, manager.GetLocoName(locoID), function);
 	}
@@ -4028,7 +4028,7 @@ namespace WebServer
 		{
 			string nrText(to_string(nr));
 			buttonArguments["function"] = nrText;
-			container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><text x=\"8\" y=\"24\" fill=\"black\" font-size=\"11\">f" + nrText + "</text>f", id + "_" + nrText, loco->GetFunction(nr), buttonArguments));
+			container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><text x=\"8\" y=\"24\" fill=\"black\" font-size=\"11\">f" + nrText + "</text>f", id + "_" + nrText, loco->GetFunctionState(nr), buttonArguments));
 		}
 		buttonArguments.erase("function");
 		ReplyHtmlWithHeaderAndParagraph(container);
