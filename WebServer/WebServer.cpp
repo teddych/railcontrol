@@ -125,7 +125,10 @@ namespace WebServer {
 		AddUpdate(command.str(), orientation ? Languages::TextLocoDirectionOfTravelIsRight : Languages::TextLocoDirectionOfTravelIsLeft, loco->GetName());
 	}
 
-	void WebServer::LocoFunction(__attribute__((unused)) const ControlType controlType, const DataModel::Loco* loco, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState state)
+	void WebServer::LocoFunction(__attribute__((unused)) const ControlType controlType,
+		const DataModel::Loco* loco,
+		const DataModel::LocoFunctionNr function,
+		const DataModel::LocoFunctionState state)
 	{
 		stringstream command;
 		command << "locofunction;loco=" << loco->GetID() << ";function=" << static_cast<unsigned int>(function) << ";on=" << (state ? "true" : "false");

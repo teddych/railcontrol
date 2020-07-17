@@ -69,7 +69,10 @@ namespace Hardware
 	}
 
 	// set loco function
-	void Virtual::LocoFunction(const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
+	void Virtual::LocoFunction(const Protocol protocol,
+		const Address address,
+		const DataModel::LocoFunctionNr function,
+		const DataModel::LocoFunctionState on)
 	{
 		logger->Info(Languages::TextSettingFunctionWithProtocol, static_cast<int>(function), static_cast<int>(protocol), address, Languages::GetOnOff(on));
 	}

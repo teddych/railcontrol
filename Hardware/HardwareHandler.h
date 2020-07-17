@@ -70,11 +70,21 @@ namespace Hardware
 			void Booster(const ControlType controlType, BoosterState status) override;
 			Hardware::Capabilities GetCapabilities() const override;
 			void LocoOrientation(const ControlType controlType, const DataModel::Loco* loco, const Orientation orientation) override;
-			void LocoFunction(const ControlType controlType, const DataModel::Loco* loco, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on) override;
+
+			void LocoFunction(const ControlType controlType,
+				const DataModel::Loco* loco,
+				const DataModel::LocoFunctionNr function,
+				const DataModel::LocoFunctionState on) override;
+
 			void LocoProtocols(std::vector<Protocol>& protocols) const override;
 			bool LocoProtocolSupported(Protocol protocol) const override;
 			void LocoSpeed(const ControlType controlType, const DataModel::Loco* loco, const Speed speed) override;
-			void LocoSpeedOrientationFunctions(const DataModel::Loco* loco, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::LocoFunctionState>& functions) override;
+
+			void LocoSpeedOrientationFunctions(const DataModel::Loco* loco,
+				const Speed speed,
+				const Orientation orientation,
+				std::vector<DataModel::LocoFunctionState>& functions) override;
+
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch) override;
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;

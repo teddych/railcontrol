@@ -105,7 +105,7 @@ namespace DataModel
 				return manager->RouteExecute(logger, locoID, objectID2);
 
 			case ObjectTypeLoco:
-				manager->LocoFunctionState(ControlTypeInternal, locoID, static_cast<DataModel::LocoFunctions::LocoFunctionNr>(objectID2), static_cast<LocoFunctions::LocoFunctionState>(data));
+				manager->LocoFunctionState(ControlTypeInternal, locoID, static_cast<DataModel::LocoFunctionNr>(objectID2), static_cast<DataModel::LocoFunctionState>(data));
 				return true;
 
 			default:

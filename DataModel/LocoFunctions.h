@@ -26,140 +26,153 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace DataModel
 {
+	typedef uint8_t LocoFunctionNr;
+
+	enum LocoFunctionState : unsigned char
+	{
+		LocoFunctionStateOff = 0,
+		LocoFunctionStateOn
+	};
+
+	enum LocoFunctionType : uint8_t
+	{
+		LocoFunctionTypeNone = 0,
+		LocoFunctionTypePermanent = 1,
+		LocoFunctionTypeOnce = 2,
+		LocoFunctionTypeFlashing = 3,
+		LocoFunctionTypeTimer = 4
+	};
+
+	enum LocoFunctionIcon : uint8_t
+	{
+		// Do not change numbers!
+		// Only add numbers!
+		// If you add numbers, add them also in ProtocolMaerklin.cpp too
+		LocoFunctionIconNone = 0,
+		LocoFunctionIconDefault = 1,
+		// logical functions
+		LocoFunctionIconShuntingMode = 2,
+		LocoFunctionIconInertia,
+		// light functions
+		LocoFunctionIconLight = 32,
+		LocoFunctionIconHeadlightLowBeam,
+		LocoFunctionIconHeadlightHighBeam,
+		LocoFunctionIconHeadlightForward,
+		LocoFunctionIconHeadlightReverse,
+		LocoFunctionIconBackLightForward,
+		LocoFunctionIconBackLightReverse,
+		LocoFunctionIconBlinkingLight,
+		LocoFunctionIconInteriorLight1,
+		LocoFunctionIconInteriorLight2,
+		LocoFunctionIconTableLight1,
+		LocoFunctionIconTableLight2,
+		LocoFunctionIconTableLight3,
+		LocoFunctionIconCabLight1,
+		LocoFunctionIconCabLight2,
+		LocoFunctionIconCabLight12,
+		LocoFunctionIconDriversDeskLight,
+		LocoFunctionIconTrainDestinationIndicator,
+		LocoFunctionIconTrainNumberIndicator,
+		LocoFunctionIconEngineLight,
+		LocoFunctionIconFireBox,
+		LocoFunctionIconStairsLight,
+		// mechanical functions
+		LocoFunctionIconSmokeGenerator = 64,
+		LocoFunctionIconTelex1,
+		LocoFunctionIconTelex2,
+		LocoFunctionIconTelex12,
+		LocoFunctionIconPanto1,
+		LocoFunctionIconPanto2,
+		LocoFunctionIconPanto12,
+		LocoFunctionIconUp,
+		LocoFunctionIconDown,
+		LocoFunctionIconUpDown1,
+		LocoFunctionIconUpDown2,
+		LocoFunctionIconLeft,
+		LocoFunctionIconRight,
+		LocoFunctionIconLeftRight,
+		LocoFunctionIconTurnLeft,
+		LocoFunctionIconTurnRight,
+		LocoFunctionIconCrane,
+		LocoFunctionIconMagnet,
+		LocoFunctionIconCraneHook,
+		LocoFunctionIconFan,
+		// sound functions
+		LocoFunctionIconNoSound = 96,
+		LocoFunctionIconSoundGeneral,
+		LocoFunctionIconRunning1,
+		LocoFunctionIconRunning2,
+		LocoFunctionIconEngine1,
+		LocoFunctionIconEngine2,
+		LocoFunctionIconBreak1,
+		LocoFunctionIconBreak2,
+		LocoFunctionIconCurve,
+		LocoFunctionIconHorn1,
+		LocoFunctionIconHorn2,
+		LocoFunctionIconWhistle1,
+		LocoFunctionIconWhistle2,
+		LocoFunctionIconBell,
+		LocoFunctionIconGenerator,
+		LocoFunctionIconGearBox,
+		LocoFunctionIconGearUp,
+		LocoFunctionIconGearDown,
+		LocoFunctionIconStationAnnouncement1,
+		LocoFunctionIconStationAnnouncement2,
+		LocoFunctionIconStationAnnouncement3,
+		LocoFunctionIconShovelCoal,
+		LocoFunctionIconOpenDoor,
+		LocoFunctionIconCloseDoor,
+		LocoFunctionIconFan1,
+		LocoFunctionIconFan2,
+		LocoFunctionIconFan3,
+		LocoFunctionIconCompressedAir,
+		LocoFunctionIconReliefValve,
+		LocoFunctionIconSteamBlowOut,
+		LocoFunctionIconSteamBlow,
+		LocoFunctionIconDrainValve,
+		LocoFunctionIconAirPump,
+		LocoFunctionIconWaterPump,
+		LocoFunctionIconRailJoint,
+		LocoFunctionIconCoupler,
+		LocoFunctionIconBufferPush,
+		LocoFunctionIconFillWater,
+		LocoFunctionIconFillDiesel,
+		LocoFunctionIconFillGas,
+		LocoFunctionIconSpeak,
+		LocoFunctionIconShakingRust,
+		LocoFunctionIconSand,
+		LocoFunctionIconMusic1,
+		LocoFunctionIconMusic2,
+		LocoFunctionIconPanto,
+		LocoFunctionIconRadio,
+
+		MaxLocoFunctionIcons
+	};
+
+	typedef uint8_t LocoFunctionTimer;
+
+	class LocoFunctionEntry
+	{
+		public:
+			LocoFunctionEntry()
+			{
+				state = LocoFunctionStateOff;
+				type = LocoFunctionTypeNone;
+				icon = LocoFunctionIconNone;
+				timer = 0;
+			}
+
+			LocoFunctionState state;
+			LocoFunctionType type;
+			LocoFunctionIcon icon;
+			LocoFunctionTimer timer;
+	};
+
 	class LocoFunctions : private Serializable
 	{
 		public:
-			typedef uint8_t LocoFunctionNr;
-
-			enum LocoFunctionState : unsigned char
-			{
-				LocoFunctionStateOff = 0,
-				LocoFunctionStateOn
-			};
-
-			enum LocoFunctionType : uint8_t
-			{
-				LocoFunctionTypeNone = 0,
-				LocoFunctionTypePermanent = 1,
-				LocoFunctionTypeOnce = 2,
-				LocoFunctionTypeFlashing = 3,
-				LocoFunctionTypeTimer = 4
-			};
-
-			enum LocoFunctionIcon : uint8_t
-			{
-				// Do not change numbers!
-				// Only add numbers!
-				// If you add numbers, add them also in ProtocolMaerklin.cpp too
-				LocoFunctionIconNone = 0,
-				LocoFunctionIconDefault = 1,
-				// logical functions
-				LocoFunctionIconShuntingMode = 2,
-				LocoFunctionIconInertia,
-				// light functions
-				LocoFunctionIconLight = 32,
-				LocoFunctionIconHeadlightLowBeam,
-				LocoFunctionIconHeadlightHighBeam,
-				LocoFunctionIconHeadlightForward,
-				LocoFunctionIconHeadlightReverse,
-				LocoFunctionIconBackLightForward,
-				LocoFunctionIconBackLightReverse,
-				LocoFunctionIconBlinkingLight,
-				LocoFunctionIconInteriorLight1,
-				LocoFunctionIconInteriorLight2,
-				LocoFunctionIconTableLight1,
-				LocoFunctionIconTableLight2,
-				LocoFunctionIconTableLight3,
-				LocoFunctionIconCabLight1,
-				LocoFunctionIconCabLight2,
-				LocoFunctionIconCabLight12,
-				LocoFunctionIconDriversDeskLight,
-				LocoFunctionIconTrainDestinationIndicator,
-				LocoFunctionIconTrainNumberIndicator,
-				LocoFunctionIconEngineLight,
-				LocoFunctionIconFireBox,
-				LocoFunctionIconStairsLight,
-				// mechanical functions
-				LocoFunctionIconSmokeGenerator = 64,
-				LocoFunctionIconTelex1,
-				LocoFunctionIconTelex2,
-				LocoFunctionIconTelex12,
-				LocoFunctionIconPanto1,
-				LocoFunctionIconPanto2,
-				LocoFunctionIconPanto12,
-				LocoFunctionIconUp,
-				LocoFunctionIconDown,
-				LocoFunctionIconUpDown1,
-				LocoFunctionIconUpDown2,
-				LocoFunctionIconLeft,
-				LocoFunctionIconRight,
-				LocoFunctionIconLeftRight,
-				LocoFunctionIconTurnLeft,
-				LocoFunctionIconTurnRight,
-				LocoFunctionIconCrane,
-				LocoFunctionIconMagnet,
-				LocoFunctionIconCraneHook,
-				LocoFunctionIconFan,
-				// sound functions
-				LocoFunctionIconNoSound = 96,
-				LocoFunctionIconSoundGeneral,
-				LocoFunctionIconRunning1,
-				LocoFunctionIconRunning2,
-				LocoFunctionIconEngine1,
-				LocoFunctionIconEngine2,
-				LocoFunctionIconBreak1,
-				LocoFunctionIconBreak2,
-				LocoFunctionIconCurve,
-				LocoFunctionIconHorn1,
-				LocoFunctionIconHorn2,
-				LocoFunctionIconWhistle1,
-				LocoFunctionIconWhistle2,
-				LocoFunctionIconBell,
-				LocoFunctionIconGenerator,
-				LocoFunctionIconGearBox,
-				LocoFunctionIconGearUp,
-				LocoFunctionIconGearDown,
-				LocoFunctionIconStationAnnouncement1,
-				LocoFunctionIconStationAnnouncement2,
-				LocoFunctionIconStationAnnouncement3,
-				LocoFunctionIconShovelCoal,
-				LocoFunctionIconOpenDoor,
-				LocoFunctionIconCloseDoor,
-				LocoFunctionIconFan1,
-				LocoFunctionIconFan2,
-				LocoFunctionIconFan3,
-				LocoFunctionIconCompressedAir,
-				LocoFunctionIconReliefValve,
-				LocoFunctionIconSteamBlowOut,
-				LocoFunctionIconSteamBlow,
-				LocoFunctionIconDrainValve,
-				LocoFunctionIconAirPump,
-				LocoFunctionIconWaterPump,
-				LocoFunctionIconRailJoint,
-				LocoFunctionIconCoupler,
-				LocoFunctionIconBufferPush,
-				LocoFunctionIconFillWater,
-				LocoFunctionIconFillDiesel,
-				LocoFunctionIconFillGas,
-				LocoFunctionIconSpeak,
-				LocoFunctionIconShakingRust,
-				LocoFunctionIconSand,
-				LocoFunctionIconMusic1,
-				LocoFunctionIconMusic2,
-				LocoFunctionIconPanto,
-				LocoFunctionIconRadio,
-
-				MaxLocoFunctionIcons
-			};
-
-			typedef uint8_t LocoFunctionTimer;
-
 			inline LocoFunctions()
-			:	count(1),
-			 	states{LocoFunctionStateOff},
-			 	types{LocoFunctionTypeNone},
-			 	icons{LocoFunctionIconNone},
-			 	timers{0}
+			:	count(1)
 			{
 			}
 
@@ -175,7 +188,7 @@ namespace DataModel
 				{
 					return;
 				}
-				states[nr] = state;
+				entries[nr].state = state;
 			}
 
 			inline LocoFunctionState GetFunctionState(const LocoFunctionNr nr) const
@@ -184,7 +197,7 @@ namespace DataModel
 				{
 					return LocoFunctionStateOff;
 				}
-				LocoFunctionState out = states[nr];
+				LocoFunctionState out = entries[nr].state;
 				return out;
 			}
 
@@ -193,7 +206,7 @@ namespace DataModel
 				std::vector<LocoFunctionState> out;
 				for (LocoFunctionNr i = 0; i < count; ++i)
 				{
-					out.push_back(states[i]);
+					out.push_back(entries[i].state);
 				}
 				return out;
 			}
@@ -206,18 +219,20 @@ namespace DataModel
 				{
 					for (LocoFunctionNr i = count; i <= nr; ++i)
 					{
-						states[i] = LocoFunctionStateOff;
-						types[i] = LocoFunctionTypePermanent;
-						icons[i] = LocoFunctionIconDefault;
+						entries[nr].state = LocoFunctionStateOff;
+						entries[nr].type = LocoFunctionTypePermanent;
+						entries[nr].icon = LocoFunctionIconDefault;
+						entries[nr].timer = 0;
 					}
 				}
 				if (nr + 1 < count)
 				{
 					for (LocoFunctionNr i = nr + 1; i <= count; ++i)
 					{
-						states[i] = LocoFunctionStateOff;
-						types[i] = LocoFunctionTypeNone;
-						icons[i] = LocoFunctionIconNone;
+						entries[nr].state = LocoFunctionStateOff;
+						entries[nr].type = LocoFunctionTypeNone;
+						entries[nr].icon = LocoFunctionIconNone;
+						entries[nr].timer = 0;
 					}
 				}
 				count = nr + 1;
@@ -245,9 +260,9 @@ namespace DataModel
 				{
 					++count;
 				}
-				types[nr] = type;
-				icons[nr] = icon;
-				timers[nr] = (type == LocoFunctionTypeTimer ? timer : 0);
+				entries[nr].type = type;
+				entries[nr].icon = icon;
+				entries[nr].timer = (type == LocoFunctionTypeTimer ? timer : 0);
 			}
 
 			std::string Serialize() const override;
@@ -264,9 +279,6 @@ namespace DataModel
 
 			static const LocoFunctionNr MaxCount = MaxFunctions + 1; // f0 - f32 = 33
 			LocoFunctionNr count;
-			LocoFunctionState states[MaxCount];
-			LocoFunctionType types[MaxCount];
-			LocoFunctionIcon icons[MaxCount];
-			LocoFunctionTimer timers[MaxCount];
+			LocoFunctionEntry entries[MaxCount];
 	};
 } // namespace DataModel

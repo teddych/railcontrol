@@ -77,8 +77,8 @@ class ControlInterface
 
 		virtual void LocoFunction(__attribute__((unused)) const ControlType controlType,
 			__attribute__((unused)) const DataModel::Loco* loco,
-			__attribute__((unused)) const DataModel::LocoFunctions::LocoFunctionNr function,
-			__attribute__((unused)) const DataModel::LocoFunctions::LocoFunctionState on)
+			__attribute__((unused)) const DataModel::LocoFunctionNr function,
+			__attribute__((unused)) const DataModel::LocoFunctionState on)
 		{}
 
 		virtual void LocoProtocols(__attribute__((unused)) std::vector<Protocol>& protocols) const {};
@@ -101,7 +101,10 @@ class ControlInterface
 		virtual void SignalSettings(__attribute__((unused)) const SignalID signalID, __attribute__((unused)) const std::string& name) {};
 		virtual void SignalState(__attribute__((unused)) const ControlType controlType, __attribute__((unused)) const DataModel::Signal* signal) {};
 
-		virtual void LocoSpeedOrientationFunctions(const DataModel::Loco* loco, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::LocoFunctionState>& functions)
+		virtual void LocoSpeedOrientationFunctions(const DataModel::Loco* loco,
+			const Speed speed,
+			const Orientation orientation,
+			std::vector<DataModel::LocoFunctionState>& functions)
 		{
 			LocoSpeed(ControlTypeInternal, loco, speed);
 			LocoOrientation(ControlTypeInternal, loco, orientation);

@@ -1145,8 +1145,8 @@ namespace WebServer
 	void WebClient::HandleLocoFunction(const map<string, string>& arguments)
 	{
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		DataModel::LocoFunctions::LocoFunctionNr function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
-		DataModel::LocoFunctions::LocoFunctionState state = static_cast<DataModel::LocoFunctions::LocoFunctionState>(Utils::Utils::GetBoolMapEntry(arguments, "on"));
+		DataModel::LocoFunctionNr function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
+		DataModel::LocoFunctionState state = static_cast<DataModel::LocoFunctionState>(Utils::Utils::GetBoolMapEntry(arguments, "on"));
 
 		manager.LocoFunctionState(ControlTypeWebserver, locoID, function, state);
 
@@ -1357,16 +1357,16 @@ namespace WebServer
 			case ObjectTypeLoco:
 			{
 				map<string,string> functionOptions;
-				for (DataModel::LocoFunctions::LocoFunctionNr function = 0; function <= DataModel::LocoFunctions::MaxFunctions; ++function)
+				for (DataModel::LocoFunctionNr function = 0; function <= DataModel::LocoFunctions::MaxFunctions; ++function)
 				{
 					functionOptions[Utils::Utils::ToStringWithLeadingZeros(function, 2)] = "F" + to_string(function);
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", functionOptions, Utils::Utils::ToStringWithLeadingZeros(objectId, 2)).AddClass("select_relation_id"));
 
-				map<DataModel::LocoFunctions::LocoFunctionState,Languages::TextSelector> stateOptions;
-				stateOptions[DataModel::LocoFunctions::LocoFunctionStateOff] = Languages::TextOff;
-				stateOptions[DataModel::LocoFunctions::LocoFunctionStateOn] = Languages::TextOn;
-				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::LocoFunctions::LocoFunctionState>(data)).AddClass("select_relation_state"));
+				map<DataModel::LocoFunctionState,Languages::TextSelector> stateOptions;
+				stateOptions[DataModel::LocoFunctionStateOff] = Languages::TextOff;
+				stateOptions[DataModel::LocoFunctionStateOn] = Languages::TextOn;
+				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::LocoFunctionState>(data)).AddClass("select_relation_state"));
 				return content;
 			}
 
@@ -1611,7 +1611,7 @@ namespace WebServer
 		Protocol protocol = ProtocolNone;
 		Address address = 1;
 		string name = Languages::GetText(Languages::TextNew);
-		DataModel::LocoFunctions::LocoFunctionNr nrOfFunctions = 0;
+		DataModel::LocoFunctionNr nrOfFunctions = 0;
 		bool pushpull = false;
 		Length length = 0;
 		Speed maxSpeed = MaxSpeed;
@@ -1713,7 +1713,7 @@ namespace WebServer
 		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
-		const DataModel::LocoFunctions::LocoFunctionNr nrOfFunctions = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
+		const DataModel::LocoFunctionNr nrOfFunctions = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
 		const Length length = Utils::Utils::GetIntegerMapEntry(arguments, "length", 0);
 		const bool pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", false);
 		const Speed maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
@@ -4023,8 +4023,8 @@ namespace WebServer
 		container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><polyline points=\"3,14 20,14 20,3 36,19 20,35 20,23 3,23\" stroke=\"black\" stroke-width=\"1\" g></svg>", id, loco->GetOrientation(), buttonArguments).AddClass("button_orientation"));
 
 		id = "locofunction_" + to_string(locoID);
-		DataModel::LocoFunctions::LocoFunctionNr nrOfFunctions = loco->GetNrOfFunctions();
-		for (DataModel::LocoFunctions::LocoFunctionNr nr = 0; nr <= nrOfFunctions; ++nr)
+		DataModel::LocoFunctionNr nrOfFunctions = loco->GetNrOfFunctions();
+		for (DataModel::LocoFunctionNr nr = 0; nr <= nrOfFunctions; ++nr)
 		{
 			string nrText(to_string(nr));
 			buttonArguments["function"] = nrText;

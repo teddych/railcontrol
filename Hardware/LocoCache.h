@@ -83,10 +83,10 @@ namespace Hardware
 				this->address = address;
 			}
 
-			inline void SetFunction(const DataModel::LocoFunctions::LocoFunctionNr nr,
-				const DataModel::LocoFunctions::LocoFunctionType type,
-				const DataModel::LocoFunctions::LocoFunctionIcon icon,
-				const DataModel::LocoFunctions::LocoFunctionTimer timer)
+			inline void SetFunction(const DataModel::LocoFunctionNr nr,
+				const DataModel::LocoFunctionType type,
+				const DataModel::LocoFunctionIcon icon,
+				const DataModel::LocoFunctionTimer timer)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
@@ -97,36 +97,36 @@ namespace Hardware
 				functionTimers[nr] = timer;
 			}
 
-			inline void ClearFunction(const DataModel::LocoFunctions::LocoFunctionNr nr)
+			inline void ClearFunction(const DataModel::LocoFunctionNr nr)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
 					return;
 				}
-				functionTypes[nr] = DataModel::LocoFunctions::LocoFunctionTypeNone;
-				functionIcons[nr] = DataModel::LocoFunctions::LocoFunctionIconNone;
+				functionTypes[nr] = DataModel::LocoFunctionTypeNone;
+				functionIcons[nr] = DataModel::LocoFunctionIconNone;
 				functionTimers[nr] = 0;
 			}
 
-			inline DataModel::LocoFunctions::LocoFunctionType GetFunctionType(const DataModel::LocoFunctions::LocoFunctionNr nr)
+			inline DataModel::LocoFunctionType GetFunctionType(const DataModel::LocoFunctionNr nr)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
-					return DataModel::LocoFunctions::LocoFunctionTypeNone;
+					return DataModel::LocoFunctionTypeNone;
 				}
 				return functionTypes[nr];
 			}
 
-			inline DataModel::LocoFunctions::LocoFunctionIcon GetFunctionIcon(const DataModel::LocoFunctions::LocoFunctionNr nr)
+			inline DataModel::LocoFunctionIcon GetFunctionIcon(const DataModel::LocoFunctionNr nr)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
-					return DataModel::LocoFunctions::LocoFunctionIconNone;
+					return DataModel::LocoFunctionIconNone;
 				}
 				return functionIcons[nr];
 			}
 
-			inline DataModel::LocoFunctions::LocoFunctionTimer GetFunctionTimer(const DataModel::LocoFunctions::LocoFunctionNr nr)
+			inline DataModel::LocoFunctionTimer GetFunctionTimer(const DataModel::LocoFunctionNr nr)
 			{
 				if (nr >= MaxFunctionsIncludingZero)
 				{
@@ -142,9 +142,9 @@ namespace Hardware
 			std::string name;
 			Protocol protocol;
 			Address address;
-			DataModel::LocoFunctions::LocoFunctionType functionTypes[MaxFunctionsIncludingZero];
-			DataModel::LocoFunctions::LocoFunctionIcon functionIcons[MaxFunctionsIncludingZero];
-			DataModel::LocoFunctions::LocoFunctionTimer functionTimers[MaxFunctionsIncludingZero];
+			DataModel::LocoFunctionType functionTypes[MaxFunctionsIncludingZero];
+			DataModel::LocoFunctionIcon functionIcons[MaxFunctionsIncludingZero];
+			DataModel::LocoFunctionTimer functionTimers[MaxFunctionsIncludingZero];
 	};
 
 	class LocoCache

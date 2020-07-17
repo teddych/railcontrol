@@ -78,7 +78,12 @@ namespace Hardware
 			void Booster(const BoosterState status) override;
 			void LocoSpeed(const Protocol protocol, const Address address, const Speed speed) override;
 			void LocoOrientation(const Protocol protocol, const Address address, const Orientation orientation) override;
-			void LocoFunction(const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on) override;
+
+			void LocoFunction(const Protocol protocol,
+				const Address address,
+				const DataModel::LocoFunctionNr function,
+				const DataModel::LocoFunctionState on) override;
+
 			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
@@ -348,7 +353,7 @@ namespace Hardware
 			void ParseCs2FileLocomotives(std::deque<std::string>& lines);
 			void ParseCs2File(std::deque<std::string>& lines);
 
-			static inline DataModel::LocoFunctions::LocoFunctionIcon MapLocoFunctionCs2ToRailControl(const DataModel::LocoFunctions::LocoFunctionIcon input)
+			static inline DataModel::LocoFunctionIcon MapLocoFunctionCs2ToRailControl(const DataModel::LocoFunctionIcon input)
 			{
 				return LocoFunctionMapCs2ToRailControl[input];
 			}
@@ -369,7 +374,8 @@ namespace Hardware
 			}
 			virtual void Send(const unsigned char* buffer) = 0;
 
-			static inline LocoFunctionCs2Icon CalculateCs2Icon(const DataModel::LocoFunctions::LocoFunctionNr nr, const DataModel::LocoFunctions::LocoFunctionIcon railcontrolIcon)
+			static inline LocoFunctionCs2Icon CalculateCs2Icon(const DataModel::LocoFunctionNr nr,
+				const DataModel::LocoFunctionIcon railcontrolIcon)
 			{
 				LocoFunctionCs2Icon icon = LocoFunctionMapRailControlToCs2[railcontrolIcon];
 				if (icon == LocoFunctionCs2IconDefault)
@@ -394,8 +400,8 @@ namespace Hardware
 			LocoCache locoCache;
 
 			static const uint8_t MaxNrOfCs2FunctionIcons = 128;
-			static const DataModel::LocoFunctions::LocoFunctionIcon LocoFunctionMapCs2ToRailControl[MaxNrOfCs2FunctionIcons];
-			static const ProtocolMaerklinCAN::LocoFunctionCs2Icon LocoFunctionMapRailControlToCs2[DataModel::LocoFunctions::MaxLocoFunctionIcons];
+			static const DataModel::LocoFunctionIcon LocoFunctionMapCs2ToRailControl[MaxNrOfCs2FunctionIcons];
+			static const ProtocolMaerklinCAN::LocoFunctionCs2Icon LocoFunctionMapRailControlToCs2[DataModel::MaxLocoFunctionIcons];
 	};
 } // namespace
 

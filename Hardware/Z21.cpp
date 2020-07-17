@@ -242,7 +242,10 @@ namespace Hardware
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::LocoFunction(__attribute__ ((unused)) const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
+	void Z21::LocoFunction(__attribute__ ((unused)) const Protocol protocol,
+		const Address address,
+		const DataModel::LocoFunctionNr function,
+		const DataModel::LocoFunctionState on)
 	{
 		if (!LocoProtocolSupported(protocol))
 		{
@@ -251,12 +254,16 @@ namespace Hardware
 		locoCache.SetFunction(address, function, on);
 		unsigned char buffer[10] = { 0x0A, 0x00, 0x40, 0x00, 0xE4, 0xF8 };
 		Utils::Utils::ShortToDataBigEndian(address | 0xC000, buffer + 6);
-		buffer[8] = (static_cast<unsigned char>(on == DataModel::LocoFunctions::LocoFunctionStateOn) << 6) | (function & 0x3F);
+		buffer[8] = (static_cast<unsigned char>(on == DataModel::LocoFunctionStateOn) << 6) | (function & 0x3F);
 		buffer[9] = buffer[4] ^ buffer[5] ^ buffer[6] ^ buffer[7] ^ buffer[8];
 		Send(buffer, sizeof(buffer));
 	}
 
-	void Z21::LocoSpeedOrientationFunctions(const Protocol protocol, const Address address, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::LocoFunctionState>& functions)
+	void Z21::LocoSpeedOrientationFunctions(const Protocol protocol,
+		const Address address,
+		const Speed speed,
+		const Orientation orientation,
+		std::vector<DataModel::LocoFunctionState>& functions)
 	{
 		if (!LocoProtocolSupported(protocol))
 		{
@@ -850,14 +857,14 @@ namespace Hardware
 			return;
 		}
 		const uint32_t functionsDiff = newFunctions ^ oldFunctions;
-		for (DataModel::LocoFunctions::LocoFunctionNr function = 0; function <= 28; ++function)
+		for (DataModel::LocoFunctionNr function = 0; function <= 28; ++function)
 		{
 			const bool stateChange = (functionsDiff >> function) & 0x01;
 			if (stateChange == false)
 			{
 				continue;
 			}
-			const DataModel::LocoFunctions::LocoFunctionState newState = ((newFunctions >> function) & 0x01 ? DataModel::LocoFunctions::LocoFunctionStateOn : DataModel::LocoFunctions::LocoFunctionStateOff);
+			const DataModel::LocoFunctionState newState = ((newFunctions >> function) & 0x01 ? DataModel::LocoFunctionStateOn : DataModel::LocoFunctionStateOff);
 			locoCache.SetFunction(address, function, newState);
 			manager->LocoFunctionState(ControlTypeHardware, controlID, protocol, address, function, newState);
 		}

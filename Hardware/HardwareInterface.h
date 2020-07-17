@@ -74,10 +74,18 @@ namespace Hardware
 			virtual void LocoOrientation(__attribute__((unused)) const Protocol protocol, __attribute__((unused)) const Address address, __attribute__((unused)) const Orientation orientation) {};
 
 			// set loco function
-			virtual void LocoFunction(__attribute__((unused)) const Protocol protocol, __attribute__((unused)) const Address address, __attribute__((unused)) const DataModel::LocoFunctions::LocoFunctionNr function, __attribute__((unused)) const DataModel::LocoFunctions::LocoFunctionState on) {};
+			virtual void LocoFunction(__attribute__((unused)) const Protocol protocol,
+				__attribute__((unused)) const Address address,
+				__attribute__((unused)) const DataModel::LocoFunctionNr function,
+				__attribute__((unused)) const DataModel::LocoFunctionState on)
+			{}
 
 			// set loco
-			virtual void LocoSpeedOrientationFunctions(const Protocol protocol, const Address address, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::LocoFunctionState>& functions)
+			virtual void LocoSpeedOrientationFunctions(const Protocol protocol,
+				const Address address,
+				const Speed speed,
+				const Orientation orientation,
+				std::vector<DataModel::LocoFunctionState>& functions)
 			{
 				// sleeps are necessary to prevent command overflow in command stations (especially Märklin Gleisbox)
 				LocoSpeed(protocol, address, speed);

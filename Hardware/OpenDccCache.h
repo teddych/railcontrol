@@ -76,7 +76,9 @@ namespace Hardware
 				cache[address] = entry;
 			}
 
-			void SetFunction(const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
+			void SetFunction(const Address address,
+				const DataModel::LocoFunctionNr function,
+				const DataModel::LocoFunctionState on)
 			{
 				bool onInternal = static_cast<bool>(on);
 				OpenDccCacheEntry entry = GetData(address);

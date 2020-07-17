@@ -172,7 +172,10 @@ namespace Hardware
 		SendXLok(address);
 	}
 
-	void OpenDcc::LocoFunction(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
+	void OpenDcc::LocoFunction(__attribute__((unused)) const Protocol protocol,
+		const Address address,
+		const DataModel::LocoFunctionNr function,
+		const DataModel::LocoFunctionState on)
 	{
 		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
 		{
@@ -205,7 +208,11 @@ namespace Hardware
 		SendXFunc34(address);
 	}
 
-	void OpenDcc::LocoSpeedOrientationFunctions(__attribute__((unused)) const Protocol protocol, const Address address, const Speed speed, const Orientation orientation, std::vector<DataModel::LocoFunctions::LocoFunctionState>& functions)
+	void OpenDcc::LocoSpeedOrientationFunctions(__attribute__((unused)) const Protocol protocol,
+		const Address address,
+		const Speed speed,
+		const Orientation orientation,
+		std::vector<DataModel::LocoFunctionState>& functions)
 	{
 		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
 		{

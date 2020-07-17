@@ -91,7 +91,7 @@ class Manager
 			const ControlID controlID,
 			const Protocol protocol,
 			const Address address,
-			const DataModel::LocoFunctions::LocoFunctionNr nrOfFunctions,
+			const DataModel::LocoFunctionNr nrOfFunctions,
 			const Length length,
 			const bool pushpull,
 			const Speed maxSpeed,
@@ -110,8 +110,18 @@ class Manager
 		void LocoOrientation(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Orientation orientation);
 		void LocoOrientation(const ControlType controlType, const LocoID locoID, const Orientation orientation);
 		void LocoOrientation(const ControlType controlType, DataModel::Loco* loco, const Orientation orientation);
-		void LocoFunctionState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on);
-		void LocoFunctionState(const ControlType controlType, const LocoID locoID, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on);
+
+		void LocoFunctionState(const ControlType controlType,
+			const ControlID controlID,
+			const Protocol protocol,
+			const Address address,
+			const DataModel::LocoFunctionNr function,
+			const DataModel::LocoFunctionState on);
+
+		void LocoFunctionState(const ControlType controlType,
+			const LocoID locoID,
+			const DataModel::LocoFunctionNr function,
+			const DataModel::LocoFunctionState on);
 
 		// accessory
 		void AccessoryState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryState state);
@@ -314,7 +324,11 @@ class Manager
 		DataModel::Feedback* GetFeedback(const ControlID controlID, const FeedbackPin pin) const;
 		DataModel::Signal* GetSignal(const ControlID controlID, const Protocol protocol, const Address address) const;
 
-		void LocoFunctionState(const ControlType controlType, DataModel::Loco* loco, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on);
+		void LocoFunctionState(const ControlType controlType,
+			DataModel::Loco* loco,
+			const DataModel::LocoFunctionNr function,
+			const DataModel::LocoFunctionState on);
+
 		void AccessoryState(const ControlType controlType, DataModel::Accessory* accessory, const DataModel::AccessoryState state, const bool force);
 		void SwitchState(const ControlType controlType, DataModel::Switch* mySwitch, const DataModel::AccessoryState state, const bool force);
 		void FeedbackState(DataModel::Feedback* feedback, const DataModel::Feedback::FeedbackState state)  { feedback->SetState(state); }

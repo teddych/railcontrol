@@ -31,19 +31,19 @@ namespace DataModel
 		std::string out;
 		for (LocoFunctionNr nr = 0; nr < MaxCount; ++nr)
 		{
-			if (types[nr] == LocoFunctionTypeNone)
+			if (entries[nr].type == LocoFunctionTypeNone)
 			{
 				continue;
 			}
 			out += "f" + std::to_string(static_cast<unsigned int>(nr));
-			out += ":" + std::to_string(static_cast<unsigned int>(states[nr]));
-			out += ":" + std::to_string(static_cast<unsigned int>(types[nr]));
-			out += ":" + std::to_string(static_cast<unsigned int>(icons[nr]));
-			if (types[nr] != LocoFunctionTypeTimer)
+			out += ":" + std::to_string(static_cast<unsigned int>(entries[nr].state));
+			out += ":" + std::to_string(static_cast<unsigned int>(entries[nr].type));
+			out += ":" + std::to_string(static_cast<unsigned int>(entries[nr].icon));
+			if (entries[nr].type != LocoFunctionTypeTimer)
 			{
 				continue;
 			}
-			out += ":" + std::to_string(static_cast<unsigned int>(icons[nr]));
+			out += ":" + std::to_string(static_cast<unsigned int>(entries[nr].icon));
 		}
 		return out;
 	}
@@ -84,18 +84,18 @@ namespace DataModel
 				count = nr + 1;
 			}
 			functionTexts.pop_front();
-			states[nr] = static_cast<LocoFunctionState>(Utils::Utils::StringToInteger(functionTexts.front(), LocoFunctionStateOff));
+			entries[nr].state = static_cast<LocoFunctionState>(Utils::Utils::StringToInteger(functionTexts.front(), LocoFunctionStateOff));
 			functionTexts.pop_front();
-			types[nr] = static_cast<LocoFunctionType>(Utils::Utils::StringToInteger(functionTexts.front(), LocoFunctionTypePermanent));
+			entries[nr].type = static_cast<LocoFunctionType>(Utils::Utils::StringToInteger(functionTexts.front(), LocoFunctionTypePermanent));
 			functionTexts.pop_front();
-			icons[nr] = static_cast<LocoFunctionIcon>(Utils::Utils::StringToInteger(functionTexts.front(), LocoFunctionIconDefault));
+			entries[nr].icon = static_cast<LocoFunctionIcon>(Utils::Utils::StringToInteger(functionTexts.front(), LocoFunctionIconDefault));
 			functionTexts.pop_front();
 			if (nrOfTexts == 4)
 			{
-				timers[nr] = 0;
+				entries[nr].timer = 0;
 				continue;
 			}
-			timers[nr] = static_cast<LocoFunctionTimer>(Utils::Utils::StringToInteger(functionTexts.front(), 0));
+			entries[nr].timer = static_cast<LocoFunctionTimer>(Utils::Utils::StringToInteger(functionTexts.front(), 0));
 			functionTexts.pop_front();
 		}
 		return true;
@@ -108,30 +108,30 @@ namespace DataModel
 		{
 			count = MaxCount;
 		}
-		for (LocoFunctionNr i = 0; i < MaxCount; ++i)
+		for (LocoFunctionNr nr = 0; nr < MaxCount; ++nr)
 		{
-			if (i >= count)
+			if (nr >= count)
 			{
-				states[i] = LocoFunctionStateOff;
-				types[i] = LocoFunctionTypeNone;
-				icons[i] = LocoFunctionIconNone;
-				timers[i] = 0;
+				entries[nr].state = LocoFunctionStateOff;
+				entries[nr].type = LocoFunctionTypeNone;
+				entries[nr].icon = LocoFunctionIconNone;
+				entries[nr].timer = 0;
 				continue;
 			}
-			switch (serialized[i])
+			switch (serialized[nr])
 			{
 				case '1':
-					states[i] = LocoFunctionStateOn;
+					entries[nr].state = LocoFunctionStateOn;
 					break;
 
 				case '0':
 					default:
-					states[i] = LocoFunctionStateOff;
+						entries[nr].state = LocoFunctionStateOff;
 					break;
 			}
-			types[i] = LocoFunctionTypePermanent;
-			icons[i] = LocoFunctionIconDefault;
-			timers[i] = 0;
+			entries[nr].type = LocoFunctionTypePermanent;
+			entries[nr].icon = LocoFunctionIconDefault;
+			entries[nr].timer = 0;
 		}
 		return true;
 	}

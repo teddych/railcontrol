@@ -199,14 +199,17 @@ namespace Hardware
 		SendInternal(buffer);
 	}
 
-	void ProtocolMaerklinCAN::LocoFunction(const Protocol protocol, const Address address, const DataModel::LocoFunctions::LocoFunctionNr function, const DataModel::LocoFunctions::LocoFunctionState on)
+	void ProtocolMaerklinCAN::LocoFunction(const Protocol protocol,
+		const Address address,
+		const DataModel::LocoFunctionNr function,
+		const DataModel::LocoFunctionState on)
 	{
 		unsigned char buffer[CANCommandBufferLength];
 		logger->Info(Languages::TextSettingFunctionWithProtocol, static_cast<int>(function), static_cast<int>(protocol), address, Languages::GetOnOff(on));
 		CreateCommandHeader(buffer, CanCommandLocoFunction, CanResponseCommand, 6);
 		CreateLocalIDLoco(buffer, protocol, address);
 		buffer[9] = function;
-		buffer[10] = (on == DataModel::LocoFunctions::LocoFunctionStateOn);
+		buffer[10] = (on == DataModel::LocoFunctionStateOn);
 		SendInternal(buffer);
 	}
 
@@ -458,8 +461,8 @@ namespace Hardware
 		Address address;
 		Protocol protocol;
 		ParseAddressProtocol(buffer, address, protocol);
-		DataModel::LocoFunctions::LocoFunctionNr function = buffer[9];
-		DataModel::LocoFunctions::LocoFunctionState on = (buffer[10] != 0 ? DataModel::LocoFunctions::LocoFunctionStateOn : DataModel::LocoFunctions::LocoFunctionStateOff);
+		DataModel::LocoFunctionNr function = buffer[9];
+		DataModel::LocoFunctionState on = (buffer[10] != 0 ? DataModel::LocoFunctionStateOn : DataModel::LocoFunctionStateOff);
 		logger->Info(Languages::TextReceivedFunctionCommand, protocol, address, function, on);
 		manager->LocoFunctionState(ControlTypeHardware, controlID, protocol, address, function, on);
 	}
@@ -668,10 +671,10 @@ namespace Hardware
 	void ProtocolMaerklinCAN::ParseCs2FileLocomotiveFunction(deque<string>& lines, LocoCacheEntry& cacheEntry)
 	{
 		lines.pop_front();
-		DataModel::LocoFunctions::LocoFunctionNr nr = 0;
-		DataModel::LocoFunctions::LocoFunctionType type = DataModel::LocoFunctions::LocoFunctionTypeNone;
-		DataModel::LocoFunctions::LocoFunctionIcon icon = DataModel::LocoFunctions::LocoFunctionIconNone;
-		DataModel::LocoFunctions::LocoFunctionTimer timer = 0;
+		DataModel::LocoFunctionNr nr = 0;
+		DataModel::LocoFunctionType type = DataModel::LocoFunctionTypeNone;
+		DataModel::LocoFunctionIcon icon = DataModel::LocoFunctionIconNone;
+		DataModel::LocoFunctionTimer timer = 0;
 		while (lines.size())
 		{
 			string& line = lines.front();
@@ -689,25 +692,25 @@ namespace Hardware
 			else if (key.compare("typ") == 0)
 			{
 				uint8_t valueInt = Utils::Utils::StringToInteger(value);
-				icon = static_cast<DataModel::LocoFunctions::LocoFunctionIcon>(valueInt & 0x7F);
-				type = static_cast<DataModel::LocoFunctions::LocoFunctionType>((valueInt >> 7) + 1); // CS2: 1 = permanent, 2 = once
+				icon = static_cast<DataModel::LocoFunctionIcon>(valueInt & 0x7F);
+				type = static_cast<DataModel::LocoFunctionType>((valueInt >> 7) + 1); // CS2: 1 = permanent, 2 = once
 			}
 			else if (key.compare("dauer") == 0)
 			{
-				type = DataModel::LocoFunctions::LocoFunctionTypeTimer;
+				type = DataModel::LocoFunctionTypeTimer;
 				timer = Utils::Utils::StringToInteger(value);
 			}
 			lines.pop_front();
 		}
-		if (type == DataModel::LocoFunctions::LocoFunctionTypeNone)
+		if (type == DataModel::LocoFunctionTypeNone)
 		{
-			icon = DataModel::LocoFunctions::LocoFunctionIconNone;
+			icon = DataModel::LocoFunctionIconNone;
 			timer = 0;
 			cacheEntry.ClearFunction(nr);
 			return;
 		}
 		cacheEntry.SetFunction(nr, type, icon, timer);
-		if (type == DataModel::LocoFunctions::LocoFunctionTypeTimer)
+		if (type == DataModel::LocoFunctionTypeTimer)
 		{
 			logger->Info(Languages::TextCs2MasterLocoFunctionIconTypeTimer, nr, icon, timer);
 		}
@@ -865,138 +868,138 @@ namespace Hardware
 		}
 	}
 
-	const DataModel::LocoFunctions::LocoFunctionIcon ProtocolMaerklinCAN::LocoFunctionMapCs2ToRailControl[MaxNrOfCs2FunctionIcons] = {
-		DataModel::LocoFunctions::LocoFunctionIconNone,
-		DataModel::LocoFunctions::LocoFunctionIconLight,
-		DataModel::LocoFunctions::LocoFunctionIconInteriorLight1,
-		DataModel::LocoFunctions::LocoFunctionIconBackLightForward,
-		DataModel::LocoFunctions::LocoFunctionIconHeadlightHighBeam,
-		DataModel::LocoFunctions::LocoFunctionIconSoundGeneral,
-		DataModel::LocoFunctions::LocoFunctionIconPanto12,
-		DataModel::LocoFunctions::LocoFunctionIconSmokeGenerator,
-		DataModel::LocoFunctions::LocoFunctionIconShuntingMode,
-		DataModel::LocoFunctions::LocoFunctionIconTelex12,
-		DataModel::LocoFunctions::LocoFunctionIconHorn1,
-		DataModel::LocoFunctions::LocoFunctionIconWhistle1,
-		DataModel::LocoFunctions::LocoFunctionIconWhistle2,
-		DataModel::LocoFunctions::LocoFunctionIconBell,
-		DataModel::LocoFunctions::LocoFunctionIconLeftRight,
-		DataModel::LocoFunctions::LocoFunctionIconUpDown1,
-		DataModel::LocoFunctions::LocoFunctionIconTurnLeft,
-		DataModel::LocoFunctions::LocoFunctionIconUpDown2,
-		DataModel::LocoFunctions::LocoFunctionIconInertia,
-		DataModel::LocoFunctions::LocoFunctionIconFan2,
-		DataModel::LocoFunctions::LocoFunctionIconBreak1,
-		DataModel::LocoFunctions::LocoFunctionIconGearBox,
-		DataModel::LocoFunctions::LocoFunctionIconGenerator,
-		DataModel::LocoFunctions::LocoFunctionIconRunning1,
-		DataModel::LocoFunctions::LocoFunctionIconEngine1,
-		DataModel::LocoFunctions::LocoFunctionIconStationAnnouncement1,
-		DataModel::LocoFunctions::LocoFunctionIconShovelCoal,
-		DataModel::LocoFunctions::LocoFunctionIconCloseDoor,
-		DataModel::LocoFunctions::LocoFunctionIconOpenDoor,
-		DataModel::LocoFunctions::LocoFunctionIconFan1,
-		DataModel::LocoFunctions::LocoFunctionIconFan,
-		DataModel::LocoFunctions::LocoFunctionIconFireBox,
-		DataModel::LocoFunctions::LocoFunctionIconInteriorLight2,
-		DataModel::LocoFunctions::LocoFunctionIconTableLight3,
-		DataModel::LocoFunctions::LocoFunctionIconTableLight2,
-		DataModel::LocoFunctions::LocoFunctionIconTableLight1,
-		DataModel::LocoFunctions::LocoFunctionIconShakingRust,
-		DataModel::LocoFunctions::LocoFunctionIconRailJoint,
-		DataModel::LocoFunctions::LocoFunctionIconTrainNumberIndicator,
-		DataModel::LocoFunctions::LocoFunctionIconMusic1,
-		DataModel::LocoFunctions::LocoFunctionIconTrainDestinationIndicator,
-		DataModel::LocoFunctions::LocoFunctionIconCabLight2,
-		DataModel::LocoFunctions::LocoFunctionIconCabLight1,
-		DataModel::LocoFunctions::LocoFunctionIconCoupler,
-		DataModel::LocoFunctions::LocoFunctionIconBufferPush,
-		DataModel::LocoFunctions::LocoFunctionIconStationAnnouncement3,
-		DataModel::LocoFunctions::LocoFunctionIconCraneHook,
-		DataModel::LocoFunctions::LocoFunctionIconBlinkingLight,
-		DataModel::LocoFunctions::LocoFunctionIconCabLight12,
-		DataModel::LocoFunctions::LocoFunctionIconCompressedAir,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconTelex2,
-		DataModel::LocoFunctions::LocoFunctionIconTelex1,
-		DataModel::LocoFunctions::LocoFunctionIconPanto2,
-		DataModel::LocoFunctions::LocoFunctionIconPanto1,
-		DataModel::LocoFunctions::LocoFunctionIconHeadlightReverse,
-		DataModel::LocoFunctions::LocoFunctionIconHeadlightForward,
-		DataModel::LocoFunctions::LocoFunctionIconUp,
-		DataModel::LocoFunctions::LocoFunctionIconFan3,
-		DataModel::LocoFunctions::LocoFunctionIconEngineLight,
-		DataModel::LocoFunctions::LocoFunctionIconSteamBlowOut,
-		DataModel::LocoFunctions::LocoFunctionIconSteamBlow,
-		DataModel::LocoFunctions::LocoFunctionIconCrane,
-		DataModel::LocoFunctions::LocoFunctionIconUp,
-		DataModel::LocoFunctions::LocoFunctionIconDown,
-		DataModel::LocoFunctions::LocoFunctionIconLeft,
-		DataModel::LocoFunctions::LocoFunctionIconRight,
-		DataModel::LocoFunctions::LocoFunctionIconTurnRight,
-		DataModel::LocoFunctions::LocoFunctionIconMagnet,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconPanto,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconRadio,
-		DataModel::LocoFunctions::LocoFunctionIconStationAnnouncement2,
-		DataModel::LocoFunctions::LocoFunctionIconBackLightReverse,
-		DataModel::LocoFunctions::LocoFunctionIconAirPump,
-		DataModel::LocoFunctions::LocoFunctionIconSpeak,
-		DataModel::LocoFunctions::LocoFunctionIconEngine2,
-		DataModel::LocoFunctions::LocoFunctionIconNoSound,
-		DataModel::LocoFunctions::LocoFunctionIconStairsLight,
-		DataModel::LocoFunctions::LocoFunctionIconFillWater,
-		DataModel::LocoFunctions::LocoFunctionIconBreak2,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault,
-		DataModel::LocoFunctions::LocoFunctionIconDefault
+	const DataModel::LocoFunctionIcon ProtocolMaerklinCAN::LocoFunctionMapCs2ToRailControl[MaxNrOfCs2FunctionIcons] = {
+		DataModel::LocoFunctionIconNone,
+		DataModel::LocoFunctionIconLight,
+		DataModel::LocoFunctionIconInteriorLight1,
+		DataModel::LocoFunctionIconBackLightForward,
+		DataModel::LocoFunctionIconHeadlightHighBeam,
+		DataModel::LocoFunctionIconSoundGeneral,
+		DataModel::LocoFunctionIconPanto12,
+		DataModel::LocoFunctionIconSmokeGenerator,
+		DataModel::LocoFunctionIconShuntingMode,
+		DataModel::LocoFunctionIconTelex12,
+		DataModel::LocoFunctionIconHorn1,
+		DataModel::LocoFunctionIconWhistle1,
+		DataModel::LocoFunctionIconWhistle2,
+		DataModel::LocoFunctionIconBell,
+		DataModel::LocoFunctionIconLeftRight,
+		DataModel::LocoFunctionIconUpDown1,
+		DataModel::LocoFunctionIconTurnLeft,
+		DataModel::LocoFunctionIconUpDown2,
+		DataModel::LocoFunctionIconInertia,
+		DataModel::LocoFunctionIconFan2,
+		DataModel::LocoFunctionIconBreak1,
+		DataModel::LocoFunctionIconGearBox,
+		DataModel::LocoFunctionIconGenerator,
+		DataModel::LocoFunctionIconRunning1,
+		DataModel::LocoFunctionIconEngine1,
+		DataModel::LocoFunctionIconStationAnnouncement1,
+		DataModel::LocoFunctionIconShovelCoal,
+		DataModel::LocoFunctionIconCloseDoor,
+		DataModel::LocoFunctionIconOpenDoor,
+		DataModel::LocoFunctionIconFan1,
+		DataModel::LocoFunctionIconFan,
+		DataModel::LocoFunctionIconFireBox,
+		DataModel::LocoFunctionIconInteriorLight2,
+		DataModel::LocoFunctionIconTableLight3,
+		DataModel::LocoFunctionIconTableLight2,
+		DataModel::LocoFunctionIconTableLight1,
+		DataModel::LocoFunctionIconShakingRust,
+		DataModel::LocoFunctionIconRailJoint,
+		DataModel::LocoFunctionIconTrainNumberIndicator,
+		DataModel::LocoFunctionIconMusic1,
+		DataModel::LocoFunctionIconTrainDestinationIndicator,
+		DataModel::LocoFunctionIconCabLight2,
+		DataModel::LocoFunctionIconCabLight1,
+		DataModel::LocoFunctionIconCoupler,
+		DataModel::LocoFunctionIconBufferPush,
+		DataModel::LocoFunctionIconStationAnnouncement3,
+		DataModel::LocoFunctionIconCraneHook,
+		DataModel::LocoFunctionIconBlinkingLight,
+		DataModel::LocoFunctionIconCabLight12,
+		DataModel::LocoFunctionIconCompressedAir,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconTelex2,
+		DataModel::LocoFunctionIconTelex1,
+		DataModel::LocoFunctionIconPanto2,
+		DataModel::LocoFunctionIconPanto1,
+		DataModel::LocoFunctionIconHeadlightReverse,
+		DataModel::LocoFunctionIconHeadlightForward,
+		DataModel::LocoFunctionIconUp,
+		DataModel::LocoFunctionIconFan3,
+		DataModel::LocoFunctionIconEngineLight,
+		DataModel::LocoFunctionIconSteamBlowOut,
+		DataModel::LocoFunctionIconSteamBlow,
+		DataModel::LocoFunctionIconCrane,
+		DataModel::LocoFunctionIconUp,
+		DataModel::LocoFunctionIconDown,
+		DataModel::LocoFunctionIconLeft,
+		DataModel::LocoFunctionIconRight,
+		DataModel::LocoFunctionIconTurnRight,
+		DataModel::LocoFunctionIconMagnet,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconPanto,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconRadio,
+		DataModel::LocoFunctionIconStationAnnouncement2,
+		DataModel::LocoFunctionIconBackLightReverse,
+		DataModel::LocoFunctionIconAirPump,
+		DataModel::LocoFunctionIconSpeak,
+		DataModel::LocoFunctionIconEngine2,
+		DataModel::LocoFunctionIconNoSound,
+		DataModel::LocoFunctionIconStairsLight,
+		DataModel::LocoFunctionIconFillWater,
+		DataModel::LocoFunctionIconBreak2,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault,
+		DataModel::LocoFunctionIconDefault
 	};
 
-	const ProtocolMaerklinCAN::LocoFunctionCs2Icon ProtocolMaerklinCAN::LocoFunctionMapRailControlToCs2[DataModel::LocoFunctions::MaxLocoFunctionIcons] = {
+	const ProtocolMaerklinCAN::LocoFunctionCs2Icon ProtocolMaerklinCAN::LocoFunctionMapRailControlToCs2[DataModel::MaxLocoFunctionIcons] = {
 		LocoFunctionCs2IconNone,
 		LocoFunctionCs2IconDefault,
 		LocoFunctionCs2IconShuntingMode,
