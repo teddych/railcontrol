@@ -1357,7 +1357,7 @@ namespace WebServer
 			case ObjectTypeLoco:
 			{
 				map<string,string> functionOptions;
-				for (DataModel::LocoFunctionNr function = 0; function <= DataModel::LocoFunctions::MaxFunctions; ++function)
+				for (DataModel::LocoFunctionNr function = 0; function <= DataModel::MaxLocoFunctions; ++function)
 				{
 					functionOptions[Utils::Utils::ToStringWithLeadingZeros(function, 2)] = "F" + to_string(function);
 				}
@@ -1611,13 +1611,13 @@ namespace WebServer
 		Protocol protocol = ProtocolNone;
 		Address address = 1;
 		string name = Languages::GetText(Languages::TextNew);
-		DataModel::LocoFunctionNr nrOfFunctions = 0;
 		bool pushpull = false;
 		Length length = 0;
 		Speed maxSpeed = MaxSpeed;
 		Speed travelSpeed = DefaultTravelSpeed;
 		Speed reducedSpeed = DefaultReducedSpeed;
 		Speed creepingSpeed = DefaultCreepingSpeed;
+		const LocoFunctionEntry* locoFunctions;
 		vector<Relation*> slaves;
 
 		if (locoID > LocoNone)
@@ -1629,13 +1629,13 @@ namespace WebServer
 				protocol = loco->GetProtocol();
 				address = loco->GetAddress();
 				name = loco->GetName();
-				nrOfFunctions = loco->GetNrOfFunctions();
 				pushpull = loco->GetPushpull();
 				length = loco->GetLength();
 				maxSpeed = loco->GetMaxSpeed();
 				travelSpeed = loco->GetTravelSpeed();
 				reducedSpeed = loco->GetReducedSpeed();
 				creepingSpeed = loco->GetCreepingSpeed();
+				locoFunctions = loco->GetFunctions();
 				slaves = loco->GetSlaves();
 			}
 		}
@@ -1643,6 +1643,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
+		tabMenu.AddChildTag(HtmlTagTabMenuItem("functions", Languages::TextFunctions));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("slaves", Languages::TextMultipleUnit));
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
@@ -1658,9 +1659,53 @@ namespace WebServer
 		basicContent.AddChildTag(HtmlTagControlLoco(controlID, "loco", locoID));
 		basicContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagProtocolLoco(controlID, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("function", Languages::TextNrOfFunctions, nrOfFunctions, 0, DataModel::LocoFunctions::MaxFunctions));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
 		formContent.AddChildTag(basicContent);
+
+		HtmlTag functionsContent("div");
+		functionsContent.AddId("tab_functions");
+		functionsContent.AddClass("tab_content");
+		functionsContent.AddClass("hidden");
+		map<DataModel::LocoFunctionType,Languages::TextSelector> functionTypes;
+		functionTypes[DataModel::LocoFunctionTypeNone] = Languages::TextLocoFunctionTypeNone;
+		functionTypes[DataModel::LocoFunctionTypePermanent] = Languages::TextLocoFunctionTypePermanent;
+		functionTypes[DataModel::LocoFunctionTypeMoment] = Languages::TextLocoFunctionTypeMoment;
+		functionTypes[DataModel::LocoFunctionTypeFlashing] = Languages::TextLocoFunctionTypeFlashing;
+		functionTypes[DataModel::LocoFunctionTypeTimer] = Languages::TextLocoFunctionTypeTimer;
+
+		map<DataModel::LocoFunctionIcon,Languages::TextSelector> functionIcons;
+		functionIcons[DataModel::LocoFunctionIconDefault] = Languages::TextLocoFunctionIconDefault;
+		functionIcons[DataModel::LocoFunctionIconShuntingMode] = Languages::TextLocoFunctionIconShuntingMode;
+		functionIcons[DataModel::LocoFunctionIconInertia] = Languages::TextLocoFunctionIconInertia;
+//		functionIcons[DataModel::LocoFunctionIcon] = Languages::TextLocoFunctionIcon;
+		for (unsigned int nr = 0; nr < DataModel::MaxLocoFunctions; ++nr)
+		{
+			HtmlTag fDiv("div");
+			fDiv.AddClass("function_line");
+			string nrString = to_string(nr);
+			string fNrString = "f" + nrString;
+			fDiv.AddChildTag(HtmlTagLabel(fNrString, fNrString + "_type"));
+			const DataModel::LocoFunctionType type = locoFunctions[nr].type;
+			const DataModel::LocoFunctionIcon icon = locoFunctions[nr].icon;
+			const DataModel::LocoFunctionTimer timer = locoFunctions[nr].timer;
+			fDiv.AddChildTag(HtmlTagSelect(fNrString + "_type", functionTypes, type).AddAttribute("onclick", "onChangeLocoFunctionType(" + nrString + ");return false;"));
+			HtmlTagSelect selectIcon(fNrString + "_icon", functionIcons, icon);
+			HtmlTagInputInteger inputTimer(fNrString + "_timer", timer, 1, 255);
+			if (type == LocoFunctionTypeNone)
+			{
+				selectIcon.AddClass("hidden");
+			}
+			if (type != LocoFunctionTypeTimer)
+			{
+				inputTimer.AddClass("hidden");
+			}
+			inputTimer.AddClass("function_line_integer");
+
+			fDiv.AddChildTag(selectIcon);
+			fDiv.AddChildTag(inputTimer);
+			functionsContent.AddChildTag(fDiv);
+		}
+		formContent.AddChildTag(functionsContent);
 
 		HtmlTag slavesDiv("div");
 		slavesDiv.AddChildTag(HtmlTagInputHidden("slavecounter", to_string(slaves.size())));
@@ -1713,7 +1758,6 @@ namespace WebServer
 		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
-		const DataModel::LocoFunctionNr nrOfFunctions = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
 		const Length length = Utils::Utils::GetIntegerMapEntry(arguments, "length", 0);
 		const bool pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", false);
 		const Speed maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
@@ -1732,6 +1776,34 @@ namespace WebServer
 		{
 			creepingSpeed = reducedSpeed;
 		}
+
+		vector<DataModel::LocoFunctionEntry> locoFunctions;
+		DataModel::LocoFunctionEntry locoFunctionEntry;
+		for (DataModel::LocoFunctionNr nr = 0; nr < DataModel::MaxLocoFunctions; ++nr)
+		{
+			string nrString = "f" + to_string(nr) + "_";
+			locoFunctionEntry.nr = nr;
+			locoFunctionEntry.type = static_cast<DataModel::LocoFunctionType>(Utils::Utils::GetIntegerMapEntry(arguments, nrString + "type", DataModel::LocoFunctionTypeNone));
+			if (locoFunctionEntry.type == DataModel::LocoFunctionTypeNone)
+			{
+				continue;
+			}
+			locoFunctionEntry.icon = static_cast<DataModel::LocoFunctionIcon>(Utils::Utils::GetIntegerMapEntry(arguments, nrString + "icon", DataModel::LocoFunctionIconNone));
+			if (locoFunctionEntry.type == DataModel::LocoFunctionTypeTimer)
+			{
+				locoFunctionEntry.timer = Utils::Utils::GetIntegerMapEntry(arguments, nrString + "timer", 1);
+				if (locoFunctionEntry.timer == 0)
+				{
+					locoFunctionEntry.timer = 1;
+				}
+			}
+			else
+			{
+				locoFunctionEntry.timer = 0;
+			}
+			locoFunctions.push_back(locoFunctionEntry);
+		}
+
 		vector<Relation*> slaves;
 		unsigned int slaveCount = Utils::Utils::GetIntegerMapEntry(arguments, "slavecounter", 0);
 		for (unsigned int index = 1; index <= slaveCount; ++index)
@@ -1752,13 +1824,13 @@ namespace WebServer
 			controlId,
 			protocol,
 			address,
-			nrOfFunctions,
 			length,
 			pushpull,
 			maxSpeed,
 			travelSpeed,
 			reducedSpeed,
 			creepingSpeed,
+			locoFunctions,
 			slaves,
 			result))
 		{
@@ -4023,12 +4095,12 @@ namespace WebServer
 		container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><polyline points=\"3,14 20,14 20,3 36,19 20,35 20,23 3,23\" stroke=\"black\" stroke-width=\"1\" g></svg>", id, loco->GetOrientation(), buttonArguments).AddClass("button_orientation"));
 
 		id = "locofunction_" + to_string(locoID);
-		DataModel::LocoFunctionNr nrOfFunctions = loco->GetNrOfFunctions();
-		for (DataModel::LocoFunctionNr nr = 0; nr <= nrOfFunctions; ++nr)
+		std::vector<DataModel::LocoFunctionEntry> functions = loco->GetFunctionStates();
+		for (DataModel::LocoFunctionEntry& function : functions)
 		{
-			string nrText(to_string(nr));
+			string nrText(to_string(function.nr));
 			buttonArguments["function"] = nrText;
-			container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><text x=\"8\" y=\"24\" fill=\"black\" font-size=\"11\">f" + nrText + "</text>f", id + "_" + nrText, loco->GetFunctionState(nr), buttonArguments));
+			container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><text x=\"8\" y=\"24\" fill=\"black\" font-size=\"11\">f" + nrText + "</text></svg>", id + "_" + nrText, function.state, buttonArguments));
 		}
 		buttonArguments.erase("function");
 		ReplyHtmlWithHeaderAndParagraph(container);

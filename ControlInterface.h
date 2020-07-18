@@ -104,13 +104,13 @@ class ControlInterface
 		virtual void LocoSpeedOrientationFunctions(const DataModel::Loco* loco,
 			const Speed speed,
 			const Orientation orientation,
-			std::vector<DataModel::LocoFunctionState>& functions)
+			std::vector<DataModel::LocoFunctionEntry>& functions)
 		{
 			LocoSpeed(ControlTypeInternal, loco, speed);
 			LocoOrientation(ControlTypeInternal, loco, orientation);
-			for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
+			for (const DataModel::LocoFunctionEntry& functionEntry : functions)
 			{
-				LocoFunction(ControlTypeInternal, loco, functionNr, functions[functionNr]);
+				LocoFunction(ControlTypeInternal, loco, functionEntry.nr, functionEntry.state);
 			}
 		}
 

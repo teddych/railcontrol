@@ -28,7 +28,9 @@ namespace DataModel
 {
 	typedef uint8_t LocoFunctionNr;
 
-	enum LocoFunctionState : unsigned char
+	static const LocoFunctionNr MaxLocoFunctions = 32;
+
+	enum LocoFunctionState : uint8_t
 	{
 		LocoFunctionStateOff = 0,
 		LocoFunctionStateOn
@@ -38,7 +40,7 @@ namespace DataModel
 	{
 		LocoFunctionTypeNone = 0,
 		LocoFunctionTypePermanent = 1,
-		LocoFunctionTypeOnce = 2,
+		LocoFunctionTypeMoment = 2,
 		LocoFunctionTypeFlashing = 3,
 		LocoFunctionTypeTimer = 4
 	};
@@ -156,12 +158,14 @@ namespace DataModel
 		public:
 			LocoFunctionEntry()
 			{
+				nr = 0;
 				state = LocoFunctionStateOff;
 				type = LocoFunctionTypeNone;
 				icon = LocoFunctionIconNone;
 				timer = 0;
 			}
 
+			LocoFunctionNr nr;
 			LocoFunctionState state;
 			LocoFunctionType type;
 			LocoFunctionIcon icon;
@@ -171,13 +175,10 @@ namespace DataModel
 	class LocoFunctions : private Serializable
 	{
 		public:
-			inline LocoFunctions()
-			:	count(1)
-			{
-			}
+			LocoFunctions();
 
 			inline LocoFunctions(const std::string& serialized)
-			: LocoFunctions()
+			:	LocoFunctions()
 			{
 				Deserialize(serialized);
 			}
@@ -197,79 +198,44 @@ namespace DataModel
 				{
 					return LocoFunctionStateOff;
 				}
-				LocoFunctionState out = entries[nr].state;
+				return entries[nr].state;
+			}
+
+			inline std::vector<LocoFunctionEntry> GetFunctionStates() const
+			{
+				std::vector<LocoFunctionEntry> out;
+				for (LocoFunctionNr i = 0; i < MaxCount; ++i)
+				{
+					if (entries[i].type == LocoFunctionTypeNone)
+					{
+						continue;
+					}
+					out.push_back(entries[i]);
+				}
 				return out;
 			}
 
-			inline std::vector<LocoFunctionState> GetFunctionStates() const
+			inline const LocoFunctionEntry* GetFunctions() const
 			{
-				std::vector<LocoFunctionState> out;
-				for (LocoFunctionNr i = 0; i < count; ++i)
-				{
-					out.push_back(entries[i].state);
-				}
-				return out;
+				return entries;
 			}
 
-			inline void SetNrOfFunctions(const LocoFunctionNr nr)
+			void ConfigureFunctions(const std::vector<LocoFunctionEntry>& newEntries)
 			{
-				// externally we count the functions additional to F0
-				// internally we count all the functions including F0
-				if (nr + 1 > count)
+				for (LocoFunctionNr nr = 0; nr < MaxCount; ++nr)
 				{
-					for (LocoFunctionNr i = count; i <= nr; ++i)
-					{
-						entries[nr].state = LocoFunctionStateOff;
-						entries[nr].type = LocoFunctionTypePermanent;
-						entries[nr].icon = LocoFunctionIconDefault;
-						entries[nr].timer = 0;
-					}
+					entries[nr].type = LocoFunctionTypeNone;
 				}
-				if (nr + 1 < count)
+				for (const LocoFunctionEntry& newEntry : newEntries)
 				{
-					for (LocoFunctionNr i = nr + 1; i <= count; ++i)
-					{
-						entries[nr].state = LocoFunctionStateOff;
-						entries[nr].type = LocoFunctionTypeNone;
-						entries[nr].icon = LocoFunctionIconNone;
-						entries[nr].timer = 0;
-					}
+					LocoFunctionNr nr = newEntry.nr;
+					entries[nr] = newEntry;
 				}
-				count = nr + 1;
-			}
-
-			inline LocoFunctionNr GetNrOfFunctions() const
-			{
-				return count - 1;
-			}
-
-			inline void ConfigureFunction(const LocoFunctionNr nr,
-				const LocoFunctionType type,
-				const LocoFunctionIcon icon,
-				const LocoFunctionTimer timer)
-			{
-				if (nr > MaxFunctions)
-				{
-					return;
-				}
-				if (count == (nr + 1) && type == LocoFunctionTypeNone)
-				{
-					--count;
-				}
-				else if (count == nr && type != LocoFunctionTypeNone)
-				{
-					++count;
-				}
-				entries[nr].type = type;
-				entries[nr].icon = icon;
-				entries[nr].timer = (type == LocoFunctionTypeTimer ? timer : 0);
 			}
 
 			std::string Serialize() const override;
 
 			bool Deserialize(const std::string& serialized) override;
-
-			static const LocoFunctionNr MaxFunctions = 32;
 
 		private:
 			bool DeserializeNew(__attribute__((unused)) const std::string& serialized);
@@ -277,8 +243,7 @@ namespace DataModel
 			// FIXME: remove later
 			bool DeserializeOld(const std::string& serialized);
 
-			static const LocoFunctionNr MaxCount = MaxFunctions + 1; // f0 - f32 = 33
-			LocoFunctionNr count;
+			static const LocoFunctionNr MaxCount = MaxLocoFunctions + 1; // f0 - f32 = 33
 			LocoFunctionEntry entries[MaxCount];
 	};
 } // namespace DataModel

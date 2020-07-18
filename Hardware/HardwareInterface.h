@@ -85,16 +85,16 @@ namespace Hardware
 				const Address address,
 				const Speed speed,
 				const Orientation orientation,
-				std::vector<DataModel::LocoFunctionState>& functions)
+				std::vector<DataModel::LocoFunctionEntry>& functions)
 			{
 				// sleeps are necessary to prevent command overflow in command stations (especially Märklin Gleisbox)
 				LocoSpeed(protocol, address, speed);
 				Utils::Utils::SleepForMilliseconds(25);
 				LocoOrientation(protocol, address, orientation);
 				Utils::Utils::SleepForMilliseconds(25);
-				for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
+				for (const DataModel::LocoFunctionEntry& functionEntry : functions)
 				{
-					LocoFunction(protocol, address, functionNr, functions[functionNr]);
+					LocoFunction(protocol, address, functionEntry.nr, functionEntry.state);
 					Utils::Utils::SleepForMilliseconds(25);
 				}
 			}

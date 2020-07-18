@@ -212,7 +212,7 @@ namespace Hardware
 		const Address address,
 		const Speed speed,
 		const Orientation orientation,
-		std::vector<DataModel::LocoFunctionState>& functions)
+		std::vector<DataModel::LocoFunctionEntry>& functions)
 	{
 		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
 		{
@@ -222,9 +222,9 @@ namespace Hardware
 		cache.SetSpeed(address, speed);
 		cache.SetOrientation(address, orientation);
 		unsigned char nrFunctions = functions.size();
-		for (unsigned char functionNr = 0; functionNr < nrFunctions; ++functionNr)
+		for (const DataModel::LocoFunctionEntry& function : functions)
 		{
-			cache.SetFunction(address, functionNr, functions[functionNr]);
+			cache.SetFunction(address, function.nr, function.state);
 		}
 		SendXLok(address);
 		if (nrFunctions > 1)

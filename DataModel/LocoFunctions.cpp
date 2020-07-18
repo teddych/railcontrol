@@ -26,6 +26,17 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace DataModel
 {
+	LocoFunctions::LocoFunctions()
+	{
+		for (LocoFunctionNr nr = 0; nr < MaxCount; ++nr)
+		{
+			entries[nr].nr = nr;
+			entries[nr].type = LocoFunctionTypeNone;
+			entries[nr].icon = LocoFunctionIconNone;
+			entries[nr].timer = 0;
+		}
+	}
+
 	std::string LocoFunctions::Serialize() const
 	{
 		std::string out;
@@ -50,7 +61,7 @@ namespace DataModel
 
 	bool LocoFunctions::Deserialize(const std::string& serialized)
 	{
-		count = serialized.size();
+		size_t count = serialized.size();
 		if (count == 0 || serialized[0] == 'f')
 		{
 			DeserializeNew(serialized);
@@ -62,7 +73,6 @@ namespace DataModel
 
 	bool LocoFunctions::DeserializeNew(__attribute__((unused))  const std::string& serialized)
 	{
-		count = 1;
 		std::deque<std::string> functionsSerialized;
 		Utils::Utils::SplitString(serialized, "f", functionsSerialized);
 		for (std::string& functionSerialized : functionsSerialized)
@@ -79,10 +89,6 @@ namespace DataModel
 				continue;
 			}
 			LocoFunctionNr nr = Utils::Utils::StringToInteger(functionTexts.front());
-			if (nr >= count)
-			{
-				count = nr + 1;
-			}
 			functionTexts.pop_front();
 			entries[nr].state = static_cast<LocoFunctionState>(Utils::Utils::StringToInteger(functionTexts.front(), LocoFunctionStateOff));
 			functionTexts.pop_front();
@@ -104,6 +110,7 @@ namespace DataModel
 	// FIXME: remove later
 	bool LocoFunctions::DeserializeOld(const std::string& serialized)
 	{
+		size_t count = serialized.size();
 		if (count > MaxCount)
 		{
 			count = MaxCount;

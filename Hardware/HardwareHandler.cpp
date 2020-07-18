@@ -315,7 +315,7 @@ namespace Hardware
 	void HardwareHandler::LocoSpeedOrientationFunctions(const DataModel::Loco* loco,
 		const Speed speed,
 		const Orientation orientation,
-			std::vector<DataModel::LocoFunctionState>& functions)
+		std::vector<DataModel::LocoFunctionEntry>& functions)
 	{
 		if (instance == nullptr || loco->GetControlID() != GetControlID())
 		{

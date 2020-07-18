@@ -73,7 +73,7 @@ namespace Hardware
 				const Address address,
 				const Speed speed,
 				const Orientation orientation,
-				std::vector<DataModel::LocoFunctionState>& functions) override;
+				std::vector<DataModel::LocoFunctionEntry>& functions) override;
 
 			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 

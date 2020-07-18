@@ -1,3 +1,40 @@
+function onChangeLocoFunctionType(nr)
+{
+	var locoFunctionType = document.getElementById('s_f' + nr + '_type');
+	if (!locoFunctionType)
+	{
+		return false;
+	}
+	var locoFunctionIcon = document.getElementById('s_f' + nr + '_icon');
+	if (!locoFunctionIcon)
+	{
+		return false;
+	}
+	var locoFunctionTimer = document.getElementById('d_f' + nr + '_timer');
+	if (!locoFunctionTimer)
+	{
+		return false;
+	}
+	var type = locoFunctionType.value;
+	if (type == 0) // LocoFunctionTypeNone
+	{
+		locoFunctionIcon.classList.add('hidden');
+	}
+	else
+	{
+		locoFunctionIcon.classList.remove('hidden');
+	}
+	if (type == 4) // LocoFunctionTypeTimer
+	{
+		locoFunctionTimer.classList.remove('hidden');
+	}
+	else
+	{
+		locoFunctionTimer.classList.add('hidden');
+	}
+	return false;
+}
+
 function onClickProgramRead(cv)
 {
 	var controlElement = document.getElementById('s_controlraw');

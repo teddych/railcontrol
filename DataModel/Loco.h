@@ -72,7 +72,6 @@ namespace DataModel
 				wait(0)
 			{
 				logger = Logger::Logger::GetLogger(GetName());
-				SetNrOfFunctions(0);
 			}
 
 			Loco(Manager* manager, const std::string& serialized)
@@ -139,19 +138,19 @@ namespace DataModel
 				return functions.GetFunctionState(nr);
 			}
 
-			inline std::vector<DataModel::LocoFunctionState> GetFunctions() const
+			inline std::vector<DataModel::LocoFunctionEntry> GetFunctionStates() const
 			{
 				return functions.GetFunctionStates();
 			}
 
-			inline void SetNrOfFunctions(const DataModel::LocoFunctionNr nr)
+			inline const DataModel::LocoFunctionEntry* GetFunctions() const
 			{
-				functions.SetNrOfFunctions(nr);
+				return functions.GetFunctions();
 			}
 
-			inline DataModel::LocoFunctionNr GetNrOfFunctions() const
+			inline void ConfigureFunctions(const std::vector<LocoFunctionEntry>& newEntries)
 			{
-				return functions.GetNrOfFunctions();
+				functions.ConfigureFunctions(newEntries);
 			}
 
 			void SetOrientation(const Orientation orientation);

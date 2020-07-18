@@ -295,7 +295,7 @@ void Manager::InitLocos()
 		std::lock_guard<std::mutex> guard(controlMutex);
 		for (auto control : controls)
 		{
-			std::vector<DataModel::LocoFunctionState> functions = loco.second->GetFunctions();
+			std::vector<DataModel::LocoFunctionEntry> functions = loco.second->GetFunctionStates();
 			control.second->LocoSpeedOrientationFunctions(loco.second, loco.second->GetSpeed(), loco.second->GetOrientation(), functions);
 		}
 	}
@@ -691,13 +691,13 @@ bool Manager::LocoSave(const LocoID locoID,
 	const ControlID controlID,
 	const Protocol protocol,
 	const Address address,
-	const DataModel::LocoFunctionNr nrOfFunctions,
 	const Length length,
 	const bool pushpull,
 	const Speed maxSpeed,
 	const Speed travelSpeed,
 	const Speed reducedSpeed,
 	const Speed creepingSpeed,
+	const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
 	const std::vector<DataModel::Relation*>& slaves,
 	string& result)
 {
@@ -722,13 +722,13 @@ bool Manager::LocoSave(const LocoID locoID,
 	loco->SetControlID(controlID);
 	loco->SetProtocol(protocol);
 	loco->SetAddress(address);
-	loco->SetNrOfFunctions(nrOfFunctions);
 	loco->SetLength(length);
 	loco->SetPushpull(pushpull);
 	loco->SetMaxSpeed(maxSpeed);
 	loco->SetTravelSpeed(travelSpeed);
 	loco->SetReducedSpeed(reducedSpeed);
 	loco->SetCreepingSpeed(creepingSpeed);
+	loco->ConfigureFunctions(locoFunctions);
 	loco->AssignSlaves(slaves);
 
 	// save in db

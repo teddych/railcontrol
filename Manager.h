@@ -91,16 +91,17 @@ class Manager
 			const ControlID controlID,
 			const Protocol protocol,
 			const Address address,
-			const DataModel::LocoFunctionNr nrOfFunctions,
 			const Length length,
 			const bool pushpull,
 			const Speed maxSpeed,
 			const Speed travelSpeed,
 			const Speed reducedSpeed,
 			const Speed creepingSpeed,
+			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
 			const std::vector<DataModel::Relation*>& slaves,
 			std::string& result
 		);
+
 		bool LocoDelete(const LocoID locoID);
 		bool LocoProtocolAddress(const LocoID locoID, ControlID& controlID, Protocol& protocol, Address& address) const;
 		void LocoSpeed(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Speed speed);

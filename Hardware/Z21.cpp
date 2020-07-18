@@ -263,7 +263,7 @@ namespace Hardware
 		const Address address,
 		const Speed speed,
 		const Orientation orientation,
-		std::vector<DataModel::LocoFunctionState>& functions)
+		std::vector<DataModel::LocoFunctionEntry>& functions)
 	{
 		if (!LocoProtocolSupported(protocol))
 		{
@@ -271,9 +271,9 @@ namespace Hardware
 		}
 		locoCache.SetSpeedOrientationProtocol(address, speed, orientation, protocol);
 		LocoSpeedOrientation(protocol, address, speed, orientation);
-		for (size_t functionNr = 0; functionNr < functions.size(); ++functionNr)
+		for (const DataModel::LocoFunctionEntry& function : functions)
 		{
-			LocoFunction(protocol, address, functionNr, functions[functionNr]);
+			LocoFunction(protocol, address, function.nr, function.state);
 		}
 	}
 
