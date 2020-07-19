@@ -241,6 +241,7 @@ class Languages
 			TextLocoEventDetected,
 			TextLocoFunctionIconDefault,
 			TextLocoFunctionIconInertia,
+			TextLocoFunctionIconLight,
 			TextLocoFunctionIconShuntingMode,
 			TextLocoFunctionIsOff,
 			TextLocoFunctionIsOn,

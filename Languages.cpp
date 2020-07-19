@@ -241,6 +241,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLocoEventDetected */ { "Locomotive event detected (ignored)", "Lokomotivevent erkannt (wird ignoriert)", "Evento de locomotora detectado (ignorando)" },
 /* TextLocoFunctionIconDefault */ { "Default", "Standard", "Estándar" },
 /* TextLocoFunctionIconInertia */ { "Inertia", "Trägheit", "Inercia" },
+/* TextLocoFunctionIconLight */ { "Light", "Licht", "Luz" },
 /* TextLocoFunctionIconShuntingMode */ { "Shunting Mode", "Rangiergang", "Modo de maniobras" },
 /* TextLocoFunctionIsOff */ { "F{1} of {0} is now off", "F{1} von {0} ist aus", "F{1} de {0} está apagado" },
 /* TextLocoFunctionIsOn */ { "F{1} of {0} is now on", "F{1} von {0} ist an", "F{1} de {0} está encendido" },
