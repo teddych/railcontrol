@@ -41,6 +41,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagAccessory.h"
 #include "WebServer/HtmlTagButtonCancel.h"
 #include "WebServer/HtmlTagButtonCommand.h"
+#include "WebServer/HtmlTagButtonCommandPressRelease.h"
 #include "WebServer/HtmlTagButtonCommandToggle.h"
 #include "WebServer/HtmlTagButtonCommandWide.h"
 #include "WebServer/HtmlTagButtonOK.h"
@@ -1670,8 +1671,8 @@ namespace WebServer
 		functionTypes[DataModel::LocoFunctionTypeNone] = Languages::TextLocoFunctionTypeNone;
 		functionTypes[DataModel::LocoFunctionTypePermanent] = Languages::TextLocoFunctionTypePermanent;
 		functionTypes[DataModel::LocoFunctionTypeMoment] = Languages::TextLocoFunctionTypeMoment;
-		functionTypes[DataModel::LocoFunctionTypeFlashing] = Languages::TextLocoFunctionTypeFlashing;
-		functionTypes[DataModel::LocoFunctionTypeTimer] = Languages::TextLocoFunctionTypeTimer;
+//		functionTypes[DataModel::LocoFunctionTypeFlashing] = Languages::TextLocoFunctionTypeFlashing;
+//		functionTypes[DataModel::LocoFunctionTypeTimer] = Languages::TextLocoFunctionTypeTimer;
 
 		map<DataModel::LocoFunctionIcon,Languages::TextSelector> functionIcons;
 		functionIcons[DataModel::LocoFunctionIconDefault] = Languages::TextLocoFunctionIconDefault;
@@ -4105,7 +4106,16 @@ namespace WebServer
 		{
 			string nrText(to_string(function.nr));
 			buttonArguments["function"] = nrText;
-			container.AddChildTag(HtmlTagButtonCommandToggle(DataModel::LocoFunctions::GetLocoFunctionIcon(function.nr, function.icon), id + "_" + nrText, function.state, buttonArguments));
+			switch(function.type)
+			{
+				case DataModel::LocoFunctionTypeMoment:
+					container.AddChildTag(HtmlTagButtonCommandPressRelease(DataModel::LocoFunctions::GetLocoFunctionIcon(function.nr, function.icon), id + "_" + nrText, buttonArguments));
+					break;
+
+				default:
+					container.AddChildTag(HtmlTagButtonCommandToggle(DataModel::LocoFunctions::GetLocoFunctionIcon(function.nr, function.icon), id + "_" + nrText, function.state, buttonArguments));
+					break;
+			}
 		}
 		buttonArguments.erase("function");
 		ReplyHtmlWithHeaderAndParagraph(container);

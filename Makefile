@@ -53,6 +53,7 @@ OBJ= \
 	WebServer/HtmlTagButton.o \
 	WebServer/HtmlTagButtonCancel.o \
 	WebServer/HtmlTagButtonCommand.o \
+	WebServer/HtmlTagButtonCommandPressRelease.o \
 	WebServer/HtmlTagButtonCommandToggle.o \
 	WebServer/HtmlTagButtonOK.o \
 	WebServer/HtmlTagButtonPopup.o \
