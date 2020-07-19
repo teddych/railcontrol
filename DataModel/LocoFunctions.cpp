@@ -182,6 +182,28 @@ namespace DataModel
 					"<polyline points=\"26,18 31,18\" stroke=\"black\" stroke-width=\"1\" class=\"button_on\"/>"
 					"<polyline points=\"24.9,22 29.3,24.5\" stroke=\"black\" stroke-width=\"1\" class=\"button_on\"/>"
 					"</svg>";
+
+			case LocoFunctionIconHeadlightLowBeamForward:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"16,30 12,30 9.9,29.8 7.9,29.3 6,28.4 4.3,27.2 2.8,25.7 1.6,24 0.7,22.1 0.2,20.1 0,18 0.2,15.9 0.7,13.9 1.6,12 2.8,10.3 4.3,8.8 6,7.6 7.9,6.7 9.9,6.2 12,6 16,6\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"17,30 17,6 19,6 19,30\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"21,8 35,14\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"<polyline points=\"21,13 35,19\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"<polyline points=\"21,18 35,24\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"<polyline points=\"21,23 35,29\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"<polyline points=\"21,28 35,34\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"</svg>";
+
+			case LocoFunctionIconHeadlightHighBeamForward:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"16,30 12,30 9.9,29.8 7.9,29.3 6,28.4 4.3,27.2 2.8,25.7 1.6,24 0.7,22.1 0.2,20.1 0,18 0.2,15.9 0.7,13.9 1.6,12 2.8,10.3 4.3,8.8 6,7.6 7.9,6.7 9.9,6.2 12,6 16,6\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"17,30 17,6 19,6 19,30\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"21,8 35,8\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"<polyline points=\"21,13 35,13\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"<polyline points=\"21,18 35,18\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"<polyline points=\"21,23 35,23\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"<polyline points=\"21,28 35,28\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
+					"</svg>";
 		}
 	}
 } // namespace DataModel

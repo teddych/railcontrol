@@ -196,7 +196,7 @@ namespace Hardware
 				LocoFunctionCs2IconLight,
 				LocoFunctionCs2IconInteriorLight1,
 				LocoFunctionCs2IconBackLightForward,
-				LocoFunctionCs2IconHeadlightHighBeam,
+				LocoFunctionCs2IconHeadlightHighBeamForward,
 				LocoFunctionCs2IconSoundGeneral,
 				LocoFunctionCs2IconPanto12,
 				LocoFunctionCs2IconSmokeGenerator,

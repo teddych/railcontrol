@@ -57,8 +57,10 @@ namespace DataModel
 		LocoFunctionIconInertia,
 		// light functions
 		LocoFunctionIconLight = 32,
-		LocoFunctionIconHeadlightLowBeam,
-		LocoFunctionIconHeadlightHighBeam,
+		LocoFunctionIconHeadlightLowBeamForward,
+		LocoFunctionIconHeadlightLowBeamReverse,
+		LocoFunctionIconHeadlightHighBeamForward,
+		LocoFunctionIconHeadlightHighBeamReverse,
 		LocoFunctionIconHeadlightForward,
 		LocoFunctionIconHeadlightReverse,
 		LocoFunctionIconBackLightForward,
