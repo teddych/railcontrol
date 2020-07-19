@@ -4100,7 +4100,7 @@ namespace WebServer
 		{
 			string nrText(to_string(function.nr));
 			buttonArguments["function"] = nrText;
-			container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\"><text x=\"8\" y=\"24\" fill=\"black\" font-size=\"11\">f" + nrText + "</text></svg>", id + "_" + nrText, function.state, buttonArguments));
+			container.AddChildTag(HtmlTagButtonCommandToggle(DataModel::LocoFunctions::GetLocoFunctionIcon(function.nr, function.icon), id + "_" + nrText, function.state, buttonArguments));
 		}
 		buttonArguments.erase("function");
 		ReplyHtmlWithHeaderAndParagraph(container);

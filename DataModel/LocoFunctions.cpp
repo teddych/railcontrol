@@ -131,9 +131,8 @@ namespace DataModel
 					entries[nr].state = LocoFunctionStateOn;
 					break;
 
-				case '0':
-					default:
-						entries[nr].state = LocoFunctionStateOff;
+				default:
+					entries[nr].state = LocoFunctionStateOff;
 					break;
 			}
 			entries[nr].type = LocoFunctionTypePermanent;
@@ -141,5 +140,20 @@ namespace DataModel
 			entries[nr].timer = 0;
 		}
 		return true;
+	}
+
+	std::string LocoFunctions::GetLocoFunctionIcon(const LocoFunctionNr nr, const LocoFunctionIcon icon)
+	{
+		switch (icon)
+		{
+			case LocoFunctionIconNone:
+				return "<svg width=\"36\" height=\"36\" />";
+
+			default:
+				return "<svg width=\"36\" height=\"36\"><text x=\"8\" y=\"24\" fill=\"black\" font-size=\"12\">F" + std::to_string(nr) + "</text></svg>";
+
+			case LocoFunctionIconShuntingMode:
+				return "<svg width=\"36\" height=\"36\"><polyline points=\"5,22 5.2,19.9 5.7,17.9 6.6,16 7.8,14.3 9.3,12.8 11,11.6 12.9,10.7 14.9,10.2 17,10 19.1,10.2 21.1,10.7 23,11.6 24.7,12.8 26.2,14.3 27.4,16 28.3,17.9 28.8,19.9 29,22\" stroke=\"black\"     stroke-width=\"0\" fill=\"black\"/><circle r=\"3\" cx=\"11\" cy=\"22\" fill=\"black\" /><circle r=\"3\" cx=\"23\" cy=\"22\" fill=\"black\" /><circle r=\"3\" cx=\"29\" cy=\"18\" fill=\"black\" /></svg>";
+		}
 	}
 } // namespace DataModel

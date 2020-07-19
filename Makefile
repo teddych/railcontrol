@@ -22,6 +22,7 @@ OBJ= \
 	DataModel/LayoutItem.o \
 	DataModel/LockableItem.o \
 	DataModel/Loco.o \
+	DataModel/LocoFunctions.o \
 	DataModel/Object.o \
 	DataModel/Relation.o \
 	DataModel/Route.o \

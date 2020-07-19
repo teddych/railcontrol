@@ -31,6 +31,7 @@ OBJZLIB=zlib/adler32.o \
 	zlib/uncompr.o \
 	zlib/zutil.o \
 	ZLib.o
+
 all: $(LIBS)
 
 zlib: $(OBJZLIB)

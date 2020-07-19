@@ -237,6 +237,8 @@ namespace DataModel
 
 			bool Deserialize(const std::string& serialized) override;
 
+			static std::string GetLocoFunctionIcon(const LocoFunctionNr nr, const LocoFunctionIcon icon);
+
 		private:
 			bool DeserializeNew(__attribute__((unused)) const std::string& serialized);
 
