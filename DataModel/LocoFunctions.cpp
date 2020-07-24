@@ -220,6 +220,15 @@ namespace DataModel
 					"<polyline points=\"1,20.5 15,20.5\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
 					"<polyline points=\"1,25.5 15,25.5\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
 					"</svg>";
+
+			case LocoFunctionIconSoundGeneral:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"8,15 10,15 10,21 8,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"11,15 18,8 18,28 11,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"30.3,7.7 31.9,10 33,12.5 33.8,15.2 34,18 33.8,20.8 33,23.5 31.9,26 30.3,28.3\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on\"/>"
+					"<polyline points=\"27.2,10.3 28.4,12 29.3,13.9 29.8,15.9 30,18 29.8,20.1 29.3,22.1 28.4,24 27.2,25.7\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on\"/>"
+					"<polyline points=\"24.1,12.9 24.9,14 25.5,15.3 25.9,16.6 26,18 25.9,19.4 25.5,20.7 24.9,22 24.1,23.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on\"/>"
+					"</svg>";
 		}
 	}
 } // namespace DataModel

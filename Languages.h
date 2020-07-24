@@ -247,6 +247,7 @@ class Languages
 			TextLocoFunctionIconInertia,
 			TextLocoFunctionIconLight,
 			TextLocoFunctionIconShuntingMode,
+			TextLocoFunctionIconSoundGeneral,
 			TextLocoFunctionIsOff,
 			TextLocoFunctionIsOn,
 			TextLocoFunctionTypeFlashing,

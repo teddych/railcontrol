@@ -61,8 +61,6 @@ namespace DataModel
 		LocoFunctionIconHeadlightLowBeamReverse,
 		LocoFunctionIconHeadlightHighBeamForward,
 		LocoFunctionIconHeadlightHighBeamReverse,
-		LocoFunctionIconHeadlightForward,
-		LocoFunctionIconHeadlightReverse,
 		LocoFunctionIconBackLightForward,
 		LocoFunctionIconBackLightReverse,
 		LocoFunctionIconBlinkingLight,
