@@ -71,7 +71,7 @@ namespace Hardware
 			Ping();
 			Wait(10);
 		}
-		if (hasCs2Master)
+		if (run && hasCs2Master)
 		{
 			RequestLoks();
 		}
