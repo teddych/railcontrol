@@ -221,6 +221,28 @@ namespace DataModel
 					"<polyline points=\"1,25.5 15,25.5\" stroke=\"black\" stroke-width=\"2\" fill=\"black\" class=\"button_on\"/>"
 					"</svg>";
 
+			case LocoFunctionIconBacklightForward:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"18,23 17.1,22.9 16.3,22.7 15.5,22.3 14.8,21.8 14.2,21.2 13.7,20.5 13.3,19.7 13.1,18.9 13,18 13.1,17.1 13.3,16.3 13.7,15.5 14.2,14.8 14.8,14.2 15.5,13.7 16.3,13.3 17.1,13.1 18,13\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"19,10 22,10 22,26 19,26\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"14,24.9 11.5,29.3\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
+					"<polyline points=\"11.1,22 6.7,24.5\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
+					"<polyline points=\"10,18 5,18\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
+					"<polyline points=\"11.1,14 6.7,11.5\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
+					"<polyline points=\"14,11.1 11.5,6.7\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
+					"</svg>";
+
+			case LocoFunctionIconBacklightReverse:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"18,13 18.9,13.1 19.7,13.3 20.5,13.7 21.2,14.2 21.8,14.8 22.3,15.5 22.7,16.3 22.9,17.1 23,18 22.9,18.9 22.7,19.7 22.3,20.5 21.8,21.2 21.2,21.8 20.5,22.3 19.7,22.7 18.9,22.9 18,23\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"14,10 17,10 17,26 14,26\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"22.5,10.2 25.5,5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"25.8,13.5 31,10.5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"27,18 33,18\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"25.8,22.5 31,25.5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"18,27 25.5,31\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"</svg>";
+
 			case LocoFunctionIconSoundGeneral:
 				return "<svg width=\"36\" height=\"36\">"
 					"<polyline points=\"8,15 10,15 10,21 8,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"

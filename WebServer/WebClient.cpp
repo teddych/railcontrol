@@ -1684,6 +1684,8 @@ namespace WebServer
 		functionIcons[DataModel::LocoFunctionIconHeadlightHighBeamForward] = Languages::TextLocoFunctionIconHeadlightHighBeamForward;
 		functionIcons[DataModel::LocoFunctionIconHeadlightHighBeamReverse] = Languages::TextLocoFunctionIconHeadlightHighBeamReverse;
 		functionIcons[DataModel::LocoFunctionIconSoundGeneral] = Languages::TextLocoFunctionIconSoundGeneral;
+		functionIcons[DataModel::LocoFunctionIconBacklightForward] = Languages::TextLocoFunctionIconBacklightForward;
+		functionIcons[DataModel::LocoFunctionIconBacklightReverse] = Languages::TextLocoFunctionIconBacklightReverse;
 //		functionIcons[DataModel::LocoFunctionIcon] = Languages::TextLocoFunctionIcon;
 		for (unsigned int nr = 0; nr < DataModel::MaxLocoFunctions; ++nr)
 		{

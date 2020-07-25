@@ -239,6 +239,8 @@ class Languages
 			TextLocoDirectionOfTravelIsRight,
 			TextLocoDoesNotExist,
 			TextLocoEventDetected,
+			TextLocoFunctionIconBacklightForward,
+			TextLocoFunctionIconBacklightReverse,
 			TextLocoFunctionIconDefault,
 			TextLocoFunctionIconHeadlightHighBeamForward,
 			TextLocoFunctionIconHeadlightHighBeamReverse,

@@ -239,6 +239,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLocoDirectionOfTravelIsRight */ { "Direction of travel  of {0} is now right", "Die Fahrtrichtung von {0} ist rechts", "La dirección de viaje de {0} está derecha" },
 /* TextLocoDoesNotExist */ { "Locomotive does not exist", "Lokomotive existiert nicht", "Locomotora no existe" },
 /* TextLocoEventDetected */ { "Locomotive event detected (ignored)", "Lokomotivevent erkannt (wird ignoriert)", "Evento de locomotora detectado (ignorando)" },
+/* TextLocoFunctionIconBacklightForward */ { "Backlight", "Rücklicht", "x" },
+/* TextLocoFunctionIconBacklightReverse */ { "Backlight reverse", "Rücklicht vorn", "x" },
 /* TextLocoFunctionIconDefault */ { "Default", "Standard", "Estándar" },
 /* TextLocoFunctionIconHeadlightHighBeamForward */ { "Headlight high beam", "Scheinwerfer", "Faros" },
 /* TextLocoFunctionIconHeadlightHighBeamReverse */ { "Headlight high beam reverse", "Scheinwerfer hinten", "Faros traseros" },
