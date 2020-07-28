@@ -242,6 +242,7 @@ class Languages
 			TextLocoEventDetected,
 			TextLocoFunctionIconBacklightForward,
 			TextLocoFunctionIconBacklightReverse,
+			TextLocoFunctionIconBlinkingLight,
 			TextLocoFunctionIconDefault,
 			TextLocoFunctionIconHeadlightHighBeamForward,
 			TextLocoFunctionIconHeadlightHighBeamReverse,

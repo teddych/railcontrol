@@ -521,9 +521,14 @@ button:active {
 	animation-name: sound3;
 }
 
+.blinking {
+	animation-name: blinking;
+}
+
 .sound1,
 .sound2,
-.sound3 {
+.sound3,
+.blinking {
 	animation-duration: 1s;
 	animation-iteration-count: infinite;
 }
@@ -551,4 +556,11 @@ button:active {
 	60% { opacity: 1; }
 	80% { opacity: 1; }
 	100% { opacity: 0.5; }
+}
+
+@keyframes blinking {
+	0% { opacity: 1; }
+	40% { opacity: 1; }
+	60% { opacity: 0.3; }
+	100% { opacity: 0.3; }
 }
