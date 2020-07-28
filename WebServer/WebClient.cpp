@@ -1618,7 +1618,7 @@ namespace WebServer
 		Speed travelSpeed = DefaultTravelSpeed;
 		Speed reducedSpeed = DefaultReducedSpeed;
 		Speed creepingSpeed = DefaultCreepingSpeed;
-		const LocoFunctionEntry* locoFunctions;
+		const LocoFunctionEntry* locoFunctions = nullptr;
 		vector<Relation*> slaves;
 
 		if (locoID > LocoNone)
@@ -1694,9 +1694,21 @@ namespace WebServer
 			string nrString = to_string(nr);
 			string fNrString = "f" + nrString;
 			fDiv.AddChildTag(HtmlTagLabel(fNrString, fNrString + "_type"));
-			const DataModel::LocoFunctionType type = locoFunctions[nr].type;
-			const DataModel::LocoFunctionIcon icon = locoFunctions[nr].icon;
-			const DataModel::LocoFunctionTimer timer = locoFunctions[nr].timer;
+			DataModel::LocoFunctionType type;
+			DataModel::LocoFunctionIcon icon;
+			DataModel::LocoFunctionTimer timer;
+			if (locoFunctions != nullptr)
+			{
+				type = locoFunctions[nr].type;
+				icon = locoFunctions[nr].icon;
+				timer = locoFunctions[nr].timer;
+			}
+			else
+			{
+				type = DataModel::LocoFunctionTypeNone;
+				icon = DataModel::LocoFunctionIconNone;
+				timer = 0;
+			}
 			fDiv.AddChildTag(HtmlTagSelect(fNrString + "_type", functionTypes, type).AddAttribute("onclick", "onChangeLocoFunctionType(" + nrString + ");return false;"));
 			HtmlTagSelect selectIcon(fNrString + "_icon", functionIcons, icon);
 			HtmlTagInputInteger inputTimer(fNrString + "_timer", timer, 1, 255);
