@@ -70,7 +70,7 @@ body {
 		width: calc(100% - 2px);
 	}
 
-	@media (max-height: 909px) {
+	@media (max-height: 780px) {
 		.loco {
 			height: calc(100% - 204px);
 		}
@@ -80,7 +80,7 @@ body {
 		}
 	}
 
-	@media (min-height: 910px) {
+	@media (min-height: 781px) {
 		.loco {
 			height: calc(100% - 456px);
 		}
@@ -108,7 +108,7 @@ body {
 		width: calc(100% - 254px);
 	}
 
-	@media (max-height: 799px) {
+	@media (max-height: 669px) {
 		.loco {
 			height: calc(100% - 92px);
 		}
@@ -118,7 +118,7 @@ body {
 		}
 	}
 
-	@media (min-height: 800px) {
+	@media (min-height: 670px) {
 		.loco {
 			height: calc(100% - 344px);
 		}
