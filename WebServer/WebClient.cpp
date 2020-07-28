@@ -2021,21 +2021,38 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagControl(const std::map<ControlID,string>& controls, const ControlID controlID, const string& objectType, const ObjectID objectID)
 	{
+		ControlID controlIdMutable = controlID;
+		if (controls.size() == 0)
+		{
+			return HtmlTagInputTextWithLabel("control", Languages::TextControl, Languages::GetText(Languages::TextConfigureControlFirst));
+		}
+		bool controlIdValid = false;
+		if (controlIdMutable != ControlIdNone)
+		{
+			for (auto control : controls)
+			{
+				if (control.first != controlIdMutable)
+				{
+					continue;
+				}
+				controlIdValid = true;
+				break;
+			}
+		}
+		if (!controlIdValid)
+		{
+			controlIdMutable = controls.begin()->first;
+		}
 		if (controls.size() == 1)
 		{
-			return HtmlTagInputHidden("control", to_string(controlID));
+			return HtmlTagInputHidden("control", to_string(controlIdMutable));
 		}
-		ControlID controlIDMutable = controlID;
 		std::map<string, string> controlOptions;
 		for(auto control : controls)
 		{
 			controlOptions[to_string(control.first)] = control.second;
-			if (controlIDMutable == ControlIdNone)
-			{
-				controlIDMutable = control.first;
-			}
 		}
-		return HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlIDMutable)).AddAttribute("onchange", "loadProtocol('" + objectType + "', " + to_string(objectID) + ")");
+		return HtmlTagSelectWithLabel("control", Languages::TextControl, controlOptions, to_string(controlIdMutable)).AddAttribute("onchange", "loadProtocol('" + objectType + "', " + to_string(objectID) + ")");
 	}
 
 	HtmlTag WebClient::HtmlTagControl(const string& name, const std::map<ControlID,string>& controls)

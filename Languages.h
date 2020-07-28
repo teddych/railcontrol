@@ -77,6 +77,7 @@ class Languages
 			TextCheckSumError,
 			TextClosingSQLite,
 			TextConfigFileReceivedWithSize,
+			TextConfigureControlFirst,
 			TextConnectionFailed,
 			TextConnectionRefused,
 			TextConnectionReset,
