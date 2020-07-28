@@ -249,6 +249,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLocoFunctionIconHeadlightLowBeamForward */ { "Headlight lwo beam", "Abblendlicht", "Luz de cruce" },
 /* TextLocoFunctionIconHeadlightLowBeamReverse */ { "Headlight lwo beam reverse", "Abblendlicht hinten", "Luz de cruce trasera" },
 /* TextLocoFunctionIconInertia */ { "Inertia", "Trägheit", "Inercia" },
+/* TextLocoFunctionIconInteriorLight1 */ { "Interior light 1", "Innenbeleuchtung 1", "Luz interior 1" },
+/* TextLocoFunctionIconInteriorLight2 */ { "Interior light 2", "Innenbeleuchtung 2", "Luz interior 2" },
 /* TextLocoFunctionIconLight */ { "Light", "Licht", "Luz" },
 /* TextLocoFunctionIconShuntingMode */ { "Shunting Mode", "Rangiergang", "Modo de maniobras" },
 /* TextLocoFunctionIconSoundGeneral */ { "Sound", "Sound", "Sonido" },

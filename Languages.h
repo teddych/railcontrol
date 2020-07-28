@@ -249,6 +249,8 @@ class Languages
 			TextLocoFunctionIconHeadlightLowBeamForward,
 			TextLocoFunctionIconHeadlightLowBeamReverse,
 			TextLocoFunctionIconInertia,
+			TextLocoFunctionIconInteriorLight1,
+			TextLocoFunctionIconInteriorLight2,
 			TextLocoFunctionIconLight,
 			TextLocoFunctionIconShuntingMode,
 			TextLocoFunctionIconSoundGeneral,
