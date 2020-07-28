@@ -225,11 +225,11 @@ namespace DataModel
 				return "<svg width=\"36\" height=\"36\">"
 					"<polyline points=\"18,23 17.1,22.9 16.3,22.7 15.5,22.3 14.8,21.8 14.2,21.2 13.7,20.5 13.3,19.7 13.1,18.9 13,18 13.1,17.1 13.3,16.3 13.7,15.5 14.2,14.8 14.8,14.2 15.5,13.7 16.3,13.3 17.1,13.1 18,13\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
 					"<polyline points=\"19,10 22,10 22,26 19,26\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
-					"<polyline points=\"14,24.9 11.5,29.3\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
-					"<polyline points=\"11.1,22 6.7,24.5\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
-					"<polyline points=\"10,18 5,18\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
-					"<polyline points=\"11.1,14 6.7,11.5\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
-					"<polyline points=\"14,11.1 11.5,6.7\" stroke=\"black\" stroke-width=\"1\" class=\"on\"/>"
+					"<polyline points=\"13.5,25.8 10.5,31\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"10.2,22 5,25.5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"9,18 3,18\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"10.2,13.5 5,10.5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"13.5,10.2 10.5,5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
 					"</svg>";
 
 			case LocoFunctionIconBacklightReverse:
@@ -240,7 +240,7 @@ namespace DataModel
 					"<polyline points=\"25.8,13.5 31,10.5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
 					"<polyline points=\"27,18 33,18\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
 					"<polyline points=\"25.8,22.5 31,25.5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
-					"<polyline points=\"18,27 25.5,31\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
+					"<polyline points=\"22.5,25.8 25.5,31\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
 					"</svg>";
 
 			case LocoFunctionIconSoundGeneral:
