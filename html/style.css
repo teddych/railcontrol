@@ -469,12 +469,12 @@ button:active {
 
 .contextentry {
 	cursor: pointer;
-	background: lightgrey;
+	background: lightgray;
 	padding: 5px;
 }
 
 .contextentry:hover {
-	background: darkgrey;
+	background: darkgray;
 }
 
 .tab_button {
@@ -484,7 +484,7 @@ button:active {
 	text-align: center;
 	text-decoration: none;
 	display: inline-block;
-	background-color: lightgrey;
+	background-color: lightgray;
 	height: 28px;
 	width: auto;
 	border-radius: 0px;
@@ -534,28 +534,29 @@ button:active {
 }
 
 @keyframes sound1 {
-	0% { opacity: 0.5; }
-	20% { opacity: 1; }
+	0% { opacity: 1; }
+	10% { opacity: 0.3; }
+	30% { opacity: 0.3; }
 	40% { opacity: 1; }
-	60% { opacity: 0.5; }
-	100% { opacity: 0.5; }
+	100% { opacity: 1; }
 }
 
 @keyframes sound2 {
-	0% { opacity: 0.5; }
-	20% { opacity: 0.5; }
-	40% { opacity: 1; }
+	0% { opacity: 1; }
+	20% { opacity: 1; }
+	30% { opacity: 0.3; }
+	50% { opacity: 0.3; }
 	60% { opacity: 1; }
-	80% { opacity: 0.5; }
-	100% { opacity: 0.5; }
+	100% { opacity: 1; }
 }
 
 @keyframes sound3 {
-	0% { opacity: 0.5; }
-	40% { opacity: 0.5; }
-	60% { opacity: 1; }
+	0% { opacity: 1; }
+	40% { opacity: 1; }
+	60% { opacity: 0.3; }
+	70% { opacity: 0.3; }
 	80% { opacity: 1; }
-	100% { opacity: 0.5; }
+	100% { opacity: 1; }
 }
 
 @keyframes blinking {
