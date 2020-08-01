@@ -4,7 +4,6 @@ CXXRASPI=aarch64-linux-g++
 
 CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -std=c++11
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
-CXXFLAGSRASPI=-I. -g -O2 -Wall -Wextra -Wno-cast-function-type -Werror -std=c++11 --sysroot=/home/teddy/buildroot-2018.11/output/host/aarch64-buildroot-linux-gnu/sysroot
 LDFLAGS=-g -Wl,--export-dynamic
 LIBS=-lpthread -ldl
 LIBSAMALGAMATION=-lpthread -ldl
@@ -123,15 +122,6 @@ amalgamation: Timestamp.cpp
 	make -C Hardware amalgamation
 	make -C Storage amalgamation
 	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o Hardware/zlib/*.o -o railcontrol $(LIBSAMALGAMATION)
-	rm -f amalgamation.o
-	rm -f amalgamation.cpp
-	rm Timestamp.cpp
-
-raspi: Timestamp.cpp
-	./amalgamation.bash
-	$(CXXRASPI) $(CXXFLAGSRASPI) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
-	make -C Storage raspi
-	$(CXXRASPI) -g amalgamation.o Storage/sqlite/sqlite3.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 	rm Timestamp.cpp
