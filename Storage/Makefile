@@ -14,8 +14,7 @@ Sqlite.so: Sqlite.o sqlite/sqlite3.o *.h ../Logger/*.h ../Hardware/HardwareParam
 sqlite/sqlite3.o: sqlite/sqlite3.c sqlite/sqlite3.h
 	$(CC) $(CFLAGSSQLITE) -c -o $@ $<
 
-amalgamation: sqlite/sqlite3.c sqlite/sqlite3.h
-	$(CC) $(CFLAGSSQLITE) -c -o sqlite/sqlite3.o sqlite/sqlite3.c
+amalgamation: sqlite/sqlite3.o ;
 
 %.o: %.cpp *.h ../*.h ../DataModel/*.h ../Logger/*.h ../Hardware/HardwareParams.h ../Languages.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<

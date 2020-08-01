@@ -1,7 +1,4 @@
 
-CCRASPI=aarch64-linux-gcc
-CXXRASPI=aarch64-linux-g++
-
 CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -std=c++11
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
 LDFLAGS=-g -Wl,--export-dynamic
@@ -138,7 +135,7 @@ Timestamp.o: Timestamp.cpp Timestamp.h
 clean:
 	make -C Hardware clean
 	make -C Storage clean
-	rm -f *.o DataModel/*.o Hardware/*.o Logger/*.o Network/*.o Storage/*.o Utils/*.o WebServer/*.o
+	rm -f *.o DataModel/*.o Hardware/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:
