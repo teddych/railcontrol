@@ -261,6 +261,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLocoFunctionIconLocomotiveNumberIndicator */ { "Locomotive number indicator", "Lokomotivnummerindikator", "Indicador del número de la locomotora" },
 /* TextLocoFunctionIconShuntingLight */ { "Shunting light", "Rangierbeleuchtung", "Luz de maniobras" },
 /* TextLocoFunctionIconShuntingMode */ { "Shunting mode", "Rangiergang", "Modo de maniobras" },
+/* TextLocoFunctionIconSmokeGenerator */ { "Smoke generator", "Rauchgenerator", "Generador de humo" },
 /* TextLocoFunctionIconSoundGeneral */ { "Sound", "Sound", "Sonido" },
 /* TextLocoFunctionIconStairsLight */ { "Stairs light", "Treppenlicht", "Luz de escalera" },
 /* TextLocoFunctionIconTableLight1 */ { "Table light 1", "Tischlicht 1", "Luz de mesa 1" },

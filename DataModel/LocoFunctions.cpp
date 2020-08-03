@@ -451,6 +451,13 @@ namespace DataModel
 					"<polyline points=\"10.2,9.5 5,12.5\" stroke=\"black\" stroke-width=\"2\" class=\"button_on\"/>"
 					"</svg>";
 
+			case LocoFunctionIconSmokeGenerator:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"20,18 30,18 30,22 28,22 28,32 22,32 22,22 20,22 20,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"25,12 28.5,12.9 30,15 28.5,17.1 25,18 21.5,17.1 20,15 21.5,12.9\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_on smoke1\"/>"
+					"<polyline points=\"25,12 28.5,12.9 30,15 28.5,17.1 25,18 21.5,17.1 20,15 21.5,12.9\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_on smoke2\"/>"
+					"</svg>";
+
 			case LocoFunctionIconSoundGeneral:
 				return "<svg width=\"36\" height=\"36\">"
 					"<polyline points=\"8,15 10,15 10,21 8,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"

@@ -545,6 +545,11 @@ button:active {
 	animation-name: blinking;
 }
 
+.smoke1,
+.smoke2 {
+	animation-name: smoke;
+}
+
 .sound1,
 .sound2,
 .sound3,
@@ -553,9 +558,15 @@ button:active {
 .fire3,
 .fire4,
 .fire5,
-.blinking {
+.blinking,
+.smoke1,
+.smoke2 {
 	animation-duration: 1s;
 	animation-iteration-count: infinite;
+}
+
+.smoke2 {
+	animation-delay: 0.5s;
 }
 
 @keyframes sound1 {
@@ -659,4 +670,10 @@ button:active {
 	40% { opacity: 1; }
 	60% { opacity: 0.3; }
 	100% { opacity: 0.3; }
+}
+
+@keyframes smoke {
+	0% { transform: translate(0px, 3px);}
+	20% { transform: translate(0px, 0px); }
+	100% { transform: translate(-30px, -5px); }
 }

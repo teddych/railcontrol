@@ -261,6 +261,7 @@ class Languages
 			TextLocoFunctionIconLocomotiveNumberIndicator,
 			TextLocoFunctionIconShuntingLight,
 			TextLocoFunctionIconShuntingMode,
+			TextLocoFunctionIconSmokeGenerator,
 			TextLocoFunctionIconSoundGeneral,
 			TextLocoFunctionIconStairsLight,
 			TextLocoFunctionIconTableLight1,
