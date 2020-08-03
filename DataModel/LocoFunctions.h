@@ -75,7 +75,7 @@ namespace DataModel
 		LocoFunctionIconCabLight12,
 		LocoFunctionIconDriversDeskLight,
 		LocoFunctionIconTrainDestinationIndicator,
-		LocoFunctionIconTrainNumberIndicator,
+		LocoFunctionIconLocomotiveNumberIndicator,
 		LocoFunctionIconEngineLight,
 		LocoFunctionIconFireBox,
 		LocoFunctionIconStairsLight,

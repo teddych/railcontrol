@@ -521,6 +521,26 @@ button:active {
 	animation-name: sound3;
 }
 
+.fire1 {
+	animation-name: fire1;
+}
+
+.fire2 {
+	animation-name: fire2;
+}
+
+.fire3 {
+	animation-name: fire3;
+}
+
+.fire4 {
+	animation-name: fire4;
+}
+
+.fire5 {
+	animation-name: fire5;
+}
+
 .blinking {
 	animation-name: blinking;
 }
@@ -528,6 +548,11 @@ button:active {
 .sound1,
 .sound2,
 .sound3,
+.fire1,
+.fire2,
+.fire3,
+.fire4,
+.fire5,
 .blinking {
 	animation-duration: 1s;
 	animation-iteration-count: infinite;
@@ -556,6 +581,76 @@ button:active {
 	60% { opacity: 0.3; }
 	70% { opacity: 0.3; }
 	80% { opacity: 1; }
+	100% { opacity: 1; }
+}
+
+@keyframes fire1 {
+	0% { opacity: 1; }
+	10% { opacity: 0.1; }
+	20% { opacity: 0.5; }
+	30% { opacity: 0.2; }
+	40% { opacity: 0.7; }
+	50% { opacity: 0.3; }
+	60% { opacity: 0.9; }
+	70% { opacity: 0.8; }
+	80% { opacity: 0.6; }
+	90% { opacity: 0.4; }
+	100% { opacity: 1; }
+}
+
+@keyframes fire2 {
+	0% { opacity: 1; }
+	10% { opacity: 0.7; }
+	20% { opacity: 0.3; }
+	30% { opacity: 0.9; }
+	40% { opacity: 0.8; }
+	50% { opacity: 0.4; }
+	60% { opacity: 0.6; }
+	70% { opacity: 0.1; }
+	80% { opacity: 0.5; }
+	90% { opacity: 0.2; }
+	100% { opacity: 1; }
+}
+
+@keyframes fire3 {
+	0% { opacity: 1; }
+	10% { opacity: 0.9; }
+	20% { opacity: 0.8; }
+	30% { opacity: 0.4; }
+	40% { opacity: 0.6; }
+	50% { opacity: 0.1; }
+	60% { opacity: 0.5; }
+	70% { opacity: 0.2; }
+	80% { opacity: 0.7; }
+	90% { opacity: 0.3; }
+	100% { opacity: 1; }
+}
+
+@keyframes fire4 {
+	0% { opacity: 1; }
+	10% { opacity: 0.4; }
+	20% { opacity: 0.6; }
+	30% { opacity: 0.1; }
+	40% { opacity: 0.5; }
+	50% { opacity: 0.2; }
+	60% { opacity: 0.7; }
+	70% { opacity: 0.3; }
+	80% { opacity: 0.9; }
+	90% { opacity: 0.3; }
+	100% { opacity: 1; }
+}
+
+@keyframes fire5 {
+	0% { opacity: 1; }
+	10% { opacity: 0.8; }
+	20% { opacity: 0.3; }
+	30% { opacity: 0.5; }
+	40% { opacity: 0.9; }
+	50% { opacity: 0.1; }
+	60% { opacity: 0.2; }
+	70% { opacity: 0.4; }
+	80% { opacity: 0.7; }
+	90% { opacity: 0.6; }
 	100% { opacity: 1; }
 }
 

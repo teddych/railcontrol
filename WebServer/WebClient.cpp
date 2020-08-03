@@ -1697,8 +1697,11 @@ namespace WebServer
 		functionIcons[DataModel::LocoFunctionIconCabLight12] = Languages::TextLocoFunctionIconCabLight12;
 		functionIcons[DataModel::LocoFunctionIconDriversDeskLight] = Languages::TextLocoFunctionIconDriversDeskLight;
 		functionIcons[DataModel::LocoFunctionIconTrainDestinationIndicator] = Languages::TextLocoFunctionIconTrainDestinationIndicator;
-		functionIcons[DataModel::LocoFunctionIconTrainNumberIndicator] = Languages::TextLocoFunctionIconTrainNumberIndicator;
+		functionIcons[DataModel::LocoFunctionIconLocomotiveNumberIndicator] = Languages::TextLocoFunctionIconLocomotiveNumberIndicator;
 		functionIcons[DataModel::LocoFunctionIconSoundGeneral] = Languages::TextLocoFunctionIconSoundGeneral;
+		functionIcons[DataModel::LocoFunctionIconEngineLight] = Languages::TextLocoFunctionIconEngineLight;
+		functionIcons[DataModel::LocoFunctionIconFireBox] = Languages::TextLocoFunctionIconFireBox;
+		functionIcons[DataModel::LocoFunctionIconStairsLight] = Languages::TextLocoFunctionIconStairsLight;
 //		functionIcons[DataModel::LocoFunctionIcon] = Languages::TextLocoFunctionIcon;
 		for (unsigned int nr = 0; nr < DataModel::MaxLocoFunctions; ++nr)
 		{
@@ -1706,7 +1709,7 @@ namespace WebServer
 			fDiv.AddClass("function_line");
 			string nrString = to_string(nr);
 			string fNrString = "f" + nrString;
-			fDiv.AddChildTag(HtmlTagLabel(fNrString, fNrString + "_type"));
+			fDiv.AddChildTag(HtmlTagLabel("F" + nrString, fNrString + "_type"));
 			DataModel::LocoFunctionType type;
 			DataModel::LocoFunctionIcon icon;
 			DataModel::LocoFunctionTimer timer;
