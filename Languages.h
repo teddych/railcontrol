@@ -282,6 +282,7 @@ class Languages
 			TextLocoFunctionIconTelex12,
 			TextLocoFunctionIconTelex2,
 			TextLocoFunctionIconTrainDestinationIndicator,
+			TextLocoFunctionIconTurn,
 			TextLocoFunctionIconTurnLeft,
 			TextLocoFunctionIconTurnRight,
 			TextLocoFunctionIconUp,

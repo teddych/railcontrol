@@ -96,6 +96,7 @@ namespace DataModel
 		LocoFunctionIconLeftRight,
 		LocoFunctionIconTurnLeft,
 		LocoFunctionIconTurnRight,
+		LocoFunctionIconTurn,
 		LocoFunctionIconCrane,
 		LocoFunctionIconMagnet,
 		LocoFunctionIconCraneHook,
