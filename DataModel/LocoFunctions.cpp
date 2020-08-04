@@ -519,6 +519,10 @@ namespace DataModel
 					"<polyline points=\"18,1 25,13 20,13 20,23 25,23 18,35 11,23 16,23 16,13 11,13\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
 					"</svg>";
 
+			case LocoFunctionIconUpDown2:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"9,4 22.4,7.6 18.9,11.1 21.1,14 22.5,17.4 23,21 28,21 21,33 14,21 19,21 18.7,18.4 17.7,16 16.1,13.9 12.5,16.5\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"</svg>";
 
 			case LocoFunctionIconLeft:
 				return "<svg width=\"36\" height=\"36\">"
@@ -533,6 +537,28 @@ namespace DataModel
 			case LocoFunctionIconLeftRight:
 				return "<svg width=\"36\" height=\"36\">"
 					"<polyline points=\"1,18 13,25 13,20 23,20 23,25 35,18 23,11 23,16 13,16 13,11\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"</svg>";
+
+			case LocoFunctionIconTurnLeft:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"26.5,22.2 28.4,21 29.6,19.6 30,18 29.6,16.4 28.4,15 26.5,13.8 24,12.8 21.1,12.2 18,12 14.9,12.2 12,12.8 9.5,13.8 7.6,15 6.4,16.4 6,18 0,18 8,24 16,18 10,18 10.3,17 11.1,16 12.3,15.2 14,14.5 15.9,14.1 18,14 20.1,14.1 22,14.5 23.7,15.2 24.9,16 25.7,17 26,18 25.7,19 24.9,20 23.7,20.8\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"</svg>";
+
+			case LocoFunctionIconTurnRight:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"20,18 28,24 36,18 30,18 29.6,16.4 28.4,15 26.5,13.8 24,12.8 21.1,12.2 18,12 14.9,12.2 12,12.8 9.5,13.8 7.6,15 6.4,16.4 6,18 6.4,19.6 7.6,21 9.5,22.2 12.3,20.8 11.1,20 10.3,19 10,18 10.3,17 11.1,16 12.3,15.2 14,14.5 15.9,14.1 18,14 20.1,14.1 22,14.5 23.7,15.2 24.9,16 25.7,17 26,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"</svg>";
+
+			case LocoFunctionIconTurn:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"20,18 28,24 36,18 30,18 29.6,16.4 28.4,15 26.5,13.8 24,12.8 21.1,12.2 18,12 14.9,12.2 12,12.8 9.5,13.8 7.6,15 6.4,16.4 6,18 0,18 8,24 16,18 10,18 10.3,17 11.1,16 12.3,15.2 14,14.5 15.9,14.1 18,14 20.1,14.1 22,14.5 23.7,15.2 24.9,16 25.7,17 26,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"</svg>";
+
+			case LocoFunctionIconCrane:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"3,33 29,3 3,25\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
+					"<polyline points=\"3,33 8,21 12,22 14,16\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
+					"<polyline points=\"29.5,3 29.5,18.5 30.5,19.5 30.5,20.5 29.5,21.5 28.5,20.5\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/>"
 					"</svg>";
 
 			case LocoFunctionIconSoundGeneral:
