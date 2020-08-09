@@ -722,7 +722,9 @@ namespace WebServer
 		}
 
 		Response response;
-		response.AddHeader("Cache-Control", "max-age=3600");
+		response.AddHeader("Cache-Control", "no-cache, must-revalidate");
+		response.AddHeader("Pragma", "no-cache");
+		response.AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
 		response.AddHeader("Content-Length", to_string(s.st_size));
 		if (contentType != nullptr)
 		{
