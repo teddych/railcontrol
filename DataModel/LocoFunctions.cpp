@@ -561,6 +561,32 @@ namespace DataModel
 					"<polyline points=\"29.5,3 29.5,18.5 30.5,19.5 30.5,20.5 29.5,21.5 28.5,20.5\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/>"
 					"</svg>";
 
+			case LocoFunctionIconMagnet:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"20,30 14,30 10.9,29.6 8,28.4 5.5,26.5 3.6,24 2.4,21.1 2,18 2.4,14.9 3.6,12 5.5,9.5 8,7.6 10.9,6.4 14,6 20,6 20,12 14,12 12.4,12.2 11,12.8 9.8,13.8 8.8,15 8.2,16.4 8,18 8.2,19.6 8.8,21 9.8,22.2 11,23.2 12.4,23.8 14,24 20,24\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"19.5,6.5 25.4,6.5 25.5,11.5 19.5,11.5 19.5,6.5\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/>"
+					"<polyline points=\"19.5,24.5 25.4,24.5 25.5,29.5 19.5,29.5 19.5,24.5\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/>"
+					"<polyline points=\"31,6 30,16 35,16 29,30 30,20 25,20\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_on\"/>"
+					"</svg>";
+
+			case LocoFunctionIconCraneHook:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"20.5,5.3 20.7,6.9 21.3,8.3 22.3,9.5 24,11.6 26.5,13.5 28.4,16 29.6,18.9 30,22 29.6,25.1 28.4,28 26.5,30.5 24,32.4 21.1,33.6 18,34 14.9,33.6 12,32.4 9.5,30.5 7.6,28 6.4,25.1 6,22   6,14 7,14 8,15   12.8,25 13.8,26.2 15,27.2 16.4,27.8 18,28 19.6,27.8 21,27.2 22.2,26.2 23.2,25 23.8,23.6 24,22 23.8,20.4 23.2,19 22.2,17.8 21,16.8   18,13.8 16.1,11.3 14.9,8.4 14.5,5.3\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"</svg>";
+
+			case LocoFunctionIconFan:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"2\" cx=\"18\" cy=\"18\" fill=\"black\" />"
+					"<polyline points=\"16,16 15,12 15,10 16,9 19,8 22,9 23,10 23,12 21,14 20,16 18,15\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_off\"/>"
+					"<polyline points=\"20,16 24,15 26,15 27,16 28,19 27,22 26,23 24,23 22,21 20,20 21,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_off\"/>"
+					"<polyline points=\"20,20 21,24 21,26 20,27 17,28 14,27 13,26 13,24 15,22 16,20 18,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_off\"/>"
+					"<polyline points=\"16,20 12,21 10,21 9,20 8,17 9,14 10,13 12,13 14,15 16,16 15,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_off\"/>"
+					"<polyline points=\"16,16 15,12 15,10 16,9 19,8 22,9 23,10 23,12 21,14 20,16 18,15\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_on rotate\"/>"
+					"<polyline points=\"20,16 24,15 26,15 27,16 28,19 27,22 26,23 24,23 22,21 20,20 21,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_on rotate\"/>"
+					"<polyline points=\"20,20 21,24 21,26 20,27 17,28 14,27 13,26 13,24 15,22 16,20 18,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_on rotate\"/>"
+					"<polyline points=\"16,20 12,21 10,21 9,20 8,17 9,14 10,13 12,13 14,15 16,16 15,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_on rotate\"/>"
+					"</svg>";
+
 			case LocoFunctionIconSoundGeneral:
 				return "<svg width=\"36\" height=\"36\">"
 					"<polyline points=\"8,15 10,15 10,21 8,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
