@@ -1724,7 +1724,17 @@ namespace WebServer
 		functionIcons[DataModel::LocoFunctionIconMagnet] = Languages::TextLocoFunctionIconMagnet;
 		functionIcons[DataModel::LocoFunctionIconCraneHook] = Languages::TextLocoFunctionIconCraneHook;
 		functionIcons[DataModel::LocoFunctionIconFan] = Languages::TextLocoFunctionIconFan;
+		functionIcons[DataModel::LocoFunctionIconNoSound] = Languages::TextLocoFunctionIconNoSound;
 		functionIcons[DataModel::LocoFunctionIconSoundGeneral] = Languages::TextLocoFunctionIconSoundGeneral;
+		functionIcons[DataModel::LocoFunctionIconRunning1] = Languages::TextLocoFunctionIconRunning1;
+		functionIcons[DataModel::LocoFunctionIconRunning2] = Languages::TextLocoFunctionIconRunning2;
+		functionIcons[DataModel::LocoFunctionIconEngine1] = Languages::TextLocoFunctionIconEngine1;
+		functionIcons[DataModel::LocoFunctionIconEngine2] = Languages::TextLocoFunctionIconEngine2;
+		functionIcons[DataModel::LocoFunctionIconBreak1] = Languages::TextLocoFunctionIconBreak1;
+		functionIcons[DataModel::LocoFunctionIconBreak2] = Languages::TextLocoFunctionIconBreak2;
+		functionIcons[DataModel::LocoFunctionIconFan1] = Languages::TextLocoFunctionIconFan1;
+		functionIcons[DataModel::LocoFunctionIconFan2] = Languages::TextLocoFunctionIconFan2;
+		functionIcons[DataModel::LocoFunctionIconFan3] = Languages::TextLocoFunctionIconFan3;
 //		functionIcons[DataModel::LocoFunctionIcon] = Languages::TextLocoFunctionIcon;
 		for (unsigned int nr = 0; nr < DataModel::MaxLocoFunctions; ++nr)
 		{

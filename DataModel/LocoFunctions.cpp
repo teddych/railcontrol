@@ -587,13 +587,150 @@ namespace DataModel
 					"<polyline points=\"16,20 12,21 10,21 9,20 8,17 9,14 10,13 12,13 14,15 16,16 15,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\" class=\"button_on rotate\"/>"
 					"</svg>";
 
+			case LocoFunctionIconNoSound:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"8,15 10,15 10,21 8,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"11,15 18,8 18,28 11,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"24.9,12.2 25.8,13.5 26.5,14.9 26.9,16.4 27,18 26.9,19.6 26.5,21.1 25.8,22.5 24.9,23.8\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_off sound1\"/>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_off sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_off sound3\"/>"
+					"<polyline points=\"25,23 35,13\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on\"/>"
+					"<polyline points=\"25,13 35,23\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on\"/>"
+					"</svg>";
+
 			case LocoFunctionIconSoundGeneral:
 				return "<svg width=\"36\" height=\"36\">"
 					"<polyline points=\"8,15 10,15 10,21 8,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
 					"<polyline points=\"11,15 18,8 18,28 11,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
-					"<polyline points=\"24.1,12.9 24.9,14 25.5,15.3 25.9,16.6 26,18 25.9,19.4 25.5,20.7 24.9,22 24.1,23.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound1\"/>"
-					"<polyline points=\"27.2,10.3 28.4,12 29.3,13.9 29.8,15.9 30,18 29.8,20.1 29.3,22.1 28.4,24 27.2,25.7\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
-					"<polyline points=\"30.3,7.7 31.9,10 33,12.5 33.8,15.2 34,18 33.8,20.8 33,23.5 31.9,26 30.3,28.3\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"24.9,12.2 25.8,13.5 26.5,14.9 26.9,16.4 27,18 26.9,19.6 26.5,21.1 25.8,22.5 24.9,23.8\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound1\"/>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"</svg>";
+
+			case LocoFunctionIconRunning1:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"18,20 13,27\" stroke=\"black\" stroke-width=\"2\" fill=\"black\"/>"
+					"<polyline points=\"18,20 23,27\" stroke=\"black\" stroke-width=\"2\" fill=\"black\"/>"
+					"<polyline points=\"11,11 12,10 18,9 24,10 25,11 25,23 24,24 12,24 11,23\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"12,12 17,12 17,15 12,15\" stroke=\"black\" stroke-width=\"0\" fill=\"darkgray\"/>"
+					"<polyline points=\"19,12 24,12 24,15 19,15\" stroke=\"black\" stroke-width=\"0\" fill=\"darkgray\"/>"
+					"<circle r=\"1.5\" cx=\"22\" cy=\"21\" fill=\"darkgray\" />"
+					"<circle r=\"1.5\" cx=\"14\" cy=\"21\" fill=\"darkgray\" />"
+					"<text x=\"15\" y=\"35\" fill=\"black\" font-size=\"10\">1</text>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"</svg>";
+
+			case LocoFunctionIconRunning2:
+				return "<svg width=\"36\" height=\"36\">"
+					"<polyline points=\"18,20 13,27\" stroke=\"black\" stroke-width=\"2\" fill=\"black\"/>"
+					"<polyline points=\"18,20 23,27\" stroke=\"black\" stroke-width=\"2\" fill=\"black\"/>"
+					"<polyline points=\"11,11 12,10 18,9 24,10 25,11 25,23 24,24 12,24 11,23\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"12,12 17,12 17,15 12,15\" stroke=\"black\" stroke-width=\"0\" fill=\"darkgray\"/>"
+					"<polyline points=\"19,12 24,12 24,15 19,15\" stroke=\"black\" stroke-width=\"0\" fill=\"darkgray\"/>"
+					"<circle r=\"1.5\" cx=\"22\" cy=\"21\" fill=\"darkgray\" />"
+					"<circle r=\"1.5\" cx=\"14\" cy=\"21\" fill=\"darkgray\" />"
+					"<text x=\"15\" y=\"35\" fill=\"black\" font-size=\"10\">2</text>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"</svg>";
+
+			case LocoFunctionIconEngine1:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"8\" cx=\"18\" cy=\"18\" fill=\"black\" />"
+					"<polyline points=\"14,18 14,9.1 15.3,8.5 16.6,8.1 18,8 19.4,8.1 20.7,8.5 22,9.1 22,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<text x=\"13.7\" y=\"21\" fill=\"white\" font-size=\"10\">M</text>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<text x=\"15\" y=\"35\" fill=\"black\" font-size=\"10\">1</text>"
+					"</svg>";
+
+			case LocoFunctionIconEngine2:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"8\" cx=\"18\" cy=\"18\" fill=\"black\" />"
+					"<polyline points=\"14,18 14,9.1 15.3,8.5 16.6,8.1 18,8 19.4,8.1 20.7,8.5 22,9.1 22,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<text x=\"13.7\" y=\"21\" fill=\"white\" font-size=\"10\">M</text>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<text x=\"15\" y=\"35\" fill=\"black\" font-size=\"10\">2</text>"
+					"</svg>";
+
+			case LocoFunctionIconBreak1:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"6\" cx=\"18\" cy=\"18\" fill=\"black\" />"
+					"<circle r=\"4.5\" cx=\"18\" cy=\"18\" fill=\"none\" stroke-with=\"1\" stroke=\"darkgray\" />"
+					"<circle r=\"1\" cx=\"18\" cy=\"18\" fill=\"darkgray\" />"
+					"<polyline points=\"10.2,22.5 9.5,21.1 9.1,19.6 9,18 9.1,16.4 9.5,14.9 10.2,13.5 12.6,13.5 11.9,14.5 11.4,15.6 11.1,16.8 11,18 11.1,19.2 11.4,20.4 11.9,21.5 12.6,22.5\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"\"/>"
+					"<polyline points=\"25.8,13.5 26.5,14.9 26.9,16.4 27,18 26.9,19.6 26.5,21.1 25.8,22.5 23.4,22.5 24.1,21.5 24.6,20.4 24.9,19.2 25,18 24.9,16.8 24.6,15.6 24.1,14.5 23.4,13.5\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"\"/>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<text x=\"15\" y=\"35\" fill=\"black\" font-size=\"10\">1</text>"
+					"</svg>";
+
+			case LocoFunctionIconBreak2:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"6\" cx=\"18\" cy=\"18\" fill=\"black\" />"
+					"<circle r=\"4.5\" cx=\"18\" cy=\"18\" fill=\"none\" stroke-with=\"1\" stroke=\"darkgray\" />"
+					"<circle r=\"1\" cx=\"18\" cy=\"18\" fill=\"darkgray\" />"
+					"<polyline points=\"10.2,22.5 9.5,21.1 9.1,19.6 9,18 9.1,16.4 9.5,14.9 10.2,13.5 12.6,13.5 11.9,14.5 11.4,15.6 11.1,16.8 11,18 11.1,19.2 11.4,20.4 11.9,21.5 12.6,22.5\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"\"/>"
+					"<polyline points=\"25.8,13.5 26.5,14.9 26.9,16.4 27,18 26.9,19.6 26.5,21.1 25.8,22.5 23.4,22.5 24.1,21.5 24.6,20.4 24.9,19.2 25,18 24.9,16.8 24.6,15.6 24.1,14.5 23.4,13.5\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"\"/>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<text x=\"15\" y=\"35\" fill=\"black\" font-size=\"10\">2</text>"
+					"</svg>";
+
+			case LocoFunctionIconFan1:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"2\" cx=\"18\" cy=\"18\" fill=\"black\" />"
+					"<polyline points=\"16,16 15,12 15,10 16,9 19,8 22,9 23,10 23,12 21,14 20,16 18,15\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"20,16 24,15 26,15 27,16 28,19 27,22 26,23 24,23 22,21 20,20 21,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"20,20 21,24 21,26 20,27 17,28 14,27 13,26 13,24 15,22 16,20 18,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"16,20 12,21 10,21 9,20 8,17 9,14 10,13 12,13 14,15 16,16 15,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<text x=\"22\" y=\"35\" fill=\"black\" font-size=\"10\">1</text>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"</svg>";
+
+			case LocoFunctionIconFan2:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"2\" cx=\"18\" cy=\"18\" fill=\"black\" />"
+					"<polyline points=\"16,16 15,12 15,10 16,9 19,8 22,9 23,10 23,12 21,14 20,16 18,15\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"20,16 24,15 26,15 27,16 28,19 27,22 26,23 24,23 22,21 20,20 21,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"20,20 21,24 21,26 20,27 17,28 14,27 13,26 13,24 15,22 16,20 18,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"16,20 12,21 10,21 9,20 8,17 9,14 10,13 12,13 14,15 16,16 15,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<text x=\"22\" y=\"35\" fill=\"black\" font-size=\"10\">2</text>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"</svg>";
+
+			case LocoFunctionIconFan3:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"2\" cx=\"18\" cy=\"18\" fill=\"black\" />"
+					"<polyline points=\"16,16 15,12 15,10 16,9 19,8 22,9 23,10 23,12 21,14 20,16 18,15\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"20,16 24,15 26,15 27,16 28,19 27,22 26,23 24,23 22,21 20,20 21,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"20,20 21,24 21,26 20,27 17,28 14,27 13,26 13,24 15,22 16,20 18,21\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<polyline points=\"16,20 12,21 10,21 9,20 8,17 9,14 10,13 12,13 14,15 16,16 15,18\" stroke=\"black\" stroke-width=\"0\" fill=\"black\"/>"
+					"<text x=\"22\" y=\"35\" fill=\"black\" font-size=\"10\">3</text>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"<polyline points=\"8,26.4 6.7,24.5 5.8,22.4 5.2,20.3 5,18 5.2,15.7 5.8,13.6 6.7,11.5 8,9.6\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"5,28.9 3.3,26.5 2,23.8 1.3,21 1,18 1.3,15 2,12.2 3.3,9.5 5,7.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
 					"</svg>";
 		}
 	}
