@@ -1732,6 +1732,11 @@ namespace WebServer
 		functionIcons[DataModel::LocoFunctionIconEngine2] = Languages::TextLocoFunctionIconEngine2;
 		functionIcons[DataModel::LocoFunctionIconBreak1] = Languages::TextLocoFunctionIconBreak1;
 		functionIcons[DataModel::LocoFunctionIconBreak2] = Languages::TextLocoFunctionIconBreak2;
+		functionIcons[DataModel::LocoFunctionIconCurve] = Languages::TextLocoFunctionIconCurve;
+		functionIcons[DataModel::LocoFunctionIconHorn1] = Languages::TextLocoFunctionIconHorn1;
+		functionIcons[DataModel::LocoFunctionIconHorn2] = Languages::TextLocoFunctionIconHorn2;
+		functionIcons[DataModel::LocoFunctionIconWhistle1] = Languages::TextLocoFunctionIconWhistle1;
+		functionIcons[DataModel::LocoFunctionIconWhistle2] = Languages::TextLocoFunctionIconWhistle2;
 		functionIcons[DataModel::LocoFunctionIconFan1] = Languages::TextLocoFunctionIconFan1;
 		functionIcons[DataModel::LocoFunctionIconFan2] = Languages::TextLocoFunctionIconFan2;
 		functionIcons[DataModel::LocoFunctionIconFan3] = Languages::TextLocoFunctionIconFan3;
