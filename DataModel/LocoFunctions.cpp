@@ -984,10 +984,10 @@ namespace DataModel
 
 			case LocoFunctionIconBufferPush:
 				return "<svg width=\"36\" height=\"36\">"
-					"<polyline points=\"8,24 14,24\" stroke=\"black\" stroke-width=\"1\" fill=\"none\" class=\"buffer_push\"/>"
-					"<polyline points=\"13,19 14,22 14,26 13,29\" stroke=\"black\" stroke-width=\"1\" fill=\"none\" class=\"buffer_push\"/>"
-					"<polyline points=\"22,24 28,24\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/>"
-					"<polyline points=\"23,19 22,22 22,26 23,29\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/>"
+					"<polyline points=\"8,24 14,24\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"buffer_push\"/>"
+					"<polyline points=\"13,19 14,22 14,26 13,29\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"buffer_push\"/>"
+					"<polyline points=\"22,24 28,24\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
+					"<polyline points=\"23,19 22,22 22,26 23,29\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
 					"<polyline points=\"12.2,11.1 13.5,10.2 14.9,9.5 16.4,9.1 18,9 19.6,9.1 21.1,9.5 22.5,10.2 23.8,11.1\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound1\"/>"
 					"<polyline points=\"9.6,8 11.5,6.7 13.6,5.8 15.7,5.2 18,5 20.3,5.2 22.4,5.8 24.5,6.7 26.4,8\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
 					"<polyline points=\"7.1,5 9.5,3.3 12.2,2 15,1.3 18,1 21,1.3 23.8,2 26.5,3.3 28.9,5\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
