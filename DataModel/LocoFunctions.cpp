@@ -1004,6 +1004,10 @@ namespace DataModel
 			case LocoFunctionIconRailJoint:
 			case LocoFunctionIconCoupler:
 			case LocoFunctionIconPanto:
+			case LocoFunctionIconMainSwitch:
+			case LocoFunctionIconSoundLouder:
+			case LocoFunctionIconSoundLower:
+			case LocoFunctionIconNoBreak:
 				return "<svg width=\"36\" height=\"36\">"
 					"<polyline points=\"0,0 36,36\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
 					"<polyline points=\"0,36 36,0\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
