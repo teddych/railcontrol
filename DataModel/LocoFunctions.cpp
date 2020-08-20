@@ -994,9 +994,78 @@ namespace DataModel
 					"</svg>";
 
 			case LocoFunctionIconGenerator:
+				return "<svg width=\"36\" height=\"36\">"
+					"<circle r=\"7\" cx=\"10\" cy=\"13\" fill=\"black\" />"
+					"<circle r=\"4\" cx=\"12\" cy=\"27\" fill=\"black\" />"
+					"<line x1=\"3.5\" y1=\"13\" x2=\"8.5\" y2=\"27\" stroke-width=\"1\" stroke=\"black\" />"
+					"<line x1=\"16.5\" y1=\"13\" x2=\"15.5\" y2=\"27\" stroke-width=\"1\" stroke=\"black\" />"
+					"<circle r=\"5\" cx=\"10\" cy=\"13\" fill=\"lightgray\" />"
+					"<circle r=\"2\" cx=\"12\" cy=\"27\" fill=\"lightgray\" />"
+					"<polyline points=\"24.9,12.2 25.8,13.5 26.5,14.9 26.9,16.4 27,18 26.9,19.6 26.5,21.1 25.8,22.5 24.9,23.8\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound1\"/>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"</svg>";
+
 			case LocoFunctionIconGearBox:
+				return "<svg width=\"36\" height=\"36\">"
+					"<line x1=\"10\" y1=\"4\" x2=\"10\" y2=\"22\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"5.5\" y1=\"5.2\" x2=\"14.5\" y2=\"20.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"2.2\" y1=\"8.5\" x2=\"17.8\" y2=\"17.5\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"1\" y1=\"13\" x2=\"19\" y2=\"13\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"5.5\" y1=\"20.8\" x2=\"14.5\" y2=\"5.2\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"2.2\" y1=\"17.5\" x2=\"17.8\" y2=\"8.5\" stroke-width=\"2\" stroke=\"black\" />"
+					"<circle r=\"7\" cx=\"10\" cy=\"13\" fill=\"black\" />"
+					"<circle r=\"5\" cx=\"10\" cy=\"13\" fill=\"lightgray\" />"
+					"<line x1=\"6\" y1=\"27\" x2=\"18\" y2=\"27\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"16.2\" y1=\"31.2\" x2=\"7.8\" y2=\"22.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"12\" y1=\"21\" x2=\"12\" y2=\"33\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"7.8\" y1=\"31.2\" x2=\"16.2\" y2=\"22.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<circle r=\"4\" cx=\"12\" cy=\"27\" fill=\"black\" />"
+					"<circle r=\"2\" cx=\"12\" cy=\"27\" fill=\"lightgray\" />"
+					"<polyline points=\"24.9,12.2 25.8,13.5 26.5,14.9 26.9,16.4 27,18 26.9,19.6 26.5,21.1 25.8,22.5 24.9,23.8\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound1\"/>"
+					"<polyline points=\"28,9.6 29.3,11.5 30.2,13.6 30.8,15.7 31,18 30.8,20.3 30.2,22.4 29.3,24.5 28,26.4\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound2\"/>"
+					"<polyline points=\"31,7.1 32.7,9.5 34,12.2 34.7,15 35,18 34.7,21 34,23.8 32.7,26.5 31,28.9\" stroke=\"black\" stroke-width=\"2\" fill=\"none\" class=\"button_on sound3\"/>"
+					"</svg>";
+
 			case LocoFunctionIconGearUp:
+				return "<svg width=\"36\" height=\"36\">"
+					"<line x1=\"10\" y1=\"4\" x2=\"10\" y2=\"22\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"5.5\" y1=\"5.2\" x2=\"14.5\" y2=\"20.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"2.2\" y1=\"8.5\" x2=\"17.8\" y2=\"17.5\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"1\" y1=\"13\" x2=\"19\" y2=\"13\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"5.5\" y1=\"20.8\" x2=\"14.5\" y2=\"5.2\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"2.2\" y1=\"17.5\" x2=\"17.8\" y2=\"8.5\" stroke-width=\"2\" stroke=\"black\" />"
+					"<circle r=\"7\" cx=\"10\" cy=\"13\" fill=\"black\" />"
+					"<circle r=\"5\" cx=\"10\" cy=\"13\" fill=\"lightgray\" />"
+					"<line x1=\"6\" y1=\"27\" x2=\"18\" y2=\"27\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"16.2\" y1=\"31.2\" x2=\"7.8\" y2=\"22.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"12\" y1=\"21\" x2=\"12\" y2=\"33\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"7.8\" y1=\"31.2\" x2=\"16.2\" y2=\"22.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<circle r=\"4\" cx=\"12\" cy=\"27\" fill=\"black\" />"
+					"<circle r=\"2\" cx=\"12\" cy=\"27\" fill=\"lightgray\" />"
+					"<polyline points=\"22,18 36,18\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
+					"<polyline points=\"29,11 29,25\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
+					"</svg>";
+
 			case LocoFunctionIconGearDown:
+				return "<svg width=\"36\" height=\"36\">"
+					"<line x1=\"10\" y1=\"4\" x2=\"10\" y2=\"22\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"5.5\" y1=\"5.2\" x2=\"14.5\" y2=\"20.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"2.2\" y1=\"8.5\" x2=\"17.8\" y2=\"17.5\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"1\" y1=\"13\" x2=\"19\" y2=\"13\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"5.5\" y1=\"20.8\" x2=\"14.5\" y2=\"5.2\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"2.2\" y1=\"17.5\" x2=\"17.8\" y2=\"8.5\" stroke-width=\"2\" stroke=\"black\" />"
+					"<circle r=\"7\" cx=\"10\" cy=\"13\" fill=\"black\" />"
+					"<circle r=\"5\" cx=\"10\" cy=\"13\" fill=\"lightgray\" />"
+					"<line x1=\"6\" y1=\"27\" x2=\"18\" y2=\"27\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"16.2\" y1=\"31.2\" x2=\"7.8\" y2=\"22.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"12\" y1=\"21\" x2=\"12\" y2=\"33\" stroke-width=\"2\" stroke=\"black\" />"
+					"<line x1=\"7.8\" y1=\"31.2\" x2=\"16.2\" y2=\"22.8\" stroke-width=\"2\" stroke=\"black\" />"
+					"<circle r=\"4\" cx=\"12\" cy=\"27\" fill=\"black\" />"
+					"<circle r=\"2\" cx=\"12\" cy=\"27\" fill=\"lightgray\" />"
+					"<polyline points=\"22,18 36,18\" stroke=\"black\" stroke-width=\"2\" fill=\"none\"/>"
+					"</svg>";
+
 			case LocoFunctionIconFillWater:
 			case LocoFunctionIconFillDiesel:
 			case LocoFunctionIconFillGas:
