@@ -210,7 +210,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextIsOnOcupiedTrack */ { "{0} thinks it is on track {1} but there is {2}. Setting error state.", "{0} meint sie sei auf Gleis {1} aber dort ist {2}. Setze Fehlerstatus.", "{0} cree que está sobre vía {1} pero allá está {2}. Poniando estado error." },
 /* TextIsRunningWaitingUntilDestination */ { "{0} is actually running, waiting until reached its destination", "{0} fährt noch, warte bis sie das Ziel erreicht hat.", "{0} todavía está en marcha, esperando hasta ha llegado el destino" },
 /* TextIsUpToDate */ { "{0} is up to date", "{0} ist aktuell", "{0} es actual" },
-/* TextLanguage */ { "Language", "Sprache", "Lingua" },
+/* TextLanguage */ { "Language", "Sprache", "Idioma" },
 /* TextLayer1 */ { "Layer 1", "Schicht 1", "Capa 1" },
 /* TextLayer1IsUndeletable */ { "Layer 1 is undeletable", "Schicht 1 ist unlöschbar", "Capa 1 no se puede eliminar" },
 /* TextLayerDeleted */ { "Layer {0} deleted", "Schicht {0} gelöscht", "Capa {0} eliminado" },
