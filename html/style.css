@@ -740,7 +740,7 @@ button:active {
 @keyframes buffer_push {
 	0% { transform: translate(0px, 0px); }
 	15% { transform: translate(0px, 0px); }
-	50% { transform: translate(6px, 0px); }
-	100% { transform: translate(6px, 0px); }
+	50% { transform: translate(14px, 0px); }
+	100% { transform: translate(14px, 0px); }
 }
 
