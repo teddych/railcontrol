@@ -3267,6 +3267,7 @@ namespace WebServer
 		HtmlTag content;
 		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		string name = Languages::GetText(Languages::TextNew);
+		bool showName = true;
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
@@ -3282,6 +3283,7 @@ namespace WebServer
 			if (track != nullptr)
 			{
 				name = track->GetName();
+				showName = track->GetShowName();
 				posx = track->GetPosX();
 				posy = track->GetPosY();
 				posz = track->GetPosZ();
@@ -3298,7 +3300,6 @@ namespace WebServer
 			case DataModel::TrackTypeTurn:
 			case DataModel::TrackTypeTunnelEnd:
 				height = 1;
-				break;
 
 			default:
 				break;
@@ -3330,6 +3331,19 @@ namespace WebServer
 		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
+		HtmlTag i_showName("div");
+		i_showName.AddId("i_showname");
+		i_showName.AddChildTag(HtmlTagInputCheckboxWithLabel("showname", Languages::TextShowName, "true", showName));
+		switch (type)
+		{
+			case DataModel::TrackTypeStraight:
+				break;
+
+			default:
+				i_showName.AddAttribute("hidden");
+				break;
+		}
+		mainContent.AddChildTag(i_showName);
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("tracktype", Languages::TextType, typeOptions, type).AddAttribute("onchange", "onChangeTrackType();return false;"));
 		HtmlTag i_length("div");
 		i_length.AddId("i_length");
@@ -3363,6 +3377,7 @@ namespace WebServer
 	{
 		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		bool showName = Utils::Utils::GetBoolMapEntry(arguments, "showname", true);
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
@@ -3395,6 +3410,7 @@ namespace WebServer
 		string result;
 		if (manager.TrackSave(trackID,
 			name,
+			showName,
 			posX,
 			posY,
 			posZ,

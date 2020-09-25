@@ -484,6 +484,13 @@ function onChangeTrackType()
 	{
 		return;
 	}
+	var trackTypeValue = trackType.value;
+	var showname = document.getElementById('i_showname');
+	if (!showname)
+	{
+		return;
+	}
+	showname.hidden = (trackTypeValue != 0)
 	var length = document.getElementById('i_length');
 	if (!length)
 	{

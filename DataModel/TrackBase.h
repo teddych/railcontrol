@@ -65,7 +65,8 @@ namespace DataModel
 				locoOrientation(OrientationRight),
 				blocked(false),
 				locoIdDelayed(LocoNone),
-				releaseWhenFree(false)
+				releaseWhenFree(false),
+				showName(true)
 			{}
 
 			virtual ~TrackBase() {}
@@ -92,6 +93,8 @@ namespace DataModel
 			LocoID GetLocoDelayed() const { return this->locoIdDelayed; }
 			bool GetReleaseWhenFree() const { return releaseWhenFree; }
 			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
+			bool GetShowName() const { return this->showName; }
+			void SetShowName(const bool showName) { this->showName = showName; }
 
 			virtual ObjectIdentifier GetObjectIdentifier() const = 0;
 			virtual ObjectID GetMyID() const = 0;
@@ -133,5 +136,6 @@ namespace DataModel
 			bool blocked;
 			LocoID locoIdDelayed;
 			bool releaseWhenFree;
+			bool showName;
 	};
 } // namespace DataModel

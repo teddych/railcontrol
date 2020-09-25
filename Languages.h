@@ -483,6 +483,7 @@ class Languages
 			TextSettings,
 			TextSettingsSaved,
 			TextShortCircuit,
+			TextShowName,
 			TextSignal,
 			TextSignalDeleted,
 			TextSignalDoesNotExist,

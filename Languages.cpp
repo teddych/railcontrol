@@ -483,6 +483,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSettings */ { "Settings", "Einstellungen", "Opciones" },
 /* TextSettingsSaved */ { "Settings saved", "Einstellungen gespeichert", "Opciones guardado" },
 /* TextShortCircuit */ { "Short circuit", "Kurzschluss", "Cortocircuit" },
+/* TextShowName */ { "Show name", "Name sichtbar", "Nombre visible" },
 /* TextSignal*/ { "signal ", "Signal", "señal" },
 /* TextSignalDeleted */ { "Signal {0} deleted", "Signal {0} gelöscht", "Señal {0} eliminado" },
 /* TextSignalDoesNotExist */ { "Signal does not exist", "Signal existiert nicht", "Señal no existe" },
