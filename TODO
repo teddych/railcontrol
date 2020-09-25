@@ -1,4 +1,6 @@
 - Dreiwegweichen
+- Hosenträger
+- Kreuzung
 - Märklin DKW
 - Mehrbegriffige Signale
 - Bahnübergänge
@@ -16,7 +18,6 @@
 - Formulare als POST-Request senden um maximale URL-Länge zu umgehen
 - Notaus bei Rückmelder an/aus
 - Lokfunktionen mit konfigurierbaren Icons
-- Numerischen Lokfunktionen eine definierte Funktion zuordnen (Rangiergang, Innenbeleuchtung, Lokpfiff, ...)
 - Synchronisieren der ECoS / CS2 Lok-Datenbank
 - Anbinden des SPROG DCC
 - Anbinden der Zimo-Zentralen
