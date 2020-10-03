@@ -497,7 +497,7 @@ function onChangeTrackType()
 		return;
 	}
 	var trackTypeValue = trackType.value;
-	length.hidden = (trackTypeValue == 1 || trackTypeValue == 5)
+	length.hidden = (trackTypeValue == 1 || trackTypeValue == 5 || trackTypeValue == 7 || trackTypeValue == 8 || trackTypeValue == 9)
 }
 
 function updateLayoutItem(elementName, data)

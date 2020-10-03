@@ -3271,7 +3271,7 @@ namespace WebServer
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", 1);
+		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", DataModel::LayoutItem::Height1);
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::TrackType type = DataModel::TrackTypeStraight;
 		std::vector<FeedbackID> feedbacks;
@@ -3299,7 +3299,14 @@ namespace WebServer
 		{
 			case DataModel::TrackTypeTurn:
 			case DataModel::TrackTypeTunnelEnd:
-				height = 1;
+				height = DataModel::LayoutItem::Height1;
+				break;
+
+			case DataModel::TrackTypeCrossingLeft:
+			case DataModel::TrackTypeCrossingRight:
+			case DataModel::TrackTypeCrossingSymetric:
+				height = DataModel::LayoutItem::Height2;
+				break;
 
 			default:
 				break;
@@ -3326,6 +3333,9 @@ namespace WebServer
 		typeOptions[DataModel::TrackTypeTunnel] = Languages::TextTunnelTwoSides;
 		typeOptions[DataModel::TrackTypeTunnelEnd] = Languages::TextTunnelOneSide;
 		typeOptions[DataModel::TrackTypeLink] = Languages::TextLink;
+		typeOptions[DataModel::TrackTypeCrossingLeft] = Languages::TextCrossingLeft;
+		typeOptions[DataModel::TrackTypeCrossingRight] = Languages::TextCrossingRight;
+		typeOptions[DataModel::TrackTypeCrossingSymetric] = Languages::TextCrossingSymetric;
 
 		HtmlTag mainContent("div");
 		mainContent.AddId("tab_main");
@@ -3381,7 +3391,7 @@ namespace WebServer
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		LayoutItemSize height = 1;
+		LayoutItemSize height = DataModel::LayoutItem::Height1;
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		int typeInt = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::TrackTypeStraight)); // FIXME: remove later
 		DataModel::TrackType type = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "tracktype", typeInt));
@@ -3389,6 +3399,13 @@ namespace WebServer
 		{
 			case DataModel::TrackTypeTurn:
 			case DataModel::TrackTypeTunnelEnd:
+				// height is already 1
+				break;
+
+			case DataModel::TrackTypeCrossingLeft:
+			case DataModel::TrackTypeCrossingRight:
+			case DataModel::TrackTypeCrossingSymetric:
+				height = DataModel::LayoutItem::Height2;
 				break;
 
 			default:

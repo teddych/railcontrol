@@ -39,7 +39,10 @@ namespace DataModel
 		TrackTypeBridge = 3,
 		TrackTypeTunnel = 4,
 		TrackTypeTunnelEnd = 5,
-		TrackTypeLink = 6
+		TrackTypeLink = 6,
+		TrackTypeCrossingLeft = 7,
+		TrackTypeCrossingRight = 8,
+		TrackTypeCrossingSymetric = 9
 	};
 
 	enum SelectRouteApproach : unsigned char
