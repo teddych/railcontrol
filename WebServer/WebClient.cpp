@@ -1308,8 +1308,8 @@ namespace WebServer
 				content.AddChildTag(HtmlTagSelect(name + "_id", signalOptions, objectId).AddClass("select_relation_id"));
 
 				map<DataModel::AccessoryState,Languages::TextSelector> stateOptions;
-				stateOptions[DataModel::SignalStateGreen] = Languages::TextGreen;
-				stateOptions[DataModel::SignalStateRed] = Languages::TextRed;
+				stateOptions[DataModel::SignalStateClear] = Languages::TextGreen;
+				stateOptions[DataModel::SignalStateStop] = Languages::TextRed;
 				content.AddChildTag(HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::AccessoryState>(data)).AddClass("select_relation_state"));
 				return content;
 			}
@@ -2409,6 +2409,7 @@ namespace WebServer
 		std::map<DataModel::AccessoryType,Languages::TextSelector> typeOptions;
 		typeOptions[DataModel::SwitchTypeLeft] = Languages::TextLeft;
 		typeOptions[DataModel::SwitchTypeRight] = Languages::TextRight;
+		typeOptions[DataModel::SwitchTypeThreeWay] = Languages::TextThreeWay;
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
@@ -2467,8 +2468,20 @@ namespace WebServer
 	void WebClient::HandleSwitchState(const map<string, string>& arguments)
 	{
 		SwitchID switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		DataModel::AccessoryState switchState = (Utils::Utils::GetStringMapEntry(arguments, "state", "turnout").compare("turnout") == 0 ? DataModel::SwitchStateTurnout : DataModel::SwitchStateStraight);
-
+		string switchStateText = Utils::Utils::GetStringMapEntry(arguments, "state", "turnout");
+		DataModel::AccessoryState switchState;
+		if (switchStateText.compare("turnout") == 0)
+		{
+			switchState = DataModel::SwitchStateTurnout;
+		}
+		else if (switchStateText.compare("third") == 0)
+		{
+			switchState = DataModel::SwitchStateThird;
+		}
+		else
+		{
+			switchState = DataModel::SwitchStateStraight;
+		}
 		manager.SwitchState(ControlTypeWebserver, switchID, switchState, false);
 
 		ReplyHtmlWithHeaderAndParagraph(switchState ? Languages::TextSwitchStateIsStraight : Languages::TextSwitchStateIsTurnout, manager.GetSwitchName(switchID));
@@ -2715,11 +2728,11 @@ namespace WebServer
 	void WebClient::HandleSignalState(const map<string, string>& arguments)
 	{
 		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		DataModel::AccessoryState signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? DataModel::SignalStateRed : DataModel::SignalStateGreen);
+		DataModel::AccessoryState signalState = (Utils::Utils::GetStringMapEntry(arguments, "state", "red").compare("red") == 0 ? DataModel::SignalStateStop : DataModel::SignalStateClear);
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
 
-		ReplyHtmlWithHeaderAndParagraph(signalState ? Languages::TextSignalStateIsGreen : Languages::TextSignalStateIsRed, manager.GetSignalName(signalID));
+		ReplyHtmlWithHeaderAndParagraph(signalState ? Languages::TextSignalStateIsClear : Languages::TextSignalStateIsStop, manager.GetSignalName(signalID));
 	}
 
 	void WebClient::HandleSignalList()
