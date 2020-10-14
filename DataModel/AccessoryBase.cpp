@@ -62,14 +62,17 @@ namespace DataModel
 		{
 			return state;
 		}
-		if (state == AccessoryStateOff)
+
+		switch(state)
 		{
-			return AccessoryStateOn;
+			case AccessoryStateOff:
+				return AccessoryStateOn;
+
+			case AccessoryStateOn:
+				return AccessoryStateOff;
+
+			default:
+				return state;
 		}
-		if (state == AccessoryStateOn)
-		{
-			return AccessoryStateOff;
-		}
-		return state;
 	}
 } // namespace DataModel
