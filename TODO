@@ -1,5 +1,7 @@
 - Eingleisige Strecken im Gegenverkehr / Fahrtrichtung über mehrere Blöcke
 - Mehrfachtraktion als separate Lok anzeigen, einzelne Loks trotzdem separat steuerbar.
+- Zugkategorien für Fahrstrassen
+- Manuelle Wahl einer Fahrstrasse einer Lok im Automode
 - Mehrbegriffige Signale
 - Notaus bei Rückmelder an/aus
 - Wenden in einem Block erlauben/nicht erlauben
