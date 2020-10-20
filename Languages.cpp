@@ -522,7 +522,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSwitchStateIsTurnout */ { "Switch {0} is turnout", "Weiche {0} ist ablenkend", "Desvío {0} está desviado" },
 /* TextSwitchUpdated */ { "Switch {0} updated", "Weiche {0} aktualisiert", "Desvío {0} actualizado" },
 /* TextSwitches */ { "Switches", "Weichen", "Desvíos" },
-/* TextSystemDefault */ { "Sysem default", "Systemeinstellung", "Configuración del sistema" },
+/* TextSystemDefault */ { "System setting", "Systemeinstellung", "Configuración del sistema" },
 /* TextTerminatingAccessorySenderThread */ { "Terminating accessory sender thread", "Beende Zubehörartikel Sender Thread", "Apagando thread enviador accesorio" },
 /* TextTerminatingHeartBeatThread */ { "Terminating heartbeat thread", "Beende Heartbeat-Thread", "Apagando thread heartbeat" },
 /* TextTerminatingReceiverThread */ { "Terminating receiver thread", "Beende Empfangs-Thread", "Apagando thread recibiendo" },
