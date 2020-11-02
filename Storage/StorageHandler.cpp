@@ -29,14 +29,14 @@ along with RailControl; see the file LICENCE. If not see
 #include "Utils/Utils.h"
 
 using DataModel::Accessory;
-using DataModel::Track;
 using DataModel::Feedback;
 using DataModel::Layer;
 using DataModel::Loco;
 using DataModel::Relation;
-using DataModel::Signal;
 using DataModel::Route;
+using DataModel::Signal;
 using DataModel::Switch;
+using DataModel::Track;
 using std::map;
 using std::string;
 using std::vector;

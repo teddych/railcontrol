@@ -531,7 +531,7 @@ class Manager
 
 		// FIXME: check usage of all mutexes
 
-		// controls (Webserver, console & hardwareHandler. So each hardware is also added here).
+		// controls (Webserver & hardwareHandler. So each hardware is also added here).
 		std::map<ControlID,ControlInterface*> controls;
 		mutable std::mutex controlMutex;
 

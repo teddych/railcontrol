@@ -52,12 +52,12 @@ namespace DataModel
 		ParseArguments(serialized, arguments);
 		LockableItem::Deserialize(arguments);
 		object1 = static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType1"));
-		type = static_cast<Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type", ObjectType1() << 3));
+		type = static_cast<Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type", ObjectType1() << 3)); // FIXME: remove default later and reorder 2020-10-27
 		object1 = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "objectID1"));
 		object2 = static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType2"));
 		object2 = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "objectID2"));
 		priority = Utils::Utils::GetIntegerMapEntry(arguments, "priority");
-		data = Utils::Utils::GetIntegerMapEntry(arguments, "accessoryState"); // FIXME: remove later
+		data = Utils::Utils::GetIntegerMapEntry(arguments, "accessoryState"); // FIXME: remove later 2020-10-27
 		data = Utils::Utils::GetIntegerMapEntry(arguments, "data", data);
 		return true;
 	}

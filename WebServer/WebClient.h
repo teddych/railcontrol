@@ -110,9 +110,21 @@ namespace WebServer
 			HtmlTag HtmlTagProtocolLoco(const ControlID controlID, const Protocol selectedProtocol);
 			HtmlTag HtmlTagProtocolAccessory(const ControlID controlID, const Protocol selectedProtocol);
 			HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration, const Languages::TextSelector label) const;
-			HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration) const { return HtmlTagDuration(duration, Languages::TextDuration); }
-			HtmlTag HtmlTagPosition(const DataModel::LayoutItem::LayoutPosition posx, const DataModel::LayoutItem::LayoutPosition posy, const DataModel::LayoutItem::LayoutPosition posz);
-			HtmlTag HtmlTagPosition(const DataModel::LayoutItem::LayoutPosition posx, const DataModel::LayoutItem::LayoutPosition posy, const DataModel::LayoutItem::LayoutPosition posz, const DataModel::LayoutItem::Visible visible);
+
+			inline HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration) const
+			{
+				return HtmlTagDuration(duration, Languages::TextDuration);
+			}
+
+			HtmlTag HtmlTagPosition(const DataModel::LayoutItem::LayoutPosition posx,
+				const DataModel::LayoutItem::LayoutPosition posy,
+				const DataModel::LayoutItem::LayoutPosition posz) const;
+
+			HtmlTag HtmlTagPosition(const DataModel::LayoutItem::LayoutPosition posx,
+				const DataModel::LayoutItem::LayoutPosition posy,
+				const DataModel::LayoutItem::LayoutPosition posz,
+				const DataModel::LayoutItem::Visible visible) const;
+
 			HtmlTag HtmlTagRotation(const DataModel::LayoutItem::LayoutRotation rotation) const;
 			HtmlTag HtmlTagSelectTrack(const std::string& name, const Languages::TextSelector label, const DataModel::ObjectIdentifier& identifier, const Orientation orientation, const std::string& onchange = "") const;
 			HtmlTag HtmlTagSelectFeedbacksOfTrack(const DataModel::ObjectIdentifier& identifier, const FeedbackID feedbackIdReduced, const FeedbackID feedbackIdCreep, const FeedbackID feedbackIdStop, const FeedbackID feedbackIdOver) const;
@@ -134,18 +146,21 @@ namespace WebServer
 			HtmlTag HtmlTagControlFeedback(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			static HtmlTag HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach, bool releaseWhenFree);
 			HtmlTag HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const DataModel::ObjectIdentifier& objectIdentifier);
+
 			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
 				const DataModel::LayoutItem::LayoutPosition posy,
 				const DataModel::LayoutItem::LayoutPosition posz,
 				const DataModel::LayoutItem::LayoutRotation rotation = DataModel::LayoutItem::RotationNotRelevant,
-				const DataModel::LayoutItem::Visible visible = DataModel::LayoutItem::VisibleNotRelevant);
-			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
+				const DataModel::LayoutItem::Visible visible = DataModel::LayoutItem::VisibleNotRelevant) const;
+
+			inline HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
 				const DataModel::LayoutItem::LayoutPosition posy,
 				const DataModel::LayoutItem::LayoutPosition posz,
-				const DataModel::LayoutItem::Visible visible)
+				const DataModel::LayoutItem::Visible visible) const
 			{
 				return HtmlTagTabPosition(posx, posy, posz, DataModel::LayoutItem::RotationNotRelevant, visible);
 			}
+
 			HtmlTag HtmlTagProgramModeSelector(const ControlID controlID, ProgramMode& mode) const;
 			HtmlTag HtmlTagCvFields(const ControlID controlID, const ProgramMode programMode) const;
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);

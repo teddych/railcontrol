@@ -60,6 +60,7 @@ namespace DataModel
 			static const LayoutItem::LayoutItemSize MinLength = 1;
 			static const LayoutItem::LayoutItemSize MaxLength = 100;
 
+			TrackBase() = delete;
 			TrackBase(Manager* manager)
 			:	manager(manager),
 				selectRouteApproach(SelectRouteSystemDefault),
@@ -74,30 +75,97 @@ namespace DataModel
 
 			virtual ~TrackBase() {}
 
-			ObjectType GetObjectType() const { return ObjectTypeTrack; }
+			inline ObjectType GetObjectType() const
+			{
+				return ObjectTypeTrack;
+			}
 
-			std::vector<FeedbackID> GetFeedbacks() const { return feedbacks; }
-			void Feedbacks(const std::vector<FeedbackID>& feedbacks) { this->feedbacks = feedbacks; }
+			inline std::vector<FeedbackID> GetFeedbacks() const
+			{
+				return feedbacks;
+			}
+
+			inline void Feedbacks(const std::vector<FeedbackID>& feedbacks)
+			{
+				this->feedbacks = feedbacks;
+			}
 
 			bool SetFeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
-			DataModel::Feedback::FeedbackState GetFeedbackStateDelayed() const { return trackStateDelayed; };
+
+			inline DataModel::Feedback::FeedbackState GetFeedbackStateDelayed() const
+			{
+				return trackStateDelayed;
+			}
 
 			bool AddRoute(Route* route);
 			bool RemoveRoute(Route* route);
 
-			SelectRouteApproach GetSelectRouteApproach() const { return selectRouteApproach; }
-			void SetSelectRouteApproach(const SelectRouteApproach selectRouteApproach) { this->selectRouteApproach = selectRouteApproach; }
+			inline SelectRouteApproach GetSelectRouteApproach() const
+			{
+				return selectRouteApproach;
+			}
+
+			inline void SetSelectRouteApproach(const SelectRouteApproach selectRouteApproach)
+			{
+				this->selectRouteApproach = selectRouteApproach;
+			}
 
 			bool GetValidRoutes(Logger::Logger* logger, const DataModel::Loco* loco, const bool allowLocoTurn, std::vector<Route*>& validRoutes) const;
-			Orientation GetLocoOrientation() const { return locoOrientation; }
-			void SetLocoOrientation(const Orientation orientation) { locoOrientation = orientation; }
-			bool GetBlocked() const { return blocked; }
-			void SetBlocked(const bool blocked) { this->blocked = blocked; }
-			LocoID GetLocoDelayed() const { return this->locoIdDelayed; }
-			bool GetReleaseWhenFree() const { return releaseWhenFree; }
-			void SetReleaseWhenFree(const bool releaseWhenFree) { this->releaseWhenFree = releaseWhenFree; }
-			bool GetShowName() const { return this->showName; }
-			void SetShowName(const bool showName) { this->showName = showName; }
+
+			inline Orientation GetLocoOrientation() const
+			{
+				return locoOrientation;
+			}
+
+			inline void SetLocoOrientation(const Orientation orientation)
+			{
+				locoOrientation = orientation;
+			}
+
+			inline bool GetBlocked() const
+			{
+				return blocked;
+			}
+
+			inline void SetBlocked(const bool blocked)
+			{
+				this->blocked = blocked;
+			}
+
+			inline LocoID GetLocoDelayed() const
+			{
+				return this->locoIdDelayed;
+			}
+
+			inline bool GetReleaseWhenFree() const
+			{
+				return releaseWhenFree;
+			}
+
+			inline void SetReleaseWhenFree(const bool releaseWhenFree)
+			{
+				this->releaseWhenFree = releaseWhenFree;
+			}
+
+			inline bool GetShowName() const
+			{
+				return this->showName;
+			}
+
+			inline void SetShowName(const bool showName)
+			{
+				this->showName = showName;
+			}
+
+			inline ClusterID GetCluster() const
+			{
+				return clusterID;
+			}
+
+			inline void SetCluster(const ClusterID trackCluster)
+			{
+				this->clusterID = trackCluster;
+			}
 
 			virtual ObjectIdentifier GetObjectIdentifier() const = 0;
 			virtual ObjectID GetMyID() const = 0;

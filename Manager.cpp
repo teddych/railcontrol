@@ -115,7 +115,7 @@ Manager::Manager(Config& config)
 	for (auto accessory : accessories)
 	{
 		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
-		// FIXME: remove again later
+		// FIXME: remove again later 2020-10-27
 		if (accessory.second->GetProtocol() == ProtocolMM2
 			&& (ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeCS2Udp)
 				|| ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeCcSchnitte)))
@@ -141,7 +141,7 @@ Manager::Manager(Config& config)
 	for (auto mySwitch : switches)
 	{
 		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
-		// FIXME: remove again later
+		// FIXME: remove again later 2020-10-27
 		if (mySwitch.second->GetProtocol() == ProtocolMM2
 			&& (ControlIsOfHardwareType(mySwitch.second->GetControlID(), HardwareTypeCS2Udp)
 				|| ControlIsOfHardwareType(mySwitch.second->GetControlID(), HardwareTypeCcSchnitte)))
@@ -155,7 +155,7 @@ Manager::Manager(Config& config)
 	for (auto signal : signals)
 	{
 		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
-		// FIXME: remove again later
+		// FIXME: remove again later 2020-10-27
 		if (signal.second->GetProtocol() == ProtocolMM2
 			&& (ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCS2Udp)
 				|| ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCcSchnitte)))
@@ -175,7 +175,7 @@ Manager::Manager(Config& config)
 	for (auto loco : locos)
 	{
 		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
-		// FIXME: remove again later
+		// FIXME: remove again later 2020-10-27
 		if (loco.second->GetProtocol() == ProtocolMM2
 			&& (ControlIsOfHardwareType(loco.second->GetControlID(), HardwareTypeCS2Udp)
 				|| ControlIsOfHardwareType(loco.second->GetControlID(), HardwareTypeCcSchnitte)))

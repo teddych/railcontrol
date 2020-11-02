@@ -32,7 +32,10 @@ namespace WebServer
 	{
 		public:
 			HtmlTagButtonPopupWide() = delete;
-			HtmlTagButtonPopupWide(const Languages::TextSelector value, const std::string& command, const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(), const std::string& tooltip = "")
+			inline HtmlTagButtonPopupWide(const Languages::TextSelector value,
+				const std::string& command,
+				const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(),
+				const std::string& tooltip = "")
 			:	HtmlTagButtonPopup(value, command, arguments, tooltip)
 			{
 				AddClass("wide_button");
