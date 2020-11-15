@@ -59,6 +59,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagSelectWithLabel.h"
 #include "WebServer/HtmlTagSignal.h"
 #include "WebServer/HtmlTagSwitch.h"
+#include "WebServer/HtmlTagTextWithLabel.h"
 #include "WebServer/HtmlTagTrack.h"
 #include "WebServer/WebClient.h"
 #include "WebServer/WebServer.h"
@@ -539,6 +540,26 @@ namespace WebServer
 			else if (arguments["cmd"].compare("getcvfields") == 0)
 			{
 				HandleCvFields(arguments);
+			}
+			else if (arguments["cmd"].compare("clusterlist") == 0)
+			{
+				cluster.HandleClusterList();
+			}
+			else if (arguments["cmd"].compare("clusteredit") == 0)
+			{
+				cluster.HandleClusterEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("clustersave") == 0)
+			{
+				cluster.HandleClusterSave(arguments);
+			}
+			else if (arguments["cmd"].compare("clusteraskdelete") == 0)
+			{
+				cluster.HandleClusterAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("clusterdelete") == 0)
+			{
+				cluster.HandleClusterDelete(arguments);
 			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
@@ -2634,6 +2655,7 @@ namespace WebServer
 		std::vector<FeedbackID> feedbacks;
 		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
+		Cluster* cluster = nullptr;
 		if (signalID > SignalNone)
 		{
 			const DataModel::Signal* signal = manager.GetSignal(signalID);
@@ -2653,6 +2675,7 @@ namespace WebServer
 				duration = signal->GetAccessoryPulseDuration();
 				inverted = signal->GetInverted();
 				feedbacks = signal->GetFeedbacks();
+				cluster = signal->GetCluster();
 				selectRouteApproach = signal->GetSelectRouteApproach();
 				releaseWhenFree = signal->GetReleaseWhenFree();
 			}
@@ -2692,7 +2715,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, ObjectIdentifier(ObjectTypeSignal, signalID)));
 
-		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, releaseWhenFree));
+		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, releaseWhenFree, cluster));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddId("editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -3298,14 +3321,23 @@ namespace WebServer
 		return feedbackContent;
 	}
 
-	HtmlTag WebClient::HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach, bool releaseWhenFree)
+	HtmlTag WebClient::HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach,
+		const bool releaseWhenFree,
+		const Cluster* cluster) const
 	{
 		HtmlTag automodeContent("div");
 		automodeContent.AddId("tab_automode");
 		automodeContent.AddClass("tab_content");
 		automodeContent.AddClass("hidden");
+
 		automodeContent.AddChildTag(HtmlTagSelectSelectRouteApproach(selectRouteApproach));
+
 		automodeContent.AddChildTag(HtmlTagInputCheckboxWithLabel("releasewhenfree", Languages::TextReleaseWhenFree, "true", releaseWhenFree));
+
+		if (cluster != nullptr)
+		{
+			automodeContent.AddChildTag(HtmlTagTextWithLabel("cluster", Languages::TextCluster, cluster->GetName()));
+		}
 		return automodeContent;
 	}
 
@@ -3322,6 +3354,7 @@ namespace WebServer
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::TrackType type = DataModel::TrackTypeStraight;
 		std::vector<FeedbackID> feedbacks;
+		Cluster* cluster = nullptr;
 		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		if (trackID > TrackNone)
@@ -3338,6 +3371,7 @@ namespace WebServer
 				rotation = track->GetRotation();
 				type = track->GetTrackType();
 				feedbacks = track->GetFeedbacks();
+				cluster = track->GetCluster();
 				selectRouteApproach = track->GetSelectRouteApproach();
 				releaseWhenFree = track->GetReleaseWhenFree();
 			}
@@ -3422,7 +3456,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabTrackFeedback(feedbacks, ObjectIdentifier(ObjectTypeTrack, trackID)));
 
-		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, releaseWhenFree));
+		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, releaseWhenFree, cluster));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -3471,6 +3505,7 @@ namespace WebServer
 		}
 		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
+
 		string result;
 		if (manager.TrackSave(trackID,
 			name,
@@ -4377,6 +4412,7 @@ namespace WebServer
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polygon points=\"1,11 6,11 6,1 11,1 11,11 26,11 26,1 36,1 36,6 31,6 31,11 36,11 36,26 1,26\" fill=\"black\"/><circle cx=\"6\" cy=\"31\" r=\"5\" fill=\"black\"/><circle cx=\"18.5\" cy=\"31\" r=\"5\" fill=\"black\"/><circle cx=\"31\" cy=\"31\" r=\"5\" fill=\"black\"/</svg>", "locolist", Languages::TextEditLocos));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polygon points=\"2,31 26,31 35,21 11,21\" fill=\"white\" stroke=\"black\"/><polygon points=\"2,26 26,26 35,16 11,16\" fill=\"white\" stroke=\"black\"/><polygon points=\"2,21 26,21 35,11 11,11\" fill=\"white\" stroke=\"black\"/><polygon points=\"2,16 26,16 35,6 11,6\" fill=\"white\" stroke=\"black\"/></svg>", "layerlist", Languages::TextEditLayers));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,12 35,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,23 35,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,10 3,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,10 6,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,10 9,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,10 12,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,10 15,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,10 18,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,10 21,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,10 24,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,10 27,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,10 30,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,10 33,25\" stroke=\"black\" stroke-width=\"1\"/></svg>", "tracklist", Languages::TextEditTracks));
+		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,12 17,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,23 17,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"19,12 35,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"19,23 35,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,10 3,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,10 6,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,10 9,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,10 12,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,10 15,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,10 21,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,10 24,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,10 27,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,10 30,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,10 33,25\" stroke=\"black\" stroke-width=\"1\"/></svg>", "clusterlist", Languages::TextEditClusters));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,20 7.1,19.5 13,17.9 18.5,15.3 23.5,11.8 27.8,7.5\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"1,28 8.5,27.3 15.7,25.4 22.5,22.2 28.6,17.9 33.9,12.6\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"1,20 35,20\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,28 35,28\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,18 3,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,18 6,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,17 9,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,16 12,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,15 15,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,13 18,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,12 21,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,9 24,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,17 27,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,18 30,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,18 33,30\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,9 32,17\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"26,7 34,15\" stroke=\"black\" stroke-width=\"1\"/></svg>", "switchlist", Languages::TextEditSwitches));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polygon points=\"17,36 17,28 15,28 10,23 10,5 15,0 21,0 26,5 26,23 21,28 19,28 19,36\" fill=\"black\" /><circle cx=\"18\" cy=\"8\" r=\"4\" fill=\"red\" /><circle cx=\"18\" cy=\"20\" r=\"4\" fill=\"green\" /></svg>", "signallist", Languages::TextEditSignals));
 		menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,20 10,20 30,15\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/><polyline points=\"28,17 28,20 34,20\" stroke=\"black\" stroke-width=\"1\" fill=\"none\"/></svg>", "accessorylist", Languages::TextEditAccessories));

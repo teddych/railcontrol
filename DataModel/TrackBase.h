@@ -23,6 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
+#include "DataModel/Cluster.h"
 #include "DataModel/Feedback.h"
 #include "Logger/Logger.h"
 
@@ -64,6 +65,7 @@ namespace DataModel
 
 			inline TrackBase(Manager* manager)
 			:	manager(manager),
+				cluster(nullptr),
 				selectRouteApproach(SelectRouteSystemDefault),
 				trackState(DataModel::Feedback::FeedbackStateFree),
 				trackStateDelayed(DataModel::Feedback::FeedbackStateFree),
@@ -121,10 +123,12 @@ namespace DataModel
 				return locoOrientation;
 			}
 
-			inline void SetLocoOrientation(const Orientation orientation)
+			inline bool CanSetLocoOrientation(const Orientation orientation, const LocoID locoId)
 			{
-				locoOrientation = orientation;
+				return cluster == nullptr ? true : cluster->CanSetLocoOrientation(orientation, locoId);
 			}
+
+			bool SetLocoOrientation(const Orientation orientation);
 
 			inline bool GetBlocked() const
 			{
@@ -161,14 +165,14 @@ namespace DataModel
 				this->showName = showName;
 			}
 
-			inline ClusterID GetCluster() const
+			inline Cluster* GetCluster() const
 			{
-				return clusterID;
+				return cluster;
 			}
 
-			inline void SetCluster(const ClusterID trackCluster)
+			inline void SetCluster(Cluster* const cluster)
 			{
-				this->clusterID = trackCluster;
+				this->cluster = cluster;
 			}
 
 			virtual ObjectIdentifier GetObjectIdentifier() const = 0;
@@ -203,6 +207,7 @@ namespace DataModel
 
 			mutable std::mutex updateMutex;
 			std::vector<FeedbackID> feedbacks;
+			Cluster* cluster;
 			SelectRouteApproach selectRouteApproach;
 			DataModel::Feedback::FeedbackState trackState;
 			DataModel::Feedback::FeedbackState trackStateDelayed;

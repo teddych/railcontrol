@@ -165,6 +165,12 @@ Manager::Manager(Config& config)
 		logger->Info(Languages::TextLoadedSignal, signal.second->GetID(), signal.second->GetName());
 	}
 
+	storage->AllClusters(clusters);
+	for (auto cluster : clusters)
+	{
+		logger->Info(Languages::TextLoadedCluster, cluster.second->GetID(), cluster.second->GetName());
+	}
+
 	storage->AllRoutes(routes);
 	for (auto route : routes)
 	{
@@ -241,6 +247,7 @@ Manager::~Manager()
 	}
 
 	DeleteAllMapEntries(locos, locoMutex);
+	DeleteAllMapEntries(clusters, clusterMutex);
 	DeleteAllMapEntries(routes, routeMutex);
 	DeleteAllMapEntries(signals, signalMutex);
 	DeleteAllMapEntries(switches, switchMutex);
@@ -1615,6 +1622,13 @@ bool Manager::TrackDelete(const TrackID trackID)
 	{
 		control.second->TrackDelete(trackID, name);
 	}
+
+	Cluster* cluster = track->GetCluster();
+	if (cluster != nullptr)
+	{
+		cluster->DeleteTrack(track);
+	}
+
 	delete track;
 	return true;
 }
@@ -2361,6 +2375,13 @@ bool Manager::SignalDelete(const SignalID signalID)
 	{
 		control.second->SignalDelete(signalID, signalName);
 	}
+
+	Cluster* cluster = signal->GetCluster();
+	if (cluster != nullptr)
+	{
+		cluster->DeleteSignal(signal);
+	}
+
 	delete signal;
 	return true;
 }
@@ -2374,6 +2395,98 @@ const map<string,DataModel::Signal*> Manager::SignalListByName() const
 		out[signal.second->GetName()] = signal.second;
 	}
 	return out;
+}
+
+/***************************
+* Cluster                  *
+***************************/
+
+Cluster* Manager::GetCluster(const ClusterID clusterID) const
+{
+	std::lock_guard<std::mutex> guard(clusterMutex);
+	if (clusters.count(clusterID) != 1)
+	{
+		return nullptr;
+	}
+	return clusters.at(clusterID);
+}
+
+const map<string,DataModel::Cluster*> Manager::ClusterListByName() const
+{
+	map<string,DataModel::Cluster*> out;
+	std::lock_guard<std::mutex> guard(clusterMutex);
+	for(auto cluster : clusters)
+	{
+		out[cluster.second->GetName()] = cluster.second;
+	}
+	return out;
+}
+
+bool Manager::ClusterSave(const ClusterID clusterID,
+	const string& name,
+	__attribute__((unused)) const std::vector<DataModel::Relation*>& newTracks,
+	__attribute__((unused)) const std::vector<DataModel::Relation*>& newSignals,
+	string& result)
+{
+	Cluster* cluster = GetCluster(clusterID);
+	if (cluster == nullptr)
+	{
+		cluster = CreateAndAddObject(clusters, clusterMutex);
+	}
+
+	if (cluster == nullptr)
+	{
+		result = Languages::GetText(Languages::TextUnableToAddCluster);
+		return false;
+	}
+
+	// update existing cluster
+	cluster->SetName(CheckObjectName(clusters, clusterMutex, clusterID, name.size() == 0 ? "C" : name));
+	cluster->AssignTracks(newTracks);
+	cluster->AssignSignals(newSignals);
+
+	// save in db
+	if (storage)
+	{
+		storage->Save(*cluster);
+	}
+	return true;
+}
+
+bool Manager::ClusterDelete(const ClusterID clusterID)
+{
+	if (clusterID == ClusterNone)
+	{
+		return false;
+	}
+	Cluster* cluster = nullptr;
+	{
+		std::lock_guard<std::mutex> guard(clusterMutex);
+		if (clusters.count(clusterID) != 1)
+		{
+			return false;
+		}
+
+		cluster = clusters.at(clusterID);
+		clusters.erase(clusterID);
+	}
+
+	cluster->DeleteTracks();
+	cluster->DeleteSignals();
+
+	if (storage)
+	{
+		storage->DeleteCluster(clusterID);
+	}
+
+	const string& clusterName = cluster->GetName();
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->ClusterDelete(clusterID, clusterName);
+	}
+	delete cluster;
+	return true;
 }
 
 /***************************

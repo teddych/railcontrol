@@ -31,10 +31,12 @@ along with RailControl; see the file LICENCE. If not see
 #include "Manager.h"
 #include "Network/TcpConnection.h"
 #include "WebServer/HtmlResponse.h"
+#include "WebServer/WebClientCluster.h"
 
 namespace DataModel
 {
 	class ObjectIdentifier;
+	class Cluster;
 }
 
 namespace WebServer
@@ -63,7 +65,8 @@ namespace WebServer
 				run(false),
 				server(webserver),
 				clientThread(&WebClient::Worker, this),
-				manager(m),
+				manager(manager),
+				cluster(manager, *this),
 				headOnly(false),
 				buttonID(0)
 			{}
@@ -303,6 +306,7 @@ namespace WebServer
 			WebServer& server;
 			std::thread clientThread;
 			Manager& manager;
+			WebClientCluster cluster;
 			bool headOnly;
 			unsigned int buttonID;
 	};

@@ -45,6 +45,8 @@ namespace DataModel
 				TypeLocoSlave = ObjectTypeLoco << 3,
 				TypeFeedbackAtSet = ObjectTypeFeedback << 3,
 				TypeFeedbackAtUnset = (ObjectTypeFeedback << 3) + 1,
+				TypeClusterTrack = (ObjectTypeCluster << 3),
+				TypeClusterSignal = (ObjectTypeCluster << 3) + 1,
 			};
 
 			typedef unsigned char Data;
@@ -99,6 +101,8 @@ namespace DataModel
 				return object2.GetObjectID();
 			}
 
+			LockableItem* GetObject2();
+
 			inline Type GetType() const
 			{
 				return type;
@@ -124,8 +128,6 @@ namespace DataModel
 			{
 				return object1.GetObjectType();
 			}
-
-			LockableItem* GetObject2();
 
 			Manager* manager;
 			ObjectIdentifier object1;

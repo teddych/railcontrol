@@ -1,3 +1,4 @@
+- besetztes Gleis löschen sollte korrekte Fehlermeldung erhalten
 - Eingleisige Strecken im Gegenverkehr / Fahrtrichtung über mehrere Blöcke
 - Mehrfachtraktion als separate Lok anzeigen, einzelne Loks trotzdem separat steuerbar.
 - Zugkategorien für Fahrstrassen

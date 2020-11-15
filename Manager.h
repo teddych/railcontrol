@@ -29,10 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Config.h"
 #include "ControlInterface.h"
-#include "DataModel/AccessoryBase.h"
 #include "DataModel/DataModel.h"
-#include "DataModel/LocoFunctions.h"
-#include "DataModel/ObjectIdentifier.h"
 #include "Hardware/HardwareParams.h"
 #include "Logger/Logger.h"
 #include "Storage/StorageHandler.h"
@@ -66,7 +63,7 @@ class Manager
 		bool HardwareLibraryRemove(const HardwareType hardwareType);
 
 		// control (console, web, ...)
-		const std::string GetControlName(const ControlID controlID); // FIXME: => string& (reference)
+		const std::string GetControlName(const ControlID controlID);
 		const std::map<std::string,Hardware::HardwareParams*> ControlListByName() const;
 		const std::map<ControlID,std::string> LocoControlListNames() const;
 		const std::map<ControlID,std::string> AccessoryControlListNames() const;
@@ -270,6 +267,18 @@ class Manager
 			std::string& result);
 		bool SignalDelete(const SignalID signalID);
 		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
+
+		// cluster
+		DataModel::Cluster* GetCluster(const ClusterID clusterID) const;
+		const std::map<std::string,DataModel::Cluster*> ClusterListByName() const;
+
+		bool ClusterSave(const ClusterID clusterID,
+			const std::string& name,
+			const std::vector<DataModel::Relation*>& newTracks,
+			const std::vector<DataModel::Relation*>& newSignals,
+			std::string& result);
+
+		bool ClusterDelete(const ClusterID clusterID);
 
 		// automode
 		bool LocoIntoTrackBase(Logger::Logger* logger, const LocoID locoID, const DataModel::ObjectIdentifier& trackIdentifier);
@@ -573,6 +582,10 @@ class Manager
 		// signal
 		std::map<SignalID,DataModel::Signal*> signals;
 		mutable std::mutex signalMutex;
+
+		// cluster
+		std::map<SignalID,DataModel::Cluster*> clusters;
+		mutable std::mutex clusterMutex;
 
 		// storage
 		Storage::StorageHandler* storage;

@@ -13,6 +13,7 @@ OBJ= \
 	Config.o \
 	DataModel/Accessory.o \
 	DataModel/AccessoryBase.o \
+	DataModel/Cluster.o \
 	DataModel/Feedback.o \
 	DataModel/HardwareHandle.o \
 	DataModel/LayoutItem.o \
@@ -65,6 +66,7 @@ OBJ= \
 	WebServer/HtmlTagTrackBase.o \
 	WebServer/Response.o \
 	WebServer/WebClient.o \
+	WebServer/WebClientCluster.o \
 	WebServer/WebServer.o
 
 CXXUNSORTED= $(shell echo $(OBJ)|sed "s/\.o//g"|sed "s/ /.cpp /g").cpp

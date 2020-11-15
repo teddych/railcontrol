@@ -97,6 +97,20 @@ namespace DataModel
 		return true;
 	}
 
+	bool TrackBase::SetLocoOrientation(const Orientation orientation)
+	{
+		if (locoOrientation == orientation)
+		{
+			return true;
+		}
+		locoOrientation = orientation;
+		if (cluster == nullptr)
+		{
+			return true;
+		}
+		return cluster->SetLocoOrientation(orientation, GetMyLoco());
+	}
+
 	bool TrackBase::BaseReserve(Logger::Logger* logger, const LocoID locoID)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);

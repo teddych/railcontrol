@@ -29,6 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Utils/Utils.h"
 
 using DataModel::Accessory;
+using DataModel::Cluster;
 using DataModel::Feedback;
 using DataModel::Layer;
 using DataModel::Loco;
@@ -332,6 +333,23 @@ namespace Storage
 		CommitTransactionInternal();
 	}
 
+	void StorageHandler::Save(const DataModel::Cluster& cluster)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		string serialized = cluster.Serialize();
+		StartTransactionInternal();
+		const ClusterID clusterID = cluster.GetID();
+		instance->SaveObject(ObjectTypeCluster, clusterID, cluster.GetName(), serialized);
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeClusterTrack, clusterID);
+		SaveRelations(cluster.GetTracks());
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeClusterSignal, clusterID);
+		SaveRelations(cluster.GetSignals());
+		CommitTransactionInternal();
+	}
+
 	void StorageHandler::AllRoutes(std::map<RouteID,DataModel::Route*>& routes)
 	{
 		if (instance == nullptr)
@@ -423,6 +441,39 @@ namespace Storage
 		StartTransactionInternal();
 		instance->DeleteRelationsTo(ObjectTypeSignal, signalID);
 		instance->DeleteObject(ObjectTypeSignal, signalID);
+		CommitTransactionInternal();
+	}
+
+	void StorageHandler::AllClusters(std::map<ClusterID,DataModel::Cluster*>& clusters)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		vector<string> serializedObjects;
+		instance->ObjectsOfType(ObjectTypeCluster, serializedObjects);
+		for(auto serializedObject : serializedObjects)
+		{
+			Cluster* cluster = new Cluster(serializedObject);
+			if (cluster == nullptr)
+			{
+				continue;
+			}
+			const ClusterID clusterID = cluster->GetID();
+			cluster->AssignTracks(RelationsFrom(DataModel::Relation::TypeClusterTrack, clusterID));
+			cluster->AssignSignals(RelationsFrom(DataModel::Relation::TypeClusterSignal, clusterID));
+			clusters[cluster->GetID()] = cluster;
+		}
+	}
+
+	void StorageHandler::DeleteCluster(const ClusterID clusterID)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		StartTransactionInternal();
+		instance->DeleteObject(ObjectTypeCluster, clusterID);
 		CommitTransactionInternal();
 	}
 
