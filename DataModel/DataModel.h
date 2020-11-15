@@ -21,12 +21,17 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include "DataModel/Accessory.h"
+#include "DataModel/AccessoryBase.h"
+#include "DataModel/Cluster.h"
 #include "DataModel/Feedback.h"
 #include "DataModel/Layer.h"
 #include "DataModel/Loco.h"
+#include "DataModel/LocoFunctions.h"
+#include "DataModel/ObjectIdentifier.h"
 #include "DataModel/Relation.h"
 #include "DataModel/Route.h"
 #include "DataModel/Signal.h"
 #include "DataModel/Switch.h"
 #include "DataModel/Track.h"
+#include "DataModel/TrackBase.h"
 

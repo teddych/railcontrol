@@ -160,15 +160,8 @@ namespace Storage
 		for(auto object : objects)
 		{
 			Loco* loco = new Loco(manager, object);
-			vector<string> slavesString;
 			const RouteID locoID = loco->GetID();
-			instance->RelationsFrom(DataModel::Relation::TypeLocoSlave, locoID, slavesString);
-			vector<Relation*> slaves;
-			for (auto slaveString : slavesString)
-			{
-				slaves.push_back(new Relation(manager, slaveString));
-			}
-			loco->AssignSlaves(slaves);
+			loco->AssignSlaves(RelationsFrom(DataModel::Relation::TypeLocoSlave, locoID));
 			locos[locoID] = loco;
 		}
 	}
@@ -181,6 +174,7 @@ namespace Storage
 		}
 		StartTransactionInternal();
 		instance->DeleteRelationsFrom(DataModel::Relation::TypeLocoSlave, locoID);
+		instance->DeleteRelationsTo(ObjectTypeLoco, locoID);
 		instance->DeleteObject(ObjectTypeLoco, locoID);
 		CommitTransactionInternal();
 	}
@@ -196,6 +190,10 @@ namespace Storage
 		for(auto object : objects)
 		{
 			Accessory* accessory = new Accessory(object);
+			if (accessory == nullptr)
+			{
+				continue;
+			}
 			accessories[accessory->GetID()] = accessory;
 		}
 	}
@@ -222,6 +220,10 @@ namespace Storage
 		for(auto object : objects)
 		{
 			Feedback* feedback = new Feedback(manager, object);
+			if (feedback == nullptr)
+			{
+				continue;
+			}
 			feedbacks[feedback->GetID()] = feedback;
 		}
 	}
@@ -248,6 +250,10 @@ namespace Storage
 		for(auto object : objects)
 		{
 			Track* track = new Track(manager, object);
+			if (track == nullptr)
+			{
+				continue;
+			}
 			tracks[track->GetID()] = track;
 		}
 	}
@@ -259,6 +265,7 @@ namespace Storage
 			return;
 		}
 		StartTransactionInternal();
+		instance->DeleteRelationsTo(ObjectTypeTrack, trackID);
 		instance->DeleteObject(ObjectTypeTrack, trackID);
 		CommitTransactionInternal();
 	}
@@ -274,6 +281,10 @@ namespace Storage
 		for(auto object : objects)
 		{
 			Switch* mySwitch = new Switch(object);
+			if (mySwitch == nullptr)
+			{
+				continue;
+			}
 			switches[mySwitch->GetID()] = mySwitch;
 		}
 	}
@@ -331,6 +342,10 @@ namespace Storage
 		instance->ObjectsOfType(ObjectTypeRoute, objects);
 		for (auto object : objects) {
 			Route* route = new Route(manager, object);
+			if (route == nullptr)
+			{
+				continue;
+			}
 			const RouteID routeID = route->GetID();
 			route->AssignRelationsAtLock(RelationsFrom(Relation::TypeRouteAtLock, routeID));
 			route->AssignRelationsAtUnlock(RelationsFrom(Relation::TypeRouteAtUnlock, routeID));
@@ -361,6 +376,10 @@ namespace Storage
 		instance->ObjectsOfType(ObjectTypeLayer, objects);
 		for(auto object : objects) {
 			Layer* layer = new Layer(object);
+			if (layer == nullptr)
+			{
+				continue;
+			}
 			layers[layer->GetID()] = layer;
 		}
 	}
@@ -387,6 +406,10 @@ namespace Storage
 		for(auto serializedObject : serializedObjects)
 		{
 			Signal* signal = new Signal(manager, serializedObject);
+			if (signal == nullptr)
+			{
+				continue;
+			}
 			signals[signal->GetID()] = signal;
 		}
 	}
@@ -398,6 +421,7 @@ namespace Storage
 			return;
 		}
 		StartTransactionInternal();
+		instance->DeleteRelationsTo(ObjectTypeSignal, signalID);
 		instance->DeleteObject(ObjectTypeSignal, signalID);
 		CommitTransactionInternal();
 	}
@@ -476,7 +500,12 @@ namespace Storage
 		vector<Relation*> output;
 		for (auto relationString : relationStrings)
 		{
-			output.push_back(new Relation(manager, relationString));
+			Relation* relation = new Relation(manager, relationString);
+			if (relation == nullptr)
+			{
+				continue;
+			}
+			output.push_back(relation);
 		}
 		return output;
 	}

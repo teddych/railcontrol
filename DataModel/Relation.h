@@ -50,7 +50,7 @@ namespace DataModel
 			typedef unsigned char Data;
 			static const Data DefaultData = 0;
 
-			Relation(Manager* manager,
+			inline Relation(Manager* manager,
 				const ObjectType objectType1,
 				const ObjectID objectID1,
 				const ObjectType objectType2,
@@ -66,7 +66,7 @@ namespace DataModel
 				data(data)
 			{}
 
-			Relation(Manager* manager,
+			inline Relation(Manager* manager,
 				const std::string& serialized)
 			:	manager(manager),
 				data(0)

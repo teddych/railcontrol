@@ -61,7 +61,8 @@ namespace DataModel
 			static const LayoutItem::LayoutItemSize MaxLength = 100;
 
 			TrackBase() = delete;
-			TrackBase(Manager* manager)
+
+			inline TrackBase(Manager* manager)
 			:	manager(manager),
 				selectRouteApproach(SelectRouteSystemDefault),
 				trackState(DataModel::Feedback::FeedbackStateFree),
@@ -110,7 +111,10 @@ namespace DataModel
 				this->selectRouteApproach = selectRouteApproach;
 			}
 
-			bool GetValidRoutes(Logger::Logger* logger, const DataModel::Loco* loco, const bool allowLocoTurn, std::vector<Route*>& validRoutes) const;
+			bool GetValidRoutes(Logger::Logger* logger,
+				const DataModel::Loco* loco,
+				const bool allowLocoTurn,
+				std::vector<Route*>& validRoutes) const;
 
 			inline Orientation GetLocoOrientation() const
 			{

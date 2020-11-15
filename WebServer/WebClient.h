@@ -44,8 +44,19 @@ namespace WebServer
 	class WebClient
 	{
 		public:
+			enum ResponseType : unsigned char
+			{
+				ResponseInfo = 'i',
+				ResponseWarning = 'w',
+				ResponseError = 'e'
+			};
+
 			WebClient() = delete;
-			WebClient(const unsigned int id, Network::TcpConnection* connection, WebServer &webserver, Manager& m)
+
+			inline WebClient(const unsigned int id,
+				Network::TcpConnection* connection,
+				WebServer &webserver,
+				Manager& manager)
 			:	logger(Logger::Logger::GetLogger("Webserver")),
 				id(id),
 				connection(connection),
@@ -58,18 +69,17 @@ namespace WebServer
 			{}
 
 			~WebClient();
+
 			void Worker();
-			int Stop();
 
-		private:
-			enum ResponseType : unsigned char
+			inline void Stop()
 			{
-				ResponseInfo = 'i',
-				ResponseWarning = 'w',
-				ResponseError = 'e'
-			};
+				run = false;
+			}
 
-			void ReplyResponse(std::string& text)
+			void ReplyHtmlWithHeader(const HtmlTag& tag);
+
+			inline void ReplyResponse(std::string& text)
 			{
 				connection->Send(HtmlResponse(HtmlTag().AddContent(text)));
 			}
@@ -82,25 +92,43 @@ namespace WebServer
 			}
 
 			template<typename... Args>
-			void ReplyResponse(ResponseType type, Languages::TextSelector text, Args... args)
+			inline void ReplyResponse(ResponseType type, Languages::TextSelector text, Args... args)
 			{
 				std::string s(1, static_cast<unsigned char>(type));
 				s.append(Logger::Logger::Format(Languages::GetText(text), args...));
 				ReplyResponse(s);
 			}
 
-			void InterpretClientRequest(const std::deque<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
-			void HandleLoco(const std::map<std::string, std::string>& arguments);
-			void PrintMainHTML();
-			void ReplyHtmlWithHeader(const HtmlTag& tag);
-			void ReplyHtmlWithHeaderAndParagraph(const std::string& content) { ReplyHtmlWithHeader(HtmlTag("p").AddContent(content)); }
-			void ReplyHtmlWithHeaderAndParagraph(const char* content) { ReplyHtmlWithHeaderAndParagraph(std::string(content)); }
+			inline void ReplyHtmlWithHeaderAndParagraph(const std::string& content)
+			{
+				ReplyHtmlWithHeader(HtmlTag("p").AddContent(content));
+			}
+
+			inline void ReplyHtmlWithHeaderAndParagraph(const char* content)
+			{
+				ReplyHtmlWithHeaderAndParagraph(std::string(content));
+			}
 
 			template<typename... Args>
-			void ReplyHtmlWithHeaderAndParagraph(const Languages::TextSelector text, Args... args)
+			inline void ReplyHtmlWithHeaderAndParagraph(const Languages::TextSelector text, Args... args)
 			{
 				ReplyHtmlWithHeaderAndParagraph(Logger::Logger::Format(Languages::GetText(text), args...));
 			}
+
+			HtmlTag HtmlTagTabMenuItem(const std::string& tabName,
+				const Languages::TextSelector buttonValue,
+				const bool selected = false) const;
+
+			HtmlTag HtmlTagSlaveSelect(const std::string& prefix,
+				const std::vector<DataModel::Relation*>& relations,
+				const std::map<std::string,ObjectID>& options) const;
+
+			std::vector<ObjectID> InterpretSlaveData(const std::string& prefix, const std::map<std::string,std::string>& arguments);
+
+		private:
+			void InterpretClientRequest(const std::deque<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
+			void HandleLoco(const std::map<std::string, std::string>& arguments);
+			void PrintMainHTML();
 			void DeliverFile(const std::string& file);
 			void DeliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			HtmlTag HtmlTagLocoSelector() const;
@@ -129,9 +157,7 @@ namespace WebServer
 			HtmlTag HtmlTagSelectTrack(const std::string& name, const Languages::TextSelector label, const DataModel::ObjectIdentifier& identifier, const Orientation orientation, const std::string& onchange = "") const;
 			HtmlTag HtmlTagSelectFeedbacksOfTrack(const DataModel::ObjectIdentifier& identifier, const FeedbackID feedbackIdReduced, const FeedbackID feedbackIdCreep, const FeedbackID feedbackIdStop, const FeedbackID feedbackIdOver) const;
 			HtmlTag HtmlTagRelation(const std::string& type, const std::string& priority, const ObjectType objectType = ObjectTypeSwitch, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
-			HtmlTag HtmlTagSlave(const std::string& priority, const ObjectID objectId = ObjectNone);
 			HtmlTag HtmlTagRelationObject(const std::string& name, const ObjectType objectType, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
-			HtmlTag HtmlTagTabMenuItem(const std::string& tabName, const Languages::TextSelector buttonValue, const bool selected = false) const;
 			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const DataModel::ObjectIdentifier& identifier, const FeedbackID feedbackID = FeedbackNone);
 			static HtmlTag HtmlTagSelectSelectRouteApproach(const DataModel::SelectRouteApproach selectRouteApproach, const bool addDefault = true);
 			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve);
@@ -144,7 +170,11 @@ namespace WebServer
 			HtmlTag HtmlTagControlLoco(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			HtmlTag HtmlTagControlAccessory(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			HtmlTag HtmlTagControlFeedback(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
-			static HtmlTag HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach, bool releaseWhenFree);
+
+			HtmlTag HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach,
+				const bool releaseWhenFree,
+				const DataModel::Cluster* cluster) const;
+
 			HtmlTag HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const DataModel::ObjectIdentifier& objectIdentifier);
 
 			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
@@ -163,6 +193,14 @@ namespace WebServer
 
 			HtmlTag HtmlTagProgramModeSelector(const ControlID controlID, ProgramMode& mode) const;
 			HtmlTag HtmlTagCvFields(const ControlID controlID, const ProgramMode programMode) const;
+
+			HtmlTag HtmlTagSlaveEntry(const std::string& prefix,
+				const std::string& priority,
+				const ObjectID objectId,
+				const std::map<std::string,ObjectID>& options) const;
+
+			std::map<std::string,ObjectID> GetLocoOptions(const LocoID locoID = LocoNone) const;
+
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);
 			void HandleLayerSave(const std::map<std::string, std::string>& arguments);

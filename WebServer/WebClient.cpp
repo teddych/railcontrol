@@ -53,11 +53,11 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagInputIntegerWithLabel.h"
 #include "WebServer/HtmlTagInputSliderLocoSpeed.h"
 #include "WebServer/HtmlTagInputTextWithLabel.h"
+#include "WebServer/HtmlTagRoute.h"
 #include "WebServer/HtmlTagSelectOrientation.h"
 #include "WebServer/HtmlTagSelectOrientationWithLabel.h"
 #include "WebServer/HtmlTagSelectWithLabel.h"
 #include "WebServer/HtmlTagSignal.h"
-#include "WebServer/HtmlTagRoute.h"
 #include "WebServer/HtmlTagSwitch.h"
 #include "WebServer/HtmlTagTrack.h"
 #include "WebServer/WebClient.h"
@@ -553,13 +553,6 @@ namespace WebServer
 				DeliverFile(uri);
 			}
 		}
-	}
-
-	int WebClient::Stop()
-	{
-		// inform working thread to stop
-		run = false;
-		return 0;
 	}
 
 	char WebClient::ConvertHexToInt(char c)
@@ -1248,7 +1241,9 @@ namespace WebServer
 		return HtmlTagSelectWithLabel("duration", label, durationOptions, Utils::Utils::ToStringWithLeadingZeros(duration, 4));
 	}
 
-	HtmlTag WebClient::HtmlTagPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz)
+	HtmlTag WebClient::HtmlTagPosition(const LayoutPosition posx,
+		const LayoutPosition posy,
+		const LayoutPosition posz) const
 	{
 		HtmlTag content("div");
 		content.AddId("position");;
@@ -1259,7 +1254,10 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz, const Visible visible)
+	HtmlTag WebClient::HtmlTagPosition(const LayoutPosition posx,
+		const LayoutPosition posy,
+		const LayoutPosition posz,
+		const Visible visible) const
 	{
 		HtmlTag content;
 		HtmlTagInputCheckboxWithLabel checkboxVisible("visible", Languages::TextVisible, "visible", static_cast<bool>(visible));
@@ -1410,26 +1408,54 @@ namespace WebServer
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagSlave(const string& priority, const ObjectID objectId)
+	HtmlTag WebClient::HtmlTagSlaveSelect(const string& prefix,
+		const vector<Relation*>& relations,
+		const map<string,ObjectID>& options) const
 	{
 		HtmlTag content("div");
-		content.AddId("priority_" + priority);
-		HtmlTagButton deleteButton(Languages::TextDelete, "delete_slave_" + priority);
-		deleteButton.AddAttribute("onclick", "deleteElement('priority_" + priority + "');return false;");
+		content.AddId("tab_" + prefix + "s");
+		content.AddClass("tab_content");
+		content.AddClass("hidden");
+
+		HtmlTag div("div");
+		div.AddChildTag(HtmlTagInputHidden(prefix + "counter", to_string(relations.size())));
+		div.AddId(prefix + "s");
+
+		unsigned int counter = 1;
+		for (auto relation : relations)
+		{
+			ObjectID objectID = relation->ObjectID2();
+			div.AddChildTag(HtmlTagSlaveEntry(prefix, to_string(counter), objectID, options));
+			++counter;
+		}
+		div.AddChildTag(HtmlTag("div").AddId(prefix + "_new_" + to_string(counter)));
+
+		content.AddChildTag(div);
+		HtmlTagButton newTrackButton(Languages::TextNew, "new" + prefix);
+		newTrackButton.AddAttribute("onclick", "addSlave('" + prefix + "');return false;");
+		newTrackButton.AddClass("wide_button");
+		content.AddChildTag(newTrackButton);
+		content.AddChildTag(HtmlTag("br"));
+		return content;
+	}
+
+	HtmlTag WebClient::HtmlTagSlaveEntry(const string& prefix,
+		const string& priority,
+		const ObjectID objectId,
+		const map<string,ObjectID>& options) const
+	{
+		HtmlTag content("div");
+		content.AddId(prefix + "_priority_" + priority);
+		HtmlTagButton deleteButton(Languages::TextDelete, prefix + "_delete_" + priority);
+		deleteButton.AddAttribute("onclick", "deleteElement('" + prefix + "_priority_" + priority + "');return false;");
 		deleteButton.AddClass("wide_button");
 		content.AddChildTag(deleteButton);
 
 		HtmlTag contentObject("div");
-		contentObject.AddId("slave_object_" + priority);
+		contentObject.AddId(prefix + "_object_" + priority);
 		contentObject.AddClass("inline-block");
 
-		std::map<string, Loco*> locos = manager.LocoListByName();
-		map<string, SwitchID> locoOptions;
-		for (auto loco : locos)
-		{
-			locoOptions[loco.first] = loco.second->GetID();
-		}
-		contentObject.AddChildTag(HtmlTagSelect("slave_id_" + priority, locoOptions, objectId).AddClass("select_slave_id"));
+		contentObject.AddChildTag(HtmlTagSelect(prefix + "_id_" + priority, options, objectId).AddClass("select_slave_id"));
 		content.AddChildTag(contentObject);
 		return content;
 	}
@@ -1572,9 +1598,23 @@ namespace WebServer
 	{
 		string priorityString = Utils::Utils::GetStringMapEntry(arguments, "priority", "1");
 		Priority priority = Utils::Utils::StringToInteger(priorityString, 1);
+		string prefix = Utils::Utils::GetStringMapEntry(arguments, "prefix");
 		HtmlTag container;
-		container.AddChildTag(HtmlTagSlave(priorityString));
-		container.AddChildTag(HtmlTag("div").AddId("new_slave_" + to_string(priority + 1)));
+		std::map<std::string,ObjectID> options;
+		if (prefix.compare("track") == 0)
+		{
+			options = cluster.GetTrackOptions();
+		}
+		else if (prefix.compare("signal") == 0)
+		{
+			options = cluster.GetSignalOptions();
+		}
+		else if (prefix.compare("slave") == 0)
+		{
+			options = GetLocoOptions();
+		}
+		container.AddChildTag(HtmlTagSlaveEntry(prefix, priorityString, ObjectNone, options));
+		container.AddChildTag(HtmlTag("div").AddId(prefix + "_new_" + to_string(priority + 1)));
 		ReplyHtmlWithHeader(container);
 	}
 
@@ -1604,6 +1644,24 @@ namespace WebServer
 		const string name = "relation_" + type + "_" + priority;
 		const ObjectType objectType = static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "objecttype"));
 		ReplyHtmlWithHeader(HtmlTagRelationObject(name, objectType));
+	}
+
+	map<string,ObjectID> WebClient::GetLocoOptions(const LocoID locoID) const
+	{
+		map<string, ObjectID> locoOptions;
+
+		map<string, Loco*> allLocos = manager.LocoListByName();
+		for (auto loco : allLocos)
+		{
+			// FIXME: check if already has a master
+			LocoID slaveID = loco.second->GetID();
+			if (locoID == slaveID)
+			{
+				continue;
+			}
+			locoOptions[loco.first] = loco.second->GetID();
+		}
+		return locoOptions;
 	}
 
 	void WebClient::HandleLocoEdit(const map<string, string>& arguments)
@@ -1651,7 +1709,8 @@ namespace WebServer
 		tabMenu.AddChildTag(HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
 
-		HtmlTag formContent;
+		HtmlTag formContent("form");
+		formContent.AddId("editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "locosave"));
 		formContent.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)));
 
@@ -1817,32 +1876,7 @@ namespace WebServer
 		}
 		formContent.AddChildTag(functionsContent);
 
-		HtmlTag slavesDiv("div");
-		slavesDiv.AddChildTag(HtmlTagInputHidden("slavecounter", to_string(slaves.size())));
-		slavesDiv.AddId("slaves");
-		unsigned int slavecounter = 1;
-		for (auto slave : slaves)
-		{
-			LocoID slaveID = slave->ObjectID2();
-			if (locoID == slaveID)
-			{
-				continue;
-			}
-			slavesDiv.AddChildTag(HtmlTagSlave(to_string(slavecounter), slaveID));
-			++slavecounter;
-		}
-		slavesDiv.AddChildTag(HtmlTag("div").AddId("new_slave_" + to_string(slavecounter)));
-		HtmlTag relationContent("div");
-		relationContent.AddId("tab_slaves");
-		relationContent.AddClass("tab_content");
-		relationContent.AddClass("hidden");
-		relationContent.AddChildTag(slavesDiv);
-		HtmlTagButton newButton(Languages::TextNew, "newslave");
-		newButton.AddAttribute("onclick", "addSlave();return false;");
-		newButton.AddClass("wide_button");
-		relationContent.AddChildTag(newButton);
-		relationContent.AddChildTag(HtmlTag("br"));
-		formContent.AddChildTag(relationContent);
+		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetLocoOptions(locoID)));
 
 		HtmlTag automodeContent("div");
 		automodeContent.AddId("tab_automode");
@@ -1855,7 +1889,7 @@ namespace WebServer
 		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("creepingspeed", Languages::TextCreepingSpeed, creepingSpeed, 0, MaxSpeed));
 		formContent.AddChildTag(automodeContent);
 
-		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddId("editform").AddChildTag(formContent)));
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
 		ReplyHtmlWithHeader(content);
@@ -1863,7 +1897,7 @@ namespace WebServer
 
 	void WebClient::HandleLocoSave(const map<string, string>& arguments)
 	{
-		const LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
+		const LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
@@ -1915,21 +1949,17 @@ namespace WebServer
 		}
 
 		vector<Relation*> slaves;
-		unsigned int slaveCount = Utils::Utils::GetIntegerMapEntry(arguments, "slavecounter", 0);
-		for (unsigned int index = 1; index <= slaveCount; ++index)
 		{
-			string slaveString = to_string(index);
-			LocoID slaveId = Utils::Utils::GetIntegerMapEntry(arguments, "slave_id_" + slaveString, LocoNone);
-			if (slaveId == LocoNone)
+			vector<LocoID> slaveIds = InterpretSlaveData("slave", arguments);
+			for (auto slaveId : slaveIds)
 			{
-				continue;
+				slaves.push_back(new Relation(&manager, ObjectTypeLoco, locoId, ObjectTypeLoco, slaveId, Relation::TypeLocoSlave, 0, 0));
 			}
-			slaves.push_back(new Relation(&manager, ObjectTypeLoco, locoID, ObjectTypeLoco, slaveId, Relation::TypeLocoSlave, 0, 0));
 		}
 
 		string result;
 
-		if (!manager.LocoSave(locoID,
+		if (!manager.LocoSave(locoId,
 			name,
 			controlId,
 			protocol,
@@ -1963,7 +1993,7 @@ namespace WebServer
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(loco.first));
 			row.AddChildTag(HtmlTag("td").AddContent(to_string(loco.second->GetAddress())));
-			string locoIdString = to_string(loco.second->GetID());
+			const string& locoIdString = to_string(loco.second->GetID());
 			locoArgument["loco"] = locoIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "locoedit_list_" + locoIdString, locoArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "locoaskdelete_" + locoIdString, locoArgument)));
@@ -2298,7 +2328,7 @@ namespace WebServer
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(accessory.first));
-			string accessoryIdString = to_string(accessory.second->GetID());
+			const string& accessoryIdString = to_string(accessory.second->GetID());
 			accessoryArgument["accessory"] = accessoryIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
@@ -2498,7 +2528,7 @@ namespace WebServer
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(mySwitch.first));
-			string switchIdString = to_string(mySwitch.second->GetID());
+			const string& switchIdString = to_string(mySwitch.second->GetID());
 			switchArgument["switch"] = switchIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "switchedit_list_" + switchIdString, switchArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "switchaskdelete_" + switchIdString, switchArgument)));
@@ -2746,7 +2776,7 @@ namespace WebServer
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(signal.first));
-			string signalIdString = to_string(signal.second->GetID());
+			const string& signalIdString = to_string(signal.second->GetID());
 			signalArgument["signal"] = signalIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "signaledit_list_" + signalIdString, signalArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "signalaskdelete_" + signalIdString, signalArgument)));
@@ -3188,7 +3218,7 @@ namespace WebServer
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(route.first));
-			string routeIdString = to_string(route.second->GetID());
+			const string& routeIdString = to_string(route.second->GetID());
 			routeArgument["route"] = routeIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "routeedit_list_" + routeIdString, routeArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "routeaskdelete_" + routeIdString, routeArgument)));
@@ -3218,7 +3248,11 @@ namespace WebServer
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Route released" : "Route not released");
 	}
 
-	HtmlTag WebClient::HtmlTagTabPosition(const LayoutPosition posx, const LayoutPosition posy, const LayoutPosition posz, const LayoutRotation rotation, const Visible visible)
+	HtmlTag WebClient::HtmlTagTabPosition(const LayoutPosition posx,
+		const LayoutPosition posy,
+		const LayoutPosition posz,
+		const LayoutRotation rotation,
+		const Visible visible) const
 	{
 		HtmlTag positionContent("div");
 		positionContent.AddId("tab_position");
@@ -3500,7 +3534,7 @@ namespace WebServer
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(track.first));
-			string trackIdString = to_string(track.second->GetID());
+			const string& trackIdString = to_string(track.second->GetID());
 			trackArgument["track"] = trackIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "trackedit_list_" + trackIdString, trackArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "trackaskdelete_" + trackIdString, trackArgument)));
@@ -3735,7 +3769,7 @@ namespace WebServer
 		{
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(feedback.first));
-			string feedbackIdString = to_string(feedback.second->GetID());
+			const string& feedbackIdString = to_string(feedback.second->GetID());
 			feedbackArgument["feedback"] = feedbackIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "feedbackedit_list_" + feedbackIdString, feedbackArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "feedbackaskdelete_" + feedbackIdString, feedbackArgument)));
@@ -4172,6 +4206,26 @@ namespace WebServer
 				break;
 		}
 		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccWrite, cv, value);
+	}
+
+	vector<ObjectID> WebClient::InterpretSlaveData(const string& prefix, const map<string, string>& arguments)
+	{
+		vector<ObjectID> ids;
+		unsigned int count = Utils::Utils::GetIntegerMapEntry(arguments, prefix + "counter", 0);
+		for (unsigned int index = 1; index <= count; ++index)
+		{
+			string indexAsString = to_string(index);
+			ObjectID id = Utils::Utils::GetIntegerMapEntry(arguments, prefix + "_id_" + indexAsString, TrackNone);
+			if (id == TrackNone)
+			{
+				continue;
+			}
+			ids.push_back(id);
+		}
+
+		std::sort(ids.begin(), ids.end());
+		ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
+		return ids;
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)

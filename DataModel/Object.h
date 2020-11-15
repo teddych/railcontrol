@@ -31,12 +31,12 @@ namespace DataModel
 	class Object : protected Serializable
 	{
 		public:
-			Object()
+			inline Object()
 			:	objectID(ObjectNone),
 			 	name(std::to_string(objectID))
 			{}
 
-			Object(const ObjectID objectID)
+			inline Object(const ObjectID objectID)
 			:	objectID(objectID),
 				name(std::to_string(objectID))
 			{}
