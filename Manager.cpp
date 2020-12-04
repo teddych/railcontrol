@@ -1546,6 +1546,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	const DataModel::TrackType trackType,
 	const std::vector<FeedbackID>& newFeedbacks,
 	const DataModel::SelectRouteApproach selectRouteApproach,
+	const bool allowLocoTurn,
 	const bool releaseWhenFree,
 	string& result)
 {
@@ -1577,6 +1578,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	track->SetTrackType(trackType);
 	track->Feedbacks(CleanupAndCheckFeedbacksForTrack(ObjectIdentifier(ObjectTypeTrack, trackID), newFeedbacks));
 	track->SetSelectRouteApproach(selectRouteApproach);
+	track->SetAllowLocoTurn(allowLocoTurn);
 	track->SetReleaseWhenFree(releaseWhenFree);
 
 	// save in db
@@ -2288,6 +2290,7 @@ bool Manager::SignalSave(const SignalID signalID,
 	const LayoutRotation rotation,
 	const std::vector<FeedbackID>& newFeedbacks,
 	const DataModel::SelectRouteApproach selectRouteApproach,
+	const bool allowLocoTurn,
 	const bool releaseWhenFree,
 	const ControlID controlID,
 	const Protocol protocol,
@@ -2328,6 +2331,7 @@ bool Manager::SignalSave(const SignalID signalID,
 	signal->SetRotation(rotation);
 	signal->Feedbacks(CleanupAndCheckFeedbacksForTrack(ObjectIdentifier(ObjectTypeSignal, signalID), newFeedbacks));
 	signal->SetSelectRouteApproach(selectRouteApproach);
+	signal->SetAllowLocoTurn(allowLocoTurn);
 	signal->SetReleaseWhenFree(releaseWhenFree);
 	signal->SetControlID(controlID);
 	signal->SetProtocol(protocol);

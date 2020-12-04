@@ -72,6 +72,7 @@ namespace DataModel
 				locoOrientation(OrientationRight),
 				blocked(false),
 				locoIdDelayed(LocoNone),
+				allowLocoTurn(true),
 				releaseWhenFree(false),
 				showName(true)
 			{}
@@ -175,6 +176,16 @@ namespace DataModel
 				this->cluster = cluster;
 			}
 
+			inline bool GetAllowLocoTurn() const
+			{
+				return allowLocoTurn;
+			}
+
+			inline void SetAllowLocoTurn(bool allowLocoTurn)
+			{
+				this->allowLocoTurn = allowLocoTurn;
+			}
+
 			virtual ObjectIdentifier GetObjectIdentifier() const = 0;
 			virtual ObjectID GetMyID() const = 0;
 			virtual const std::string& GetMyName() const = 0;
@@ -215,6 +226,7 @@ namespace DataModel
 			Orientation locoOrientation;
 			bool blocked;
 			LocoID locoIdDelayed;
+			bool allowLocoTurn;
 			bool releaseWhenFree;
 			bool showName;
 	};

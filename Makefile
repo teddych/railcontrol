@@ -67,6 +67,9 @@ OBJ= \
 	WebServer/Response.o \
 	WebServer/WebClient.o \
 	WebServer/WebClientCluster.o \
+	WebServer/WebClientSignal.o \
+	WebServer/WebClientTrack.o \
+	WebServer/WebClientTrackBase.o \
 	WebServer/WebServer.o
 
 CXXUNSORTED= $(shell echo $(OBJ)|sed "s/\.o//g"|sed "s/ /.cpp /g").cpp

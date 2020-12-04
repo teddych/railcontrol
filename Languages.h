@@ -57,6 +57,7 @@ class Languages
 			TextAddress,
 			TextAddressMustBeHigherThen0,
 			TextAllTrains,
+			TextAllowLocoTurn,
 			TextAllowedTrains,
 			TextAreYouSureToDelete,
 			TextAtLock,

@@ -32,6 +32,8 @@ along with RailControl; see the file LICENCE. If not see
 #include "Network/TcpConnection.h"
 #include "WebServer/HtmlResponse.h"
 #include "WebServer/WebClientCluster.h"
+#include "WebServer/WebClientSignal.h"
+#include "WebServer/WebClientTrack.h"
 
 namespace DataModel
 {
@@ -67,6 +69,8 @@ namespace WebServer
 				clientThread(&WebClient::Worker, this),
 				manager(manager),
 				cluster(manager, *this),
+				track(manager, *this, logger),
+				signal(manager, *this, logger),
 				headOnly(false),
 				buttonID(0)
 			{}
@@ -128,6 +132,27 @@ namespace WebServer
 
 			std::vector<ObjectID> InterpretSlaveData(const std::string& prefix, const std::map<std::string,std::string>& arguments);
 
+			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
+				const DataModel::LayoutItem::LayoutPosition posy,
+				const DataModel::LayoutItem::LayoutPosition posz,
+				const DataModel::LayoutItem::LayoutRotation rotation = DataModel::LayoutItem::RotationNotRelevant,
+				const DataModel::LayoutItem::Visible visible = DataModel::LayoutItem::VisibleNotRelevant) const;
+
+			HtmlTag HtmlTagControlAccessory(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
+			HtmlTag HtmlTagProtocolAccessory(const ControlID controlID, const Protocol selectedProtocol);
+
+			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter,
+				const DataModel::ObjectIdentifier& identifier,
+				const FeedbackID feedbackID = FeedbackNone) const;
+
+			inline HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration) const
+			{
+				return HtmlTagDuration(duration, Languages::TextDuration);
+			}
+
+			static HtmlTag HtmlTagSelectSelectRouteApproach(const DataModel::SelectRouteApproach selectRouteApproach,
+				const bool addDefault = true);
+
 		private:
 			void InterpretClientRequest(const std::deque<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
 			void HandleLoco(const std::map<std::string, std::string>& arguments);
@@ -139,13 +164,7 @@ namespace WebServer
 			static HtmlTag HtmlTagControlArgument(const unsigned char argNr, const ArgumentType type, const std::string& value);
 			HtmlTag HtmlTagProtocol(const std::map<std::string,Protocol>& protocolMap, const Protocol selectedProtocol);
 			HtmlTag HtmlTagProtocolLoco(const ControlID controlID, const Protocol selectedProtocol);
-			HtmlTag HtmlTagProtocolAccessory(const ControlID controlID, const Protocol selectedProtocol);
 			HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration, const Languages::TextSelector label) const;
-
-			inline HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration) const
-			{
-				return HtmlTagDuration(duration, Languages::TextDuration);
-			}
 
 			HtmlTag HtmlTagPosition(const DataModel::LayoutItem::LayoutPosition posx,
 				const DataModel::LayoutItem::LayoutPosition posy,
@@ -161,8 +180,6 @@ namespace WebServer
 			HtmlTag HtmlTagSelectFeedbacksOfTrack(const DataModel::ObjectIdentifier& identifier, const FeedbackID feedbackIdReduced, const FeedbackID feedbackIdCreep, const FeedbackID feedbackIdStop, const FeedbackID feedbackIdOver) const;
 			HtmlTag HtmlTagRelation(const std::string& type, const std::string& priority, const ObjectType objectType = ObjectTypeSwitch, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
 			HtmlTag HtmlTagRelationObject(const std::string& name, const ObjectType objectType, const ObjectID objectId = ObjectNone, const DataModel::Relation::Data = DataModel::Relation::DefaultData);
-			HtmlTag HtmlTagSelectFeedbackForTrack(const unsigned int counter, const DataModel::ObjectIdentifier& identifier, const FeedbackID feedbackID = FeedbackNone);
-			static HtmlTag HtmlTagSelectSelectRouteApproach(const DataModel::SelectRouteApproach selectRouteApproach, const bool addDefault = true);
 			static HtmlTag HtmlTagNrOfTracksToReserve(const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve);
 			static HtmlTag HtmlTagLogLevel();
 			static HtmlTag HtmlTagLanguage();
@@ -171,20 +188,7 @@ namespace WebServer
 			static HtmlTag HtmlTagControl(const std::map<ControlID,std::string>& controls, const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			static HtmlTag HtmlTagControl(const std::string& name, const std::map<ControlID,std::string>& controls);
 			HtmlTag HtmlTagControlLoco(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
-			HtmlTag HtmlTagControlAccessory(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
 			HtmlTag HtmlTagControlFeedback(const ControlID controlID, const std::string& objectType, const ObjectID objectID);
-
-			HtmlTag HtmlTagTabTrackAutomode(DataModel::SelectRouteApproach selectRouteApproach,
-				const bool releaseWhenFree,
-				const DataModel::Cluster* cluster) const;
-
-			HtmlTag HtmlTagTabTrackFeedback(const std::vector<FeedbackID>& feedbacks, const DataModel::ObjectIdentifier& objectIdentifier);
-
-			HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
-				const DataModel::LayoutItem::LayoutPosition posy,
-				const DataModel::LayoutItem::LayoutPosition posz,
-				const DataModel::LayoutItem::LayoutRotation rotation = DataModel::LayoutItem::RotationNotRelevant,
-				const DataModel::LayoutItem::Visible visible = DataModel::LayoutItem::VisibleNotRelevant) const;
 
 			inline HtmlTag HtmlTagTabPosition(const DataModel::LayoutItem::LayoutPosition posx,
 				const DataModel::LayoutItem::LayoutPosition posy,
@@ -243,14 +247,6 @@ namespace WebServer
 			void HandleSwitchDelete(const std::map<std::string,std::string>& arguments);
 			void HandleSwitchGet(const std::map<std::string,std::string>& arguments);
 			void HandleSwitchRelease(const std::map<std::string,std::string>& arguments);
-			void HandleSignalEdit(const std::map<std::string,std::string>& arguments);
-			void HandleSignalSave(const std::map<std::string,std::string>& arguments);
-			void HandleSignalState(const std::map<std::string,std::string>& arguments);
-			void HandleSignalList();
-			void HandleSignalAskDelete(const std::map<std::string,std::string>& arguments);
-			void HandleSignalDelete(const std::map<std::string,std::string>& arguments);
-			void HandleSignalGet(const std::map<std::string,std::string>& arguments);
-			void HandleSignalRelease(const std::map<std::string,std::string>& arguments);
 			void HandleRouteEdit(const std::map<std::string,std::string>& arguments);
 			void HandleRouteSave(const std::map<std::string,std::string>& arguments);
 			void HandleRouteList();
@@ -259,18 +255,6 @@ namespace WebServer
 			void HandleRouteGet(const std::map<std::string,std::string>& arguments);
 			void HandleRouteExecute(const std::map<std::string,std::string>& arguments);
 			void HandleRouteRelease(const std::map<std::string,std::string>& arguments);
-			void HandleTrackEdit(const std::map<std::string,std::string>& arguments);
-			void HandleTrackSave(const std::map<std::string,std::string>& arguments);
-			void HandleTrackList();
-			void HandleTrackAskDelete(const std::map<std::string,std::string>& arguments);
-			void HandleTrackDelete(const std::map<std::string,std::string>& arguments);
-			void HandleTrackGet(const std::map<std::string, std::string>& arguments);
-			void HandleTrackSetLoco(const std::map<std::string, std::string>& arguments);
-			void HandleTrackRelease(const std::map<std::string, std::string>& arguments);
-			void HandleTrackStartLoco(const std::map<std::string, std::string>& arguments);
-			void HandleTrackStopLoco(const std::map<std::string, std::string>& arguments);
-			void HandleTrackBlock(const std::map<std::string, std::string>& arguments);
-			void HandleTrackOrientation(const std::map<std::string, std::string>& arguments);
 			void HandleFeedbackEdit(const std::map<std::string,std::string>& arguments);
 			void HandleFeedbackSave(const std::map<std::string,std::string>& arguments);
 			void HandleFeedbackState(const std::map<std::string,std::string>& arguments);
@@ -307,6 +291,8 @@ namespace WebServer
 			std::thread clientThread;
 			Manager& manager;
 			WebClientCluster cluster;
+			WebClientTrack track;
+			WebClientSignal signal;
 			bool headOnly;
 			unsigned int buttonID;
 	};

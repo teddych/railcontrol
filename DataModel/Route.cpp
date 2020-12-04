@@ -177,7 +177,11 @@ namespace DataModel
 		return true;
 	}
 
-	bool Route::FromTrackOrientation(Logger::Logger* logger, const ObjectIdentifier& identifier, const Orientation trackOrientation, const Loco* loco, const bool allowLocoTurn)
+	bool Route::FromTrackOrientation(Logger::Logger* logger,
+		const ObjectIdentifier& identifier,
+		const Orientation trackOrientation,
+		const Loco* loco,
+		const bool allowLocoTurn)
 	{
 		if (automode == false)
 		{
@@ -208,14 +212,22 @@ namespace DataModel
 			return false;
 		}
 
-		if (allowLocoTurn == true && locoPushpull == true)
+		if (fromOrientation == trackOrientation)
 		{
 			return true;
 		}
 
-		if (fromOrientation == trackOrientation)
+		if (allowLocoTurn == true && locoPushpull == true)
 		{
-			return true;
+			TrackBase* trackBase = manager->GetTrackBase(fromTrack);
+			if (trackBase != nullptr)
+			{
+				bool allowTrackTurn = trackBase->GetAllowLocoTurn();
+				if (allowTrackTurn == true)
+				{
+					return true;
+				}
+			}
 		}
 
 		logger->Debug(Languages::TextDifferentOrientations, GetName());

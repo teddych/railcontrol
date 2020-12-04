@@ -163,6 +163,7 @@ class Manager
 		const std::map<TrackID,DataModel::Track*>& TrackList() const { return tracks; }
 		const std::map<std::string,DataModel::Track*> TrackListByName() const;
 		const std::map<std::string,TrackID> TrackListIdByName() const;
+
 		TrackID TrackSave(const TrackID trackID,
 			const std::string& name,
 			const bool showName,
@@ -174,8 +175,10 @@ class Manager
 			const DataModel::TrackType trackType,
 			const std::vector<FeedbackID>& feedbacks,
 			const DataModel::SelectRouteApproach selectRouteApproach,
+			const bool allowLocoTurn,
 			const bool releaseWhenFree,
 			std::string& result);
+
 		bool TrackDelete(const TrackID trackID);
 		const std::map<std::string,DataModel::ObjectIdentifier> TrackBaseListIdentifierByName() const;
 
@@ -247,6 +250,7 @@ class Manager
 		const std::string& GetSignalName(const SignalID signalID) const;
 		const std::map<SignalID,DataModel::Signal*>& SignalList() const { return signals; }
 		const std::map<std::string,DataModel::Signal*> SignalListByName() const;
+
 		bool SignalSave(const SignalID signalID,
 			const std::string& name,
 			const Orientation signalOrientation,
@@ -257,6 +261,7 @@ class Manager
 			const DataModel::LayoutItem::LayoutRotation rotation,
 			const std::vector<FeedbackID>& newFeedbacks,
 			const DataModel::SelectRouteApproach selectRouteApproach,
+			const bool allowLocoTurn,
 			const bool releaseWhenFree,
 			const ControlID controlID,
 			const Protocol protocol,
@@ -265,6 +270,7 @@ class Manager
 			const DataModel::AccessoryPulseDuration duration,
 			const bool inverted,
 			std::string& result);
+
 		bool SignalDelete(const SignalID signalID);
 		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
 

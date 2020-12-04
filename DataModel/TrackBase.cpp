@@ -62,6 +62,8 @@ namespace DataModel
 		str += to_string(blocked);
 		str += ";locodelayed=";
 		str += to_string(locoIdDelayed);
+		str += ";allowlocoturn=";
+		str += to_string(allowLocoTurn);
 		str += ";releasewhenfree=";
 		str += to_string(releaseWhenFree);
 		str += ";showname=";
@@ -92,6 +94,7 @@ namespace DataModel
 		locoOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "locoorientation", locoOrientation));
 		blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked", false);
 		locoIdDelayed = static_cast<LocoID>(Utils::Utils::GetIntegerMapEntry(arguments, "locodelayed", GetLockedLoco()));
+		allowLocoTurn = Utils::Utils::GetBoolMapEntry(arguments, "allowlocoturn", true);
 		releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		showName = Utils::Utils::GetBoolMapEntry(arguments, "showname", true);
 		return true;
@@ -304,7 +307,10 @@ namespace DataModel
 		return selectRouteApproach;
 	}
 
-	bool TrackBase::GetValidRoutes(Logger::Logger* logger, const Loco* loco, const bool allowLocoTurn, std::vector<Route*>& validRoutes) const
+	bool TrackBase::GetValidRoutes(Logger::Logger* logger,
+		const Loco* loco,
+		const bool allowLocoTurn,
+		std::vector<Route*>& validRoutes) const
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto route : routes)

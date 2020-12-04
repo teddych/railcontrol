@@ -57,6 +57,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextAddress */ { "Address", "Adresse", "Dirección" },
 /* TextAddressMustBeHigherThen0 */ { "Address must be higher then 0", "Adresse muss grösser sein als 0", "Dirección tiene que ser mas que 0" },
 /* TextAllTrains */ { "all trains", "alle Züge", "todos los trenes" },
+/* TextAllowLocoTurn */ { "Allow turn locomotive orientation", "Fahrtrichtung der Lokomotive drehen erlauben", "Permitir girar la dirección de viaje" },
 /* TextAllowedTrains */ { "Allowed trains:", "Erlaubte Züge", "Trenes permitidos" },
 /* TextAreYouSureToDelete */ { "Are you sure you really want to delete {0}?", "Sind sie sicher, dass sie {0} löschen möchten?", "Está usted seguro, que usted quiere eliminar {0}?" },
 /* TextAtLock */ { "At lock", "Beim Sperren", "Durante bloquear" },
