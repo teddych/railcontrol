@@ -1,6 +1,7 @@
-- besetztes Gleis löschen sollte korrekte Fehlermeldung erhalten
-- Eingleisige Strecken im Gegenverkehr / Fahrtrichtung über mehrere Blöcke
-- Mehrfachtraktion als separate Lok anzeigen, einzelne Loks trotzdem separat steuerbar.
+- Bug: Elemente löschen darf nicht zum Absturz führen
+- Bug: Erreichen des zweiten reservierten Blocks muss beide vorhergehende Blöcke freigeben
+- Bug: Besetztes Gleis löschen sollte korrekte Fehlermeldung erhalten
+- Mehrfachtraktion als separate Lok anzeigen, einzelne Loks trotzdem separat steuerbar
 - Zugkategorien für Fahrstrassen
 - Manuelle Wahl einer Fahrstrasse einer Lok im Automode
 - Mehrbegriffige Signale
