@@ -278,9 +278,10 @@ namespace WebServer
 
 		string name = signal->GetName();
 
-		if (!manager.SignalDelete(signalID))
+		string result;
+		if (!manager.SignalDelete(signalID, result))
 		{
-			client.ReplyResponse(WebClient::ResponseError, Languages::TextSignalDoesNotExist);
+			client.ReplyResponse(WebClient::ResponseError, result);
 			return;
 		}
 

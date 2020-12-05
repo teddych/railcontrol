@@ -179,7 +179,9 @@ class Manager
 			const bool releaseWhenFree,
 			std::string& result);
 
-		bool TrackDelete(const TrackID trackID);
+		bool TrackDelete(const TrackID trackID,
+			std::string& result);
+
 		const std::map<std::string,DataModel::ObjectIdentifier> TrackBaseListIdentifierByName() const;
 
 		// switch
@@ -271,7 +273,9 @@ class Manager
 			const bool inverted,
 			std::string& result);
 
-		bool SignalDelete(const SignalID signalID);
+		bool SignalDelete(const SignalID signalID,
+			std::string& result);
+
 		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
 
 		// cluster

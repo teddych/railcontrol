@@ -311,9 +311,10 @@ namespace WebServer
 
 		string name = track->GetName();
 
-		if (!manager.TrackDelete(trackID))
+		string result;
+		if (!manager.TrackDelete(trackID, result))
 		{
-			client.ReplyResponse(WebClient::ResponseError, Languages::TextTrackDoesNotExist);
+			client.ReplyResponse(WebClient::ResponseError, result);
 			return;
 		}
 
@@ -346,7 +347,7 @@ namespace WebServer
 
 		if (track->IsTrackInUse())
 		{
-			client.ReplyHtmlWithHeaderAndParagraph(Languages::TextTrackIsInUse, track->GetMyName());
+			client.ReplyHtmlWithHeaderAndParagraph(identifier.GetObjectType() == ObjectTypeTrack ? Languages::TextTrackIsUsedByLoco : Languages::TextSignalIsUsedByLoco, track->GetMyName(), manager.GetLocoName(track->GetMyLoco()));
 			return;
 		}
 

@@ -119,7 +119,7 @@ namespace DataModel
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		if (this->locoIdDelayed != LocoNone && this->locoIdDelayed != locoID)
 		{
-			logger->Debug(Languages::TextTrackIsInUse, GetMyName());
+			logger->Debug(Languages::TextTrackIsUsedByLoco, GetMyName(), manager->GetLocoName(locoIdDelayed));
 			return false;
 		}
 		if (blocked == true)

@@ -1595,19 +1595,28 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	return trackIdSave;
 }
 
-bool Manager::TrackDelete(const TrackID trackID)
+bool Manager::TrackDelete(const TrackID trackID,
+	string& result)
 {
 	Track* track = nullptr;
 	{
 		std::lock_guard<std::mutex> guard(trackMutex);
 		if (trackID == TrackNone || tracks.count(trackID) != 1)
 		{
+			result = Languages::GetText(Languages::TextTrackDoesNotExist);
 			return false;
 		}
 
 		track = tracks.at(trackID);
-		if (track == nullptr || track->IsInUse())
+		if (track == nullptr)
 		{
+			result = Languages::GetText(Languages::TextTrackDoesNotExist);
+			return false;
+		}
+
+		if (track->IsInUse())
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextTrackIsUsedByLoco), track->GetName(), GetLocoName(track->GetLoco()));
 			return false;
 		}
 
@@ -2354,15 +2363,31 @@ bool Manager::SignalSave(const SignalID signalID,
 	return true;
 }
 
-bool Manager::SignalDelete(const SignalID signalID)
+bool Manager::SignalDelete(const SignalID signalID,
+	string& result)
 {
 	Signal* signal = nullptr;
 	{
 		std::lock_guard<std::mutex> guard(signalMutex);
 		if (signalID == SignalNone || signals.count(signalID) != 1)
 		{
+			result = Languages::GetText(Languages::TextSignalDoesNotExist);
 			return false;
 		}
+
+		signal = signals.at(signalID);
+		if (signal == nullptr)
+		{
+			result = Languages::GetText(Languages::TextSignalDoesNotExist);
+			return false;
+		}
+
+		if (signal->IsInUse())
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextSignalIsUsedByLoco), signal->GetName(), GetLocoName(signal->GetLoco()));
+			return false;
+		}
+
 
 		signal = signals.at(signalID);
 		signals.erase(signalID);
