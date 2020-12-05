@@ -466,6 +466,7 @@ class Languages
 			TextRoute,
 			TextRouteDeleted,
 			TextRouteDoesNotExist,
+			TextRouteIsInUse,
 			TextRouteIsLocked,
 			TextRouteIsReleased,
 			TextRouteSaved,

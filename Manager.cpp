@@ -2087,17 +2087,25 @@ const map<string,DataModel::Route*> Manager::RouteListByName() const
 	return out;
 }
 
-bool Manager::RouteDelete(const RouteID routeID)
+bool Manager::RouteDelete(const RouteID routeID,
+	string& result)
 {
 	Route* route = nullptr;
 	{
 		std::lock_guard<std::mutex> guard(routeMutex);
 		if (routeID == RouteNone || routes.count(routeID) != 1)
 		{
+			result = Languages::GetText(Languages::TextLocoDoesNotExist);
 			return false;
 		}
 
 		route = routes.at(routeID);
+		if (route->IsInUse())
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextRouteIsInUse), route->GetName());
+			return false;
+		}
+
 		routes.erase(routeID);
 	}
 

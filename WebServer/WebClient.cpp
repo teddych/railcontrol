@@ -2973,9 +2973,10 @@ namespace WebServer
 
 		string name = route->GetName();
 
-		if (!manager.RouteDelete(routeID))
+		string result;
+		if (!manager.RouteDelete(routeID, result))
 		{
-			ReplyResponse(ResponseError, Languages::TextRouteDoesNotExist);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
 

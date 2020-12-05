@@ -284,7 +284,9 @@ class Manager
 			const FeedbackID feedbackIdOver,
 			const Pause waitAfterRelease,
 			std::string& result);
-		bool RouteDelete(const RouteID routeID);
+
+		bool RouteDelete(const RouteID routeID,
+			std::string& result);
 
 		DataModel::Route* GetFirstRouteToTrackBase(const DataModel::ObjectIdentifier& identifier) const;
 
