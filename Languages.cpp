@@ -361,6 +361,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLocoHasReachedDestination */ { "{0} has reached destination track {1} via {2}", "{0} hat das Zielgleis {1} über {2} erreicht.", "{0} ha llegado a su vía destino {1} vía {2}" },
 /* TextLocoIsInAutoMode */ { "{0} is in auto mode", "{0} ist im Automatik-Betrieb", "{0} está en el modo automático" },
 /* TextLocoIsInManualMode */ { "{0} is in manual mode", "{0} ist im manuellen Betrieb", "{0} está en el modo manual" },
+/* TextLocoIsInUse */ { "{0} is in use", "{0} ist in Gebrauch", "{0} está en uso" },
 /* TextLocoIsOnTrack */ { "{0} is on track {1}", "{0} ist auf Gleis {1}", "{0} está sobre vía {1}" } ,
 /* TextLocoIsReleased */ { "{0} is released", " {0} ist freigegeben", "{0} está desbloqueada" },
 /* TextLocoSaved */ { "Locomotive {0} saved", "Lokomotive {0} gespeichert", "Locomotora {0} guardado" },

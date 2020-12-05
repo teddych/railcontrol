@@ -42,7 +42,11 @@ class Manager
 		~Manager();
 
 		// booster
-		BoosterState Booster() const { return boosterState; }
+		inline BoosterState Booster() const
+		{
+			return boosterState;
+		}
+
 		void Booster(const ControlType controlType, const BoosterState status);
 
 		// hardware (virt, CS2, ...)
@@ -55,6 +59,7 @@ class Manager
 			const std::string& arg4,
 			const std::string& arg5,
 			std::string& result);
+
 		bool ControlDelete(ControlID controlID);
 		Hardware::HardwareParams* GetHardware(const ControlID controlID);
 		unsigned int ControlsOfHardwareType(const HardwareType hardwareType);
@@ -69,8 +74,16 @@ class Manager
 		const std::map<ControlID,std::string> AccessoryControlListNames() const;
 		const std::map<ControlID,std::string> FeedbackControlListNames() const;
 		const std::map<ControlID,std::string> ProgramControlListNames() const;
-		const std::map<std::string,Protocol> LocoProtocolsOfControl(const ControlID controlID) const { return ProtocolsOfControl(AddressTypeLoco, controlID); }
-		const std::map<std::string,Protocol> AccessoryProtocolsOfControl(const ControlID controlID) const { return ProtocolsOfControl(AddressTypeAccessory, controlID); }
+
+		inline const std::map<std::string,Protocol> LocoProtocolsOfControl(const ControlID controlID) const
+		{
+			return ProtocolsOfControl(AddressTypeLoco, controlID);
+		}
+
+		inline const std::map<std::string,Protocol> AccessoryProtocolsOfControl(const ControlID controlID) const
+		{
+			return ProtocolsOfControl(AddressTypeAccessory, controlID);
+		}
 
 		DataModel::TrackBase* GetTrackBase(const DataModel::ObjectIdentifier& identifier) const;
 		void TrackBasePublishState(const DataModel::TrackBase* trackBase);
@@ -78,7 +91,12 @@ class Manager
 		// loco
 		DataModel::Loco* GetLoco(const LocoID locoID) const;
 		const std::string& GetLocoName(const LocoID locoID) const;
-		const std::map<LocoID,DataModel::Loco*>& locoList() const { return locos; }
+
+		inline const std::map<LocoID,DataModel::Loco*>& locoList() const
+		{
+			return locos;
+		}
+
 		const std::map<std::string,LocoID> LocoListFree() const;
 		const std::map<std::string,DataModel::Loco*> LocoListByName() const;
 		bool LocoSave
@@ -99,7 +117,9 @@ class Manager
 			std::string& result
 		);
 
-		bool LocoDelete(const LocoID locoID);
+		bool LocoDelete(const LocoID locoID,
+			std::string& result);
+
 		bool LocoProtocolAddress(const LocoID locoID, ControlID& controlID, Protocol& protocol, Address& address) const;
 		void LocoSpeed(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Speed speed);
 		bool LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed, const bool withSlaves = true);
@@ -127,7 +147,12 @@ class Manager
 		void AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::AccessoryState state, const bool inverted, const bool on);
 		DataModel::Accessory* GetAccessory(const AccessoryID accessoryID) const;
 		const std::string& GetAccessoryName(const AccessoryID accessoryID) const;
-		const std::map<AccessoryID,DataModel::Accessory*>& AccessoryList() const { return accessories; }
+
+		inline const std::map<AccessoryID,DataModel::Accessory*>& AccessoryList() const
+		{
+			return accessories;
+		}
+
 		const std::map<std::string,DataModel::Accessory*> AccessoryListByName() const;
 		bool AccessorySave(const AccessoryID accessoryID,
 			const std::string& name,
@@ -150,17 +175,30 @@ class Manager
 		DataModel::Feedback* GetFeedback(const FeedbackID feedbackID) const;
 		DataModel::Feedback* GetFeedbackUnlocked(const FeedbackID feedbackID) const;
 		const std::string& GetFeedbackName(const FeedbackID feedbackID) const;
-		const std::map<FeedbackID,DataModel::Feedback*>& FeedbackList() const { return feedbacks; }
+
+		inline const std::map<FeedbackID,DataModel::Feedback*>& FeedbackList() const
+		{
+			return feedbacks;
+		}
+
 		const std::map<std::string,DataModel::Feedback*> FeedbackListByName() const;
 		const std::map<std::string,FeedbackID> FeedbacksOfTrack(const DataModel::ObjectIdentifier& identifier) const;
 		FeedbackID FeedbackSave(const FeedbackID feedbackID, const std::string& name, const DataModel::LayoutItem::Visible visible, const DataModel::LayoutItem::LayoutPosition posX, const DataModel::LayoutItem::LayoutPosition posY, const DataModel::LayoutItem::LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted,  std::string& result);
 		bool FeedbackDelete(const FeedbackID feedbackID);
-		bool FeedbackExists(const FeedbackID feedbackID) const { return feedbacks.count(feedbackID) == 1; }
+		inline bool FeedbackExists(const FeedbackID feedbackID) const
+		{
+			return feedbacks.count(feedbackID) == 1;
+		}
 
 		// track
 		DataModel::Track* GetTrack(const TrackID trackID) const;
 		const std::string& GetTrackName(const TrackID trackID) const;
-		const std::map<TrackID,DataModel::Track*>& TrackList() const { return tracks; }
+
+		inline const std::map<TrackID,DataModel::Track*>& TrackList() const
+		{
+			return tracks;
+		}
+
 		const std::map<std::string,DataModel::Track*> TrackListByName() const;
 		const std::map<std::string,TrackID> TrackListIdByName() const;
 
@@ -188,7 +226,12 @@ class Manager
 		bool SwitchState(const ControlType controlType, const SwitchID switchID, const DataModel::AccessoryState state, const bool force);
 		DataModel::Switch* GetSwitch(const SwitchID switchID) const;
 		const std::string& GetSwitchName(const SwitchID switchID) const;
-		const std::map<SwitchID,DataModel::Switch*>& SwitchList() const { return switches; }
+
+		inline const std::map<SwitchID,DataModel::Switch*>& SwitchList() const
+		{
+			return switches;
+		}
+
 		const std::map<std::string,DataModel::Switch*> SwitchListByName() const;
 		bool SwitchSave(const SwitchID switchID,
 			const std::string& name,
@@ -210,7 +253,12 @@ class Manager
 		void RouteExecuteAsync(Logger::Logger* logger, const RouteID routeID);
 		DataModel::Route* GetRoute(const RouteID routeID) const;
 		const std::string& GetRouteName(const RouteID routeID) const;
-		const std::map<RouteID,DataModel::Route*>& RouteList() const { return routes; }
+
+		inline const std::map<RouteID,DataModel::Route*>& RouteList() const
+		{
+			return routes;
+		}
+
 		const std::map<std::string,DataModel::Route*> RouteListByName() const;
 		bool RouteSave(const RouteID routeID,
 			const std::string& name,
@@ -252,7 +300,12 @@ class Manager
 		bool SignalState(const ControlType controlType, DataModel::Signal* signal, const DataModel::AccessoryState state, const bool force = false);
 		DataModel::Signal* GetSignal(const SignalID signalID) const;
 		const std::string& GetSignalName(const SignalID signalID) const;
-		const std::map<SignalID,DataModel::Signal*>& SignalList() const { return signals; }
+
+		inline const std::map<SignalID,DataModel::Signal*>& SignalList() const
+		{
+			return signals;
+		}
+
 		const std::map<std::string,DataModel::Signal*> SignalListByName() const;
 
 		bool SignalSave(const SignalID signalID,
@@ -444,14 +497,17 @@ class Manager
 
 		bool CheckAddressLoco(const Protocol protocol, const Address address, std::string& result);
 		bool CheckAddressAccessory(const Protocol protocol, const Address address, std::string& result);
+
 		bool CheckControlLocoProtocolAddress(const ControlID controlID, const Protocol protocol, const Address address, std::string& result)
 		{
 			return CheckControlProtocolAddress(AddressTypeLoco, controlID, protocol, address, result);
 		}
+
 		bool CheckControlAccessoryProtocolAddress(const ControlID controlID, const Protocol protocol, const Address address, std::string& result)
 		{
 			return CheckControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result);
 		}
+
 		bool CheckControlProtocolAddress(const AddressType type, const ControlID controlID, const Protocol protocol, const Address address, std::string& result);
 		const std::map<std::string,Protocol> ProtocolsOfControl(const AddressType type, const ControlID) const;
 
@@ -496,8 +552,12 @@ class Manager
 			return true;
 		}
 
-		bool CheckIfNumber(const char& c) { return c >= '0' && c <= '9'; }
-		bool CheckIfThreeNumbers(const std::string& s)
+		inline bool CheckIfNumber(const char& c)
+		{
+			return c >= '0' && c <= '9';
+		}
+
+		inline bool CheckIfThreeNumbers(const std::string& s)
 		{
 			size_t sSize = s.size();
 			return sSize >= 3
@@ -543,7 +603,11 @@ class Manager
 		bool LocoIntoTrackBase(Logger::Logger *logger, DataModel::Loco* loco, const ObjectType objectType, DataModel::TrackBase* track);
 
 		void InitLocos();
-		static void InitLocosStatic(Manager* manager) { manager->InitLocos(); }
+
+		static inline void InitLocosStatic(Manager* manager)
+		{
+			manager->InitLocos();
+		}
 
 		void ProgramCheckBooster(const ProgramMode mode);
 

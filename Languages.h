@@ -361,6 +361,7 @@ class Languages
 			TextLocoHasReachedDestination,
 			TextLocoIsInAutoMode,
 			TextLocoIsInManualMode,
+			TextLocoIsInUse,
 			TextLocoIsOnTrack,
 			TextLocoIsReleased,
 			TextLocoSaved,

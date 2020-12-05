@@ -753,19 +753,21 @@ bool Manager::LocoSave(const LocoID locoID,
 	return true;
 }
 
-bool Manager::LocoDelete(const LocoID locoID)
+bool Manager::LocoDelete(const LocoID locoID, string& result)
 {
 	Loco* loco = nullptr;
 	{
 		std::lock_guard<std::mutex> guard(locoMutex);
 		if (locoID == LocoNone || locos.count(locoID) != 1)
 		{
+			result = Languages::GetText(Languages::TextLocoDoesNotExist);
 			return false;
 		}
 
 		loco = locos.at(locoID);
 		if (loco->IsInUse())
 		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextLocoIsInUse), loco->GetName());
 			return false;
 		}
 

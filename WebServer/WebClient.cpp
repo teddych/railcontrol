@@ -2073,9 +2073,10 @@ namespace WebServer
 
 		string name = loco->GetName();
 
-		if (!manager.LocoDelete(locoID))
+		string result;
+		if (!manager.LocoDelete(locoID, result))
 		{
-			ReplyResponse(ResponseError, Languages::TextLocoDoesNotExist);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
 
