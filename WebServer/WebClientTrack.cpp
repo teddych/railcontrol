@@ -309,8 +309,6 @@ namespace WebServer
 			return;
 		}
 
-		string name = track->GetName();
-
 		string result;
 		if (!manager.TrackDelete(trackID, result))
 		{
@@ -318,6 +316,7 @@ namespace WebServer
 			return;
 		}
 
+		string name = track->GetName();
 		client.ReplyResponse(WebClient::ResponseInfo, Languages::TextTrackDeleted, name);
 	}
 

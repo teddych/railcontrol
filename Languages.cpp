@@ -166,6 +166,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextFeedbackChange */ { "State of pin {0} on S88 module {1} is {2}", "Status von Pin {0} an S88 Modul {1} ist {2}", "Estado de contacto {0} del S88 módulo {1} está {2}" },
 /* TextFeedbackDeleted */ { "Feedback {0} deleted", "Rückmelder {0} gelöscht", "Retroseñal {0} eliminado" },
 /* TextFeedbackDoesNotExist */ { "Feedback does not exist", "Rückmelder existiert nicht", "Retroseñal no existe" },
+/* TextFeedbackIsUsedByTrack */ { "Feedback {0} is used by track {1}", "Rückmelder {0} wird gebraucht von Gleis {1}", "Retroseñal {0} está usado por vía {1}" },
 /* TextFeedbackSaved */ { "Feedback {0} saved", "Rückmelder {0} gespeichert", "Retroseñal {0} guardado" },
 /* TextFeedbackStateIsOff */ { "Feedback state of {0} is now off", "Der Status des Rückmelders {0} ist nun aus", "El estado de la retroseñal {0} está apagada" },
 /* TextFeedbackStateIsOn */ { "Feedback state of {0} is now on", "Der Status des Rückmelders {0} ist nun ein", "El estado de la retroseñal {0} está encendida" },

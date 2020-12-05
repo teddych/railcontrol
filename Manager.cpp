@@ -1326,19 +1326,23 @@ const map<string,FeedbackID> Manager::FeedbacksOfTrack(const ObjectIdentifier& i
 	return out;
 }
 
-bool Manager::FeedbackDelete(const FeedbackID feedbackID)
+bool Manager::FeedbackDelete(const FeedbackID feedbackID,
+	string& result)
 {
 	Feedback* feedback = nullptr;
 	{
 		std::lock_guard<std::mutex> guard(feedbackMutex);
 		if (feedbackID == FeedbackNone || feedbacks.count(feedbackID) != 1)
 		{
+			result = Languages::GetText(Languages::TextFeedbackDoesNotExist);
 			return false;
 		}
 
 		feedback = feedbacks.at(feedbackID);
-		if (feedback == nullptr)
+		TrackBase* trackBase = feedback->GetTrack();
+		if (trackBase != nullptr)
 		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextFeedbackIsUsedByTrack), feedback->GetName(), trackBase->GetMyName());
 			return false;
 		}
 

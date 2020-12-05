@@ -166,6 +166,7 @@ class Languages
 			TextFeedbackChange,
 			TextFeedbackDeleted,
 			TextFeedbackDoesNotExist,
+			TextFeedbackIsUsedByTrack,
 			TextFeedbackSaved,
 			TextFeedbackStateIsOff,
 			TextFeedbackStateIsOn,

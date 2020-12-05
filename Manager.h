@@ -184,7 +184,10 @@ class Manager
 		const std::map<std::string,DataModel::Feedback*> FeedbackListByName() const;
 		const std::map<std::string,FeedbackID> FeedbacksOfTrack(const DataModel::ObjectIdentifier& identifier) const;
 		FeedbackID FeedbackSave(const FeedbackID feedbackID, const std::string& name, const DataModel::LayoutItem::Visible visible, const DataModel::LayoutItem::LayoutPosition posX, const DataModel::LayoutItem::LayoutPosition posY, const DataModel::LayoutItem::LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted,  std::string& result);
-		bool FeedbackDelete(const FeedbackID feedbackID);
+
+		bool FeedbackDelete(const FeedbackID feedbackID,
+			std::string& result);
+
 		inline bool FeedbackExists(const FeedbackID feedbackID) const
 		{
 			return feedbacks.count(feedbackID) == 1;
