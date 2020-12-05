@@ -238,6 +238,8 @@ class Manager
 			std::string& result);
 		bool RouteDelete(const RouteID routeID);
 
+		DataModel::Route* GetFirstRouteToTrackBase(const DataModel::ObjectIdentifier& identifier) const;
+
 		// layer
 		DataModel::Layer* GetLayer(const LayerID layerID) const;
 		const std::map<std::string,LayerID> LayerListByName() const;

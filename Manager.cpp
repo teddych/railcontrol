@@ -1620,6 +1620,27 @@ bool Manager::TrackDelete(const TrackID trackID,
 			return false;
 		}
 
+		Route* route = track->GetFirstRoute();
+		if (route != nullptr)
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextTrackHasAssociatedRoute), track->GetName(), route->GetName());
+			return false;
+		}
+
+		route = GetFirstRouteToTrackBase(ObjectIdentifier(ObjectTypeTrack, trackID));
+		if (route != nullptr)
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextTrackHasAssociatedRoute), track->GetName(), route->GetName());
+			return false;
+		}
+
+		FeedbackID feedbackId = track->GetFirstFeedbackId();
+		if (feedbackId != FeedbackNone)
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextTrackHasAssociatedFeedback), track->GetName(), GetFeedbackName(feedbackId));
+			return false;
+		}
+
 		tracks.erase(trackID);
 	}
 
@@ -2093,6 +2114,19 @@ bool Manager::RouteDelete(const RouteID routeID)
 	return true;
 }
 
+Route* Manager::GetFirstRouteToTrackBase(const ObjectIdentifier& identifier) const
+{
+	std::lock_guard<std::mutex> guard(routeMutex);
+	for (auto route : routes)
+	{
+		if (route.second->GetToTrack() == identifier)
+		{
+			return route.second;
+		}
+	}
+	return nullptr;
+}
+
 Layer* Manager::GetLayer(const LayerID layerID) const
 {
 	std::lock_guard<std::mutex> guard(layerMutex);
@@ -2388,6 +2422,26 @@ bool Manager::SignalDelete(const SignalID signalID,
 			return false;
 		}
 
+		Route* route = signal->GetFirstRoute();
+		if (route != nullptr)
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextSignalHasAssociatedRoute), signal->GetName(), route->GetName());
+			return false;
+		}
+
+		route = GetFirstRouteToTrackBase(ObjectIdentifier(ObjectTypeSignal, signalID));
+		if (route != nullptr)
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextTrackHasAssociatedRoute), signal->GetName(), route->GetName());
+			return false;
+		}
+
+		FeedbackID feedbackId = signal->GetFirstFeedbackId();
+		if (feedbackId != FeedbackNone)
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextSignalHasAssociatedFeedback), signal->GetName(), GetFeedbackName(feedbackId));
+			return false;
+		}
 
 		signal = signals.at(signalID);
 		signals.erase(signalID);

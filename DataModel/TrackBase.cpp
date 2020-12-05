@@ -278,9 +278,9 @@ namespace DataModel
 	bool TrackBase::AddRoute(Route* route)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		for (auto s : routes)
+		for (auto r : routes)
 		{
-			if (s == route)
+			if (r == route)
 			{
 				return false;
 			}
