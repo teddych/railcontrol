@@ -905,15 +905,15 @@ namespace WebServer
 			return;
 		}
 
-		string name = layer->GetName();
-
-		if (!manager.LayerDelete(layerID))
+		string result;
+		if (!manager.LayerDelete(layerID, result))
 		{
-			ReplyResponse(ResponseError, Languages::TextLayerDoesNotExist);
+			ReplyResponse(ResponseError, result);
 			return;
 		}
 
-		ReplyResponse(ResponseInfo, Languages::TextLayerDeleted);
+		string name = layer->GetName();
+		ReplyResponse(ResponseInfo, Languages::TextLayerDeleted, name);
 	}
 
 	void WebClient::HandleLayerList()
