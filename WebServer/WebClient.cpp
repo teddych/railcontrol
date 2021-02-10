@@ -1562,6 +1562,12 @@ namespace WebServer
 	{
 		HtmlTag tag;
 		map<string,ObjectIdentifier> tracks = manager.TrackBaseListIdentifierByName();
+		// FIXME: remove signal later and also remove Manager::TrackBaseListIdentifierByName() 2021-02-10
+		if (identifier.GetObjectType() == ObjectTypeSignal)
+		{
+			Signal* signal = manager.GetSignal(identifier.GetObjectID());
+			tracks[signal->GetName()] = ObjectIdentifier(ObjectTypeSignal, signal->GetID());
+		}
 		HtmlTagSelectWithLabel selectTrack(name + "track", label, tracks, identifier);
 		selectTrack.AddClass("select_track");
 		if (onchange.size() > 0)

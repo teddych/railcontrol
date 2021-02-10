@@ -1443,6 +1443,7 @@ const map<string,TrackID> Manager::TrackListIdByName() const
 	return out;
 }
 
+// FIXME: replace with TrackListByName later. 2021-02-10
 const map<string,ObjectIdentifier> Manager::TrackBaseListIdentifierByName() const
 {
 	map<string,ObjectIdentifier> out;
@@ -1451,13 +1452,6 @@ const map<string,ObjectIdentifier> Manager::TrackBaseListIdentifierByName() cons
 		for (auto track : tracks)
 		{
 			out[track.second->GetName()] = ObjectIdentifier(ObjectTypeTrack, track.second->GetID());
-		}
-	}
-	{
-		std::lock_guard<std::mutex> guard(signalMutex);
-		for (auto signal : signals)
-		{
-			out[signal.second->GetName()] = ObjectIdentifier(ObjectTypeSignal, signal.second->GetID());
 		}
 	}
 	return out;
