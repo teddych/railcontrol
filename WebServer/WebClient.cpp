@@ -1471,7 +1471,8 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagSlaveSelect(const string& prefix,
 		const vector<Relation*>& relations,
-		const map<string,ObjectID>& options) const
+		const map<string,ObjectID>& options,
+		const bool allowNew) const
 	{
 		HtmlTag content("div");
 		content.AddId("tab_" + prefix + "s");
@@ -1492,10 +1493,13 @@ namespace WebServer
 		div.AddChildTag(HtmlTag("div").AddId(prefix + "_new_" + to_string(counter)));
 
 		content.AddChildTag(div);
-		HtmlTagButton newTrackButton(Languages::TextNew, "new" + prefix);
-		newTrackButton.AddAttribute("onclick", "addSlave('" + prefix + "');return false;");
-		newTrackButton.AddClass("wide_button");
-		content.AddChildTag(newTrackButton);
+		if (allowNew)
+		{
+			HtmlTagButton newTrackButton(Languages::TextNew, "new" + prefix);
+			newTrackButton.AddAttribute("onclick", "addSlave('" + prefix + "');return false;");
+			newTrackButton.AddClass("wide_button");
+			content.AddChildTag(newTrackButton);
+		}
 		content.AddChildTag(HtmlTag("br"));
 		return content;
 	}

@@ -128,7 +128,8 @@ namespace WebServer
 
 			HtmlTag HtmlTagSlaveSelect(const std::string& prefix,
 				const std::vector<DataModel::Relation*>& relations,
-				const std::map<std::string,ObjectID>& options) const;
+				const std::map<std::string,ObjectID>& options,
+				const bool allowNew = true) const;
 
 			std::vector<ObjectID> InterpretSlaveData(const std::string& prefix, const std::map<std::string,std::string>& arguments);
 

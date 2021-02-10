@@ -95,7 +95,10 @@ namespace WebServer
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(client.HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
 		tabMenu.AddChildTag(client.HtmlTagTabMenuItem("tracks", Languages::TextTracks));
-		tabMenu.AddChildTag(client.HtmlTagTabMenuItem("signals", Languages::TextSignals));
+		if (signals.size() > 0)
+		{
+			tabMenu.AddChildTag(client.HtmlTagTabMenuItem("signals", Languages::TextSignals));
+		}
 		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
@@ -110,7 +113,10 @@ namespace WebServer
 		formContent.AddChildTag(basicContent);
 
 		formContent.AddChildTag(client.HtmlTagSlaveSelect("track", tracks, GetTrackOptions(clusterID)));
-		formContent.AddChildTag(client.HtmlTagSlaveSelect("signal", signals, GetSignalOptions(clusterID)));
+		if (signals.size() > 0)
+		{
+			formContent.AddChildTag(client.HtmlTagSlaveSelect("signal", signals, GetSignalOptions(clusterID), false));
+		}
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
