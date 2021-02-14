@@ -51,6 +51,23 @@ using std::vector;
 
 namespace WebServer
 {
+	map<string,ObjectID> WebClientTrack::GetSignalOptions(const TrackID trackId) const
+	{
+		map<string, ObjectID> signalOptions;
+
+		map<string, Signal*> allSignals = manager.SignalListByName();
+		for (auto signal : allSignals)
+		{
+			Track* trackOfSignal = signal.second->GetTrack();
+			if (trackOfSignal != nullptr && trackOfSignal->GetID() != trackId)
+			{
+				continue;
+			}
+			signalOptions[signal.first] = signal.second->GetID();
+		}
+		return signalOptions;
+	}
+
 	void WebClientTrack::HandleTrackEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
@@ -63,7 +80,8 @@ namespace WebServer
 		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", DataModel::LayoutItem::Height1);
 		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
 		DataModel::TrackType type = DataModel::TrackTypeStraight;
-		std::vector<FeedbackID> feedbacks;
+		vector<FeedbackID> feedbacks;
+		vector<Relation*> signals;
 		Cluster* cluster = nullptr;
 		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool allowLocoTurn = Utils::Utils::GetBoolMapEntry(arguments, "allowlocoturn", false);
@@ -82,6 +100,7 @@ namespace WebServer
 				rotation = track->GetRotation();
 				type = track->GetTrackType();
 				feedbacks = track->GetFeedbacks();
+				signals = track->GetSignals();
 				cluster = track->GetCluster();
 				selectRouteApproach = track->GetSelectRouteApproach();
 				allowLocoTurn = track->GetAllowLocoTurn();
@@ -110,6 +129,7 @@ namespace WebServer
 		tabMenu.AddChildTag(client.HtmlTagTabMenuItem("main", Languages::TextBasic, true));
 		tabMenu.AddChildTag(client.HtmlTagTabMenuItem("position", Languages::TextPosition));
 		tabMenu.AddChildTag(client.HtmlTagTabMenuItem("feedback", Languages::TextFeedbacks));
+		tabMenu.AddChildTag(client.HtmlTagTabMenuItem("signals", Languages::TextSignals));
 		tabMenu.AddChildTag(client.HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
 
@@ -168,6 +188,8 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabTrackFeedback(client, feedbacks, ObjectIdentifier(ObjectTypeTrack, trackID)));
 
+		formContent.AddChildTag(client.HtmlTagSlaveSelect("signal", signals, GetSignalOptions(trackID)));
+
 		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, allowLocoTurn, releaseWhenFree, cluster));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
@@ -178,7 +200,7 @@ namespace WebServer
 
 	void WebClientTrack::HandleTrackSave(const map<string, string>& arguments)
 	{
-		TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
+		TrackID trackId = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		bool showName = Utils::Utils::GetBoolMapEntry(arguments, "showname", true);
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
@@ -215,12 +237,25 @@ namespace WebServer
 				feedbacks.push_back(feedbackID);
 			}
 		}
+
+		vector<Relation*> signals;
+		{
+			vector<SignalID> signalIds = client.InterpretSlaveData("signal", arguments);
+			for (auto signalId : signalIds)
+			{
+				signals.push_back(new Relation(&manager,
+					ObjectIdentifier(ObjectTypeTrack, trackId),
+					ObjectIdentifier(ObjectTypeSignal, signalId),
+					Relation::TypeTrackSignal));
+			}
+		}
+
 		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
 		bool allowLocoTurn = Utils::Utils::GetBoolMapEntry(arguments, "allowlocoturn", false);
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 
 		string result;
-		if (manager.TrackSave(trackID,
+		if (!manager.TrackSave(trackId,
 			name,
 			showName,
 			posX,
@@ -230,10 +265,11 @@ namespace WebServer
 			rotation,
 			type,
 			feedbacks,
+			signals,
 			selectRouteApproach,
 			allowLocoTurn,
 			releaseWhenFree,
-			result) == TrackNone)
+			result))
 		{
 			client.ReplyResponse(WebClient::ResponseError, result);
 			return;

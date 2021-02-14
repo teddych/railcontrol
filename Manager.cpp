@@ -1272,12 +1272,12 @@ bool Manager::CheckFeedbackPosition(const Feedback* feedback, const LayoutPositi
 	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 }
 
-FeedbackID Manager::FeedbackSave(const FeedbackID feedbackID, const std::string& name, const Visible visible, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted, string& result)
+bool Manager::FeedbackSave(const FeedbackID feedbackID, const std::string& name, const Visible visible, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted, string& result)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
 	if (visible && !CheckFeedbackPosition(feedback, posX, posY, posZ, result))
 	{
-		return FeedbackNone;
+		return false;
 	}
 
 	if (feedback == nullptr)
@@ -1311,7 +1311,7 @@ FeedbackID Manager::FeedbackSave(const FeedbackID feedbackID, const std::string&
 	{
 		control.second->FeedbackSettings(feedbackIdSave, name);
 	}
-	return feedbackIdSave;
+	return true;
 }
 
 const map<string,DataModel::Feedback*> Manager::FeedbackListByName() const
@@ -1555,7 +1555,7 @@ const std::vector<FeedbackID> Manager::CleanupAndCheckFeedbacksForTrack(const Ob
 	return checkedFeedbacks;
 }
 
-TrackID Manager::TrackSave(const TrackID trackID,
+bool Manager::TrackSave(const TrackID trackID,
 	const std::string& name,
 	const bool showName,
 	const LayoutPosition posX,
@@ -1564,7 +1564,8 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	const LayoutItemSize height,
 	const LayoutRotation rotation,
 	const DataModel::TrackType trackType,
-	const std::vector<FeedbackID>& newFeedbacks,
+	const vector<FeedbackID>& newFeedbacks,
+	const vector<Relation*>& newSignals,
 	const DataModel::SelectRouteApproach selectRouteApproach,
 	const bool allowLocoTurn,
 	const bool releaseWhenFree,
@@ -1573,7 +1574,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	Track* track = GetTrack(trackID);
 	if (!CheckTrackPosition(track, posX, posY, posZ, height, rotation, result))
 	{
-		return TrackNone;
+		return false;
 	}
 
 	if (track == nullptr)
@@ -1597,6 +1598,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	track->SetPosZ(posZ);
 	track->SetTrackType(trackType);
 	track->Feedbacks(CleanupAndCheckFeedbacksForTrack(ObjectIdentifier(ObjectTypeTrack, trackID), newFeedbacks));
+	track->AssignSignals(newSignals);
 	track->SetSelectRouteApproach(selectRouteApproach);
 	track->SetAllowLocoTurn(allowLocoTurn);
 	track->SetReleaseWhenFree(releaseWhenFree);
@@ -1612,7 +1614,7 @@ TrackID Manager::TrackSave(const TrackID trackID,
 	{
 		control.second->TrackSettings(trackIdSave, name);
 	}
-	return trackIdSave;
+	return true;
 }
 
 bool Manager::TrackDelete(const TrackID trackID,
@@ -2082,7 +2084,7 @@ bool Manager::RouteSave(const RouteID routeID,
 	if (newTrack != nullptr)
 	{
 		newTrack->AddRoute(route);
-		if (storage == nullptr)
+		if (storage != nullptr)
 		{
 			switch (newFromTrack.GetObjectType())
 			{
@@ -2653,8 +2655,8 @@ const map<string,DataModel::Cluster*> Manager::ClusterListByName() const
 
 bool Manager::ClusterSave(const ClusterID clusterID,
 	const string& name,
-	__attribute__((unused)) const std::vector<DataModel::Relation*>& newTracks,
-	__attribute__((unused)) const std::vector<DataModel::Relation*>& newSignals,
+	const vector<Relation*>& newTracks,
+	const vector<Relation*>& newSignals,
 	string& result)
 {
 	Cluster* cluster = GetCluster(clusterID);

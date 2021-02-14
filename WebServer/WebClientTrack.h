@@ -56,6 +56,8 @@ namespace WebServer
 			void HandleTrackOrientation(const std::map<std::string, std::string>& arguments);
 
 		private:
+			std::map<std::string,ObjectID> GetSignalOptions(const TrackID trackId) const;
+
 			Manager& manager;
 			WebClient& client;
 			Logger::Logger* logger;

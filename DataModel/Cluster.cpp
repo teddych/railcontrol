@@ -225,7 +225,7 @@ namespace DataModel
 	{
 		DeleteSignals();
 		signals = newSignals;
-		for (auto signalRelation : tracks)
+		for (auto signalRelation : signals)
 		{
 			Signal* signal = dynamic_cast<Signal*>(signalRelation->GetObject2());
 			if (signal != nullptr)

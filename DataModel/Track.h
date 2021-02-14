@@ -101,6 +101,15 @@ namespace DataModel
 				return BaseReleaseForce(logger, locoID);
 			}
 
+			inline const std::vector<DataModel::Relation*>& GetSignals() const
+			{
+				return signals;
+			}
+
+			void DeleteSignals();
+			void DeleteSignal(DataModel::Signal* signalToDelete);
+			void AssignSignals(const std::vector<DataModel::Relation*>& newSignals);
+
 		protected:
 			inline bool ReserveInternal(Logger::Logger* logger, const LocoID locoID) override
 			{
@@ -151,5 +160,6 @@ namespace DataModel
 
 		private:
 			TrackType trackType;
+			std::vector<DataModel::Relation*> signals;
 	};
 } // namespace DataModel

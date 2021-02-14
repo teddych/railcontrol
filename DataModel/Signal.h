@@ -40,7 +40,8 @@ namespace DataModel
 				TrackBase(manager),
 				LayoutItem(signalID),
 				LockableItem(),
-				signalOrientation(OrientationRight)
+				signalOrientation(OrientationRight),
+				track(nullptr)
 			{
 			}
 
@@ -97,6 +98,16 @@ namespace DataModel
 				return BaseReleaseForce(logger, locoID);
 			}
 
+			inline Track* GetTrack() const
+			{
+				return track;
+			}
+
+			inline void SetTrack(Track* const track)
+			{
+				this->track = track;
+			}
+
 		protected:
 			inline bool ReserveInternal(Logger::Logger* logger, const LocoID locoID) override
 			{
@@ -143,6 +154,7 @@ namespace DataModel
 			}
 
 			Orientation signalOrientation;
+			Track* track;
 	};
 } // namespace DataModel
 

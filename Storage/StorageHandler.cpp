@@ -260,7 +260,9 @@ namespace Storage
 			{
 				continue;
 			}
-			tracks[track->GetID()] = track;
+			const TrackID trackId = track->GetID();
+			track->AssignSignals(RelationsFrom(DataModel::Relation::TypeTrackSignal, trackId));
+			tracks[trackId] = track;
 		}
 	}
 
@@ -352,6 +354,21 @@ namespace Storage
 		SaveRelations(cluster.GetTracks());
 		instance->DeleteRelationsFrom(DataModel::Relation::TypeClusterSignal, clusterID);
 		SaveRelations(cluster.GetSignals());
+		CommitTransactionInternal();
+	}
+
+	void StorageHandler::Save(const DataModel::Track& track)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		string serialized = track.Serialize();
+		StartTransactionInternal();
+		const TrackID trackId = track.GetID();
+		instance->SaveObject(ObjectTypeTrack, trackId, track.GetName(), serialized);
+		instance->DeleteRelationsFrom(DataModel::Relation::TypeTrackSignal, trackId);
+		SaveRelations(track.GetSignals());
 		CommitTransactionInternal();
 	}
 
@@ -464,10 +481,10 @@ namespace Storage
 			{
 				continue;
 			}
-			const ClusterID clusterID = cluster->GetID();
-			cluster->AssignTracks(RelationsFrom(DataModel::Relation::TypeClusterTrack, clusterID));
-			cluster->AssignSignals(RelationsFrom(DataModel::Relation::TypeClusterSignal, clusterID));
-			clusters[cluster->GetID()] = cluster;
+			const ClusterID clusterId = cluster->GetID();
+			cluster->AssignTracks(RelationsFrom(DataModel::Relation::TypeClusterTrack, clusterId));
+			cluster->AssignSignals(RelationsFrom(DataModel::Relation::TypeClusterSignal, clusterId));
+			clusters[clusterId] = cluster;
 		}
 	}
 

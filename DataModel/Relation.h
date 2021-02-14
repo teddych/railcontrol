@@ -40,11 +40,12 @@ namespace DataModel
 			enum Type : unsigned char
 			{
 				TypeCalculate = 0,
-				TypeRouteAtLock = ObjectTypeRoute << 3,
-				TypeRouteAtUnlock = (ObjectTypeRoute << 3) + 1,
 				TypeLocoSlave = ObjectTypeLoco << 3,
+				TypeTrackSignal = ObjectTypeTrack << 3,
 				TypeFeedbackAtSet = ObjectTypeFeedback << 3,
 				TypeFeedbackAtUnset = (ObjectTypeFeedback << 3) + 1,
+				TypeRouteAtLock = ObjectTypeRoute << 3,
+				TypeRouteAtUnlock = (ObjectTypeRoute << 3) + 1,
 				TypeClusterTrack = (ObjectTypeCluster << 3),
 				TypeClusterSignal = (ObjectTypeCluster << 3) + 1,
 			};

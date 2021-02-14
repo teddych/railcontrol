@@ -87,4 +87,48 @@ namespace DataModel
 	{
 		manager->TrackPublishState(this);
 	}
+
+	void Track::DeleteSignals()
+	{
+		while (signals.size() > 0)
+		{
+			Relation* signalRelation = signals.back();
+			Signal* signal = dynamic_cast<Signal*>(signalRelation->GetObject2());
+			if (signal != nullptr)
+			{
+				signal->SetTrack(nullptr);
+			}
+			signals.pop_back();
+			delete signalRelation;
+		}
+	}
+
+	void Track::DeleteSignal(Signal* signalToDelete)
+	{
+		for (unsigned int index = 0; index < signals.size(); ++index)
+		{
+			if (signals[index]->GetObject2() != signalToDelete)
+			{
+				continue;
+			}
+			delete signals[index];
+			signals.erase(signals.begin() + index);
+			signalToDelete->SetTrack(nullptr);
+			return;
+		}
+	}
+
+	void Track::AssignSignals(const std::vector<DataModel::Relation*>& newSignals)
+	{
+		DeleteSignals();
+		signals = newSignals;
+		for (auto signalRelation : signals)
+		{
+			Signal* signal = dynamic_cast<Signal*>(signalRelation->GetObject2());
+			if (signal != nullptr)
+			{
+				signal->SetTrack(this);
+			}
+		}
+	}
 } // namespace DataModel

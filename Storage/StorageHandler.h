@@ -64,6 +64,7 @@ namespace Storage
 			void Save(const DataModel::Route& route);
 			void Save(const DataModel::Loco& loco);
 			void Save(const DataModel::Cluster& cluster);
+			void Save(const DataModel::Track& track);
 			template<class T> void Save(const T& t)
 			{
 				if (instance == nullptr)

@@ -3198,7 +3198,7 @@ namespace WebServer
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		string result;
-		if (manager.FeedbackSave(feedbackID, name, visible, posX, posY, posZ, controlId, pin, inverted, result) == FeedbackNone)
+		if (!manager.FeedbackSave(feedbackID, name, visible, posX, posY, posZ, controlId, pin, inverted, result))
 		{
 			ReplyResponse(ResponseError, result);
 			return;
