@@ -1680,7 +1680,7 @@ namespace WebServer
 		}
 		else if (prefix.compare("signal") == 0)
 		{
-			options = cluster.GetSignalOptions();
+			options = track.GetSignalOptions();
 		}
 		else if (prefix.compare("slave") == 0)
 		{

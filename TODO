@@ -1,3 +1,5 @@
+- Überprüfen, ob die Relationen Track-Signal ruand Cluster-Track korrekt wiederhergestellt werden beim Starten
+- Rückmelder-Gleis als Relation speichern
 - Signal an Gleis assoziieren um bei einer Fahrstrasse als Startsignal zu verwenden
 - Mehrfachtraktion als separate Lok anzeigen, einzelne Loks trotzdem separat steuerbar
 - Zugkategorien für Fahrstrassen

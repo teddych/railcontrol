@@ -113,9 +113,11 @@ namespace WebServer
 		formContent.AddChildTag(basicContent);
 
 		formContent.AddChildTag(client.HtmlTagSlaveSelect("track", tracks, GetTrackOptions(clusterID)));
+
+		// FIXME: remove again later 2021-02-10
 		if (signals.size() > 0)
 		{
-			formContent.AddChildTag(client.HtmlTagSlaveSelect("signal", signals, GetSignalOptions(clusterID), false));
+			formContent.AddChildTag(client.HtmlTagSlaveSelect("signal", signals, GetSignalOptions(signals), false));
 		}
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
@@ -230,19 +232,19 @@ namespace WebServer
 		return trackOptions;
 	}
 
-	map<string,ObjectID> WebClientCluster::GetSignalOptions(const ClusterID clusterId) const
+	// FIXME: remove again later 2021-02-10
+	map<string,ObjectID> WebClientCluster::GetSignalOptions(const vector<Relation*>& signals) const
 	{
 		map<string, ObjectID> signalOptions;
 
-		map<string, Signal*> allSignals = manager.SignalListByName();
-		for (auto signal : allSignals)
+		for (auto signalRelation : signals)
 		{
-			Cluster* clusterOfSignal = signal.second->GetCluster();
-			if (clusterOfSignal != nullptr && clusterOfSignal->GetID() != clusterId)
+			Signal* signal = dynamic_cast<Signal*>(signalRelation->GetObject2());
+			if (signal == nullptr)
 			{
 				continue;
 			}
-			signalOptions[signal.first] = signal.second->GetID();
+			signalOptions[signal->GetName()] = signal->GetID();
 		}
 		return signalOptions;
 	}

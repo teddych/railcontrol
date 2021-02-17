@@ -200,16 +200,16 @@ namespace WebServer
 
 	void WebClientTrack::HandleTrackSave(const map<string, string>& arguments)
 	{
-		TrackID trackId = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
-		bool showName = Utils::Utils::GetBoolMapEntry(arguments, "showname", true);
-		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
-		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
-		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		const TrackID trackId = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
+		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		const bool showName = Utils::Utils::GetBoolMapEntry(arguments, "showname", true);
+		const LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		const LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		const LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
 		LayoutItemSize height = DataModel::LayoutItem::Height1;
-		LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
-		int typeInt = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::TrackTypeStraight)); // FIXME: remove later 2020-10-27
-		DataModel::TrackType type = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "tracktype", typeInt));
+		const LayoutRotation rotation = static_cast<LayoutRotation>(Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0));
+		const int typeInt = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::TrackTypeStraight)); // FIXME: remove later 2020-10-27
+		const DataModel::TrackType type = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "tracktype", typeInt));
 		switch (type)
 		{
 			case DataModel::TrackTypeTurn:
@@ -250,9 +250,9 @@ namespace WebServer
 			}
 		}
 
-		DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
-		bool allowLocoTurn = Utils::Utils::GetBoolMapEntry(arguments, "allowlocoturn", false);
-		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
+		const DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteSystemDefault));
+		const bool allowLocoTurn = Utils::Utils::GetBoolMapEntry(arguments, "allowlocoturn", false);
+		const bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 
 		string result;
 		if (!manager.TrackSave(trackId,

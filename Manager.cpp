@@ -131,6 +131,20 @@ Manager::Manager(Config& config)
 		logger->Info(Languages::TextLoadedFeedback, feedback.second->GetID(), feedback.second->GetName());
 	}
 
+	storage->AllSignals(signals);
+	for (auto signal : signals)
+	{
+		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
+		// FIXME: remove again later 2020-10-27
+		if (signal.second->GetProtocol() == ProtocolMM2
+			&& (ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCS2Udp)
+				|| ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCcSchnitte)))
+		{
+			signal.second->SetProtocol(ProtocolMM);
+		}
+		logger->Info(Languages::TextLoadedSignal, signal.second->GetID(), signal.second->GetName());
+	}
+
 	storage->AllTracks(tracks);
 	for (auto track : tracks)
 	{
@@ -149,20 +163,6 @@ Manager::Manager(Config& config)
 			mySwitch.second->SetProtocol(ProtocolMM);
 		}
 		logger->Info(Languages::TextLoadedSwitch, mySwitch.second->GetID(), mySwitch.second->GetName());
-	}
-
-	storage->AllSignals(signals);
-	for (auto signal : signals)
-	{
-		// We set the protocol MM2 to MM when control is a CS2 or CC-Schnitte
-		// FIXME: remove again later 2020-10-27
-		if (signal.second->GetProtocol() == ProtocolMM2
-			&& (ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCS2Udp)
-				|| ControlIsOfHardwareType(signal.second->GetControlID(), HardwareTypeCcSchnitte)))
-		{
-			signal.second->SetProtocol(ProtocolMM);
-		}
-		logger->Info(Languages::TextLoadedSignal, signal.second->GetID(), signal.second->GetName());
 	}
 
 	storage->AllClusters(clusters);
@@ -247,13 +247,13 @@ Manager::~Manager()
 	}
 
 	DeleteAllMapEntries(locos, locoMutex);
-	DeleteAllMapEntries(clusters, clusterMutex);
 	DeleteAllMapEntries(routes, routeMutex);
-	DeleteAllMapEntries(signals, signalMutex);
+	DeleteAllMapEntries(clusters, clusterMutex);
 	DeleteAllMapEntries(switches, switchMutex);
-	DeleteAllMapEntries(accessories, accessoryMutex);
-	DeleteAllMapEntries(feedbacks, feedbackMutex);
 	DeleteAllMapEntries(tracks, trackMutex);
+	DeleteAllMapEntries(signals, signalMutex);
+	DeleteAllMapEntries(feedbacks, feedbackMutex);
+	DeleteAllMapEntries(accessories, accessoryMutex);
 	DeleteAllMapEntries(layers, layerMutex);
 
 	if (storage == nullptr)

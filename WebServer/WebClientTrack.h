@@ -55,9 +55,9 @@ namespace WebServer
 			void HandleTrackBlock(const std::map<std::string, std::string>& arguments);
 			void HandleTrackOrientation(const std::map<std::string, std::string>& arguments);
 
-		private:
-			std::map<std::string,ObjectID> GetSignalOptions(const TrackID trackId) const;
+			std::map<std::string,ObjectID> GetSignalOptions(const TrackID trackId = TrackNone) const;
 
+		private:
 			Manager& manager;
 			WebClient& client;
 			Logger::Logger* logger;
