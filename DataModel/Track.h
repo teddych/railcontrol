@@ -158,6 +158,8 @@ namespace DataModel
 				return GetLoco();
 			}
 
+			void ReleaseSignals(Logger::Logger* logger, const LocoID locoID) override;
+
 		private:
 			TrackType trackType;
 			std::vector<DataModel::Relation*> signals;

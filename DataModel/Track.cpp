@@ -131,4 +131,17 @@ namespace DataModel
 			}
 		}
 	}
+
+	void Track::ReleaseSignals(Logger::Logger* logger, const LocoID locoID)
+	{
+		for (auto signalRelation : signals)
+		{
+			Signal* signal = dynamic_cast<Signal*>(signalRelation->GetObject2());
+			if (signal == nullptr)
+			{
+				continue;
+			}
+			signal->Release(logger, locoID);
+		}
+	}
 } // namespace DataModel

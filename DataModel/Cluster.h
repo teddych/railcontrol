@@ -94,7 +94,7 @@ namespace DataModel
 		private:
 			Orientation orientation;
 			std::vector<DataModel::Relation*> tracks;
-			std::vector<DataModel::Relation*> signals;
+			std::vector<DataModel::Relation*> signals; // FIXME: remove again later 2021-02-10
 			mutable std::mutex orientationMutex;
 	};
 } // namespace DataModel
