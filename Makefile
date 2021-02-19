@@ -1,4 +1,5 @@
 
+CFLAGSSQLITE=-g -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
 CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -std=c++11
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
 LDFLAGS=-g -Wl,--export-dynamic
@@ -40,6 +41,7 @@ OBJ= \
 	Network/UdpConnection.o \
 	RailControl.o \
 	Storage/StorageHandler.o \
+	Storage/Sqlite.o \
 	Utils/Utils.o \
 	WebServer/HtmlFullResponse.o \
 	WebServer/HtmlResponse.o \
@@ -72,13 +74,12 @@ OBJ= \
 	WebServer/WebClientTrackBase.o \
 	WebServer/WebServer.o
 
-CXXUNSORTED= $(shell echo $(OBJ)|sed "s/\.o//g"|sed "s/ /.cpp /g").cpp
+CXXUNSORTED= $(subst .o,.cpp,$(OBJ))
 CXXSORTED= $(shell ls -S $(CXXUNSORTED))
-OBJSORTED= Timestamp.o $(shell echo $(CXXSORTED)|sed "s/\.cpp//g"|sed "s/ /.o /g").o
+OBJSORTED= Timestamp.o Storage/sqlite/sqlite3.o $(subst .cpp,.o,$(CXXSORTED))
 
 all: $(OBJSORTED)
 	+make -C Hardware
-	+make -C Storage
 	rm Timestamp.cpp
 	$(CXX) $(LDFLAGS) $(OBJSORTED) -o railcontrol $(LIBS)
 	rm Timestamp.o
@@ -86,18 +87,15 @@ all: $(OBJSORTED)
 dist: all
 	strip railcontrol
 	strip Hardware/*.so
-	strip Storage/*.so
-	tar cvJf railcontrol.tar.xz Hardware/*.so Storage/*.so railcontrol railcontrol.conf.dist html/*
+	tar cvJf railcontrol.tar.xz Hardware/*.so railcontrol railcontrol.conf.dist html/*
 	mkdir $(TMPDIR)
 	mkdir $(TMPDIR)/Hardware
-	mkdir $(TMPDIR)/Storage
 	cp -r \
 		html \
 		railcontrol.conf.dist \
 		railcontrol \
 		$(TMPDIR)
 	cp -r Hardware/*.so $(TMPDIR)/Hardware
-	cp -r Storage/*.so $(TMPDIR)/Storage
 	tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz $(TMPDIR)/* $(TMPDIR)/html/*
 	rm -r $(TMPDIR)
 
@@ -122,7 +120,6 @@ amalgamation: Timestamp.cpp
 	./amalgamation.bash
 	$(CXX) $(CXXFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
 	make -C Hardware amalgamation
-	make -C Storage amalgamation
 	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o Hardware/zlib/*.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
@@ -134,12 +131,14 @@ sqlite-shell:
 Timestamp.o: Timestamp.cpp Timestamp.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+Storage/sqlite/sqlite3.o: Storage/sqlite/sqlite3.c Storage/sqlite/sqlite3.h
+	$(CC) $(CFLAGSSQLITE) -c -o $@ $<
+
 %.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
 	make -C Hardware clean
-	make -C Storage clean
 	rm -f *.o DataModel/*.o Hardware/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
 

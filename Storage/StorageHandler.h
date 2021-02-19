@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/DataModel.h"
 #include "DataTypes.h"
 #include "Hardware/HardwareParams.h"
+#include "Storage/Sqlite.h"
 #include "Storage/StorageInterface.h"
 #include "Storage/StorageParams.h"
 
@@ -67,13 +68,9 @@ namespace Storage
 			void Save(const DataModel::Track& track);
 			template<class T> void Save(const T& t)
 			{
-				if (instance == nullptr)
-				{
-					return;
-				}
 				const std::string serialized = t.Serialize();
 				StartTransactionInternal();
-				instance->SaveObject(t.GetObjectType(), t.GetID(), t.GetName(), serialized);
+				sqlite.SaveObject(t.GetObjectType(), t.GetID(), t.GetName(), serialized);
 				CommitTransactionInternal();
 			}
 
@@ -91,12 +88,7 @@ namespace Storage
 
 
 			Manager* manager;
-			CreateStorage* createStorage;
-			DestroyStorage* destroyStorage;
-			Storage::StorageInterface* instance;
-#ifndef AMALGAMATION
-			void* dlhandle;
-#endif
+			Storage::SQLite sqlite;
 			bool transactionRunning;
 	};
 
