@@ -42,27 +42,11 @@ using std::vector;
 
 namespace Storage
 {
-	StorageHandler::StorageHandler(Manager* manager, const StorageParams* params)
-	:	manager(manager),
-		sqlite(params),
-		transactionRunning(false)
-	{
-	}
-
-	StorageHandler::~StorageHandler()
-	{
-	}
-
 	void StorageHandler::Save(const Hardware::HardwareParams& hardwareParams)
 	{
 		StartTransactionInternal();
 		sqlite.SaveHardwareParams(hardwareParams);
 		CommitTransactionInternal();
-	}
-
-	void StorageHandler::AllHardwareParams(std::map<ControlID,Hardware::HardwareParams*>& hardwareParams)
-	{
-		sqlite.AllHardwareParams(hardwareParams);
 	}
 
 	void StorageHandler::DeleteHardwareParams(const ControlID controlID)
@@ -333,33 +317,6 @@ namespace Storage
 		StartTransactionInternal();
 		sqlite.SaveSetting(key, value);
 		CommitTransactionInternal();
-	}
-
-	std::string StorageHandler::GetSetting(const std::string& key)
-	{
-		return sqlite.GetSetting(key);
-	}
-
-	void StorageHandler::StartTransaction()
-	{
-		transactionRunning = true;
-		sqlite.StartTransaction();
-	}
-
-	void StorageHandler::CommitTransaction()
-	{
-		transactionRunning = false;
-		sqlite.CommitTransaction();
-	}
-
-	void StorageHandler::StartTransactionInternal()
-	{
-		sqlite.StartTransaction();
-	}
-
-	void StorageHandler::CommitTransactionInternal()
-	{
-		sqlite.CommitTransaction();
 	}
 
 	void StorageHandler::SaveRelations(const vector<DataModel::Relation*> relations)

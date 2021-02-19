@@ -39,9 +39,22 @@ namespace Storage
 	class StorageHandler
 	{
 		public:
-			StorageHandler(Manager* manager, const StorageParams* params);
-			~StorageHandler();
-			void AllHardwareParams(std::map<ControlID,Hardware::HardwareParams*>& hardwareParams);
+			inline StorageHandler(Manager* manager, const StorageParams* params)
+			:	manager(manager),
+				sqlite(params),
+				transactionRunning(false)
+			{
+			}
+
+			inline ~StorageHandler()
+			{
+			}
+
+			inline void AllHardwareParams(std::map<ControlID,Hardware::HardwareParams*>& hardwareParams)
+			{
+				sqlite.AllHardwareParams(hardwareParams);
+			}
+
 			void DeleteHardwareParams(const ControlID controlID);
 			void AllLocos(std::map<LocoID,DataModel::Loco*>& locos);
 			void DeleteLoco(LocoID locoID);
@@ -66,6 +79,7 @@ namespace Storage
 			void Save(const DataModel::Loco& loco);
 			void Save(const DataModel::Cluster& cluster);
 			void Save(const DataModel::Track& track);
+
 			template<class T> void Save(const T& t)
 			{
 				const std::string serialized = t.Serialize();
@@ -74,15 +88,41 @@ namespace Storage
 				CommitTransactionInternal();
 			}
 
-			template <class T> static void Save(StorageHandler* storageHandler, const T* t) { storageHandler->Save(*t); }
+			template <class T> static void Save(StorageHandler* storageHandler, const T* t)
+			{
+				storageHandler->Save(*t);
+			}
+
 			void SaveSetting(const std::string& key, const std::string& value);
-			std::string GetSetting(const std::string& key) ;
-			void StartTransaction();
-			void CommitTransaction();
+
+			inline std::string GetSetting(const std::string& key)
+			{
+				return sqlite.GetSetting(key);
+			}
+
+			inline void StartTransaction()
+			{
+				transactionRunning = true;
+				sqlite.StartTransaction();
+			}
+
+			inline void CommitTransaction()
+			{
+				transactionRunning = false;
+				sqlite.CommitTransaction();
+			}
 
 		private:
-			void StartTransactionInternal();
-			void CommitTransactionInternal();
+			inline void StartTransactionInternal()
+			{
+				sqlite.StartTransaction();
+			}
+
+			inline void CommitTransactionInternal()
+			{
+				sqlite.CommitTransaction();
+			}
+
 			void SaveRelations(const std::vector<DataModel::Relation*> relations);
 			std::vector<DataModel::Relation*> RelationsFrom(const DataModel::Relation::Type type, const ObjectID objectID);
 
