@@ -63,9 +63,6 @@ class Manager
 		bool ControlDelete(ControlID controlID);
 		Hardware::HardwareParams* GetHardware(const ControlID controlID);
 		unsigned int ControlsOfHardwareType(const HardwareType hardwareType);
-		bool HardwareLibraryAdd(const HardwareType hardwareType, void* libraryHandle);
-		void* HardwareLibraryGet(const HardwareType hardwareType) const;
-		bool HardwareLibraryRemove(const HardwareType hardwareType);
 
 		// control (console, web, ...)
 		const std::string GetControlName(const ControlID controlID);
@@ -645,9 +642,6 @@ class Manager
 		// hardware (virt, CS2, ...)
 		std::map<ControlID,Hardware::HardwareParams*> hardwareParams;
 		mutable std::mutex hardwareMutex;
-
-		std::map<HardwareType,void*> hardwareLibraries;
-		mutable std::mutex hardwareLibrariesMutex;
 
 		// loco
 		std::map<LocoID,DataModel::Loco*> locos;

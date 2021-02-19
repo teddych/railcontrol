@@ -92,7 +92,7 @@ Manager::Manager(Config& config)
 	for (auto hardwareParam : hardwareParams)
 	{
 		hardwareParam.second->SetManager(this);
-		controls[hardwareParam.second->GetControlID()] = new HardwareHandler(*this, hardwareParam.second);
+		controls[hardwareParam.second->GetControlID()] = new HardwareHandler(hardwareParam.second);
 		logger->Info(Languages::TextLoadedControl, hardwareParam.first, hardwareParam.second->GetName());
 	}
 
@@ -359,7 +359,7 @@ bool Manager::ControlSave(const ControlID& controlID,
 	if (newControl == true)
 	{
 		std::lock_guard<std::mutex> Guard(controlMutex);
-		ControlInterface* control = new HardwareHandler(*this, params);
+		ControlInterface* control = new HardwareHandler(params);
 		if (control == nullptr)
 		{
 			return false;
@@ -453,38 +453,6 @@ bool Manager::ControlIsOfHardwareType(const ControlID controlID, const HardwareT
 		return hardwareParam.second->GetHardwareType() == hardwareType;
 	}
 	return false;
-}
-
-bool Manager::HardwareLibraryAdd(const HardwareType hardwareType, void* libraryHandle)
-{
-	std::lock_guard<std::mutex> guard(hardwareLibrariesMutex);
-	if (hardwareLibraries.count(hardwareType) == 1)
-	{
-		return false;
-	}
-	hardwareLibraries[hardwareType] = libraryHandle;
-	return true;
-}
-
-void* Manager::HardwareLibraryGet(const HardwareType hardwareType) const
-{
-	std::lock_guard<std::mutex> guard(hardwareLibrariesMutex);
-	if (hardwareLibraries.count(hardwareType) != 1)
-	{
-		return nullptr;
-	}
-	return hardwareLibraries.at(hardwareType);
-}
-
-bool Manager::HardwareLibraryRemove(const HardwareType hardwareType)
-{
-	std::lock_guard<std::mutex> guard(hardwareLibrariesMutex);
-	if (hardwareLibraries.count(hardwareType) != 1)
-	{
-		return false;
-	}
-	hardwareLibraries.erase(hardwareType);
-	return true;
 }
 
 ControlInterface* Manager::GetControl(const ControlID controlID) const

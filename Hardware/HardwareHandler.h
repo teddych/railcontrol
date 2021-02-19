@@ -38,16 +38,8 @@ namespace Hardware
 	class HardwareHandler: public ControlInterface
 	{
 		public:
-			HardwareHandler(
-#ifdef AMALGAMATION
-				__attribute__((unused))
-#endif
-				Manager& manager,
-				const HardwareParams* params)
+			inline HardwareHandler(const HardwareParams* params)
 			:	ControlInterface(ControlTypeHardware),
-#ifndef AMALGAMATION
-				manager(manager),
-#endif
 				createHardware(nullptr),
 				destroyHardware(nullptr),
 				instance(nullptr),
@@ -56,12 +48,12 @@ namespace Hardware
 				Init(params);
 			}
 
-			~HardwareHandler()
+			inline ~HardwareHandler()
 			{
 				Close();
 			}
 
-			void ReInit(const HardwareParams* params) override
+			inline void ReInit(const HardwareParams* params) override
 			{
 				Close();
 				Init(params);
@@ -100,9 +92,6 @@ namespace Hardware
 			static void ArgumentTypesOfHardwareTypeAndHint(const HardwareType hardwareType, std::map<unsigned char,ArgumentType>& arguments, std::string& hint);
 
 		private:
-#ifndef AMALGAMATION
-			Manager& manager;
-#endif
 			createHardware_t* createHardware;
 			destroyHardware_t* destroyHardware;
 			Hardware::HardwareInterface* instance;

@@ -1,5 +1,6 @@
 
 CFLAGSSQLITE=-g -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
+CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration
 CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -std=c++11
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
 LDFLAGS=-g -Wl,--export-dynamic
@@ -29,7 +30,18 @@ OBJ= \
 	DataModel/Switch.o \
 	DataModel/Track.o \
 	DataModel/TrackBase.o \
+	Hardware/CS2Tcp.o \
+	Hardware/CS2Udp.o \
+	Hardware/CcSchnitte.o \
+	Hardware/Ecos.o \
 	Hardware/HardwareHandler.o \
+	Hardware/Hsi88.o \
+	Hardware/M6051.o \
+	Hardware/OpenDcc.o \
+	Hardware/ProtocolMaerklinCAN.o \
+	Hardware/RM485.o \
+	Hardware/Virtual.o \
+	Hardware/Z21.o \
 	Languages.o \
 	Logger/Logger.o \
 	Logger/LoggerServer.o \
@@ -40,8 +52,8 @@ OBJ= \
 	Network/TcpServer.o \
 	Network/UdpConnection.o \
 	RailControl.o \
-	Storage/StorageHandler.o \
 	Storage/Sqlite.o \
+	Storage/StorageHandler.o \
 	Utils/Utils.o \
 	WebServer/HtmlFullResponse.o \
 	WebServer/HtmlResponse.o \
@@ -74,28 +86,42 @@ OBJ= \
 	WebServer/WebClientTrackBase.o \
 	WebServer/WebServer.o
 
+OBJZLIB=Hardware/zlib/adler32.o \
+	Hardware/zlib/compress.o \
+	Hardware/zlib/crc32.o \
+	Hardware/zlib/deflate.o \
+	Hardware/zlib/gzclose.o \
+	Hardware/zlib/gzlib.o \
+	Hardware/zlib/gzread.o \
+	Hardware/zlib/gzwrite.o \
+	Hardware/zlib/infback.o \
+	Hardware/zlib/inffast.o \
+	Hardware/zlib/inflate.o \
+	Hardware/zlib/inftrees.o \
+	Hardware/zlib/trees.o \
+	Hardware/zlib/uncompr.o \
+	Hardware/zlib/zutil.o \
+	Hardware/ZLib.o
+
+
 CXXUNSORTED= $(subst .o,.cpp,$(OBJ))
 CXXSORTED= $(shell ls -S $(CXXUNSORTED))
-OBJSORTED= Timestamp.o Storage/sqlite/sqlite3.o $(subst .cpp,.o,$(CXXSORTED))
+OBJSORTED= Timestamp.o Storage/sqlite/sqlite3.o $(subst .cpp,.o,$(CXXSORTED)) $(OBJZLIB)
 
 all: $(OBJSORTED)
-	+make -C Hardware
 	rm Timestamp.cpp
 	$(CXX) $(LDFLAGS) $(OBJSORTED) -o railcontrol $(LIBS)
 	rm Timestamp.o
 
 dist: all
 	strip railcontrol
-	strip Hardware/*.so
-	tar cvJf railcontrol.tar.xz Hardware/*.so railcontrol railcontrol.conf.dist html/*
+	tar cvJf railcontrol.tar.xz railcontrol railcontrol.conf.dist html/*
 	mkdir $(TMPDIR)
-	mkdir $(TMPDIR)/Hardware
 	cp -r \
 		html \
 		railcontrol.conf.dist \
 		railcontrol \
 		$(TMPDIR)
-	cp -r Hardware/*.so $(TMPDIR)/Hardware
 	tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz $(TMPDIR)/* $(TMPDIR)/html/*
 	rm -r $(TMPDIR)
 
@@ -119,7 +145,6 @@ dist-cygwin: amalgamation
 amalgamation: Timestamp.cpp
 	./amalgamation.bash
 	$(CXX) $(CXXFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
-	make -C Hardware amalgamation
 	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o Hardware/zlib/*.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
@@ -131,6 +156,9 @@ sqlite-shell:
 Timestamp.o: Timestamp.cpp Timestamp.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+Hardware/zlib/%.o: Hardware/zlib/%.c Hardware/zlib/*.h
+	$(CC) $(CFLAGSZLIB) -c -o $@ $<
+
 Storage/sqlite/sqlite3.o: Storage/sqlite/sqlite3.c Storage/sqlite/sqlite3.h
 	$(CC) $(CFLAGSSQLITE) -c -o $@ $<
 
@@ -138,7 +166,6 @@ Storage/sqlite/sqlite3.o: Storage/sqlite/sqlite3.c Storage/sqlite/sqlite3.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 clean:
-	make -C Hardware clean
 	rm -f *.o DataModel/*.o Hardware/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
 

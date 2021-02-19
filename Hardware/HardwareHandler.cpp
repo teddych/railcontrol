@@ -63,7 +63,6 @@ namespace Hardware
 		this->params = params;
 		HardwareType type = params->GetHardwareType();
 
-#ifdef AMALGAMATION
 		switch(type)
 		{
 			case HardwareTypeCS2Udp:
@@ -122,56 +121,6 @@ namespace Hardware
 				destroyHardware = nullptr;
 				break;
 		}
-#else
-		// generate symbol and library names
-		char* error;
-		const string& symbol = hardwareSymbols[type];
-
-		string moduleName = "Hardware/" + symbol + ".so";
-
-		Logger::Logger* logger = Logger::Logger::GetLogger("HardwareHandler");
-		void* dlhandle = manager.HardwareLibraryGet(type);
-		if (dlhandle == nullptr)
-		{
-			// open dynamic library
-			dlhandle = dlopen(moduleName.c_str(), RTLD_LAZY);
-			if (dlhandle == nullptr)
-			{
-				logger->Error(Languages::TextCanNotOpenLibrary, moduleName, dlerror());
-				return;
-			}
-			logger->Info(Languages::TextLibraryLoaded, symbol);
-			if (!manager.HardwareLibraryAdd(type, dlhandle))
-			{
-				logger->Error(Languages::TextUnableToStoreLibraryAddress, moduleName);
-				return;
-			}
-		}
-
-		// look for symbol create_*
-		string createSymbol = "create_" + symbol;
-		createHardware_t* new_create_hardware = (createHardware_t*)dlsym(dlhandle, createSymbol.c_str());
-		error = dlerror();
-		if (error)
-		{
-			logger->Error(Languages::TextUnableToFindSymbol, createSymbol, error);
-			return;
-		}
-
-		// look for symbol destroy_*
-		string destroySymbol = "destroy_" + symbol;
-		destroyHardware_t* new_destroy_hardware = (destroyHardware_t*)dlsym(dlhandle, destroySymbol.c_str());
-		error = dlerror();
-		if (error)
-		{
-			logger->Error(Languages::TextUnableToFindSymbol, destroySymbol, error);
-			return;
-		}
-
-		// register  valid symbols
-		createHardware = new_create_hardware;
-		destroyHardware = new_destroy_hardware;
-#endif
 
 		// start control
 		if (createHardware != nullptr)
@@ -190,28 +139,7 @@ namespace Hardware
 			destroyHardware(instanceTemp);
 		}
 		destroyHardware = nullptr;
-
-#ifndef AMALGAMATION
-		HardwareType type = params->GetHardwareType();
 		params = nullptr;
-		// close library
-		if (manager.ControlsOfHardwareType(type) > 1)
-		{
-			return;
-		}
-		void* dlhandle = manager.HardwareLibraryGet(type);
-		if (dlhandle == nullptr)
-		{
-			return;
-		}
-		if (manager.HardwareLibraryRemove(type) == false)
-		{
-			return;
-		}
-		dlclose(dlhandle);
-#else
-		params = nullptr;
-#endif
 	}
 
 	const std::string HardwareHandler::GetName() const
