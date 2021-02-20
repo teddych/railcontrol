@@ -132,7 +132,7 @@ namespace DataModel
 		}
 	}
 
-	void Track::ReleaseSignals(Logger::Logger* logger, const LocoID locoID)
+	void Track::StopAllSignals(const LocoID locoId)
 	{
 		for (auto signalRelation : signals)
 		{
@@ -141,7 +141,11 @@ namespace DataModel
 			{
 				continue;
 			}
-			signal->Release(logger, locoID);
+			if (locoId != signal->GetLoco())
+			{
+				continue;
+			}
+			manager->SignalState(ControlTypeInternal, signal, SignalStateStop, true);
 		}
 	}
 } // namespace DataModel

@@ -217,10 +217,7 @@ namespace DataModel
 			virtual bool ReleaseInternal(Logger::Logger* logger, const LocoID locoID) = 0;
 			virtual void PublishState() const = 0;
 			virtual LocoID GetLockedLoco() const = 0;
-			virtual void ReleaseSignals(__attribute__((unused)) Logger::Logger* logger,
-				__attribute__((unused))  const LocoID locoID)
-			{
-			}
+			virtual void StopAllSignals(__attribute__((unused)) const LocoID locoId) {}
 
 			Manager* manager;
 

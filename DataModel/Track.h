@@ -158,7 +158,7 @@ namespace DataModel
 				return GetLoco();
 			}
 
-			void ReleaseSignals(Logger::Logger* logger, const LocoID locoID) override;
+			void StopAllSignals(const LocoID locoId) override;
 
 		private:
 			TrackType trackType;
