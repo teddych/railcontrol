@@ -125,7 +125,7 @@ dist: all
 	tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz $(TMPDIR)/* $(TMPDIR)/html/*
 	rm -r $(TMPDIR)
 
-dist-cygwin: amalgamation
+dist-cygwin: all
 	strip railcontrol.exe
 	mkdir $(TMPDIRCYGWIN)
 	cp -r \
