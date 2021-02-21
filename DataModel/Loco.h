@@ -81,34 +81,9 @@ namespace DataModel
 			}
 
 			inline Loco(Manager* manager, const std::string& serialized)
-			:	Object(LocoNone),
-				HardwareHandle(),
-			 	manager(manager),
-				length(0),
-				pushpull(false),
-				maxSpeed(0),
-				travelSpeed(0),
-				reducedSpeed(0),
-				creepingSpeed(0),
-				speed(MinSpeed),
-				orientation(OrientationRight),
-				state(LocoStateManual),
-				requestManualMode(false),
-				trackFrom(nullptr),
-				trackFirst(nullptr),
-				trackSecond(nullptr),
-				routeFirst(nullptr),
-				routeSecond(nullptr),
-				feedbackIdFirst(FeedbackNone),
-				feedbackIdReduced(FeedbackNone),
-				feedbackIdCreep(FeedbackNone),
-				feedbackIdStop(FeedbackNone),
-				feedbackIdOver(FeedbackNone),
-				feedbackIdsReached(),
-				wait(0)
+			:	Loco(manager, LocoNone)
 			{
 				Deserialize(serialized);
-				logger = Logger::Logger::GetLogger(GetName());
 			}
 
 			virtual ~Loco();
