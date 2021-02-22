@@ -3,7 +3,7 @@ CFLAGSSQLITE=-g -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_R
 CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration
 CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -std=c++11
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
-LDFLAGS=-g -Wl,--export-dynamic
+LDFLAGS=-g
 LIBS=-lpthread -ldl
 LIBSAMALGAMATION=-lpthread -ldl
 
@@ -165,6 +165,7 @@ Storage/sqlite/sqlite3.o: Storage/sqlite/sqlite3.c Storage/sqlite/sqlite3.h
 %.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
+.PHONY: clean
 clean:
 	rm -f *.o DataModel/*.o Hardware/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
@@ -178,6 +179,7 @@ test:
 tools:
 	make -C tools
 
+.PHONY: Timestamp.cpp
 Timestamp.cpp:
 	echo "#include <ctime>" > Timestamp.cpp
 	echo "#include \"Timestamp.h\"" >> Timestamp.cpp
