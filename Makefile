@@ -161,7 +161,7 @@ Hardware/zlib/%.o: Hardware/zlib/%.c Hardware/zlib/*.h
 Storage/sqlite/sqlite3.o: Storage/sqlite/sqlite3.c Storage/sqlite/sqlite3.h
 	$(CC) $(CFLAGSSQLITE) -c -o $@ $<
 
-%.o: %.cpp *.h DataModel/*.h Hardware/HardwareHandler.h Logger/*.h Network/*.h Storage/StorageHandler.h Utils/*.h WebServer/*.h
+%.o: %.cpp *.h DataModel/*.h Hardware/*.h Logger/*.h Network/*.h Storage/*.h Utils/*.h WebServer/*.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 .PHONY: clean
