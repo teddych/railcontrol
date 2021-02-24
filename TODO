@@ -1,5 +1,5 @@
+- Layout ein-/ausblenden, mehrere Loksteuerungen
 - Rückmelder-Gleis als Relation speichern
-- Signal an Gleis assoziieren um bei einer Fahrstrasse als Startsignal zu verwenden
 - Mehrfachtraktion als separate Lok anzeigen, einzelne Loks trotzdem separat steuerbar
 - Zugkategorien für Fahrstrassen
 - Manuelle Wahl einer Fahrstrasse einer Lok im Automode
