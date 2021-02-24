@@ -7,7 +7,7 @@ LDFLAGS=-g
 LIBS=-lpthread -ldl
 LIBSAMALGAMATION=-lpthread -ldl
 
-TMPDIR=RailControl
+TMPDIR=/tmp/RailControl
 TMPDIRCYGWIN=/RailControl
 
 OBJ= \
@@ -115,14 +115,13 @@ all: $(OBJSORTED)
 
 dist: all
 	strip railcontrol
-	tar cvJf railcontrol.tar.xz railcontrol railcontrol.conf.dist html/*
 	mkdir $(TMPDIR)
 	cp -r \
 		html \
 		railcontrol.conf.dist \
 		railcontrol \
 		$(TMPDIR)
-	tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz $(TMPDIR)/* $(TMPDIR)/html/*
+	cd $(TEMPDIR)/.. && tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz RailControl/* RailControl/html/*
 	rm -r $(TMPDIR)
 
 dist-cygwin: all
