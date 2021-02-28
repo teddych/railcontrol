@@ -729,7 +729,7 @@ namespace Hardware
 	void ProtocolMaerklinCAN::ParseCs2FileLocomotive(deque<string>& lines)
 	{
 		lines.pop_front();
-		LocoCacheEntry cacheEntry;
+		LocoCacheEntry cacheEntry(params->GetControlID());
 		std::string oldName;
 		bool remove = false;
 		while (lines.size())
@@ -776,15 +776,15 @@ namespace Hardware
 		if (remove)
 		{
 			logger->Info(Languages::TextCs2MasterLocoRemove, name);
-			locoCache.Delete(name);
+			locoCache.DeleteByName(name);
 		}
 		else if (oldName.size() > 0)
 		{
-			locoCache.Replace(cacheEntry, oldName);
+			locoCache.ReplaceByName(cacheEntry, oldName);
 		}
 		else
 		{
-			locoCache.Insert(cacheEntry);
+			locoCache.InsertByName(cacheEntry);
 		}
 	}
 

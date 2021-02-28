@@ -79,6 +79,8 @@ namespace DataModel
 		str += to_string(reducedSpeed);
 		str += ";creepingspeed=";
 		str += to_string(creepingSpeed);
+		str += ";matchkey=";
+		str += matchKey;
 		return str;
 	}
 
@@ -113,6 +115,7 @@ namespace DataModel
 		reducedSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
 		creepingSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepspeed", DefaultCreepingSpeed);
 		creepingSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepingspeed", creepingSpeed);
+		matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		return true;
 	}
 

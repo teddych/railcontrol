@@ -205,6 +205,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextHttpConnectionOpen */ { "HTTP connection {0}: open", "HTTP Verbindung {0}: geöffnet", "HTTP connectión {0}: abierto" },
 /* TextHttpConnectionRequest */ { "HTTP connection {0}: Request: {1} {2}", "HTTP Verbindung {0}: Anfrage {1} {2}", "HTTP connectión {0}: solicitud: {1} {2}" },
 /* TextIPAddress */ { "IP address", "IP Adresse", "Dirección IP" },
+/* TextImport */ { "Import", "Importieren", "Importar" },
 /* TextIndex */ { "Index", "Index", "Index" },
 /* TextInfo */ { "info", "Informationen", "informaciones" },
 /* TextInvalidControlID */ { "Invalid controlID {0}", "Ungültige Control ID {0}", "Control ID {0} no valido" },

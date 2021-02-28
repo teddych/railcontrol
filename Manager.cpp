@@ -612,6 +612,20 @@ Loco* Manager::GetLoco(const LocoID locoID) const
 	return locos.at(locoID);
 }
 
+LocoConfig Manager::GetLocoByMatch(const ControlID controlId, const string& match) const
+{
+	std::lock_guard<std::mutex> guard(locoMutex);
+	for (auto loco : locos)
+	{
+		Loco* locoEntry = loco.second;
+		if ((locoEntry->GetControlID() == controlId) && (locoEntry->GetMatchKey().compare(match) == 0))
+		{
+			return LocoConfig(*locoEntry);
+		}
+	}
+	return LocoConfig();
+}
+
 Loco* Manager::GetLoco(const ControlID controlID, const Protocol protocol, const Address address) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
@@ -651,14 +665,23 @@ const map<string,LocoID> Manager::LocoListFree() const
 	return out;
 }
 
-const map<string,DataModel::Loco*> Manager::LocoListByName() const
+const map<string,DataModel::LocoConfig> Manager::LocoListByName() const
 {
-	map<string,DataModel::Loco*> out;
-	std::lock_guard<std::mutex> guard(locoMutex);
-	for(auto loco : locos)
+	map<string,DataModel::LocoConfig> out;
 	{
-		out[loco.second->GetName()] = loco.second;
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (auto loco : locos)
+		{
+			out[loco.second->GetName()] = *(loco.second);
+		}
 	}
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto control : controls)
+	{
+		control.second->AddUnmatchedLocos(out);
+	}
+
+
 	return out;
 }
 

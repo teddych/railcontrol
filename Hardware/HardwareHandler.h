@@ -95,6 +95,8 @@ namespace Hardware
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
+			void AddUnmatchedLocos(std::map<std::string,DataModel::LocoConfig>& list) const override;
+
 			static void ArgumentTypesOfHardwareTypeAndHint(const HardwareType hardwareType, std::map<unsigned char,ArgumentType>& arguments, std::string& hint);
 
 		private:

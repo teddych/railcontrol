@@ -205,6 +205,7 @@ class Languages
 			TextHttpConnectionOpen,
 			TextHttpConnectionRequest,
 			TextIPAddress,
+			TextImport,
 			TextIndex,
 			TextInfo,
 			TextInvalidControlID,

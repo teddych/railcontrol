@@ -88,6 +88,11 @@ namespace Hardware
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
+			inline virtual const std::map<std::string,Hardware::LocoCacheEntry>& GetLocoDatabase() const override
+			{
+				return locoCache.GetAll();
+			}
+
 		protected:
 			inline ProtocolMaerklinCAN(HardwareParams* const params, Logger::Logger* logger, std::string name)
 			:	HardwareInterface(params->GetManager(), params->GetControlID(), name),
@@ -98,7 +103,8 @@ namespace Hardware
 				hasCs2Master(false),
 				canFileDataSize(0),
 				canFileData(nullptr),
-				canFileDataPointer(nullptr)
+				canFileDataPointer(nullptr),
+				locoCache(params->GetControlID())
 			{
 				if (uid == 0)
 				{

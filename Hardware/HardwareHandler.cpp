@@ -374,6 +374,25 @@ namespace Hardware
 		instance->ProgramWrite(mode, address, cv, value);
 	}
 
+	void HardwareHandler::AddUnmatchedLocos(std::map<std::string,DataModel::LocoConfig>& list) const
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+
+		const std::map<std::string,Hardware::LocoCacheEntry>& database = instance->GetLocoDatabase();
+		for (auto entry : database)
+		{
+			Hardware::LocoCacheEntry& loco = entry.second;
+			if (loco.GetLocoID() != LocoNone)
+			{
+				continue;
+			}
+			list[loco.GetName() + " (Hardware)"] = loco;
+		}
+	}
+
 	void HardwareHandler::ArgumentTypesOfHardwareTypeAndHint(const HardwareType hardwareType, std::map<unsigned char,ArgumentType>& arguments, std::string& hint)
 	{
 		switch (hardwareType)

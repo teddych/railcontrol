@@ -30,7 +30,9 @@ along with RailControl; see the file LICENCE. If not see
 #include "Config.h"
 #include "ControlInterface.h"
 #include "DataModel/DataModel.h"
+#include "DataModel/LocoConfig.h"
 #include "Hardware/HardwareParams.h"
+#include "Hardware/LocoCache.h"
 #include "Logger/Logger.h"
 #include "Storage/StorageHandler.h"
 
@@ -87,6 +89,9 @@ class Manager
 
 		// loco
 		DataModel::Loco* GetLoco(const LocoID locoID) const;
+
+		DataModel::LocoConfig GetLocoByMatch(const ControlID controlId, const std::string& match) const;
+
 		const std::string& GetLocoName(const LocoID locoID) const;
 
 		inline const std::map<LocoID,DataModel::Loco*>& locoList() const
@@ -95,7 +100,9 @@ class Manager
 		}
 
 		const std::map<std::string,LocoID> LocoListFree() const;
-		const std::map<std::string,DataModel::Loco*> LocoListByName() const;
+
+		const std::map<std::string,DataModel::LocoConfig> LocoListByName() const;
+
 		bool LocoSave
 		(
 			const LocoID locoID,

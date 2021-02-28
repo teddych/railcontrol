@@ -77,7 +77,8 @@ namespace DataModel
 				feedbackIdStop(FeedbackNone),
 				feedbackIdOver(FeedbackNone),
 				feedbackIdsReached(),
-				wait(0)
+				wait(0),
+				matchKey("")
 			{
 				logger = Logger::Logger::GetLogger(GetName());
 			}
@@ -246,6 +247,16 @@ namespace DataModel
 				return slaves;
 			}
 
+			inline void SetMatchKey(std::string& matchKey)
+			{
+				this->matchKey = matchKey;
+			}
+
+			inline std::string GetMatchKey() const
+			{
+				return matchKey;
+			}
+
 		private:
 			void SetMinThreadPriorityAndThreadName();
 			void AutoMode();
@@ -299,6 +310,7 @@ namespace DataModel
 			volatile FeedbackID feedbackIdOver;
 			Utils::ThreadSafeQueue<FeedbackID> feedbackIdsReached;
 			Pause wait;
+			std::string matchKey;
 
 			LocoFunctions functions;
 

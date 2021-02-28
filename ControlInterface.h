@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataModel/AccessoryBase.h"
 #include "DataModel/Feedback.h"
+#include "DataModel/LocoConfig.h"
 #include "DataModel/LocoFunctions.h"
 #include "DataTypes.h"
 #include "Hardware/Capabilities.h"
@@ -294,6 +295,9 @@ class ControlInterface
 		{
 		}
 
+		virtual void AddUnmatchedLocos(__attribute__((unused)) std::map<std::string,DataModel::LocoConfig>& list) const
+		{
+		}
 
 	private:
 		ControlType controlType;

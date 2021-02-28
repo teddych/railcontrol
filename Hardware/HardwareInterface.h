@@ -25,8 +25,10 @@ along with RailControl; see the file LICENCE. If not see
 #include <vector>
 
 #include "DataModel/AccessoryBase.h"
+#include "DataModel/Loco.h"
 #include "DataTypes.h"
 #include "Hardware/Capabilities.h"
+#include "Hardware/LocoCache.h"
 #include "Manager.h"
 #include "Utils/Utils.h"
 
@@ -151,6 +153,11 @@ namespace Hardware
 			{
 			}
 
+			virtual const std::map<std::string,Hardware::LocoCacheEntry>& GetLocoDatabase() const
+			{
+				return emptyLocoDatabase;
+			}
+
 		protected:
 			Manager* manager;
 			const ControlID controlID;
@@ -173,6 +180,8 @@ namespace Hardware
 				Utils::Utils::SleepForMilliseconds(duration);
 				hardware->AccessoryOnOrOff(protocol, address, state, false);
 			}
+
+			std::map<std::string,Hardware::LocoCacheEntry> emptyLocoDatabase;
 	};
 
 } // namespace

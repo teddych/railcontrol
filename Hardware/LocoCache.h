@@ -32,8 +32,11 @@ namespace Hardware
 	class LocoCacheEntry
 	{
 		public:
-			inline LocoCacheEntry()
-			:	locoID(LocoNone),
+			LocoCacheEntry() = delete;
+
+			inline LocoCacheEntry(const ControlID controlId)
+			:	controlId(controlId),
+				locoId(LocoNone),
 				name(""),
 				protocol(ProtocolNone),
 				address(AddressNone)
@@ -43,14 +46,19 @@ namespace Hardware
 				memset(&functionTimers, 0, sizeof(functionTimers));
 			}
 
-			inline LocoID GetLocoID() const
+			inline ControlID GetControlID() const
 			{
-				return locoID;
+				return controlId;
 			}
 
-			inline void SetLocoID(const LocoID locoID)
+			inline LocoID GetLocoID() const
 			{
-				this->locoID = locoID;
+				return locoId;
+			}
+
+			inline void SetLocoID(const LocoID locoId)
+			{
+				this->locoId = locoId;
 			}
 
 			inline const std::string& GetName() const
@@ -135,10 +143,17 @@ namespace Hardware
 				return functionTimers[nr];
 			}
 
+			inline const std::string& GetMatchKey() const
+			{
+				return name;
+			}
+
 		private:
 			static const uint8_t MaxFunctions = 32;
 			static const uint8_t MaxFunctionsIncludingZero = MaxFunctions + 1;
-			LocoID locoID;
+
+			const ControlID controlId;
+			LocoID locoId;
 			std::string name;
 			Protocol protocol;
 			Address address;
@@ -150,32 +165,45 @@ namespace Hardware
 	class LocoCache
 	{
 		public:
-			inline LocoCache() {}
+			inline LocoCache(const ControlID controlId)
+			:	controlId(controlId)
+			{
+			}
+
+			LocoCache() = delete;
+
 			LocoCache(const LocoCache& rhs) = delete;
+
 			LocoCache& operator= (const LocoCache& rhs) = delete;
 
-			inline void Insert(const LocoCacheEntry& entry)
+			inline void InsertByName(const LocoCacheEntry& entry)
 			{
-				entries[entry.GetName()] = entry;
+				entries.emplace(entry.GetName(), entry);
 			}
 
-			inline void Replace(const LocoCacheEntry& entry, const std::string& oldName)
+			inline void ReplaceByName(const LocoCacheEntry& entry, const std::string& oldName)
 			{
-				Delete(oldName);
-				Insert(entry);
+				DeleteByName(oldName);
+				InsertByName(entry);
 			}
 
-			inline LocoCacheEntry Get(const std::string& name)
+			inline LocoCacheEntry GetByName(const std::string& name) const
 			{
-				return entries.count(name) == 0 ? LocoCacheEntry() : entries.at(name);
+				return entries.count(name) == 0 ? LocoCacheEntry(controlId) : entries.at(name);
 			}
 
-			inline void Delete(const std::string& name)
+			inline void DeleteByName(const std::string& name)
 			{
 				entries.erase(name);
 			}
 
+			inline const std::map<std::string,LocoCacheEntry>& GetAll() const
+			{
+				return entries;
+			}
+
 		private:
+			const ControlID controlId;
 			std::map<std::string,LocoCacheEntry> entries;
 	};
 } // namespace Hardware
