@@ -602,7 +602,7 @@ const std::map<std::string, Protocol> Manager::ProtocolsOfControl(const AddressT
 * Loco                     *
 ***************************/
 
-DataModel::Loco* Manager::GetLoco(const LocoID locoID) const
+Loco* Manager::GetLoco(const LocoID locoID) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
 	if (locos.count(locoID) != 1)

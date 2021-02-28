@@ -50,6 +50,8 @@ namespace DataModel
 				ReserveTwo = 2
 			};
 
+			Loco() = delete;
+
 			inline Loco(Manager* manager, const LocoID locoID)
 			:	Object(locoID),
 				HardwareHandle(),

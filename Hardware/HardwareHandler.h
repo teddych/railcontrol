@@ -59,7 +59,11 @@ namespace Hardware
 				Init(params);
 			}
 
-			ControlID GetControlID() const { return params->GetControlID(); }
+			inline ControlID GetControlID() const
+			{
+				return params->GetControlID();
+			}
+
 			const std::string GetName() const override;
 
 			void AccessoryProtocols(std::vector<Protocol>& protocols) const override;
@@ -68,7 +72,9 @@ namespace Hardware
 
 			void Booster(const ControlType controlType, BoosterState status) override;
 			Hardware::Capabilities GetCapabilities() const override;
-			void LocoOrientation(const ControlType controlType, const DataModel::Loco* loco, const Orientation orientation) override;
+			void LocoOrientation(const ControlType controlType,
+				const DataModel::Loco* loco,
+				const Orientation orientation) override;
 
 			void LocoFunction(const ControlType controlType,
 				const DataModel::Loco* loco,

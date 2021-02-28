@@ -18,10 +18,6 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#ifndef AMALGAMATION
-#include <dlfcn.h>              // dl*
-#endif
-
 #include "DataModel/Loco.h"
 #include "DataModel/LocoFunctions.h"
 #include "DataTypes.h"

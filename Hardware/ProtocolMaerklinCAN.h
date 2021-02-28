@@ -89,9 +89,8 @@ namespace Hardware
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
 		protected:
-			ProtocolMaerklinCAN(HardwareParams* const params, Logger::Logger* logger, std::string name)
-			:	HardwareInterface(params->GetManager(),
-				params->GetControlID(), name),
+			inline ProtocolMaerklinCAN(HardwareParams* const params, Logger::Logger* logger, std::string name)
+			:	HardwareInterface(params->GetManager(), params->GetControlID(), name),
 				logger(logger),
 				run(false),
 				params(params),
