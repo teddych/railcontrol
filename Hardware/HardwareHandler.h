@@ -118,7 +118,6 @@ namespace Hardware
 			Hardware::HardwareInterface* instance;
 			const HardwareParams* params;
 
-			static const std::string hardwareSymbols[];
 			static const std::string Unknown;
 
 			void Init(const HardwareParams* params);

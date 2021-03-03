@@ -39,20 +39,6 @@ using std::string;
 
 namespace Hardware
 {
-	const std::string HardwareHandler::hardwareSymbols[] =
-	{
-		"none",
-		"Virtual",
-		"CS2Udp",
-		"M6051",
-		"RM485",
-		"OpenDcc",
-		"Hsi88",
-		"Z21",
-		"CcSchnitte",
-		"Ecos",
-		"CS2Tcp"
-	};
 	const std::string HardwareHandler::Unknown = "Unknown, not running";
 
 	void HardwareHandler::Init(const HardwareParams* params)

@@ -1715,7 +1715,7 @@ namespace WebServer
 		}
 		else if (prefix.compare("slave") == 0)
 		{
-			options = GetLocoOptions();
+			options = GetLocoSlaveOptions();
 		}
 		container.AddChildTag(HtmlTagSlaveEntry(prefix, priorityString, ObjectNone, options));
 		container.AddChildTag(HtmlTag("div").AddId(prefix + "_new_" + to_string(priority + 1)));
@@ -1757,7 +1757,7 @@ namespace WebServer
 		ReplyHtmlWithHeader(HtmlTagRelationSwitchState(name, switchId));
 	}
 
-	map<string,ObjectID> WebClient::GetLocoOptions(const LocoID locoID) const
+	map<string,ObjectID> WebClient::GetLocoSlaveOptions(const LocoID locoID) const
 	{
 		map<string, ObjectID> locoOptions;
 
@@ -1782,7 +1782,7 @@ namespace WebServer
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
 		if (controlId == ControlNone)
 		{
-			controlId = manager.GetControlForLoco();
+			controlId = manager.GetPossibleControlForLoco();
 		}
 		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		Protocol protocol = ProtocolNone;
@@ -2006,7 +2006,7 @@ namespace WebServer
 		}
 		formContent.AddChildTag(functionsContent);
 
-		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetLocoOptions(locoId)));
+		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetLocoSlaveOptions(locoId)));
 
 		HtmlTag automodeContent("div");
 		automodeContent.AddId("tab_automode");
@@ -2364,7 +2364,7 @@ namespace WebServer
 	{
 		HtmlTag content;
 		AccessoryID accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		ControlID controlID = manager.GetControlForAccessory();
+		ControlID controlID = manager.GetPossibleControlForAccessory();
 		Protocol protocol = ProtocolNone;
 		Address address = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
@@ -2552,7 +2552,7 @@ namespace WebServer
 	{
 		HtmlTag content;
 		SwitchID switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		ControlID controlID = manager.GetControlForAccessory();
+		ControlID controlID = manager.GetPossibleControlForAccessory();
 		Protocol protocol = ProtocolNone;
 		Address address = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
@@ -3186,7 +3186,7 @@ namespace WebServer
 		HtmlTag content;
 		FeedbackID feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
 		string name = Languages::GetText(Languages::TextNew);
-		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "controlid", manager.GetControlForFeedback());
+		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "controlid", manager.GetPossibleControlForFeedback());
 		FeedbackPin pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin", 0);
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);

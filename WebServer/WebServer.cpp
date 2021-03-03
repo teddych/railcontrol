@@ -46,7 +46,10 @@ using DataModel::Loco;
 using DataModel::Route;
 using DataModel::TrackBase;
 
-namespace WebServer {
+namespace WebServer
+{
+	const std::string WebServer::UpdateStatus = "data: status=";
+	const std::string WebServer::Webserver = "Webserver";
 
 	WebServer::WebServer(Manager& manager, const unsigned short port)
 	:	ControlInterface(ControlTypeWebserver),

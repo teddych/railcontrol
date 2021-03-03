@@ -56,7 +56,7 @@ namespace WebServer
 	{
 		HtmlTag content;
 		SignalID signalID = Utils::Utils::GetIntegerMapEntry(arguments, "signal", SignalNone);
-		ControlID controlID = manager.GetControlForAccessory();
+		ControlID controlID = manager.GetPossibleControlForAccessory();
 		Protocol protocol = ProtocolNone;
 		Address address = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);

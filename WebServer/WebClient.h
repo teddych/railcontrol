@@ -240,7 +240,7 @@ namespace WebServer
 				const ObjectID objectId,
 				const std::map<std::string,ObjectID>& options) const;
 
-			std::map<std::string,ObjectID> GetLocoOptions(const LocoID locoID = LocoNone) const;
+			std::map<std::string,ObjectID> GetLocoSlaveOptions(const LocoID locoID = LocoNone) const;
 
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);

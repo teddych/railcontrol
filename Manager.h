@@ -52,7 +52,7 @@ class Manager
 		void Booster(const ControlType controlType, const BoosterState status);
 
 		// hardware (virt, CS2, ...)
-		bool ControlSave(const ControlID& controlID,
+		bool ControlSave(ControlID controlID,
 			const HardwareType& hardwareType,
 			const std::string& name,
 			const std::string& arg1,
@@ -104,7 +104,7 @@ class Manager
 
 		bool LocoSave
 		(
-			const LocoID locoID,
+			LocoID locoID,
 			const std::string& name,
 			const ControlID controlID,
 			const std::string& matchKey,
@@ -158,7 +158,8 @@ class Manager
 		}
 
 		const std::map<std::string,DataModel::Accessory*> AccessoryListByName() const;
-		bool AccessorySave(const AccessoryID accessoryID,
+
+		bool AccessorySave(AccessoryID accessoryID,
 			const std::string& name,
 			const DataModel::LayoutItem::LayoutPosition x,
 			const DataModel::LayoutItem::LayoutPosition y,
@@ -190,7 +191,17 @@ class Manager
 
 		const std::map<std::string,DataModel::Feedback*> FeedbackListByName() const;
 		const std::map<std::string,FeedbackID> FeedbacksOfTrack(const DataModel::ObjectIdentifier& identifier) const;
-		bool FeedbackSave(const FeedbackID feedbackID, const std::string& name, const DataModel::LayoutItem::Visible visible, const DataModel::LayoutItem::LayoutPosition posX, const DataModel::LayoutItem::LayoutPosition posY, const DataModel::LayoutItem::LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted,  std::string& result);
+
+		bool FeedbackSave(FeedbackID feedbackID,
+			const std::string& name,
+			const DataModel::LayoutItem::Visible visible,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			const DataModel::LayoutItem::LayoutPosition posZ,
+			const ControlID controlID,
+			const FeedbackPin pin,
+			const bool inverted,
+			std::string& result);
 
 		bool FeedbackDelete(const FeedbackID feedbackID,
 			std::string& result);
@@ -244,7 +255,8 @@ class Manager
 		}
 
 		const std::map<std::string,DataModel::Switch*> SwitchListByName() const;
-		bool SwitchSave(const SwitchID switchID,
+
+		bool SwitchSave(SwitchID switchID,
 			const std::string& name,
 			const DataModel::LayoutItem::LayoutPosition x,
 			const DataModel::LayoutItem::LayoutPosition y,
@@ -275,7 +287,7 @@ class Manager
 		}
 
 		const std::map<std::string,DataModel::Route*> RouteListByName() const;
-		bool RouteSave(const RouteID routeID,
+		bool RouteSave(RouteID routeID,
 			const std::string& name,
 			const Delay delay,
 			const DataModel::Route::PushpullType pushpull,
@@ -327,7 +339,7 @@ class Manager
 
 		const std::map<std::string,DataModel::Signal*> SignalListByName() const;
 
-		bool SignalSave(const SignalID signalID,
+		bool SignalSave(SignalID signalID,
 			const std::string& name,
 			const Orientation signalOrientation,
 			const DataModel::LayoutItem::LayoutPosition x,
@@ -356,7 +368,7 @@ class Manager
 		DataModel::Cluster* GetCluster(const ClusterID clusterID) const;
 		const std::map<std::string,DataModel::Cluster*> ClusterListByName() const;
 
-		bool ClusterSave(const ClusterID clusterID,
+		bool ClusterSave(ClusterID clusterID,
 			const std::string& name,
 			const std::vector<DataModel::Relation*>& newTracks,
 			const std::vector<DataModel::Relation*>& newSignals,
@@ -417,9 +429,9 @@ class Manager
 			const Logger::Logger::Level logLevel
 			);
 
-		ControlID GetControlForLoco() const;
-		ControlID GetControlForAccessory() const;
-		ControlID GetControlForFeedback() const;
+		ControlID GetPossibleControlForLoco() const;
+		ControlID GetPossibleControlForAccessory() const;
+		ControlID GetPossibleControlForFeedback() const;
 
 		void ProgramRead(const ControlID controlID, const ProgramMode mode, const Address address, const CvNumber cv);
 		void ProgramWrite(const ControlID controlID, const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value);
