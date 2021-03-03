@@ -53,6 +53,7 @@ namespace Hardware
 		"Ecos",
 		"CS2Tcp"
 	};
+	const std::string HardwareHandler::Unknown = "Unknown, not running";
 
 	void HardwareHandler::Init(const HardwareParams* params)
 	{
@@ -138,13 +139,22 @@ namespace Hardware
 		params = nullptr;
 	}
 
-	const std::string HardwareHandler::GetName() const
+	const std::string& HardwareHandler::GetName() const
 	{
 		if (instance == nullptr)
 		{
-			return "Unknown, not running";
+			return Unknown;
 		}
-		return instance->GetName();
+		return instance->GetFullName();
+	}
+
+	const std::string& HardwareHandler::GetShortName() const
+	{
+		if (instance == nullptr)
+		{
+			return Unknown;
+		}
+		return instance->GetShortName();
 	}
 
 	Hardware::Capabilities HardwareHandler::GetCapabilities() const
@@ -246,6 +256,17 @@ namespace Hardware
 			return;
 		}
 		instance->LocoSpeedOrientationFunctions(loco->GetProtocol(), loco->GetAddress(), speed, orientation, functions);
+	}
+
+	void HardwareHandler::LocoSettings(const LocoID locoId,
+		__attribute__((unused)) const std::string& name,
+		const std::string& matchKey)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->SetLocoIdOfMatch(locoId, matchKey);
 	}
 
 	void HardwareHandler::AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory)
@@ -389,8 +410,55 @@ namespace Hardware
 			{
 				continue;
 			}
-			list[loco.GetName() + " (Hardware)"] = loco;
+			list[loco.GetName() + " (" + instance->GetShortName() + ")"] = loco;
 		}
+	}
+
+	std::map<std::string,DataModel::LocoConfig> HardwareHandler::GetUnmatchedLocos() const
+	{
+		std::map<std::string,DataModel::LocoConfig> out;
+		if (instance == nullptr)
+		{
+			return out;
+		}
+
+		const std::map<std::string,Hardware::LocoCacheEntry>& database = instance->GetLocoDatabase();
+		for (auto entry : database)
+		{
+			Hardware::LocoCacheEntry& loco = entry.second;
+			if (loco.GetLocoID() != LocoNone)
+			{
+				continue;
+			}
+			out[loco.GetName()] = loco;
+		}
+		return out;
+	}
+
+	std::map<std::string,DataModel::LocoConfig> HardwareHandler::GetAllLocos() const
+	{
+		std::map<std::string,DataModel::LocoConfig> out;
+		if (instance == nullptr)
+		{
+			return out;
+		}
+
+		const std::map<std::string,Hardware::LocoCacheEntry>& database = instance->GetLocoDatabase();
+		for (auto entry : database)
+		{
+			Hardware::LocoCacheEntry& loco = entry.second;
+			out[loco.GetName()] = loco;
+		}
+		return out;
+	}
+
+	DataModel::LocoConfig HardwareHandler::GetLocoByMatch(const std::string& match) const
+	{
+		if (instance == nullptr)
+		{
+			return DataModel::LocoConfig();
+		}
+		return instance->GetLocoByMatch(match);
 	}
 
 	void HardwareHandler::ArgumentTypesOfHardwareTypeAndHint(const HardwareType hardwareType, std::map<unsigned char,ArgumentType>& arguments, std::string& hint)

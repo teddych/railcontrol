@@ -42,6 +42,8 @@ namespace Hardware
 		CapabilityProgramDccDirectWrite   = 0x00000800,
 		CapabilityProgramDccPomRead       = 0x00001000,
 		CapabilityProgramDccPomWrite      = 0x00002000,
+
+		CapabilityLocoDatabase            = 0x00010000,
 	};
 
 	inline Capabilities operator& (const Capabilities c1, const Capabilities c2)

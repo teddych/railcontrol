@@ -50,14 +50,15 @@ namespace Hardware
 	Ecos::Ecos(const HardwareParams* params)
 	:	HardwareInterface(params->GetManager(),
 			params->GetControlID(),
-			"ESU ECoS / " + params->GetName() + " at IP " + params->GetArg1()),
+			"ESU ECoS / " + params->GetName() + " at IP " + params->GetArg1(),
+			params->GetName()),
 		logger(Logger::Logger::GetLogger("ECoS " + params->GetName() + " " + params->GetArg1())),
 	 	run(false),
 	 	tcp(Network::TcpClient::GetTcpClientConnection(logger, params->GetArg1(), EcosPort)),
 	 	readBufferLength(0),
 		readBufferPosition(0)
 	{
-		logger->Info(Languages::TextStarting, name);
+		logger->Info(Languages::TextStarting, GetFullName());
 		if (!tcp.IsConnected())
 		{
 			return;

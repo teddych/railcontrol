@@ -1190,26 +1190,49 @@ namespace WebServer
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Loco released" : "Loco not released");
 	}
 
-	HtmlTag WebClient::HtmlTagProtocol(const map<string,Protocol>& protocolMap, const Protocol selectedProtocol)
+	HtmlTag WebClient::HtmlTagMatchKey(const map<string,LocoConfig>& matchKeyMap, const string& selectedMatchKey)
 	{
+		if (matchKeyMap.size() == 0)
+		{
+			return HtmlTagInputHidden("matchkey", "");
+		}
+
+		map<string,string> options;
+		for (auto matchKey : matchKeyMap)
+		{
+			options[matchKey.first] = matchKey.second.GetName();
+		}
 		HtmlTag content;
-		if (protocolMap.size() > 1)
-		{
-			content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
-			content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
-		}
-		else
-		{
-			auto entry = protocolMap.begin();
-			content.AddChildTag(HtmlTagInputHidden("protocol", std::to_string(entry->second)));
-		}
+		content.AddChildTag(HtmlTagLabel(Languages::TextNameInControl, "matchkey"));
+		content.AddChildTag(HtmlTagSelect("matchkey", options, selectedMatchKey));
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagProtocolLoco(const ControlID controlID, const Protocol selectedProtocol)
+	HtmlTag WebClient::HtmlTagProtocol(const map<string,Protocol>& protocolMap, const Protocol selectedProtocol)
 	{
-		map<string,Protocol> protocolMap = manager.LocoProtocolsOfControl(controlID);
-		return HtmlTagProtocol(protocolMap, selectedProtocol);
+		if (protocolMap.size() == 0)
+		{
+			return HtmlTagInputHidden("protocol", std::to_string(ProtocolNone));
+		}
+
+		HtmlTag content;
+		content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
+		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
+		return content;
+	}
+
+	HtmlTag WebClient::HtmlTagMatchKeyProtocolLoco(const ControlID controlId, const string& selectedMatchKey, const Protocol selectedProtocol)
+	{
+		HtmlTag content;
+		map<string,LocoConfig> matchKeyMap = manager.GetUnmatchedLocosOfControl(controlId);
+		if ((matchKeyMap.size() > 0) && (selectedMatchKey.size() > 0))
+		{
+			matchKeyMap[selectedMatchKey].SetName(selectedMatchKey);
+		}
+		content.AddChildTag(HtmlTagMatchKey(matchKeyMap, selectedMatchKey));
+		map<string,Protocol> protocolMap = manager.LocoProtocolsOfControl(controlId);
+		content.AddChildTag(HtmlTagProtocol(protocolMap, selectedProtocol));
+		return content;
 	}
 
 	HtmlTag WebClient::HtmlTagProtocolAccessory(const ControlID controlID, const Protocol selectedProtocol)
@@ -1229,8 +1252,15 @@ namespace WebServer
 		LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		if (locoId != LocoNone)
 		{
+			string matchKey;
+			Protocol protocol = ProtocolNone;
 			Loco *loco = manager.GetLoco(locoId);
-			ReplyHtmlWithHeader(HtmlTagProtocolLoco(controlId, loco == nullptr ? ProtocolNone : loco->GetProtocol()));
+			if (loco != nullptr)
+			{
+				matchKey = loco->GetMatchKey();
+				protocol = loco->GetProtocol();
+			}
+			ReplyHtmlWithHeader(HtmlTagMatchKeyProtocolLoco(controlId, matchKey, protocol));
 			return;
 		}
 		AccessoryID accessoryId = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
@@ -1754,8 +1784,9 @@ namespace WebServer
 		{
 			controlId = manager.GetControlForLoco();
 		}
+		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		Protocol protocol = ProtocolNone;
-		Address address = 1;
+		Address address = 3;
 		string name = Languages::GetText(Languages::TextNew);
 		bool pushpull = false;
 		Length length = 0;
@@ -1768,10 +1799,12 @@ namespace WebServer
 
 		if (locoId > LocoNone)
 		{
+			// existing loco
 			const DataModel::Loco* loco = manager.GetLoco(locoId);
 			if (loco != nullptr)
 			{
 				controlId = loco->GetControlID();
+				matchKey = loco->GetMatchKey();
 				protocol = loco->GetProtocol();
 				address = loco->GetAddress();
 				name = loco->GetName();
@@ -1787,9 +1820,16 @@ namespace WebServer
 		}
 		else if (controlId > ControlNone)
 		{
-			string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
+			// loco from hardware database
 			const DataModel::LocoConfig loco = manager.GetLocoByMatch(controlId, matchKey);
+			if (loco.GetControlId() == controlId && loco.GetMatchKey() == matchKey)
+			{
+				protocol = loco.GetProtocol();
+				address = loco.GetAddress();
+				name = loco.GetName();
+			}
 		}
+		// else new loco
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
@@ -1809,7 +1849,7 @@ namespace WebServer
 		basicContent.AddClass("tab_content");
 		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		basicContent.AddChildTag(HtmlTagControlLoco(controlId, "loco", locoId));
-		basicContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagProtocolLoco(controlId, protocol)));
+		basicContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagMatchKeyProtocolLoco(controlId, matchKey, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
 		formContent.AddChildTag(basicContent);
@@ -1990,6 +2030,7 @@ namespace WebServer
 		const LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		const string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
 		const Length length = Utils::Utils::GetIntegerMapEntry(arguments, "length", 0);
@@ -2055,6 +2096,7 @@ namespace WebServer
 		if (!manager.LocoSave(locoId,
 			name,
 			controlId,
+			matchKey,
 			protocol,
 			address,
 			length,
@@ -3756,13 +3798,7 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagLocoSelector() const
 	{
-		const map<LocoID, Loco*>& locos = manager.locoList();
-		map<string,LocoID> options;
-		for (auto locoTMP : locos)
-		{
-			Loco* loco = locoTMP.second;
-			options[loco->GetName()] = loco->GetID();
-		}
+		map<string,LocoID> options = manager.LocoIdsByName();
 		return HtmlTagSelect("loco", options).AddAttribute("onchange", "loadLoco();");
 	}
 

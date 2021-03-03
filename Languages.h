@@ -390,6 +390,7 @@ class Languages
 			TextMultipleUnit,
 			TextMyUidHash,
 			TextName,
+			TextNameInControl,
 			TextNetworkUnreachable,
 			TextNew,
 			TextNoAnswerFromDecoder,

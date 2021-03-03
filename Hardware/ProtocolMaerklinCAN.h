@@ -49,7 +49,8 @@ namespace Hardware
 					| Hardware::CapabilityProgramMfxWrite
 					| Hardware::CapabilityProgramDccDirectRead
 					| Hardware::CapabilityProgramDccDirectWrite
-					| Hardware::CapabilityProgramDccPomWrite;
+					| Hardware::CapabilityProgramDccPomWrite
+					| Hardware::CapabilityLocoDatabase;
 			}
 
 			void GetLocoProtocols(std::vector<Protocol>& protocols) const override
@@ -93,9 +94,25 @@ namespace Hardware
 				return locoCache.GetAll();
 			}
 
+			inline virtual DataModel::LocoConfig GetLocoByMatch(const std::string& match) const override
+			{
+				return DataModel::LocoConfig(locoCache.GetByName(match));
+			}
+
+			inline virtual void SetLocoIdOfMatch(const LocoID locoId, const std::string& match) override
+			{
+				locoCache.SetLocoIdByName(locoId, match);
+			}
+
 		protected:
-			inline ProtocolMaerklinCAN(HardwareParams* const params, Logger::Logger* logger, std::string name)
-			:	HardwareInterface(params->GetManager(), params->GetControlID(), name),
+			inline ProtocolMaerklinCAN(HardwareParams* const params,
+				Logger::Logger* logger,
+				std::string fullName,
+				std::string shortName)
+			:	HardwareInterface(params->GetManager(),
+					params->GetControlID(),
+					fullName,
+					shortName),
 				logger(logger),
 				run(false),
 				params(params),

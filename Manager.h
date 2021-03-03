@@ -92,22 +92,22 @@ class Manager
 
 		DataModel::LocoConfig GetLocoByMatch(const ControlID controlId, const std::string& match) const;
 
-		const std::string& GetLocoName(const LocoID locoID) const;
+		const std::map<std::string,DataModel::LocoConfig> GetUnmatchedLocosOfControl(const ControlID controlId) const;
 
-		inline const std::map<LocoID,DataModel::Loco*>& locoList() const
-		{
-			return locos;
-		}
+		const std::string& GetLocoName(const LocoID locoID) const;
 
 		const std::map<std::string,LocoID> LocoListFree() const;
 
 		const std::map<std::string,DataModel::LocoConfig> LocoListByName() const;
+
+		const std::map<std::string,LocoID> LocoIdsByName() const;
 
 		bool LocoSave
 		(
 			const LocoID locoID,
 			const std::string& name,
 			const ControlID controlID,
+			const std::string& matchKey,
 			const Protocol protocol,
 			const Address address,
 			const Length length,
@@ -431,6 +431,7 @@ class Manager
 		}
 
 		bool CanHandle(const Hardware::Capabilities capability) const;
+		bool CanHandle(const ControlID controlId, const Hardware::Capabilities capability) const;
 		Hardware::Capabilities GetCapabilities(const ControlID controlID) const;
 
 	private:

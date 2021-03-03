@@ -202,6 +202,24 @@ namespace Hardware
 				return entries;
 			}
 
+			void SetLocoIdByName(const LocoID locoId, const std::string& name)
+			{
+				for (auto& locoCacheEntry : entries)
+				{
+					LocoCacheEntry& entry = locoCacheEntry.second;
+					if (entry.GetLocoID() == locoId)
+					{
+						entry.SetLocoID(LocoNone);
+					}
+				}
+				auto entry = entries.find(name);
+				if (entry == entries.end())
+				{
+					return;
+				}
+				entry->second.SetLocoID(locoId);
+			}
+
 		private:
 			const ControlID controlId;
 			std::map<std::string,LocoCacheEntry> entries;

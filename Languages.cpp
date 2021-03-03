@@ -390,6 +390,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextMultipleUnit */ { "Multiple unit", "Mehrfachtraktion", "Unidad múltiple" },
 /* TextMyUidHash */ { "My UID: {0} my hash: {1}", "Meine UID: {0} mein hash: {1}", "Mi UID: {0} mi hash: {1}" },
 /* TextName */ { "Name", "Name", "Nombre" },
+/* TextNameInControl */ { "Name in control's database", "Name in der Datenbank der Zentrale", "Nombre en el control" },
 /* TextNetworkUnreachable */ { "Network of {0}:{1} unreachable", "Netzwerk von {0}:{1} nicht erreichbar", "Red de {0}:{1} inaccesible" },
 /* TextNew */ { "New", "Neu", "Nuevo" },
 /* TextNoAnswerFromDecoder */ { "No answer from decoder", "Keine Antwort vom Decoder", "Ninguna respuesta del decoder" },

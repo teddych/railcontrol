@@ -37,12 +37,15 @@ namespace Hardware
 	}
 
 	OpenDcc::OpenDcc(const HardwareParams* params)
-	:	HardwareInterface(params->GetManager(), params->GetControlID(), "OpenDCC / " + params->GetName() + " at serial port " + params->GetArg1()),
+	:	HardwareInterface(params->GetManager(),
+			params->GetControlID(),
+			"OpenDCC / " + params->GetName() + " at serial port " + params->GetArg1(),
+			params->GetName()),
 	 	logger(Logger::Logger::GetLogger("OpenDCC " + params->GetName() + " " + params->GetArg1())),
 	 	serialLine(logger, params->GetArg1(), B19200, 8, 'N', 2),
 		run(false)
 	{
-		logger->Info(Languages::TextStarting, name);
+		logger->Info(Languages::TextStarting, GetFullName());
 
 		SendP50XOnly();
 		bool ok = SendNop();

@@ -383,7 +383,9 @@ namespace WebServer {
 		AddUpdate(command.str(), Languages::TextLocoIsInManualMode, name);
 	}
 
-	void WebServer::LocoSettings(const LocoID locoID, const std::string& name)
+	void WebServer::LocoSettings(const LocoID locoID,
+		const std::string& name,
+		__attribute__((unused)) const std::string& matchKey)
 	{
 		stringstream command;
 		command << "locosettings;loco=" << locoID;

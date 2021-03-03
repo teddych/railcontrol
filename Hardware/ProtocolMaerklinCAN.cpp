@@ -730,6 +730,7 @@ namespace Hardware
 	{
 		lines.pop_front();
 		LocoCacheEntry cacheEntry(params->GetControlID());
+		std::string name;
 		std::string oldName;
 		bool remove = false;
 		while (lines.size())
@@ -744,6 +745,7 @@ namespace Hardware
 			ParseCs2FileKeyValue(line, key, value);
 			if (key.compare("name") == 0)
 			{
+				name = value;
 				cacheEntry.SetName(value);
 				logger->Info(Languages::TextCs2MasterLocoName, value);
 			}

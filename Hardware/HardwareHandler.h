@@ -27,6 +27,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataTypes.h"
 #include "Hardware/HardwareInterface.h"
 #include "Hardware/HardwareParams.h"
+#include "Hardware/LocoCache.h"
 #include "Manager.h"
 
 namespace Hardware
@@ -64,7 +65,9 @@ namespace Hardware
 				return params->GetControlID();
 			}
 
-			const std::string GetName() const override;
+			const std::string& GetName() const override;
+
+			const std::string& GetShortName() const override;
 
 			void AccessoryProtocols(std::vector<Protocol>& protocols) const override;
 			bool AccessoryProtocolSupported(Protocol protocol) const override;
@@ -90,12 +93,22 @@ namespace Hardware
 				const Orientation orientation,
 				std::vector<DataModel::LocoFunctionEntry>& functions) override;
 
+			void LocoSettings(const LocoID locoId,
+				__attribute__((unused)) const std::string& name,
+				const std::string& matchKey) override;
+
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch) override;
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
 			void AddUnmatchedLocos(std::map<std::string,DataModel::LocoConfig>& list) const override;
+
+			std::map<std::string,DataModel::LocoConfig> GetUnmatchedLocos() const override;
+
+			std::map<std::string,DataModel::LocoConfig> GetAllLocos() const override;
+
+			DataModel::LocoConfig GetLocoByMatch(__attribute__((unused)) const std::string& match) const override;
 
 			static void ArgumentTypesOfHardwareTypeAndHint(const HardwareType hardwareType, std::map<unsigned char,ArgumentType>& arguments, std::string& hint);
 
@@ -106,6 +119,7 @@ namespace Hardware
 			const HardwareParams* params;
 
 			static const std::string hardwareSymbols[];
+			static const std::string Unknown;
 
 			void Init(const HardwareParams* params);
 			void Close();

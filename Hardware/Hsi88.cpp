@@ -44,12 +44,15 @@ namespace Hardware
 	}
 
 	Hsi88::Hsi88(const HardwareParams* params)
-	:	HardwareInterface(params->GetManager(), params->GetControlID(), "HSI-88 / " + params->GetName() + " at serial port " + params->GetArg1()),
+	:	HardwareInterface(params->GetManager(),
+			params->GetControlID(),
+			"HSI-88 / " + params->GetName() + " at serial port " + params->GetArg1(),
+			params->GetName()),
 	 	logger(Logger::Logger::GetLogger("HSI-88 " + params->GetName() + " " + params->GetArg1())),
 	 	serialLine(logger, params->GetArg1(), B9600, 8, 'N', 1),
 		run(false)
 	{
-		logger->Info(Languages::TextStarting, name);
+		logger->Info(Languages::TextStarting, GetFullName());
 
 		memset(s88Init, 0xFF, sizeof(s88Memory));
 		memset(s88Memory, 0x00, sizeof(s88Memory));

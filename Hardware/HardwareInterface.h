@@ -39,10 +39,14 @@ namespace Hardware
 	{
 		public:
 			// non virtual default constructor is needed to prevent polymorphism
-			inline HardwareInterface(Manager* manager, const ControlID controlID, const std::string& name)
+			inline HardwareInterface(Manager* manager,
+				const ControlID controlID,
+				const std::string& fullName,
+				const std::string& shortName)
 			:	manager(manager),
 			 	controlID(controlID),
-			 	name(name)
+			 	fullName(fullName),
+			 	shortName(shortName)
 			{
 			}
 
@@ -51,10 +55,16 @@ namespace Hardware
 			{
 			}
 
-			// get the name of the hardware
-			inline const std::string GetName() const
+			// get the full name of the hardware
+			inline const std::string& GetFullName() const
 			{
-				return name;
+				return fullName;
+			}
+
+			// get the short name of the hardware
+			inline const std::string& GetShortName() const
+			{
+				return shortName;
 			}
 
 			// get hardware capabilities
@@ -158,10 +168,19 @@ namespace Hardware
 				return emptyLocoDatabase;
 			}
 
+			virtual DataModel::LocoConfig GetLocoByMatch(__attribute__((unused)) const std::string& match) const
+			{
+				return DataModel::LocoConfig();
+			}
+
+			virtual void SetLocoIdOfMatch(__attribute__((unused)) const LocoID locoId,
+				__attribute__((unused)) const std::string& match)
+			{
+			}
+
 		protected:
-			Manager* manager;
+			Manager* const manager;
 			const ControlID controlID;
-			const std::string name;
 
 			virtual void AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
 				__attribute__((unused)) const Address address,
@@ -181,6 +200,8 @@ namespace Hardware
 				hardware->AccessoryOnOrOff(protocol, address, state, false);
 			}
 
+			const std::string fullName;
+			const std::string shortName;
 			std::map<std::string,Hardware::LocoCacheEntry> emptyLocoDatabase;
 	};
 

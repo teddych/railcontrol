@@ -163,8 +163,17 @@ namespace WebServer
 			HtmlTag HtmlTagLocoSelector() const;
 			HtmlTag HtmlTagLayerSelector() const;
 			static HtmlTag HtmlTagControlArgument(const unsigned char argNr, const ArgumentType type, const std::string& value);
-			HtmlTag HtmlTagProtocol(const std::map<std::string,Protocol>& protocolMap, const Protocol selectedProtocol);
-			HtmlTag HtmlTagProtocolLoco(const ControlID controlID, const Protocol selectedProtocol);
+
+			static HtmlTag HtmlTagMatchKey(const std::map<std::string,DataModel::LocoConfig>& matchKeyMap,
+				const std::string& selectedMatchKey);
+
+			static HtmlTag HtmlTagProtocol(const std::map<std::string,Protocol>& protocolMap,
+				const Protocol selectedProtocol);
+
+			HtmlTag HtmlTagMatchKeyProtocolLoco(const ControlID controlID,
+				const std::string& selectedMatchKey,
+				const Protocol selectedProtocol);
+
 			HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration, const Languages::TextSelector label) const;
 
 			HtmlTag HtmlTagPosition(const DataModel::LayoutItem::LayoutPosition posx,

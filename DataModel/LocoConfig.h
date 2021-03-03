@@ -50,6 +50,17 @@ namespace DataModel
 			{
 			}
 
+			inline LocoConfig(const Hardware::LocoCacheEntry& loco)
+			:	controlId(loco.GetControlID()),
+				locoId(loco.GetLocoID()),
+				address(loco.GetAddress()),
+				protocol(loco.GetProtocol()),
+				name(loco.GetName()),
+				matchKey(loco.GetMatchKey()),
+				isInUse(false)
+			{
+			}
+
 			inline LocoConfig& operator=(const DataModel::Loco& loco)
 			{
 				controlId = loco.GetControlID();
@@ -72,37 +83,42 @@ namespace DataModel
 				return *this;
 			}
 
-			inline ControlID GetControlId()
+			inline ControlID GetControlId() const
 			{
 				return controlId;
 			}
 
-			inline LocoID GetLocoId()
+			inline LocoID GetLocoId() const
 			{
 				return locoId;
 			}
 
-			inline Address GetAddress()
+			inline Address GetAddress() const
 			{
 				return address;
 			}
 
-			inline Protocol GetProtocol()
+			inline Protocol GetProtocol() const
 			{
 				return protocol;
 			}
 
-			inline std::string GetName()
+			inline std::string GetName() const
 			{
 				return name;
 			}
 
-			inline std::string GetMatchKey()
+			inline void SetName(const std::string& name)
+			{
+				this->name = name;
+			}
+
+			inline std::string GetMatchKey() const
 			{
 				return matchKey;
 			}
 
-			inline bool IsInUse()
+			inline bool IsInUse() const
 			{
 				return isInUse;
 			}

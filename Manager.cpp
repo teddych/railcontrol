@@ -528,7 +528,7 @@ const std::map<ControlID,std::string> Manager::FeedbackControlListNames() const
 		{
 			continue;
 		}
-		ret[control.first] = control.second->GetName();
+		ret[control.first] = control.second->GetShortName();
 	}
 	return ret;
 }
@@ -547,7 +547,7 @@ const std::map<ControlID,std::string> Manager::ProgramControlListNames() const
 		{
 			continue;
 		}
-		ret[control.first] = control.second->GetName();
+		ret[control.first] = control.second->GetShortName();
 	}
 	return ret;
 }
@@ -614,6 +614,11 @@ Loco* Manager::GetLoco(const LocoID locoID) const
 
 LocoConfig Manager::GetLocoByMatch(const ControlID controlId, const string& match) const
 {
+	ControlInterface* control = GetControl(controlId);
+	if (control != nullptr)
+	{
+		return control->GetLocoByMatch(match);
+	}
 	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto loco : locos)
 	{
@@ -624,6 +629,19 @@ LocoConfig Manager::GetLocoByMatch(const ControlID controlId, const string& matc
 		}
 	}
 	return LocoConfig();
+}
+
+const map<string,LocoConfig> Manager::GetUnmatchedLocosOfControl(const ControlID controlId) const
+{
+	ControlInterface* control = GetControl(controlId);
+	map<string,LocoConfig> out;
+	if (control == nullptr || !control->CanHandle(Hardware::CapabilityLocoDatabase))
+	{
+		return out;
+	}
+	out = control->GetUnmatchedLocos();
+	out[""].SetName("");
+	return out;
 }
 
 Loco* Manager::GetLoco(const ControlID controlID, const Protocol protocol, const Address address) const
@@ -681,13 +699,27 @@ const map<string,DataModel::LocoConfig> Manager::LocoListByName() const
 		control.second->AddUnmatchedLocos(out);
 	}
 
+	return out;
+}
 
+const map<string,LocoID> Manager::LocoIdsByName() const
+{
+	map<string,LocoID> out;
+	{
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (auto loco : locos)
+		{
+			Loco* locoEntry = loco.second;
+			out[locoEntry->GetName()] = locoEntry->GetID();
+		}
+	}
 	return out;
 }
 
 bool Manager::LocoSave(const LocoID locoID,
 	const string& name,
 	const ControlID controlID,
+	const std::string& matchKey,
 	const Protocol protocol,
 	const Address address,
 	const Length length,
@@ -719,6 +751,7 @@ bool Manager::LocoSave(const LocoID locoID,
 
 	loco->SetName(CheckObjectName(locos, locoMutex, locoID, name.size() == 0 ? "L" : name));
 	loco->SetControlID(controlID);
+	loco->SetMatchKey(matchKey);
 	loco->SetProtocol(protocol);
 	loco->SetAddress(address);
 	loco->SetLength(length);
@@ -739,7 +772,7 @@ bool Manager::LocoSave(const LocoID locoID,
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto control : controls)
 	{
-		control.second->LocoSettings(locoIdSave, name);
+		control.second->LocoSettings(locoIdSave, name, matchKey);
 	}
 	return true;
 }
@@ -2216,7 +2249,7 @@ const map<string,LayerID> Manager::LayerListByNameWithFeedback() const
 		{
 			continue;
 		}
-		list["| Feedbacks of " + control.second->GetName()] = -control.first;
+		list["| Feedbacks of " + control.second->GetShortName()] = -control.first;
 	}
 	return list;
 }
@@ -3381,6 +3414,16 @@ bool Manager::CanHandle(const Hardware::Capabilities capability) const
 		}
 	}
 	return false;
+}
+
+bool Manager::CanHandle(const ControlID controlId, const Hardware::Capabilities capability) const
+{
+	ControlInterface* control = GetControl(controlId);
+	if (control == nullptr)
+	{
+		return false;
+	}
+	return control->CanHandle(capability);
 }
 
 Hardware::Capabilities Manager::GetCapabilities(const ControlID controlID) const

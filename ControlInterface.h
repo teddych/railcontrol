@@ -67,7 +67,12 @@ class ControlInterface
 			return controlType;
 		}
 
-		virtual const std::string GetName() const = 0;
+		virtual const std::string& GetName() const = 0;
+
+		virtual const std::string& GetShortName() const
+		{
+			return GetName();
+		}
 
 		virtual void AccessoryDelete(__attribute__((unused)) const AccessoryID accessoryID,
 			__attribute__((unused)) const std::string& name)
@@ -178,7 +183,8 @@ class ControlInterface
 		}
 
 		virtual void LocoSettings(__attribute__((unused)) const LocoID locoID,
-			__attribute__((unused)) const std::string& name)
+			__attribute__((unused)) const std::string& name,
+			__attribute__((unused)) const std::string& matchKey)
 		{
 		}
 
@@ -296,6 +302,28 @@ class ControlInterface
 		}
 
 		virtual void AddUnmatchedLocos(__attribute__((unused)) std::map<std::string,DataModel::LocoConfig>& list) const
+		{
+		}
+
+		virtual std::map<std::string,DataModel::LocoConfig> GetUnmatchedLocos() const
+		{
+			std::map<std::string,DataModel::LocoConfig> out;
+			return out;
+		}
+
+		virtual std::map<std::string,DataModel::LocoConfig> GetAllLocos() const
+		{
+			std::map<std::string,DataModel::LocoConfig> out;
+			return out;
+		}
+
+		virtual DataModel::LocoConfig GetLocoByMatch(__attribute__((unused)) const std::string& match) const
+		{
+			return DataModel::LocoConfig();
+		}
+
+		virtual void SetLocoIdOfMatch(__attribute__((unused)) const LocoID locoId,
+			__attribute__((unused)) const std::string& matchKey)
 		{
 		}
 

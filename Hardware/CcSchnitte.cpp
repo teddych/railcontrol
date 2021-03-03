@@ -43,10 +43,11 @@ namespace Hardware
 	CcSchnitte::CcSchnitte(HardwareParams* const params)
 	:	ProtocolMaerklinCAN(params,
 			Logger::Logger::GetLogger("CC-Schnitte " + params->GetName() + " " + params->GetArg1()),
-			"CC-Schnitte / " + params->GetName() + " at serial port " + params->GetArg1()),
+			"CC-Schnitte / " + params->GetName() + " at serial port " + params->GetArg1(),
+			params->GetName()),
 	 	serialLine(logger, params->GetArg1(), B500000, 8, 'N', 1, true)
 	{
-		logger->Info(Languages::TextStarting, name);
+		logger->Info(Languages::TextStarting, GetFullName());
 
 		if (!serialLine.IsConnected())
 		{

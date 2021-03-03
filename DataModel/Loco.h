@@ -247,7 +247,7 @@ namespace DataModel
 				return slaves;
 			}
 
-			inline void SetMatchKey(std::string& matchKey)
+			inline void SetMatchKey(const std::string& matchKey)
 			{
 				this->matchKey = matchKey;
 			}

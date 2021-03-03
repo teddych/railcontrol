@@ -66,7 +66,7 @@ namespace WebServer
 				const DataModel::LocoFunctionState on) override;
 
 			void LocoRelease(const LocoID locoID) override;
-			void LocoSettings(const LocoID locoID, const std::string& name) override;
+			void LocoSettings(const LocoID locoID, const std::string& name, const std::string& matchKey) override;
 			void LocoSpeed(const ControlType controlType, const DataModel::Loco* loco, const Speed speed) override;
 			void LocoStart(const LocoID locoID, const std::string& name) override;
 			void LocoStop(const LocoID locoID, const std::string& name) override;
