@@ -73,9 +73,5 @@ namespace Hardware
 
 			void CheckEventsWorker();
 	};
-
-	extern "C" Hsi88* create_Hsi88(const HardwareParams* params);
-	extern "C" void destroy_Hsi88(Hsi88* opendcc);
-
 } // namespace
 

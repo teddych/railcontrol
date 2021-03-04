@@ -30,17 +30,7 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	extern "C" CcSchnitte* create_CcSchnitte(HardwareParams* const params)
-	{
-		return new CcSchnitte(params);
-	}
-
-	extern "C" void destroy_CcSchnitte(CcSchnitte* const ccSchnitte)
-	{
-		delete(ccSchnitte);
-	}
-
-	CcSchnitte::CcSchnitte(HardwareParams* const params)
+	CcSchnitte::CcSchnitte(const HardwareParams* params)
 	:	ProtocolMaerklinCAN(params,
 			Logger::Logger::GetLogger("CC-Schnitte " + params->GetName() + " " + params->GetArg1()),
 			"CC-Schnitte / " + params->GetName() + " at serial port " + params->GetArg1(),

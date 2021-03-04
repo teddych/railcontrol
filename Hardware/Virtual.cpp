@@ -28,23 +28,6 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-
-	// create_virt and destroy_virt are used to instantiate
-	// and delete the command station in main program
-
-	// create instance of virtual
-	extern "C" Virtual* create_Virtual(const HardwareParams* params)
-	{
-		return new Virtual(params);
-	}
-
-	// delete instance of virtual
-	extern "C" void destroy_Virtual(Virtual* virt)
-	{
-		delete(virt);
-	}
-
-
 	Virtual::Virtual(const HardwareParams* params)
 	:	HardwareInterface(params->GetManager(),
 			params->GetControlID(),

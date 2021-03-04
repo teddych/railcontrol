@@ -176,6 +176,11 @@ namespace Hardware
 
 			LocoCache& operator= (const LocoCache& rhs) = delete;
 
+			inline ControlID GetControlId() const
+			{
+				return controlId;
+			}
+
 			inline void InsertByName(const LocoCacheEntry& entry)
 			{
 				entries.emplace(entry.GetName(), entry);

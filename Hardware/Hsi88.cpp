@@ -30,19 +30,6 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-
-	// create instance of Hsi88
-	extern "C" Hsi88* create_Hsi88(const HardwareParams* params)
-	{
-		return new Hsi88(params);
-	}
-
-	// delete instance of Hsi88
-	extern "C" void destroy_Hsi88(Hsi88* hsi88)
-	{
-		delete(hsi88);
-	}
-
 	Hsi88::Hsi88(const HardwareParams* params)
 	:	HardwareInterface(params->GetManager(),
 			params->GetControlID(),

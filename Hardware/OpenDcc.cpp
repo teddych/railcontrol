@@ -23,19 +23,6 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-
-	// create instance of OpenDcc
-	extern "C" OpenDcc* create_OpenDcc(const HardwareParams* params)
-	{
-		return new OpenDcc(params);
-	}
-
-	// delete instance of OpenDcc
-	extern "C" void destroy_OpenDcc(OpenDcc* opendcc)
-	{
-		delete(opendcc);
-	}
-
 	OpenDcc::OpenDcc(const HardwareParams* params)
 	:	HardwareInterface(params->GetManager(),
 			params->GetControlID(),

@@ -39,19 +39,6 @@ using std::to_string;
 
 namespace Storage
 {
-
-	// create instance of sqlite
-	extern "C" SQLite* create_Sqlite(const StorageParams* params)
-	{
-		return new SQLite(params);
-	}
-
-	// delete instance of sqlite
-	extern "C" void destroy_Sqlite(SQLite* sqlite)
-	{
-		delete (sqlite);
-	}
-
 	SQLite::SQLite(const StorageParams* params)
 	:	filename(params->filename),
 	 	logger(Logger::Logger::GetLogger("SQLite")),

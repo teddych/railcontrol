@@ -32,16 +32,6 @@ using std::to_string;
 
 namespace Hardware
 {
-	extern "C" Ecos* create_Ecos(const HardwareParams* params)
-	{
-		return new Ecos(params);
-	}
-
-	extern "C" void destroy_Ecos(Ecos* ecos)
-	{
-		delete(ecos);
-	}
-
 	const char* const Ecos::CommandActivateBoosterUpdates = "request(1,view)\n";
 	const char* const Ecos::CommandQueryLocos = "queryObjects(10,name)\n";
 	const char* const Ecos::CommandQueryAccessories = "queryObjects(11,name1,name2,name3)\n";

@@ -28,7 +28,9 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Network
 {
-	UdpConnection::UdpConnection(Logger::Logger* logger, const std::string& server, const unsigned short port)
+	UdpConnection::UdpConnection(Logger::Logger* logger,
+		const std::string& server,
+		const unsigned short port)
 	:	logger(logger),
 	 	connected(false),
 	 	port(port)

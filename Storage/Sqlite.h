@@ -78,9 +78,5 @@ namespace Storage
 			static int CallbackStringVector(void* v, int argc, char **argv, char **colName);
 			static std::string EscapeString(const std::string& input);
 	};
-
-	extern "C" SQLite* create_Sqlite(const StorageParams* params);
-	extern "C" void destroy_Sqlite(SQLite* sqlite);
-
 } // namespace Storage
 

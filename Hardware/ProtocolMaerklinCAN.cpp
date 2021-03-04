@@ -142,7 +142,7 @@ namespace Hardware
 	{
 		uid = Utils::Utils::RandInt();
 		string uidString = Utils::Utils::IntegerToHex(uid);
-		params->SetArg5(uidString);
+		// FIXME: params->SetArg5(uidString);
 		hash = CalcHash(uid);
 		logger->Info(Languages::TextMyUidHash, uidString, Utils::Utils::IntegerToHex(hash));
 	}
@@ -729,7 +729,7 @@ namespace Hardware
 	void ProtocolMaerklinCAN::ParseCs2FileLocomotive(deque<string>& lines)
 	{
 		lines.pop_front();
-		LocoCacheEntry cacheEntry(params->GetControlID());
+		LocoCacheEntry cacheEntry(locoCache.GetControlId());
 		std::string name;
 		std::string oldName;
 		bool remove = false;

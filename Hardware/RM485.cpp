@@ -32,18 +32,6 @@ using std::string;
 
 namespace Hardware
 {
-	// create instance of RM485
-	extern "C" RM485* create_RM485(const HardwareParams* params)
-	{
-		return new RM485(params);
-	}
-
-	// delete instance of RM485
-	extern "C" void destroy_RM485(RM485* RM485)
-	{
-		delete(RM485);
-	}
-
 	RM485::RM485(const HardwareParams* params)
 	:	HardwareInterface(params->GetManager(),
 			params->GetControlID(),

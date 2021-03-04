@@ -32,17 +32,11 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	// the types of the class factories
-	typedef Hardware::HardwareInterface* createHardware_t(const Hardware::HardwareParams* params);
-	typedef void destroyHardware_t(Hardware::HardwareInterface*);
-
 	class HardwareHandler: public ControlInterface
 	{
 		public:
 			inline HardwareHandler(const HardwareParams* params)
 			:	ControlInterface(ControlTypeHardware),
-				createHardware(nullptr),
-				destroyHardware(nullptr),
 				instance(nullptr),
 				params(nullptr)
 			{
@@ -113,8 +107,6 @@ namespace Hardware
 			static void ArgumentTypesOfHardwareTypeAndHint(const HardwareType hardwareType, std::map<unsigned char,ArgumentType>& arguments, std::string& hint);
 
 		private:
-			createHardware_t* createHardware;
-			destroyHardware_t* destroyHardware;
 			Hardware::HardwareInterface* instance;
 			const HardwareParams* params;
 

@@ -131,7 +131,4 @@ namespace Hardware
 			void ReadUpdateData();
 			void RM485Worker();
 	};
-
-	extern "C" RM485* create_RM485(const HardwareParams* params);
-	extern "C" void destroy_RM485(RM485* RM485);
 } // namespace

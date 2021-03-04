@@ -76,9 +76,5 @@ namespace Hardware
 		private:
 			Logger::Logger* logger;
 	};
-
-	extern "C" Virtual* create_Virtual(const HardwareParams* params);
-	extern "C" void destroy_Virtual(Virtual* virt);
-
 } // namespace
 

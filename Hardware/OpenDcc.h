@@ -146,9 +146,5 @@ namespace Hardware
 
 			void CheckEventsWorker();
 	};
-
-	extern "C" OpenDcc* create_OpenDcc(const HardwareParams* params);
-	extern "C" void destroy_OpenDcc(OpenDcc* opendcc);
-
 } // namespace
 

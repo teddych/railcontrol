@@ -30,7 +30,7 @@ namespace Hardware
 	class CS2Tcp : protected ProtocolMaerklinCAN
 	{
 		public:
-			CS2Tcp(HardwareParams* const params);
+			CS2Tcp(const HardwareParams* params);
 
 			static void GetArgumentTypesAndHint(std::map<unsigned char,ArgumentType>& argumentTypes, std::string& hint)
 			{
@@ -47,9 +47,5 @@ namespace Hardware
 
 			static const unsigned short CS2Port = 15731;
 	};
-
-	extern "C" CS2Tcp* create_CS2Tcp(HardwareParams* const params);
-	extern "C" void destroy_CS2Tcp(CS2Tcp* const cs2tcp);
-
 } // namespace
 

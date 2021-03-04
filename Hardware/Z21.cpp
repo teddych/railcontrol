@@ -31,19 +31,6 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-
-	// create instance of Z21
-	extern "C" Z21* create_Z21(const HardwareParams* params)
-	{
-		return new Z21(params);
-	}
-
-	// delete instance of Z21
-	extern "C" void destroy_Z21(Z21* z21)
-	{
-		delete(z21);
-	}
-
 	Z21::Z21(const HardwareParams* params)
 	:	HardwareInterface(params->GetManager(),
 			params->GetControlID(),

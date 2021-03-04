@@ -105,17 +105,16 @@ namespace Hardware
 			}
 
 		protected:
-			inline ProtocolMaerklinCAN(HardwareParams* const params,
+			inline ProtocolMaerklinCAN(const HardwareParams* params,
 				Logger::Logger* logger,
-				std::string fullName,
-				std::string shortName)
+				const std::string& fullName,
+				const std::string& shortName)
 			:	HardwareInterface(params->GetManager(),
 					params->GetControlID(),
 					fullName,
 					shortName),
 				logger(logger),
 				run(false),
-				params(params),
 				uid(Utils::Utils::HexToInteger(params->GetArg5(), 0)),
 				hasCs2Master(false),
 				canFileDataSize(0),
@@ -407,7 +406,6 @@ namespace Hardware
 				return icon;
 			}
 
-			HardwareParams* const params;
 			CanUid uid;
 			CanHash hash;
 			bool hasCs2Master;

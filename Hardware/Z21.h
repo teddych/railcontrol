@@ -295,9 +295,5 @@ namespace Hardware
 			Speed DecodeSpeed28(unsigned char data);
 			Speed DecodeSpeed128(unsigned char data);
 	};
-
-	extern "C" Z21* create_Z21(const HardwareParams* params);
-	extern "C" void destroy_Z21(Z21* z21);
-
 } // namespace
 

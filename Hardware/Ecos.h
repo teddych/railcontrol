@@ -221,7 +221,4 @@ namespace Hardware
 			static const int OffsetAccessoryAddress = 19999;
 			static const int OffsetFeedbackModuleAddress = 100;
 	};
-
-	extern "C" Ecos* create_Ecos(const HardwareParams* params);
-	extern "C" void destroy_Ecos(Ecos* ecos);
 } // namespace

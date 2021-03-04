@@ -30,7 +30,7 @@ namespace Hardware
 	class CcSchnitte : ProtocolMaerklinCAN
 	{
 		public:
-			CcSchnitte(HardwareParams* const params);
+			CcSchnitte(const HardwareParams* params);
 
 			static void GetArgumentTypesAndHint(std::map<unsigned char,ArgumentType>& argumentTypes, std::string& hint)
 			{
@@ -44,9 +44,6 @@ namespace Hardware
 			void Send(const unsigned char* buffer) override;
 			void Receiver() override;
 	};
-
-	extern "C" CcSchnitte* create_CcSchnitte(HardwareParams* const params);
-	extern "C" void destroy_CcSchnitte(CcSchnitte* const ccSchnitte);
 
 } // namespace
 

@@ -49,79 +49,55 @@ namespace Hardware
 		switch(type)
 		{
 			case HardwareTypeCS2Udp:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_CS2Udp);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_CS2Udp);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Udp(params));
 				break;
 
 			case HardwareTypeCS2Tcp:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_CS2Tcp);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_CS2Tcp);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Tcp(params));
 				break;
 
 			case HardwareTypeVirtual:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_Virtual);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_Virtual);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Virtual(params));
 				break;
 
-
 			case HardwareTypeM6051:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_M6051);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_M6051);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new M6051(params));
 				break;
 
 			case HardwareTypeRM485:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_RM485);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_RM485);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new RM485(params));
 				break;
 
 			case HardwareTypeOpenDcc:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_OpenDcc);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_OpenDcc);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new OpenDcc(params));
 				break;
 
 			case HardwareTypeHsi88:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_Hsi88);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_Hsi88);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Hsi88(params));
 				break;
 
 			case HardwareTypeZ21:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_Z21);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_Z21);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Z21(params));
 				break;
 
 			case HardwareTypeCcSchnitte:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_CcSchnitte);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_CcSchnitte);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CcSchnitte(params));
 				break;
 
 			case HardwareTypeEcos:
-				createHardware = (Hardware::HardwareInterface* (*)(const Hardware::HardwareParams*))(&create_Ecos);
-				destroyHardware = (void (*)(Hardware::HardwareInterface*))(&destroy_Ecos);
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Ecos(params));
 				break;
 
 			default:
-				createHardware = nullptr;
-				destroyHardware = nullptr;
+				instance = nullptr;
 				break;
-		}
-
-		// start control
-		if (createHardware != nullptr)
-		{
-			instance = createHardware(params);
 		}
 	}
 
 	void HardwareHandler::Close()
 	{
-		Hardware::HardwareInterface* instanceTemp = instance;
+		delete(instance);
 		instance = nullptr;
-		createHardware = nullptr;
-		if (instanceTemp != nullptr)
-		{
-			destroyHardware(instanceTemp);
-		}
-		destroyHardware = nullptr;
 		params = nullptr;
 	}
 
