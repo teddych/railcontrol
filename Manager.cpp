@@ -615,23 +615,34 @@ Loco* Manager::GetLoco(const LocoID locoID) const
 	return locos.at(locoID);
 }
 
-LocoConfig Manager::GetLocoByMatch(const ControlID controlId, const string& match) const
+LocoConfig Manager::GetLocoByMatchKey(const ControlID controlId, const string& matchKey) const
 {
 	ControlInterface* control = GetControl(controlId);
-	if (control != nullptr)
+	if (control == nullptr)
 	{
-		return control->GetLocoByMatch(match);
+		return LocoConfig();
 	}
-	std::lock_guard<std::mutex> guard(locoMutex);
-	for (auto loco : locos)
+	return control->GetLocoByMatch(matchKey);
+}
+
+void Manager::LocoRemoveMatchKey(const LocoID locoId)
+{
+	Loco* loco = GetLoco(locoId);
+	if (loco == nullptr)
 	{
-		Loco* locoEntry = loco.second;
-		if ((locoEntry->GetControlID() == controlId) && (locoEntry->GetMatchKey().compare(match) == 0))
-		{
-			return LocoConfig(*locoEntry);
-		}
+		return;
 	}
-	return LocoConfig();
+	loco->ClearMatchKey();
+}
+
+void Manager::LocoReplaceMatchKey(const LocoID locoId, const std::string& newMatchKey)
+{
+	Loco* loco = GetLoco(locoId);
+	if (loco == nullptr)
+	{
+		return;
+	}
+	loco->SetMatchKey(newMatchKey);
 }
 
 const map<string,LocoConfig> Manager::GetUnmatchedLocosOfControl(const ControlID controlId) const

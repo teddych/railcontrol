@@ -778,11 +778,13 @@ namespace Hardware
 		if (remove)
 		{
 			logger->Info(Languages::TextCs2MasterLocoRemove, name);
+			manager->LocoRemoveMatchKey(locoCache.GetByName(name).GetLocoID());
 			locoCache.DeleteByName(name);
 		}
 		else if (oldName.size() > 0)
 		{
 			locoCache.ReplaceByName(cacheEntry, oldName);
+			manager->LocoReplaceMatchKey(locoCache.GetByName(name).GetLocoID(), name);
 		}
 		else
 		{

@@ -252,6 +252,11 @@ namespace DataModel
 				this->matchKey = matchKey;
 			}
 
+			inline void ClearMatchKey()
+			{
+				matchKey.clear();
+			}
+
 			inline std::string GetMatchKey() const
 			{
 				return matchKey;

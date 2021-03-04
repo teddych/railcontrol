@@ -192,7 +192,7 @@ namespace Hardware
 				InsertByName(entry);
 			}
 
-			inline LocoCacheEntry GetByName(const std::string& name) const
+			inline const LocoCacheEntry GetByName(const std::string& name) const
 			{
 				return entries.count(name) == 0 ? LocoCacheEntry(controlId) : entries.at(name);
 			}
