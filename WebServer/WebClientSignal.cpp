@@ -218,13 +218,16 @@ namespace WebServer
 		map<string,string> signalArgument;
 		for (auto signal : signalList)
 		{
+			Signal* signalConfig = signal.second;
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(signal.first));
-			const string& signalIdString = to_string(signal.second->GetID());
+			row.AddChildTag(HtmlTag("td").AddContent(client.ProtocolName(signalConfig->GetProtocol())));
+			row.AddChildTag(HtmlTag("td").AddContent(to_string(signalConfig->GetAddress())));
+			const string& signalIdString = to_string(signalConfig->GetID());
 			signalArgument["signal"] = signalIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "signaledit_list_" + signalIdString, signalArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "signalaskdelete_" + signalIdString, signalArgument)));
-			if (signal.second->IsInUse())
+			if (signalConfig->IsInUse())
 			{
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "signalrelease_" + signalIdString, signalArgument, "hideElement('b_signalrelease_" + signalIdString + "');")));
 			}

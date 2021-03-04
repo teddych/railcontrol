@@ -2123,11 +2123,12 @@ namespace WebServer
 		HtmlTag table("table");
 		const map<string,LocoConfig> locoList = manager.LocoListByName();
 		map<string,string> locoArgument;
-		for (auto loco : locoList)
+		for (auto& loco : locoList)
 		{
-			LocoConfig& locoConfig = loco.second;
+			const LocoConfig& locoConfig = loco.second;
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(loco.first));
+			row.AddChildTag(HtmlTag("td").AddContent(ProtocolName(locoConfig.GetProtocol())));
 			row.AddChildTag(HtmlTag("td").AddContent(to_string(locoConfig.GetAddress())));
 			const LocoID locoId = locoConfig.GetLocoId();
 			const string& locoIdString = to_string(locoId);
@@ -2472,13 +2473,16 @@ namespace WebServer
 		map<string,string> accessoryArgument;
 		for (auto accessory : accessoryList)
 		{
+			Accessory* accessoryConfig = accessory.second;
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(accessory.first));
-			const string& accessoryIdString = to_string(accessory.second->GetID());
+			row.AddChildTag(HtmlTag("td").AddContent(ProtocolName(accessoryConfig->GetProtocol())));
+			row.AddChildTag(HtmlTag("td").AddContent(to_string(accessoryConfig->GetAddress())));
+			const string& accessoryIdString = to_string(accessoryConfig->GetID());
 			accessoryArgument["accessory"] = accessoryIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
-			if (accessory.second->IsInUse())
+			if (accessoryConfig->IsInUse())
 			{
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "accessoryrelease_" + accessoryIdString, accessoryArgument, "hideElement('b_accessoryrelease_" + accessoryIdString + "');")));
 			}
@@ -2672,13 +2676,16 @@ namespace WebServer
 		map<string,string> switchArgument;
 		for (auto mySwitch : switchList)
 		{
+			Switch* switchConfig = mySwitch.second;
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(mySwitch.first));
-			const string& switchIdString = to_string(mySwitch.second->GetID());
+			row.AddChildTag(HtmlTag("td").AddContent(ProtocolName(switchConfig->GetProtocol())));
+			row.AddChildTag(HtmlTag("td").AddContent(to_string(switchConfig->GetAddress())));
+			const string& switchIdString = to_string(switchConfig->GetID());
 			switchArgument["switch"] = switchIdString;
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "switchedit_list_" + switchIdString, switchArgument)));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "switchaskdelete_" + switchIdString, switchArgument)));
-			if (mySwitch.second->IsInUse())
+			if (switchConfig->IsInUse())
 			{
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "switchrelease_" + switchIdString, switchArgument, "hideElement('b_switchrelease_" + switchIdString + "');")));
 			}

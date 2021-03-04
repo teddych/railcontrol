@@ -3239,7 +3239,7 @@ bool Manager::CheckControlProtocolAddress(const AddressType type, const ControlI
 		if (!ret)
 		{
 			string protocolText;
-			if (protocol > ProtocolNone && protocol <= ProtocolEnd)
+			if (protocol <= ProtocolEnd)
 			{
 				protocolText = ProtocolSymbols[protocol] + " ";
 			}
