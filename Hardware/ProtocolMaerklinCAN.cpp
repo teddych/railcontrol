@@ -613,7 +613,6 @@ namespace Hardware
 		{
 			case CanDeviceGfp:
 				deviceString = const_cast<char*>("Gleisformat Prozessor");
-				hasCs2Master = true;
 				break;
 
 			case CanDeviceGleisbox:
@@ -635,6 +634,7 @@ namespace Hardware
 
 			case CanDeviceCs2Master:
 				deviceString = const_cast<char*>("CS2 Master");
+				hasCs2Master = true;
 				break;
 
 			case CanDeviceCs2Slave:
@@ -778,13 +778,11 @@ namespace Hardware
 		if (remove)
 		{
 			logger->Info(Languages::TextCs2MasterLocoRemove, name);
-			manager->LocoRemoveMatchKey(locoCache.GetByName(name).GetLocoID());
 			locoCache.DeleteByName(name);
 		}
 		else if (oldName.size() > 0)
 		{
 			locoCache.ReplaceByName(cacheEntry, oldName);
-			manager->LocoReplaceMatchKey(locoCache.GetByName(name).GetLocoID(), name);
 		}
 		else
 		{
