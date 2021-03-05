@@ -36,6 +36,7 @@ OBJ= \
 	Hardware/Ecos.o \
 	Hardware/HardwareHandler.o \
 	Hardware/Hsi88.o \
+	Hardware/LocoCache.o \
 	Hardware/M6051.o \
 	Hardware/OpenDcc.o \
 	Hardware/ProtocolMaerklinCAN.o \
