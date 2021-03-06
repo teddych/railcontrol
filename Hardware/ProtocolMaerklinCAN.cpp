@@ -616,6 +616,7 @@ namespace Hardware
 				break;
 
 			case CanDeviceGleisbox:
+			case CanDeviceGleisbox_2:
 				deviceString = const_cast<char*>("Gleisbox");
 				break;
 
@@ -640,6 +641,11 @@ namespace Hardware
 			case CanDeviceCs2Slave:
 			case CanDeviceCs2Slave_2:
 				deviceString = const_cast<char*>("CS2 Slave");
+				break;
+
+			case CanDeviceSRSEII:
+				deviceString = const_cast<char*>("SRSEII");
+				hasCs2Master = true;
 				break;
 
 			default:

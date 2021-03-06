@@ -183,9 +183,11 @@ namespace Hardware
 			{
 				CanDeviceGfp         = 0x0000,
 				CanDeviceGleisbox    = 0x0010,
+				CanDeviceGleisbox_2  = 0x0011, // undocumented
 				CanDeviceConnect6021 = 0x0020,
 				CanDeviceMs2         = 0x0030,
 				CanDeviceMs2_2       = 0x0032, // undocumented
+				CanDeviceSRSEII      = 0x0040, // SRSEII project
 				CanDeviceCs2Slave_2  = 0xeeee, // undocumented
 				CanDeviceWireless    = 0xffe0,
 				CanDeviceCs2Slave    = 0xfff0, // undocumented
