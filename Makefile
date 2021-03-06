@@ -7,6 +7,10 @@ LDFLAGS=-g
 LIBS=-lpthread -ldl
 LIBSAMALGAMATION=-lpthread -ldl
 
+ifeq ($(OS),Windows_NT)
+	LDFLAGS+= -static
+endif
+
 TMPDIR=/tmp/RailControl
 TMPDIRCYGWIN=/RailControl
 
@@ -37,8 +41,6 @@ dist-cygwin: all
 		/cygdrive/c/Windows/SYSTEM32/ntdll.dll \
 		/cygdrive/c/Windows/system32/KERNELBASE.dll \
 		/cygdrive/c/Windows/system32/kernel32.dll \
-		/usr/bin/cyggcc_s-seh-1.dll \
-		/usr/bin/cygstdc++-6.dll \
 		/usr/bin/cygwin1.dll \
 		html \
 		railcontrol.conf.dist \
