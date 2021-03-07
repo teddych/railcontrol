@@ -37,18 +37,14 @@ namespace Hardware
 
 	ProtocolMaerklinCAN::~ProtocolMaerklinCAN()
 	{
+		run = false;
+		receiverThread.join();
+		cs2MasterThread.join();
 		if (canFileData != nullptr)
 		{
 			free(canFileData);
 			canFileData = nullptr;
 		}
-		if (run == false)
-		{
-			return;
-		}
-		run = false;
-		receiverThread.join();
-		cs2MasterThread.join();
 	}
 
 	void ProtocolMaerklinCAN::Wait(const unsigned int duration) const
@@ -63,7 +59,6 @@ namespace Hardware
 
 	void ProtocolMaerklinCAN::Cs2MasterThread()
 	{
-		run = true;
 		Wait(30);
 
 		while (run && !hasCs2Master)
