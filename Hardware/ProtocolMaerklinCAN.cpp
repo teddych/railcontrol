@@ -737,12 +737,12 @@ namespace Hardware
 		while (lines.size())
 		{
 			string& line = lines.front();
-			string key;
-			string value;
 			if (line.length() == 0 || line[0] != ' ')
 			{
-				return;
+				break;
 			}
+			string key;
+			string value;
 			ParseCs2FileKeyValue(line, key, value);
 			if (key.compare("name") == 0)
 			{
