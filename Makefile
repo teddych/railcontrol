@@ -14,14 +14,12 @@ endif
 TMPDIR=/tmp/RailControl
 TMPDIRCYGWIN=/RailControl
 
-CXXOBJ= $(patsubst %.cpp,%.o,$(wildcard *.cpp WebServer/*.cpp DataModel/*.cpp Hardware/*.cpp Logger/*.cpp Network/*.cpp Storage/*.cpp Utils/*.cpp))
+CXXOBJ= $(patsubst %.cpp,%.o,$(sort Timestamp.cpp $(wildcard *.cpp)) $(wildcard WebServer/*.cpp DataModel/*.cpp Hardware/*.cpp Logger/*.cpp Network/*.cpp Storage/*.cpp Utils/*.cpp))
 COBJ= $(patsubst %.c,%.o,$(wildcard Hardware/zlib/*.c))
-OBJ=Timestamp.o Storage/sqlite/sqlite3.o $(CXXOBJ) $(COBJ)
+OBJ=Storage/sqlite/sqlite3.o $(CXXOBJ) $(COBJ)
 
 all: $(OBJ)
-	rm Timestamp.cpp
 	$(CXX) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
-	rm Timestamp.o
 
 dist: all
 	strip railcontrol
@@ -55,7 +53,6 @@ amalgamation: Timestamp.cpp
 	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o Hardware/zlib/*.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
-	rm Timestamp.cpp
 
 sqlite-shell:
 	make -C Storage/sqlite
