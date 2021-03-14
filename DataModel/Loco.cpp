@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataModel/Loco.h"
 #include "DataModel/Track.h"
+#include "Hardware/LocoCache.h"
 #include "Manager.h"
 #include "Utils/Utils.h"
 
@@ -761,5 +762,16 @@ namespace DataModel
 		DeleteSlaves();
 		slaves = newslaves;
 		return true;
+	}
+
+	Loco& Loco::operator=(const Hardware::LocoCacheEntry& loco)
+	{
+		SetControlID(loco.GetControlID());
+		SetAddress(loco.GetAddress());
+		SetProtocol(loco.GetProtocol());
+		SetName(loco.GetName());
+		SetMatchKey(loco.GetMatchKey());
+		ConfigureFunctions(loco.GetFunctionStates());
+		return *this;
 	}
 } // namespace DataModel
