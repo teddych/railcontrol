@@ -45,7 +45,7 @@ namespace DataModel
 					break;
 				}
 			}
-			logger->Info(Languages::TextWaitingUntilHasStopped, name);
+			logger->Info(Languages::TextWaitingUntilHasStopped, GetName());
 			Utils::Utils::SleepForSeconds(1);
 		}
 		DeleteSlaves();
@@ -139,27 +139,27 @@ namespace DataModel
 
 		if (routeFirst != nullptr)
 		{
-			routeFirst->Release(logger, objectID);
+			routeFirst->Release(logger, GetID());
 			routeFirst = nullptr;
 		}
 		if (routeSecond != nullptr)
 		{
-			routeSecond->Release(logger, objectID);
+			routeSecond->Release(logger, GetID());
 			routeSecond = nullptr;
 		}
 		if (trackFrom != nullptr)
 		{
-			trackFrom->BaseRelease(logger, objectID);
+			trackFrom->BaseRelease(logger, GetID());
 			trackFrom = nullptr;
 		}
 		if (trackFirst != nullptr)
 		{
-			trackFirst->BaseRelease(logger, objectID);
+			trackFirst->BaseRelease(logger, GetID());
 			trackFirst = nullptr;
 		}
 		if (trackSecond != nullptr)
 		{
-			trackSecond->BaseRelease(logger, objectID);
+			trackSecond->BaseRelease(logger, GetID());
 			trackSecond = nullptr;
 		}
 		feedbackIdOver = FeedbackNone;
@@ -181,12 +181,12 @@ namespace DataModel
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		if (trackFrom == nullptr)
 		{
-			logger->Warning(Languages::TextCanNotStartNotOnTrack, name);
+			logger->Warning(Languages::TextCanNotStartNotOnTrack, GetName());
 			return false;
 		}
 		if (state == LocoStateError)
 		{
-			logger->Warning(Languages::TextCanNotStartInErrorState, name);
+			logger->Warning(Languages::TextCanNotStartInErrorState, GetName());
 			return false;
 		}
 		if (state == LocoStateTerminated)
@@ -196,7 +196,7 @@ namespace DataModel
 		}
 		if (state != LocoStateManual)
 		{
-			logger->Info(Languages::TextCanNotStartAlreadyRunning, name);
+			logger->Info(Languages::TextCanNotStartAlreadyRunning, GetName());
 			return false;
 		}
 
@@ -361,7 +361,7 @@ namespace DataModel
 		if (routeFirst != nullptr)
 		{
 			state = LocoStateError;
-			logger->Error(Languages::TextHasAlreadyReservedRoute, name);
+			logger->Error(Languages::TextHasAlreadyReservedRoute, GetName());
 			return;
 		}
 
@@ -493,14 +493,14 @@ namespace DataModel
 		if (routeSecond != nullptr)
 		{
 			state = LocoStateError;
-			logger->Error(Languages::TextHasAlreadyReservedRoute, name);
+			logger->Error(Languages::TextHasAlreadyReservedRoute, GetName());
 			return nullptr;
 		}
 
 		if (track == nullptr)
 		{
 			state = LocoStateOff;
-			logger->Info(Languages::TextIsNotOnTrack, name);
+			logger->Info(Languages::TextIsNotOnTrack, GetName());
 			return nullptr;
 		}
 
@@ -508,12 +508,13 @@ namespace DataModel
 		if (locoIdOfTrack != GetID())
 		{
 			state = LocoStateError;
-			logger->Error(Languages::TextIsOnOcupiedTrack, name, track->GetMyName(), manager->GetLocoName(locoIdOfTrack));
+			logger->Error(Languages::TextIsOnOcupiedTrack, GetName(), track->GetMyName(), manager->GetLocoName(locoIdOfTrack));
 			return nullptr;
 		}
 
 		vector<Route*> validRoutes;
 		track->GetValidRoutes(logger, this, allowLocoTurn, validRoutes);
+		LocoID objectID = GetID();
 		for (auto route : validRoutes)
 		{
 			logger->Debug(Languages::TextExecutingRoute, route->GetName());
@@ -562,7 +563,7 @@ namespace DataModel
 
 			return route;
 		}
-		logger->Debug(Languages::TextNoValidRouteFound, name);
+		logger->Debug(Languages::TextNoValidRouteFound, GetName());
 		return nullptr;
 	}
 
@@ -572,7 +573,7 @@ namespace DataModel
 		{
 			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 			manager->Booster(ControlTypeInternal, BoosterStateStop);
-			logger->Error(Languages::TextHitOverrun, name, manager->GetFeedbackName(feedbackID));
+			logger->Error(Languages::TextHitOverrun, GetName(), manager->GetFeedbackName(feedbackID));
 			return;
 		}
 
@@ -648,7 +649,7 @@ namespace DataModel
 		{
 			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 			state = LocoStateError;
-			logger->Error(Languages::TextIsInAutomodeWithoutRouteTrack, name);
+			logger->Error(Languages::TextIsInAutomodeWithoutRouteTrack, GetName());
 			return;
 		}
 
@@ -675,11 +676,11 @@ namespace DataModel
 		}
 
 
-		routeFirst->Release(logger, objectID);
+		routeFirst->Release(logger, GetID());
 		routeFirst = routeSecond;
 		routeSecond = nullptr;
 
-		trackFrom->BaseRelease(logger, objectID);
+		trackFrom->BaseRelease(logger, GetID());
 		trackFrom = trackFirst;
 		trackFirst = trackSecond;
 		trackSecond = nullptr;
@@ -696,7 +697,7 @@ namespace DataModel
 				break;
 
 			default:
-				logger->Error(Languages::TextIsInInvalidAutomodeState, name, state, manager->GetFeedbackName(feedbackIdFirst));
+				logger->Error(Languages::TextIsInInvalidAutomodeState, GetName(), state, manager->GetFeedbackName(feedbackIdFirst));
 				state = LocoStateError;
 				break;
 		}
@@ -710,18 +711,18 @@ namespace DataModel
 		{
 			manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);
 			state = LocoStateError;
-			logger->Error(Languages::TextIsInAutomodeWithoutRouteTrack, name);
+			logger->Error(Languages::TextIsInAutomodeWithoutRouteTrack, GetName());
 			return;
 		}
 
 		manager->LocoDestinationReached(this, routeFirst, trackFrom);
-		routeFirst->Release(logger, objectID);
+		routeFirst->Release(logger, GetID());
 		routeFirst = nullptr;
 
-		trackFrom->BaseRelease(logger, objectID);
+		trackFrom->BaseRelease(logger, GetID());
 		trackFrom = trackFirst;
 		trackFirst = nullptr;
-		logger->Info(Languages::TextReachedItsDestination, name);
+		logger->Info(Languages::TextReachedItsDestination, GetName());
 
 		// set state
 		switch (state)
@@ -735,7 +736,7 @@ namespace DataModel
 				break;
 
 			default:
-				logger->Error(Languages::TextIsInInvalidAutomodeState, name, state, manager->GetFeedbackName(feedbackIdStop));
+				logger->Error(Languages::TextIsInInvalidAutomodeState, GetName(), state, manager->GetFeedbackName(feedbackIdStop));
 				state = LocoStateError;
 				break;
 		}
