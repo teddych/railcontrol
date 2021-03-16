@@ -20,4 +20,7 @@ amalgamation.cpp
 svg/*
 Timestamp.cpp
 .settings/
+CMakeCache.txt
+CMakeFiles/*
+cmake_install.cmake
 
