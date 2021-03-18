@@ -517,6 +517,7 @@ class Languages
 			TextSignalIsLocked,
 			TextSignalIsUsedByLoco,
 			TextSignalIsUsedByRoute,
+			TextSignalIsUsedByTrack,
 			TextSignalSaved,
 			TextSignalStateIsClear,
 			TextSignalStateIsStop,

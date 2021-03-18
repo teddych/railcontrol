@@ -517,6 +517,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSignalIsLocked */ { "Signal {0} is locked", "Signal {0} ist gesperrt", "Señal {0} está bloqueado" },
 /* TextSignalIsUsedByLoco */ { "Signal {0} is used by locomotive {1}", "Signal {0} wird von Lokomotive {1} benutzt", "Señal {0} está utilizado por locomotora {1}" },
 /* TextSignalIsUsedByRoute */ { "Signal {0} is used route {1}", "Signal {0} wird von Fahrstrasse {1} benutzt", "Señal {0} está utilizado por itinerario {1}" },
+/* TextSignalIsUsedByTrack */ { "Signal {0} is used track {1}", "Signal {0} wird von Gleis {1} benutzt", "Señal {0} está utilizado por vía {1}" },
 /* TextSignalSaved */ { "Signal {0} saved", "Signale {0} gespeichert", "Señal {0} guardado" },
 /* TextSignalStateIsClear */ { "Signal {0} is clear", "Signal {0} ist auf Fahrt", "Señal {0} está verde" },
 /* TextSignalStateIsStop */ { "Signal {0} is stop", "Signal {0} ist auf Halt", "Señal {0} está roja" },
