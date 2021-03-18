@@ -622,7 +622,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextUnknownObjectType */ { "Unknown object type", "Unbekannter Objekttyp", "Typo de objecto desconocido" },
 /* TextUnloadingControl */ { "Unloading control {0}: {1}", "Entlade Zentrale {0}: {1}", "Descargando control {0}: {1}" },
 /* TextValue */ { "Value", "Wert", "Valor" },
-/* TextVersion */ { "Version: {0}", "Version: {0}", "Versión: {0}" },
+/* TextVersion */ { "Version: {0}; Compiled at: {1}; Last GIT commit hash: {2}; Last GIT commit date: {3}", "Version: {0}; Kompiliert um: {1}; Letzter GIT Commit Hash: {2}; Letztes GIT Commit Datum: {3}", "Versión: {0}; Compilado a: {1}; Último GIT commit hash: {2}; Último GIT commit fetcha: {2}" },
 /* TextVisible */ { "Visible", "Sichtbar", "Visible" },
 /* TextWaitAfterRelease */ { "Wait after release (s)", "Wartezeit nach Freigabe (s)", "Tiempo de espera despues liberar (s)" },
 /* TextWaitingTimeBetweenMembers */ { "Waiting time between members (ms)", "Wartezeit zwischen Teilnehmern (ms)", "Tiempo de esprera entre los miembros (ms)" },

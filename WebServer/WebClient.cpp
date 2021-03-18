@@ -33,7 +33,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/ObjectIdentifier.h"
 #include "Hardware/HardwareHandler.h"
 #include "RailControl.h"
-#include "Timestamp.h"
+#include "Version.h"
 #include "Utils/Utils.h"
 #include "WebServer/HtmlFullResponse.h"
 #include "WebServer/HtmlResponse.h"
@@ -3461,7 +3461,7 @@ namespace WebServer
 		}
 		struct timeval tv;
 		int ret = gettimeofday(&tv, nullptr);
-		if (ret != 0 || tv.tv_sec > GetCompileTime())
+		if (ret != 0 || tv.tv_sec > GetVersionInfoCompileTimestamp())
 		{
 			ReplyHtmlWithHeaderAndParagraph(Languages::TextTimestampAlreadySet);
 			return;
