@@ -31,27 +31,14 @@ class ArgumentHandler
 		ArgumentHandler() = delete;
 		ArgumentHandler(const int argc, char* argv[], const std::map<std::string,char>& linkMap, const char defaultSwitch);
 
-		bool GetArgumentBool(const char argument)
+		inline bool GetArgumentBool(const char argument)
 		{
 			return (argumentMap.count(argument) == 1);
 		}
 
-		std::string GetArgumentString(const char argument, const std::string& defaultValue = "")
-		{
-			if (GetArgumentBool(argument) == false)
-			{
-				return defaultValue;
-			}
-			std::string& value = argumentMap[argument];
-			if (value.size() == 0)
-			{
-				return defaultValue;
-			}
+		std::string GetArgumentString(const char argument, const std::string& defaultValue = "");
 
-			return value;
-		}
-
-		int GetArgumentInt(const char argument, const int defaultValue = 0)
+		inline int GetArgumentInt(const char argument, const int defaultValue = 0)
 		{
 			return Utils::Utils::StringToInteger(GetArgumentString(argument, std::to_string(defaultValue)));
 		}

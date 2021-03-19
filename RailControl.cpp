@@ -126,7 +126,12 @@ int main (int argc, char* argv[])
 	logger->Info(Languages::TextStarting, RailControl);
 	logger->Info(Languages::TextVersion, GetVersionInfoRailControlVersion(), Utils::Utils::TimestampToDate(GetVersionInfoCompileTimestamp()), GetVersionInfoGitHash(), Utils::Utils::TimestampToDate(GetVersionInfoGitTimestamp()));
 
-	const string configFileName = argumentHandler.GetArgumentString('c', "railcontrol.conf");
+	const string configFileDefaultName("railcontrol.conf");
+	const string configFileName = argumentHandler.GetArgumentString('c', configFileDefaultName);
+	if (configFileName.compare(configFileDefaultName) == 0 && !Utils::Utils::FileExists(configFileDefaultName))
+	{
+		Utils::Utils::CopyFile(logger, "railcontrol.conf.dist", configFileDefaultName);
+	}
 	Config config(configFileName);
 
 	Manager m(config);
