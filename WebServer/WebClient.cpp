@@ -2921,8 +2921,8 @@ namespace WebServer
 		{
 			tracksDiv.AddAttribute("hidden");
 		}
-		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", Languages::TextStartSignalTrack, fromTrack, fromOrientation));
-		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", Languages::TextDestinationSignalTrack, toTrack, toOrientation, "updateFeedbacksOfTrack(); return false;"));
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("from", Languages::TextStartTrack, fromTrack, fromOrientation));
+		tracksDiv.AddChildTag(HtmlTagSelectTrack("to", Languages::TextDestinationTrack, toTrack, toOrientation, "updateFeedbacksOfTrack(); return false;"));
 		map<Route::Speed,Languages::TextSelector> speedOptions;
 		speedOptions[Route::SpeedTravel] = Languages::TextTravelSpeed;
 		speedOptions[Route::SpeedReduced] = Languages::TextReducedSpeed;
