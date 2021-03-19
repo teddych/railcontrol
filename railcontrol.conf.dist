@@ -8,5 +8,8 @@ dbfilename = railcontrol.sqlite
 # Default dbkeepbackups is 10
 dbkeepbackups = 10
 
-# Default webserver port is 80, default alt webserver port is 8080
-webserverport = 8080
+# Default webserver port is 80, but
+# RailControl should not be started as root.
+# Therefore we use alternate port 8082
+webserverport = 8082
+
