@@ -1210,15 +1210,21 @@ namespace WebServer
 
 	HtmlTag WebClient::HtmlTagProtocol(const map<string,Protocol>& protocolMap, const Protocol selectedProtocol)
 	{
-		if (protocolMap.size() == 0)
+		size_t mapSize = protocolMap.size();
+		switch (mapSize)
 		{
-			return HtmlTagInputHidden("protocol", std::to_string(ProtocolNone));
-		}
+			case 0:
+				return HtmlTagInputHidden("protocol", std::to_string(ProtocolNone));
 
-		HtmlTag content;
-		content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
-		content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
-		return content;
+			case 1:
+				return HtmlTagInputHidden("protocol", std::to_string(protocolMap.begin()->second));
+
+			default:
+				HtmlTag content;
+				content.AddChildTag(HtmlTagLabel(Languages::TextProtocol, "protocol"));
+				content.AddChildTag(HtmlTagSelect("protocol", protocolMap, selectedProtocol));
+				return content;
+		}
 	}
 
 	HtmlTag WebClient::HtmlTagMatchKeyProtocolLoco(const ControlID controlId, const string& selectedMatchKey, const Protocol selectedProtocol)
