@@ -1249,12 +1249,13 @@ namespace WebServer
 			ReplyHtmlWithHeaderAndParagraph(Languages::TextControlDoesNotExist);
 			return;
 		}
-		LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		if (locoId != LocoNone)
+
+		if (Utils::Utils::IsMapEntrySet(arguments, "loco"))
 		{
+			LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 			string matchKey;
 			Protocol protocol = ProtocolNone;
-			Loco *loco = manager.GetLoco(locoId);
+			Loco* loco = manager.GetLoco(locoId);
 			if (loco != nullptr)
 			{
 				matchKey = loco->GetMatchKey();
@@ -1284,6 +1285,8 @@ namespace WebServer
 			ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, signal == nullptr ? ProtocolNone : signal->GetProtocol()));
 			return;
 		}
+
+		ReplyHtmlWithHeader(HtmlTagProtocolAccessory(controlId, ProtocolNone));
 	}
 
 	HtmlTag WebClient::HtmlTagDuration(const DataModel::AccessoryPulseDuration duration, const Languages::TextSelector label) const

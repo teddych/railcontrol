@@ -41,6 +41,12 @@ namespace Utils
 			static void SplitString(const std::string& str, const std::string& delimiter, std::deque<std::string>& list);
 			static void SplitString(const std::string& input, const std::string& delimiter, std::string& first, std::string& second);
 			static std::string StringBeforeDelimiter(const std::string& input, const std::string& delimiter);
+
+			static inline bool IsMapEntrySet(const std::map<std::string,std::string>& map, const std::string& key)
+			{
+				return map.count(key) != 0;
+			}
+
 			static const std::string& GetStringMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const std::string& defaultValue = "");
 			static int GetIntegerMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const int defaultValue = 0);
 			static bool GetBoolMapEntry(const std::map<std::string,std::string>& map, const std::string& key, const bool defaultValue = false);
