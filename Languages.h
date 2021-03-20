@@ -70,6 +70,7 @@ class Languages
 			TextBoosterIsTurnedOff,
 			TextBoosterIsTurnedOn,
 			TextBridge,
+			TextBrowserInfo,
 			TextBufferStop,
 			TextCV,
 			TextCanNotOpenLibrary,
