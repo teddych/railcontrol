@@ -478,12 +478,12 @@ namespace Storage
 
 	void SQLite::StartTransaction()
 	{
-		Execute("BEGIN TRANSACTION");
+		Execute("BEGIN TRANSACTION;");
 	}
 
 	void SQLite::CommitTransaction()
 	{
-		Execute("COMMIT");
+		Execute("COMMIT;");
 	}
 
 	bool SQLite::Execute(const char* query, sqlite3_callback callback = nullptr, void* result = nullptr)
