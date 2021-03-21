@@ -140,7 +140,6 @@ WebServer/HtmlTagAccessory.cpp
 WebServer/HtmlTagAccessory.h
 WebServer/HtmlTagButton.cpp
 WebServer/HtmlTagButton.h
-WebServer/HtmlTagButtonCancel.cpp
 WebServer/HtmlTagButtonCancel.h
 WebServer/HtmlTagButtonCommand.cpp
 WebServer/HtmlTagButtonCommand.h
@@ -149,8 +148,9 @@ WebServer/HtmlTagButtonCommandPressRelease.h
 WebServer/HtmlTagButtonCommandToggle.cpp
 WebServer/HtmlTagButtonCommandToggle.h
 WebServer/HtmlTagButtonCommandWide.h
-WebServer/HtmlTagButtonOK.cpp
+WebServer/HtmlTagButtonMinus.h
 WebServer/HtmlTagButtonOK.h
+WebServer/HtmlTagButtonPlus.h
 WebServer/HtmlTagButtonPopup.cpp
 WebServer/HtmlTagButtonPopup.h
 WebServer/HtmlTagButtonPopupWide.h

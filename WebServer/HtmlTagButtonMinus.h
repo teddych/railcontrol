@@ -18,16 +18,27 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include <sstream>
+#pragma once
 
-#include "WebServer/HtmlTagButtonOK.h"
+#include <map>
+#include <string>
+
+#include "WebServer/HtmlTagButton.h"
 
 namespace WebServer
 {
-	HtmlTagButtonOK::HtmlTagButtonOK()
-	:	HtmlTagButton(HtmlTag("span").AddContent("&#x2714;"), "popup_ok")
+	class HtmlTagButtonMinus : public HtmlTagButton
 	{
-		AddAttribute("onclick", "submitEditForm(); return false;");
-		AddClass("wide_button");
-	}
+		public:
+			HtmlTagButtonMinus() = delete;
+			HtmlTagButtonMinus(HtmlTagButtonMinus&) = delete;
+			HtmlTagButtonMinus& operator=(HtmlTagButtonMinus&) = delete;
+
+			inline HtmlTagButtonMinus(const std::string& field, const int min)
+			:	HtmlTagButton(HtmlTag("span").AddContent("-"), field + "_minus")
+			{
+				AddAttribute("onclick", "decrementIntegerValue('" + field + "', " + std::to_string(min) + "); return false;");
+				AddClass("small_button");
+			}
+	};
 } // namespace WebServer

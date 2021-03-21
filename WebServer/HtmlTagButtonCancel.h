@@ -20,7 +20,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <map>
 #include <string>
 
 #include "WebServer/HtmlTagButton.h"
@@ -30,6 +29,11 @@ namespace WebServer
 	class HtmlTagButtonCancel : public HtmlTagButton
 	{
 		public:
-			HtmlTagButtonCancel();
+			inline HtmlTagButtonCancel()
+			:	HtmlTagButton(HtmlTag("span").AddContent("&#x2718;"), "popup_cancel")
+			{
+				AddAttribute("onclick", "document.getElementById('popup').style.display = 'none'; return false;");
+				AddClass("wide_button");
+			}
 	};
 } // namespace WebServer
