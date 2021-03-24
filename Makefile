@@ -31,7 +31,7 @@ dist: all
 		railcontrol.conf.dist \
 		railcontrol \
 		$(TMPDIR)
-	( cd $(TMPDIR)/.. && tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz RailControl/* RailControl/html/* )
+	( cd $(TMPDIR)/.. && tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz RailControl/* )
 	rm -r $(TMPDIR)
 
 dist-cygwin: all
