@@ -1166,7 +1166,7 @@ function loadRelationObject(type, priority)
 	requestUpdateItem(elementName + "_object", url);
 }
 
-function loadRelationSwitchStates(name)
+function loadRelationObjectStates(type, name)
 {
 	var elementName = name + '_state';
 	var object = document.getElementById(elementName);
@@ -1174,14 +1174,14 @@ function loadRelationSwitchStates(name)
 	{
 		return;
 	}
-	var mySwitch = document.getElementById('s_' + name + '_id');
-	if (!mySwitch)
+	var object = document.getElementById('s_' + name + '_id');
+	if (!object)
 	{
 		return;
 	}
-	var switchId = mySwitch.value;
-	var url = '/?cmd=switchstates';
-	url += '&switch=' + switchId;
+	var objectId = object.value;
+	var url = '/?cmd=' + type + 'states';
+	url += '&' + type + '=' + objectId;
 	url += '&name=' + name;
 	requestUpdateItem(elementName, url);
 }
