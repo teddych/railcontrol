@@ -31,8 +31,8 @@ namespace WebServer
 	HtmlTagRoute::HtmlTagRoute(const DataModel::Route* route)
 	:	HtmlTagLayoutItem()
 	{
-		unsigned int layoutPosX = route->GetPosX() * EdgeLength;
-		unsigned int layoutPosY = route->GetPosY() * EdgeLength;
+		const unsigned int layoutPosX = route->GetPosX() * EdgeLength;
+		const unsigned int layoutPosY = route->GetPosY() * EdgeLength;
 		const string& routeName = route->GetName();
 
 		HtmlTag div1("div");
