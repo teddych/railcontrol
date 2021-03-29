@@ -70,7 +70,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextBoosterIsTurnedOff */ { "Booster is turned off", "Booster ist ausgeschaltet", "Booster está apagado" },
 /* TextBoosterIsTurnedOn */ { "Booster is turned on", "Booster ist eingeschaltet", "Booster está encendido" },
 /* TextBridge */ { "Bridge", "Brücke", "Puente" },
-/* TextBrowserInfo */ { "Please type one of the following links in your browser to connect to RailControl:{0}{1}{2}", "Bitte eine der folgenden Links im Browser eingeben um sich mit RailControl zu verbinden:{0}{1}{2}", "Por favor conectate a RailControl con el navegador internet con una de las enlaces siguientes:{0}{1}{2}" },
+/* TextBrowserInfo */ { "Please type one of the following links in your browser to connect to RailControl:{0}{1}{2}", "Bitte einer der folgenden Links im Browser eingeben um sich mit RailControl zu verbinden:{0}{1}{2}", "Por favor conectate a RailControl con el navegador internet con una de las enlaces siguientes:{0}{1}{2}" },
 /* TextBufferStop */ { "End / Buffer Stop", "Ende / Prellbock", "Final / Tope" },
 /* TextCV */ { "CV", "CV", "CV" },
 /* TextCanNotOpenLibrary */ { "Can not open library {0}: {1}", "Kann Bibliothek {0} nicht öffenen: {1}", "Imposible abrir biblioteca {0}: {1}" },
