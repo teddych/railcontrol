@@ -1346,23 +1346,12 @@ namespace WebServer
 		const DataModel::Relation::Data data)
 	{
 		map<DataModel::AccessoryState,Languages::TextSelector> stateOptions;
-		DataModel::AccessoryType selectedSwitchType = SwitchTypeLeft;
 		Switch* mySwitch = manager.GetSwitch(switchId);
 		if (mySwitch != nullptr)
 		{
-			selectedSwitchType = mySwitch->GetType();
+			stateOptions = mySwitch->GetStateOptions();
 		}
 
-		stateOptions[DataModel::SwitchStateStraight] = Languages::TextStraight;
-		if (selectedSwitchType == DataModel::SwitchTypeThreeWay)
-		{
-			stateOptions[DataModel::SwitchStateTurnout] = Languages::TextLeft;
-			stateOptions[DataModel::SwitchStateThird] = Languages::TextRight;
-		}
-		else
-		{
-			stateOptions[DataModel::SwitchStateTurnout] = Languages::TextTurnout;
-		}
 		return HtmlTagSelect(name + "_state", stateOptions, static_cast<DataModel::AccessoryState>(data)).AddClass("select_relation_state");
 	}
 
