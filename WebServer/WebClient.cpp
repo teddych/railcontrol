@@ -154,7 +154,11 @@ namespace WebServer
 			}
 
 			// handle requests
-			if (arguments["cmd"].compare("quit") == 0)
+			if (uri.compare("/") == 0)
+			{
+				PrintMainHTML();
+			}
+			else if (arguments["cmd"].compare("quit") == 0)
 			{
 				ReplyHtmlWithHeaderAndParagraph(Languages::TextStoppingRailControl);
 				stopRailControlWebserver();
@@ -573,13 +577,19 @@ namespace WebServer
 			{
 				cluster.HandleClusterDelete(arguments);
 			}
+			else if (arguments["cmd"].compare("getlocolist") == 0)
+			{
+				string s = manager.GetLocoList();
+				connection->Send(s);
+			}
+			else if (arguments["cmd"].compare("getroutelist") == 0)
+			{
+				string s = manager.GetRouteList();
+				connection->Send(s);
+			}
 			else if (arguments["cmd"].compare("updater") == 0)
 			{
 				HandleUpdater(headers);
-			}
-			else if (uri.compare("/") == 0)
-			{
-				PrintMainHTML();
 			}
 			else
 			{

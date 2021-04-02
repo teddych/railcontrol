@@ -132,6 +132,15 @@ namespace DataModel
 		return true;
 	}
 
+	TrackID Loco::GetTrackId()
+	{
+		if (trackFrom)
+		{
+			return trackFrom->GetMyID();
+		}
+		return TrackNone;
+	}
+
 	bool Loco::Release()
 	{
 		manager->LocoSpeed(ControlTypeInternal, this, MinSpeed);

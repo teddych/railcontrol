@@ -131,6 +131,7 @@ namespace DataModel
 			bool AddTimeTable(ObjectIdentifier& identifier);
 
 			bool SetTrack(const DataModel::ObjectIdentifier& identifier);
+			TrackID GetTrackId();
 			bool Release();
 			bool IsRunningFromTrack(const TrackID trackID) const;
 

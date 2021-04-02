@@ -91,6 +91,9 @@ class Manager
 		void TrackBasePublishState(const DataModel::TrackBase* trackBase);
 
 		// loco
+		std::string GetLocoList() const;
+		std::string GetRouteList() const;
+
 		DataModel::Loco* GetLoco(const LocoID locoID) const;
 
 		DataModel::LocoConfig GetLocoOfConfigByMatchKey(const ControlID controlId, const std::string& matchKey) const;

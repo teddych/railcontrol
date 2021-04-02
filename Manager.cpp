@@ -41,6 +41,7 @@ using Visible = DataModel::LayoutItem::Visible;
 using Hardware::HardwareHandler;
 using Hardware::HardwareParams;
 using std::map;
+using std::to_string;
 using std::string;
 using std::stringstream;
 using std::vector;
@@ -602,6 +603,39 @@ const std::map<std::string, Protocol> Manager::ProtocolsOfControl(const AddressT
 /***************************
 * Loco                     *
 ***************************/
+
+string Manager::GetLocoList() const
+{
+	string out;
+	std::lock_guard<std::mutex> guard(locoMutex);
+	for (auto loco : locos)
+	{
+		Loco* l = loco.second;
+		out += to_string(l->GetID()) + ";";
+		out += to_string(l->GetSpeed()) + ";";
+		out += to_string(l->GetOrientation()) + ";";
+		out += to_string(l->GetTrackId()) + ";";
+		out += l->GetName() + "\n";
+	}
+	return out;
+}
+
+string Manager::GetRouteList() const
+{
+	string out;
+	std::lock_guard<std::mutex> guard(routeMutex);
+	for (auto route : routes)
+	{
+		Route* r = route.second;
+		out += to_string(r->GetID()) + ";";
+		out += to_string(r->GetFromTrack().GetObjectID()) + ";";
+		out += to_string(r->GetFromOrientation()) + ";";
+		out += to_string(r->GetToTrack().GetObjectID()) + ";";
+		out += to_string(r->GetToOrientation()) + ";";
+		out += r->GetName() + "\n";
+	}
+	return out;
+}
 
 Loco* Manager::GetLoco(const LocoID locoID) const
 {
