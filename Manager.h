@@ -401,18 +401,29 @@ class Manager
 		bool LocoRelease(const LocoID locoID);
 		bool TrackBaseRelease(const DataModel::ObjectIdentifier& objectIdentifier);
 		bool LocoReleaseOnTrackBase(const DataModel::ObjectIdentifier& objectIdentifier);
-		bool TrackBaseStartLoco(const DataModel::ObjectIdentifier& objectIdentifier);
+
+		bool TrackBaseStartLoco(const DataModel::ObjectIdentifier& objectIdentifier,
+			const DataModel::Loco::AutoModeType type);
+
 		bool TrackBaseStopLoco(const DataModel::ObjectIdentifier& objectIdentifier);
 		void TrackBaseBlock(const DataModel::ObjectIdentifier& objectIdentifier, const bool blocked);
 		void TrackBaseSetLocoOrientation(const DataModel::ObjectIdentifier& objectIdentifier, const Orientation orientation);
 		void TrackPublishState(const DataModel::Track* track);
 		bool RouteRelease(const RouteID routeID);
-		bool LocoDestinationReached(const DataModel::Loco* loco, const DataModel::Route* route, const DataModel::TrackBase* track);
-		bool LocoStart(const LocoID locoID);
+
+		bool LocoDestinationReached(const DataModel::Loco* loco,
+			const DataModel::Route* route,
+			const DataModel::TrackBase* track);
+
+		bool LocoStart(const LocoID locoID,
+			const DataModel::Loco::AutoModeType type);
+
 		bool LocoStop(const LocoID locoID);
 		bool LocoStartAll();
 		bool LocoStopAll();
 		void StopAllLocosImmediately(const ControlType controlType);
+
+		bool LocoAddTimeTable(const LocoID locoId, DataModel::ObjectIdentifier& identifier);
 
 		// settings
 		inline DataModel::AccessoryPulseDuration GetDefaultAccessoryDuration() const

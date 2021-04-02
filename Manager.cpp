@@ -2899,14 +2899,14 @@ bool Manager::LocoReleaseOnTrackBase(const ObjectIdentifier& identifier)
 	return LocoReleaseInternal(loco);
 }
 
-bool Manager::TrackBaseStartLoco(const ObjectIdentifier& identifier)
+bool Manager::TrackBaseStartLoco(const ObjectIdentifier& identifier, const DataModel::Loco::AutoModeType type)
 {
 	TrackBase* track = GetTrackBase(identifier);
 	if (track == nullptr)
 	{
 		return false;
 	}
-	return LocoStart(track->GetMyLoco());
+	return LocoStart(track->GetMyLoco(), type);
 }
 
 bool Manager::TrackBaseStopLoco(const ObjectIdentifier& identifier)
@@ -2988,14 +2988,14 @@ bool Manager::LocoDestinationReached(const Loco* loco, const Route* route, const
 	return true;
 }
 
-bool Manager::LocoStart(const LocoID locoID)
+bool Manager::LocoStart(const LocoID locoID, const DataModel::Loco::AutoModeType type)
 {
 	Loco* loco = GetLoco(locoID);
 	if (loco == nullptr)
 	{
 		return false;
 	}
-	bool ret = loco->GoToAutoMode();
+	bool ret = loco->GoToAutoMode(type);
 	if (ret == false)
 	{
 		return false;
@@ -3107,6 +3107,16 @@ void Manager::StopAllLocosImmediately(const ControlType controlType)
 	{
 		LocoSpeed(controlType, loco.second, MinSpeed, false);
 	}
+}
+
+bool Manager::LocoAddTimeTable(const LocoID locoId, ObjectIdentifier& identifier)
+{
+	Loco* loco = GetLoco(locoId);
+	if (loco == nullptr)
+	{
+		return false;
+	}
+	return loco->AddTimeTable(identifier);
 }
 
 /***************************
