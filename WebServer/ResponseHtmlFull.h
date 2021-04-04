@@ -23,21 +23,39 @@ along with RailControl; see the file LICENCE. If not see
 #include <ostream>
 #include <string>
 
-#include "HtmlResponse.h"
+#include "WebServer/ResponseHtml.h"
 
 namespace WebServer
 {
-	class HtmlFullResponse : public HtmlResponse
+	class ResponseHtmlFull : public ResponseHtml
 	{
 		public:
-			HtmlFullResponse() = delete;
-			HtmlFullResponse(const ResponseCode responseCode);
-			HtmlFullResponse(const std::string& title, const HtmlTag body);
-			HtmlFullResponse(const ResponseCode responseCode, const std::string& title, const HtmlTag body);
-			~HtmlFullResponse() {};
+			ResponseHtmlFull() = delete;
+			ResponseHtmlFull(const ResponseHtmlFull&) = delete;
+			ResponseHtmlFull& operator=(const ResponseHtmlFull&) = delete;
+
+			inline ResponseHtmlFull(const ResponseCode responseCode)
+			:	ResponseHtml(responseCode)
+			{
+			}
+
+			inline ResponseHtmlFull(const std::string& title, const HtmlTag body)
+			:	ResponseHtml(title, body)
+			{
+			}
+
+			ResponseHtmlFull(const ResponseCode responseCode, const std::string& title, const HtmlTag body)
+			:	ResponseHtml(responseCode, title, body)
+			{
+			}
+
+			virtual ~ResponseHtmlFull()
+			{
+			}
+
 			operator std::string();
 
-			friend std::ostream& operator<<(std::ostream& stream, const HtmlFullResponse& response);
+			friend std::ostream& operator<<(std::ostream& stream, const ResponseHtmlFull& response);
 	};
 } // namespace WebServer
 

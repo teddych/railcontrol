@@ -20,41 +20,20 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <sstream>
 
-#include "WebServer/HtmlResponse.h"
+#include "WebServer/ResponseHtmlFull.h"
 
 namespace WebServer
 {
-	HtmlResponse::HtmlResponse(const ResponseCode responseCode, const std::string& title, const HtmlTag body)
-	:	Response(responseCode, body),
-	 	title(title)
-	{
-		AddHeader("Cache-Control", "no-cache, must-revalidate");
-		AddHeader("Pragma", "no-cache");
-		AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
-		AddHeader("Content-Type", "text/html; charset=utf-8");
-		AddHeader("Connection", "keep-alive");
-	}
-
-	void HtmlResponse::AddAttribute(const std::string name, const std::string value)
-	{
-		this->content.AddAttribute(name, value);
-	}
-
-	void HtmlResponse::AddChildTag(HtmlTag content)
-	{
-		this->content.AddChildTag(content);
-	}
-
-	HtmlResponse::operator std::string()
+	ResponseHtmlFull::operator std::string()
 	{
 		std::stringstream reply;
 		reply << *this;
 		return reply.str();
 	}
 
-	std::ostream& operator<<(std::ostream& stream, const HtmlResponse& response)
+	std::ostream& operator<<(std::ostream& stream, const ResponseHtmlFull& response)
 	{
-		stream << "HTTP/1.1 " << response.responseCode << " " << HtmlResponse::responseTexts.at(response.responseCode) << "\r\n";
+		stream << "HTTP/1.1 " << response.responseCode << " " << ResponseHtml::responseTexts.at(response.responseCode) << "\r\n";
 		for(auto header : response.headers)
 		{
 			stream << header.first << ": " << header.second << "\r\n";
@@ -63,17 +42,18 @@ namespace WebServer
 		std::stringstream body;
 		body << "<!DOCTYPE html>";
 
-		HtmlTag html("html");
-		if (response.title.length() > 0)
-		{
-			HtmlTag head("head");
-			head.AddChildTag(HtmlTag("title").AddContent(response.title));
-			html.AddChildTag(head);
-		}
-		html.AddChildTag(response.content);
-		body << html;
+		HtmlTag head("head");
+		head.AddChildTag(HtmlTag("title").AddId("title").AddContent(response.title));
+		head.AddChildTag(HtmlTag("link").AddAttribute("rel", "stylesheet").AddAttribute("type", "text/css").AddAttribute("href", "/style.css"));
+		head.AddChildTag(HtmlTag("script").AddAttribute("type", "application/javascript").AddAttribute("src", "/nosleep.js"));
+		head.AddChildTag(HtmlTag("script").AddAttribute("type", "application/javascript").AddAttribute("src", "/javascript.js"));
+		head.AddChildTag(HtmlTag("meta").AddAttribute("name", "viewport").AddAttribute("content", "width=device-width, initial-scale=1.0"));
+		head.AddChildTag(HtmlTag("meta").AddAttribute("name", "robots").AddAttribute("content", "noindex,nofollow"));
+
+		body << HtmlTag("html").AddChildTag(head).AddChildTag(response.content);
 
 		std::string bodyString(body.str());
+
 		stream << "Content-Length: " << bodyString.size();
 		stream << "\r\n\r\n";
 		stream << bodyString;

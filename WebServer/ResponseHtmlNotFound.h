@@ -20,51 +20,25 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <map>
 #include <ostream>
 #include <string>
 
-#include "WebServer/HtmlTag.h"
+#include "WebServer/ResponseHtml.h"
 
 namespace WebServer
 {
-	class Response
+	class ResponseHtmlNotFound : public ResponseHtml
 	{
 		public:
-			enum ResponseCode : unsigned short
-			{
-				OK = 200,
-				NotFound = 404,
-				NotImplemented = 501
-			};
+			ResponseHtmlNotFound() = delete;
+			ResponseHtmlNotFound(const ResponseHtmlNotFound&) = delete;
+			ResponseHtmlNotFound& operator=(const ResponseHtmlNotFound&) = delete;
 
-			inline Response()
-			:	responseCode(OK)
+			ResponseHtmlNotFound(const std::string& file);
+
+			virtual ~ResponseHtmlNotFound()
 			{
 			}
-
-			inline Response(const ResponseCode responseCode, const HtmlTag& content)
-			:	responseCode(responseCode),
-				content(content)
-			{
-			}
-
-			virtual ~Response()
-			{
-			}
-
-			void AddHeader(const std::string& key, const std::string& value);
-			operator std::string();
-
-			friend std::ostream& operator<<(std::ostream& stream, const Response& response);
-
-			ResponseCode responseCode;
-
-			typedef std::map<Response::ResponseCode,std::string> responseCodeMap;
-			static const responseCodeMap responseTexts;
-
-			std::map<const std::string,std::string> headers;
-			HtmlTag content;
 	};
 } // namespace WebServer
 
