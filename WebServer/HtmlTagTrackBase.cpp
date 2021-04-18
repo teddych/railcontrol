@@ -63,20 +63,10 @@ namespace WebServer
 		contextMenuDiv.AddClass(track->GetLocoOrientation() == OrientationRight ? "orientation_right" : "orientation_left");
 
 		const string& trackName = track->GetMyName();
+		AddOnClickMenuEntry(trackName);
 		AddContextMenuEntry(trackName);
 		urlIdentifier = typeString + "=" + to_string(layout->GetID());
-		AddContextMenuEntry(Languages::TextBlockTrack, "fireRequestAndForget('/?cmd=trackblock&" + urlIdentifier + "&blocked=true');", "track_block");
-		AddContextMenuEntry(Languages::TextUnblockTrack, "fireRequestAndForget('/?cmd=trackblock&" + urlIdentifier + "&blocked=false');", "track_unblock");
-		AddContextMenuEntry(Languages::TextTurnDirectionOfTravelToLeft, "fireRequestAndForget('/?cmd=trackorientation&orientation=false&" + urlIdentifier + "');", "track_left");
-		AddContextMenuEntry(Languages::TextTurnDirectionOfTravelToRight, "fireRequestAndForget('/?cmd=trackorientation&orientation=true&" + urlIdentifier + "');", "track_right");
-		AddContextMenuEntry(Languages::TextReleaseTrack, "fireRequestAndForget('/?cmd=trackrelease&" + urlIdentifier + "');", "track_release");
-		AddContextMenuEntry(Languages::TextReleaseTrackAndLoco, "fireRequestAndForget('/?cmd=locorelease&" + urlIdentifier + "');", "track_loco_release");
-		AddContextMenuEntry(Languages::TextSetLoco, "loadPopup('/?cmd=tracksetloco&" + urlIdentifier + "');", "track_set");
-		AddContextMenuEntry(Languages::TextStartLoco, "fireRequestAndForget('/?cmd=trackstartloco&" + urlIdentifier + "');", "track_start_loco");
-		AddContextMenuEntry(Languages::TextStopLoco, "fireRequestAndForget('/?cmd=trackstoploco&" + urlIdentifier + "');", "track_stop_loco");
 
-		imageDiv.AddId(identifier);
-		imageDiv.AddClass("layout_item");
 		imageDiv.AddClass("track_item");
 		string trackClass;
 		if (reserved && occupied)
@@ -101,7 +91,6 @@ namespace WebServer
 		}
 
 		imageDiv.AddClass(trackClass);
-		imageDiv.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 		const DataModel::LayoutItem::LayoutItemSize trackHeight = layout->GetHeight();
 		const string layoutHeight = to_string(EdgeLength * trackHeight);
 

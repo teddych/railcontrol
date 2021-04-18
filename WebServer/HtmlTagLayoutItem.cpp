@@ -49,11 +49,18 @@ namespace WebServer
 				identifier = "si_";
 				break;
 
+			case ObjectTypeSwitch:
+				identifier = "sw_";
+				break;
+
 			default:
 				identifier = "unknown_";
 				return;
 		}
 		identifier += to_string(layout->GetID());
+		imageDiv.AddId(identifier);
+		imageDiv.AddClass("layout_item");
+		imageDiv.AddAttribute("style", "left:" + to_string(layoutPosX) + "px;top:" + to_string(layoutPosY) + "px;");
 
 		string menuPosition = "left:" + to_string(layoutPosX + 5) + "px;top:" + to_string(layoutPosY + 30) + "px;";
 		onClickMenuDiv.AddClass("contextmenu");
@@ -87,16 +94,17 @@ namespace WebServer
 		}
 
 		imageDiv.AddChildTag(HtmlTag().AddContent("<svg width=\"" + EdgeLengthString + "\" height=\"" + layoutHeight + "\" id=\"" + identifier + "_img\" style=\"transform:rotate(" + DataModel::LayoutItem::Rotation(layout->GetRotation()) + "deg) translate(" + to_string(translate) + "px," + to_string(translate) + "px);\">" + image + "</svg>"));
-		imageDiv.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + identifier + "');");
-		AddChildTag(imageDiv);
+		imageDiv.AddAttribute("oncontextmenu", "return showContextMenu(event, '" + identifier + "');");
 
 		if (onClickMenuContentDiv.ChildCount())
 		{
+			imageDiv.AddAttribute("onclick", "return showOnClickMenu(event, '" + identifier + "');");
 			onClickMenuDiv.AddChildTag(onClickMenuContentDiv);
 			AddChildTag(onClickMenuDiv);
 		}
 		contextMenuDiv.AddChildTag(contextMenuContentDiv);
 		AddChildTag(contextMenuDiv);
+		AddChildTag(imageDiv);
 	}
 
 	void HtmlTagLayoutItem::AddMenuEntry(HtmlTag& menu,

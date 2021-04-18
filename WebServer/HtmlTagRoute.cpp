@@ -46,7 +46,7 @@ namespace WebServer
 		div1.AddChildTag(HtmlTag().AddContent(image));
 		div1.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(routeName));
 		div1.AddAttribute("onclick", "return onClickRoute(" + routeIdString + ");");
-		div1.AddAttribute("oncontextmenu", "return onContextLayoutItem(event, '" + id + "');");
+		div1.AddAttribute("oncontextmenu", "return showContextMenu(event, '" + id + "');");
 		AddChildTag(div1);
 
 		HtmlTag div2("div");

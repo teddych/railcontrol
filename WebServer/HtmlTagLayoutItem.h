@@ -66,6 +66,11 @@ namespace WebServer
 				AddMenuEntry(contextMenuContentDiv, text, onClick, className);
 			}
 
+			void AddToolTip(const std::string& toolTip)
+			{
+				imageDiv.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(toolTip));
+			}
+
 			static const unsigned char EdgeLength = 36;
 			static const std::string EdgeLengthString;
 

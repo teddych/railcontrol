@@ -49,11 +49,6 @@ namespace WebServer
 
 			virtual ~HtmlTagTrackBase() {}
 
-			void AddToolTip(const std::string& toolTip)
-			{
-				imageDiv.AddChildTag(HtmlTag("span").AddClass("tooltip").AddContent(toolTip));
-			}
-
 			const DataModel::TrackBase* track;
 
 			std::string urlIdentifier;
