@@ -218,7 +218,12 @@ namespace WebServer
 		HtmlTag addressContent;
 		for (auto& stateOption : stateOptions)
 		{
-			addressContent.AddChildTag(HtmlTagSelectWithLabel("address" + to_string(stateOption.first), stateOption.second.text, selectAddressOptions, signal->GetStateAddressOffset(stateOption.first)));
+			AccessoryState state = stateOption.first;
+			addressContent.AddChildTag(HtmlTagSelectWithLabel("address" + to_string(state),
+				HtmlTagSignal::GetSignalImage(state, signal) + Languages::GetText(stateOption.second),
+				selectAddressOptions,
+				signal->GetStateAddressOffset(state)
+			));
 			++i;
 		}
 		client.ReplyHtmlWithHeader(addressContent);
