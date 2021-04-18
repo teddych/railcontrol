@@ -254,7 +254,7 @@ namespace WebServer
 		std::map<AccessoryState,unsigned char> offsets;
 		for (unsigned char i = 0; i < 10; ++i)
 		{
-			char address = Utils::Utils::GetIntegerMapEntry(arguments, "address" + to_string(i), -1);
+			signed char address = Utils::Utils::GetIntegerMapEntry(arguments, "address" + to_string(i), -1);
 			if (address == -1)
 			{
 				continue;
