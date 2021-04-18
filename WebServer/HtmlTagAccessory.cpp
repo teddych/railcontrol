@@ -29,7 +29,7 @@ using std::to_string;
 namespace WebServer
 {
 	HtmlTagAccessory::HtmlTagAccessory(const DataModel::Accessory* accessory)
-	:	HtmlTagLayoutItem()
+	:	HtmlTagLayoutItem(dynamic_cast<const DataModel::LayoutItem*>(accessory))
 	{
 		const DataModel::AccessoryState state = accessory->GetAccessoryState();
 

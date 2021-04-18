@@ -29,7 +29,7 @@ using std::to_string;
 namespace WebServer
 {
 	HtmlTagRoute::HtmlTagRoute(const DataModel::Route* route)
-	:	HtmlTagLayoutItem()
+	:	HtmlTagLayoutItem(dynamic_cast<const DataModel::LayoutItem*>(route))
 	{
 		const unsigned int layoutPosX = route->GetPosX() * EdgeLength;
 		const unsigned int layoutPosY = route->GetPosY() * EdgeLength;

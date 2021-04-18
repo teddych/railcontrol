@@ -29,7 +29,7 @@ using std::to_string;
 namespace WebServer
 {
 	HtmlTagSwitch::HtmlTagSwitch(const DataModel::Switch* mySwitch)
-	:	HtmlTagLayoutItem()
+	:	HtmlTagLayoutItem(dynamic_cast<const DataModel::LayoutItem*>(mySwitch))
 	{
 		const DataModel::AccessoryState state = mySwitch->GetAccessoryState();
 		const DataModel::AccessoryType type = mySwitch->GetType();

@@ -31,8 +31,6 @@ namespace WebServer
 {
 	HtmlTagSignal::HtmlTagSignal(const Manager& manager, const DataModel::Signal* signal)
 	:	HtmlTagTrackBase(manager,
-			ObjectTypeSignal,
-			DataModel::TrackTypeStraight,
 			dynamic_cast<const DataModel::TrackBase*>(signal),
 			dynamic_cast<const DataModel::LayoutItem*>(signal)
 		)

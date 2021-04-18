@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <sstream>
 
 #include "DataModel/Feedback.h"
+#include "DataModel/LayoutItem.h"
 #include "WebServer/HtmlTagFeedback.h"
 
 using std::string;
@@ -28,8 +29,10 @@ using std::to_string;
 
 namespace WebServer
 {
-	HtmlTagFeedback::HtmlTagFeedback(const DataModel::Feedback* feedback, DataModel::LayoutItem::LayoutPosition posX, DataModel::LayoutItem::LayoutPosition posY)
-	:	HtmlTagLayoutItem()
+	HtmlTagFeedback::HtmlTagFeedback(const DataModel::Feedback* feedback,
+		DataModel::LayoutItem::LayoutPosition posX,
+		DataModel::LayoutItem::LayoutPosition posY)
+	:	HtmlTagLayoutItem(dynamic_cast<const DataModel::LayoutItem*>(feedback))
 	{
 		const DataModel::Feedback::FeedbackState state = feedback->GetState();
 

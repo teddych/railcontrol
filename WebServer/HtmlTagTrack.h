@@ -36,7 +36,9 @@ namespace WebServer
 		public:
 			HtmlTagTrack() = delete;
 			HtmlTagTrack(const Manager& manager, const DataModel::Track* track)
-			:	HtmlTagTrackBase(manager, ObjectTypeTrack, track->GetTrackType(), dynamic_cast<const DataModel::TrackBase*>(track), dynamic_cast<const DataModel::LayoutItem*>(track))
+			:	HtmlTagTrackBase(manager,
+				dynamic_cast<const DataModel::TrackBase*>(track),
+				dynamic_cast<const DataModel::LayoutItem*>(track))
 			{
 				AddContextMenuEntry(Languages::TextEditTrack, "loadPopup('/?cmd=trackedit&" + urlIdentifier + "');");
 				AddContextMenuEntry(Languages::TextDeleteTrack, "loadPopup('/?cmd=trackaskdelete&" + urlIdentifier + "');");
