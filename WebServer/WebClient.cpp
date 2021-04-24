@@ -3932,6 +3932,10 @@ namespace WebServer
 	HtmlTag WebClient::HtmlTagLocoSelector() const
 	{
 		map<string,LocoID> options = manager.LocoIdsByName();
+		if (options.size() != 1)
+		{
+			options["-"] = LocoNone;
+		}
 		return HtmlTagSelect("loco", options).AddAttribute("onchange", "loadLoco();");
 	}
 
@@ -3939,6 +3943,11 @@ namespace WebServer
 	{
 		string content;
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
+		if (locoID == LocoNone)
+		{
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextPleaseSelectLoco);
+			return;
+		}
 		Loco* loco = manager.GetLoco(locoID);
 		if (loco == nullptr)
 		{
