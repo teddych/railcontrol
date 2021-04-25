@@ -184,6 +184,7 @@ class Languages
 			TextFoundAccessoryInEcosDatabase,
 			TextFoundFeedbackModuleInEcosDatabase,
 			TextFoundLocoInEcosDatabase,
+			TextFullScreen,
 			TextFunctions,
 			TextGerman,
 			TextGitDate,

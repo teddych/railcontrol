@@ -38,6 +38,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagAccessory.h"
 #include "WebServer/HtmlTagButtonCancel.h"
 #include "WebServer/HtmlTagButtonCommand.h"
+#include "WebServer/HtmlTagButtonCommandFullScreen.h"
 #include "WebServer/HtmlTagButtonCommandPressRelease.h"
 #include "WebServer/HtmlTagButtonCommandToggle.h"
 #include "WebServer/HtmlTagButtonCommandWide.h"
@@ -4046,6 +4047,8 @@ namespace WebServer
 			menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 			menuAdd.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,5 35,5\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"1,16 35,16\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"3,3 3,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"6,3 6,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"9,3 9,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"12,3 12,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"15,3 15,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"18,3 18,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"21,3 21,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"24,3 24,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"27,3 27,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"30,3 30,18\" stroke=\"black\" stroke-width=\"1\" /><polyline points=\"33,3 33,18\" stroke=\"black\" stroke-width=\"1\" /><text x=\"3\" y=\"31\" fill=\"black\" >Prog</text></svg>", "program", Languages::TextProgrammer));
 		}
+		menuAdd.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
+		menuAdd.AddChildTag(HtmlTagButtonCommandFullScreen());
 
 		menu.AddChildTag(menuAdd);
 		body.AddChildTag(menu);

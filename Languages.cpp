@@ -184,6 +184,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextFoundAccessoryInEcosDatabase */ { "Found accessory in ECoS database: Address: {0} Name: {1}/{2}/{3}", "Zubehörartikel in ECoS Datenbank gefunden: Adresse: {0} Name: {1}/{2}/{3}", "Encontrado un accessorio en la base de datos de ECoS: Dirección: {0} Nombre: {1}/{2}/{3}" },
 /* TextFoundFeedbackModuleInEcosDatabase */ { "Found feedback module in ECoS database: ID: {0}", "Rückmeldemodule in ECoS Datenbank gefunden: ID: {0}", "Encontrado un modulo retroseñal en la base de datos de ECoS: ID: {0}" },
 /* TextFoundLocoInEcosDatabase */ { "Found locomotive in ECoS database: Address: {0} Name: {1}", "Locomotive in ECoS Datenbank gefunden: Adresse: {0} Name: {1}", "Encontrado una locomotora en la base de datos de ECoS: Dirección: {0} Nombre: {1}" },
+/* TextFullScreen */ { "Full screen", "Vollbild", "Pantalla completa" },
 /* TextFunctions */ { "Functions", "Funktionen", "Functiones" },
 /* TextGerman */ { "German", "Deutsch", "Aleman" },
 /* TextGitDate */ { "Last GIT commit date: {0}", "Letztes GIT Commit Datum: {0}", "Último GIT commit fetcha: {0}" },
