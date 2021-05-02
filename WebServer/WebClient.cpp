@@ -2360,7 +2360,7 @@ namespace WebServer
 					continue;
 				}
 
-				content.AddChildTag(HtmlTagFeedbackOnControlLayer(feedback.second));
+				content.AddChildTag(HtmlTagFeedback(feedback.second, true));
 			}
 			ReplyHtmlWithHeader(content);
 			return;
@@ -3493,15 +3493,6 @@ namespace WebServer
 		ReplyResponse(ResponseInfo, Languages::TextFeedbackDeleted, name);
 	}
 
-	HtmlTag WebClient::HtmlTagFeedbackOnControlLayer(const Feedback* feedback)
-	{
-		FeedbackPin pin = feedback->GetPin() - 1;
-		LayoutPosition x = pin & 0x0F; // => % 16;
-		LayoutPosition y = pin >> 4;   // => / 16;
-		x += x >> 3; // => if (x >= 8) ++x;
-		return HtmlTagFeedback(feedback, x, y);
-	}
-
 	void WebClient::HandleFeedbackGet(const map<string, string>& arguments)
 	{
 		FeedbackID feedbackID = Utils::Utils::GetIntegerMapEntry(arguments, "feedback", FeedbackNone);
@@ -3515,7 +3506,7 @@ namespace WebServer
 		LayerID layer = Utils::Utils::GetIntegerMapEntry(arguments, "layer", LayerNone);
 		if (feedback->GetControlID() == -layer)
 		{
-			ReplyHtmlWithHeader(HtmlTagFeedbackOnControlLayer(feedback));
+			ReplyHtmlWithHeader(HtmlTagFeedback(feedback, true));
 			return;
 		}
 

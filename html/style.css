@@ -264,11 +264,15 @@ body {
 }
 
 .accessory_off {
-	color: red;
+	stroke: white;
+	stroke-width: 2px;
+	fill: red;
 }
 
 .accessory_on {
-	color: lightgreen;
+	stroke: white;
+	stroke-width: 2px;
+	fill: lightgreen;
 }
 
 .switch_turnout .turnout,
@@ -532,6 +536,11 @@ button:active {
 	list-style: none;
 	padding: 0;
 	margin: 0;
+}
+
+.contexttitle {
+	background: darkgray;
+	padding: 5px;
 }
 
 .contextentry {
