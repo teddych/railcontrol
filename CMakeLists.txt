@@ -76,13 +76,15 @@ Hardware/LocoCache.cpp
 Hardware/LocoCache.h
 Hardware/M6051.cpp
 Hardware/M6051.h
-Hardware/OpenDcc.cpp
 Hardware/OpenDcc.h
-Hardware/OpenDccCache.h
 Hardware/ProtocolMaerklinCAN.cpp
 Hardware/ProtocolMaerklinCAN.h
+Hardware/ProtocolP50x.cpp
+Hardware/ProtocolP50x.h
+Hardware/ProtocolP50xCache.h
 Hardware/RM485.cpp
 Hardware/RM485.h
+Hardware/SerialP50x.h
 Hardware/Virtual.cpp
 Hardware/Virtual.h
 Hardware/Z21.cpp

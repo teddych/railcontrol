@@ -18,19 +18,26 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include "Hardware/OpenDcc.h"
+#include "Hardware/ProtocolP50x.h"
+#include "Languages.h"
 #include "Utils/Utils.h"
 
 namespace Hardware
 {
-	OpenDcc::OpenDcc(const HardwareParams* params)
+	ProtocolP50x::ProtocolP50x(const HardwareParams* const params,
+		const std::string& controlName,
+		const std::string& loggerName)
 	:	HardwareInterface(params->GetManager(),
 			params->GetControlID(),
-			"OpenDCC / " + params->GetName() + " at serial port " + params->GetArg1(),
+			controlName,
 			params->GetName()),
-	 	logger(Logger::Logger::GetLogger("OpenDCC " + params->GetName() + " " + params->GetArg1())),
-	 	serialLine(logger, params->GetArg1(), B19200, 8, 'N', 2),
+	 	logger(Logger::Logger::GetLogger(loggerName)),
+	 	params(params),
 		run(false)
+	{
+	}
+
+	void ProtocolP50x::Init()
 	{
 		logger->Info(Languages::TextStarting, GetFullName());
 
@@ -107,10 +114,10 @@ namespace Hardware
 			}
 		}
 
-		checkEventsThread = std::thread(&Hardware::OpenDcc::CheckEventsWorker, this);
+		checkEventsThread = std::thread(&Hardware::ProtocolP50x::CheckEventsWorker, this);
 	}
 
-	OpenDcc::~OpenDcc()
+	ProtocolP50x::~ProtocolP50x()
 	{
 		if (!run)
 		{
@@ -120,13 +127,8 @@ namespace Hardware
 		checkEventsThread.join();
 	}
 
-	void OpenDcc::Booster(const BoosterState status)
+	void ProtocolP50x::Booster(const BoosterState status)
 	{
-		if (!serialLine.IsConnected())
-		{
-			return;
-		}
-
 		if (status)
 		{
 			logger->Info(Languages::TextTurningBoosterOn);
@@ -139,9 +141,9 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::LocoSpeed(__attribute__((unused)) const Protocol protocol, const Address address, const Speed speed)
+	void ProtocolP50x::LocoSpeed(__attribute__((unused)) const Protocol protocol, const Address address, const Speed speed)
 	{
-		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
+		if (!CheckLocoAddress(address))
 		{
 			return;
 		}
@@ -151,9 +153,9 @@ namespace Hardware
 	}
 
 
-	void OpenDcc::LocoOrientation(__attribute__((unused)) const Protocol protocol, const Address address, const Orientation orientation)
+	void ProtocolP50x::LocoOrientation(__attribute__((unused)) const Protocol protocol, const Address address, const Orientation orientation)
 	{
-		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
+		if (!CheckLocoAddress(address))
 		{
 			return;
 		}
@@ -162,12 +164,12 @@ namespace Hardware
 		SendXLok(address);
 	}
 
-	void OpenDcc::LocoFunction(__attribute__((unused)) const Protocol protocol,
+	void ProtocolP50x::LocoFunction(__attribute__((unused)) const Protocol protocol,
 		const Address address,
 		const DataModel::LocoFunctionNr function,
 		const DataModel::LocoFunctionState on)
 	{
-		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
+		if (!CheckLocoAddress(address))
 		{
 			return;
 		}
@@ -198,13 +200,13 @@ namespace Hardware
 		SendXFunc34(address);
 	}
 
-	void OpenDcc::LocoSpeedOrientationFunctions(__attribute__((unused)) const Protocol protocol,
+	void ProtocolP50x::LocoSpeedOrientationFunctions(__attribute__((unused)) const Protocol protocol,
 		const Address address,
 		const Speed speed,
 		const Orientation orientation,
 		std::vector<DataModel::LocoFunctionEntry>& functions)
 	{
-		if (!serialLine.IsConnected() || !CheckLocoAddress(address))
+		if (!CheckLocoAddress(address))
 		{
 			return;
 		}
@@ -231,17 +233,17 @@ namespace Hardware
 		}
 	}
 
-	bool OpenDcc::SendXLok(const Address address) const
+	bool ProtocolP50x::SendXLok(const Address address) const
 	{
-		OpenDccCacheEntry entry = cache.GetData(address);
+		ProtocolP50xCacheEntry entry = cache.GetData(address);
 		logger->Info(Languages::TextSettingSpeedOrientationLight, address, entry.speed, Languages::GetLeftRight(static_cast<Orientation>((entry.orientationF0 >> 5) & 0x01)), Languages::GetOnOff((entry.orientationF0 >> 4) & 0x01));
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char data[5] = { XLok, addressLSB, addressMSB, entry.speed, entry.orientationF0 };
 
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		unsigned char input;
-		bool ret = serialLine.ReceiveExact(&input, 1);
+		bool ret = ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
 			logger->Warning(Languages::TextControlDoesNotAnswer);
@@ -270,43 +272,43 @@ namespace Hardware
 		}
 	}
 
-	bool OpenDcc::SendXFunc(const Address address) const
+	bool ProtocolP50x::SendXFunc(const Address address) const
 	{
-		OpenDccCacheEntry entry = cache.GetData(address);
+		ProtocolP50xCacheEntry entry = cache.GetData(address);
 		logger->Info(Languages::TextSettingFunctions1_8, address, entry.function[0]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char data[4] = { XFunc, addressLSB, addressMSB, entry.function[0] };
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		return ReceiveFunctionCommandAnswer();
 	}
 
-	bool OpenDcc::SendXFunc2(const Address address) const
+	bool ProtocolP50x::SendXFunc2(const Address address) const
 	{
-		OpenDccCacheEntry entry = cache.GetData(address);
+		ProtocolP50xCacheEntry entry = cache.GetData(address);
 		logger->Info(Languages::TextSettingFunctions9_16, address, entry.function[1]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char data[4] = { XFunc2, addressLSB, addressMSB, entry.function[1] };
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		return ReceiveFunctionCommandAnswer();
 	}
 
-	bool OpenDcc::SendXFunc34(const Address address) const
+	bool ProtocolP50x::SendXFunc34(const Address address) const
 	{
-		OpenDccCacheEntry entry = cache.GetData(address);
+		ProtocolP50xCacheEntry entry = cache.GetData(address);
 		logger->Info(Languages::TextSettingFunctions17_28, address, entry.function[2], entry.function[3]);
 		const unsigned char addressLSB = (address & 0xFF);
 		const unsigned char addressMSB = (address >> 8);
 		const unsigned char data[5] = { XFunc34, addressLSB, addressMSB, entry.function[2], entry.function[3] };
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		return ReceiveFunctionCommandAnswer();
 	}
 
-	bool OpenDcc::ReceiveFunctionCommandAnswer() const
+	bool ProtocolP50x::ReceiveFunctionCommandAnswer() const
 	{
 		unsigned char input;
-		bool ret = serialLine.ReceiveExact(&input, 1);
+		bool ret = ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
 			logger->Warning(Languages::TextControlDoesNotAnswer);
@@ -331,9 +333,9 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on)
+	void ProtocolP50x::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on)
 	{
-		if (!serialLine.IsConnected() || !CheckAccessoryAddress(address))
+		if (!CheckAccessoryAddress(address))
 		{
 			return;
 		}
@@ -343,9 +345,9 @@ namespace Hardware
 		const unsigned char statusBits = ((state == DataModel::AccessoryStateOn) << 7) | (on << 6);
 		const unsigned char addressStatus = addressMSB | statusBits;
 		const unsigned char data[3] = { XTrnt, addressLSB, addressStatus };
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		unsigned char input;
-		bool ret = serialLine.ReceiveExact(&input, 1);
+		bool ret = ReceiveExact(&input, 1);
 		if (ret != 1)
 		{
 			logger->Warning(Languages::TextControlDoesNotAnswer);
@@ -370,42 +372,43 @@ namespace Hardware
 		}
 	}
 
-	bool OpenDcc::SendP50XOnly() const
+	bool ProtocolP50x::SendP50XOnly() const
 	{
 		unsigned char data[6] = { 'X', 'Z', 'Z', 'A', '1', 0x0D };
-		serialLine.Send(data, sizeof(data));
-		std::string input;
-		serialLine.ReceiveExact(input, 34);
+		Send(data, sizeof(data));
+		const unsigned char dataLengthRead = 34;
+		unsigned char input[dataLengthRead];
+		ReceiveExact(input, dataLengthRead);
 		return true;
 	}
 
-	bool OpenDcc::SendOneByteCommand(const unsigned char data) const
+	bool ProtocolP50x::SendOneByteCommand(const unsigned char data) const
 	{
-		serialLine.Send(data);
+		Send(data);
 		unsigned char input[1];
-		int ret = serialLine.Receive(input, sizeof(input));
+		int ret = Receive(input, sizeof(input));
 		return ret > 0 && input[0] == OK;
 	}
 
-	bool OpenDcc::SendRestart() const
+	bool ProtocolP50x::SendRestart() const
 	{
 		unsigned char data[3] = { '@', '@', 0x0D };
 		logger->Info(Languages::TextRestarting);
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		return true;
 	}
 
-	unsigned char OpenDcc::SendXP88Get(unsigned char param) const
+	unsigned char ProtocolP50x::SendXP88Get(unsigned char param) const
 	{
 		unsigned char data[2] = { XP88Get, param };
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		unsigned char input;
-		size_t ret = serialLine.ReceiveExact(&input, 1);
+		size_t ret = ReceiveExact(&input, 1);
 		if (ret == 0 || input != OK)
 		{
 			return 0xFF;
 		}
-		ret = serialLine.ReceiveExact(&input, 1);
+		ret = ReceiveExact(&input, 1);
 		if (ret == 0)
 		{
 			return 0xFF;
@@ -413,12 +416,12 @@ namespace Hardware
 		return input;
 	}
 
-	bool OpenDcc::SendXP88Set(unsigned char param, unsigned char value) const
+	bool ProtocolP50x::SendXP88Set(unsigned char param, unsigned char value) const
 	{
 		unsigned char data[3] = { XP88Set, param, value };
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		unsigned char input;
-		size_t ret = serialLine.ReceiveExact(&input, 1);
+		size_t ret = ReceiveExact(&input, 1);
 		if (ret == 0)
 		{
 			return false;
@@ -426,7 +429,7 @@ namespace Hardware
 		return (input == OK);
 	}
 
-	void OpenDcc::CheckSensorData(const unsigned char module, const unsigned char data) const
+	void ProtocolP50x::CheckSensorData(const unsigned char module, const unsigned char data) const
 	{
 		unsigned char diff = s88Memory[module] ^ data;
 		s88Memory[module] = data;
@@ -443,14 +446,14 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::SendXEvtSen() const
+	void ProtocolP50x::SendXEvtSen() const
 	{
 		unsigned char data[1] = { XEvtSen };
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		while (true)
 		{
 			unsigned char module;
-			size_t ret = serialLine.ReceiveExact(&module, 1);
+			size_t ret = ReceiveExact(&module, 1);
 			if (ret == 0 || module == 0)
 			{
 				return;
@@ -460,7 +463,7 @@ namespace Hardware
 			module <<= 1;
 
 			unsigned char data[2];
-			ret = serialLine.ReceiveExact(data, sizeof(data));
+			ret = ReceiveExact(data, sizeof(data));
 			if (ret == 0)
 			{
 				return;
@@ -480,12 +483,12 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::SendXEvent() const
+	void ProtocolP50x::SendXEvent() const
 	{
 		unsigned char data[1] = { XEvent };
-		serialLine.Send(data, sizeof(data));
+		Send(data, sizeof(data));
 		unsigned char input;
-		size_t ret = serialLine.ReceiveExact(&input, 1);
+		size_t ret = ReceiveExact(&input, 1);
 		if (ret == 0)
 		{
 			return;
@@ -502,7 +505,7 @@ namespace Hardware
 			{
 				break;
 			}
-			ret = serialLine.ReceiveExact(&input, 1);
+			ret = ReceiveExact(&input, 1);
 			if (ret == 0)
 			{
 				break;
@@ -530,7 +533,7 @@ namespace Hardware
 		}
 	}
 
-	void OpenDcc::CheckEventsWorker()
+	void ProtocolP50x::CheckEventsWorker()
 	{
 		Utils::Utils::SetThreadName("OpenDcc");
 		run = true;
