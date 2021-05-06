@@ -29,19 +29,19 @@ namespace Hardware
 {
 	class HardwareParams;
 
-	class OpenDcc : SerialP50x
+	class Intellibox : SerialP50x
 	{
 		public:
-			OpenDcc() = delete;
-			OpenDcc(const OpenDcc&) = delete;
-			OpenDcc& operator=(const OpenDcc&) = delete;
+			Intellibox() = delete;
+			Intellibox(const Intellibox&) = delete;
+			Intellibox& operator=(const Intellibox&) = delete;
 
-			inline OpenDcc(const HardwareParams* params)
-			:	SerialP50x(params, "OpenDCC")
+			inline Intellibox(const HardwareParams* params)
+			:	SerialP50x(params, "Intellibox")
 			{
 			}
 
-			virtual ~OpenDcc()
+			virtual ~Intellibox()
 			{
 			}
 
@@ -49,9 +49,7 @@ namespace Hardware
 			{
 				argumentTypes[1] = ArgumentTypeSerialPort;
 				argumentTypes[2] = ArgumentTypeS88Modules;
-				argumentTypes[3] = ArgumentTypeS88Modules;
-				argumentTypes[4] = ArgumentTypeS88Modules;
-				hint = Languages::GetText(Languages::TextHintOpenDcc);
+				hint = Languages::GetText(Languages::TextHintIntellibox);
 			}
 	};
 } // namespace

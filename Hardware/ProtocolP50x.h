@@ -69,15 +69,6 @@ namespace Hardware
 				return (protocol == ProtocolDCC);
 			}
 
-			static void GetArgumentTypesAndHint(std::map<unsigned char,ArgumentType>& argumentTypes, std::string& hint)
-			{
-				argumentTypes[1] = ArgumentTypeSerialPort;
-				argumentTypes[2] = ArgumentTypeS88Modules;
-				argumentTypes[3] = ArgumentTypeS88Modules;
-				argumentTypes[4] = ArgumentTypeS88Modules;
-				hint = Languages::GetText(Languages::TextHintOpenDcc);
-			}
-
 			void Booster(const BoosterState status) override;
 			void LocoSpeed(const Protocol protocol, const Address address, const Speed speed) override;
 			void LocoOrientation(const Protocol protocol, const Address address, const Orientation orientation) override;

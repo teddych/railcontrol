@@ -72,6 +72,7 @@ Hardware/HardwareInterface.h
 Hardware/HardwareParams.h
 Hardware/Hsi88.cpp
 Hardware/Hsi88.h
+Hardware/Intellibox.h
 Hardware/LocoCache.cpp
 Hardware/LocoCache.h
 Hardware/M6051.cpp
