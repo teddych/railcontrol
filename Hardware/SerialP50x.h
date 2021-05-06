@@ -30,7 +30,7 @@ namespace Hardware
 {
 	class HardwareParams;
 
-	class SerialP50x : ProtocolP50x
+	class SerialP50x : public ProtocolP50x
 	{
 		public:
 			SerialP50x() = delete;
@@ -43,7 +43,6 @@ namespace Hardware
 					controlName + " " + params->GetName() + " " + params->GetArg1()),
 			 	serialLine(logger, params->GetArg1(), B19200, 8, 'N', 2)
 			{
-				Init();
 			}
 
 			virtual ~SerialP50x()

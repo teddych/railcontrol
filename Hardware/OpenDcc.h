@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <map>
 #include <string>
 
 #include "Hardware/SerialP50x.h"
@@ -29,17 +30,14 @@ namespace Hardware
 {
 	class HardwareParams;
 
-	class OpenDcc : SerialP50x
+	class OpenDcc : public SerialP50x
 	{
 		public:
 			OpenDcc() = delete;
 			OpenDcc(const OpenDcc&) = delete;
 			OpenDcc& operator=(const OpenDcc&) = delete;
 
-			inline OpenDcc(const HardwareParams* params)
-			:	SerialP50x(params, "OpenDCC")
-			{
-			}
+			OpenDcc(const HardwareParams* params);
 
 			virtual ~OpenDcc()
 			{
@@ -53,6 +51,11 @@ namespace Hardware
 				argumentTypes[4] = ArgumentTypeS88Modules;
 				hint = Languages::GetText(Languages::TextHintOpenDcc);
 			}
+
+		private:
+			unsigned char s88Modules1;
+			unsigned char s88Modules2;
+			unsigned char s88Modules3;
 	};
 } // namespace
 

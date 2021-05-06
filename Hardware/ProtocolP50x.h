@@ -86,14 +86,34 @@ namespace Hardware
 
 			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
 
-		protected:
-			void Init();
+			void CheckEventsWorker();
 
+		protected:
 			virtual int Send(const unsigned char* buffer, const size_t bufferLength) const = 0;
 			virtual ssize_t Receive(unsigned char* data, const size_t length) const = 0;
 			virtual ssize_t ReceiveExact(unsigned char* data, const size_t length) const = 0;
 
 			Logger::Logger* logger;
+
+			bool SendP50XOnly() const;
+			bool SendRestart() const;
+			unsigned char SendXP88Get(unsigned char param) const;
+			bool SendXP88Set(unsigned char param, unsigned char value) const;
+
+			inline bool SendNop() const
+			{
+				return SendOneByteCommand(XNop);
+			}
+
+			inline ssize_t Send(const unsigned char data) const
+			{
+				return Send(&data, 1);
+			}
+
+			static const unsigned char MaxS88Modules = 128;
+
+			unsigned short s88Modules;
+			std::thread checkEventsThread;
 
 		private:
 			enum Commands : unsigned char
@@ -113,6 +133,7 @@ namespace Hardware
 				XEvtTrnt = 0xCA,
 				XEvtSen = 0xCB
 			};
+
 			enum Answers : unsigned char
 			{
 				OK = 0x00,
@@ -124,19 +145,14 @@ namespace Hardware
 				XLKHALT = 0x41,
 				XLKPOFF = 0x42
 			};
-			static const unsigned char MaxS88Modules = 128;
+
 			static const unsigned char MaxLocoFunctions = 28;
 			static const unsigned short MaxLocoAddress = 10239;
 			static const unsigned short MaxAccessoryAddress = 2043;
 
 			const HardwareParams* const params;
 			volatile bool run;
-			unsigned char s88Modules1;
-			unsigned char s88Modules2;
-			unsigned char s88Modules3;
-			unsigned short s88Modules;
 
-			std::thread checkEventsThread;
 			mutable unsigned char s88Memory[MaxS88Modules];
 
 			Hardware::ProtocolP50xCache cache;
@@ -151,13 +167,7 @@ namespace Hardware
 				return 0 < address && address <= MaxAccessoryAddress;
 			}
 
-			bool SendP50XOnly() const;
 			bool SendOneByteCommand(const unsigned char data) const;
-
-			inline bool SendNop() const
-			{
-				return SendOneByteCommand(XNop);
-			}
 
 			inline bool SendPowerOn() const
 			{
@@ -174,19 +184,9 @@ namespace Hardware
 			bool SendXFunc2(const Address address) const;
 			bool SendXFunc34(const Address address) const;
 			bool ReceiveFunctionCommandAnswer() const;
-			bool SendRestart() const;
-			unsigned char SendXP88Get(unsigned char param) const;
-			bool SendXP88Set(unsigned char param, unsigned char value) const;
 			void CheckSensorData(const unsigned char module, const unsigned char data) const;
 			void SendXEvtSen() const;
 			void SendXEvent() const;
-
-			void CheckEventsWorker();
-
-			inline ssize_t Send(const unsigned char data) const
-			{
-				return Send(&data, 1);
-			}
 	};
 } // namespace
 

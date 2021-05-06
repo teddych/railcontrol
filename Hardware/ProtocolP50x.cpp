@@ -35,86 +35,7 @@ namespace Hardware
 	 	params(params),
 		run(false)
 	{
-	}
-
-	void ProtocolP50x::Init()
-	{
 		logger->Info(Languages::TextStarting, GetFullName());
-
-		SendP50XOnly();
-		bool ok = SendNop();
-		if (!ok)
-		{
-			logger->Error(Languages::TextControlDoesNotAnswer);
-			return;
-		}
-
-		s88Modules1 = Utils::Utils::StringToInteger(params->GetArg2(), 0);
-		s88Modules2 = Utils::Utils::StringToInteger(params->GetArg3(), 0);
-		s88Modules3 = Utils::Utils::StringToInteger(params->GetArg4(), 0);
-		s88Modules = s88Modules1 + s88Modules2 + s88Modules3;
-
-		if (s88Modules > MaxS88Modules)
-		{
-			logger->Error(Languages::TextTooManyS88Modules, s88Modules, MaxS88Modules);
-			return;
-		}
-
-		if (s88Modules == 0)
-		{
-			logger->Info(Languages::TextNoS88Modules);
-			return;
-		}
-
-		logger->Info(Languages::TextHsi88Configured, s88Modules, s88Modules1, s88Modules2, s88Modules3);
-		bool restart = false;
-		unsigned char modules = SendXP88Get(0);
-		if (modules != s88Modules)
-		{
-			logger->Info(Languages::TextNrOfS88Modules, s88Modules);
-			SendXP88Set(0, s88Modules);
-			restart = true;;
-		}
-
-		modules = SendXP88Get(1);
-		if (modules != s88Modules1)
-		{
-			logger->Info(Languages::TextNrOfS88ModulesOnBus, s88Modules1, 1);
-			SendXP88Set(1, s88Modules1);
-			restart = true;;
-		}
-
-		modules = SendXP88Get(2);
-		if (modules != s88Modules2)
-		{
-			logger->Info(Languages::TextNrOfS88ModulesOnBus, s88Modules2, 2);
-			SendXP88Set(2, s88Modules2);
-			restart = true;;
-		}
-
-		modules = SendXP88Get(3);
-		if (modules != s88Modules3)
-		{
-			logger->Info(Languages::TextNrOfS88ModulesOnBus, s88Modules3, 3);
-			SendXP88Set(3, s88Modules3);
-			restart = true;;
-		}
-
-		if (restart)
-		{
-			SendXP88Set(4, 0);
-			SendRestart();
-			Utils::Utils::SleepForMilliseconds(100);
-			SendP50XOnly();
-			ok = SendNop();
-			if (!ok)
-			{
-				logger->Error(Languages::TextControlDoesNotAnswer);
-				return;
-			}
-		}
-
-		checkEventsThread = std::thread(&Hardware::ProtocolP50x::CheckEventsWorker, this);
 	}
 
 	ProtocolP50x::~ProtocolP50x()
@@ -535,7 +456,7 @@ namespace Hardware
 
 	void ProtocolP50x::CheckEventsWorker()
 	{
-		Utils::Utils::SetThreadName("OpenDcc");
+		Utils::Utils::SetThreadName(GetShortName());
 		run = true;
 		while (run)
 		{
