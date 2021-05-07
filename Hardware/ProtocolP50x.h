@@ -105,9 +105,35 @@ namespace Hardware
 				return SendOneByteCommand(XNop);
 			}
 
-			inline ssize_t Send(const unsigned char data) const
+			inline ssize_t SendInternal(const unsigned char data) const
 			{
-				return Send(&data, 1);
+				return SendInternal(&data, 1);
+			}
+
+			inline ssize_t SendInternal(const unsigned char* data, const size_t dataLength) const
+			{
+				logger->Hex(data, dataLength);
+				return Send(data, dataLength);
+			}
+
+			inline ssize_t ReceiveInternal(unsigned char* data, const size_t length) const
+			{
+				const ssize_t ret = Receive(data, length);
+				if (ret > 0)
+				{
+					logger->Hex(data, ret);
+				}
+				return ret;
+			}
+
+			inline ssize_t ReceiveExactInternal(unsigned char* data, const size_t length) const
+			{
+				const ssize_t ret = ReceiveExact(data, length);
+				if (ret > 0)
+				{
+					logger->Hex(data, ret);
+				}
+				return ret;
 			}
 
 			static const unsigned char MaxS88Modules = 128;
