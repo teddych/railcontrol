@@ -206,6 +206,7 @@ class Languages
 			TextHintHsi88,
 			TextHintIntellibox,
 			TextHintM6051,
+			TextHintMasterControl,
 			TextHintOpenDcc,
 			TextHintRM485,
 			TextHintVirtual,

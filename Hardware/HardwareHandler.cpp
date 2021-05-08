@@ -30,6 +30,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Hardware/Hsi88.h"
 #include "Hardware/Intellibox.h"
 #include "Hardware/M6051.h"
+#include "Hardware/MasterControl.h"
 #include "Hardware/OpenDcc.h"
 #include "Hardware/RM485.h"
 #include "Hardware/Virtual.h"
@@ -97,6 +98,9 @@ namespace Hardware
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Intellibox(params));
 				break;
 
+			case HardwareTypeMasterControl:
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new MasterControl(params));
+				break;
 		}
 	}
 
@@ -517,6 +521,9 @@ namespace Hardware
 				Hardware::Intellibox::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
+			case HardwareTypeMasterControl:
+				Hardware::MasterControl::GetArgumentTypesAndHint(arguments, hint);
+				return;
 		}
 	}
 } // namespace Hardware
