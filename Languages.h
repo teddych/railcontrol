@@ -656,6 +656,7 @@ class Languages
 			TextUnableToSendDataToControl,
 			TextUnableToStoreLibraryAddress,
 			TextUnblockTrack,
+			TextUnknownHardware,
 			TextUnknownObjectType,
 			TextUnloadingControl,
 			TextValue,

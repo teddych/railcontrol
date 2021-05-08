@@ -49,53 +49,54 @@ namespace Hardware
 
 		switch(type)
 		{
-			case HardwareTypeCS2Udp:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Udp(params));
-				break;
-
-			case HardwareTypeCS2Tcp:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Tcp(params));
-				break;
+			case HardwareTypeNone:
+				instance = nullptr;
+				return;
 
 			case HardwareTypeVirtual:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Virtual(params));
-				break;
+				return;
+
+			case HardwareTypeCS2Udp:
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Udp(params));
+				return;
 
 			case HardwareTypeM6051:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new M6051(params));
-				break;
+				return;
 
 			case HardwareTypeRM485:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new RM485(params));
-				break;
+				return;
 
 			case HardwareTypeOpenDcc:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new OpenDcc(params));
-				break;
+				return;
 
 			case HardwareTypeHsi88:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Hsi88(params));
-				break;
+				return;
 
 			case HardwareTypeZ21:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Z21(params));
-				break;
+				return;
 
 			case HardwareTypeCcSchnitte:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CcSchnitte(params));
-				break;
+				return;
 
 			case HardwareTypeEcos:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Ecos(params));
-				break;
+				return;
+
+			case HardwareTypeCS2Tcp:
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Tcp(params));
+				return;
 
 			case HardwareTypeIntellibox:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Intellibox(params));
 				break;
 
-			default:
-				instance = nullptr;
-				break;
 		}
 	}
 
@@ -468,12 +469,16 @@ namespace Hardware
 	{
 		switch (hardwareType)
 		{
-			case HardwareTypeCS2Udp:
-				Hardware::CS2Udp::GetArgumentTypesAndHint(arguments, hint);
+			case HardwareTypeNone:
+				hint = "";
 				return;
 
-			case HardwareTypeCS2Tcp:
-				Hardware::CS2Tcp::GetArgumentTypesAndHint(arguments, hint);
+			case HardwareTypeVirtual:
+				Hardware::Virtual::GetHint(hint);
+				return;
+
+			case HardwareTypeCS2Udp:
+				Hardware::CS2Udp::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeM6051:
@@ -504,17 +509,14 @@ namespace Hardware
 				Hardware::Ecos::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
+			case HardwareTypeCS2Tcp:
+				Hardware::CS2Tcp::GetArgumentTypesAndHint(arguments, hint);
+				return;
+
 			case HardwareTypeIntellibox:
 				Hardware::Intellibox::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
-			case HardwareTypeVirtual:
-				Hardware::Virtual::GetHint(hint);
-				return;
-
-			default:
-				hint = "";
-				return;
 		}
 	}
 } // namespace Hardware

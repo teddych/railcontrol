@@ -656,6 +656,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextUnableToSendDataToControl */ { "Unable to send data to control", "Nicht möglich Daten an die Zentrale zu senden", "Imposible enviar datos al control" },
 /* TextUnableToStoreLibraryAddress */ { "Unable to store library address for {0}", "Adresse der Biblikothek {0} kann nicht gespeichert werden", "Imposible guardar la dirección de la biblioteca {0}" },
 /* TextUnblockTrack */ { "Unblock track", "Deblockere Gleis", "Desbloquear vía" },
+/* TextUnknownHardware */ { "Unknown control", "Unbekannte Zentrale", "Typo de control desconocido" },
 /* TextUnknownObjectType */ { "Unknown object type", "Unbekannter Objekttyp", "Typo de objecto desconocido" },
 /* TextUnloadingControl */ { "Unloading control {0}: {1}", "Entlade Zentrale {0}: {1}", "Descargando control {0}: {1}" },
 /* TextValue */ { "Value", "Wert", "Valor" },

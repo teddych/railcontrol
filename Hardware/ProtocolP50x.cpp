@@ -25,13 +25,11 @@ along with RailControl; see the file LICENCE. If not see
 namespace Hardware
 {
 	ProtocolP50x::ProtocolP50x(const HardwareParams* const params,
-		const std::string& controlName,
-		const std::string& loggerName)
+		const std::string& controlName)
 	:	HardwareInterface(params->GetManager(),
 			params->GetControlID(),
 			controlName,
 			params->GetName()),
-	 	logger(Logger::Logger::GetLogger(loggerName)),
 	 	params(params),
 		run(false)
 	{
@@ -306,9 +304,9 @@ namespace Hardware
 	bool ProtocolP50x::SendOneByteCommand(const unsigned char data) const
 	{
 		SendInternal(data);
-		unsigned char input[1];
-		int ret = ReceiveInternal(input, sizeof(input));
-		return ret > 0 && input[0] == OK;
+		unsigned char input;
+		int ret = ReceiveInternal(&input, 1);
+		return ret > 0 && input == OK;
 	}
 
 	bool ProtocolP50x::SendRestart() const

@@ -29,7 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Hardware
 {
-	class ProtocolP50x : HardwareInterface
+	class ProtocolP50x : protected HardwareInterface
 	{
 		public:
 			ProtocolP50x() = delete;
@@ -37,8 +37,7 @@ namespace Hardware
 			ProtocolP50x& operator=(const ProtocolP50x&) = delete;
 
 			ProtocolP50x(const HardwareParams* const params,
-				const std::string& controlName,
-				const std::string& loggerName);
+				const std::string& controlName);
 
 			virtual ~ProtocolP50x();
 
@@ -92,8 +91,6 @@ namespace Hardware
 			virtual int Send(const unsigned char* buffer, const size_t bufferLength) const = 0;
 			virtual ssize_t Receive(unsigned char* data, const size_t length) const = 0;
 			virtual ssize_t ReceiveExact(unsigned char* data, const size_t length) const = 0;
-
-			Logger::Logger* logger;
 
 			bool SendP50XOnly() const;
 			bool SendRestart() const;
