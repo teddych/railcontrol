@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <mutex>
 #include <string>
 
 #include "Hardware/HardwareInterface.h"
@@ -173,13 +174,6 @@ namespace Hardware
 			static const unsigned short MaxLocoAddress = 10239;
 			static const unsigned short MaxAccessoryAddress = 2043;
 
-			const HardwareParams* const params;
-			volatile bool run;
-
-			mutable unsigned char s88Memory[MaxS88Modules];
-
-			Hardware::ProtocolP50xCache cache;
-
 			static inline bool CheckLocoAddress(const Address address)
 			{
 				return 0 < address && address <= MaxLocoAddress;
@@ -210,6 +204,15 @@ namespace Hardware
 			void CheckSensorData(const unsigned char module, const unsigned char data) const;
 			void SendXEvtSen() const;
 			void SendXEvent() const;
+
+			const HardwareParams* const params;
+			volatile bool run;
+
+			mutable unsigned char s88Memory[MaxS88Modules];
+
+			Hardware::ProtocolP50xCache cache;
+
+			mutable std::mutex communicationLock;
 	};
 } // namespace
 
