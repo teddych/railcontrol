@@ -30,19 +30,19 @@ namespace Hardware
 {
 	class HardwareParams;
 
-	class Intellibox : public IntelliboxBase
+	class TwinCenter : public IntelliboxBase
 	{
 		public:
-			Intellibox() = delete;
-			Intellibox(const Intellibox&) = delete;
-			Intellibox& operator=(const Intellibox&) = delete;
+			TwinCenter() = delete;
+			TwinCenter(const TwinCenter&) = delete;
+			TwinCenter& operator=(const TwinCenter&) = delete;
 
-			inline Intellibox(const HardwareParams* params)
-			:	IntelliboxBase(params, "Intellibox")
+			inline TwinCenter(const HardwareParams* params)
+			:	IntelliboxBase(params, "TwinCenter")
 			{
 			}
 
-			virtual ~Intellibox()
+			virtual ~TwinCenter()
 			{
 			}
 
@@ -50,7 +50,7 @@ namespace Hardware
 			{
 				argumentTypes[1] = ArgumentTypeSerialPort;
 				argumentTypes[2] = ArgumentTypeS88Modules;
-				hint = Languages::GetText(Languages::TextHintIntellibox);
+				hint = Languages::GetText(Languages::TextHintTwinCenter);
 			}
 	};
 } // namespace

@@ -209,6 +209,7 @@ class Languages
 			TextHintMasterControl,
 			TextHintOpenDcc,
 			TextHintRM485,
+			TextHintTwinCenter,
 			TextHintVirtual,
 			TextHintZ21,
 			TextHitOverrun,

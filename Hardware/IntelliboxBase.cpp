@@ -18,14 +18,14 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include "Hardware/Intellibox.h"
+#include "Hardware/IntelliboxBase.h"
 #include "Languages.h"
 #include "Utils/Utils.h"
 
 namespace Hardware
 {
-	Intellibox::Intellibox(const HardwareParams* params)
-	:	SerialP50x(params, "Intellibox")
+	IntelliboxBase::IntelliboxBase(const HardwareParams* params, const std::string& controlName)
+	:	SerialP50x(params, controlName)
 	{
 		SendP50XOnly();
 		const bool ok = SendNop();
