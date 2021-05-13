@@ -55,7 +55,10 @@ namespace Hardware
 		else
 		{
 			logger->Info(Languages::TextTurningBoosterOff);
-			SendPowerOff();
+			if (!SendPowerOff())
+			{
+				manager->Booster(ControlTypeHardware, BoosterStateStop);
+			}
 		}
 	}
 
