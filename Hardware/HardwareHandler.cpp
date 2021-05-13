@@ -309,6 +309,10 @@ namespace Hardware
 			return;
 		}
 		Address address = signal->GetMappedAddress();
+		if (address == 0)
+		{
+			return;
+		}
 		DataModel::AccessoryState state = signal->GetMappedAccessoryState();
 		switch (state)
 		{
