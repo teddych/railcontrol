@@ -1149,20 +1149,6 @@ const std::string& Manager::GetAccessoryName(const AccessoryID accessoryID) cons
 	return accessories.at(accessoryID)->GetName();
 }
 
-bool Manager::CheckAccessoryPosition(const Accessory* accessory, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, string& result) const
-{
-	if (accessory == nullptr)
-	{
-		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-	}
-
-	if (accessory->HasPosition(posX, posY, posZ))
-	{
-		return true;
-	}
-	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-}
-
 bool Manager::AccessorySave(AccessoryID accessoryID, const string& name, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryType type, const DataModel::AccessoryPulseDuration duration, const bool inverted, string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
@@ -1171,7 +1157,7 @@ bool Manager::AccessorySave(AccessoryID accessoryID, const string& name, const L
 	}
 
 	Accessory* accessory = GetAccessory(accessoryID);
-	if (!CheckAccessoryPosition(accessory, posX, posY, posZ, result))
+	if (!CheckLayoutItemPosition(accessory, posX, posY, posZ, result))
 	{
 		return false;
 	}
@@ -1372,29 +1358,10 @@ const std::string& Manager::GetFeedbackName(const FeedbackID feedbackID) const
 	return feedbacks.at(feedbackID)->GetName();
 }
 
-bool Manager::CheckFeedbackPosition(const Feedback* feedback, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, string& result) const
-{
-	if (feedback == nullptr)
-	{
-		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-	}
-
-	if (feedback->GetVisible() == DataModel::LayoutItem::VisibleNo)
-	{
-		return true;
-	}
-
-	if (feedback->HasPosition(posX, posY, posZ))
-	{
-		return true;
-	}
-	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-}
-
 bool Manager::FeedbackSave(FeedbackID feedbackID, const std::string& name, const Visible visible, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted, string& result)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
-	if (visible && !CheckFeedbackPosition(feedback, posX, posY, posZ, result))
+	if (visible && !CheckLayoutItemPosition(feedback, posX, posY, posZ, result))
 	{
 		return false;
 	}
@@ -1576,63 +1543,6 @@ const map<string,ObjectIdentifier> Manager::TrackBaseListIdentifierByName() cons
 		}
 	}
 	return out;
-}
-
-bool Manager::CheckTrackPosition(const Track* track,
-	const LayoutPosition posX,
-	const LayoutPosition posY,
-	const LayoutPosition posZ,
-	const LayoutItemSize height,
-	const LayoutRotation rotation,
-	string& result) const
-{
-	LayoutPosition x1;
-	LayoutPosition y1;
-	LayoutPosition z1 = posZ;
-	LayoutItemSize w1;
-	LayoutItemSize h1;
-	bool ret = DataModel::LayoutItem::MapPosition(posX, posY, DataModel::LayoutItem::Width1, height, rotation, x1, y1, w1, h1);
-	if (ret == false)
-	{
-		result = Languages::GetText(Languages::TextUnableToCalculatePosition);
-		return false;
-	}
-
-	LayoutPosition x2 = 0;
-	LayoutPosition y2 = 0;
-	LayoutPosition z2 = 0;
-	LayoutItemSize w2 = 0;
-	LayoutItemSize h2 = 0;
-
-	if (track != nullptr)
-	{
-		z2 = track->GetPosZ();
-		ret = DataModel::LayoutItem::MapPosition(track->GetPosX(), track->GetPosY(), DataModel::LayoutItem::Width1, track->GetHeight(), track->GetRotation(), x2, y2, w2, h2);
-		if (ret == false)
-		{
-			result = Languages::GetText(Languages::TextUnableToCalculatePosition);
-			return false;
-		}
-	}
-
-	for (LayoutPosition ix = x1; ix < x1 + w1; ++ix)
-	{
-		for (LayoutPosition iy = y1; iy < y1 + h1; ++iy)
-		{
-			ret = (ix >= x2 && ix < x2 + w2 && iy >= y2 && iy < y2 + h2 && z1 == z2);
-			if (ret == true)
-			{
-				continue;
-			}
-
-			ret = CheckPositionFree(ix, iy, z1, result);
-			if (ret == false)
-			{
-				return false;
-			}
-		}
-	}
-	return true;
 }
 
 const std::vector<FeedbackID> Manager::CleanupAndCheckFeedbacksForTrack(const ObjectIdentifier& identifier, const std::vector<FeedbackID>& newFeedbacks)
@@ -1921,7 +1831,7 @@ bool Manager::SwitchSave(SwitchID switchID,
 	}
 
 	Switch* mySwitch = GetSwitch(switchID);
-	if (!CheckSwitchPosition(mySwitch, posX, posY, posZ, result))
+	if (!CheckLayoutItemPosition(mySwitch, posX, posY, posZ, result))
 	{
 		return false;
 	}
@@ -2075,25 +1985,6 @@ const string& Manager::GetRouteName(const RouteID routeID) const
 	return routes.at(routeID)->GetName();
 }
 
-bool Manager::CheckRoutePosition(const Route* route, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, string& result) const
-{
-	if (route == nullptr)
-	{
-		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-	}
-
-	if (route->GetVisible() == DataModel::LayoutItem::VisibleNo)
-	{
-		return true;
-	}
-
-	if (route->HasPosition(posX, posY, posZ))
-	{
-		return true;
-	}
-	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-}
-
 bool Manager::RouteSave(RouteID routeID,
 	const std::string& name,
 	const Delay delay,
@@ -2121,7 +2012,7 @@ bool Manager::RouteSave(RouteID routeID,
 {
 
 	Route* route = GetRoute(routeID);
-	if (visible && !CheckRoutePosition(route, posX, posY, posZ, result))
+	if (visible && !CheckLayoutItemPosition(route, posX, posY, posZ, result))
 	{
 		return false;
 	}
@@ -2586,21 +2477,6 @@ const std::string& Manager::GetSignalName(const SignalID signalID) const
 	return signals.at(signalID)->GetName();
 }
 
-bool Manager::CheckSignalPosition(const Signal* signal, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, string& result) const
-{
-	if (signal == nullptr)
-	{
-		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-	}
-
-	if (signal->HasPosition(posX, posY, posZ))
-	{
-		return true;
-	}
-	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-
-}
-
 bool Manager::SignalSave(SignalID signalID,
 	const string& name,
 	const Orientation signalOrientation,
@@ -2628,7 +2504,7 @@ bool Manager::SignalSave(SignalID signalID,
 	}
 
 	Signal* signal = GetSignal(signalID);
-	if (!CheckSignalPosition(signal, posX, posY, posZ, result))
+	if (!CheckLayoutItemPosition(signal, posX, posY, posZ, result))
 	{
 		return false;
 	}
@@ -3081,20 +2957,6 @@ bool Manager::LocoStartAll()
 	{
 		loco.second->GoToAutoMode();
 		Utils::Utils::SleepForMilliseconds(50);
-		/*
-		bool ret = loco.second->GoToAutoMode();
-		if (ret == false)
-		{
-			continue;
-		}
-		{
-			std::lock_guard<std::mutex> guard(controlMutex);
-			for (auto& control : controls)
-			{
-				control.second->LocoStart(loco.first, loco.second->GetName());
-			}
-		}
-		*/
 	}
 	return true;
 }
@@ -3150,17 +3012,6 @@ bool Manager::LocoStopAll()
 			}
 			bool locoInManualMode = loco.second->GoToManualMode();
 			anyLocosInAutoMode |= !locoInManualMode;
-			/*
-			if (locoInManualMode)
-			{
-				const string& locoName = loco.second->GetName();
-				std::lock_guard<std::mutex> guard(controlMutex);
-				for (auto& control : controls)
-				{
-					control.second->LocoStop(loco.first, locoName);
-				}
-			}
-			*/
 		}
 	}
 	return true;
@@ -3232,6 +3083,81 @@ bool Manager::CheckPositionFree(const LayoutPosition posX,
 		for (LayoutPosition iy = y; iy < y + h; iy++)
 		{
 			bool ret = CheckPositionFree(ix, iy, z, result);
+			if (ret == false)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+bool Manager::CheckLayoutItemPosition(const LayoutItem* item,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	const LayoutPosition posZ,
+	string& result) const
+{
+	if (item)
+	{
+		if (item->IsVisibleOnLayer(posZ) == DataModel::LayoutItem::VisibleNo ||
+		    item->HasPosition(posX, posY, posZ))
+		{
+			return true;
+		}
+	}
+	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
+}
+
+bool Manager::CheckLayoutItemPosition(const LayoutItem* item,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	const LayoutPosition posZ,
+	const LayoutItemSize width,
+	const LayoutItemSize height,
+	const LayoutRotation rotation,
+	string& result) const
+{
+	LayoutPosition x1;
+	LayoutPosition y1;
+	LayoutPosition z1 = posZ;
+	LayoutItemSize w1;
+	LayoutItemSize h1;
+	bool ret = DataModel::LayoutItem::MapPosition(posX, posY, width, height, rotation, x1, y1, w1, h1);
+	if (ret == false)
+	{
+		result = Languages::GetText(Languages::TextUnableToCalculatePosition);
+		return false;
+	}
+
+	LayoutPosition x2 = 0;
+	LayoutPosition y2 = 0;
+	LayoutPosition z2 = 0;
+	LayoutItemSize w2 = 0;
+	LayoutItemSize h2 = 0;
+
+	if (item != nullptr)
+	{
+		z2 = item->GetPosZ();
+		ret = DataModel::LayoutItem::MapPosition(item->GetPosX(), item->GetPosY(), width, item->GetHeight(), item->GetRotation(), x2, y2, w2, h2);
+		if (ret == false)
+		{
+			result = Languages::GetText(Languages::TextUnableToCalculatePosition);
+			return false;
+		}
+	}
+
+	for (LayoutPosition ix = x1; ix < x1 + w1; ++ix)
+	{
+		for (LayoutPosition iy = y1; iy < y1 + h1; ++iy)
+		{
+			ret = (ix >= x2 && ix < x2 + w2 && iy >= y2 && iy < y2 + h2 && z1 == z2);
+			if (ret == true)
+			{
+				continue;
+			}
+
+			ret = CheckPositionFree(ix, iy, z1, result);
 			if (ret == false)
 			{
 				return false;
