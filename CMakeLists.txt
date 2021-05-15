@@ -186,8 +186,6 @@ WebServer/HtmlTagSignal.cpp
 WebServer/HtmlTagSignal.h
 WebServer/HtmlTagSwitch.cpp
 WebServer/HtmlTagSwitch.h
-WebServer/HtmlTagText.h
-WebServer/HtmlTagTextWithLabel.h
 WebServer/HtmlTagTrack.cpp
 WebServer/HtmlTagTrack.h
 WebServer/HtmlTagTrackBase.cpp
