@@ -75,7 +75,7 @@ namespace WebServer
 				cluster(manager, *this),
 				track(manager, *this, logger),
 				signal(manager, *this, logger),
-				text(manager, *this, logger),
+				text(manager, *this),
 				headOnly(false),
 				buttonID(0)
 			{

@@ -37,10 +37,9 @@ namespace WebServer
 			WebClientText(const WebClientText&) = delete;
 			WebClientText& operator=(const WebClientText&) = delete;
 
-			inline WebClientText(Manager& manager, WebClient& client, Logger::Logger* logger)
+			inline WebClientText(Manager& manager, WebClient& client)
 			:	manager(manager),
-				client(client),
-				logger(logger)
+				client(client)
 			{
 			}
 
@@ -54,7 +53,6 @@ namespace WebServer
 		private:
 			Manager& manager;
 			WebClient& client;
-			Logger::Logger* logger;
 	};
 } // namespace WebServer
 
