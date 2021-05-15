@@ -1604,7 +1604,7 @@ bool Manager::TrackSave(TrackID trackID,
 	string& result)
 {
 	Track* track = GetTrack(trackID);
-	if (!CheckTrackPosition(track, posX, posY, posZ, height, rotation, result))
+	if (!CheckLayoutItemPosition(track, posX, posY, posZ, LayoutItem::Width1, height, rotation, result))
 	{
 		return false;
 	}
@@ -1796,20 +1796,6 @@ const std::string& Manager::GetSwitchName(const SwitchID switchID) const
 		return unknownSwitch;
 	}
 	return switches.at(switchID)->GetName();
-}
-
-bool Manager::CheckSwitchPosition(const Switch* mySwitch, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, string& result) const
-{
-	if (mySwitch == nullptr)
-	{
-		return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
-	}
-
-	if (mySwitch->HasPosition(posX, posY, posZ))
-	{
-		return true;
-	}
-	return CheckPositionFree(posX, posY, posZ, DataModel::LayoutItem::Width1, DataModel::LayoutItem::Height1, DataModel::LayoutItem::Rotation0, result);
 }
 
 bool Manager::SwitchSave(SwitchID switchID,
