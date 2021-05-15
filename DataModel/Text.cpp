@@ -18,21 +18,37 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#pragma once
+#include <map>
+#include <string>
 
-#include "DataModel/Accessory.h"
-#include "DataModel/AccessoryBase.h"
-#include "DataModel/Cluster.h"
-#include "DataModel/Feedback.h"
-#include "DataModel/Layer.h"
-#include "DataModel/Loco.h"
-#include "DataModel/LocoFunctions.h"
-#include "DataModel/ObjectIdentifier.h"
-#include "DataModel/Relation.h"
-#include "DataModel/Route.h"
-#include "DataModel/Signal.h"
-#include "DataModel/Switch.h"
 #include "DataModel/Text.h"
-#include "DataModel/Track.h"
-#include "DataModel/TrackBase.h"
+#include "Utils/Utils.h"
 
+using std::map;
+using std::string;
+
+namespace DataModel
+{
+	string Text::Serialize() const
+	{
+		string str;
+		str = "objectType=Text;";
+		str += LayoutItem::Serialize();
+		return str;
+	}
+
+	bool Text::Deserialize(const string& serialized)
+	{
+		map<string, string> arguments;
+		ParseArguments(serialized, arguments);
+		string objectType = Utils::Utils::GetStringMapEntry(arguments, "objectType");
+		if (objectType.compare("Text") != 0)
+		{
+			return false;
+		}
+		LayoutItem::Deserialize(arguments);
+		SetHeight(Height1);
+		SetVisible(VisibleYes);
+		return true;
+	}
+} // namespace DataModel
