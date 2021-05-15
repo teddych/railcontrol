@@ -124,6 +124,17 @@ Manager::Manager(Config& config)
 		{
 			accessory.second->SetProtocol(ProtocolMM);
 		}
+		// We set the protocol DCC to Server when control uses P50x protocol
+		// FIXME: remove again later 2021-05-15
+		if (accessory.second->GetProtocol() == ProtocolDCC
+			&& (ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeOpenDcc)
+				|| ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeIntellibox)
+				|| ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeTwinCenter)
+				|| ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeMasterControl)
+				))
+		{
+			accessory.second->SetProtocol(ProtocolServer);
+		}
 		logger->Info(Languages::TextLoadedAccessory, accessory.second->GetID(), accessory.second->GetName());
 	}
 
