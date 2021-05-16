@@ -74,7 +74,7 @@ namespace Logger
 
 		private:
 			inline LoggerServer()
-			:	Network::TcpServer(defaultLoggerPort, "Logger"),
+			:	Network::TcpServer("::1", defaultLoggerPort, "Logger"),
 			 	run(true),
 			 	fileLoggerStarted(false),
 			 	consoleLoggerStarted(false)

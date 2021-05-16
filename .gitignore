@@ -23,4 +23,4 @@ Version.cpp
 CMakeCache.txt
 CMakeFiles/*
 cmake_install.cmake
-
+.idea/
