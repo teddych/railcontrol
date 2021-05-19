@@ -1910,7 +1910,8 @@ bool Manager::SwitchSave(SwitchID switchID,
 	const Address address,
 	const DataModel::AccessoryType type,
 	const DataModel::AccessoryPulseDuration duration,
-	const bool inverted, string& result)
+	const bool inverted,
+	string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
@@ -1950,7 +1951,36 @@ bool Manager::SwitchSave(SwitchID switchID,
 	mySwitch->SetAccessoryPulseDuration(duration);
 	mySwitch->SetInverted(inverted);
 
-	// save in db
+	SwitchSaveAndPublishSettings(mySwitch);
+	return true;
+}
+
+bool Manager::SwitchNewPosition(const SwitchID switchID,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	string& result)
+{
+	Switch* mySwitch = GetSwitch(switchID);
+	if (mySwitch == nullptr)
+	{
+		result = Languages::GetText(Languages::TextSwitchDoesNotExist);
+		return false;
+	}
+
+	if (!CheckLayoutItemPosition(mySwitch, posX, posY, mySwitch->GetPosZ(), result))
+	{
+		return false;
+	}
+
+	mySwitch->SetPosX(posX);
+	mySwitch->SetPosY(posY);
+
+	SwitchSaveAndPublishSettings(mySwitch);
+	return true;
+}
+
+void Manager::SwitchSaveAndPublishSettings(const Switch* const mySwitch)
+{
 	if (storage)
 	{
 		storage->Save(*mySwitch);
@@ -1959,9 +1989,8 @@ bool Manager::SwitchSave(SwitchID switchID,
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->SwitchSettings(switchID, name);
+		control.second->SwitchSettings(mySwitch->GetID(), mySwitch->GetName());
 	}
-	return true;
 }
 
 bool Manager::SwitchDelete(const SwitchID switchID,
@@ -3806,6 +3835,10 @@ bool Manager::NewPosition(const DataModel::ObjectIdentifier& identifier,
 
 		case ObjectTypeSignal:
 			SignalNewPosition(id, posX, posY, result);
+			return true;;
+
+		case ObjectTypeSwitch:
+			SwitchNewPosition(id, posX, posY, result);
 			return true;;
 
 		case ObjectTypeText:

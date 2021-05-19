@@ -552,6 +552,11 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition posY,
 			std::string& result);
 
+		bool SwitchNewPosition(const SwitchID switchID,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			std::string& result);
+
 		bool TextNewPosition(const TextID textID,
 			const DataModel::LayoutItem::LayoutPosition posX,
 			const DataModel::LayoutItem::LayoutPosition posY,
@@ -561,6 +566,7 @@ class Manager
 		void FeedbackSaveAndPublishSettings(const DataModel::Feedback* const feedback);
 		void RouteSaveAndPublishSettings(const DataModel::Route* const route);
 		void SignalSaveAndPublishSettings(const DataModel::Signal* const signal);
+		void SwitchSaveAndPublishSettings(const DataModel::Switch* const mySwitch);
 		void TextSaveAndPublishSettings(const DataModel::Text* const text);
 
 		// layout
