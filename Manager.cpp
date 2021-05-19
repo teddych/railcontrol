@@ -1739,7 +1739,36 @@ bool Manager::TrackSave(TrackID trackID,
 	track->SetAllowLocoTurn(allowLocoTurn);
 	track->SetReleaseWhenFree(releaseWhenFree);
 
-	// save in db
+	TrackSaveAndPublishSettings(track);
+	return true;
+}
+
+bool Manager::TrackNewPosition(const TrackID trackID,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	string& result)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		result = Languages::GetText(Languages::TextTrackDoesNotExist);
+		return false;
+	}
+
+	if (!CheckLayoutItemPosition(track, posX, posY, track->GetPosZ(), LayoutItem::Width1, track->GetHeight(), track->GetRotation(), result))
+	{
+		return false;
+	}
+
+	track->SetPosX(posX);
+	track->SetPosY(posY);
+
+	TrackSaveAndPublishSettings(track);
+	return true;
+}
+
+void Manager::TrackSaveAndPublishSettings(const Track* const track)
+{
 	if (storage)
 	{
 		storage->Save(*track);
@@ -1748,9 +1777,8 @@ bool Manager::TrackSave(TrackID trackID,
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->TrackSettings(trackID, name);
+		control.second->TrackSettings(track->GetID(), track->GetName());
 	}
-	return true;
 }
 
 bool Manager::TrackDelete(const TrackID trackID,
@@ -3843,6 +3871,10 @@ bool Manager::NewPosition(const DataModel::ObjectIdentifier& identifier,
 
 		case ObjectTypeText:
 			TextNewPosition(id, posX, posY, result);
+			return true;;
+
+		case ObjectTypeTrack:
+			TrackNewPosition(id, posX, posY, result);
 			return true;;
 
 		default:
