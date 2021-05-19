@@ -542,6 +542,11 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition posY,
 			std::string& result);
 
+		bool RouteNewPosition(const RouteID routeID,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			std::string& result);
+
 		bool TextNewPosition(const TextID textID,
 			const DataModel::LayoutItem::LayoutPosition posX,
 			const DataModel::LayoutItem::LayoutPosition posY,
@@ -549,6 +554,7 @@ class Manager
 
 		void AccessorySaveAndPublishSettings(const DataModel::Accessory* const accessory);
 		void FeedbackSaveAndPublishSettings(const DataModel::Feedback* const feedback);
+		void RouteSaveAndPublishSettings(const DataModel::Route* const route);
 		void TextSaveAndPublishSettings(const DataModel::Text* const text);
 
 		// layout

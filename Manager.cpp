@@ -2209,7 +2209,41 @@ bool Manager::RouteSave(RouteID routeID,
 		}
 	}
 
-	// save in db
+	RouteSaveAndPublishSettings(route);
+	return true;
+}
+
+bool Manager::RouteNewPosition(const RouteID routeID,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	string& result)
+{
+	Route* route = GetRoute(routeID);
+	if (route == nullptr)
+	{
+		result = Languages::GetText(Languages::TextRouteDoesNotExist);
+		return false;
+	}
+
+	if (!route->GetVisible())
+	{
+		return false;
+	}
+
+	if (!CheckLayoutItemPosition(route, posX, posY, route->GetPosZ(), result))
+	{
+		return false;
+	}
+
+	route->SetPosX(posX);
+	route->SetPosY(posY);
+
+	RouteSaveAndPublishSettings(route);
+	return true;
+}
+
+void Manager::RouteSaveAndPublishSettings(const Route* const route)
+{
 	if (storage)
 	{
 		storage->Save(*route);
@@ -2217,9 +2251,8 @@ bool Manager::RouteSave(RouteID routeID,
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->RouteSettings(routeID, name);
+		control.second->RouteSettings(route->GetID(), route->GetName());
 	}
-	return true;
 }
 
 const map<string,DataModel::Route*> Manager::RouteListByName() const
@@ -3736,6 +3769,10 @@ bool Manager::NewPosition(const DataModel::ObjectIdentifier& identifier,
 
 		case ObjectTypeFeedback:
 			FeedbackNewPosition(id, posX, posY, result);
+			return true;;
+
+		case ObjectTypeRoute:
+			RouteNewPosition(id, posX, posY, result);
 			return true;;
 
 		case ObjectTypeText:
