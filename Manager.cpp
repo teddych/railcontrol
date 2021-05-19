@@ -2662,6 +2662,36 @@ bool Manager::SignalSave(SignalID signalID,
 	signal->SetAccessoryPulseDuration(duration);
 	signal->SetInverted(inverted);
 
+	SignalSaveAndPublishSettings(signal);
+	return true;
+}
+
+bool Manager::SignalNewPosition(const SignalID signalID,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	string& result)
+{
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		result = Languages::GetText(Languages::TextSignalDoesNotExist);
+		return false;
+	}
+
+	if (!CheckLayoutItemPosition(signal, posX, posY, signal->GetPosZ(), result))
+	{
+		return false;
+	}
+
+	signal->SetPosX(posX);
+	signal->SetPosY(posY);
+
+	SignalSaveAndPublishSettings(signal);
+	return true;
+}
+
+void Manager::SignalSaveAndPublishSettings(const Signal* const signal)
+{
 	// save in db
 	if (storage)
 	{
@@ -2671,9 +2701,8 @@ bool Manager::SignalSave(SignalID signalID,
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->SignalSettings(signalID, name);
+		control.second->SignalSettings(signal->GetID(), signal->GetName());
 	}
-	return true;
 }
 
 bool Manager::SignalDelete(const SignalID signalID,
@@ -3773,6 +3802,10 @@ bool Manager::NewPosition(const DataModel::ObjectIdentifier& identifier,
 
 		case ObjectTypeRoute:
 			RouteNewPosition(id, posX, posY, result);
+			return true;;
+
+		case ObjectTypeSignal:
+			SignalNewPosition(id, posX, posY, result);
 			return true;;
 
 		case ObjectTypeText:
