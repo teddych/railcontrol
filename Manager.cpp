@@ -1167,7 +1167,18 @@ const std::string& Manager::GetAccessoryName(const AccessoryID accessoryID) cons
 	return accessories.at(accessoryID)->GetName();
 }
 
-bool Manager::AccessorySave(AccessoryID accessoryID, const string& name, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryType type, const DataModel::AccessoryPulseDuration duration, const bool inverted, string& result)
+bool Manager::AccessorySave(AccessoryID accessoryID,
+	const string& name,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	const LayoutPosition posZ,
+	const ControlID controlID,
+	const Protocol protocol,
+	const Address address,
+	const DataModel::AccessoryType type,
+	const DataModel::AccessoryPulseDuration duration,
+	const bool inverted,
+	string& result)
 {
 	if (!CheckControlAccessoryProtocolAddress(controlID, protocol, address, result))
 	{
@@ -1206,6 +1217,36 @@ bool Manager::AccessorySave(AccessoryID accessoryID, const string& name, const L
 	accessory->SetAccessoryPulseDuration(duration);
 	accessory->SetInverted(inverted);
 
+	AccessorySaveAndPublishSettings(accessory);
+	return true;
+}
+
+bool Manager::AccessoryNewPosition(const AccessoryID accessoryID,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	string& result)
+{
+	Accessory* accessory = GetAccessory(accessoryID);
+	if (accessory == nullptr)
+	{
+		result = Languages::GetText(Languages::TextAccessoryDoesNotExist);
+		return false;
+	}
+
+	if (!CheckLayoutItemPosition(accessory, posX, posY, accessory->GetPosZ(), result))
+	{
+		return false;
+	}
+
+	accessory->SetPosX(posX);
+	accessory->SetPosY(posY);
+
+	AccessorySaveAndPublishSettings(accessory);
+	return true;
+}
+
+void Manager::AccessorySaveAndPublishSettings(const Accessory* const accessory)
+{
 	// save in db
 	if (storage)
 	{
@@ -1215,9 +1256,8 @@ bool Manager::AccessorySave(AccessoryID accessoryID, const string& name, const L
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->AccessorySettings(accessoryID, name);
+		control.second->AccessorySettings(accessory->GetID(), accessory->GetName());
 	}
-	return true;
 }
 
 const map<string,DataModel::Accessory*> Manager::AccessoryListByName() const
@@ -3647,6 +3687,10 @@ bool Manager::NewPosition(const DataModel::ObjectIdentifier& identifier,
 	ObjectID id = identifier.GetObjectID();
 	switch (type)
 	{
+		case ObjectTypeAccessory:
+			AccessoryNewPosition(id, posX, posY, result);
+			return true;;
+
 		case ObjectTypeText:
 			TextNewPosition(id, posX, posY, result);
 			return true;;

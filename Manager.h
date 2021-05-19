@@ -532,11 +532,17 @@ class Manager
 			feedback->SetState(state);
 		}
 
-		bool TextNewPosition(TextID textID,
+		bool AccessoryNewPosition(const AccessoryID accessoryID,
 			const DataModel::LayoutItem::LayoutPosition posX,
 			const DataModel::LayoutItem::LayoutPosition posY,
 			std::string& result);
 
+		bool TextNewPosition(const TextID textID,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			std::string& result);
+
+		void AccessorySaveAndPublishSettings(const DataModel::Accessory* const accessory);
 		void TextSaveAndPublishSettings(const DataModel::Text* const text);
 
 		// layout
