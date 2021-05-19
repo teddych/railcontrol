@@ -537,12 +537,18 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition posY,
 			std::string& result);
 
+		bool FeedbackNewPosition(const FeedbackID feedbackID,
+			const DataModel::LayoutItem::LayoutPosition posX,
+			const DataModel::LayoutItem::LayoutPosition posY,
+			std::string& result);
+
 		bool TextNewPosition(const TextID textID,
 			const DataModel::LayoutItem::LayoutPosition posX,
 			const DataModel::LayoutItem::LayoutPosition posY,
 			std::string& result);
 
 		void AccessorySaveAndPublishSettings(const DataModel::Accessory* const accessory);
+		void FeedbackSaveAndPublishSettings(const DataModel::Feedback* const feedback);
 		void TextSaveAndPublishSettings(const DataModel::Text* const text);
 
 		// layout

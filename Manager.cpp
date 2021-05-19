@@ -1416,7 +1416,16 @@ const std::string& Manager::GetFeedbackName(const FeedbackID feedbackID) const
 	return feedbacks.at(feedbackID)->GetName();
 }
 
-bool Manager::FeedbackSave(FeedbackID feedbackID, const std::string& name, const Visible visible, const LayoutPosition posX, const LayoutPosition posY, const LayoutPosition posZ, const ControlID controlID, const FeedbackPin pin, const bool inverted, string& result)
+bool Manager::FeedbackSave(FeedbackID feedbackID,
+	const std::string& name,
+	const Visible visible,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	const LayoutPosition posZ,
+	const ControlID controlID,
+	const FeedbackPin pin,
+	const bool inverted,
+	string& result)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
 	if (visible && !CheckLayoutItemPosition(feedback, posX, posY, posZ, result))
@@ -1447,6 +1456,41 @@ bool Manager::FeedbackSave(FeedbackID feedbackID, const std::string& name, const
 	feedback->SetPin(pin);
 	feedback->SetInverted(inverted);
 
+	FeedbackSaveAndPublishSettings(feedback);
+	return true;
+}
+
+bool Manager::FeedbackNewPosition(const FeedbackID feedbackID,
+	const LayoutPosition posX,
+	const LayoutPosition posY,
+	string& result)
+{
+	Feedback* feedback = GetFeedback(feedbackID);
+	if (feedback == nullptr)
+	{
+		result = Languages::GetText(Languages::TextFeedbackDoesNotExist);
+		return false;
+	}
+
+	if (!feedback->GetVisible())
+	{
+		return false;
+	}
+
+	if (!CheckLayoutItemPosition(feedback, posX, posY, feedback->GetPosZ(), result))
+	{
+		return false;
+	}
+
+	feedback->SetPosX(posX);
+	feedback->SetPosY(posY);
+
+	FeedbackSaveAndPublishSettings(feedback);
+	return true;
+}
+
+void Manager::FeedbackSaveAndPublishSettings(const Feedback* const feedback)
+{
 	// save in db
 	if (storage)
 	{
@@ -1455,9 +1499,8 @@ bool Manager::FeedbackSave(FeedbackID feedbackID, const std::string& name, const
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->FeedbackSettings(feedbackID, name);
+		control.second->FeedbackSettings(feedback->GetID(), feedback->GetName());
 	}
-	return true;
 }
 
 const map<string,DataModel::Feedback*> Manager::FeedbackListByName() const
@@ -3689,6 +3732,10 @@ bool Manager::NewPosition(const DataModel::ObjectIdentifier& identifier,
 	{
 		case ObjectTypeAccessory:
 			AccessoryNewPosition(id, posX, posY, result);
+			return true;;
+
+		case ObjectTypeFeedback:
+			FeedbackNewPosition(id, posX, posY, result);
 			return true;;
 
 		case ObjectTypeText:
