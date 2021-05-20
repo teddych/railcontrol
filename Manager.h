@@ -505,6 +505,9 @@ class Manager
 		Hardware::Capabilities GetCapabilities(const ControlID controlID) const;
 
 		bool NewPosition(const DataModel::ObjectIdentifier& identifier,
+		bool LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
+			std::string& result);
+
 			const DataModel::LayoutItem::LayoutItemSize posX,
 			const DataModel::LayoutItem::LayoutItemSize posY,
 			std::string& result);
@@ -565,6 +568,18 @@ class Manager
 		bool TrackNewPosition(const TrackID trackID,
 			const DataModel::LayoutItem::LayoutPosition posX,
 			const DataModel::LayoutItem::LayoutPosition posY,
+			std::string& result);
+
+		bool SignalRotate(const SignalID signalID,
+			std::string& result);
+
+		bool SwitchRotate(const SwitchID switchID,
+			std::string& result);
+
+		bool TextRotate(const TextID textID,
+			std::string& result);
+
+		bool TrackRotate(const TrackID trackID,
 			std::string& result);
 
 		void AccessorySaveAndPublishSettings(const DataModel::Accessory* const accessory);

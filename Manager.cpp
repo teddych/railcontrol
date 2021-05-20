@@ -1767,6 +1767,29 @@ bool Manager::TrackNewPosition(const TrackID trackID,
 	return true;
 }
 
+bool Manager::TrackRotate(const TrackID trackID,
+	string& result)
+{
+	Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		result = Languages::GetText(Languages::TextTrackDoesNotExist);
+		return false;
+	}
+
+	LayoutRotation newRotation = track->GetRotation();
+	++newRotation;
+	if (!CheckLayoutItemPosition(track, track->GetPosX(), track->GetPosY(), track->GetPosZ(), LayoutItem::Width1, track->GetHeight(), newRotation, result))
+	{
+		return false;
+	}
+
+	track->SetRotation(newRotation);
+
+	TrackSaveAndPublishSettings(track);
+	return true;
+}
+
 void Manager::TrackSaveAndPublishSettings(const Track* const track)
 {
 	if (storage)
@@ -2002,6 +2025,22 @@ bool Manager::SwitchNewPosition(const SwitchID switchID,
 
 	mySwitch->SetPosX(posX);
 	mySwitch->SetPosY(posY);
+
+	SwitchSaveAndPublishSettings(mySwitch);
+	return true;
+}
+
+bool Manager::SwitchRotate(const SwitchID switchID,
+	string& result)
+{
+	Switch* mySwitch = GetSwitch(switchID);
+	if (mySwitch == nullptr)
+	{
+		result = Languages::GetText(Languages::TextSwitchDoesNotExist);
+		return false;
+	}
+
+	mySwitch->Rotate();
 
 	SwitchSaveAndPublishSettings(mySwitch);
 	return true;
@@ -2747,6 +2786,22 @@ bool Manager::SignalNewPosition(const SignalID signalID,
 	return true;
 }
 
+bool Manager::SignalRotate(const SignalID signalID,
+	string& result)
+{
+	Signal* signal = GetSignal(signalID);
+	if (signal == nullptr)
+	{
+		result = Languages::GetText(Languages::TextSignalDoesNotExist);
+		return false;
+	}
+
+	signal->Rotate();
+
+	SignalSaveAndPublishSettings(signal);
+	return true;
+}
+
 void Manager::SignalSaveAndPublishSettings(const Signal* const signal)
 {
 	// save in db
@@ -3031,6 +3086,29 @@ bool Manager::TextNewPosition(TextID textID,
 
 	text->SetPosX(posX);
 	text->SetPosY(posY);
+
+	TextSaveAndPublishSettings(text);
+	return true;
+}
+
+bool Manager::TextRotate(TextID textID,
+	string& result)
+{
+	Text* text = GetText(textID);
+	if (!text)
+	{
+		result = Languages::GetText(Languages::TextTextDoesNotExist);
+		return false;
+	}
+
+	LayoutRotation newRotation = text->GetRotation();
+	++newRotation;
+	if (!CheckLayoutItemPosition(text, text->GetPosX(), text->GetPosY(), text->GetPosZ(), text->GetWidth(), LayoutItem::Height1, newRotation, result))
+	{
+		return false;
+	}
+
+	text->SetRotation(newRotation);
 
 	TextSaveAndPublishSettings(text);
 	return true;
@@ -3841,6 +3919,33 @@ Hardware::Capabilities Manager::GetCapabilities(const ControlID controlID) const
 }
 
 bool Manager::NewPosition(const DataModel::ObjectIdentifier& identifier,
+bool Manager::LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
+	string& result)
+{
+	ObjectType type = identifier.GetObjectType();
+	ObjectID id = identifier.GetObjectID();
+	switch (type)
+	{
+		case ObjectTypeSignal:
+			return SignalRotate(id, result);
+
+		case ObjectTypeSwitch:
+			return SwitchRotate(id, result);
+
+		case ObjectTypeText:
+			return TextRotate(id, result);
+
+		case ObjectTypeTrack:
+			return TrackRotate(id, result);
+
+		case ObjectTypeAccessory:
+		case ObjectTypeFeedback:
+		case ObjectTypeRoute:
+		default:
+			return false;
+	}
+}
+
 	const DataModel::LayoutItem::LayoutItemSize posX,
 	const DataModel::LayoutItem::LayoutItemSize posY,
 	string& result)
