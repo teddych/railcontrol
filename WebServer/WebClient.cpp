@@ -4037,13 +4037,13 @@ namespace WebServer
 
 	void WebClient::HandleNewPosition(const map<string, string>& arguments)
 	{
-		HandleNewPositionInternal(arguments);
-		ReplyHtmlWithHeaderAndParagraph("Text");
+		string result;
+		HandleNewPositionInternal(arguments, result);
+		ReplyHtmlWithHeaderAndParagraph(result);
 	}
 
-	void WebClient::HandleNewPositionInternal(const map<string, string>& arguments)
+	void WebClient::HandleNewPositionInternal(const map<string, string>& arguments, string& result)
 	{
-		string result;
 		const LayoutPosition posX = static_cast<LayoutPosition>(Utils::Utils::GetIntegerMapEntry(arguments, "x", -1));
 		if (posX == -1)
 		{
@@ -4056,7 +4056,7 @@ namespace WebServer
 			return;
 		}
 
-		manager.NewPosition(ObjectIdentifier(arguments), posX, posY, result);
+		manager.LayoutItemNewPosition(ObjectIdentifier(arguments), posX, posY, result);
 	}
 
 	void WebClient::HandleRotate(const map<string, string>& arguments)

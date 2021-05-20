@@ -1221,7 +1221,7 @@ bool Manager::AccessorySave(AccessoryID accessoryID,
 	return true;
 }
 
-bool Manager::AccessoryNewPosition(const AccessoryID accessoryID,
+bool Manager::AccessoryPosition(const AccessoryID accessoryID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	string& result)
@@ -1460,7 +1460,7 @@ bool Manager::FeedbackSave(FeedbackID feedbackID,
 	return true;
 }
 
-bool Manager::FeedbackNewPosition(const FeedbackID feedbackID,
+bool Manager::FeedbackPosition(const FeedbackID feedbackID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	string& result)
@@ -1743,7 +1743,7 @@ bool Manager::TrackSave(TrackID trackID,
 	return true;
 }
 
-bool Manager::TrackNewPosition(const TrackID trackID,
+bool Manager::TrackPosition(const TrackID trackID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	string& result)
@@ -2006,7 +2006,7 @@ bool Manager::SwitchSave(SwitchID switchID,
 	return true;
 }
 
-bool Manager::SwitchNewPosition(const SwitchID switchID,
+bool Manager::SwitchPosition(const SwitchID switchID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	string& result)
@@ -2309,7 +2309,7 @@ bool Manager::RouteSave(RouteID routeID,
 	return true;
 }
 
-bool Manager::RouteNewPosition(const RouteID routeID,
+bool Manager::RoutePosition(const RouteID routeID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	string& result)
@@ -2762,7 +2762,7 @@ bool Manager::SignalSave(SignalID signalID,
 	return true;
 }
 
-bool Manager::SignalNewPosition(const SignalID signalID,
+bool Manager::SignalPosition(const SignalID signalID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	string& result)
@@ -3067,7 +3067,7 @@ bool Manager::TextSave(TextID textID,
 	return true;
 }
 
-bool Manager::TextNewPosition(TextID textID,
+bool Manager::TextPosition(TextID textID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	string& result)
@@ -3918,7 +3918,6 @@ Hardware::Capabilities Manager::GetCapabilities(const ControlID controlID) const
 	return control->GetCapabilities();
 }
 
-bool Manager::NewPosition(const DataModel::ObjectIdentifier& identifier,
 bool Manager::LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
 	string& result)
 {
@@ -3946,6 +3945,7 @@ bool Manager::LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
 	}
 }
 
+bool Manager::LayoutItemNewPosition(const DataModel::ObjectIdentifier& identifier,
 	const DataModel::LayoutItem::LayoutItemSize posX,
 	const DataModel::LayoutItem::LayoutItemSize posY,
 	string& result)
@@ -3955,32 +3955,25 @@ bool Manager::LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
 	switch (type)
 	{
 		case ObjectTypeAccessory:
-			AccessoryNewPosition(id, posX, posY, result);
-			return true;;
+			return AccessoryPosition(id, posX, posY, result);
 
 		case ObjectTypeFeedback:
-			FeedbackNewPosition(id, posX, posY, result);
-			return true;;
+			return FeedbackPosition(id, posX, posY, result);
 
 		case ObjectTypeRoute:
-			RouteNewPosition(id, posX, posY, result);
-			return true;;
+			return RoutePosition(id, posX, posY, result);
 
 		case ObjectTypeSignal:
-			SignalNewPosition(id, posX, posY, result);
-			return true;;
+			return SignalPosition(id, posX, posY, result);
 
 		case ObjectTypeSwitch:
-			SwitchNewPosition(id, posX, posY, result);
-			return true;;
+			return SwitchPosition(id, posX, posY, result);
 
 		case ObjectTypeText:
-			TextNewPosition(id, posX, posY, result);
-			return true;;
+			return TextPosition(id, posX, posY, result);
 
 		case ObjectTypeTrack:
-			TrackNewPosition(id, posX, posY, result);
-			return true;;
+			return TrackPosition(id, posX, posY, result);
 
 		default:
 			return false;
