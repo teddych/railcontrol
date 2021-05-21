@@ -113,10 +113,10 @@ namespace WebServer
 
 		if (onClickMenuContentDiv.ChildCount())
 		{
-			static const string onClick("onclick");
-			if (!IsAttributeSet(onClick))
+			static const string OnClick("onclick");
+			if (!imageDiv.IsAttributeSet(OnClick))
 			{
-				imageDiv.AddAttribute(onClick, "return showOnClickMenu(event, '" + identifier + "');");
+				imageDiv.AddAttribute(OnClick, "return showOnClickMenu(event, '" + identifier + "');");
 			}
 			onClickMenuContentDiv.AddClass("contextentries");
 			onClickMenuDiv.AddChildTag(onClickMenuContentDiv);
