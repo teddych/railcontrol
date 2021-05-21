@@ -1619,7 +1619,7 @@ function submitEditForm()
 		}
 		else
 		{
-			url += formElement.value;
+			url += encodeURIComponent(formElement.value);
 		}
 		++i;
 	}
