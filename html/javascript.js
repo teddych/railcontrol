@@ -1,7 +1,17 @@
-function onClickText(event, identifier)
+function onClickWithoutMenu(event, identifier)
 {
 	if (event.ctrlKey != true)
 	{
+		return;
+	}
+	rotateObject(identifier);
+}
+
+function onClickWithMenu(event, identifier)
+{
+	if (event.ctrlKey != true)
+	{
+		showOnClickMenu(event, identifier);
 		return;
 	}
 	rotateObject(identifier);
