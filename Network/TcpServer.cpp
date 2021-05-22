@@ -42,7 +42,7 @@ namespace Network
 		memset(reinterpret_cast<char*>(&serverAddr6), 0, sizeof(serverAddr6));
 		serverAddr6.sin6_family = AF_INET6;
 
-		if(address == "::1") {
+		if(address == "localhost") {
             serverAddr6.sin6_addr = IN6ADDR_LOOPBACK_INIT;
         } else {
             serverAddr6.sin6_addr = in6addr_any;
