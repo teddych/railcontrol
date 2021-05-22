@@ -48,14 +48,16 @@ namespace Utils
 {
 	void Utils::ReplaceString(std::string& str, const std::string& from, const std::string& to)
 	{
+		size_t lastOccurrence = 0;
 		while (true)
 		{
-			size_t start_pos = str.find(from);
-			if (start_pos == string::npos)
+			size_t startPos = str.find(from, lastOccurrence);
+			if (startPos == string::npos)
 			{
 				return;
 			}
-			str.replace(start_pos, from.length(), to);
+			str.replace(startPos, from.length(), to);
+			lastOccurrence = startPos + to.length();
 		}
 	}
 

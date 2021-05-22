@@ -663,21 +663,22 @@ namespace WebServer
 
 	void WebClient::UrlDecode(string& argumentValue)
 	{
-		// decode %20 and similar
+		size_t startSearch = 0;
 		while (true)
 		{
-			size_t pos = argumentValue.find('%');
+			size_t pos = argumentValue.find('%', startSearch);
 			if (pos == string::npos || pos + 3 > argumentValue.length())
 			{
 				break;
 			}
-			char c = ConvertHexToInt(argumentValue[pos + 1]) * 16 + ConvertHexToInt(argumentValue[pos + 2]);
-			if (c == '%')
+			unsigned char highNibble = ConvertHexToInt(argumentValue[pos + 1]);
+			unsigned char lowNibble = ConvertHexToInt(argumentValue[pos + 2]);
+			if (highNibble < 16 && lowNibble < 16)
 			{
-				// % is our character to search for, so we replace it with a space
-				c = ' ';
+				unsigned char c = (highNibble << 4) + lowNibble;
+				argumentValue.replace(pos, 3, 1, c);
 			}
-			argumentValue.replace(pos, 3, 1, c);
+			startSearch = pos + 1;
 		}
 	}
 
