@@ -35,6 +35,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Languages.h"
 #include "RailControl.h"
 #include "Utils/Utils.h"
+#include "Version.h"
 #include "WebServer/WebClient.h"
 #include "WebServer/WebServer.h"
 
@@ -61,7 +62,8 @@ namespace WebServer
 		run(false),
 		lastClientID(0),
 		manager(manager),
-		updateID(1)
+		updateID(1),
+		updateAvailable(false)
 	{
 		logger->Info(Languages::TextWebServerStarted);
 		{
@@ -70,6 +72,7 @@ namespace WebServer
 		}
 		run = true;
 		LogBrowserInfo(webserveraddress, port);
+		updateAvailable = Utils::Utils::HostResolves(GetVersionInfoGitHash() + ".hash.railcontrol.org");
 	}
 
 	WebServer::~WebServer()
