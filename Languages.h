@@ -434,6 +434,7 @@ class Languages
 			TextOrientation,
 			TextOverrunAt,
 			TextParameterFoundInConfigFile,
+			TextPause,
 			TextPin,
 			TextPleaseSelectLoco,
 			TextPosX,

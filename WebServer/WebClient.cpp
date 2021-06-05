@@ -1462,6 +1462,34 @@ namespace WebServer
 				return content;
 			}
 
+			case ObjectTypePause:
+			{
+				map<unsigned int,string> time;
+				time[1u] = "0.1s";
+				time[2u] = "0.2s";
+				time[3u] = "0.3s";
+				time[4u] = "0.4s";
+				time[5u] = "0.5s";
+				time[6u] = "0.6s";
+				time[7u] = "0.7s";
+				time[8u] = "0.8s";
+				time[9u] = "0.9s";
+				time[10u] = "1s";
+				time[15u] = "1.5s";
+				time[20u] = "2s";
+				time[25u] = "2.5s";
+				time[30u] = "3s";
+				time[40u] = "4s";
+				time[50u] = "5s";
+				time[60u] = "6s";
+				time[70u] = "7s";
+				time[80u] = "8s";
+				time[90u] = "9s";
+				time[100u] = "10s";
+				content.AddChildTag(HtmlTagSelect(name + "_state", time, static_cast<unsigned int>(data)).AddClass("select_relation_state"));
+				return content;
+			}
+
 			default:
 			{
 				content.AddContent(Languages::TextUnknownObjectType);
@@ -1487,6 +1515,7 @@ namespace WebServer
 		objectTypeOptions[ObjectTypeTrack] = Languages::TextTrack;
 		objectTypeOptions[ObjectTypeRoute] = Languages::TextRoute;
 		objectTypeOptions[ObjectTypeLoco] = Languages::TextLoco;
+		objectTypeOptions[ObjectTypePause] = Languages::TextPause;
 		HtmlTagSelect select(name + "_type", objectTypeOptions, objectType);
 		select.AddClass("select_relation_objecttype");
 		select.AddAttribute("onchange", "loadRelationObject('" + type + "', " + priority + ");return false;");
@@ -2856,8 +2885,8 @@ namespace WebServer
 		{
 			string priorityString = to_string(relationId);
 			ObjectType objectType = static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_type"));
-			ObjectID objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_id", SwitchNone);
-			if (objectId == 0 && objectType != ObjectTypeLoco)
+			ObjectID objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atlock_" + priorityString + "_id", ObjectNone);
+			if (objectId == 0 && objectType != ObjectTypeLoco && objectType != ObjectTypePause)
 			{
 				continue;
 			}
@@ -2885,8 +2914,8 @@ namespace WebServer
 		{
 			string priorityString = to_string(relationId);
 			ObjectType objectType = static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_type"));
-			ObjectID objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_id", SwitchNone);
-			if (objectId == 0 && objectType != ObjectTypeLoco)
+			ObjectID objectId = Utils::Utils::GetIntegerMapEntry(arguments, "relation_atunlock_" + priorityString + "_id", ObjectNone);
+			if (objectId == 0 && objectType != ObjectTypeLoco && objectType != ObjectTypePause)
 			{
 				continue;
 			}

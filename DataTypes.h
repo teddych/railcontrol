@@ -196,7 +196,8 @@ enum ObjectType : uint8_t
 	ObjectTypeSignal = 8,
 	ObjectTypeCluster = 9,
 	ObjectTypeTimeTable = 10,
-	ObjectTypeText = 11
+	ObjectTypeText = 11,
+	ObjectTypePause = 12
 };
 
 enum Orientation : bool
