@@ -211,6 +211,7 @@ class Languages
 			TextHintIntellibox,
 			TextHintM6051,
 			TextHintMasterControl,
+			TextHintMasterControl2,
 			TextHintOpenDcc,
 			TextHintPositionMove,
 			TextHintPositionRotate,
