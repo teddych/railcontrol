@@ -95,6 +95,8 @@ Hardware/ProtocolP50x.h
 Hardware/ProtocolP50xCache.h
 Hardware/ProtocolP50xEthernet.h
 Hardware/ProtocolP50xSerial.h
+Hardware/RedBox.cpp
+Hardware/RedBox.h
 Hardware/RM485.cpp
 Hardware/RM485.h
 Hardware/Virtual.cpp

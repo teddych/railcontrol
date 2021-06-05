@@ -215,6 +215,7 @@ class Languages
 			TextHintOpenDcc,
 			TextHintPositionMove,
 			TextHintPositionRotate,
+			TextHintRedBox,
 			TextHintRM485,
 			TextHintTwinCenter,
 			TextHintVirtual,
