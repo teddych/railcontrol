@@ -209,6 +209,8 @@ WebServer/ResponseHtmlNotImplemented.cpp
 WebServer/ResponseHtmlNotImplemented.h
 WebServer/WebClientCluster.cpp
 WebServer/WebClientCluster.h
+WebServer/WebClientRoute.cpp
+WebServer/WebClientRoute.h
 WebServer/WebClientSignal.cpp
 WebServer/WebClientSignal.h
 WebServer/WebClientStatic.cpp
