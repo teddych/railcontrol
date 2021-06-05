@@ -257,6 +257,7 @@ class Languages
 			TextLayerIsUsedByRoute,
 			TextLayerIsUsedBySignal,
 			TextLayerIsUsedBySwitch,
+			TextLayerIsUsedByText,
 			TextLayerIsUsedByTrack,
 			TextLayerSaved,
 			TextLayerUpdated,

@@ -257,6 +257,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLayerIsUsedByRoute */ { "Layer {0} is used by route {1}", "Schicht {0} wird benutzt von Fahrstrasse {1}", "Capa {0} está usado por itinerario {1}" },
 /* TextLayerIsUsedBySignal */ { "Layer {0} is used by signal {1}", "Schicht {0} wird benutzt von Signal {1}", "Capa {0} está usado por señal {1}" },
 /* TextLayerIsUsedBySwitch */ { "Layer {0} is used by switch {1}", "Schicht {0} wird benutzt von Weiche {1}", "Capa {0} está usado por desvío {1}" },
+/* TextLayerIsUsedByText */ { "Layer {0} is used by text {1}", "Schicht {0} wird benutzt von Text {1}", "Capa {0} está usado por texto {1}" },
 /* TextLayerIsUsedByTrack */ { "Layer {0} is used by track {1}", "Schicht {0} wird benutzt von Gleis {1}", "Capa {0} está usado por vía {1}" },
 /* TextLayerSaved */ { "Layer {0} saved", "Schicht {0} gespeichert", "Capa {0} guardado" },
 /* TextLayerUpdated */ { "Layer {0} updated", "Schicht {0} aktualisiert", "Capa {0} actualizado" },
