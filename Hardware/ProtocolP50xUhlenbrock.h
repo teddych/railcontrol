@@ -30,21 +30,21 @@ namespace Hardware
 {
 	class HardwareParams;
 
-	class IntelliboxBase : public ProtocolP50xSerial
+	class ProtocolP50xUhlenbrock : public ProtocolP50xSerial
 	{
 		public:
-			IntelliboxBase() = delete;
-			IntelliboxBase(const IntelliboxBase&) = delete;
-			IntelliboxBase& operator=(const IntelliboxBase&) = delete;
+			ProtocolP50xUhlenbrock() = delete;
+			ProtocolP50xUhlenbrock(const ProtocolP50xUhlenbrock&) = delete;
+			ProtocolP50xUhlenbrock& operator=(const ProtocolP50xUhlenbrock&) = delete;
 
-			IntelliboxBase(const HardwareParams* params, const std::string& controlName);
-
-			virtual ~IntelliboxBase()
+			ProtocolP50xUhlenbrock(const HardwareParams* params, const std::string& controlName)
+			:	ProtocolP50xSerial(params, controlName, TypeUhlenbrock)
 			{
 			}
 
-		private:
-			static const unsigned char MaxS88ModulesIntellibox = 104;
+			virtual ~ProtocolP50xUhlenbrock()
+			{
+			}
 	};
 } // namespace
 
