@@ -152,6 +152,12 @@ namespace Hardware
 					DataModel::LocoFunctionState state;
 			};
 
+			struct TurnoutCommand
+			{
+					Address address;
+					DataModel::AccessoryState state;
+			};
+
 			static const unsigned char MaxLocoFunctions = 28;
 			static const unsigned short MaxLocoAddress = 10239;
 			static const unsigned short MaxAccessoryAddress = 2043;
