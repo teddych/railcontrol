@@ -20,19 +20,19 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include "Hardware/Protocols/Z21.h"
+#include "Hardware/Protocols/EsuCAN.h"
 
 namespace Hardware
 {
-	class Z21 : Protocols::Z21
+	class CS1 : Protocols::EsuCAN
 	{
 		public:
-			Z21() = delete;
-			Z21(const Z21&) = delete;
-			Z21& operator=(const Z21&) = delete;
+			CS1() = delete;
+			CS1(const CS1&) = delete;
+			CS1& operator=(const CS1&) = delete;
 
-			inline Z21(const HardwareParams* params)
-			:	Protocols::Z21(params, "Z21")
+			inline CS1(const HardwareParams* params)
+			:	Protocols::EsuCAN(params, "CS1")
 			{
 			}
 	};
