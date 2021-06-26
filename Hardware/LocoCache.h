@@ -40,7 +40,8 @@ namespace Hardware
 			:	controlId(controlId),
 				locoId(LocoNone),
 				protocol(ProtocolNone),
-				address(AddressNone)
+				address(AddressNone),
+				matchKey("")
 			{
 			}
 

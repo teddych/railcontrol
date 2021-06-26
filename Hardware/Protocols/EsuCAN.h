@@ -246,8 +246,11 @@ namespace Hardware
 				LocoCache locoCache;
 
 				static const int MinLocoId = 1000;
-				static const int OffsetAccessoryId = 19999;
+				static const int OffsetLocoAddress = 999;
+				static const int MinAccessoryId = 20000;
+				static const int OffsetAccessoryAddress = 19999;
 				static const int MinFeedbackModuleId = 100;
+				static const int OffsetFeedbackModuleAddress = 100;
 		};
 	} // namespace
 } // namespace
