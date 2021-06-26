@@ -117,6 +117,11 @@ namespace Hardware
 				this->matchKey = matchKey;
 			}
 
+			inline void SetMatchKey(const unsigned int matchKey)
+			{
+				this->matchKey = std::to_string(matchKey);
+			}
+
 		private:
 			const ControlID controlId;
 			LocoID locoId;
