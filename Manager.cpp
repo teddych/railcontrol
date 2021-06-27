@@ -689,7 +689,7 @@ LocoConfig Manager::GetLocoOfConfigByMatchKey(const ControlID controlId, const s
 
 Loco* Manager::GetLocoByMatchKey(const ControlID controlId, const string& matchKey) const
 {
-	std::lock_guard<std::mutex> guard(controlMutex);
+	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto& loco : locos)
 	{
 		Loco* locoConfig = loco.second;
@@ -1272,14 +1272,24 @@ void Manager::AccessorySaveAndPublishSettings(const Accessory* const accessory)
 	}
 }
 
-const map<string,DataModel::Accessory*> Manager::AccessoryListByName() const
+const map<string,DataModel::AccessoryConfig> Manager::AccessoryListByName() const
 {
-	map<string,DataModel::Accessory*> out;
-	std::lock_guard<std::mutex> guard(accessoryMutex);
-	for (auto& accessory : accessories)
+	map<string,DataModel::AccessoryConfig> out;
 	{
-		out[accessory.second->GetName()] = accessory.second;
+		std::lock_guard<std::mutex> guard(accessoryMutex);
+		for (auto& accessory : accessories)
+		{
+			out[accessory.second->GetName()] = *(accessory.second);
+		}
 	}
+	/* FIXME: not yet implemented
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto& control : controls)
+	{
+		control.second->AddUnmatchedAccessories(out);
+	}
+	*/
+
 	return out;
 }
 
@@ -1333,6 +1343,30 @@ bool Manager::AccessoryRelease(const AccessoryID accessoryID)
 	}
 	LocoID locoID = accessory->GetLoco();
 	return accessory->Release(logger, locoID);
+}
+
+Accessory* Manager::GetAccessoryByMatchKey(const ControlID controlId, const string& matchKey) const
+{
+	std::lock_guard<std::mutex> guard(accessoryMutex);
+	for (auto& accessory : accessories)
+	{
+		Accessory* accessoryConfig = accessory.second;
+		if (accessoryConfig->GetControlID() == controlId && accessoryConfig->GetMatchKey().compare(matchKey) == 0)
+		{
+			return accessory.second;
+		}
+	}
+	return nullptr;
+}
+
+void Manager::AccessoryRemoveMatchKey(const AccessoryID accessoryId)
+{
+	Accessory* accessory = GetAccessory(accessoryId);
+	if (accessory == nullptr)
+	{
+		return;
+	}
+	accessory->ClearMatchKey();
 }
 
 /***************************

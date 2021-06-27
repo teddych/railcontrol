@@ -21,8 +21,10 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include "Hardware/Capabilities.h"
+#include "Hardware/AccessoryCache.h"
 #include "Hardware/HardwareInterface.h"
 #include "Hardware/HardwareParams.h"
+#include "Hardware/LocoCache.h"
 #include "Network/TcpClient.h"
 
 namespace Hardware
@@ -244,6 +246,7 @@ namespace Hardware
 				uint8_t feedbackMemory[MaxFeedbackModules];
 
 				LocoCache locoCache;
+				AccessoryCache accessoryCache;
 
 				static const int MinLocoId = 1000;
 				static const int OffsetLocoAddress = 999;

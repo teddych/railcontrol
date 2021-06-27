@@ -350,7 +350,6 @@ namespace DataModel
 
 			LocoFunctions functions;
 
-
 			Logger::Logger* logger;
 	};
 } // namespace DataModel

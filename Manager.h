@@ -29,6 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Config.h"
 #include "ControlInterface.h"
+#include "DataModel/AccessoryConfig.h"
 #include "DataModel/DataModel.h"
 #include "DataModel/LocoConfig.h"
 #include "Hardware/HardwareParams.h"
@@ -175,7 +176,7 @@ class Manager
 			return accessories;
 		}
 
-		const std::map<std::string,DataModel::Accessory*> AccessoryListByName() const;
+		const std::map<std::string,DataModel::AccessoryConfig> AccessoryListByName() const;
 
 		bool AccessorySave(AccessoryID accessoryID,
 			const std::string& name,
@@ -194,6 +195,10 @@ class Manager
 			std::string& result);
 
 		bool AccessoryRelease(const AccessoryID accessoryID);
+
+		DataModel::Accessory* GetAccessoryByMatchKey(const ControlID controlId, const std::string& matchKey) const;
+
+		void AccessoryRemoveMatchKey(const AccessoryID accessoryId);
 
 		// feedback
 		void FeedbackState(const ControlID controlID, const FeedbackPin pin, const DataModel::Feedback::FeedbackState state);

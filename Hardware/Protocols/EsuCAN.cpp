@@ -50,7 +50,8 @@ namespace Hardware
 			tcp(Network::TcpClient::GetTcpClientConnection(logger, params->GetArg1(), EsuCANPort)),
 			readBufferLength(0),
 			readBufferPosition(0),
-			locoCache(params->GetControlID(), params->GetManager())
+			locoCache(params->GetControlID(), params->GetManager()),
+			accessoryCache(params->GetControlID(), params->GetManager())
 		{
 			logger->Info(Languages::TextStarting, GetFullName());
 			std::memset(feedbackMemory, 0, MaxFeedbackModules);

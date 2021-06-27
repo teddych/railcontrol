@@ -2002,22 +2002,32 @@ namespace WebServer
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextAccessories));
 		HtmlTag table("table");
-		const map<string,DataModel::Accessory*> accessoryList = manager.AccessoryListByName();
+		const map<string,DataModel::AccessoryConfig> accessoryList = manager.AccessoryListByName();
 		map<string,string> accessoryArgument;
 		for (auto& accessory : accessoryList)
 		{
-			Accessory* accessoryConfig = accessory.second;
+			const AccessoryConfig& accessoryConfig = accessory.second;
 			HtmlTag row("tr");
 			row.AddChildTag(HtmlTag("td").AddContent(accessory.first));
-			row.AddChildTag(HtmlTag("td").AddContent(ProtocolName(accessoryConfig->GetProtocol())));
-			row.AddChildTag(HtmlTag("td").AddContent(to_string(accessoryConfig->GetAddress())));
-			const string& accessoryIdString = to_string(accessoryConfig->GetID());
+			row.AddChildTag(HtmlTag("td").AddContent(ProtocolName(accessoryConfig.GetProtocol())));
+			row.AddChildTag(HtmlTag("td").AddContent(to_string(accessoryConfig.GetAddress())));
+			AccessoryID accessoryId = accessoryConfig.GetAccessoryId();
+			const string& accessoryIdString = to_string(accessoryId);
 			accessoryArgument["accessory"] = accessoryIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
-			if (accessoryConfig->IsInUse())
+			if (accessoryId == AccessoryNone)
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "accessoryrelease_" + accessoryIdString, accessoryArgument, "hideElement('b_accessoryrelease_" + accessoryIdString + "');")));
+				accessoryArgument["control"] = to_string(accessoryConfig.GetControlId());
+				accessoryArgument["matchkey"] = accessoryConfig.GetMatchKey();
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
+			}
+			else
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
+				if (accessoryConfig.IsInUse())
+				{
+					row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "accessoryrelease_" + accessoryIdString, accessoryArgument, "hideElement('b_accessoryrelease_" + accessoryIdString + "');")));
+				}
 			}
 			table.AddChildTag(row);
 		}
