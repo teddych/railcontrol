@@ -105,7 +105,8 @@ class Manager
 
 		void LocoReplaceMatchKey(const LocoID locoId, const std::string& newMatchKey);
 
-		const std::map<std::string,DataModel::LocoConfig> GetUnmatchedLocosOfControl(const ControlID controlId) const;
+		const std::map<std::string,DataModel::LocoConfig> GetUnmatchedLocosOfControl(const ControlID controlId,
+			const std::string& matchKey) const;
 
 		const std::string& GetLocoName(const LocoID locoID) const;
 

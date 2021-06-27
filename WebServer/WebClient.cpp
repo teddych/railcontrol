@@ -1127,14 +1127,12 @@ namespace WebServer
 		ReplyHtmlWithHeaderAndParagraph(ret ? "Timetable added" : "Timetable not added");
 	}
 
-	HtmlTag WebClient::HtmlTagMatchKeyProtocolLoco(const ControlID controlId, const string& selectedMatchKey, const Protocol selectedProtocol)
+	HtmlTag WebClient::HtmlTagMatchKeyProtocolLoco(const ControlID controlId,
+		const string& selectedMatchKey,
+		const Protocol selectedProtocol)
 	{
 		HtmlTag content;
-		map<string,LocoConfig> matchKeyMap = manager.GetUnmatchedLocosOfControl(controlId);
-		if ((matchKeyMap.size() > 0) && (selectedMatchKey.size() > 0))
-		{
-			matchKeyMap[selectedMatchKey].SetName(selectedMatchKey);
-		}
+		map<string,LocoConfig> matchKeyMap = manager.GetUnmatchedLocosOfControl(controlId, selectedMatchKey);
 		content.AddChildTag(WebClientStatic::HtmlTagMatchKey(matchKeyMap, selectedMatchKey));
 		map<string,Protocol> protocolMap = manager.LocoProtocolsOfControl(controlId);
 		content.AddChildTag(WebClientStatic::HtmlTagProtocol(protocolMap, selectedProtocol));

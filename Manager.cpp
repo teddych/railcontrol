@@ -721,7 +721,8 @@ void Manager::LocoReplaceMatchKey(const LocoID locoId, const std::string& newMat
 	loco->SetMatchKey(newMatchKey);
 }
 
-const map<string,LocoConfig> Manager::GetUnmatchedLocosOfControl(const ControlID controlId) const
+const map<string,LocoConfig> Manager::GetUnmatchedLocosOfControl(const ControlID controlId,
+	const std::string& matchKey) const
 {
 	ControlInterface* control = GetControl(controlId);
 	map<string,LocoConfig> out;
@@ -729,7 +730,7 @@ const map<string,LocoConfig> Manager::GetUnmatchedLocosOfControl(const ControlID
 	{
 		return out;
 	}
-	out = control->GetUnmatchedLocos();
+	out = control->GetUnmatchedLocos(matchKey);
 	out[""].SetName("");
 	return out;
 }
