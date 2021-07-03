@@ -68,10 +68,6 @@ namespace Hardware
 
 		EsuCAN::~EsuCAN()
 		{
-			if (run == false)
-			{
-				return;
-			}
 			run = false;
 			receiverThread.join();
 			logger->Info(Languages::TextTerminatingSenderSocket);

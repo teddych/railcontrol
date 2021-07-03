@@ -40,7 +40,7 @@ namespace Hardware
 
 				EsuCAN(const HardwareParams* params, const std::string& controlName);
 
-				~EsuCAN();
+				virtual ~EsuCAN();
 
 				inline Hardware::Capabilities GetCapabilities() const override
 				{
