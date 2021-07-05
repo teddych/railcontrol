@@ -819,6 +819,8 @@ bool Manager::LocoSave(LocoID locoID,
 	const Speed travelSpeed,
 	const Speed reducedSpeed,
 	const Speed creepingSpeed,
+	const Propulsion propulsion,
+	const TrainType type,
 	const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
 	const std::vector<DataModel::Relation*>& slaves,
 	string& result)
@@ -854,6 +856,8 @@ bool Manager::LocoSave(LocoID locoID,
 	loco->SetTravelSpeed(travelSpeed);
 	loco->SetReducedSpeed(reducedSpeed);
 	loco->SetCreepingSpeed(creepingSpeed);
+	loco->SetPropulsion(propulsion);
+	loco->SetType(type);
 	loco->ConfigureFunctions(locoFunctions);
 	loco->AssignSlaves(slaves);
 

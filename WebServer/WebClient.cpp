@@ -1370,6 +1370,8 @@ namespace WebServer
 		Speed travelSpeed = DefaultTravelSpeed;
 		Speed reducedSpeed = DefaultReducedSpeed;
 		Speed creepingSpeed = DefaultCreepingSpeed;
+		Propulsion propulsion = PropulsionUnknown;
+		TrainType type = TrainTypeUnknown;
 		LocoFunctionEntry locoFunctions[NumberOfLocoFunctions];
 		vector<Relation*> slaves;
 
@@ -1390,6 +1392,8 @@ namespace WebServer
 				travelSpeed = loco->GetTravelSpeed();
 				reducedSpeed = loco->GetReducedSpeed();
 				creepingSpeed = loco->GetCreepingSpeed();
+				propulsion = loco->GetPropulsion();
+				type = loco->GetType();
 				loco->GetFunctions(locoFunctions);
 				slaves = loco->GetSlaves();
 			}
@@ -1429,6 +1433,43 @@ namespace WebServer
 		basicContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagMatchKeyProtocolLoco(controlId, matchKey, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
+
+		map<Propulsion,Languages::TextSelector> propulsions;
+		propulsions[PropulsionUnknown] = Languages::TextPropulsionUnknown;
+		propulsions[PropulsionSteam] = Languages::TextPropulsionSteam;
+		propulsions[PropulsionDiesel] = Languages::TextPropulsionDiesel;
+		propulsions[PropulsionGas] = Languages::TextPropulsionGas;
+		propulsions[PropulsionElectric] = Languages::TextPropulsionElectric;
+		propulsions[PropulsionHydrogen] = Languages::TextPropulsionHydrogen;
+		propulsions[PropulsionOther] = Languages::TextPropulsionOther;
+		basicContent.AddChildTag(HtmlTagSelectWithLabel("propulsion", Languages::TextPropulsion, propulsions, propulsion));
+
+		map<TrainType,Languages::TextSelector> types;
+		types[TrainTypeUnknown] = Languages::TextTrainTypeUnknown;
+		types[TrainTypeInternationalHighSpeed] = Languages::TextTrainTypeInternationalHighSpeed;
+		types[TrainTypeNationalHighSpeed] = Languages::TextTrainTypeNationalHighSpeed;
+		types[TrainTypeInternationalLongDistance] = Languages::TextTrainTypeInternationalLongDistance;
+		types[TrainTypeNationalLongDistance] = Languages::TextTrainTypeNationalLongDistance;
+		types[TrainTypeInternationalNight] = Languages::TextTrainTypeInternationalNight;
+		types[TrainTypeNationalNight] = Languages::TextTrainTypeNationalNight;
+		types[TrainTypeLongDistanceFastLocal] = Languages::TextTrainTypeLongDistanceFastLocal;
+		types[TrainTypeFastLocal] = Languages::TextTrainTypeFastLocal;
+		types[TrainTypeLocal] = Languages::TextTrainTypeLocal;
+		types[TrainTypeSuburban] = Languages::TextTrainTypeSuburban;
+		types[TrainTypeUnderground] = Languages::TextTrainTypeUnderground;
+		types[TrainTypeHistoric] = Languages::TextTrainTypeHistoric;
+		types[TrainTypeExtra] = Languages::TextTrainTypeExtra;
+		types[TrainTypePassengerWithCargo] = Languages::TextTrainTypePassengerWithCargo;
+		types[TrainTypeCargoWithPassenger] = Languages::TextTrainTypeCargoWithPassenger;
+		types[TrainTypeCargoLongDistance] = Languages::TextTrainTypeCargoLongDistance;
+		types[TrainTypeCargoLocal] = Languages::TextTrainTypeCargoLocal;
+		types[TrainTypeCargoBlock] = Languages::TextTrainTypeCargoBlock;
+		types[TrainTypeRescue] = Languages::TextTrainTypeRescue;
+		types[TrainTypeConstruction] = Languages::TextTrainTypeConstruction;
+		types[TrainTypeCleaning] = Languages::TextTrainTypeCleaning;
+		types[TrainTypeOther] = Languages::TextTrainTypeOther;
+		basicContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextTrainType, types, type));
+
 		formContent.AddChildTag(basicContent);
 
 		HtmlTag functionsContent("div");
@@ -1618,6 +1659,8 @@ namespace WebServer
 		{
 			creepingSpeed = reducedSpeed;
 		}
+		const Propulsion propulsion = static_cast<Propulsion>(Utils::Utils::GetIntegerMapEntry(arguments, "propulsion", PropulsionUnknown));
+		const TrainType type = static_cast<TrainType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TrainTypeUnknown));
 
 		vector<DataModel::LocoFunctionEntry> locoFunctions;
 		DataModel::LocoFunctionEntry locoFunctionEntry;
@@ -1672,6 +1715,8 @@ namespace WebServer
 			travelSpeed,
 			reducedSpeed,
 			creepingSpeed,
+			propulsion,
+			type,
 			locoFunctions,
 			slaves,
 			result))

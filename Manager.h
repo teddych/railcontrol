@@ -130,6 +130,8 @@ class Manager
 			const Speed travelSpeed,
 			const Speed reducedSpeed,
 			const Speed creepingSpeed,
+			const Propulsion propulsion,
+			const TrainType type,
 			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
 			const std::vector<DataModel::Relation*>& slaves,
 			std::string& result

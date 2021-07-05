@@ -75,6 +75,8 @@ namespace DataModel
 				travelSpeed(0),
 				reducedSpeed(0),
 				creepingSpeed(0),
+				propulsion(PropulsionUnknown),
+				type(TrainTypeUnknown),
 				speed(MinSpeed),
 				orientation(OrientationRight),
 				state(LocoStateManual),
@@ -231,29 +233,49 @@ namespace DataModel
 				return creepingSpeed;
 			}
 
-			inline void SetPushpull(bool pushpull)
+			inline void SetPushpull(const bool pushpull)
 			{
 				this->pushpull = pushpull;
 			}
 
-			inline void SetMaxSpeed(Speed speed)
+			inline void SetMaxSpeed(const Speed speed)
 			{
 				maxSpeed = speed;
 			}
 
-			inline void SetTravelSpeed(Speed speed)
+			inline void SetTravelSpeed(const Speed speed)
 			{
 				travelSpeed = speed;
 			}
 
-			inline void SetReducedSpeed(Speed speed)
+			inline void SetReducedSpeed(const Speed speed)
 			{
 				reducedSpeed = speed;
 			}
 
-			inline void SetCreepingSpeed(Speed speed)
+			inline void SetCreepingSpeed(const Speed speed)
 			{
 				creepingSpeed = speed;
+			}
+
+			inline void SetPropulsion(const Propulsion propulsion)
+			{
+				this->propulsion = propulsion;
+			}
+
+			inline Propulsion GetPropulsion() const
+			{
+				return propulsion;
+			}
+
+			inline void SetType(const TrainType type)
+			{
+				this->type = type;
+			}
+
+			inline TrainType GetType() const
+			{
+				return type;
 			}
 
 			bool AssignSlaves(const std::vector<DataModel::Relation*>& newslaves);
@@ -325,6 +347,9 @@ namespace DataModel
 			Speed travelSpeed;
 			Speed reducedSpeed;
 			Speed creepingSpeed;
+
+			Propulsion propulsion;
+			TrainType type;
 
 			Speed speed;
 			Orientation orientation;
