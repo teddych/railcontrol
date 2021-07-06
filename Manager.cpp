@@ -939,16 +939,14 @@ bool Manager::LocoProtocolAddress(const LocoID locoID, ControlID& controlID, Pro
 void Manager::LocoSpeed(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Speed speed)
 {
 	Loco* loco = GetLoco(controlID, protocol, address);
-	if (loco == nullptr)
-	{
-		return;
-	}
+	// nullptr check is done within submethod
 	LocoSpeed(controlType, loco, speed);
 }
 
 bool Manager::LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed, const bool withSlaves)
 {
 	Loco* loco = GetLoco(locoID);
+	// nullptr check is done within submethod
 	return LocoSpeed(controlType, loco, speed, withSlaves);
 }
 
