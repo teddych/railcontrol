@@ -14,6 +14,7 @@
 - Fahren nach Fahrplan bzw. Vorgabe des Zielortes
 - Formulare als POST-Request senden um maximale URL-Länge zu umgehen
 - Synchronisieren der ECoS / CS2 Lok-Datenbank
+- Anbinden von DCC++EX
 - Anbinden von SPROG DCC
 - Anbinden von Zimo-Zentralen
 - Anbinden von LocoNet-Zentralen
