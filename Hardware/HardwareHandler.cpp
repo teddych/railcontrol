@@ -271,6 +271,17 @@ namespace Hardware
 		instance->SetLocoIdOfMatchKey(locoId, matchKey);
 	}
 
+	void HardwareHandler::LocoDelete(__attribute__((unused)) const LocoID locoID,
+		__attribute__((unused)) const std::string& name,
+		const std::string& matchKey)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->SetLocoIdOfMatchKey(LocoNone, matchKey);
+	}
+
 	void HardwareHandler::AccessorySettings(const AccessoryID accessoryId,
 		__attribute__((unused)) const std::string& name,
 		const std::string& matchKey)
@@ -279,7 +290,18 @@ namespace Hardware
 		{
 			return;
 		}
-		instance->SetAccessoryIdOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeAccessory, accessoryId), matchKey);
+		instance->SetAccessoryIdentifierOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeAccessory, accessoryId), matchKey);
+	}
+
+	void HardwareHandler::AccessoryDelete(__attribute__((unused)) const AccessoryID accessoryId,
+		__attribute__((unused)) const std::string& name,
+		const std::string& matchKey)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->SetAccessoryIdentifierOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeNone, ObjectNone), matchKey);
 	}
 
 	void HardwareHandler::AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory)
@@ -302,7 +324,18 @@ namespace Hardware
 		{
 			return;
 		}
-		instance->SetAccessoryIdOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeSwitch, switchId), matchKey);
+		instance->SetAccessoryIdentifierOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeSwitch, switchId), matchKey);
+	}
+
+	void HardwareHandler::SwitchDelete(__attribute__((unused)) const SwitchID switchId,
+		__attribute__((unused)) const std::string& name,
+		const std::string& matchKey)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->SetAccessoryIdentifierOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeNone, ObjectNone), matchKey);
 	}
 
 	void HardwareHandler::SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch)
@@ -354,7 +387,18 @@ namespace Hardware
 		{
 			return;
 		}
-		instance->SetAccessoryIdOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeSignal, signalId), matchKey);
+		instance->SetAccessoryIdentifierOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeSignal, signalId), matchKey);
+	}
+
+	void HardwareHandler::SignalDelete(__attribute__((unused)) const SignalID signalId,
+		__attribute__((unused)) const std::string& name,
+		const std::string& matchKey)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->SetAccessoryIdentifierOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeNone, ObjectNone), matchKey);
 	}
 
 	void HardwareHandler::SignalState(const ControlType controlType, const DataModel::Signal* signal)

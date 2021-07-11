@@ -92,21 +92,37 @@ namespace Hardware
 				std::vector<DataModel::LocoFunctionEntry>& functions) override;
 
 			void LocoSettings(const LocoID locoId,
-				__attribute__((unused)) const std::string& name,
+				const std::string& name,
+				const std::string& matchKey) override;
+
+			void LocoDelete(const LocoID locoId,
+				const std::string& name,
 				const std::string& matchKey) override;
 
 			void AccessorySettings(const AccessoryID accessoryId,
-				__attribute__((unused)) const std::string& name,
+				const std::string& name,
+				const std::string& matchKey) override;
+
+			void AccessoryDelete(const AccessoryID accessoryId,
+				const std::string& name,
 				const std::string& matchKey) override;
 
 			void SwitchSettings(const SwitchID switchId,
-				__attribute__((unused)) const std::string& name,
+				const std::string& name,
+				const std::string& matchKey) override;
+
+			void SwitchDelete(const SwitchID switchId,
+				const std::string& name,
 				const std::string& matchKey) override;
 
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch) override;
 
 			void SignalSettings(const SignalID signalId,
-				__attribute__((unused)) const std::string& name,
+				const std::string& name,
+				const std::string& matchKey) override;
+
+			void SignalDelete(const SignalID signalId,
+				const std::string& name,
 				const std::string& matchKey) override;
 
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;

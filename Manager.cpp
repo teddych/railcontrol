@@ -914,10 +914,11 @@ bool Manager::LocoDelete(const LocoID locoID, string& result)
 		storage->DeleteLoco(locoID);
 	}
 	const string& name = loco->GetName();
+	const string& matchKey = loco->GetMatchKey();
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoDelete(locoID, name);
+		control.second->LocoDelete(locoID, name, matchKey);
 	}
 	delete loco;
 	return true;
@@ -1350,10 +1351,12 @@ bool Manager::AccessoryDelete(const AccessoryID accessoryID,
 	{
 		storage->DeleteAccessory(accessoryID);
 	}
+	const string& name = accessory->GetName();
+	const string& matchKey = accessory->GetMatchKey();
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->AccessoryDelete(accessoryID, accessory->GetName());
+		control.second->AccessoryDelete(accessoryID, name, matchKey);
 	}
 	delete accessory;
 	return true;
@@ -1388,7 +1391,7 @@ Accessory* Manager::GetAccessoryByMatchKey(const ControlID controlId, const stri
 		Accessory* accessoryConfig = accessory.second;
 		if (accessoryConfig->GetControlID() == controlId && accessoryConfig->GetMatchKey().compare(matchKey) == 0)
 		{
-			return accessory.second;
+			return accessoryConfig;
 		}
 	}
 	return nullptr;
@@ -2182,11 +2185,12 @@ bool Manager::SwitchDelete(const SwitchID switchID,
 		storage->DeleteSwitch(switchID);
 	}
 
-	const string& switchName = mySwitch->GetName();
+	const string& name = mySwitch->GetName();
+	const string& matchKey = mySwitch->GetMatchKey();
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->SwitchDelete(switchID, switchName);
+		control.second->SwitchDelete(switchID, name, matchKey);
 	}
 	delete mySwitch;
 	return true;
@@ -2220,6 +2224,30 @@ bool Manager::SwitchRelease(const RouteID switchID)
 	}
 	LocoID locoID = mySwitch->GetLoco();
 	return mySwitch->Release(logger, locoID);
+}
+
+Switch* Manager::GetSwitchByMatchKey(const ControlID controlId, const string& matchKey) const
+{
+	std::lock_guard<std::mutex> guard(switchMutex);
+	for (auto& mySwitch : switches)
+	{
+		Switch* switchConfig = mySwitch.second;
+		if (switchConfig->GetControlID() == controlId && switchConfig->GetMatchKey().compare(matchKey) == 0)
+		{
+			return switchConfig;
+		}
+	}
+	return nullptr;
+}
+
+void Manager::SwitchRemoveMatchKey(const SwitchID switchId)
+{
+	Switch* mySwitch = GetSwitch(switchId);
+	if (mySwitch == nullptr)
+	{
+		return;
+	}
+	mySwitch->ClearMatchKey();
 }
 
 /***************************
@@ -2999,11 +3027,12 @@ bool Manager::SignalDelete(const SignalID signalID,
 		storage->DeleteSignal(signalID);
 	}
 
-	const string& signalName = signal->GetName();
+	const string& name = signal->GetName();
+	const string& matchKey = signal->GetMatchKey();
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->SignalDelete(signalID, signalName);
+		control.second->SignalDelete(signalID, name, matchKey);
 	}
 
 	Cluster* cluster = signal->GetCluster();
@@ -3044,6 +3073,30 @@ const map<string,DataModel::AccessoryConfig> Manager::SignalConfigByName() const
 		control.second->AddUnmatchedAccessories(out);
 	}
 	return out;
+}
+
+Signal* Manager::GetSignalByMatchKey(const ControlID controlId, const string& matchKey) const
+{
+	std::lock_guard<std::mutex> guard(signalMutex);
+	for (auto& signal : signals)
+	{
+		Signal* signalConfig = signal.second;
+		if (signalConfig->GetControlID() == controlId && signalConfig->GetMatchKey().compare(matchKey) == 0)
+		{
+			return signalConfig;
+		}
+	}
+	return nullptr;
+}
+
+void Manager::SignalRemoveMatchKey(const SignalID signalId)
+{
+	Signal* signal = GetSignal(signalId);
+	if (signal == nullptr)
+	{
+		return;
+	}
+	signal->ClearMatchKey();
 }
 
 /***************************

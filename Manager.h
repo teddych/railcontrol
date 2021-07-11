@@ -310,6 +310,9 @@ class Manager
 
 		bool SwitchRelease(const SwitchID switchID);
 
+		DataModel::Switch* GetSwitchByMatchKey(const ControlID controlId, const std::string& matchKey) const;
+		void SwitchRemoveMatchKey(const SwitchID switchId);
+
 		// route
 		bool RouteExecute(Logger::Logger* logger, const LocoID locoID, const RouteID routeID);
 		void RouteExecuteAsync(Logger::Logger* logger, const RouteID routeID);
@@ -406,6 +409,9 @@ class Manager
 			std::string& result);
 
 		void SignalPublishState(const ControlType controlType, const DataModel::Signal* signal);
+
+		DataModel::Signal* GetSignalByMatchKey(const ControlID controlId, const std::string& matchKey) const;
+		void SignalRemoveMatchKey(const SignalID signalId);
 
 		// cluster
 		DataModel::Cluster* GetCluster(const ClusterID clusterID) const;
