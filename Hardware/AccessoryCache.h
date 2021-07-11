@@ -61,7 +61,7 @@ namespace Hardware
 
 			inline void ClearObjectIdentifier()
 			{
-				this->objectIdentifier = DataModel::ObjectIdentifier();
+				this->objectIdentifier.Clear();
 			}
 
 			inline const std::string& GetName() const

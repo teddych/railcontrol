@@ -84,13 +84,13 @@ namespace WebServer
 			void RouteRelease(const RouteID routeID) override;
 			void RouteSettings(const RouteID routeID, const std::string& name) override;
 			void SwitchDelete(const SwitchID switchID, const std::string& name) override;
-			void SwitchSettings(const SwitchID switchID, const std::string& name) override;
+			void SwitchSettings(const SwitchID switchID, const std::string& name, const std::string& matchKey) override;
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch) override;
 			void TrackDelete(const TrackID trackID, const std::string& name) override;
 			void TrackSettings(const TrackID trackID, const std::string& name) override;
 			void TrackState(const DataModel::Track* track) override;
 			void SignalDelete(const SignalID signalID, const std::string& name) override;
-			void SignalSettings(const SignalID signalID, const std::string& name) override;
+			void SignalSettings(const SignalID signalID, const std::string& name, const std::string& matchKey) override;
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
 			void ClusterDelete(const ClusterID clusterID, const std::string& name) override;
 			void ClusterSettings(const ClusterID clusterID, const std::string& name) override;

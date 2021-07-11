@@ -782,7 +782,7 @@ const map<string,LocoID> Manager::LocoListFree() const
 	return out;
 }
 
-const map<string,DataModel::LocoConfig> Manager::LocoListByName() const
+const map<string,DataModel::LocoConfig> Manager::LocoConfigByName() const
 {
 	map<string,DataModel::LocoConfig> out;
 	{
@@ -1299,7 +1299,7 @@ void Manager::AccessorySaveAndPublishSettings(const Accessory* const accessory)
 	}
 }
 
-const map<string,DataModel::AccessoryConfig> Manager::AccessoryListByName() const
+const map<string,DataModel::AccessoryConfig> Manager::AccessoryConfigByName() const
 {
 	map<string,DataModel::AccessoryConfig> out;
 	{
@@ -1309,12 +1309,12 @@ const map<string,DataModel::AccessoryConfig> Manager::AccessoryListByName() cons
 			out[accessory.second->GetName()] = *(accessory.second);
 		}
 	}
+
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
 		control.second->AddUnmatchedAccessories(out);
 	}
-
 	return out;
 }
 
@@ -2038,6 +2038,7 @@ bool Manager::SwitchSave(SwitchID switchID,
 	const LayoutPosition posZ,
 	const LayoutRotation rotation,
 	const ControlID controlID,
+	const string& matchKey,
 	const Protocol protocol,
 	const Address address,
 	const DataModel::AccessoryType type,
@@ -2077,6 +2078,7 @@ bool Manager::SwitchSave(SwitchID switchID,
 	mySwitch->SetPosZ(posZ);
 	mySwitch->SetRotation(rotation);
 	mySwitch->SetControlID(controlID);
+	mySwitch->SetMatchKey(matchKey);
 	mySwitch->SetProtocol(protocol);
 	mySwitch->SetAddress(address);
 	mySwitch->SetType(type);
@@ -2144,7 +2146,7 @@ void Manager::SwitchSaveAndPublishSettings(const Switch* const mySwitch)
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->SwitchSettings(mySwitch->GetID(), mySwitch->GetName());
+		control.second->SwitchSettings(mySwitch->GetID(), mySwitch->GetName(), mySwitch->GetMatchKey());
 	}
 }
 
@@ -2190,13 +2192,21 @@ bool Manager::SwitchDelete(const SwitchID switchID,
 	return true;
 }
 
-const map<string,DataModel::Switch*> Manager::SwitchListByName() const
+const map<string,DataModel::AccessoryConfig> Manager::SwitchConfigByName() const
 {
-	map<string,DataModel::Switch*> out;
-	std::lock_guard<std::mutex> guard(switchMutex);
-	for (auto& mySwitch : switches)
+	map<string,DataModel::AccessoryConfig> out;
 	{
-		out[mySwitch.second->GetName()] = mySwitch.second;
+		std::lock_guard<std::mutex> guard(switchMutex);
+		for (auto& mySwitch : switches)
+		{
+			out[mySwitch.second->GetName()] = *(mySwitch.second);
+		}
+	}
+
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto& control : controls)
+	{
+		control.second->AddUnmatchedAccessories(out);
 	}
 	return out;
 }
@@ -2816,6 +2826,7 @@ bool Manager::SignalSave(SignalID signalID,
 	const bool allowLocoTurn,
 	const bool releaseWhenFree,
 	const ControlID controlID,
+	const string& matchKey,
 	const Protocol protocol,
 	const Address address,
 	const DataModel::AccessoryType type,
@@ -2861,6 +2872,7 @@ bool Manager::SignalSave(SignalID signalID,
 	signal->SetAllowLocoTurn(allowLocoTurn);
 	signal->SetReleaseWhenFree(releaseWhenFree);
 	signal->SetControlID(controlID);
+	signal->SetMatchKey(matchKey);
 	signal->SetProtocol(protocol);
 	signal->SetAddress(address);
 	signal->SetType(type);
@@ -2923,7 +2935,7 @@ void Manager::SignalSaveAndPublishSettings(const Signal* const signal)
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->SignalSettings(signal->GetID(), signal->GetName());
+		control.second->SignalSettings(signal->GetID(), signal->GetName(), signal->GetMatchKey());
 	}
 }
 
@@ -3011,6 +3023,25 @@ const map<string,DataModel::Signal*> Manager::SignalListByName() const
 	for (auto& signal : signals)
 	{
 		out[signal.second->GetName()] = signal.second;
+	}
+	return out;
+}
+
+const map<string,DataModel::AccessoryConfig> Manager::SignalConfigByName() const
+{
+	map<string,DataModel::AccessoryConfig> out;
+	{
+		std::lock_guard<std::mutex> guard(signalMutex);
+		for (auto& signal : signals)
+		{
+			out[signal.second->GetName()] = *(signal.second);
+		}
+	}
+
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto& control : controls)
+	{
+		control.second->AddUnmatchedAccessories(out);
 	}
 	return out;
 }

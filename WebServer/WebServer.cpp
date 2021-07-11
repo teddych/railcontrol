@@ -292,7 +292,9 @@ namespace WebServer
 		AddUpdate(command.str(), text, mySwitch->GetName());
 	}
 
-	void WebServer::SwitchSettings(const SwitchID switchID, const std::string& name)
+	void WebServer::SwitchSettings(const SwitchID switchID,
+		const std::string& name,
+		__attribute__((unused)) const std::string& matchKey)
 	{
 		stringstream command;
 		command << "switchsettings;switch=" << switchID;
@@ -427,7 +429,9 @@ namespace WebServer
 		TrackBaseState(command2, dynamic_cast<const DataModel::TrackBase*>(signal));
 	}
 
-	void WebServer::SignalSettings(const SignalID signalID, const std::string& name)
+	void WebServer::SignalSettings(const SignalID signalID,
+		const std::string& name,
+		__attribute__((unused)) const std::string& matchKey)
 	{
 		stringstream command;
 		command << "signalsettings;signal=" << signalID;

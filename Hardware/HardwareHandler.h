@@ -99,8 +99,18 @@ namespace Hardware
 				__attribute__((unused)) const std::string& name,
 				const std::string& matchKey) override;
 
+			void SwitchSettings(const SwitchID switchId,
+				__attribute__((unused)) const std::string& name,
+				const std::string& matchKey) override;
+
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch) override;
+
+			void SignalSettings(const SignalID signalId,
+				__attribute__((unused)) const std::string& name,
+				const std::string& matchKey) override;
+
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
+
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 

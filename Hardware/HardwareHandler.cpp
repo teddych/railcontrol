@@ -294,6 +294,17 @@ namespace Hardware
 		instance->Accessory(accessory->GetProtocol(), accessory->GetAddress(), accessory->GetInvertedAccessoryState(), accessory->GetAccessoryPulseDuration());
 	}
 
+	void HardwareHandler::SwitchSettings(const SwitchID switchId,
+		__attribute__((unused)) const std::string& name,
+		const std::string& matchKey)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->SetAccessoryIdOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeSwitch, switchId), matchKey);
+	}
+
 	void HardwareHandler::SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch)
 	{
 		if (controlType == ControlTypeHardware
@@ -333,6 +344,17 @@ namespace Hardware
 		}
 		// else left or right switch
 		instance->Accessory(protocol, address, mySwitch->GetInvertedAccessoryState(), duration);
+	}
+
+	void HardwareHandler::SignalSettings(const SignalID signalId,
+		__attribute__((unused)) const std::string& name,
+		const std::string& matchKey)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->SetAccessoryIdOfMatchKey(DataModel::ObjectIdentifier(ObjectTypeSignal, signalId), matchKey);
 	}
 
 	void HardwareHandler::SignalState(const ControlType controlType, const DataModel::Signal* signal)

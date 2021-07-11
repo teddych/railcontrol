@@ -229,7 +229,8 @@ class ControlInterface
 		}
 
 		virtual void SwitchSettings(__attribute__((unused)) const SwitchID switchID,
-			__attribute__((unused)) const std::string& name)
+			__attribute__((unused)) const std::string& name,
+			__attribute__((unused)) const std::string& matchKey)
 		{
 		}
 
@@ -258,7 +259,8 @@ class ControlInterface
 		}
 
 		virtual void SignalSettings(__attribute__((unused)) const SignalID signalID,
-			__attribute__((unused)) const std::string& name)
+			__attribute__((unused)) const std::string& name,
+			__attribute__((unused)) const std::string& matchKey)
 		{
 		}
 
