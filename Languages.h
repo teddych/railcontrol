@@ -206,6 +206,8 @@ class Languages
 			TextHintCcSchnitte,
 			TextHintCs2Tcp,
 			TextHintCs2Udp,
+			TextHintDccPpExSerial,
+			TextHintDccPpExTcp,
 			TextHintEcos,
 			TextHintHsi88,
 			TextHintIntellibox,
