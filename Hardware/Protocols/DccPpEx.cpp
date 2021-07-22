@@ -39,15 +39,21 @@ namespace Hardware
 		}
 
 		void DccPpEx::LocoSpeed(__attribute__((unused)) const Protocol protocol,
-			__attribute__((unused)) const Address address,
-			__attribute__((unused)) const Speed speed)
+			const Address address,
+			const Speed speed)
 		{
+			locoCache.SetSpeed(address, speed);
+			Orientation orientation = locoCache.GetOrientation(address);
+			LocoSpeedOrientation(address, speed, orientation);
 		}
 
 		void DccPpEx::LocoOrientation(__attribute__((unused)) const Protocol protocol,
-			__attribute__((unused)) const Address address,
-			__attribute__((unused)) const Orientation orientation)
+			const Address address,
+			const Orientation orientation)
 		{
+			Speed speed = locoCache.GetSpeed(address);
+			locoCache.SetOrientation(address, orientation);
+			LocoSpeedOrientation(address, speed, orientation);
 		}
 
 		void DccPpEx::LocoFunction(__attribute__((unused)) const Protocol protocol,
@@ -75,6 +81,20 @@ namespace Hardware
 			__attribute__((unused)) const CvNumber cv,
 			__attribute__((unused)) const CvValue value)
 		{
+		}
+
+		void DccPpEx::LocoSpeedOrientation(const Address address,
+			const Speed speed,
+			const Orientation orientation)
+		{
+			string buffer("<t 1 ");
+			buffer += to_string(address);
+			buffer += " ";
+			buffer += to_string(speed >= 1008 ? 126 : speed >> 3);
+			buffer += " ";
+			buffer += to_string(orientation);
+			buffer += ">";
+			SendInternal(buffer);
 		}
 	} // namespace
 } // namespace
