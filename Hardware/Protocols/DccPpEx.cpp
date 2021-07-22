@@ -23,6 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Hardware/Protocols/DccPpEx.h"
 
 using std::string;
+using std::to_string;
 
 namespace Hardware
 {
@@ -32,7 +33,7 @@ namespace Hardware
 		{
 			string buffer("<");
 			logger->Info(status ? Languages::TextTurningBoosterOn : Languages::TextTurningBoosterOff);
-			buffer += std::to_string(static_cast<unsigned char>(status));
+			buffer += to_string(static_cast<unsigned char>(status));
 			buffer += ">";
 			SendInternal(buffer);
 		}
@@ -57,10 +58,16 @@ namespace Hardware
 		}
 
 		void DccPpEx::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
-			__attribute__((unused)) const Address address,
-			__attribute__((unused)) const DataModel::AccessoryState state,
+			const Address address,
+			const DataModel::AccessoryState state,
 			__attribute__((unused)) const bool on)
 		{
+			string buffer("<a ");
+			buffer += to_string(address);
+			buffer += " ";
+			buffer += state == DataModel::AccessoryStateOff ? "0" : "1";
+			buffer += ">";
+			SendInternal(buffer);
 		}
 
 		void DccPpEx::ProgramWrite(__attribute__((unused)) const ProgramMode mode,
