@@ -22,7 +22,9 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace WebServer
 {
-	HtmlTagSelect::HtmlTagSelect(const std::string& name, const std::map<std::string,std::string>& options, const std::string& defaultValue)
+	HtmlTagSelect::HtmlTagSelect(const std::string& name,
+		const std::map<std::string,std::string>& options,
+		const std::string& defaultValue)
 	:	HtmlTag("select"),
 	 	commandID("s_" + name)
 	{
@@ -42,7 +44,9 @@ namespace WebServer
 		}
 	}
 
-	HtmlTagSelect::HtmlTagSelect(const std::string& name, const std::map<std::string,Languages::TextSelector>& options, const std::string& defaultValue)
+	HtmlTagSelect::HtmlTagSelect(const std::string& name,
+		const std::map<std::string,DataModel::ObjectIdentifier>& options,
+		const DataModel::ObjectIdentifier& defaultValue)
 	:	HtmlTag("select"),
 	 	commandID("s_" + name)
 	{
@@ -52,9 +56,9 @@ namespace WebServer
 		for (auto& option : options)
 		{
 			HtmlTag optionTag("option");
-			optionTag.AddAttribute("value", option.first);
-			optionTag.AddContent(Languages::GetText(option.second));
-			if (option.first.compare(defaultValue) == 0)
+			optionTag.AddAttribute("value", option.second);
+			optionTag.AddContent(option.first);
+			if (option.second == defaultValue)
 			{
 				optionTag.AddAttribute("selected");
 			}

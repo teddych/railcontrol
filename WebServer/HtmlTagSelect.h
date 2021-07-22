@@ -37,31 +37,18 @@ namespace WebServer
 		public:
 			HtmlTagSelect() = delete;
 
-			HtmlTagSelect(const std::string& name, const std::map<std::string,std::string>& options, const std::string& defaultValue = "");
-			HtmlTagSelect(const std::string& name, const std::map<std::string,Languages::TextSelector>& options, const std::string& defaultValue = "");
+			HtmlTagSelect(const std::string& name,
+				const std::map<std::string,std::string>& options,
+				const std::string& defaultValue = "");
 
-			HtmlTagSelect(const std::string& name, const std::map<std::string,DataModel::ObjectIdentifier>& options, const DataModel::ObjectIdentifier& defaultValue = DataModel::ObjectIdentifier())
-			:	HtmlTag("select"),
-			 	commandID("s_" + name)
-			{
-				AddAttribute("name", name);
-				AddId(commandID);
-
-				for (auto& option : options)
-				{
-					HtmlTag optionTag("option");
-					optionTag.AddAttribute("value", option.second);
-					optionTag.AddContent(option.first);
-					if (option.second == defaultValue)
-					{
-						optionTag.AddAttribute("selected");
-					}
-					AddChildTag(optionTag);
-				}
-			}
+			HtmlTagSelect(const std::string& name,
+				const std::map<std::string,DataModel::ObjectIdentifier>& options,
+				const DataModel::ObjectIdentifier& defaultValue = DataModel::ObjectIdentifier());
 
 			template<typename T>
-			HtmlTagSelect(const std::string& name, const std::map<std::string,T>& options, const int defaultValue = 0)
+			HtmlTagSelect(const std::string& name,
+				const std::map<std::string,T>& options,
+				const int defaultValue = 0) // This can not be Type T, because it would be ambiguous with previous declaration
 			:	HtmlTag("select"),
 			 	commandID("s_" + name)
 			{
@@ -83,7 +70,9 @@ namespace WebServer
 
 			// T2 must be implicitly convertible to Languages::TextSelector
 			template<typename T1, typename T2>
-			HtmlTagSelect(const std::string& name, const std::map<T1,T2>& options, T1 defaultValue = 0)
+			HtmlTagSelect(const std::string& name,
+				const std::map<T1,T2>& options,
+				const T1 defaultValue = 0)
 			:	HtmlTag("select"),
 			 	commandID("s_" + name)
 			{
@@ -104,7 +93,9 @@ namespace WebServer
 			}
 
 			template<typename T>
-			HtmlTagSelect(const std::string& name, const std::map<T,std::string>& options, T defaultValue = 0)
+			HtmlTagSelect(const std::string& name,
+				const std::map<T,std::string>& options,
+				const T defaultValue = 0)
 			:	HtmlTag("select"),
 			 	commandID("s_" + name)
 			{
