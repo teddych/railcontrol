@@ -57,10 +57,18 @@ namespace Hardware
 		}
 
 		void DccPpEx::LocoFunction(__attribute__((unused)) const Protocol protocol,
-			__attribute__((unused)) const Address address,
-			__attribute__((unused)) const DataModel::LocoFunctionNr function,
-			__attribute__((unused)) const DataModel::LocoFunctionState on)
+			const Address address,
+			const DataModel::LocoFunctionNr function,
+			const DataModel::LocoFunctionState on)
 		{
+			string buffer("<F ");
+			buffer += to_string(address);
+			buffer += " ";
+			buffer += to_string(function);
+			buffer += " ";
+			buffer += on ? "1" : "0";
+			buffer += ">";
+			SendInternal(buffer);
 		}
 
 		void DccPpEx::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
