@@ -39,7 +39,11 @@ namespace Hardware
 
 				inline Hardware::Capabilities GetCapabilities() const override
 				{
-					return CapabilityLoco | CapabilityAccessory;
+					return CapabilityLoco
+						| CapabilityAccessory
+						| CapabilityProgram
+						| CapabilityProgramDccDirectWrite
+						| CapabilityProgramDccPomLocoWrite;
 				}
 
 				void GetLocoProtocols(std::vector<Protocol>& protocols) const override
@@ -107,6 +111,13 @@ namespace Hardware
 				void LocoSpeedOrientation(const Address address,
 					const Speed speed,
 					const Orientation orientation);
+
+				void ProgramWriteMain(const Address address,
+					const CvNumber cv,
+					const CvValue value);
+
+				void ProgramWriteProgram(const CvNumber cv,
+					const CvValue value);
 
 				inline void SendInternal(const std::string& buffer)
 				{

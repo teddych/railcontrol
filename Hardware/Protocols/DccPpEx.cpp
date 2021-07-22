@@ -76,11 +76,49 @@ namespace Hardware
 			SendInternal(buffer);
 		}
 
-		void DccPpEx::ProgramWrite(__attribute__((unused)) const ProgramMode mode,
-			__attribute__((unused)) const Address address,
-			__attribute__((unused)) const CvNumber cv,
-			__attribute__((unused)) const CvValue value)
+		void DccPpEx::ProgramWrite(const ProgramMode mode,
+			const Address address,
+			const CvNumber cv,
+			const CvValue value)
 		{
+			switch(mode)
+			{
+				case ProgramModeDccDirect:
+					ProgramWriteProgram(cv, value);
+					return;
+
+				case ProgramModeDccPomLoco:
+					ProgramWriteMain(address, cv, value);
+					return;
+
+				default:
+					return;
+			}
+		}
+
+		void DccPpEx::ProgramWriteMain(const Address address,
+			const CvNumber cv,
+			const CvValue value)
+		{
+			string buffer("<w ");
+			buffer += to_string(address);
+			buffer += " ";
+			buffer += to_string(cv);
+			buffer += " ";
+			buffer += to_string(value);
+			buffer += ">";
+			SendInternal(buffer);
+		}
+
+		void DccPpEx::ProgramWriteProgram(const CvNumber cv,
+			const CvValue value)
+		{
+			string buffer("<W ");
+			buffer += to_string(cv);
+			buffer += " ";
+			buffer += to_string(value);
+			buffer += " 8 9>";
+			SendInternal(buffer);
 		}
 
 		void DccPpEx::LocoSpeedOrientation(const Address address,
