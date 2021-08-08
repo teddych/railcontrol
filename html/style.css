@@ -590,6 +590,7 @@ button:active {
 .button_off .button_on,
 .button_on .button_off {
 	display: none;
+	visibility: hidden;
 }
 
 .sound1 {
