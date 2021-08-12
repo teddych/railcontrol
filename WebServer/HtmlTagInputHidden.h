@@ -34,15 +34,13 @@ namespace WebServer
 			HtmlTagInputHidden(const HtmlTagInputHidden&) = delete;
 			HtmlTagInputHidden& operator=(const HtmlTagInputHidden&) = delete;
 
-			HtmlTagInputHidden(const DataModel::ObjectIdentifier& identifier)
-			:	HtmlTagInput("hidden",
-					identifier.GetObjectTypeAsString(),
+			inline HtmlTagInputHidden(const DataModel::ObjectIdentifier& identifier)
+			:	HtmlTagInputHidden(identifier.GetObjectTypeAsString(),
 					identifier.GetObjectIdAsString())
 			{
-				AddClass("hidden");
 			}
 
-			HtmlTagInputHidden(const std::string& name,
+			inline HtmlTagInputHidden(const std::string& name,
 				const std::string& value = "")
 			:	HtmlTagInput("hidden",
 					name,

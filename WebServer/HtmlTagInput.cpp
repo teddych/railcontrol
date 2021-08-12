@@ -25,9 +25,9 @@ using std::string;
 
 namespace WebServer
 {
-	HtmlTagInput::HtmlTagInput(const std::string& type,
-		const std::string& name,
-		const std::string& value,
+	HtmlTagInput::HtmlTagInput(const string& type,
+		const string& name,
+		const string& value,
 		const Style style)
 	:	HtmlTag("input")
 	{
