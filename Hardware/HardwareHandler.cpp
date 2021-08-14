@@ -39,7 +39,6 @@ along with RailControl; see the file LICENCE. If not see
 #include "Hardware/OpenDcc.h"
 #include "Hardware/RedBox.h"
 #include "Hardware/Rektor.h"
-#include "Hardware/RM485.h"
 #include "Hardware/TwinCenter.h"
 #include "Hardware/Virtual.h"
 #include "Hardware/Z21.h"
@@ -72,10 +71,6 @@ namespace Hardware
 
 			case HardwareTypeM6051:
 				instance = reinterpret_cast<Hardware::HardwareInterface*>(new M6051(params));
-				return;
-
-			case HardwareTypeRM485:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new RM485(params));
 				return;
 
 			case HardwareTypeOpenDcc:
@@ -660,10 +655,6 @@ namespace Hardware
 
 			case HardwareTypeM6051:
 				Hardware::M6051::GetArgumentTypesAndHint(arguments, hint);
-				return;
-
-			case HardwareTypeRM485:
-				Hardware::RM485::GetArgumentTypesAndHint(arguments, hint);
 				return;
 
 			case HardwareTypeOpenDcc:
