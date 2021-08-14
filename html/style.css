@@ -435,7 +435,7 @@ label {
 
 input {
 	display: inline-block;
-	width: 242px;
+	width: 240px;
 }
 
 .dropdowncontainer {
@@ -444,38 +444,36 @@ input {
 	width: 250px;
 }
 
+.dropdowncontainer input {
+	width: calc(100% - 10px);
+}
+
 .select_track,
-.select_track .dropdown,
-.select_track input {
+.select_track .dropdown {
 	width: 160px;
 }
 
 .select_orientation,
-.select_orientation .dropdown,
-.select_orientation input {
+.select_orientation .dropdown {
 	width: 80px;
 }
 
 .select_relation_objecttype,
-.select_relation_objecttype .dropdown,
-.select_relation_objecttype input {
+.select_relation_objecttype .dropdown {
 	width: 100px;
 }
 
 .select_relation_id,
-.select_relation_id .dropdown,
-.select_relation_id input {
+.select_relation_id .dropdown {
 	width: 300px;
 }
 
 .select_relation_state,
-.select_relation_state .dropdown,
-.select_relation_state input {
+.select_relation_state .dropdown {
 	width: 80px;
 }
 
-.layer_selector .dropdowncontainer,
-.layer_selector input {
+.layer_selector .dropdowncontainer {
 	width: 100%;
 }
 
@@ -488,7 +486,8 @@ input {
 	right: 0;
 	visibility: hidden;
 	opacity: 0;
-	max-height: 250px;
+	max-height: 210px;
+	overflow-y: auto;
 }
 
 .dropdownentry {
@@ -498,7 +497,7 @@ input {
 	display: block;
 	width: 0;
 	height: 0;
-	padding: 4px;
+	padding: 0;
 	margin: 0;
 	z-index: 2;
 	visibility: hidden;
@@ -517,11 +516,16 @@ input {
 	visibility: visible;
 	pointer-events: all;
 	opacity: 1;
+}
+
+.dropdown.show {
 	width: 100%;
 }
 
 .dropdown.show .dropdownentry {
-	height: 23px;
+	height: 14px;
+	padding: 4px;
+	width: calc(100% - 10px);
 }
 
 .status {
