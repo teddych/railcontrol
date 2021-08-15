@@ -519,6 +519,24 @@ namespace Hardware
 		instance->ProgramWrite(mode, address, cv, value);
 	}
 
+	void HardwareHandler::FeedbackDelete(const FeedbackID feedbackID, const std::string& name)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->FeedbackDelete(feedbackID, name);
+	}
+
+	void HardwareHandler::FeedbackSettings(const FeedbackID feedbackID, const std::string& name)
+	{
+		if (instance == nullptr)
+		{
+			return;
+		}
+		instance->FeedbackSettings(feedbackID, name);
+	}
+
 	void HardwareHandler::AddUnmatchedLocos(std::map<std::string,DataModel::LocoConfig>& list) const
 	{
 		if (instance == nullptr)
