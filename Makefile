@@ -49,9 +49,10 @@ dist-cygwin: all
 	zip -9 railcontrol.windows.`date +"%Y%m%d"`.zip $(TMPDIRCYGWIN)/* $(TMPDIRCYGWIN)/html/*
 	rm -r $(TMPDIRCYGWIN)
 
-amalgamation: Version.cpp
+amalgamation.cpp:
 	./amalgamation.bash
-	$(CXX) $(CXXFLAGSAMALGAMATION) -DAMALGAMATION -c -o amalgamation.o amalgamation.cpp
+
+amalgamation: amalgamation.o Version.cpp Storage/sqlite/sqlite3.o $(COBJ)
 	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o Hardware/zlib/*.o -o railcontrol $(LIBSAMALGAMATION)
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
