@@ -46,7 +46,7 @@ namespace Network
 	        return TcpConnection(0);
 	    }
 
-	    ok = connect(sock, (struct sockaddr *)&address, sizeof(address));
+	    ok = ConnectWithTimeout(sock, (struct sockaddr *)&address, sizeof(address));
 	    if (ok < 0)
 	    {
 	    	Languages::TextSelector text;

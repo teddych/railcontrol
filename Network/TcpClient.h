@@ -37,6 +37,6 @@ namespace Network
 			static TcpConnection GetTcpClientConnection(Logger::Logger* logger, const std::string& host, const unsigned short port);
 
 		private:
-			int ConnectWithTimeout(int sock, struct sockaddr *addr, socklen_t length);
+			static int ConnectWithTimeout(int sock, struct sockaddr *addr, socklen_t length);
 	};
 }
