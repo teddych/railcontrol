@@ -3,8 +3,8 @@ RAILCONTROL_VERSION := 20
 
 CFLAGSSQLITE=-g -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
 CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration
-CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -std=c++11 -D_GNU_SOURCE
-CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -Werror -std=c++11
+CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11 -D_GNU_SOURCE
+CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11
 LDFLAGS=-g
 LIBS=-lpthread -ldl
 LIBSAMALGAMATION=-lpthread -ldl
