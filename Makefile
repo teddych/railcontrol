@@ -69,12 +69,12 @@ Hardware/zlib/%.o: Hardware/zlib/%.c Hardware/zlib/*.h
 Storage/sqlite/sqlite3.o: Storage/sqlite/sqlite3.c Storage/sqlite/sqlite3.h
 	$(CC) $(CFLAGSSQLITE) -c -o $@ $<
 
-%.o: %.cpp *.h DataModel/*.h Hardware/*.h Logger/*.h Network/*.h Storage/*.h Utils/*.h WebServer/*.h
+%.o: %.cpp *.h DataModel/*.h Hardware/*.h Hardware/Protocols/*.h Logger/*.h Network/*.h Storage/*.h Utils/*.h WebServer/*.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 .PHONY: clean
 clean:
-	rm -f *.o DataModel/*.o Hardware/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Storage/sqlite/*.o Utils/*.o WebServer/*.o
+	rm -f *.o DataModel/*.o Hardware/*.o Hardware/Protocols/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Storage/sqlite/*.o Utils/*.o WebServer/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:
