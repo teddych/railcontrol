@@ -73,6 +73,7 @@ namespace DataModel
 		str += ";feedbackIdStop=" + to_string(feedbackIdStop);
 		str += ";feedbackIdOver=" + to_string(feedbackIdOver);
 		str += ";pushpull=" + to_string(pushpull);
+		str += ";traintype=" + to_string(trainType);
 		str += ";mintrainlength=" + to_string(minTrainLength);
 		str += ";maxtrainlength=" + to_string(maxTrainLength);
 		str += ";waitafterrelease=" + to_string(waitAfterRelease);
@@ -108,6 +109,7 @@ namespace DataModel
 			feedbackIdStop = FeedbackNone;
 			feedbackIdOver = FeedbackNone;
 			pushpull = PushpullTypeBoth;
+			trainType = TrainTypeAll;
 			minTrainLength = 0;
 			maxTrainLength = 0;
 			waitAfterRelease = 0;
@@ -146,6 +148,7 @@ namespace DataModel
 		feedbackIdOver = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdOver", FeedbackNone);
 		pushpull = static_cast<PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "commuter", PushpullTypeBoth)); // FIXME: remove later 2020-10-27
 		pushpull = static_cast<PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", pushpull));
+		trainType = static_cast<TrainType>(Utils::Utils::GetIntegerMapEntry(arguments, "traintype", trainType));
 		minTrainLength = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "mintrainlength", 0));
 		maxTrainLength = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "maxtrainlength", 0));
 		waitAfterRelease = Utils::Utils::GetIntegerMapEntry(arguments, "waitafterrelease", 0);
@@ -209,6 +212,13 @@ namespace DataModel
 		if (pushpull != locoPushpull && pushpull != PushpullTypeBoth)
 		{
 			logger->Debug(Languages::TextDifferentPushpullTypes, GetName());
+			return false;
+		}
+
+		const TrainType locoTrainType = loco->GetTrainType();
+		if (!(trainType & locoTrainType))
+		{
+			logger->Debug(Languages::TextDifferentTrainTypes, GetName());
 			return false;
 		}
 

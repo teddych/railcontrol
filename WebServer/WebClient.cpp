@@ -1421,7 +1421,7 @@ namespace WebServer
 				reducedSpeed = loco->GetReducedSpeed();
 				creepingSpeed = loco->GetCreepingSpeed();
 				propulsion = loco->GetPropulsion();
-				type = loco->GetType();
+				type = loco->GetTrainType();
 				loco->GetFunctions(locoFunctions);
 				slaves = loco->GetSlaves();
 			}

@@ -66,6 +66,7 @@ namespace DataModel
 				executeAtUnlock(false),
 				delay(0),
 				pushpull(PushpullTypeBoth),
+				trainType(TrainTypeAll),
 				minTrainLength(0),
 				maxTrainLength(0),
 				automode(AutomodeNo),
@@ -170,6 +171,16 @@ namespace DataModel
 			inline void SetPushpull(const PushpullType pushpull)
 			{
 				this->pushpull = pushpull;
+			}
+
+			inline TrainType GetTrainType() const
+			{
+				return trainType;
+			}
+
+			inline void SetTrainType(const TrainType trainType)
+			{
+				this->trainType = trainType;
 			}
 
 			inline Length GetMinTrainLength() const
@@ -332,6 +343,7 @@ namespace DataModel
 			std::vector<DataModel::Relation*> relationsAtLock;
 			std::vector<DataModel::Relation*> relationsAtUnlock;
 			PushpullType pushpull;
+			TrainType trainType;
 			Length minTrainLength;
 			Length maxTrainLength;
 			Automode automode;
