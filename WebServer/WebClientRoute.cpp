@@ -74,6 +74,7 @@ namespace WebServer
 		string name = Languages::GetText(Languages::TextNew);
 		Delay delay = Route::DefaultDelay;
 		Route::PushpullType pushpull = Route::PushpullTypeBoth;
+		Propulsion propulsion = PropulsionAll;
 		TrainType trainType = TrainTypeAll;
 		Length minTrainLength = 0;
 		Length maxTrainLength = 0;
@@ -102,6 +103,7 @@ namespace WebServer
 				name = route->GetName();
 				delay = route->GetDelay();
 				pushpull = route->GetPushpull();
+				propulsion = route->GetPropulsion();
 				trainType = route->GetTrainType();
 				minTrainLength = route->GetMinTrainLength();
 				maxTrainLength = route->GetMaxTrainLength();
@@ -228,6 +230,17 @@ namespace WebServer
 		pushpullOptions[Route::PushpullTypeOnly] = Languages::TextPushPullOnly;
 		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("pushpull", Languages::TextAllowedTrains, pushpullOptions, pushpull));
 
+		vector<pair<Propulsion,Languages::TextSelector>> propulsionOptions;
+		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionAll,Languages::TextPropulsionAll));
+		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionSteam,Languages::TextPropulsionSteam));
+		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionDiesel,Languages::TextPropulsionDiesel));
+		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionGas,Languages::TextPropulsionGas));
+		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionElectric,Languages::TextPropulsionElectric));
+		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionHydrogen,Languages::TextPropulsionHydrogen));
+		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionAccu,Languages::TextPropulsionAccu));
+		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionOther,Languages::TextPropulsionOther));
+		tracksDiv.AddChildTag(HtmlTagSelectMultipleWithLabel("propulsion", Languages::TextAllowedPropulsions, propulsionOptions, propulsion));
+
 		vector<pair<TrainType,Languages::TextSelector>> trainTypeOptions;
 		trainTypeOptions.push_back(pair<TrainType,Languages::TextSelector>(TrainTypeAll,Languages::TextTrainTypeAll));
 		trainTypeOptions.push_back(pair<TrainType,Languages::TextSelector>(TrainTypePassenger,Languages::TextTrainTypePassenger));
@@ -278,6 +291,11 @@ namespace WebServer
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		Delay delay = static_cast<Delay>(Utils::Utils::GetIntegerMapEntry(arguments, "delay"));
 		Route::PushpullType pushpull = static_cast<Route::PushpullType>(Utils::Utils::GetIntegerMapEntry(arguments, "pushpull", Route::PushpullTypeBoth));
+		Propulsion propulsion = static_cast<Propulsion>(Utils::Utils::GetIntegerMapEntry(arguments, "propulsion", PropulsionAll));
+		if (propulsion == PropulsionUnknown)
+		{
+			propulsion = PropulsionAll;
+		}
 		TrainType trainType = static_cast<TrainType>(Utils::Utils::GetIntegerMapEntry(arguments, "traintype", TrainTypeAll));
 		if (trainType == TrainTypeUnknown)
 		{
@@ -367,6 +385,7 @@ namespace WebServer
 			name,
 			delay,
 			pushpull,
+			propulsion,
 			trainType,
 			mintrainlength,
 			maxtrainlength,

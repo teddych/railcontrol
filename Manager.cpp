@@ -2383,6 +2383,7 @@ bool Manager::RouteSave(RouteID routeID,
 	const std::string& name,
 	const Delay delay,
 	const Route::PushpullType pushpull,
+	const Propulsion propulsion,
 	const TrainType trainType,
 	const Length minTrainLength,
 	const Length maxTrainLength,
@@ -2416,7 +2417,6 @@ bool Manager::RouteSave(RouteID routeID,
 	{
 		route = CreateAndAddObject(routes, routeMutex);
 	}
-
 	if (route == nullptr)
 	{
 		result = Languages::GetText(Languages::TextUnableToAddRoute);
@@ -2486,6 +2486,7 @@ bool Manager::RouteSave(RouteID routeID,
 		route->SetFeedbackIdStop(feedbackIdStop);
 		route->SetFeedbackIdOver(feedbackIdOver);
 		route->SetPushpull(pushpull);
+		route->SetPropulsion(propulsion);
 		route->SetTrainType(trainType);
 		route->SetMinTrainLength(minTrainLength);
 		route->SetMaxTrainLength(maxTrainLength);
@@ -2503,6 +2504,7 @@ bool Manager::RouteSave(RouteID routeID,
 		route->SetFeedbackIdStop(FeedbackNone);
 		route->SetFeedbackIdOver(FeedbackNone);
 		route->SetPushpull(Route::PushpullTypeBoth);
+		route->SetPropulsion(PropulsionAll);
 		route->SetTrainType(TrainTypeAll);
 		route->SetMinTrainLength(0);
 		route->SetMaxTrainLength(0);

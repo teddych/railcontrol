@@ -173,6 +173,16 @@ namespace DataModel
 				this->pushpull = pushpull;
 			}
 
+			inline Propulsion GetPropulsion() const
+			{
+				return propulsion;
+			}
+
+			inline void SetPropulsion(const Propulsion propulsion)
+			{
+				this->propulsion = propulsion;
+			}
+
 			inline TrainType GetTrainType() const
 			{
 				return trainType;
@@ -343,6 +353,7 @@ namespace DataModel
 			std::vector<DataModel::Relation*> relationsAtLock;
 			std::vector<DataModel::Relation*> relationsAtUnlock;
 			PushpullType pushpull;
+			Propulsion propulsion;
 			TrainType trainType;
 			Length minTrainLength;
 			Length maxTrainLength;

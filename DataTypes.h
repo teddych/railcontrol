@@ -237,7 +237,14 @@ enum Propulsion : uint8_t
 	PropulsionElectric = 0x08,
 	PropulsionHydrogen = 0x10,
 	PropulsionAccu     = 0x20,
-	PropulsionOther    = 0x80
+	PropulsionOther    = 0x80,
+	PropulsionAll      = PropulsionSteam
+							| PropulsionDiesel
+							| PropulsionGas
+							| PropulsionElectric
+							| PropulsionHydrogen
+							| PropulsionAccu
+							| PropulsionOther
 };
 
 enum TrainType : uint32_t
