@@ -228,7 +228,7 @@ namespace WebServer
 		pushpullOptions[Route::PushpullTypeNo] = Languages::TextNoPushPull;
 		pushpullOptions[Route::PushpullTypeBoth] = Languages::TextAllTrains;
 		pushpullOptions[Route::PushpullTypeOnly] = Languages::TextPushPullOnly;
-		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("pushpull", Languages::TextAllowedTrains, pushpullOptions, pushpull));
+		tracksDiv.AddChildTag(HtmlTagSelectWithLabel("pushpull", Languages::TextAllowedPushPull, pushpullOptions, pushpull));
 
 		vector<pair<Propulsion,Languages::TextSelector>> propulsionOptions;
 		propulsionOptions.push_back(pair<Propulsion,Languages::TextSelector>(PropulsionAll,Languages::TextPropulsionAll));
