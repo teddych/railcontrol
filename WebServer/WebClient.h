@@ -192,7 +192,7 @@ namespace WebServer
 			void PrintMainHTML();
 			void DeliverFile(const std::string& file);
 			void DeliverFileInternal(FILE* f, const char* realFile, const std::string& file);
-			HtmlTag HtmlTagLocoSelector(const unsigned int selector) const;
+			HtmlTag HtmlTagLocoSelector(const std::string& selector) const;
 			HtmlTag HtmlTagLayerSelector() const;
 
 			HtmlTag HtmlTagMatchKeyProtocolLoco(const ControlID controlID,
