@@ -3325,8 +3325,8 @@ namespace WebServer
 			.AddAttribute("ondragover", "allowDrop(event);")
 			.AddAttribute("ondrop", "drop(event);")
 			);
-		body.AddChildTag(HtmlTag("div").AddClass("reduce_locos").AddId("reduce_locos").AddContent("&lt;").AddAttribute("onclick", "reduceLocos(); return false;"));
-		body.AddChildTag(HtmlTag("div").AddClass("extend_locos").AddId("extend_locos").AddContent("&gt;").AddAttribute("onclick", "extendLocos(); return false;"));
+		//body.AddChildTag(HtmlTag("div").AddClass("reduce_locos").AddId("reduce_locos").AddContent("&lt;").AddAttribute("onclick", "reduceLocos(); return false;"));
+		//body.AddChildTag(HtmlTag("div").AddClass("extend_locos").AddId("extend_locos").AddContent("&gt;").AddAttribute("onclick", "extendLocos(); return false;"));
 		body.AddChildTag(HtmlTag("div").AddClass("clock").AddId("clock").AddContent("<object data=\"/station-clock.svg\" class=\"clock2\" type=\"image/svg+xml\"><param name=\"secondHand\" value=\"din 41071.1\"/><param name=\"minuteHandBehavior\" value=\"sweeping\"/><param name=\"secondHandBehavior\" value=\"steeping\"/><param name=\"axisCoverRadius\" value=\"0\"/><param name=\"updateInterval\" value=\"250\"/></object>"));
 		body.AddChildTag(HtmlTag("div").AddClass("status").AddId("status"));
 		body.AddChildTag(HtmlTag("div").AddClass("popup").AddId("popup"));
