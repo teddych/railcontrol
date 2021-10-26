@@ -1952,22 +1952,22 @@ namespace WebServer
 		ReplyHtmlWithHeader(content);
 	}
 
-	HtmlTag WebClient::HtmlTagControlLoco(const ControlID controlID, const string& objectType, const ObjectID objectID)
+	HtmlTag WebClient::HtmlTagControlLoco(ControlID& controlId, const string& objectType, const ObjectID objectID)
 	{
 		std::map<ControlID,string> controls = manager.LocoControlListNames();
-		return WebClientStatic::HtmlTagControl(controls, controlID, objectType, objectID);
+		return WebClientStatic::HtmlTagControl(controls, controlId, objectType, objectID);
 	}
 
-	HtmlTag WebClient::HtmlTagControlAccessory(const ControlID controlID, const string& objectType, const ObjectID objectID)
+	HtmlTag WebClient::HtmlTagControlAccessory(ControlID& controlID, const string& objectType, const ObjectID objectID)
 	{
 		std::map<ControlID,string> controls = manager.AccessoryControlListNames();
 		return WebClientStatic::HtmlTagControl(controls, controlID, objectType, objectID);
 	}
 
-	HtmlTag WebClient::HtmlTagControlFeedback(const ControlID controlID, const string& objectType, const ObjectID objectID)
+	HtmlTag WebClient::HtmlTagControlFeedback(ControlID& controlId, const string& objectType, const ObjectID objectID)
 	{
 		std::map<ControlID,string> controls = manager.FeedbackControlListNames();
-		return WebClientStatic::HtmlTagControl(controls, controlID, objectType, objectID);
+		return WebClientStatic::HtmlTagControl(controls, controlId, objectType, objectID);
 	}
 
 	void WebClient::HandleAccessoryEdit(const map<string, string>& arguments)
