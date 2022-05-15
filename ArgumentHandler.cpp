@@ -65,12 +65,6 @@ std::string ArgumentHandler::GetArgumentString(const char argument, const std::s
 	{
 		return defaultValue;
 	}
-	std::string& value = argumentMap.at(argument);
-	if (value.size() == 0)
-	{
-		return defaultValue;
-	}
-
-	return value;
+	return argumentMap.at(argument);
 }
 

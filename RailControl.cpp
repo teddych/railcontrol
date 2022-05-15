@@ -79,9 +79,9 @@ int main (int argc, char* argv[])
 	{
 		std::cout << "Usage: " << argv[0] << " <options>" << std::endl;
 		std::cout << "Options:" << std::endl;
-		std::cout << "-c --config=ConfigFile   Read config file with file name ConfigFile (default ConfigFile: railcontrol.conf)" << std::endl;
+		std::cout << "   --config=ConfigFile   Read config file with file name ConfigFile (default ConfigFile: railcontrol.conf)" << std::endl;
 		std::cout << "-d --daemonize           Daemonize RailControl. Implies -s" << std::endl;
-		std::cout << "-l --logfile=LogFile     Write a logfile to file LogFile (default LogFile: railcontrol.log)" << std::endl;
+		std::cout << "   --logfile=LogFile     Write a logfile to file LogFile (default LogFile: railcontrol.log)" << std::endl;
 		std::cout << "-h --help                Show this help" << std::endl;
 		std::cout << "-s --silent              Omit writing to console" << std::endl;
 		return EXIT_SUCCESS;
@@ -116,10 +116,9 @@ int main (int argc, char* argv[])
 		logger->AddConsoleLogger();
 	}
 
-	const bool fileLogger = argumentHandler.GetArgumentBool('l');
-	if (fileLogger == true)
+	const string logFileName = argumentHandler.GetArgumentString('l', "railcontrol.log");
+	if (logFileName.length() > 0)
 	{
-		const string logFileName = argumentHandler.GetArgumentString('l', "railcontrol.log");
 		logger->AddFileLogger(logFileName);
 	}
 
@@ -135,7 +134,18 @@ int main (int argc, char* argv[])
 	}
 
 	const string configFileDefaultName("railcontrol.conf");
-	const string configFileName = argumentHandler.GetArgumentString('c', configFileDefaultName);
+	string configFileName = argumentHandler.GetArgumentString('c', configFileDefaultName);
+	if (configFileName.compare("") == 0)
+	{
+		configFileName = configFileDefaultName;
+	}
+
+	if (!Utils::Utils::FileExists(configFileName))
+	{
+		logger->Warning(Languages::TextConfigFileNotFound, configFileName, configFileDefaultName);
+		configFileName = configFileDefaultName;
+	}
+
 	if (configFileName.compare(configFileDefaultName) == 0 && !Utils::Utils::FileExists(configFileDefaultName))
 	{
 		Utils::Utils::CopyFile(logger, "railcontrol.conf.dist", configFileDefaultName);
