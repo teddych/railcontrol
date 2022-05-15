@@ -132,6 +132,7 @@ int main (int argc, char* argv[])
 	{
 		logger->Info(Languages::TextGitDirty, changedFiles);
 	}
+	logger->Info(Languages::TextStartArgument, argv[0]);
 
 	const string configFileDefaultName("railcontrol.conf");
 	string configFileName = argumentHandler.GetArgumentString('c', configFileDefaultName);

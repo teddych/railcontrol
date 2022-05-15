@@ -593,6 +593,7 @@ class Languages
 			TextSimpleRight,
 			TextSpanish,
 			TextSpeed,
+			TextStartArgument,
 			TextStartLocoAutomode,
 			TextStartLocoTimetablemode,
 			TextStartTrack,

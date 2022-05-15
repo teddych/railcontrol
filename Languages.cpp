@@ -593,6 +593,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSimpleRight */ { "simple right", "einfach rechts", "simple derecha" },
 /* TextSpanish */ { "Spanisch", "Spanisch", "Español" },
 /* TextSpeed */ { "Speed", "Geschwindigkeit", "Velocidad" },
+/* TextStartArgument */ { "Start argument: {0}", "Startargument: {0}", "Argumento de inicio: {0}" },
 /* TextStartLocoAutomode */ { "Start locomotive in automode", "Starte Lokomotive im Automodus", "Poner locomotora en marcha en autómodo" },
 /* TextStartLocoTimetablemode */ { "Start locomotive in timetable mode", "Starte Lokomotive im Fahrplanmodus", "Poner locomotora en marcha en modo horario" },
 /* TextStartTrack */ { "Start track", "Startgleis", "Vía de inicio" },
