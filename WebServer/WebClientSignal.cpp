@@ -282,7 +282,7 @@ namespace WebServer
 			if ((signalType == SignalTypeChDwarf || signalType == SignalTypeDeCombined) && i == SignalStateAspect2)
 			{
 				// FIXME: Remove later: 2022-05-27
-				offsets[SignalStateExpectedStop] = address;
+				offsets[SignalStateStopExpected] = address;
 				continue;
 			}
 			offsets[static_cast<AccessoryState>(i)] = address;
@@ -363,6 +363,10 @@ namespace WebServer
 		else if (signalStateText.compare("aspect10") == 0)
 		{
 			signalState = DataModel::SignalStateAspect10;
+		}
+		else if (signalStateText.compare("stopexpected") == 0)
+		{
+			signalState = DataModel::SignalStateStopExpected;
 		}
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);

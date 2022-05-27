@@ -425,6 +425,11 @@ namespace WebServer
 				stateText = "aspect6";
 				text = Languages::TextSignalStateIsAspect6;
 				break;
+
+			case DataModel::SignalStateStopExpected:
+				stateText = "stopexpected";
+				text = Languages::TextSignalStateIsStopExpected;
+				break;
 		}
 		string signalIdText(to_string(signal->GetID()));
 		string command = "signal;signal=" + signalIdText + ";state=" + stateText;

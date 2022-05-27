@@ -584,6 +584,7 @@ class Languages
 			TextSignalStateIsAspect9,
 			TextSignalStateIsClear,
 			TextSignalStateIsStop,
+			TextSignalStateIsStopExpected,
 			TextSignalStateShortClear,
 			TextSignalStateStop,
 			TextSignalStateStopExpected,

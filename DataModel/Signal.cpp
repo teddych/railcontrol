@@ -116,11 +116,11 @@ namespace DataModel
 		switch(GetType())
 		{
 			case SignalTypeDeCombined:
-				SetStateAddressOffset(SignalStateExpectedStop, 2);
+				SetStateAddressOffset(SignalStateStopExpected, 2);
 				break;
 
 			case SignalTypeChDwarf:
-				SetStateAddressOffset(SignalStateExpectedStop, 2);
+				SetStateAddressOffset(SignalStateStopExpected, 2);
 				break;
 
 			case SignalTypeChLMain:
@@ -145,11 +145,11 @@ namespace DataModel
 		switch(GetType())
 		{
 			case SignalTypeDeCombined:
-				out.emplace(SignalStateExpectedStop, StateOption(Languages::TextSignalStateStopExpected, GetStateAddressOffset(SignalStateExpectedStop)));
+				out.emplace(SignalStateStopExpected, StateOption(Languages::TextSignalStateStopExpected, GetStateAddressOffset(SignalStateStopExpected)));
 				break;
 
 			case SignalTypeChDwarf:
-				out.emplace(SignalStateExpectedStop, StateOption(Languages::TextSignalStateCaution, GetStateAddressOffset(SignalStateExpectedStop)));
+				out.emplace(SignalStateStopExpected, StateOption(Languages::TextSignalStateCaution, GetStateAddressOffset(SignalStateStopExpected)));
 				break;
 
 			case SignalTypeChLMain:
