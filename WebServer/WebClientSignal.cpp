@@ -276,9 +276,15 @@ namespace WebServer
 		bool releaseWhenFree = Utils::Utils::GetBoolMapEntry(arguments, "releasewhenfree", false);
 		DataModel::AccessoryType signalType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "signaltype", DataModel::SignalTypeSimpleLeft));
 		std::map<AccessoryState,AddressOffset> offsets;
-		for (AddressOffset i = 0; i < 10; ++i)
+		for (AddressOffset i = 0; i < SignalStateMax; ++i)
 		{
 			AddressOffset address = Utils::Utils::GetIntegerMapEntry(arguments, "address" + to_string(i), -1);
+			if ((signalType == SignalTypeChDwarf || signalType == SignalTypeDeCombined) && i == SignalStateAspect2)
+			{
+				// FIXME: Remove later: 2022-05-27
+				offsets[SignalStateExpectedStop] = address;
+				continue;
+			}
 			offsets[static_cast<AccessoryState>(i)] = address;
 		}
 		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
