@@ -185,14 +185,14 @@ namespace WebServer
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
-		formContent.AddChildTag(client.HtmlTagTabPosition(posx, posy, posz, rotation));
-
 		HtmlTag addressContent("div");
 		addressContent.AddId("tab_address");
 		addressContent.AddClass("tab_content");
 		addressContent.AddClass("hidden");
 		addressContent.AddChildTag(HtmlTag("div").AddId("addresses"));
 		formContent.AddChildTag(addressContent);
+
+		formContent.AddChildTag(client.HtmlTagTabPosition(posx, posy, posz, rotation));
 
 		// FIXME: Remove later: 2021-03-18
 		if (feedbacks.size())
@@ -225,7 +225,7 @@ namespace WebServer
 
 		Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressNone);
 
-		std::map<DataModel::AccessoryState,DataModel::Signal::StateOption> stateOptions = signal->GetStateOptions();
+		const std::map<DataModel::AccessoryState,DataModel::Signal::StateOption> stateOptions = signal->GetStateOptions();
 
 		map<AddressOffset,string> selectAddressOptions;
 		selectAddressOptions[-1] = "-";
@@ -367,6 +367,10 @@ namespace WebServer
 		else if (signalStateText.compare("stopexpected") == 0)
 		{
 			signalState = DataModel::SignalStateStopExpected;
+		}
+		else if (signalStateText.compare("dark") == 0)
+		{
+			signalState = DataModel::SignalStateDark;
 		}
 
 		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);

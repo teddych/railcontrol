@@ -426,9 +426,19 @@ namespace WebServer
 				text = Languages::TextSignalStateIsAspect6;
 				break;
 
+			case DataModel::SignalStateAspect7:
+				stateText = "aspect7";
+				text = Languages::TextSignalStateIsAspect7;
+				break;
+
 			case DataModel::SignalStateStopExpected:
 				stateText = "stopexpected";
 				text = Languages::TextSignalStateIsStopExpected;
+				break;
+
+			case DataModel::SignalStateDark:
+				stateText = "dark";
+				text = Languages::TextSignalStateIsDark;
 				break;
 		}
 		string signalIdText(to_string(signal->GetID()));

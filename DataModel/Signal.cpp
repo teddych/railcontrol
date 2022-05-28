@@ -117,6 +117,9 @@ namespace DataModel
 		{
 			case SignalTypeDeCombined:
 				SetStateAddressOffset(SignalStateStopExpected, 2);
+				SetStateAddressOffset(SignalStateAspect4, 3);
+				SetStateAddressOffset(SignalStateAspect7, 4);
+				SetStateAddressOffset(SignalStateDark, 5);
 				break;
 
 			case SignalTypeChDwarf:
@@ -146,6 +149,9 @@ namespace DataModel
 		{
 			case SignalTypeDeCombined:
 				out.emplace(SignalStateStopExpected, StateOption(Languages::TextSignalStateStopExpected, GetStateAddressOffset(SignalStateStopExpected)));
+				out.emplace(SignalStateAspect4, StateOption(Languages::TextSignalStateShunting, GetStateAddressOffset(SignalStateAspect4)));
+				out.emplace(SignalStateAspect7, StateOption(Languages::TextSignalStateZs7, GetStateAddressOffset(SignalStateAspect7)));
+				out.emplace(SignalStateDark, StateOption(Languages::TextSignalStateDark, GetStateAddressOffset(SignalStateDark)));
 				break;
 
 			case SignalTypeChDwarf:
