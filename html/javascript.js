@@ -1412,7 +1412,7 @@ function dataUpdate(event)
 	}
 	else if (command == 'locosettings' || command == 'locodelete')
 	{
-		loadLocoSelector();
+		loadLocoSelectors();
 	}
 	else if (command == 'layersettings' || command == 'layerdelete')
 	{
@@ -1462,38 +1462,31 @@ function loadPopup(url)
 	xmlHttp.send(null);
 }
 
-function loadLocoSelector()
+function loadLocoSelector(selector)
 {
-	var selector = 1;
 	var locoValue = document.getElementById('s_loco_' + selector).value;
-	var url = '/?cmd=locoselector';
+	var url = '/?cmd=locoselector&selector=' + selector + '&loco=' + locoValue;
 	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.onreadystatechange = function() {
-		if (xmlHttp.readyState !== 4 || xmlHttp.status !== 200)
+	xmlHttp.onload = function()
+	{
+		if (xmlHttp.status !== 200)
 		{
 			return;
 		}
 		var element = document.getElementById('loco_selector_' + selector);
 		element.innerHTML = xmlHttp.responseText;
-		var selectorElement = document.getElementById('s_loco_' + selector);
-		if (selectHasValue('s_loco_' + selector, locoValue))
-		{
-			selectorElement.value = locoValue;
-			loadLoco(selector);
-			return;
-		}
-		for (var i = 1; i < 255; ++i)
-		{
-			if (selectHasValue('s_loco_' + selector, i))
-			{
-				selectorElement.value = i;
-				loadLoco(selector);
-				return;
-			}
-		}
+		loadLoco(selector);
 	}
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
+}
+
+function loadLocoSelectors()
+{
+	for (var selector = 1; selector <= MaxNumberOfLocoControls; ++selector)
+	{
+		loadLocoSelector(selector);
+	}
 }
 
 function loadLayerSelector()

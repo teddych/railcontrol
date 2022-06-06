@@ -2740,7 +2740,8 @@ namespace WebServer
 	void WebClient::HandleLocoSelector(const map<string,string>& arguments)
 	{
 		const unsigned int selector = Utils::Utils::GetIntegerMapEntry(arguments, "selector", 1);
-		ReplyHtmlWithHeader(HtmlTagLocoSelector(to_string(selector)));
+		const LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco");
+		ReplyHtmlWithHeader(HtmlTagLocoSelector(to_string(selector), locoID));
 	}
 
 	void WebClient::HandleLayerSelector()
@@ -3127,14 +3128,14 @@ namespace WebServer
 		}
 	}
 
-	HtmlTag WebClient::HtmlTagLocoSelector(const string& selector) const
+	HtmlTag WebClient::HtmlTagLocoSelector(const string& selector, const LocoID locoID) const
 	{
 		map<string,LocoID> options = manager.LocoIdsByName();
 		if (options.size() != 1)
 		{
 			options["-"] = LocoNone;
 		}
-		return HtmlTagSelect("loco_" + selector, options).AddAttribute("onchange", "loadLoco(" + selector + ");");
+		return HtmlTagSelect("loco_" + selector, options, locoID).AddAttribute("onchange", "loadLoco(" + selector + ");");
 	}
 
 	void WebClient::HandleLoco(const map<string, string>& arguments)
@@ -3294,7 +3295,8 @@ namespace WebServer
 
 		body.AddChildTag(menu);
 
-		for (unsigned int i = 1; i <= 5; ++i)
+		const unsigned int MaxNumberOfLocoControls = 5;
+		for (unsigned int i = 1; i <= MaxNumberOfLocoControls; ++i)
 		{
 			const string iText = to_string(i);
 			HtmlTag locoContainer("div");
