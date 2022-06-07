@@ -1491,32 +1491,18 @@ function loadLocoSelectors()
 
 function loadLayerSelector()
 {
-	var layer = document.getElementById('s_layer').value;
-	var url = '/?cmd=layerselector';
+	var layerValue = document.getElementById('s_layer').value;
+	var url = '/?cmd=layerselector&layer=' + layerValue;
 	var xmlHttp = new XMLHttpRequest();
-	xmlHttp.onreadystatechange = function() {
-		if (xmlHttp.readyState !== 4 || xmlHttp.status !== 200)
+	xmlHttp.onload = function()
+	{
+		if (xmlHttp.status !== 200)
 		{
 			return;
 		}
 		var element = document.getElementById('layer_selector');
 		element.innerHTML = xmlHttp.responseText;
-		var selector = document.getElementById('s_layer');
-		if (selectHasValue('s_layer', layer))
-		{
-			selector.value = layer;
-			loadLayout();
-			return;
-		}
-		for (var i = 1; i < 255; ++i)
-		{
-			if (selectHasValue('s_layer', i))
-			{
-				selector.value = i;
-				loadLayout();
-				return;
-			}
-		}
+		loadLayout();
 	}
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
@@ -1852,16 +1838,6 @@ function fireRequestAndForget(url)
 	var xmlHttp = new XMLHttpRequest();
 	xmlHttp.open('GET', url, true);
 	xmlHttp.send(null);
-}
-
-function selectHasValue(selectId, value)
-{
-	obj = document.getElementById(selectId);
-	if (!obj)
-	{
-		return false;
-	}
-	return (obj.innerHTML.indexOf('value="' + value + '"') >= 0);
 }
 
 function checkAvailability()

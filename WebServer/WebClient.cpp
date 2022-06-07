@@ -542,7 +542,7 @@ namespace WebServer
 			}
 			else if (arguments["cmd"].compare("layerselector") == 0)
 			{
-				HandleLayerSelector();
+				HandleLayerSelector(arguments);
 			}
 			else if (arguments["cmd"].compare("stopallimmediately") == 0)
 			{
@@ -1852,10 +1852,10 @@ namespace WebServer
 		ReplyResponse(ResponseInfo, Languages::TextLocoDeleted, name);
 	}
 
-	HtmlTag WebClient::HtmlTagLayerSelector() const
+	HtmlTag WebClient::HtmlTagLayerSelector(const LayerID layerID) const
 	{
 		map<string,LayerID> options = manager.LayerListByNameWithFeedback();
-		return HtmlTagSelect("layer", options).AddAttribute("onchange", "loadLayout();");
+		return HtmlTagSelect("layer", options, layerID).AddAttribute("onchange", "loadLayout();");
 	}
 
 	void WebClient::HandleLayout(const map<string, string>& arguments)
@@ -2744,9 +2744,10 @@ namespace WebServer
 		ReplyHtmlWithHeader(HtmlTagLocoSelector(to_string(selector), locoID));
 	}
 
-	void WebClient::HandleLayerSelector()
+	void WebClient::HandleLayerSelector(const map<string,string>& arguments)
 	{
-		ReplyHtmlWithHeader(HtmlTagLayerSelector());
+		const LayerID layerID = Utils::Utils::GetIntegerMapEntry(arguments, "layer");
+		ReplyHtmlWithHeader(HtmlTagLayerSelector(layerID));
 	}
 
 	void WebClient::HandleSettingsEdit()
