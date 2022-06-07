@@ -3204,7 +3204,7 @@ namespace WebServer
 			}
 		}
 		buttonArguments.erase("function");
-		ReplyHtmlWithHeaderAndParagraph(container);
+		ReplyHtmlWithHeader(container);
 	}
 
 	void WebClient::HandleNewPosition(const map<string, string>& arguments)
