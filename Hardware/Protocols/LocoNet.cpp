@@ -45,6 +45,14 @@ namespace Hardware
 			logger->Info(Languages::TextTerminatingSenderSocket);
 		}
 
+		void LocoNet::Booster(const BoosterState status)
+		{
+			unsigned char cmd[2];
+			cmd[0] = status ? OPC_GPON : OPC_GPOFF;
+			CalcCheckSum(cmd, sizeof(cmd));
+			serialLine.Send(cmd, sizeof(cmd));
+		}
+
 		void LocoNet::Receiver()
 		{
 			Utils::Utils::SetThreadName("LocoNet Receiver");
@@ -72,6 +80,16 @@ namespace Hardware
 //				Parse(buffer);
 			}
 			logger->Info(Languages::TextTerminatingReceiverThread);
+		}
+
+		void LocoNet::CalcCheckSum(unsigned char* data, unsigned char length)
+		{
+			--length;
+			data[length] = 0xFF;
+			for (unsigned char i = 0; i < length; ++i)
+			{
+				data[length] ^= data[i];
+			}
 		}
 	} // namespace
 } // namespace

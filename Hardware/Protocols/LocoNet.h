@@ -46,8 +46,18 @@ namespace Hardware
 					return Hardware::CapabilityNone;
 				}
 
+				virtual void Booster(const BoosterState status);
+
 			private:
+				enum OpCodes : unsigned char
+				{
+					OPC_GPON        = 0x83,
+					OPC_GPOFF       = 0x82
+				};
+
 				void Receiver();
+
+				static void CalcCheckSum(unsigned char* data, unsigned char length);
 
 				volatile bool run;
 				mutable Network::Serial serialLine;
