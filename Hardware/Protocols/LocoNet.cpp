@@ -27,13 +27,15 @@ namespace Hardware
 {
 	namespace Protocols
 	{
-		LocoNet::LocoNet(const HardwareParams* params, const std::string& controlName)
+		LocoNet::LocoNet(const HardwareParams* params,
+			const std::string& controlName,
+			const unsigned int dataSpeed)
 		:	HardwareInterface(params->GetManager(),
 			   params->GetControlID(),
 				controlName + " / " + params->GetName() + " at serial port " + params->GetArg1(),
 			   params->GetName()),
 			run(true),
-			serialLine(logger, params->GetArg1(), B19200, 8, 'N', 1)
+			serialLine(logger, params->GetArg1(), dataSpeed, 8, 'N', 1)
 		{
 			receiverThread = std::thread(&Hardware::Protocols::LocoNet::Receiver, this);
 		}
