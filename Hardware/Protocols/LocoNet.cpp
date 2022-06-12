@@ -49,10 +49,11 @@ namespace Hardware
 
 		void LocoNet::Booster(const BoosterState status)
 		{
-			unsigned char cmd[2];
-			cmd[0] = status ? OPC_GPON : OPC_GPOFF;
-			CalcCheckSum(cmd, 1, cmd + 1);
-			serialLine.Send(cmd, sizeof(cmd));
+			unsigned char buffer[2];
+			buffer[0] = status ? OPC_GPON : OPC_GPOFF;
+			CalcCheckSum(buffer, 1, buffer + 1);
+			logger->Hex(buffer, sizeof(buffer));
+			serialLine.Send(buffer, sizeof(buffer));
 		}
 
 		void LocoNet::Receiver()
@@ -80,6 +81,11 @@ namespace Hardware
 				switch (commandType)
 				{
 					case 0x80:
+						dataLength = serialLine.ReceiveExact(buffer + 1, 1);
+						if (dataLength != 1)
+						{
+							continue;
+						}
 						commandLength = 2;
 						break;
 
