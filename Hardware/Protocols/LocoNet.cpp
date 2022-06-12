@@ -51,7 +51,7 @@ namespace Hardware
 		{
 			unsigned char cmd[2];
 			cmd[0] = status ? OPC_GPON : OPC_GPOFF;
-			CalcCheckSum(cmd, sizeof(cmd));
+			CalcCheckSum(cmd, 1, cmd + 1);
 			serialLine.Send(cmd, sizeof(cmd));
 		}
 
@@ -62,6 +62,8 @@ namespace Hardware
 
 			const unsigned char BufferSize = 128u;
 			unsigned char buffer[BufferSize];
+			unsigned char checkSumCalculated;
+			unsigned char commandLength;
 			while (run)
 			{
 				if (!serialLine.IsConnected())
@@ -69,28 +71,100 @@ namespace Hardware
 					logger->Error(Languages::TextUnableToReceiveData);
 					return;
 				}
-				ssize_t dataLength = serialLine.ReceiveExact(buffer, sizeof(buffer));
+				ssize_t dataLength = serialLine.ReceiveExact(buffer, 1);
+				if (dataLength != 1)
+				{
+					continue;
+				}
+				unsigned char commandType = buffer[0] & 0xE0;
+				switch (commandType)
+				{
+					case 0x80:
+						commandLength = 2;
+						break;
+
+					case 0xA0:
+					{
+						dataLength = serialLine.ReceiveExact(buffer + 1, 3);
+						if (dataLength != 3)
+						{
+							continue;
+						}
+						commandLength = 4;
+						break;
+					}
+
+					case 0xC0:
+					{
+						dataLength = serialLine.ReceiveExact(buffer + 1, 5);
+						if (dataLength != 5)
+						{
+							continue;
+						}
+						commandLength = 6;
+						break;
+					}
+
+					case 0xE0:
+					{
+						dataLength = serialLine.ReceiveExact(buffer + 1, 1);
+						if (dataLength != 1)
+						{
+							continue;
+						}
+						unsigned char dataSize = buffer[1];
+						dataLength = serialLine.ReceiveExact(buffer + 2, dataSize + 1);
+						if (dataLength != dataSize)
+						{
+							continue;
+						}
+						commandLength = dataSize + 2;
+						break;
+					}
+
+					default:
+						continue;
+				}
+				logger->Hex(buffer, commandLength);
+				CalcCheckSum(buffer, commandLength - 1, &checkSumCalculated);
+				if (checkSumCalculated != buffer[commandLength - 1])
+				{
+					continue;
+				}
+
 				if (run == false)
 				{
 					break;
 				}
-				if (dataLength == 0)
-				{
-					continue;
-				}
-				logger->Hex(buffer, dataLength);
-//				Parse(buffer);
+
+				Parse(buffer);
 			}
 			logger->Info(Languages::TextTerminatingReceiverThread);
 		}
 
-		void LocoNet::CalcCheckSum(unsigned char* data, unsigned char length)
+		void LocoNet::CalcCheckSum(unsigned char* data, const unsigned char length, unsigned char* checkSum)
 		{
-			--length;
-			data[length] = 0xFF;
+			*checkSum = 0xFF;
 			for (unsigned char i = 0; i < length; ++i)
 			{
-				data[length] ^= data[i];
+				(*checkSum) ^= data[i];
+			}
+		}
+
+		void LocoNet::Parse(unsigned char* data)
+		{
+			switch (data[0])
+			{
+				case OPC_GPON:
+					manager->Booster(ControlTypeHardware, BoosterStateGo);
+					break;
+
+				case OPC_GPOFF:
+					manager->Booster(ControlTypeHardware, BoosterStateStop);
+					break;
+
+				default:
+					break;
 			}
 		}
 	} // namespace
