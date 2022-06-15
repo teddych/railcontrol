@@ -64,7 +64,16 @@ namespace Hardware
 		void LocoNet::Booster(const BoosterState status)
 		{
 			unsigned char buffer[2];
-			buffer[0] = status ? OPC_GPON : OPC_GPOFF;
+			if (status)
+			{
+				buffer[0] = OPC_GPON;
+				logger->Info(Languages::TextTurningBoosterOn);
+			}
+			else
+			{
+				buffer[0] = OPC_GPOFF;
+				logger->Info(Languages::TextTurningBoosterOff);
+			}
 			CalcCheckSum(buffer, 1, buffer + 1);
 			logger->Hex(buffer, sizeof(buffer));
 			serialLine.Send(buffer, sizeof(buffer));
@@ -75,6 +84,7 @@ namespace Hardware
 			const DataModel::AccessoryState state,
 			const bool on)
 		{
+			logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 			unsigned char buffer[4];
 			buffer[0] = OPC_SW_REQ;
 			buffer[1] = static_cast<unsigned char>(address & 0x007F);
@@ -190,10 +200,12 @@ namespace Hardware
 			switch (data[0])
 			{
 				case OPC_GPON:
+					logger->Info(Languages::TextTurningBoosterOn);
 					manager->Booster(ControlTypeHardware, BoosterStateGo);
 					break;
 
 				case OPC_GPOFF:
+					logger->Info(Languages::TextTurningBoosterOff);
 					manager->Booster(ControlTypeHardware, BoosterStateStop);
 					break;
 
@@ -206,6 +218,7 @@ namespace Hardware
 					}
 					const DataModel::AccessoryState state = static_cast<DataModel::AccessoryState>((data[2] & 0x10) >> 4);
 					const Address address = static_cast<Address>(data[1] & 0x7F) | (static_cast<Address>(data[2] & 0x0F) << 7);
+					logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 					manager->AccessoryState(ControlTypeHardware, ControlID(), ProtocolServer, address, state);
 					break;
 				}
