@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Hardware/HardwareInterface.h"
 #include "Hardware/HardwareParams.h"
+#include "Hardware/Protocols/LocoNetLocoCache.h"
 #include "Logger/Logger.h"
 #include "Network/Serial.h"
 
@@ -104,6 +105,8 @@ namespace Hardware
 				volatile bool run;
 				mutable Network::Serial serialLine;
 				std::thread receiverThread;
+
+				LocoNetLocoCache locoCache;
 		};
 	} // namespace
 } // namespace

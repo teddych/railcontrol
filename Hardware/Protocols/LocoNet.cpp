@@ -38,6 +38,20 @@ namespace Hardware
 			serialLine(logger, params->GetArg1(), dataSpeed, 8, 'N', 1)
 		{
 			receiverThread = std::thread(&Hardware::Protocols::LocoNet::Receiver, this);
+
+			Utils::Utils::SleepForSeconds(1);
+
+			unsigned char buffer[4];
+			buffer[0] = OPC_RQ_SL_DATA;
+			buffer[2] = 0;
+			for (unsigned char slot = LocoNetLocoCache::MinLocoNetSlot; slot <= LocoNetLocoCache::MaxLocoNetSlot; ++slot)
+			{
+				Utils::Utils::SleepForMilliseconds(25);
+				buffer[1] = slot;
+				CalcCheckSum(buffer, 3, buffer + 3);
+				logger->Hex(buffer, sizeof(buffer));
+				serialLine.Send(buffer, sizeof(buffer));
+			}
 		}
 
 		LocoNet::~LocoNet()
@@ -193,6 +207,19 @@ namespace Hardware
 					const DataModel::AccessoryState state = static_cast<DataModel::AccessoryState>((data[2] & 0x10) >> 4);
 					const Address address = static_cast<Address>(data[1] & 0x7F) | (static_cast<Address>(data[2] & 0x0F) << 7);
 					manager->AccessoryState(ControlTypeHardware, ControlID(), ProtocolServer, address, state);
+					break;
+				}
+
+				case OPC_SL_RD_DATA:
+				{
+					if (data[1] != 0x0E)
+					{
+						break;
+					}
+					const unsigned char slot = data[2];
+					const Address address = static_cast<Address>(data[4] & 0x7F) | (static_cast<Address>(data[9] & 0x3F) << 7);
+					logger->Debug("Slot {0} has address {1}", slot, address);
+					locoCache.Set(slot, address);
 					break;
 				}
 

@@ -101,6 +101,7 @@ Hardware/Protocols/EsuCAN.cpp
 Hardware/Protocols/EsuCAN.h
 Hardware/Protocols/LocoNet.cpp
 Hardware/Protocols/LocoNet.h
+Hardware/Protocols/LocoNetLocoCache.h
 Hardware/Protocols/MaerklinCAN.cpp
 Hardware/Protocols/MaerklinCAN.h
 Hardware/Protocols/P50x.cpp
