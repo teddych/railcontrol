@@ -46,16 +46,53 @@ namespace Hardware
 
 				inline Hardware::Capabilities GetCapabilities() const override
 				{
-					return Hardware::CapabilityNone;
+					return Hardware::CapabilityAccessory;
 				}
 
-				virtual void Booster(const BoosterState status);
+				void GetAccessoryProtocols(std::vector<Protocol>& protocols) const override
+				{
+					protocols.push_back(ProtocolServer);
+				}
+
+				bool AccessoryProtocolSupported(Protocol protocol) const override
+				{
+					return (protocol == ProtocolServer);
+				}
+
+				virtual void Booster(const BoosterState status) override;
+
+				virtual void AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
+					const Address address,
+					const DataModel::AccessoryState state,
+					const bool on) override;
 
 			private:
 				enum OpCodes : unsigned char
 				{
-					OPC_GPON        = 0x83,
-					OPC_GPOFF       = 0x82
+					OPC_BUSY         = 0x81,
+					OPC_GPOFF        = 0x82,
+					OPC_GPON         = 0x83,
+					OPC_IDLE         = 0x85,
+					OPC_LOCO_SPD     = 0xA0,
+					OPC_LOCO_DIRF    = 0xA1,
+					OPC_LOCO_SND     = 0xA2,
+					OPC_LOCO_FUNC    = 0xA3,
+					OPC_SW_REQ       = 0xB0,
+					OPC_SW_REP       = 0xB1,
+					OPC_INPUT_REP    = 0xB2,
+					OPC_LONG_ACK     = 0xB4,
+					OPC_SLOT_STAT1   = 0xB5,
+					OPC_CONSIST_FUNC = 0xB6,
+					OPC_UNLINK_SLOTS = 0xB8,
+					OPC_LINK_SLOTS   = 0xB9,
+					OPC_MOVE_SLOTS   = 0xBA,
+					OPC_RQ_SL_DATA   = 0xBB,
+					OPC_SW_STATE     = 0xBC,
+					OPC_SW_ACK       = 0xBD,
+					OPC_LOCO_ADR     = 0xBF,
+					OPC_LOCO_FUNC2   = 0xD4,
+					OPC_SL_RD_DATA   = 0xE7,
+					OPC_WR_SL_DATA   = 0xEF
 				};
 
 				void Receiver();

@@ -56,6 +56,20 @@ namespace Hardware
 			serialLine.Send(buffer, sizeof(buffer));
 		}
 
+		void LocoNet::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
+			const Address address,
+			const DataModel::AccessoryState state,
+			const bool on)
+		{
+			unsigned char buffer[4];
+			buffer[0] = OPC_SW_REQ;
+			buffer[1] = static_cast<unsigned char>(address & 0x007F);
+			buffer[2] = static_cast<unsigned char>(((address >> 7) & 0x000F) | ((state & 0x01) << 5) | ((on & 0x01) << 4));
+			CalcCheckSum(buffer, 3, buffer + 3);
+			logger->Hex(buffer, sizeof(buffer));
+			serialLine.Send(buffer, sizeof(buffer));
+		}
+
 		void LocoNet::Receiver()
 		{
 			Utils::Utils::SetThreadName("LocoNet Receiver");
@@ -168,6 +182,19 @@ namespace Hardware
 				case OPC_GPOFF:
 					manager->Booster(ControlTypeHardware, BoosterStateStop);
 					break;
+
+				case OPC_SW_REQ:
+				{
+					const bool on = static_cast<bool>((data[2] & 0x20) >> 5);
+					if (!on)
+					{
+						break;
+					}
+					const DataModel::AccessoryState state = static_cast<DataModel::AccessoryState>((data[2] & 0x10) >> 4);
+					const Address address = static_cast<Address>(data[1] & 0x7F) | (static_cast<Address>(data[2] & 0x0F) << 7);
+					manager->AccessoryState(ControlTypeHardware, ControlID(), ProtocolServer, address, state);
+					break;
+				}
 
 				default:
 					break;
