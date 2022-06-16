@@ -87,8 +87,9 @@ namespace Hardware
 			logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 			unsigned char buffer[4];
 			buffer[0] = OPC_SW_REQ;
-			buffer[1] = static_cast<unsigned char>(address & 0x007F);
-			buffer[2] = static_cast<unsigned char>(((address >> 7) & 0x000F) | ((state & 0x01) << 5) | ((on & 0x01) << 4));
+			const Address addressLocoNet = address - 1;
+			buffer[1] = static_cast<unsigned char>(addressLocoNet & 0x007F);
+			buffer[2] = static_cast<unsigned char>(((addressLocoNet >> 7) & 0x000F) | ((state & 0x01) << 5) | ((on & 0x01) << 4));
 			CalcCheckSum(buffer, 3, buffer + 3);
 			logger->Hex(buffer, sizeof(buffer));
 			serialLine.Send(buffer, sizeof(buffer));
@@ -211,13 +212,13 @@ namespace Hardware
 
 				case OPC_SW_REQ:
 				{
-					const bool on = static_cast<bool>((data[2] & 0x20) >> 5);
+					const bool on = static_cast<bool>((data[2] & 0x10) >> 4);
 					if (!on)
 					{
 						break;
 					}
-					const DataModel::AccessoryState state = static_cast<DataModel::AccessoryState>((data[2] & 0x10) >> 4);
-					const Address address = static_cast<Address>(data[1] & 0x7F) | (static_cast<Address>(data[2] & 0x0F) << 7);
+					const DataModel::AccessoryState state = static_cast<DataModel::AccessoryState>((data[2] & 0x20) >> 5);
+					const Address address = (static_cast<Address>(data[1] & 0x7F) | (static_cast<Address>(data[2] & 0x0F) << 7)) + 1;
 					logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 					manager->AccessoryState(ControlTypeHardware, ControlID(), ProtocolServer, address, state);
 					break;
