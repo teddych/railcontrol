@@ -38,9 +38,17 @@ namespace Hardware
 			serialLine(logger, params->GetArg1(), dataSpeed, 8, 'N', 1)
 		{
 			receiverThread = std::thread(&Hardware::Protocols::LocoNet::Receiver, this);
+		}
 
-			Utils::Utils::SleepForSeconds(1);
+		LocoNet::~LocoNet()
+		{
+			run = false;
+			receiverThread.join();
+			logger->Info(Languages::TextTerminatingSenderSocket);
+		}
 
+		void LocoNet::Start()
+		{
 			unsigned char buffer[4];
 			buffer[0] = OPC_RQ_SL_DATA;
 			buffer[2] = 0;
@@ -52,13 +60,6 @@ namespace Hardware
 				logger->Hex(buffer, sizeof(buffer));
 				serialLine.Send(buffer, sizeof(buffer));
 			}
-		}
-
-		LocoNet::~LocoNet()
-		{
-			run = false;
-			receiverThread.join();
-			logger->Info(Languages::TextTerminatingSenderSocket);
 		}
 
 		void LocoNet::Booster(const BoosterState status)

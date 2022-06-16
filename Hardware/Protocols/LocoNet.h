@@ -60,6 +60,8 @@ namespace Hardware
 					return (protocol == ProtocolServer);
 				}
 
+				virtual void Start();
+
 				virtual void Booster(const BoosterState status) override;
 
 				virtual void AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,

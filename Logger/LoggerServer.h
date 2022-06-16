@@ -79,6 +79,7 @@ namespace Logger
 			 	fileLoggerStarted(false),
 			 	consoleLoggerStarted(false)
 			{
+				StartTcpServer();
 			}
 
 			~LoggerServer();
