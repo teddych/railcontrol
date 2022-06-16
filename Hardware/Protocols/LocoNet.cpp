@@ -85,7 +85,7 @@ namespace Hardware
 			const DataModel::AccessoryState state,
 			const bool on)
 		{
-			logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
+			logger->Info(Languages::TextSettingAccessoryOnOff, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 			unsigned char buffer[4];
 			buffer[0] = OPC_SW_REQ;
 			const Address addressLocoNet = address - 1;
@@ -220,7 +220,7 @@ namespace Hardware
 					}
 					const DataModel::AccessoryState state = static_cast<DataModel::AccessoryState>((data[2] & 0x20) >> 5);
 					const Address address = (static_cast<Address>(data[1] & 0x7F) | (static_cast<Address>(data[2] & 0x0F) << 7)) + 1;
-					logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
+					logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state));
 					manager->AccessoryState(ControlTypeHardware, ControlID(), ProtocolServer, address, state);
 					break;
 				}

@@ -544,6 +544,7 @@ class Languages
 			TextSetAllLocosToManualMode,
 			TextSetLoco,
 			TextSettingAccessory,
+			TextSettingAccessoryOnOff,
 			TextSettingAccessoryWithProtocol,
 			TextSettingDirectionOfTravel,
 			TextSettingDirectionOfTravelWithProtocol,
