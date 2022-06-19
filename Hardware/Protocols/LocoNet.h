@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include "DataModel/LocoFunctions.h"
 #include "Hardware/HardwareInterface.h"
 #include "Hardware/HardwareParams.h"
 #include "Hardware/Protocols/LocoNetLocoCache.h"
@@ -47,7 +48,18 @@ namespace Hardware
 
 				inline Hardware::Capabilities GetCapabilities() const override
 				{
-					return Hardware::CapabilityAccessory;
+					return Hardware::CapabilityLoco
+						| Hardware::CapabilityAccessory;
+				}
+
+				void GetLocoProtocols(std::vector<Protocol>& protocols) const override
+				{
+					protocols.push_back(ProtocolServer);
+				}
+
+				bool LocoProtocolSupported(Protocol protocol) const override
+				{
+					return (protocol == ProtocolServer);
 				}
 
 				void GetAccessoryProtocols(std::vector<Protocol>& protocols) const override
@@ -60,9 +72,11 @@ namespace Hardware
 					return (protocol == ProtocolServer);
 				}
 
-				virtual void Start();
-
 				virtual void Booster(const BoosterState status) override;
+
+				virtual void LocoSpeed(const Protocol protocol,
+					const Address address,
+					const Speed speed) override;
 
 				virtual void AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
 					const Address address,
@@ -103,6 +117,10 @@ namespace Hardware
 				static void CalcCheckSum(unsigned char* data, const unsigned char length, unsigned char* checkSum);
 
 				void Parse(unsigned char* data);
+
+				static void ParseSpeed(const unsigned char data, Speed& speed);
+
+				static unsigned char CalcSpeed(const Speed speed);
 
 				volatile bool run;
 				mutable Network::Serial serialLine;

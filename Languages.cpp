@@ -38,6 +38,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextAccessory*/ { "accessory", "Zubehörartikel", "accesorio" },
 /* TextAccessoryAddressDccTooHigh */ { "Addresses higher then 2044 are not supported by DCC", "Adressen grösser als 2044 werden nicht unterstützt von DCC", "Direcciones más grandes que 2044 no están compatibles con DCC" },
 /* TextAccessoryAddressMmTooHigh */ { "Addresses higher then 320 are not supported by MM1/MM2", "Adressen grösser als 320 werden nicht unterstützt von MM1/MM2", "Direcciones más grandes que 320 no están compatibles con MM1/MM2" },
+/* TextAccessoryControlProtocolAddressDoesNotExist */ { "Acessory for control {0} with protocol {1} and address {2} does not exist", "Zubehörartikel für Zentrale {0} mit Protokoll {1} und Adresse {2} existiert nicht", "Accesorio para control {0} con protocolo {1} y dirección {2} no existe" },
 /* TextAccessoryDeleted */ { "Accessory {0} deleted", "Zubehörartikel {0} gelöscht", "Accessorio {0} eliminado" },
 /* TextAccessoryDoesNotExist */ { "Acessory does not exist", "Zubehörartikel existiert nicht", "Accesorio no existe" },
 /* TextAccessoryIsLocked */ { "Accessory {0} is locked", "Zubehörartikel {0} ist gesperrt", "Accesorio {0} está bloqueado" },

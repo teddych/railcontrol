@@ -47,21 +47,6 @@ namespace Hardware
 			logger->Info(Languages::TextTerminatingSenderSocket);
 		}
 
-		void LocoNet::Start()
-		{
-			unsigned char buffer[4];
-			buffer[0] = OPC_RQ_SL_DATA;
-			buffer[2] = 0;
-			for (unsigned char slot = LocoNetLocoCache::MinLocoNetSlot; slot <= LocoNetLocoCache::MaxLocoNetSlot; ++slot)
-			{
-				Utils::Utils::SleepForMilliseconds(25);
-				buffer[1] = slot;
-				CalcCheckSum(buffer, 3, buffer + 3);
-				logger->Hex(buffer, sizeof(buffer));
-				serialLine.Send(buffer, sizeof(buffer));
-			}
-		}
-
 		void LocoNet::Booster(const BoosterState status)
 		{
 			unsigned char buffer[2];
@@ -76,6 +61,29 @@ namespace Hardware
 				logger->Info(Languages::TextTurningBoosterOff);
 			}
 			CalcCheckSum(buffer, 1, buffer + 1);
+			logger->Hex(buffer, sizeof(buffer));
+			serialLine.Send(buffer, sizeof(buffer));
+		}
+
+		void LocoNet::LocoSpeed(__attribute__((unused)) const Protocol protocol,
+			const Address address,
+			const Speed speed)
+		{
+			unsigned char buffer[4];
+			unsigned char slot = locoCache.GetSlotOfAddress(address);
+			if (0 == slot)
+			{
+				buffer[0] = OPC_LOCO_ADR;
+				buffer[1] = static_cast<unsigned char>((address >> 7) & 0x7F);
+				buffer[2] = static_cast<unsigned char>(address & 0x7F);
+			}
+			else
+			{
+				buffer[0] = OPC_LOCO_SPD;
+				buffer[1] = slot;
+				buffer[2] = CalcSpeed(speed);
+			}
+			CalcCheckSum(buffer, 3, buffer + 3);
 			logger->Hex(buffer, sizeof(buffer));
 			serialLine.Send(buffer, sizeof(buffer));
 		}
@@ -234,13 +242,66 @@ namespace Hardware
 					const unsigned char slot = data[2];
 					const Address address = static_cast<Address>(data[4] & 0x7F) | (static_cast<Address>(data[9] & 0x3F) << 7);
 					logger->Debug("Slot {0} has address {1}", slot, address);
-					locoCache.Set(slot, address);
+					locoCache.SetAddress(slot, address);
+					Speed speed;
+					ParseSpeed(data[5], speed);
+					locoCache.SetSpeed(slot, speed);
+					logger->Info(Languages::TextSettingSpeed, address, speed);
+					manager->LocoSpeed(ControlTypeHardware, ControlID(), ProtocolServer, address, speed);
+					break;
+				}
+
+				case OPC_LOCO_SPD:
+				{
+					const unsigned char slot = data[1];
+					const Address address = locoCache.GetAddressOfSlot(slot);
+					if (0 == address)
+					{
+						unsigned char buffer[4];
+						buffer[0] = OPC_RQ_SL_DATA;
+						buffer[1] = slot;
+						buffer[2] = 0;
+						CalcCheckSum(buffer, 3, buffer + 3);
+						logger->Hex(buffer, sizeof(buffer));
+						serialLine.Send(buffer, sizeof(buffer));
+						break;
+					}
+					Speed speed;
+					ParseSpeed(data[2], speed);
+					locoCache.SetSpeed(slot, speed);
+					logger->Info(Languages::TextSettingSpeed, address, speed);
+					manager->LocoSpeed(ControlTypeHardware, ControlID(), ProtocolServer, address, speed);
 					break;
 				}
 
 				default:
 					break;
 			}
+		}
+
+		void LocoNet::ParseSpeed(const unsigned char data, Speed& speed)
+		{
+			speed = data;
+			if (speed)
+			{
+				--speed;
+			}
+			speed <<= 3;
+		}
+
+		unsigned char LocoNet::CalcSpeed(const Speed speed)
+		{
+			Speed calculatedSpeed = speed;
+			calculatedSpeed >>= 3;
+			if (calculatedSpeed)
+			{
+				++calculatedSpeed;
+			}
+			if (calculatedSpeed > 127)
+			{
+				calculatedSpeed = 127;
+			}
+			return static_cast<unsigned char>(calculatedSpeed);
 		}
 	} // namespace
 } // namespace

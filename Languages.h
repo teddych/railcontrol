@@ -38,6 +38,7 @@ class Languages
 			TextAccessory,
 			TextAccessoryAddressDccTooHigh,
 			TextAccessoryAddressMmTooHigh,
+			TextAccessoryControlProtocolAddressDoesNotExist,
 			TextAccessoryDeleted,
 			TextAccessoryDoesNotExist,
 			TextAccessoryIsLocked,

@@ -1093,6 +1093,8 @@ void Manager::AccessoryState(const ControlType controlType, const ControlID cont
 		SignalState(controlType, signal, signal->CalculateInvertedAccessoryState(state), true);
 		return;
 	}
+
+	logger->Warning(Languages::TextAccessoryControlProtocolAddressDoesNotExist, controlID, protocol, address);
 }
 
 bool Manager::AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::AccessoryState state, const bool force)
