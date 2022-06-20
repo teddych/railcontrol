@@ -20,7 +20,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include "DataModel/LocoFunctions.h"
 #include "DataTypes.h"
 
 namespace Hardware
@@ -32,7 +31,7 @@ namespace Hardware
 			public:
 				inline LocoNetLocoCacheEntry()
 				:	address(0),
-					orientation(OrientationRight)
+					orientationF0F4(0)
 				{
 				}
 
@@ -46,40 +45,18 @@ namespace Hardware
 					return address;
 				}
 
-				inline void SetSpeed(const Speed speed)
+				inline void SetOrientationF0F4(const unsigned char orientationF0F4)
 				{
-					this->speed = speed;
+					this->orientationF0F4 = orientationF0F4;
 				}
 
-				inline Speed GetSpeed()
+				inline unsigned char GetOrientationF0F4()
 				{
-					return speed;
-				}
-
-				inline void SetOrientation(const Orientation orientation)
-				{
-					this->orientation = orientation;
-				}
-
-				inline Orientation GetOrientation()
-				{
-					return orientation;
-				}
-
-				inline void SetFunctionState(const DataModel::LocoFunctionNr nr, const DataModel::LocoFunctionState state)
-				{
-					functions.SetFunctionState(nr, state);
-				}
-
-				inline DataModel::LocoFunctionState GetFunctionState(const DataModel::LocoFunctionNr nr) const
-				{
-					return GetFunctionState(nr);
+					return orientationF0F4;
 				}
 
 				Address address;
-				Speed speed;
-				Orientation orientation;
-				DataModel::LocoFunctions functions;
+				unsigned char orientationF0F4;
 		};
 
 		class LocoNetLocoCache
@@ -126,22 +103,22 @@ namespace Hardware
 					return entries[slot].GetAddress();
 				}
 
-				inline void SetSpeed(const unsigned char slot, const Speed speed)
+				inline void SetOrientationF0F4(const unsigned char slot, const unsigned char orientationF0F4)
 				{
 					if (slot == 0 || slot > MaxLocoNetSlot)
 					{
 						return;
 					}
-					entries[slot].SetSpeed(speed);
+					entries[slot].SetOrientationF0F4(orientationF0F4);
 				}
 
-				inline Speed GetSpeed(const unsigned char slot)
+				inline unsigned char GetOrientationF0F4(const unsigned char slot)
 				{
 					if (slot == 0 || slot > MaxLocoNetSlot)
 					{
 						return 0;
 					}
-					return entries[slot].GetSpeed();
+					return entries[slot].GetOrientationF0F4();
 				}
 
 				static const unsigned char MinLocoNetSlot = 1;

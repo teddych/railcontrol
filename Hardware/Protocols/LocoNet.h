@@ -20,7 +20,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include "DataModel/LocoFunctions.h"
 #include "Hardware/HardwareInterface.h"
 #include "Hardware/HardwareParams.h"
 #include "Hardware/Protocols/LocoNetLocoCache.h"
@@ -78,6 +77,15 @@ namespace Hardware
 					const Address address,
 					const Speed speed) override;
 
+				virtual void LocoOrientation(const Protocol protocol,
+					const Address address,
+					const Orientation orientation) override;
+
+				virtual void LocoFunction(const Protocol protocol,
+					const Address address,
+					const DataModel::LocoFunctionNr function,
+					const DataModel::LocoFunctionState on);
+
 				virtual void AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
 					const Address address,
 					const DataModel::AccessoryState state,
@@ -118,9 +126,41 @@ namespace Hardware
 
 				void Parse(unsigned char* data);
 
-				static void ParseSpeed(const unsigned char data, Speed& speed);
+				void ParseSpeed(const Address address, const unsigned char data);
 
 				static unsigned char CalcSpeed(const Speed speed);
+
+				void ParseOrientationF0F4(const unsigned char slot, const Address address, const unsigned char data);
+
+				void Send2ByteCommand(const unsigned char data0);
+
+				void Send4ByteCommand(const unsigned char data0,
+					const unsigned char data1,
+					const unsigned char data2);
+
+				inline void SendRequestLocoData(const unsigned char slot)
+				{
+					Send4ByteCommand(OPC_RQ_SL_DATA, slot, 0);
+				}
+
+				inline void SendLocoAddress(const Address address)
+				{
+					Send4ByteCommand(OPC_LOCO_ADR,
+						static_cast<unsigned char>((address >> 7) & 0x7F),
+						static_cast<unsigned char>(address & 0x7F));
+				}
+
+				inline void SendLocoSpeed(const unsigned char slot, const Speed speed)
+				{
+					Send4ByteCommand(OPC_LOCO_SPD, slot, CalcSpeed(speed));
+				}
+
+				inline void SendLocoOrientationF0F4(const unsigned char slot, const unsigned char orientationF0F4)
+				{
+					Send4ByteCommand(OPC_LOCO_DIRF, slot, orientationF0F4);
+				}
+
+				unsigned char SetOrientationF0F4Bit(const unsigned char slot, const bool on, const unsigned char shift);
 
 				volatile bool run;
 				mutable Network::Serial serialLine;
