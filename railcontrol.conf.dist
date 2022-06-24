@@ -8,6 +8,9 @@ dbfilename = railcontrol.sqlite
 # Default dbkeepbackups is 10
 dbkeepbackups = 10
 
+# Default logkeepbackups is 10
+logkeepbackups = 10;
+
 # If this is set to any the webserver will listen to all addresses
 # If this is set to localhost the webserver will listen to the IPv6 localhost address only
 webserveraddress = any
