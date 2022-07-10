@@ -58,8 +58,6 @@ DataModel/Text.cpp
 DataModel/Text.h
 DataModel/Track.cpp
 DataModel/Track.h
-DataModel/TrackBase.cpp
-DataModel/TrackBase.h
 DataTypes.h
 Fallthrough.h
 Hardware/AccessoryCache.cpp
@@ -218,8 +216,6 @@ WebServer/HtmlTagText.cpp
 WebServer/HtmlTagText.h
 WebServer/HtmlTagTrack.cpp
 WebServer/HtmlTagTrack.h
-WebServer/HtmlTagTrackBase.cpp
-WebServer/HtmlTagTrackBase.h
 WebServer/Response.cpp
 WebServer/Response.h
 WebServer/ResponseCsv.cpp
@@ -244,8 +240,6 @@ WebServer/WebClientText.cpp
 WebServer/WebClientText.h
 WebServer/WebClientTrack.cpp
 WebServer/WebClientTrack.h
-WebServer/WebClientTrackBase.cpp
-WebServer/WebClientTrackBase.h
 WebServer/WebServer.cpp
 WebServer/WebServer.h
 Version.cpp.in
