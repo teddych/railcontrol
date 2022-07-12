@@ -121,6 +121,17 @@ namespace Hardware
 					break;
 				}
 
+				case 5:
+				case 6:
+				case 7:
+				case 8:
+				{
+					const unsigned char shift = function - 5;
+					const unsigned char f5F8 = SetF5F8Bit(slot, on, shift);
+					SendLocoF5F8(slot, f5F8);
+					break;
+				}
+
 				default:
 					return;
 			}
@@ -200,13 +211,17 @@ namespace Hardware
 						{
 							continue;
 						}
-						unsigned char dataSize = buffer[1];
-						dataLength = serialLine.ReceiveExact(buffer + 2, dataSize + 1);
-						if (dataLength != dataSize)
+						commandLength = buffer[1];
+						if (commandLength < 3)
 						{
 							continue;
 						}
-						commandLength = dataSize + 2;
+						unsigned char dataToRead = commandLength - 2;
+						dataLength = serialLine.ReceiveExact(buffer + 2, dataToRead);
+						if (dataLength != dataToRead)
+						{
+							continue;
+						}
 						break;
 					}
 
@@ -243,17 +258,17 @@ namespace Hardware
 		{
 			switch (data[0])
 			{
-				case OPC_GPON:
+				case OPC_GPON: // 0x83
 					logger->Info(Languages::TextTurningBoosterOn);
 					manager->Booster(ControlTypeHardware, BoosterStateGo);
 					break;
 
-				case OPC_GPOFF:
+				case OPC_GPOFF: // 0x82
 					logger->Info(Languages::TextTurningBoosterOff);
 					manager->Booster(ControlTypeHardware, BoosterStateStop);
 					break;
 
-				case OPC_SW_REQ:
+				case OPC_SW_REQ: // 0xB0
 				{
 					const bool on = static_cast<bool>((data[2] & 0x10) >> 4);
 					if (!on)
@@ -267,50 +282,83 @@ namespace Hardware
 					break;
 				}
 
-				case OPC_SL_RD_DATA:
+				case OPC_SL_RD_DATA: // 0xE7
 				{
-					if (data[1] != 0x0E)
-					{
-						break;
-					}
-					const unsigned char slot = data[2];
-					const Address address = static_cast<Address>(data[4] & 0x7F) | (static_cast<Address>(data[9] & 0x3F) << 7);
-					logger->Debug("Slot {0} has address {1}", slot, address);
-					locoCache.SetAddress(slot, address);
-					ParseSpeed(address, data[5]);
-					ParseOrientationF0F4(slot, address, data[6]);
+					ParseSlotReadData(data);
 					break;
 				}
 
-				case OPC_LOCO_SPD:
+				case OPC_LOCO_SPD: // 0xA0
 				{
-					const unsigned char slot = data[1];
-					const Address address = locoCache.GetAddressOfSlot(slot);
-					if (0 == address)
+					const Address address = CheckSlot(data[1]);
+					if (!address)
 					{
-						SendRequestLocoData(slot);
 						break;
 					}
 					ParseSpeed(address, data[2]);
 					break;
 				}
 
-				case OPC_LOCO_DIRF:
+				case OPC_LOCO_DIRF: // 0xA1
 				{
+
 					const unsigned char slot = data[1];
-					const Address address = locoCache.GetAddressOfSlot(slot);
-					if (0 == address)
+					const Address address = CheckSlot(slot);
+					if (!address)
 					{
-						SendRequestLocoData(slot);
 						break;
 					}
 					ParseOrientationF0F4(slot, address, data[2]);
 					break;
 				}
 
+				case OPC_LOCO_SND: // 0xA2
+				{
+
+					const unsigned char slot = data[1];
+					const Address address = CheckSlot(slot);
+					if (!address)
+					{
+						break;
+					}
+					ParseF5F8(slot, address, data[2]);
+					break;
+				}
+
 				default:
 					break;
 			}
+		}
+
+		Address LocoNet::CheckSlot(const unsigned char slot)
+		{
+			const Address address = locoCache.GetAddressOfSlot(slot);
+			if (0 == address)
+			{
+				SendRequestLocoData(slot);
+				return 0;
+			}
+			return address;
+		}
+
+		void LocoNet::ParseSlotReadData(const unsigned char* data)
+		{
+			if (data[1] != 0x0E)
+			{
+				return;
+			}
+			const unsigned char slot = data[2];
+			if (slot == 0)
+			{
+				logger->Debug("Parsing of Hardware ID not yet implemented"); // FIXME
+				return;
+			}
+			const Address address = ParseLocoAddress(data[4], data[9]);
+			logger->Debug("Slot {0} has address {1}", slot, address);
+			locoCache.SetAddress(slot, address);
+			ParseSpeed(address, data[5]);
+			ParseOrientationF0F4(slot, address, data[6]);
+			ParseF5F8(slot, address, data[10]);
 		}
 
 		void LocoNet::ParseSpeed(const Address address, const unsigned char data)
@@ -323,7 +371,6 @@ namespace Hardware
 			speed <<= 3;
 			logger->Info(Languages::TextSettingSpeed, address, speed);
 			manager->LocoSpeed(ControlTypeHardware, controlID, ProtocolServer, address, speed);
-
 		}
 
 		unsigned char LocoNet::CalcSpeed(const Speed speed)
@@ -345,6 +392,7 @@ namespace Hardware
 		{
 			const unsigned char oldData = locoCache.GetOrientationF0F4(slot);
 			const unsigned char dataDiff = data ^ oldData;
+			locoCache.SetOrientationF0F4(slot, data);
 			if (dataDiff | 0x20)
 			{
 				Orientation orientation = static_cast<Orientation>((data >> 5) & 0x01);
@@ -383,6 +431,37 @@ namespace Hardware
 			}
 		}
 
+		void LocoNet::ParseF5F8(const unsigned char slot, const Address address, const unsigned char data)
+		{
+			const unsigned char oldData = locoCache.GetF5F8(slot);
+			const unsigned char dataDiff = data ^ oldData;
+			locoCache.SetF5F8(slot, data);
+			if (dataDiff | 0x01)
+			{
+				DataModel::LocoFunctionState f5 = static_cast<DataModel::LocoFunctionState>((data >> 0) & 0x01);
+				logger->Info(Languages::TextSettingFunction, 5, address, f5);
+				manager->LocoFunctionState(ControlTypeHardware, controlID, ProtocolServer, address, 5, f5);
+			}
+			if (dataDiff | 0x02)
+			{
+				DataModel::LocoFunctionState f6 = static_cast<DataModel::LocoFunctionState>((data >> 1) & 0x01);
+				logger->Info(Languages::TextSettingFunction, 6, address, f6);
+				manager->LocoFunctionState(ControlTypeHardware, controlID, ProtocolServer, address, 6, f6);
+			}
+			if (dataDiff | 0x04)
+			{
+				DataModel::LocoFunctionState f7 = static_cast<DataModel::LocoFunctionState>((data >> 2) & 0x01);
+				logger->Info(Languages::TextSettingFunction, 7, address, f7);
+				manager->LocoFunctionState(ControlTypeHardware, controlID, ProtocolServer, address, 7, f7);
+			}
+			if (dataDiff | 0x08)
+			{
+				DataModel::LocoFunctionState f8 = static_cast<DataModel::LocoFunctionState>((data >> 3) & 0x01);
+				logger->Info(Languages::TextSettingFunction, 8, address, f8);
+				manager->LocoFunctionState(ControlTypeHardware, controlID, ProtocolServer, address, 8, f8);
+			}
+		}
+
 		void LocoNet::Send2ByteCommand(const unsigned char data)
 		{
 			unsigned char buffer[2];
@@ -411,6 +490,15 @@ namespace Hardware
 			data &= (~(0x01 << shift));
 			data |= (on << shift);
 			locoCache.SetOrientationF0F4(slot, data);
+			return data;
+		}
+
+		unsigned char LocoNet::SetF5F8Bit(const unsigned char slot, const bool on, const unsigned char shift)
+		{
+			unsigned char data = locoCache.GetF5F8(slot);
+			data &= (~(0x01 << shift));
+			data |= (on << shift);
+			locoCache.SetF5F8(slot, data);
 			return data;
 		}
 	} // namespace

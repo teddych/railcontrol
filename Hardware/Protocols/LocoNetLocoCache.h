@@ -55,8 +55,19 @@ namespace Hardware
 					return orientationF0F4;
 				}
 
+				inline void SetF5F8(const unsigned char f5F8)
+				{
+					this->f5F8 = f5F8;
+				}
+
+				inline unsigned char GetF5F8()
+				{
+					return f5F8;
+				}
+
 				Address address;
 				unsigned char orientationF0F4;
+				unsigned char f5F8;
 		};
 
 		class LocoNetLocoCache
@@ -119,6 +130,24 @@ namespace Hardware
 						return 0;
 					}
 					return entries[slot].GetOrientationF0F4();
+				}
+
+				inline void SetF5F8(const unsigned char slot, const unsigned char f5F8)
+				{
+					if (slot == 0 || slot > MaxLocoNetSlot)
+					{
+						return;
+					}
+					entries[slot].SetF5F8(f5F8);
+				}
+
+				inline unsigned char GetF5F8(const unsigned char slot)
+				{
+					if (slot == 0 || slot > MaxLocoNetSlot)
+					{
+						return 0;
+					}
+					return entries[slot].GetF5F8();
 				}
 
 				static const unsigned char MinLocoNetSlot = 1;

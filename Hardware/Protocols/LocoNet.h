@@ -45,6 +45,14 @@ namespace Hardware
 
 				virtual ~LocoNet();
 
+				inline void Start() override
+				{
+					SendRequestLocoData(0x7F);
+					Utils::Utils::SleepForMilliseconds(25);
+					SendRequestLocoData(0);
+					Utils::Utils::SleepForMilliseconds(25);
+				}
+
 				inline Hardware::Capabilities GetCapabilities() const override
 				{
 					return Hardware::CapabilityLoco
@@ -115,9 +123,10 @@ namespace Hardware
 					OPC_SW_STATE     = 0xBC,
 					OPC_SW_ACK       = 0xBD,
 					OPC_LOCO_ADR     = 0xBF,
-					OPC_LOCO_FUNC2   = 0xD4,
 					OPC_SL_RD_DATA   = 0xE7,
-					OPC_WR_SL_DATA   = 0xEF
+					OPC_WR_SL_DATA   = 0xEF,
+					// IB-II codes
+					OPC_LOCO_FUNC2   = 0xD4
 				};
 
 				void Receiver();
@@ -126,11 +135,22 @@ namespace Hardware
 
 				void Parse(unsigned char* data);
 
+				Address CheckSlot(const unsigned char slot);
+
+				void ParseSlotReadData(const unsigned char* data);
+
+				inline Address ParseLocoAddress(const unsigned char data1, const unsigned char data2)
+				{
+					return static_cast<Address>(data1 & 0x7F) | (static_cast<Address>(data2 & 0x3F) << 7);
+				}
+
 				void ParseSpeed(const Address address, const unsigned char data);
 
 				static unsigned char CalcSpeed(const Speed speed);
 
 				void ParseOrientationF0F4(const unsigned char slot, const Address address, const unsigned char data);
+
+				void ParseF5F8(const unsigned char slot, const Address address, const unsigned char data);
 
 				void Send2ByteCommand(const unsigned char data0);
 
@@ -160,7 +180,14 @@ namespace Hardware
 					Send4ByteCommand(OPC_LOCO_DIRF, slot, orientationF0F4);
 				}
 
+				inline void SendLocoF5F8(const unsigned char slot, const unsigned char f5F8)
+				{
+					Send4ByteCommand(OPC_LOCO_SND, slot, f5F8);
+				}
+
 				unsigned char SetOrientationF0F4Bit(const unsigned char slot, const bool on, const unsigned char shift);
+
+				unsigned char SetF5F8Bit(const unsigned char slot, const bool on, const unsigned char shift);
 
 				volatile bool run;
 				mutable Network::Serial serialLine;
