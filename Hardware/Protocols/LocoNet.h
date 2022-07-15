@@ -92,7 +92,7 @@ namespace Hardware
 				virtual void LocoFunction(const Protocol protocol,
 					const Address address,
 					const DataModel::LocoFunctionNr function,
-					const DataModel::LocoFunctionState on);
+					const DataModel::LocoFunctionState on) override;
 
 				virtual void AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
 					const Address address,
