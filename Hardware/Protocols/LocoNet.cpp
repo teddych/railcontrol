@@ -39,11 +39,14 @@ namespace Hardware
 			serialLine(logger, params->GetArg1(), dataSpeed, 8, 'N', 1)
 		{
 			receiverThread = std::thread(&Hardware::Protocols::LocoNet::Receiver, this);
+			senderThread = std::thread(&Hardware::Protocols::LocoNet::Sender, this);
 		}
 
 		LocoNet::~LocoNet()
 		{
 			run = false;
+			sendingQueue.Enqueue(SendingQueueEntry());
+			senderThread.join();
 			receiverThread.join();
 			logger->Info(Languages::TextTerminatingSenderSocket);
 		}
@@ -196,6 +199,39 @@ namespace Hardware
 			Send4ByteCommand(OPC_SW_REQ, addressLow, addressHigh);
 		}
 
+		void LocoNet::Sender()
+		{
+			Utils::Utils::SetThreadName("LocoNet Sender");
+			logger->Info(Languages::TextSenderThreadStarted);
+			while (run)
+			{
+				while (!entryToVerify.GetSize())
+				{
+					if (entryToVerify.GetTimestamp() + 1 < time(nullptr))
+					{
+						entryToVerify.Reset();
+						break;
+					}
+					Utils::Utils::SleepForMilliseconds(50);
+				}
+
+				entryToVerify = sendingQueue.Dequeue();
+
+				const unsigned char size = entryToVerify.GetSize();
+				if (!size)
+				{
+					continue;
+				}
+
+				entryToVerify.SetTimestamp();
+
+				const unsigned char* data = entryToVerify.GetData();
+
+				serialLine.Send(data, size);
+			}
+			logger->Info(Languages::TextTerminatingSenderThread);
+		}
+
 		void LocoNet::Receiver()
 		{
 			Utils::Utils::SetThreadName("LocoNet Receiver");
@@ -275,10 +311,17 @@ namespace Hardware
 					default:
 						continue;
 				}
-				logger->Hex(buffer, commandLength);
 				CalcCheckSum(buffer, commandLength - 1, &checkSumCalculated);
 				if (checkSumCalculated != buffer[commandLength - 1])
 				{
+					continue;
+				}
+
+				const unsigned char size = entryToVerify.GetSize();
+				if (size && memcmp(buffer, entryToVerify.GetData(), size) == 0)
+				{
+					// response of sent command
+					entryToVerify.Reset();
 					continue;
 				}
 
@@ -287,6 +330,7 @@ namespace Hardware
 					break;
 				}
 
+				logger->Hex(buffer, commandLength);
 				Parse(buffer);
 			}
 			logger->Info(Languages::TextTerminatingReceiverThread);
@@ -620,7 +664,7 @@ namespace Hardware
 			buffer[0] = data;
 			CalcCheckSum(buffer, 1, buffer + 1);
 			logger->Hex(buffer, sizeof(buffer));
-			serialLine.Send(buffer, sizeof(buffer));
+			sendingQueue.Enqueue(SendingQueueEntry(sizeof(buffer), buffer));
 		}
 
 		void LocoNet::Send4ByteCommand(const unsigned char data0,
@@ -633,7 +677,7 @@ namespace Hardware
 			buffer[2] = data2;
 			CalcCheckSum(buffer, 3, buffer + 3);
 			logger->Hex(buffer, sizeof(buffer));
-			serialLine.Send(buffer, sizeof(buffer));
+			sendingQueue.Enqueue(SendingQueueEntry(sizeof(buffer), buffer));
 		}
 
 		void LocoNet::Send6ByteCommand(const unsigned char data0,
@@ -650,7 +694,7 @@ namespace Hardware
 			buffer[4] = data4;
 			CalcCheckSum(buffer, 5, buffer + 5);
 			logger->Hex(buffer, sizeof(buffer));
-			serialLine.Send(buffer, sizeof(buffer));
+			sendingQueue.Enqueue(SendingQueueEntry(sizeof(buffer), buffer));
 		}
 
 		uint8_t LocoNet::SetOrientationF0F4Bit(const unsigned char slot, const bool on, const unsigned char shift)

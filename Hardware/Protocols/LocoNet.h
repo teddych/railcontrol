@@ -20,6 +20,9 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <algorithm>
+#include <ctime>
+
 #include "Hardware/HardwareInterface.h"
 #include "Hardware/HardwareParams.h"
 #include "Hardware/Protocols/LocoNetLocoCache.h"
@@ -101,6 +104,10 @@ namespace Hardware
 					const bool on) override;
 
 			private:
+				// longest known LocoNet-Command
+				// also defined in subclass SendingQueueEntry
+				static const unsigned char MaxDataLength = 0x0E;
+
 				enum OpCodes : unsigned char
 				{
 					OPC_BUSY         = 0x81,
@@ -126,9 +133,63 @@ namespace Hardware
 					OPC_LOCO_ADR     = 0xBF,
 					OPC_SL_RD_DATA   = 0xE7,
 					OPC_WR_SL_DATA   = 0xEF,
-					// IB-II codes
+					// Intellibox-II codes
 					OPC_LOCO_FUNC2   = 0xD4
 				};
+
+				class SendingQueueEntry
+				{
+					public:
+						inline SendingQueueEntry()
+						:	size(0),
+						 	timestamp(0)
+						{
+						}
+
+						inline SendingQueueEntry(unsigned char size, const unsigned char* data)
+						:	size(std::min(size, static_cast<unsigned char>(MaxDataLength))),
+						 	timestamp(time(nullptr))
+						{
+							memcpy(this->data, data, this->size);
+						}
+
+						inline SendingQueueEntry(const SendingQueueEntry& rhs) = default;
+
+						inline SendingQueueEntry& operator=(const SendingQueueEntry& rhs) = default;
+
+						inline unsigned char GetSize() const
+						{
+							return size;
+						}
+
+						inline unsigned char GetTimestamp() const
+						{
+							return timestamp;
+						}
+
+						inline void SetTimestamp()
+						{
+							timestamp = time(nullptr);
+						}
+
+						inline const unsigned char* GetData() const
+						{
+							return data;
+						}
+
+						inline void Reset()
+						{
+							size = 0;
+							timestamp = 0;
+						}
+
+					private:
+						volatile unsigned char size;
+						unsigned char data[MaxDataLength];
+						volatile time_t timestamp;
+				};
+
+				void Sender();
 
 				void Receiver();
 
@@ -218,9 +279,13 @@ namespace Hardware
 
 				volatile bool run;
 				mutable Network::Serial serialLine;
+				std::thread senderThread;
 				std::thread receiverThread;
 
 				LocoNetLocoCache locoCache;
+
+				Utils::ThreadSafeQueue<SendingQueueEntry> sendingQueue;
+				SendingQueueEntry entryToVerify;
 		};
 	} // namespace
 } // namespace
