@@ -148,15 +148,30 @@ namespace Hardware
 
 				static unsigned char CalcSpeed(const Speed speed);
 
-				void ParseOrientationF0F4(const unsigned char slot, const Address address, const unsigned char data);
+				void ParseOrientationF0F4(const unsigned char slot, const Address address, const uint8_t data);
 
-				void ParseF5F8(const unsigned char slot, const Address address, const unsigned char data);
+				void ParseF5F8(const unsigned char slot, const Address address, const uint8_t data);
+
+				void ParseF9F12(const unsigned char slot, const Address address, const uint8_t data);
+
+				void ParseFunction(const Address address,
+					const uint32_t data,
+					const DataModel::LocoFunctionNr nr,
+					const uint8_t shift);
+
+				void ParseF13F44(const unsigned char slot, const Address address, const unsigned char* data);
 
 				void Send2ByteCommand(const unsigned char data0);
 
 				void Send4ByteCommand(const unsigned char data0,
 					const unsigned char data1,
 					const unsigned char data2);
+
+				void Send6ByteCommand(const unsigned char data0,
+					const unsigned char data1,
+					const unsigned char data2,
+					const unsigned char data3,
+					const unsigned char data4);
 
 				inline void SendRequestLocoData(const unsigned char slot)
 				{
@@ -175,19 +190,28 @@ namespace Hardware
 					Send4ByteCommand(OPC_LOCO_SPD, slot, CalcSpeed(speed));
 				}
 
-				inline void SendLocoOrientationF0F4(const unsigned char slot, const unsigned char orientationF0F4)
+				inline void SendLocoOrientationF0F4(const unsigned char slot, const uint8_t orientationF0F4)
 				{
 					Send4ByteCommand(OPC_LOCO_DIRF, slot, orientationF0F4);
 				}
 
-				inline void SendLocoF5F8(const unsigned char slot, const unsigned char f5F8)
+				inline void SendLocoF5F8(const unsigned char slot, const uint8_t f5F8)
 				{
 					Send4ByteCommand(OPC_LOCO_SND, slot, f5F8);
 				}
 
-				unsigned char SetOrientationF0F4Bit(const unsigned char slot, const bool on, const unsigned char shift);
+				inline void SendLocoF9F12(const unsigned char slot, const uint8_t f9F12)
+				{
+					Send4ByteCommand(OPC_LOCO_FUNC, slot, f9F12);
+				}
 
-				unsigned char SetF5F8Bit(const unsigned char slot, const bool on, const unsigned char shift);
+				uint8_t SetOrientationF0F4Bit(const unsigned char slot, const bool on, const unsigned char shift);
+
+				uint8_t SetF5F8Bit(const unsigned char slot, const bool on, const unsigned char shift);
+
+				uint8_t SetF9F12Bit(const unsigned char slot, const bool on, const unsigned char shift);
+
+				uint32_t SetF13F44Bit(const unsigned char slot, const bool on, const unsigned char shift);
 
 				volatile bool run;
 				mutable Network::Serial serialLine;
