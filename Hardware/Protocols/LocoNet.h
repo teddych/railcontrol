@@ -56,7 +56,8 @@ namespace Hardware
 				inline Hardware::Capabilities GetCapabilities() const override
 				{
 					return Hardware::CapabilityLoco
-						| Hardware::CapabilityAccessory;
+						| Hardware::CapabilityAccessory
+						| Hardware::CapabilityFeedback;
 				}
 
 				void GetLocoProtocols(std::vector<Protocol>& protocols) const override
@@ -160,6 +161,8 @@ namespace Hardware
 					const uint8_t shift);
 
 				void ParseF13F44(const unsigned char slot, const Address address, const unsigned char* data);
+
+				void ParseSensorData(const unsigned char* data);
 
 				void Send2ByteCommand(const unsigned char data0);
 

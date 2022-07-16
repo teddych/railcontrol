@@ -308,42 +308,46 @@ namespace Hardware
 				case OPC_GPON: // 0x83
 					logger->Info(Languages::TextTurningBoosterOn);
 					manager->Booster(ControlTypeHardware, BoosterStateGo);
-					break;
+					return;
 
 				case OPC_GPOFF: // 0x82
 					logger->Info(Languages::TextTurningBoosterOff);
 					manager->Booster(ControlTypeHardware, BoosterStateStop);
-					break;
+					return;
 
 				case OPC_SW_REQ: // 0xB0
 				{
 					const bool on = static_cast<bool>((data[2] & 0x10) >> 4);
 					if (!on)
 					{
-						break;
+						return;
 					}
 					const DataModel::AccessoryState state = static_cast<DataModel::AccessoryState>((data[2] & 0x20) >> 5);
 					const Address address = (static_cast<Address>(data[1] & 0x7F) | (static_cast<Address>(data[2] & 0x0F) << 7)) + 1;
 					logger->Info(Languages::TextSettingAccessory, address, Languages::GetGreenRed(state));
 					manager->AccessoryState(ControlTypeHardware, controlID, ProtocolServer, address, state);
-					break;
+					return;
+				}
+
+				case OPC_INPUT_REP: // 0xB2
+				{
+					ParseSensorData(data);
+					return;
 				}
 
 				case OPC_SL_RD_DATA: // 0xE7
-				{
 					ParseSlotReadData(data);
-					break;
-				}
+					return;
 
 				case OPC_LOCO_SPD: // 0xA0
 				{
 					const Address address = CheckSlot(data[1]);
 					if (!address)
 					{
-						break;
+						return;
 					}
 					ParseSpeed(address, data[2]);
-					break;
+					return;
 				}
 
 				case OPC_LOCO_DIRF: // 0xA1
@@ -352,10 +356,10 @@ namespace Hardware
 					const Address address = CheckSlot(slot);
 					if (!address)
 					{
-						break;
+						return;
 					}
 					ParseOrientationF0F4(slot, address, data[2]);
-					break;
+					return;
 				}
 
 				case OPC_LOCO_SND: // 0xA2
@@ -364,10 +368,10 @@ namespace Hardware
 					const Address address = CheckSlot(slot);
 					if (!address)
 					{
-						break;
+						return;
 					}
 					ParseF5F8(slot, address, data[2]);
-					break;
+					return;
 				}
 
 				case OPC_LOCO_FUNC: // 0xA3
@@ -376,10 +380,10 @@ namespace Hardware
 					const Address address = CheckSlot(slot);
 					if (!address)
 					{
-						break;
+						return;
 					}
 					ParseF9F12(slot, address, data[2]);
-					break;
+					return;
 				}
 
 				case OPC_LOCO_FUNC2: // 0xD4
@@ -389,14 +393,15 @@ namespace Hardware
 					const Address address = CheckSlot(slot);
 					if (!address)
 					{
-						break;
+						return;
 					}
 					ParseF13F44(slot, address, data);
-					break;
+					return;
 				}
 
 				default:
-					break;
+					// FIXME: Log unknown command
+					return;
 			}
 		}
 
@@ -591,6 +596,22 @@ namespace Hardware
 					ParseFunction(address, newData, i + 13, i);
 				}
 			}
+		}
+
+		void LocoNet::ParseSensorData(const unsigned char* data)
+		{
+			if (!(data[2] & 0x40))
+			{
+				// control bit not set
+				return;
+			}
+			const FeedbackPin pin = (((static_cast<FeedbackPin>(data[2]) >> 5) & 0x0001)
+				| ((static_cast<FeedbackPin>(data[1]) <<1) & 0x00FE)
+				| ((static_cast<FeedbackPin>(data[2]) << 8) & 0x7F))
+				+ 1; // LocoNet is 0-based, RailControl is 1-based
+			DataModel::Feedback::FeedbackState state = static_cast<DataModel::Feedback::FeedbackState>((data[2] >> 4) & 0x01);
+			logger->Info(Languages::TextFeedbackChange, pin & 0x000F, pin >> 4, Languages::GetText(state ? Languages::TextOn : Languages::TextOff));
+			manager->FeedbackState(controlID, pin, state);
 		}
 
 		void LocoNet::Send2ByteCommand(const unsigned char data)
