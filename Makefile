@@ -2,7 +2,7 @@
 RAILCONTROL_VERSION := 21
 
 CFLAGSSQLITE=-g -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
-CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration
+CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration -Wno-\#warnings -Wno-deprecated -Wno-deprecated-non-prototype
 CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11 -D_GNU_SOURCE
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11
 LDFLAGS=-g
