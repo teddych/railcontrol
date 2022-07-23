@@ -150,34 +150,34 @@ namespace Hardware
 					break;
 			}
 			// else function > 12
+			// Sending function numbers bigger than 12 is an Uhlenbrock Intellibox II extension
 
-			if (function > 44)
+			if (function > 28)
 			{
+				// even Uhlenbrock Intellibox does not interpret functions > 28 correct
 				return;
 			}
-
-			// Sending function numbers bigger than 12 is an Uhlenbrock Intellibox II extension
 
 			const unsigned char shift = function - 13;
 			const uint32_t data = SetF13F44Bit(slot, on, shift);
 			if (function < 20)
 			{
 				const uint8_t data4 = static_cast<uint8_t>(data & 0x7F);
-				Send6ByteCommand(OPC_LOCO_FUNC2, 0x20, 0x01, 0x08, data4);
+				Send6ByteCommand(OPC_EXP_CMD, 0x20, 0x01, 0x08, data4);
 				return;
 			}
 			if (function == 20 || function == 28)
 			{
 				const uint8_t data4 = static_cast<uint8_t>(((data >> 2) & 0x20) | ((data >> 9) & 0x40));
-				Send6ByteCommand(OPC_LOCO_FUNC2, 0x20, 0x01, 0x05, data4);
+				Send6ByteCommand(OPC_EXP_CMD, 0x20, 0x01, 0x05, data4);
 				return;
 			}
-			if (function < 28)
-			{
-				const uint8_t data4 = static_cast<uint8_t>((data >> 8) & 0x7F);
-				Send6ByteCommand(OPC_LOCO_FUNC2, 0x20, 0x01, 0x09, data4);
-				return;
-			}
+
+			// else function > 21 && function < 28
+			const uint8_t data4 = static_cast<uint8_t>((data >> 8) & 0x7F);
+			Send6ByteCommand(OPC_EXP_CMD, 0x20, 0x01, 0x09, data4);
+			return;
+
 			// else function > 28
 			// Actually Uhlenbrock Intellibox II does not interpret and store these values.
 			// Therefore we don't send the values.
@@ -205,28 +205,33 @@ namespace Hardware
 			logger->Info(Languages::TextSenderThreadStarted);
 			while (run)
 			{
-				while (!entryToVerify.GetSize())
 				{
-					if (entryToVerify.GetTimestamp() + 1 < time(nullptr))
+					std::unique_lock<std::mutex> lock(entryToVerifyMutex);
+					while (entryToVerify.GetSize() > 0)
 					{
-						entryToVerify.Reset();
-						break;
+						// we wait 1s for the response from LocoNet
+						if (entryToVerifyCV.wait_for(lock, std::chrono::seconds(1)) == std::cv_status::timeout)
+						{
+							break;
+						}
 					}
-					Utils::Utils::SleepForMilliseconds(50);
 				}
 
-				entryToVerify = sendingQueue.Dequeue();
+				SendingQueueEntry temp = sendingQueue.Dequeue();
+				{
+					std::unique_lock<std::mutex> lock(entryToVerifyMutex);
+					entryToVerify = temp;
+				}
 
-				const unsigned char size = entryToVerify.GetSize();
+				const unsigned char size = temp.GetSize();
 				if (!size)
 				{
 					continue;
 				}
 
-				entryToVerify.SetTimestamp();
+				const unsigned char* data = temp.GetData();
 
-				const unsigned char* data = entryToVerify.GetData();
-
+				logger->Hex(data, size);
 				serialLine.Send(data, size);
 			}
 			logger->Info(Languages::TextTerminatingSenderThread);
@@ -317,12 +322,16 @@ namespace Hardware
 					continue;
 				}
 
-				const unsigned char size = entryToVerify.GetSize();
-				if (size && memcmp(buffer, entryToVerify.GetData(), size) == 0)
 				{
-					// response of sent command
-					entryToVerify.Reset();
-					continue;
+					std::unique_lock<std::mutex> lock(entryToVerifyMutex);
+					const unsigned char size = entryToVerify.GetSize();
+					if (size && memcmp(buffer, entryToVerify.GetData(), size) == 0)
+					{
+						// response of sent command received
+						entryToVerify.Reset();
+						entryToVerifyCV.notify_all();
+						continue;
+					}
 				}
 
 				if (run == false)
@@ -430,7 +439,7 @@ namespace Hardware
 					return;
 				}
 
-				case OPC_LOCO_FUNC2: // 0xD4
+				case OPC_EXP_CMD: // 0xD4
 				{
 					// This is an Uhlenbrock Intellibox II extension
 					const unsigned char slot = data[2];
@@ -663,7 +672,6 @@ namespace Hardware
 			unsigned char buffer[2];
 			buffer[0] = data;
 			CalcCheckSum(buffer, 1, buffer + 1);
-			logger->Hex(buffer, sizeof(buffer));
 			sendingQueue.Enqueue(SendingQueueEntry(sizeof(buffer), buffer));
 		}
 
@@ -676,7 +684,6 @@ namespace Hardware
 			buffer[1] = data1;
 			buffer[2] = data2;
 			CalcCheckSum(buffer, 3, buffer + 3);
-			logger->Hex(buffer, sizeof(buffer));
 			sendingQueue.Enqueue(SendingQueueEntry(sizeof(buffer), buffer));
 		}
 
@@ -693,7 +700,6 @@ namespace Hardware
 			buffer[3] = data3;
 			buffer[4] = data4;
 			CalcCheckSum(buffer, 5, buffer + 5);
-			logger->Hex(buffer, sizeof(buffer));
 			sendingQueue.Enqueue(SendingQueueEntry(sizeof(buffer), buffer));
 		}
 
