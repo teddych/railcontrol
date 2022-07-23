@@ -104,9 +104,8 @@ namespace Hardware
 					const bool on) override;
 
 			private:
-				// longest known LocoNet-Command
-				// also defined in subclass SendingQueueEntry
-				static const unsigned char MaxDataLength = 0x0E;
+				// longest known LocoNet-Command is OPC_SL_RD_DATA_EXP (Uhlenbrock Extension)
+				static const unsigned char MaxDataLength = 0x15;
 
 				enum OpCodes : unsigned char
 				{
