@@ -453,7 +453,7 @@ namespace Hardware
 				}
 
 				default:
-					// FIXME: Log unknown command
+					logger->Debug(Languages::TextCommandUnknown, Utils::Utils::IntegerToHex(data[0]));
 					return;
 			}
 		}
@@ -478,11 +478,54 @@ namespace Hardware
 			const unsigned char slot = data[2];
 			if (slot == 0)
 			{
-				logger->Debug("Parsing of Hardware ID not yet implemented"); // FIXME
+				const unsigned char ib[] = { 0x00, 0x00, 0x02, 0x00, 0x07, 0x00, 0x00, 0x00, 0x49, 0x42, 0x18 };
+				if (memcmp(ib, data + 3, 11) == 0)
+				{
+					logger->Info(Languages::TextConnectedTo, "Intellibox / TwinCenter");
+					return;
+				}
+
+				const unsigned char ib2[] = { 0x02, 0x42, 0x03, 0x00, 0x07, 0x00, 0x00, 0x15, 0x49, 0x42, 0x4C };
+				if (memcmp(ib2, data + 3, 11) == 0)
+				{
+					logger->Info(Languages::TextConnectedTo, "Intellibox II / IB-Basic / IB-Com");
+					return;
+				}
+
+				const unsigned char sc7[] = { 0x02, 0x42, 0x03, 0x00, 0x06, 0x00, 0x00, 0x15, 0x49, 0x42, 0x4D };
+				if (memcmp(sc7, data + 3, 11) == 0)
+				{
+					logger->Info(Languages::TextConnectedTo, "System Control 7");
+					return;
+				}
+
+				const unsigned char daisy[] = { 0x00, 0x44, 0x02, 0x00, 0x07, 0x00, 0x59, 0x01, 0x49, 0x42, 0x04 };
+				if (memcmp(daisy, data + 3, 11) == 0)
+				{
+					logger->Info(Languages::TextConnectedTo, "Daisy");
+					return;
+				}
+
+				const unsigned char adapter63820[] = { 0x00, 0x4C, 0x01, 0x00, 0x07, 0x00, 0x49, 0x02, 0x49, 0x42, 0x1C };
+				if (memcmp(adapter63820, data + 3, 11) == 0)
+				{
+					logger->Info(Languages::TextConnectedTo, "Adapter 63820");
+					return;
+				}
+
+				const unsigned char digitraxChief[] = { 0x03, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11 };
+				if (memcmp(digitraxChief, data + 3, 11) == 0)
+				{
+					logger->Info(Languages::TextConnectedTo, "Digitrax Chief");
+					return;
+				}
+
+				logger->Info(Languages::TextUnknownHardware);
 				return;
 			}
 			const Address address = ParseLocoAddress(data[4], data[9]);
-			logger->Debug("Slot {0} has address {1}", slot, address);
+			logger->Debug(Languages::TextSlotHasAddress, slot, address);
+
 			locoCache.SetAddress(slot, address);
 			ParseSpeed(address, data[5]);
 			ParseOrientationF0F4(slot, address, data[6]);
