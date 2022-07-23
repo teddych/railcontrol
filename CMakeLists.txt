@@ -88,6 +88,8 @@ Hardware/Intellibox.h
 Hardware/Intellibox2.h
 Hardware/LocoCache.cpp
 Hardware/LocoCache.h
+Hardware/LocoNetAdapter63120.h
+Hardware/LocoNetAdapter63820.h
 Hardware/M6051.cpp
 Hardware/M6051.h
 Hardware/MasterControl.h
