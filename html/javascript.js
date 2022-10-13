@@ -616,15 +616,23 @@ function checkIntegerValue(name, min, max)
 	{
 		return;
 	}
-	if (input.value < min)
+
+	if (isNaN(input.value) || (input.value < min))
 	{
 		input.value = min;
-		return;
 	}
-	if (input.value > max)
+	else if (input.value > max)
 	{
 		input.value = max;
 	}
+
+	var fname = 'update_' + name;
+	if (typeof window[fname] !== 'function')
+	{
+		return;
+	}
+
+	window[fname]();
 }
 
 function incrementIntegerValue(name, max)
@@ -640,6 +648,14 @@ function incrementIntegerValue(name, max)
 		return;
 	}
 	input.value = value;
+
+	var fname = 'update_' + name;
+	if (typeof window[fname] !== 'function')
+	{
+		return;
+	}
+
+	window[fname]();
 }
 
 function decrementIntegerValue(name, min)
@@ -655,6 +671,58 @@ function decrementIntegerValue(name, min)
 		return;
 	}
 	input.value = value;
+
+	var fname = 'update_' + name;
+	if (typeof window[fname] !== 'function')
+	{
+		return;
+	}
+
+	window[fname]();
+}
+
+function update_valueraw()
+{
+	var element = document.getElementById('valueraw');
+	if (!element)
+	{
+		return;
+	}
+	for (var bit = 0; bit < 8; ++bit)
+	{
+		updateCvBit(bit, (element.value >> bit) & 0x01);
+	}
+}
+
+function updateCvBit(bit, value)
+{
+	var name = 'valueraw' + bit;
+	var element = document.getElementById(name);
+	if (!element)
+	{
+		return;
+	}
+	element.checked = value ? true : false;
+}
+
+function updateCvValue()
+{
+	var value = 0;
+	for (var bit = 0; bit < 8; ++bit)
+	{
+		var element = document.getElementById('valueraw' + bit);
+		if (!element)
+		{
+			return;
+		}
+		value |= (element.checked ? (1 << bit) : 0);
+	}
+	var element = document.getElementById('valueraw');
+	if (!element)
+	{
+		return;
+	}
+	element.value = value;
 }
 
 function setToggleButton(elementName, on)

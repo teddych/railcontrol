@@ -47,6 +47,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "WebServer/HtmlTagButtonPopup.h"
 #include "WebServer/HtmlTagButtonPopupWide.h"
 #include "WebServer/HtmlTagFeedback.h"
+#include "WebServer/HtmlTagInputCheckbox.h"
 #include "WebServer/HtmlTagInputCheckboxWithLabel.h"
 #include "WebServer/HtmlTagInputHidden.h"
 #include "WebServer/HtmlTagInputIntegerWithLabel.h"
@@ -2926,21 +2927,13 @@ namespace WebServer
 				break;
 		}
 
-		Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);
-		if (((programMode == ProgramModeMfx) && (capabilities & Hardware::CapabilityProgramMfxRead))
-			|| ((programMode == ProgramModeDccRegister) && (capabilities & Hardware::CapabilityProgramDccRegisterRead))
-			|| ((programMode == ProgramModeDccDirect) && (capabilities & Hardware::CapabilityProgramDccDirectRead))
-			|| ((programMode == ProgramModeDccPomLoco) && (capabilities & Hardware::CapabilityProgramDccPomLocoRead))
-			|| ((programMode == ProgramModeDccPomAccessory) && (capabilities & Hardware::CapabilityProgramDccPomAccessoryRead)))
-		{
-			HtmlTagButton readButton(Languages::TextRead, "programread");
-			readButton.AddAttribute("onclick", "onClickProgramRead();return false;");
-			readButton.AddClass("wide_button");
-			content.AddChildTag(readButton);
-		}
-
 		content.AddChildTag(HtmlTagInputIntegerWithLabel("valueraw", Languages::TextValue, 0, 0, 255));
 
+		content.AddChildTag(HtmlTag("br"));
+		content.AddChildTag(HtmlTagInput8BitValueWithLabel());
+		content.AddChildTag(HtmlTag("br"));
+
+		Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);
 		if (((programMode == ProgramModeMm) && (capabilities & Hardware::CapabilityProgramMmWrite))
 			|| ((programMode == ProgramModeMmPom) && (capabilities & Hardware::CapabilityProgramMmPomWrite))
 			|| ((programMode == ProgramModeMfx) && (capabilities & Hardware::CapabilityProgramMfxWrite))
@@ -2954,6 +2947,19 @@ namespace WebServer
 			writeButton.AddClass("wide_button");
 			content.AddChildTag(writeButton);
 		}
+
+		if (((programMode == ProgramModeMfx) && (capabilities & Hardware::CapabilityProgramMfxRead))
+			|| ((programMode == ProgramModeDccRegister) && (capabilities & Hardware::CapabilityProgramDccRegisterRead))
+			|| ((programMode == ProgramModeDccDirect) && (capabilities & Hardware::CapabilityProgramDccDirectRead))
+			|| ((programMode == ProgramModeDccPomLoco) && (capabilities & Hardware::CapabilityProgramDccPomLocoRead))
+			|| ((programMode == ProgramModeDccPomAccessory) && (capabilities & Hardware::CapabilityProgramDccPomAccessoryRead)))
+		{
+			HtmlTagButton readButton(Languages::TextRead, "programread");
+			readButton.AddAttribute("onclick", "onClickProgramRead();return false;");
+			readButton.AddClass("wide_button");
+			content.AddChildTag(readButton);
+		}
+
 		return content;
 	}
 
@@ -2962,6 +2968,28 @@ namespace WebServer
 		ControlID controlID = static_cast<ControlID>(Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone));
 		ProgramMode programMode = static_cast<ProgramMode>(Utils::Utils::GetIntegerMapEntry(arguments, "mode", ProgramModeNone));
 		ReplyHtmlWithHeader(HtmlTagCvFields(controlID, programMode));
+	}
+
+	HtmlTag WebClient::HtmlTagInput8BitValueWithLabel() const
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTagLabel(Languages::TextValue, "valueraw0"));
+		content.AddChildTag(HtmlTagInputBitValue("valueraw7"));
+		content.AddChildTag(HtmlTagInputBitValue("valueraw6"));
+		content.AddChildTag(HtmlTagInputBitValue("valueraw5"));
+		content.AddChildTag(HtmlTagInputBitValue("valueraw4"));
+		content.AddChildTag(HtmlTagInputBitValue("valueraw3"));
+		content.AddChildTag(HtmlTagInputBitValue("valueraw2"));
+		content.AddChildTag(HtmlTagInputBitValue("valueraw1"));
+		content.AddChildTag(HtmlTagInputBitValue("valueraw0"));
+		return content;
+	}
+
+	HtmlTag WebClient::HtmlTagInputBitValue(string name) const
+	{
+		HtmlTagInputCheckbox checkbox(name, name);
+		checkbox.AddAttribute("onclick", "updateCvValue();");
+		return checkbox;
 	}
 
 	void WebClient::HandleProgram()
