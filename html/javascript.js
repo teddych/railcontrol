@@ -605,6 +605,16 @@ function addFeedback()
 	return false;
 }
 
+function execFunctionByName(name)
+{
+	if (typeof window[name] !== 'function')
+	{
+		return;
+	}
+
+	window[name]();
+}
+
 function checkIntegerValue(name, min, max)
 {
 	if (min > max)
@@ -626,13 +636,7 @@ function checkIntegerValue(name, min, max)
 		input.value = max;
 	}
 
-	var fname = 'update_' + name;
-	if (typeof window[fname] !== 'function')
-	{
-		return;
-	}
-
-	window[fname]();
+	execFunctionByName('update_' + name);
 }
 
 function incrementIntegerValue(name, max)
@@ -649,13 +653,7 @@ function incrementIntegerValue(name, max)
 	}
 	input.value = value;
 
-	var fname = 'update_' + name;
-	if (typeof window[fname] !== 'function')
-	{
-		return;
-	}
-
-	window[fname]();
+	execFunctionByName('update_' + name);
 }
 
 function decrementIntegerValue(name, min)
@@ -672,13 +670,7 @@ function decrementIntegerValue(name, min)
 	}
 	input.value = value;
 
-	var fname = 'update_' + name;
-	if (typeof window[fname] !== 'function')
-	{
-		return;
-	}
-
-	window[fname]();
+	execFunctionByName('update_' + name);
 }
 
 function update_valueraw()
@@ -1507,6 +1499,7 @@ function dataUpdate(event)
 			if (valueElement)
 			{
 				valueElement.value = value;
+				update_valueraw();
 			}
 		}
 	}
