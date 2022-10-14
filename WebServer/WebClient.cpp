@@ -2832,6 +2832,30 @@ namespace WebServer
 	{
 		Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);
 		map<ProgramMode, Languages::TextSelector> programModeOptions;
+		if (capabilities & (Hardware::CapabilityProgramDccDirectRead | Hardware::CapabilityProgramDccDirectWrite))
+		{
+			programModeOptions[ProgramModeDccDirect] = Languages::TextProgramModeDccDirect;
+			if (mode == ProgramModeNone)
+			{
+				mode = ProgramModeDccDirect;
+			}
+		}
+		if (capabilities & (Hardware::CapabilityProgramDccPomLocoRead | Hardware::CapabilityProgramDccPomLocoWrite))
+		{
+			programModeOptions[ProgramModeDccPomLoco] = Languages::TextProgramModeDccPomLoco;
+			if (mode == ProgramModeNone)
+			{
+				mode = ProgramModeDccPomLoco;
+			}
+		}
+		if (capabilities & (Hardware::CapabilityProgramDccPomAccessoryRead | Hardware::CapabilityProgramDccPomAccessoryWrite))
+		{
+			programModeOptions[ProgramModeDccPomAccessory] = Languages::TextProgramModeDccPomAccessory;
+			if (mode == ProgramModeNone)
+			{
+				mode = ProgramModeDccPomAccessory;
+			}
+		}
 		if (capabilities & Hardware::CapabilityProgramMmWrite)
 		{
 			programModeOptions[ProgramModeMm] = Languages::TextProgramModeMm;
@@ -2856,28 +2880,20 @@ namespace WebServer
 				mode = ProgramModeMfx;
 			}
 		}
-		if (capabilities & (Hardware::CapabilityProgramDccDirectRead | Hardware::CapabilityProgramDccDirectWrite))
+		if (capabilities & (Hardware::CapabilityProgramDccPageRead | Hardware::CapabilityProgramDccPageWrite))
 		{
-			programModeOptions[ProgramModeDccDirect] = Languages::TextProgramModeDccDirect;
+			programModeOptions[ProgramModeDccPage] = Languages::TextProgramModeDccPage;
 			if (mode == ProgramModeNone)
 			{
-				mode = ProgramModeDccDirect;
+				mode = ProgramModeDccPage;
 			}
 		}
-		if (capabilities & (Hardware::CapabilityProgramDccPomLocoRead | Hardware::CapabilityProgramDccPomLocoWrite))
+		if (capabilities & (Hardware::CapabilityProgramDccRegisterRead | Hardware::CapabilityProgramDccRegisterWrite))
 		{
-			programModeOptions[ProgramModeDccPomLoco] = Languages::TextProgramModeDccPomLoco;
+			programModeOptions[ProgramModeDccRegister] = Languages::TextProgramModeDccRegister;
 			if (mode == ProgramModeNone)
 			{
-				mode = ProgramModeDccPomLoco;
-			}
-		}
-		if (capabilities & (Hardware::CapabilityProgramDccPomAccessoryRead | Hardware::CapabilityProgramDccPomAccessoryWrite))
-		{
-			programModeOptions[ProgramModeDccPomAccessory] = Languages::TextProgramModeDccPomAccessory;
-			if (mode == ProgramModeNone)
-			{
-				mode = ProgramModeDccPomAccessory;
+				mode = ProgramModeDccRegister;
 			}
 		}
 		return HtmlTagSelectWithLabel("moderaw", Languages::TextProgramMode, programModeOptions, mode).AddAttribute("onchange", "onChangeProgramModeSelector();");
@@ -2938,6 +2954,7 @@ namespace WebServer
 			|| ((programMode == ProgramModeMmPom) && (capabilities & Hardware::CapabilityProgramMmPomWrite))
 			|| ((programMode == ProgramModeMfx) && (capabilities & Hardware::CapabilityProgramMfxWrite))
 			|| ((programMode == ProgramModeDccRegister) && (capabilities & Hardware::CapabilityProgramDccRegisterWrite))
+			|| ((programMode == ProgramModeDccPage) && (capabilities & Hardware::CapabilityProgramDccPageWrite))
 			|| ((programMode == ProgramModeDccDirect) && (capabilities & Hardware::CapabilityProgramDccDirectWrite))
 			|| ((programMode == ProgramModeDccPomLoco) && (capabilities & Hardware::CapabilityProgramDccPomLocoWrite))
 			|| ((programMode == ProgramModeDccPomAccessory) && (capabilities & Hardware::CapabilityProgramDccPomAccessoryWrite)))
@@ -2950,6 +2967,7 @@ namespace WebServer
 
 		if (((programMode == ProgramModeMfx) && (capabilities & Hardware::CapabilityProgramMfxRead))
 			|| ((programMode == ProgramModeDccRegister) && (capabilities & Hardware::CapabilityProgramDccRegisterRead))
+			|| ((programMode == ProgramModeDccPage) && (capabilities & Hardware::CapabilityProgramDccPageRead))
 			|| ((programMode == ProgramModeDccDirect) && (capabilities & Hardware::CapabilityProgramDccDirectRead))
 			|| ((programMode == ProgramModeDccPomLoco) && (capabilities & Hardware::CapabilityProgramDccPomLocoRead))
 			|| ((programMode == ProgramModeDccPomAccessory) && (capabilities & Hardware::CapabilityProgramDccPomAccessoryRead)))
@@ -3068,6 +3086,8 @@ namespace WebServer
 		ProgramMode mode = static_cast<ProgramMode>(Utils::Utils::GetIntegerMapEntry(arguments, "mode"));
 		switch (mode)
 		{
+			case ProgramModeDccRegister:
+			case ProgramModeDccPage:
 			case ProgramModeDccDirect:
 				manager.ProgramRead(controlID, mode, 0, cv);
 				break;
@@ -3084,7 +3104,7 @@ namespace WebServer
 			default:
 				break;
 		}
-		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccRead, cv);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccDirectRead, cv);
 	}
 
 	void WebClient::HandleProgramWrite(const map<string, string>& arguments)
@@ -3096,6 +3116,8 @@ namespace WebServer
 		switch (mode)
 		{
 			case ProgramModeMm:
+			case ProgramModeDccRegister:
+			case ProgramModeDccPage:
 			case ProgramModeDccDirect:
 				manager.ProgramWrite(controlID, mode, 0, cv, value);
 				break;
@@ -3113,7 +3135,7 @@ namespace WebServer
 			default:
 				break;
 		}
-		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccWrite, cv, value);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccDirectWrite, cv, value);
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)
