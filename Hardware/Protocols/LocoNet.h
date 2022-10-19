@@ -62,6 +62,7 @@ namespace Hardware
 						| Hardware::CapabilityAccessory
 						| Hardware::CapabilityFeedback
 						| Hardware::CapabilityProgram
+						| Hardware::CapabilityProgramMmWrite
 						| Hardware::CapabilityProgramDccRegisterRead
 						| Hardware::CapabilityProgramDccRegisterWrite
 						| Hardware::CapabilityProgramDccPageRead
