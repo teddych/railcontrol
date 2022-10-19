@@ -207,6 +207,7 @@ namespace Hardware
 		{
 			switch(mode)
 			{
+				case ProgramModeMm:
 				case ProgramModeDccRegister:
 				case ProgramModeDccPage:
 				case ProgramModeDccDirect:
@@ -330,6 +331,10 @@ namespace Hardware
 			unsigned char data[0x1F]; // 31 bytes
 			switch(mode)
 			{
+				case ProgramModeMm:
+					data[6] = 0x62;
+					break;
+
 				case ProgramModeDccRegister:
 					data[6] = 0x6C;
 					break;
