@@ -37,7 +37,8 @@ namespace Hardware
 			   params->GetName()),
 			run(true),
 			serialLine(logger, params->GetArg1(), dataSpeed, 8, 'N', 1),
-			lastCv(0)
+			lastCv(0),
+			isProgramming(false)
 		{
 			receiverThread = std::thread(&Hardware::Protocols::LocoNet::Receiver, this);
 			senderThread = std::thread(&Hardware::Protocols::LocoNet::Sender, this);
@@ -260,10 +261,9 @@ namespace Hardware
 			// data[6] is set in SendXByteCommand
 
 			SendXByteCommand(data, sizeof(data));
+			isProgramming = true;
 		}
 
-		/**
-		 * Actually not used
 		void LocoNet::ProgramEnd()
 		{
 			unsigned char data[0x07];
@@ -276,8 +276,8 @@ namespace Hardware
 			// data[6] is set in SendXByteCommand
 
 			SendXByteCommand(data, sizeof(data));
+			isProgramming = false;
 		}
-		*/
 
 		/**
  	 	 * Reverse Engineered with a KM1 System control 7, but it does not work properly.
@@ -732,76 +732,100 @@ namespace Hardware
 
 		void LocoNet::ParseSlotReadData(const unsigned char* data)
 		{
-			if (data[1] != 0x0E)
+			const unsigned char dataLength = data[1];
+			if (dataLength != 0x0E)
 			{
 				return;
 			}
 			const unsigned char slot = data[2];
-			if (slot == SlotHardwareType)
+			switch (slot)
 			{
-				const unsigned char ib[] = { 0x00, 0x00, 0x02, 0x00, 0x07, 0x00, 0x00, 0x00, 0x49, 0x42, 0x18 };
-				if (memcmp(ib, data + 3, 11) == 0)
-				{
-					logger->Info(Languages::TextConnectedTo, "Intellibox / TwinCenter");
+				case SlotHardwareType:
+					ParseSlotHardwareType(data);
 					return;
-				}
 
-				const unsigned char ib2[] = { 0x02, 0x42, 0x03, 0x00, 0x07, 0x00, 0x00, 0x15, 0x49, 0x42, 0x4C };
-				if (memcmp(ib2, data + 3, 11) == 0)
-				{
-					logger->Info(Languages::TextConnectedTo, "Intellibox II / IB-Basic / IB-Com");
+				case SlotProgramming:
+					ParseSlotProgramming(data);
 					return;
-				}
 
-				const unsigned char sc7[] = { 0x02, 0x42, 0x03, 0x00, 0x06, 0x00, 0x00, 0x15, 0x49, 0x42, 0x4D };
-				if (memcmp(sc7, data + 3, 11) == 0)
-				{
-					logger->Info(Languages::TextConnectedTo, "System Control 7");
+				default:
+					ParseSlotLocoData(data);
 					return;
-				}
+			}
+		}
 
-				const unsigned char daisy[] = { 0x00, 0x44, 0x02, 0x00, 0x07, 0x00, 0x59, 0x01, 0x49, 0x42, 0x04 };
-				if (memcmp(daisy, data + 3, 11) == 0)
-				{
-					logger->Info(Languages::TextConnectedTo, "Daisy");
-					return;
-				}
-
-				const unsigned char adapter63820[] = { 0x00, 0x4C, 0x01, 0x00, 0x07, 0x00, 0x49, 0x02, 0x49, 0x42, 0x1C };
-				if (memcmp(adapter63820, data + 3, 11) == 0)
-				{
-					logger->Info(Languages::TextConnectedTo, "Adapter 63820");
-					return;
-				}
-
-				const unsigned char digitraxChief[] = { 0x03, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11 };
-				if (memcmp(digitraxChief, data + 3, 11) == 0)
-				{
-					logger->Info(Languages::TextConnectedTo, "Digitrax Chief");
-					return;
-				}
-
-				logger->Info(Languages::TextUnknownHardware);
+		void LocoNet::ParseSlotHardwareType(const unsigned char* data)
+		{
+			const unsigned char ib[] = { 0x00, 0x00, 0x02, 0x00, 0x07, 0x00, 0x00, 0x00, 0x49, 0x42, 0x18 };
+			if (memcmp(ib, data + 3, 11) == 0)
+			{
+				logger->Info(Languages::TextConnectedTo, "Intellibox / TwinCenter");
 				return;
 			}
 
-			if (slot == SlotProgramming)
+			const unsigned char ib2[] = { 0x02, 0x42, 0x03, 0x00, 0x07, 0x00, 0x00, 0x15, 0x49, 0x42, 0x4C };
+			if (memcmp(ib2, data + 3, 11) == 0)
 			{
-				if (data[4] != 0)
-				{
-					return;
-				}
-				CvNumber cv = (static_cast<CvNumber>(data[9]) & 0x7F) | ((static_cast<CvNumber>(data[8]) & 0x01) << 7) | ((static_cast<CvNumber>(data[8]) & 0x30) << 5);
-				if (cv == 0)
-				{
-					cv = lastCv;
-				}
-				const CvValue value =  (static_cast<CvValue>(data[10]) & 0x7F) | ((static_cast<CvValue>(data[8]) & 0x02) << 6);
-				logger->Info(Languages::TextProgramReadValue, cv, value);
-				manager->ProgramValue(cv, value);
+				logger->Info(Languages::TextConnectedTo, "Intellibox II / IB-Basic / IB-Com");
 				return;
 			}
 
+			const unsigned char sc7[] = { 0x02, 0x42, 0x03, 0x00, 0x06, 0x00, 0x00, 0x15, 0x49, 0x42, 0x4D };
+			if (memcmp(sc7, data + 3, 11) == 0)
+			{
+				logger->Info(Languages::TextConnectedTo, "System Control 7");
+				return;
+			}
+
+			const unsigned char daisy[] = { 0x00, 0x44, 0x02, 0x00, 0x07, 0x00, 0x59, 0x01, 0x49, 0x42, 0x04 };
+			if (memcmp(daisy, data + 3, 11) == 0)
+			{
+				logger->Info(Languages::TextConnectedTo, "Daisy");
+				return;
+			}
+
+			const unsigned char adapter63820[] = { 0x00, 0x4C, 0x01, 0x00, 0x07, 0x00, 0x49, 0x02, 0x49, 0x42, 0x1C };
+			if (memcmp(adapter63820, data + 3, 11) == 0)
+			{
+				logger->Info(Languages::TextConnectedTo, "Adapter 63820");
+				return;
+			}
+
+			const unsigned char digitraxChief[] = { 0x03, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11 };
+			if (memcmp(digitraxChief, data + 3, 11) == 0)
+			{
+				logger->Info(Languages::TextConnectedTo, "Digitrax Chief");
+				return;
+			}
+
+			logger->Info(Languages::TextUnknownHardware);
+		}
+
+		void LocoNet::ParseSlotProgramming(const unsigned char* data)
+		{
+			if (data[4] != 0)
+			{
+				return;
+			}
+			CvNumber cv = (static_cast<CvNumber>(data[9]) & 0x7F) | ((static_cast<CvNumber>(data[8]) & 0x01) << 7) | ((static_cast<CvNumber>(data[8]) & 0x30) << 5);
+			if (cv == 0)
+			{
+				cv = lastCv;
+			}
+
+			const CvValue value =  (static_cast<CvValue>(data[10]) & 0x7F) | ((static_cast<CvValue>(data[8]) & 0x02) << 6);
+			logger->Info(Languages::TextProgramReadValue, cv, value);
+			manager->ProgramValue(cv, value);
+
+			if (isProgramming)
+			{
+				ProgramEnd();
+			}
+		}
+
+		void LocoNet::ParseSlotLocoData(const unsigned char* data)
+		{
+			const unsigned char slot = data[2];
 			const Address address = ParseLocoAddress(data[4], data[9]);
 			logger->Debug(Languages::TextSlotHasAddress, slot, address);
 

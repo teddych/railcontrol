@@ -29,7 +29,8 @@ along with RailControl; see the file LICENCE. If not see
 #include "Logger/Logger.h"
 #include "Network/Serial.h"
 
-// protocol specification at https://www.digitrax.com/static/apps/cms/media/documents/loconet/loconetpersonaledition.pdf
+// Protocol specification at https://www.digitrax.com/static/apps/cms/media/documents/loconet/loconetpersonaledition.pdf
+// Programming specification does not fit for Uhlenbrock Intellibox II
 
 namespace Hardware
 {
@@ -213,6 +214,12 @@ namespace Hardware
 
 				void ParseSlotReadData(const unsigned char* data);
 
+				void ParseSlotHardwareType(const unsigned char* data);
+
+				void ParseSlotProgramming(const unsigned char* data);
+
+				void ParseSlotLocoData(const unsigned char* data);
+
 				void ParseProgram(const unsigned char* data);
 
 				inline Address ParseLocoAddress(const unsigned char data1, const unsigned char data2)
@@ -295,8 +302,8 @@ namespace Hardware
 
 				void ProgramStart();
 
-//				void ProgramEnd();
-//
+				void ProgramEnd();
+
 //				void ProgramMain(const Address address,
 //					const CvNumber cv,
 //					const CvValue value);
@@ -319,6 +326,7 @@ namespace Hardware
 				std::condition_variable entryToVerifyCV;
 
 				CvNumber lastCv;
+				bool isProgramming;
 		};
 	} // namespace
 } // namespace
