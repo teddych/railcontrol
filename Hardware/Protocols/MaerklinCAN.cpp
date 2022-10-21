@@ -663,9 +663,10 @@ namespace Hardware
 					break;
 			}
 			const string hash = Utils::Utils::IntegerToHex(Utils::Utils::DataBigEndianToShort(buffer + 2));
+			const unsigned char deviceId = buffer[8];
 			const unsigned char majorVersion = buffer[9];
 			const unsigned char minorVersion = buffer[10];
-			logger->Debug(Languages::TextDeviceOnCanBus, deviceString, hash, majorVersion, minorVersion);
+			logger->Debug(Languages::TextDeviceOnCanBus, deviceString, hash, deviceId, majorVersion, minorVersion);
 		}
 
 		bool MaerklinCAN::ParseCs2FileKeyValue(const string& line, string& key, string& value)
