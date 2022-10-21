@@ -597,9 +597,9 @@ namespace Hardware
 				onOff = Languages::GetText(Languages::TextOff);
 				state = DataModel::Feedback::FeedbackStateFree;
 			}
-			Address address = ParseAddress(buffer);
-			logger->Info(Languages::TextFeedbackChange, address & 0x000F, address >> 4, onOff);
-			manager->FeedbackState(controlID, address, state);
+			FeedbackPin pin = ParseFeedbackPin(buffer);
+			logger->Info(Languages::TextFeedbackChange, pin & 0x000F, pin >> 4, onOff);
+			manager->FeedbackState(controlID, pin, state);
 		}
 
 		void MaerklinCAN::ParseResponseReadConfig(const unsigned char* const buffer)
@@ -653,8 +653,8 @@ namespace Hardware
 					deviceString = const_cast<char*>("CS2 Slave");
 					break;
 
-				case CanDeviceSRSEII:
-					deviceString = const_cast<char*>("SRSEII");
+				case CanDeviceLinkS88:
+					deviceString = const_cast<char*>("Link S88");
 					hasCs2Master = true;
 					break;
 
