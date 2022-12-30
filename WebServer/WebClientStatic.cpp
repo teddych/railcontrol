@@ -315,4 +315,25 @@ namespace WebServer
 		ids.erase(std::unique(ids.begin(), ids.end()), ids.end());
 		return ids;
 	}
+
+	HtmlTag WebClientStatic::HtmlTagTabMenuItem(const std::string& tabName,
+		const Languages::TextSelector buttonValue,
+		const bool selected,
+		const bool hidden)
+	{
+		HtmlTag button("button");
+		button.AddClass("tab_button");
+		button.AddId("tab_button_" + tabName);
+		button.AddAttribute("onclick", "ShowTab('" + tabName + "');");
+		button.AddContent(buttonValue);
+		if (selected)
+		{
+			button.AddClass("tab_button_selected");
+		}
+		if (hidden)
+		{
+			button.AddClass("hidden");
+		}
+		return button;
+	}
 } // namespace WebServer
