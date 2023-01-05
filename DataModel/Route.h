@@ -34,7 +34,7 @@ class Manager;
 
 namespace DataModel
 {
-	class Loco;
+	class LocoBase;
 	class Relation;
 
 	class Route : public LayoutItem, public LockableItem
@@ -139,7 +139,7 @@ namespace DataModel
 			bool FromTrackOrientation(Logger::Logger* logger,
 				const TrackID trackID,
 				const Orientation trackOrientation,
-				const DataModel::Loco* loco,
+				const DataModel::LocoBase* loco,
 				const bool allowLocoTurn);
 
 			bool Execute(Logger::Logger* logger, const LocoID locoID);

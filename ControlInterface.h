@@ -161,21 +161,21 @@ class ControlInterface
 		{
 		}
 
-		virtual void LocoDestinationReached(__attribute__((unused)) const DataModel::Loco* loco,
+		virtual void LocoDestinationReached(__attribute__((unused)) const DataModel::LocoBase* loco,
 			__attribute__((unused)) const DataModel::Route* route,
 			__attribute__((unused)) const DataModel::Track* track)
 		{
 		}
 
 		virtual void LocoOrientation(__attribute__((unused)) const ControlType controlType,
-			__attribute__((unused)) const DataModel::Loco* loco,
+			__attribute__((unused)) const DataModel::LocoBase* loco,
 			__attribute__((unused)) const Orientation orientation)
 		{
 		}
 
 
 		virtual void LocoFunction(__attribute__((unused)) const ControlType controlType,
-			__attribute__((unused)) const DataModel::Loco* loco,
+			__attribute__((unused)) const DataModel::LocoBase* loco,
 			__attribute__((unused)) const DataModel::LocoFunctionNr function,
 			__attribute__((unused)) const DataModel::LocoFunctionState on)
 		{
@@ -201,7 +201,8 @@ class ControlInterface
 		}
 
 		virtual void LocoSpeed(__attribute__((unused)) const ControlType controlType,
-			__attribute__((unused)) const DataModel::Loco* loco, __attribute__((unused)) const Speed speed)
+			__attribute__((unused)) const DataModel::LocoBase* loco,
+			__attribute__((unused)) const Speed speed)
 		{
 		}
 
@@ -297,7 +298,7 @@ class ControlInterface
 		{
 		}
 
-		virtual void LocoSpeedOrientationFunctions(const DataModel::Loco* loco,
+		virtual void LocoSpeedOrientationFunctions(const DataModel::LocoBase* loco,
 			const Speed speed,
 			const Orientation orientation,
 			std::vector<DataModel::LocoFunctionEntry>& functions)

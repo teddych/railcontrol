@@ -243,7 +243,9 @@ namespace Hardware
 		instance->Booster(status);
 	}
 
-	void HardwareHandler::LocoSpeed(const ControlType controlType, const DataModel::Loco* loco, const Speed speed)
+	void HardwareHandler::LocoSpeed(const ControlType controlType,
+		const DataModel::LocoBase* loco,
+		const Speed speed)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr || loco->GetControlID() != GetControlID())
 		{
@@ -252,7 +254,9 @@ namespace Hardware
 		instance->LocoSpeed(loco->GetProtocol(), loco->GetAddress(), speed);
 	}
 
-	void HardwareHandler::LocoOrientation(const ControlType controlType, const DataModel::Loco* loco, const Orientation orientation)
+	void HardwareHandler::LocoOrientation(const ControlType controlType,
+		const DataModel::LocoBase* loco,
+		const Orientation orientation)
 	{
 		if (controlType == ControlTypeHardware || instance == nullptr || loco->GetControlID() != GetControlID())
 		{
@@ -262,7 +266,7 @@ namespace Hardware
 	}
 
 	void HardwareHandler::LocoFunction(const ControlType controlType,
-		const DataModel::Loco* loco,
+		const DataModel::LocoBase* loco,
 		const DataModel::LocoFunctionNr function,
 		const DataModel::LocoFunctionState on)
 	{
@@ -273,7 +277,7 @@ namespace Hardware
 		instance->LocoFunction(loco->GetProtocol(), loco->GetAddress(), function, on);
 	}
 
-	void HardwareHandler::LocoSpeedOrientationFunctions(const DataModel::Loco* loco,
+	void HardwareHandler::LocoSpeedOrientationFunctions(const DataModel::LocoBase* loco,
 		const Speed speed,
 		const Orientation orientation,
 		std::vector<DataModel::LocoFunctionEntry>& functions)

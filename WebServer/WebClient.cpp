@@ -1709,17 +1709,6 @@ namespace WebServer
 			locoFunctions.push_back(locoFunctionEntry);
 		}
 
-		vector<Relation*> slaves;
-		{
-			vector<LocoID> slaveIds = WebClientStatic::InterpretSlaveData("slave", arguments);
-			for (auto slaveId : slaveIds)
-			{
-				slaves.push_back(new Relation(&manager,
-					ObjectIdentifier(ObjectTypeLoco, locoId),
-					ObjectIdentifier(ObjectTypeLoco, slaveId),
-					Relation::TypeLocoSlave));
-			}
-		}
 
 		string result;
 
@@ -1738,7 +1727,6 @@ namespace WebServer
 			propulsion,
 			type,
 			locoFunctions,
-			slaves,
 			result))
 		{
 			ReplyResponse(ResponseError, result);

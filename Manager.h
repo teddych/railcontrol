@@ -131,7 +131,6 @@ class Manager
 			const Propulsion propulsion,
 			const TrainType type,
 			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
-			const std::vector<DataModel::Relation*>& slaves,
 			std::string& result
 		);
 
@@ -147,11 +146,27 @@ class Manager
 		bool LocoProtocolAddress(const LocoID locoID, ControlID& controlID, Protocol& protocol, Address& address) const;
 		void LocoSpeed(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Speed speed);
 		bool LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed, const bool withSlaves = true);
-		bool LocoSpeed(const ControlType controlType, DataModel::Loco* loco, const Speed speed, const bool withSlaves = true);
+
+		bool LocoSpeed(const ControlType controlType,
+			DataModel::LocoBase* loco,
+			const Speed speed,
+			const bool withSlaves = true);
+
 		Speed LocoSpeed(const LocoID locoID) const;
-		void LocoOrientation(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Orientation orientation);
-		void LocoOrientation(const ControlType controlType, const LocoID locoID, const Orientation orientation);
-		void LocoOrientation(const ControlType controlType, DataModel::Loco* loco, const Orientation orientation);
+
+		void LocoOrientation(const ControlType controlType,
+			const ControlID controlID,
+			const Protocol protocol,
+			const Address address,
+			const Orientation orientation);
+
+		void LocoOrientation(const ControlType controlType,
+			const LocoID locoID,
+			const Orientation orientation);
+
+		void LocoOrientation(const ControlType controlType,
+			DataModel::LocoBase* loco,
+			const Orientation orientation);
 
 		void LocoFunctionState(const ControlType controlType,
 			const ControlID controlID,
@@ -470,7 +485,7 @@ class Manager
 		void TrackPublishState(const DataModel::Track* track);
 		bool RouteRelease(const RouteID routeID);
 
-		bool LocoDestinationReached(const DataModel::Loco* loco,
+		bool LocoDestinationReached(const DataModel::LocoBase* loco,
 			const DataModel::Route* route,
 			const DataModel::Track* track);
 

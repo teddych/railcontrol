@@ -31,6 +31,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "ControlInterface.h"
 #include "DataTypes.h"
+#include "DataModel/LocoBase.h"
 #include "DataModel/LocoFunctions.h"
 #include "Languages.h"
 #include "RailControl.h"
@@ -46,7 +47,9 @@ using std::stringstream;
 using std::to_string;
 using std::vector;
 
-using DataModel::Loco;
+using DataModel::LocoBase;
+using DataModel::LocoFunctionNr;
+using DataModel::LocoFunctionState;
 using DataModel::Route;
 using DataModel::Track;
 
@@ -187,14 +190,18 @@ namespace WebServer
 		}
 	}
 
-	void WebServer::LocoSpeed(__attribute__((unused)) const ControlType controlType, const DataModel::Loco* loco, const Speed speed)
+	void WebServer::LocoSpeed(__attribute__((unused)) const ControlType controlType,
+		const LocoBase* loco,
+		const Speed speed)
 	{
 		stringstream command;
 		command << "locospeed;loco=" << loco->GetID() << ";speed=" << speed;
 		AddUpdate(command.str(), Languages::TextLocoSpeedIs, loco->GetName(), speed);
 	}
 
-	void WebServer::LocoOrientation(__attribute__((unused)) const ControlType controlType, const DataModel::Loco* loco, const Orientation orientation)
+	void WebServer::LocoOrientation(__attribute__((unused)) const ControlType controlType,
+		const LocoBase* loco,
+		const Orientation orientation)
 	{
 		stringstream command;
 		command << "locoorientation;loco=" << loco->GetID() << ";orientation=" << (orientation ? "true" : "false");
@@ -202,9 +209,9 @@ namespace WebServer
 	}
 
 	void WebServer::LocoFunction(__attribute__((unused)) const ControlType controlType,
-		const DataModel::Loco* loco,
-		const DataModel::LocoFunctionNr function,
-		const DataModel::LocoFunctionState state)
+		const LocoBase* loco,
+		const LocoFunctionNr function,
+		const LocoFunctionState state)
 	{
 		stringstream command;
 		command << "locofunction;loco=" << loco->GetID() << ";function=" << static_cast<unsigned int>(function) << ";on=" << (state ? "true" : "false");
@@ -319,7 +326,7 @@ namespace WebServer
 
 	void WebServer::TrackState(const DataModel::Track* track)
 	{
-		const DataModel::Loco* loco = manager.GetLoco(track->GetLocoDelayed());
+		const LocoBase* loco = manager.GetLoco(track->GetLocoDelayed());
 		const bool reserved = loco != nullptr;
 		const string& trackName = track->GetName();
 		const string& locoName = reserved ? loco->GetName() : "";
@@ -505,7 +512,9 @@ namespace WebServer
 		AddUpdate(command.str(), Languages::TextRouteIsReleased, manager.GetRouteName(routeID));
 	}
 
-	void WebServer::LocoDestinationReached(const Loco* loco, const Route* route, const Track* track)
+	void WebServer::LocoDestinationReached(const LocoBase* loco,
+		const Route* route,
+		const Track* track)
 	{
 		string command("locoDestinationReached;loco=");
 		command += to_string(loco->GetID());

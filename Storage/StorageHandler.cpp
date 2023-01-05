@@ -63,7 +63,8 @@ namespace Storage
 		{
 			Loco* loco = new Loco(manager, serializedObject);
 			const RouteID locoID = loco->GetID();
-			loco->AssignSlaves(RelationsFrom(DataModel::Relation::TypeLocoSlave, locoID));
+			// FIXME: convert slaves to multitraction
+//			loco->AssignSlaves(RelationsFrom(DataModel::Relation::TypeLocoSlave, locoID));
 			locos[locoID] = loco;
 		}
 	}

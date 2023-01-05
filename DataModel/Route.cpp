@@ -22,7 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
-#include "DataModel/Loco.h"
+#include "DataModel/LocoBase.h"
 #include "DataModel/Relation.h"
 #include "DataModel/Route.h"
 #include "Manager.h"
@@ -176,7 +176,7 @@ namespace DataModel
 	bool Route::FromTrackOrientation(Logger::Logger* logger,
 		const TrackID trackID,
 		const Orientation trackOrientation,
-		const Loco* loco,
+		const LocoBase* loco,
 		const bool allowLocoTurn)
 	{
 		if (automode == false)

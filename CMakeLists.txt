@@ -37,6 +37,8 @@ DataModel/LockableItem.cpp
 DataModel/LockableItem.h
 DataModel/Loco.cpp
 DataModel/Loco.h
+DataModel/LocoBase.cpp
+DataModel/LocoBase.h
 DataModel/LocoConfig.h
 DataModel/LocoFunctions.cpp
 DataModel/LocoFunctions.h

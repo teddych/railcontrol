@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 
 #include "DataModel/Feedback.h"
+#include "DataModel/Loco.h"
 #include "DataModel/Track.h"
 #include "Manager.h"
 #include "Utils/Utils.h"
@@ -405,7 +406,7 @@ namespace DataModel
 	}
 
 	bool Track::GetValidRoutes(Logger::Logger* logger,
-		const Loco* loco,
+		const LocoBase* loco,
 		const bool allowLocoTurn,
 		std::vector<Route*>& validRoutes) const
 	{

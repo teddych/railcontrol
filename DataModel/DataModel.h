@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/Feedback.h"
 #include "DataModel/Layer.h"
 #include "DataModel/Loco.h"
+#include "DataModel/LocoBase.h"
 #include "DataModel/LocoFunctions.h"
 #include "DataModel/ObjectIdentifier.h"
 #include "DataModel/Relation.h"

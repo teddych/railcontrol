@@ -36,7 +36,7 @@ class Manager;
 
 namespace DataModel
 {
-	class Loco;
+	class LocoBase;
 	class Route;
 
 	enum TrackType : unsigned char
@@ -157,7 +157,7 @@ namespace DataModel
 			}
 
 			bool GetValidRoutes(Logger::Logger* logger,
-				const DataModel::Loco* loco,
+				const DataModel::LocoBase* loco,
 				const bool allowLocoTurn,
 				std::vector<Route*>& validRoutes) const;
 

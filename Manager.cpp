@@ -807,7 +807,6 @@ bool Manager::LocoSave(LocoID locoID,
 	const Propulsion propulsion,
 	const TrainType type,
 	const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
-	const std::vector<DataModel::Relation*>& slaves,
 	string& result)
 {
 	if (!CheckControlLocoProtocolAddress(controlID, protocol, address, result))
@@ -844,7 +843,6 @@ bool Manager::LocoSave(LocoID locoID,
 	loco->SetPropulsion(propulsion);
 	loco->SetTrainType(type);
 	loco->ConfigureFunctions(locoFunctions);
-	loco->AssignSlaves(slaves);
 
 	// save in db
 	if (storage)
@@ -936,7 +934,10 @@ bool Manager::LocoSpeed(const ControlType controlType, const LocoID locoID, cons
 	return LocoSpeed(controlType, loco, speed, withSlaves);
 }
 
-bool Manager::LocoSpeed(const ControlType controlType, Loco* loco, const Speed speed, const bool withSlaves)
+bool Manager::LocoSpeed(const ControlType controlType,
+	LocoBase* loco,
+	const Speed speed,
+	const bool withSlaves)
 {
 	if (loco == nullptr)
 	{
@@ -973,7 +974,9 @@ Speed Manager::LocoSpeed(const LocoID locoID) const
 	return loco->GetSpeed();
 }
 
-void Manager::LocoOrientation(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Orientation orientation)
+void Manager::LocoOrientation(const ControlType controlType,
+	const ControlID controlID, const Protocol protocol,
+	const Address address, const Orientation orientation)
 {
 	Loco* loco = GetLoco(controlID, protocol, address);
 	if (loco == nullptr)
@@ -983,13 +986,17 @@ void Manager::LocoOrientation(const ControlType controlType, const ControlID con
 	LocoOrientation(controlType, loco, orientation);
 }
 
-void Manager::LocoOrientation(const ControlType controlType, const LocoID locoID, const Orientation orientation)
+void Manager::LocoOrientation(const ControlType controlType,
+	const LocoID locoID,
+	const Orientation orientation)
 {
 	Loco* loco = GetLoco(locoID);
 	LocoOrientation(controlType, loco, orientation);
 }
 
-void Manager::LocoOrientation(const ControlType controlType, Loco* loco, const Orientation orientation)
+void Manager::LocoOrientation(const ControlType controlType,
+	LocoBase* loco,
+	const Orientation orientation)
 {
 	if (loco == nullptr)
 	{
@@ -3501,7 +3508,9 @@ bool Manager::RouteRelease(const RouteID routeID)
 	return route->Release(logger, locoID);
 }
 
-bool Manager::LocoDestinationReached(const Loco* loco, const Route* route, const Track* track)
+bool Manager::LocoDestinationReached(const LocoBase* loco,
+	const Route* route,
+	const Track* track)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
