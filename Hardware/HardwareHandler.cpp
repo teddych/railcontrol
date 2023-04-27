@@ -243,7 +243,7 @@ namespace Hardware
 		instance->Booster(status);
 	}
 
-	void HardwareHandler::LocoSpeed(const ControlType controlType,
+	void HardwareHandler::LocoBaseSpeed(const ControlType controlType,
 		const DataModel::LocoBase* loco,
 		const Speed speed)
 	{
@@ -254,7 +254,7 @@ namespace Hardware
 		instance->LocoSpeed(loco->GetProtocol(), loco->GetAddress(), speed);
 	}
 
-	void HardwareHandler::LocoOrientation(const ControlType controlType,
+	void HardwareHandler::LocoBaseOrientation(const ControlType controlType,
 		const DataModel::LocoBase* loco,
 		const Orientation orientation)
 	{
@@ -265,7 +265,7 @@ namespace Hardware
 		instance->LocoOrientation(loco->GetProtocol(), loco->GetAddress(), orientation);
 	}
 
-	void HardwareHandler::LocoFunction(const ControlType controlType,
+	void HardwareHandler::LocoBaseFunction(const ControlType controlType,
 		const DataModel::LocoBase* loco,
 		const DataModel::LocoFunctionNr function,
 		const DataModel::LocoFunctionState on)
@@ -544,6 +544,10 @@ namespace Hardware
 		{
 			const Hardware::LocoCacheEntry& loco = entry.second;
 			if (loco.GetLocoID() != LocoNone)
+			{
+				continue;
+			}
+			if (loco.GetType() != LocoTypeLoco)
 			{
 				continue;
 			}

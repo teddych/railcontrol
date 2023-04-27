@@ -33,6 +33,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataTypes.h"
 #include "DataModel/LocoBase.h"
 #include "DataModel/LocoFunctions.h"
+#include "DataModel/ObjectIdentifier.h"
 #include "Languages.h"
 #include "RailControl.h"
 #include "Utils/Utils.h"
@@ -190,7 +191,7 @@ namespace WebServer
 		}
 	}
 
-	void WebServer::LocoSpeed(__attribute__((unused)) const ControlType controlType,
+	void WebServer::LocoBaseSpeed(__attribute__((unused)) const ControlType controlType,
 		const LocoBase* loco,
 		const Speed speed)
 	{
@@ -199,7 +200,7 @@ namespace WebServer
 		AddUpdate(command.str(), Languages::TextLocoSpeedIs, loco->GetName(), speed);
 	}
 
-	void WebServer::LocoOrientation(__attribute__((unused)) const ControlType controlType,
+	void WebServer::LocoBaseOrientation(__attribute__((unused)) const ControlType controlType,
 		const LocoBase* loco,
 		const Orientation orientation)
 	{
@@ -208,7 +209,7 @@ namespace WebServer
 		AddUpdate(command.str(), orientation ? Languages::TextLocoDirectionOfTravelIsRight : Languages::TextLocoDirectionOfTravelIsLeft, loco->GetName());
 	}
 
-	void WebServer::LocoFunction(__attribute__((unused)) const ControlType controlType,
+	void WebServer::LocoBaseFunction(__attribute__((unused)) const ControlType controlType,
 		const LocoBase* loco,
 		const LocoFunctionNr function,
 		const LocoFunctionState state)
@@ -498,11 +499,11 @@ namespace WebServer
 		AddUpdate(command, Languages::TextTextDeleted, name);
 	}
 
-	void WebServer::LocoRelease(const LocoID locoID)
+	void WebServer::LocoBaseRelease(const DataModel::LocoBase* loco)
 	{
-		stringstream command;
-		command << "locorelease;loco=" << locoID;
-		AddUpdate(command.str(), Languages::TextLocoIsReleased, manager.GetLocoName(locoID));
+		string command("locorelease;loco=");
+		command += loco->GetObjectIdentifier();
+		AddUpdate(command, Languages::TextLocoIsReleased, loco->GetName());
 	}
 
 	void WebServer::RouteRelease(const RouteID routeID)
@@ -512,12 +513,12 @@ namespace WebServer
 		AddUpdate(command.str(), Languages::TextRouteIsReleased, manager.GetRouteName(routeID));
 	}
 
-	void WebServer::LocoDestinationReached(const LocoBase* loco,
+	void WebServer::LocoBaseDestinationReached(const LocoBase* loco,
 		const Route* route,
 		const Track* track)
 	{
 		string command("locoDestinationReached;loco=");
-		command += to_string(loco->GetID());
+		command += loco->GetObjectIdentifier();
 		command += ";route=";
 		command += to_string(route->GetID());
 		command += ";track=";
@@ -525,18 +526,18 @@ namespace WebServer
 		AddUpdate(command, Languages::TextLocoHasReachedDestination, loco->GetName(), track->GetName(), route->GetName());
 	}
 
-	void WebServer::LocoStart(const LocoID locoID, const std::string& name)
+	void WebServer::LocoBaseStart(const DataModel::LocoBase* loco)
 	{
-		stringstream command;
-		command << "locoStart;loco=" << locoID;
-		AddUpdate(command.str(), Languages::TextLocoIsInAutoMode, name);
+		string command("locoStart;loco=");
+		command += loco->GetObjectIdentifier();
+		AddUpdate(command, Languages::TextLocoIsInAutoMode, loco->GetName());
 	}
 
-	void WebServer::LocoStop(const LocoID locoID, const std::string& name)
+	void WebServer::LocoBaseStop(const DataModel::LocoBase* loco)
 	{
-		stringstream command;
-		command << "locoStop;loco=" << locoID;
-		AddUpdate(command.str(), Languages::TextLocoIsInManualMode, name);
+		string command("locoStop;loco=");
+		command += loco->GetObjectIdentifier();
+		AddUpdate(command, Languages::TextLocoIsInManualMode, loco->GetName());
 	}
 
 	void WebServer::LocoSettings(const LocoID locoID,

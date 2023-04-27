@@ -31,6 +31,7 @@ using DataModel::Cluster;
 using DataModel::Feedback;
 using DataModel::Layer;
 using DataModel::Loco;
+using DataModel::MultipleUnit;
 using DataModel::Relation;
 using DataModel::Route;
 using DataModel::Signal;
@@ -62,10 +63,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Loco* loco = new Loco(manager, serializedObject);
-			const RouteID locoID = loco->GetID();
-			// FIXME: convert slaves to multitraction
-//			loco->AssignSlaves(RelationsFrom(DataModel::Relation::TypeLocoSlave, locoID));
-			locos[locoID] = loco;
+			locos[loco->GetID()] = loco;
 		}
 	}
 
@@ -75,6 +73,27 @@ namespace Storage
 		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeLocoSlave, locoID);
 		sqlite.DeleteRelationsTo(ObjectTypeLoco, locoID);
 		sqlite.DeleteObject(ObjectTypeLoco, locoID);
+	}
+
+	void StorageHandler::AllMultipleUnits(map<MultipleUnitID,DataModel::MultipleUnit*>& multipleUnits)
+	{
+		vector<string> serializedObjects;
+		sqlite.ObjectsOfType(ObjectTypeMultipleUnit, serializedObjects);
+		for (auto& serializedObject : serializedObjects)
+		{
+			MultipleUnit* multipleUnit = new MultipleUnit(manager, serializedObject);
+			const MultipleUnitID multipleUnitID = multipleUnit->GetID();
+			multipleUnit->AssignSlaves(RelationsFrom(DataModel::Relation::TypeMultipleUnitSlave, multipleUnitID));
+			multipleUnits[multipleUnitID] = multipleUnit;
+		}
+	}
+
+	void StorageHandler::DeleteMultipleUnit(const MultipleUnitID multipleUnitID)
+	{
+		TransactionGuard guard(this);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeMultipleUnitSlave, multipleUnitID);
+		sqlite.DeleteRelationsTo(ObjectTypeMultipleUnit, multipleUnitID);
+		sqlite.DeleteObject(ObjectTypeMultipleUnit, multipleUnitID);
 	}
 
 	void StorageHandler::AllAccessories(std::map<AccessoryID,DataModel::Accessory*>& accessories)
@@ -183,7 +202,16 @@ namespace Storage
 		const LocoID locoID = loco.GetID();
 		sqlite.SaveObject(ObjectTypeLoco, locoID, loco.GetName(), serialized);
 		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeLocoSlave, locoID);
-		SaveRelations(loco.GetSlaves());
+	}
+
+	void StorageHandler::Save(const DataModel::MultipleUnit& multipleUnit)
+	{
+		string serialized = multipleUnit.Serialize();
+		TransactionGuard guard(this);
+		const MultipleUnitID multipleUnitID = multipleUnit.GetID();
+		sqlite.SaveObject(ObjectTypeLoco, multipleUnitID, multipleUnit.GetName(), serialized);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeMultipleUnitSlave, multipleUnitID);
+		SaveRelations(multipleUnit.GetSlaves());
 	}
 
 	void StorageHandler::Save(const DataModel::Cluster& cluster)

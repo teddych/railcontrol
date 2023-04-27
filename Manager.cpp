@@ -62,6 +62,7 @@ Manager::Manager(Config& config)
 	initLocosDone(false),
 	unknownControl(Languages::GetText(Languages::TextControlDoesNotExist)),
 	unknownLoco(Languages::GetText(Languages::TextLocoDoesNotExist)),
+	unknownMultipleUnit(Languages::GetText(Languages::TextMultipleUnitDoesNotExist)),
 	unknownAccessory(Languages::GetText(Languages::TextAccessoryDoesNotExist)),
 	unknownFeedback(Languages::GetText(Languages::TextFeedbackDoesNotExist)),
 	unknownTrack(Languages::GetText(Languages::TextTrackDoesNotExist)),
@@ -122,17 +123,6 @@ Manager::Manager(Config& config)
 	storage->AllAccessories(accessories);
 	for (auto& accessory : accessories)
 	{
-		// We set the protocol DCC to Server when control uses P50x protocol
-		// FIXME: remove again later 2021-05-15
-		if (accessory.second->GetProtocol() == ProtocolDCC
-			&& (ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeOpenDcc)
-				|| ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeIntellibox)
-				|| ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeTwinCenter)
-				|| ControlIsOfHardwareType(accessory.second->GetControlID(), HardwareTypeMasterControl)
-				))
-		{
-			accessory.second->SetProtocol(ProtocolServer);
-		}
 		logger->Info(Languages::TextLoadedAccessory, accessory.second->GetID(), accessory.second->GetName());
 	}
 
@@ -176,6 +166,12 @@ Manager::Manager(Config& config)
 	for (auto& loco : locos)
 	{
 		logger->Info(Languages::TextLoadedLoco, loco.second->GetID(), loco.second->GetName());
+	}
+
+	storage->AllMultipleUnits(multipleUnits);
+	for (auto& multipleUnit : multipleUnits)
+	{
+		logger->Info(Languages::TextLoadedMultipleUnit, multipleUnit.second->GetID(), multipleUnit.second->GetName());
 	}
 
 	debounceRun = true;
@@ -635,23 +631,6 @@ string Manager::GetLocoList() const
 	return out;
 }
 
-string Manager::GetRouteList() const
-{
-	string out;
-	std::lock_guard<std::mutex> guard(routeMutex);
-	for (auto& route : routes)
-	{
-		Route* r = route.second;
-		out += to_string(r->GetID()) + ";";
-		out += to_string(r->GetFromTrack()) + ";";
-		out += to_string(r->GetFromOrientation()) + ";";
-		out += to_string(r->GetToTrack()) + ";";
-		out += to_string(r->GetToOrientation()) + ";";
-		out += r->GetName() + "\n";
-	}
-	return out;
-}
-
 Loco* Manager::GetLoco(const LocoID locoID) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
@@ -927,17 +906,16 @@ void Manager::LocoSpeed(const ControlType controlType, const ControlID controlID
 	LocoSpeed(controlType, loco, speed);
 }
 
-bool Manager::LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed, const bool withSlaves)
+bool Manager::LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed)
 {
 	Loco* loco = GetLoco(locoID);
 	// nullptr check is done within submethod
-	return LocoSpeed(controlType, loco, speed, withSlaves);
+	return LocoSpeed(controlType, loco, speed);
 }
 
 bool Manager::LocoSpeed(const ControlType controlType,
 	LocoBase* loco,
-	const Speed speed,
-	const bool withSlaves)
+	const Speed speed)
 {
 	if (loco == nullptr)
 	{
@@ -955,11 +933,11 @@ bool Manager::LocoSpeed(const ControlType controlType,
 	{
 		return true;
 	}
-	loco->SetSpeed(newSpeed, withSlaves);
+	loco->SetSpeed(newSpeed);
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoSpeed(controlType, loco, newSpeed);
+		control.second->LocoBaseSpeed(controlType, loco, newSpeed);
 	}
 	return true;
 }
@@ -1012,7 +990,7 @@ void Manager::LocoOrientation(const ControlType controlType,
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoOrientation(controlType, loco, orientation);
+		control.second->LocoBaseOrientation(controlType, loco, orientation);
 	}
 }
 
@@ -1070,8 +1048,64 @@ void Manager::LocoFunctionState(const ControlType controlType,
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoFunction(controlType, loco, function, on);
+		control.second->LocoBaseFunction(controlType, loco, function, on);
 	}
+}
+
+/***************************
+* MultipleUnit             *
+***************************/
+
+MultipleUnit* Manager::GetMultipleUnit(const MultipleUnitID multipleUnitId) const
+{
+	std::lock_guard<std::mutex> guard(multipleUnitMutex);
+	if (multipleUnits.count(multipleUnitId) != 1)
+	{
+		return nullptr;
+	}
+	return multipleUnits.at(multipleUnitId);
+}
+
+bool Manager::MultipleUnitDelete(const MultipleUnitID multipleUnitID, string& result)
+{
+	MultipleUnit* multipleUnit = nullptr;
+	{
+		std::lock_guard<std::mutex> guard(locoMutex);
+		if (multipleUnitID == MultipleUnitNone || locos.count(multipleUnitID) != 1)
+		{
+			result = Languages::GetText(Languages::TextMultipleUnitDoesNotExist);
+			return false;
+		}
+
+		multipleUnit = multipleUnits.at(multipleUnitID);
+		if (multipleUnit == nullptr)
+		{
+			result = Languages::GetText(Languages::TextMultipleUnitDoesNotExist);
+			return false;
+		}
+
+		if (multipleUnit->IsInUse())
+		{
+			result = Logger::Logger::Format(Languages::GetText(Languages::TextMultipleUnitIsInUse), multipleUnit->GetName());
+			return false;
+		}
+
+		locos.erase(multipleUnitID);
+	}
+
+	if (storage)
+	{
+		storage->DeleteMultipleUnit(multipleUnitID);
+	}
+	const string& name = multipleUnit->GetName();
+	const string& matchKey = multipleUnit->GetMatchKey();
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto& control : controls)
+	{
+		control.second->MultipleUnitDelete(multipleUnitID, name, matchKey);
+	}
+	delete multipleUnit;
+	return true;
 }
 
 /***************************
@@ -2317,6 +2351,23 @@ void Manager::RouteExecuteAsync(Logger::Logger* logger, const RouteID routeID)
 	__attribute__((unused)) auto r = std::async(std::launch::async, Route::ExecuteStatic, logger, route);
 }
 
+string Manager::GetRouteList() const
+{
+	string out;
+	std::lock_guard<std::mutex> guard(routeMutex);
+	for (auto& route : routes)
+	{
+		Route* r = route.second;
+		out += to_string(r->GetID()) + ";";
+		out += to_string(r->GetFromTrack()) + ";";
+		out += to_string(r->GetFromOrientation()) + ";";
+		out += to_string(r->GetToTrack()) + ";";
+		out += to_string(r->GetToOrientation()) + ";";
+		out += r->GetName() + "\n";
+	}
+	return out;
+}
+
 Route* Manager::GetRoute(const RouteID routeID) const
 {
 	std::lock_guard<std::mutex> guard(routeMutex);
@@ -3409,11 +3460,10 @@ bool Manager::LocoReleaseInternal(Loco* loco)
 	{
 		return false;
 	}
-	LocoID locoID = loco->GetID();
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoRelease(locoID);
+		control.second->LocoBaseRelease(loco);
 	}
 	return true;
 }
@@ -3515,7 +3565,7 @@ bool Manager::LocoDestinationReached(const LocoBase* loco,
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoDestinationReached(loco, route, track);
+		control.second->LocoBaseDestinationReached(loco, route, track);
 	}
 	return true;
 }
@@ -3535,7 +3585,7 @@ bool Manager::LocoStart(const LocoID locoID, const DataModel::Loco::AutoModeType
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoStart(locoID, loco->GetName());
+		control.second->LocoBaseStart(loco);
 	}
 	return true;
 }
@@ -3574,7 +3624,7 @@ bool Manager::LocoStop(const LocoID locoID)
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoStop(locoID, loco->GetName());
+		control.second->LocoBaseStop(loco);
 	}
 	return true;
 }
@@ -3620,7 +3670,7 @@ void Manager::StopAllLocosImmediately(const ControlType controlType)
 	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto& loco : locos)
 	{
-		LocoSpeed(controlType, loco.second, MinSpeed, false);
+		LocoSpeed(controlType, loco.second, MinSpeed);
 	}
 }
 

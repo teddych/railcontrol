@@ -34,6 +34,9 @@ typedef uint16_t Address;
 typedef uint16_t Speed;
 typedef uint32_t Length;
 
+// multiple unit
+typedef ObjectID MultipleUnitID;
+
 // accessory
 typedef ObjectID AccessoryID;
 
@@ -69,6 +72,8 @@ typedef ObjectID TextID;
 static const Address AddressNone = 0;
 static const Address AddressDefault = 3;
 static const LocoID LocoNone = 0;
+static const MultipleUnitID MultipleUnitNone = 0;
+static const MultipleUnitID MultipleUnitIdPrefix = 0x8000;
 static const ObjectID ObjectNone = 0;
 static const AccessoryID AccessoryNone = 0;
 static const FeedbackID FeedbackNone = 0;
@@ -152,6 +157,12 @@ enum AddressType : uint8_t
 	AddressTypeAccessory
 };
 
+enum LocoType : uint8_t
+{
+	LocoTypeLoco = 0,
+	LocoTypeMultipleUnit
+};
+
 enum ArgumentType : uint8_t
 {
 	ArgumentTypeIpAddress = 1,
@@ -208,7 +219,8 @@ enum ObjectType : uint8_t
 	ObjectTypeCluster = 9,
 	ObjectTypeTimeTable = 10,
 	ObjectTypeText = 11,
-	ObjectTypePause = 12
+	ObjectTypePause = 12,
+	ObjectTypeMultipleUnit = 13
 };
 
 enum Orientation : bool

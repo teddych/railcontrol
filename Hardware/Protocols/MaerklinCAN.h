@@ -321,12 +321,17 @@ namespace Hardware
 
 				inline void ParseAddressProtocol(const unsigned char* const buffer,
 					Address& address,
-					Protocol& protocol)
+					Protocol& protocol,
+					LocoType& type)
 				{
 					Address input = ParseAddress(buffer);
-					ParseAddressProtocol(input, address, protocol);
+					ParseAddressProtocol(input, address, protocol, type);
 				}
-				static void ParseAddressProtocol(const Address input, Address& address, Protocol& protocol);
+
+				static void ParseAddressProtocol(const Address input,
+					Address& address,
+					Protocol& protocol,
+					LocoType& type);
 
 				static inline CanPrio ParsePrio(const unsigned char* const buffer)
 				{

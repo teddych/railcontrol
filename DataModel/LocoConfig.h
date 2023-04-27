@@ -30,11 +30,12 @@ namespace DataModel
 	class LocoConfig
 	{
 		public:
-			inline LocoConfig()
+			inline LocoConfig(const LocoType type = LocoTypeLoco)
 			:	controlId(ControlNone),
 				locoId(LocoNone),
 				address(AddressDefault),
 				protocol(ProtocolNone),
+				type(type),
 				isInUse(false)
 			{
 			}
@@ -44,6 +45,7 @@ namespace DataModel
 				locoId(loco.GetID()),
 				address(loco.GetAddress()),
 				protocol(loco.GetProtocol()),
+				type(LocoTypeLoco),
 				name(loco.GetName()),
 				matchKey(loco.GetMatchKey()),
 				isInUse(loco.IsInUse())
@@ -56,6 +58,7 @@ namespace DataModel
 				locoId(loco.GetLocoID()),
 				address(loco.GetAddress()),
 				protocol(loco.GetProtocol()),
+				type(loco.GetType()),
 				name(loco.GetName()),
 				matchKey(loco.GetMatchKey()),
 				isInUse(false)
@@ -69,6 +72,7 @@ namespace DataModel
 				locoId = loco.GetID();
 				address = loco.GetAddress();
 				protocol = loco.GetProtocol();
+				type = LocoTypeLoco;
 				name = loco.GetName();
 				matchKey = loco.GetMatchKey();
 				isInUse = loco.IsInUse();
@@ -82,6 +86,7 @@ namespace DataModel
 				locoId = loco.GetLocoID();
 				address = loco.GetAddress();
 				protocol = loco.GetProtocol();
+				type = loco.GetType();
 				name = loco.GetName();
 				matchKey = loco.GetMatchKey();
 				ConfigureFunctions(loco.GetFunctionStates());
@@ -106,6 +111,16 @@ namespace DataModel
 			inline Protocol GetProtocol() const
 			{
 				return protocol;
+			}
+
+			inline LocoType GetType() const
+			{
+				return type;
+			}
+
+			inline void SetType(const LocoType type)
+			{
+				this->type = type;
 			}
 
 			inline std::string GetName() const
@@ -143,6 +158,7 @@ namespace DataModel
 			LocoID locoId;
 			Address address;
 			Protocol protocol;
+			LocoType type;
 			std::string name;
 			std::string matchKey;
 			bool isInUse;

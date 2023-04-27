@@ -84,11 +84,11 @@ namespace Hardware
 			void Booster(const ControlType controlType, BoosterState status) override;
 			Hardware::Capabilities GetCapabilities() const override;
 
-			void LocoOrientation(const ControlType controlType,
+			void LocoBaseOrientation(const ControlType controlType,
 				const DataModel::LocoBase* loco,
 				const Orientation orientation) override;
 
-			void LocoFunction(const ControlType controlType,
+			void LocoBaseFunction(const ControlType controlType,
 				const DataModel::LocoBase* loco,
 				const DataModel::LocoFunctionNr function,
 				const DataModel::LocoFunctionState on) override;
@@ -97,7 +97,7 @@ namespace Hardware
 
 			bool LocoProtocolSupported(Protocol protocol) const override;
 
-			void LocoSpeed(const ControlType controlType,
+			void LocoBaseSpeed(const ControlType controlType,
 				const DataModel::LocoBase* loco,
 				const Speed speed) override;
 

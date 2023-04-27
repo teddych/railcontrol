@@ -73,8 +73,13 @@ namespace DataModel
 
 	bool LocoBase::Deserialize(const std::string& serialized)
 	{
-		map<string,string> arguments;
+		map<string, string> arguments;
 		ParseArguments(serialized, arguments);
+		return Deserialize(arguments);
+	}
+
+	bool LocoBase::Deserialize(const std::map<std::string,std::string>& arguments)
+	{
 		Object::Deserialize(arguments);
 		HardwareHandle::Deserialize(arguments);
 		TrackID trackFromID = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
@@ -729,36 +734,20 @@ namespace DataModel
 		}
 	}
 
-	void LocoBase::SetSpeed(const Speed speed, const bool withSlaves)
+	void LocoBase::SetSpeed(const Speed speed)
 	{
 		this->speed = speed;
-		if (!withSlaves)
-		{
-			return;
-		}
-		for (auto slave : slaves)
-		{
-			manager->LocoSpeed(ControlTypeInternal, slave->ObjectID2(), speed, false);
-		}
 	}
 
 	void LocoBase::SetFunctionState(const DataModel::LocoFunctionNr nr,
 		const DataModel::LocoFunctionState state)
 	{
 		functions.SetFunctionState(nr, state);
-		for (auto slave : slaves)
-		{
-			manager->LocoFunctionState(ControlTypeInternal, slave->ObjectID2(), nr, state);
-		}
 	}
 
 	void LocoBase::SetOrientation(const Orientation orientation)
 	{
 		this->orientation = orientation;
-		for (auto slave : slaves)
-		{
-			manager->LocoOrientation(ControlTypeInternal, slave->ObjectID2(), orientation);
-		}
 	}
 
 	void LocoBase::FeedbackIdFirstReached()

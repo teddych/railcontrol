@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 
 #include "DataTypes.h"
+#include "DataModel/ObjectIdentifier.h"
 #include "DataModel/Serializable.h"
 
 namespace DataModel
@@ -59,6 +60,11 @@ namespace DataModel
 			inline ObjectID GetID() const
 			{
 				return objectID;
+			}
+
+			inline ObjectIdentifier GetObjectIdentifier() const
+			{
+				return ObjectIdentifier(GetObjectType(), GetID());
 			}
 
 			virtual inline void SetName(const std::string& name)

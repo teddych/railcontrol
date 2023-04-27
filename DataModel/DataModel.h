@@ -28,6 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/Loco.h"
 #include "DataModel/LocoBase.h"
 #include "DataModel/LocoFunctions.h"
+#include "DataModel/MultipleUnit.h"
 #include "DataModel/ObjectIdentifier.h"
 #include "DataModel/Relation.h"
 #include "DataModel/Route.h"
@@ -35,4 +36,3 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/Switch.h"
 #include "DataModel/Text.h"
 #include "DataModel/Track.h"
-

@@ -111,12 +111,18 @@ namespace DataModel
 				return objectID;
 			}
 
-			std::string GetObjectTypeAsString() const;
+			inline std::string GetObjectTypeAsString() const
+			{
+				return ObjectTypeToString(objectType);
+			}
+
 
 			inline std::string GetObjectIdAsString() const
 			{
 				return std::to_string(objectID);
 			}
+
+			static std::string ObjectTypeToString(const ObjectType objectType);
 
 		private:
 			ObjectType objectType;

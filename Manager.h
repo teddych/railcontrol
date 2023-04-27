@@ -91,7 +91,6 @@ class Manager
 
 		// loco
 		std::string GetLocoList() const;
-		std::string GetRouteList() const;
 
 		DataModel::Loco* GetLoco(const LocoID locoID) const;
 
@@ -145,12 +144,11 @@ class Manager
 
 		bool LocoProtocolAddress(const LocoID locoID, ControlID& controlID, Protocol& protocol, Address& address) const;
 		void LocoSpeed(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Speed speed);
-		bool LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed, const bool withSlaves = true);
+		bool LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed);
 
 		bool LocoSpeed(const ControlType controlType,
 			DataModel::LocoBase* loco,
-			const Speed speed,
-			const bool withSlaves = true);
+			const Speed speed);
 
 		Speed LocoSpeed(const LocoID locoID) const;
 
@@ -179,6 +177,18 @@ class Manager
 			const LocoID locoID,
 			const DataModel::LocoFunctionNr function,
 			const DataModel::LocoFunctionState on);
+
+		// multiple unit
+		DataModel::MultipleUnit* GetMultipleUnit(const MultipleUnitID multipleUnitId) const;
+
+		bool MultipleUnitDelete(const MultipleUnitID multipleUnitID,
+			std::string& result);
+
+		inline bool MultipleUnitDelete(const MultipleUnitID multipleUnitId)
+		{
+			std::string result;
+			return MultipleUnitDelete(multipleUnitId, result);
+		}
 
 		// accessory
 		void AccessoryState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryState state);
@@ -340,8 +350,13 @@ class Manager
 
 		// route
 		bool RouteExecute(Logger::Logger* logger, const LocoID locoID, const RouteID routeID);
+
 		void RouteExecuteAsync(Logger::Logger* logger, const RouteID routeID);
+
+		std::string GetRouteList() const;
+
 		DataModel::Route* GetRoute(const RouteID routeID) const;
+
 		const std::string& GetRouteName(const RouteID routeID) const;
 
 		inline const std::map<RouteID,DataModel::Route*>& RouteList() const
@@ -350,6 +365,7 @@ class Manager
 		}
 
 		const std::map<std::string,DataModel::Route*> RouteListByName() const;
+
 		bool RouteSave(RouteID routeID,
 			const std::string& name,
 			const Delay delay,
@@ -823,6 +839,10 @@ class Manager
 		std::map<LocoID,DataModel::Loco*> locos;
 		mutable std::mutex locoMutex;
 
+		// multiple unit
+		std::map<LocoID,DataModel::MultipleUnit*> multipleUnits;
+		mutable std::mutex multipleUnitMutex;
+
 		// accessory
 		std::map<AccessoryID,DataModel::Accessory*> accessories;
 		mutable std::mutex accessoryMutex;
@@ -876,6 +896,7 @@ class Manager
 
 		const std::string unknownControl;
 		const std::string unknownLoco;
+		const std::string unknownMultipleUnit;
 		const std::string unknownAccessory;
 		const std::string unknownFeedback;
 		const std::string unknownTrack;

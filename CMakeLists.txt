@@ -42,6 +42,8 @@ DataModel/LocoBase.h
 DataModel/LocoConfig.h
 DataModel/LocoFunctions.cpp
 DataModel/LocoFunctions.h
+DataModel/MultipleUnit.cpp
+DataModel/MultipleUnit.h
 DataModel/Object.cpp
 DataModel/Object.h
 DataModel/ObjectIdentifier.cpp

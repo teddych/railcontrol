@@ -45,7 +45,6 @@ namespace DataModel
 	{
 		map<string,string> arguments;
 		ParseArguments(serialized, arguments);
-		Object::Deserialize(arguments);
 		if (!arguments.count("objectType") || arguments.at("objectType").compare("Loco") != 0)
 		{
 			return false;

@@ -70,31 +70,31 @@ namespace WebServer
 			void LayerSettings(const LayerID layerID, const std::string& name) override;
 			void LocoDelete(const LocoID locoID, const std::string& name, const std::string& matchKey) override;
 
-			void LocoDestinationReached(const DataModel::LocoBase* loco,
+			void LocoBaseDestinationReached(const DataModel::LocoBase* loco,
 				const DataModel::Route* route,
 				const DataModel::Track* track) override;
 
-			void LocoOrientation(const ControlType controlType,
+			void LocoBaseOrientation(const ControlType controlType,
 				const DataModel::LocoBase* loco,
 				const Orientation direction) override;
 
-			void LocoFunction(const ControlType controlType,
+			void LocoBaseFunction(const ControlType controlType,
 				const DataModel::LocoBase* loco,
 				const DataModel::LocoFunctionNr function,
 				const DataModel::LocoFunctionState on) override;
 
-			void LocoRelease(const LocoID locoID) override;
+			void LocoBaseRelease(const DataModel::LocoBase* loco) override;
 
 			void LocoSettings(const LocoID locoID,
 				const std::string& name,
 				const std::string& matchKey) override;
 
-			void LocoSpeed(const ControlType controlType,
+			void LocoBaseSpeed(const ControlType controlType,
 				const DataModel::LocoBase* loco,
 				const Speed speed) override;
 
-			void LocoStart(const LocoID locoID, const std::string& name) override;
-			void LocoStop(const LocoID locoID, const std::string& name) override;
+			void LocoBaseStart(const DataModel::LocoBase* loco) override;
+			void LocoBaseStop(const DataModel::LocoBase* loco) override;
 			void RouteDelete(const RouteID routeID, const std::string& name) override;
 			void RouteRelease(const RouteID routeID) override;
 			void RouteSettings(const RouteID routeID, const std::string& name) override;

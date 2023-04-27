@@ -112,8 +112,10 @@ namespace DataModel
 			}
 
 			std::string Serialize() const override;
-			using HardwareHandle::Deserialize;
+
 			bool Deserialize(const std::string& serialized) override;
+
+			bool Deserialize(const std::map<std::string,std::string>& arguments) override;
 
 			virtual void SetName(const std::string& name) override
 			{
@@ -139,14 +141,14 @@ namespace DataModel
 
 			void LocationReached(const FeedbackID feedbackID);
 
-			void SetSpeed(const Speed speed, const bool withSlaves);
+			virtual void SetSpeed(const Speed speed);
 
 			inline Speed GetSpeed() const
 			{
 				return speed;
 			}
 
-			void SetFunctionState(const DataModel::LocoFunctionNr nr,
+			virtual void SetFunctionState(const DataModel::LocoFunctionNr nr,
 				const DataModel::LocoFunctionState state);
 
 			inline DataModel::LocoFunctionState GetFunctionState(const DataModel::LocoFunctionNr nr) const
@@ -169,7 +171,7 @@ namespace DataModel
 				functions.ConfigureFunctions(newEntries);
 			}
 
-			void SetOrientation(const Orientation orientation);
+			virtual void SetOrientation(const Orientation orientation);
 
 			inline Orientation GetOrientation() const
 			{
@@ -275,11 +277,6 @@ namespace DataModel
 				return trainType;
 			}
 
-			inline const std::vector<DataModel::Relation*>& GetSlaves() const
-			{
-				return slaves;
-			}
-
 			inline void SetMatchKey(const std::string& matchKey)
 			{
 				this->matchKey = matchKey;
@@ -298,6 +295,9 @@ namespace DataModel
 			DataModel::LocoFunctionNr GetFunctionNumberFromFunctionIcon(DataModel::LocoFunctionIcon icon) const;
 
 			LocoBase& operator=(const Hardware::LocoCacheEntry& loco);
+
+		protected:
+			Manager* manager;
 
 		private:
 			enum LocoState : unsigned char
@@ -345,7 +345,6 @@ namespace DataModel
 
 			bool GoToAutoModeInternal(const LocoState newState);
 
-			Manager* manager;
 			mutable std::mutex stateMutex;
 			std::thread locoThread;
 
@@ -361,8 +360,6 @@ namespace DataModel
 
 			Speed speed;
 			Orientation orientation;
-
-			std::vector<DataModel::Relation*> slaves;
 
 			volatile LocoState state;
 			volatile bool requestManualMode;

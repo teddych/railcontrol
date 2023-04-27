@@ -214,7 +214,7 @@ namespace WebServer
 
 			HtmlTag HtmlTagInputBitValue(std::string name) const;
 
-			std::map<std::string,ObjectID> GetLocoSlaveOptions(const LocoID locoID = LocoNone) const;
+			std::map<std::string,ObjectID> GetMultipleUnitSlaveOptions(const LocoID locoID = LocoNone) const;
 
 			void HandleSelectLoco(const std::map<std::string, std::string>& arguments);
 			void HandleLayerEdit(const std::map<std::string, std::string>& arguments);
@@ -237,6 +237,14 @@ namespace WebServer
 			void HandleLocoDelete(const std::map<std::string, std::string>& arguments);
 			void HandleLocoRelease(const std::map<std::string, std::string>& arguments);
 			void HandleLocoAddTimeTable(const std::map<std::string, std::string>& arguments);
+			void HandleMultipleUnitEdit(const std::map<std::string, std::string>& arguments);
+			void HandleMultipleUnitSave(const std::map<std::string, std::string>& arguments);
+			void HandleMultipleUnitList();
+			void HandleMultipleUnitAskDelete(const std::map<std::string, std::string>& arguments);
+			void HandleMultipleUnitDelete(const std::map<std::string, std::string>& arguments);
+
+			HtmlTag HandleLocoMultipleUnitEdit(const std::map<std::string, std::string>& arguments, const LocoType type, const LocoID locoId);
+
 			void HandleProtocol(const std::map<std::string, std::string>& arguments);
 			void HandleLayout(const std::map<std::string,std::string>& arguments);
 			void HandleAccessoryEdit(const std::map<std::string,std::string>& arguments);

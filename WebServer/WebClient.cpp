@@ -273,6 +273,26 @@ namespace WebServer
 			{
 				HandleLocoAddTimeTable(arguments);
 			}
+			else if (arguments["cmd"].compare("multipleunitedit") == 0)
+			{
+				HandleMultipleUnitEdit(arguments);
+			}
+			else if (arguments["cmd"].compare("multipleunitsave") == 0)
+			{
+				HandleMultipleUnitSave(arguments);
+			}
+			else if (arguments["cmd"].compare("multipleunitlist") == 0)
+			{
+				HandleMultipleUnitList();
+			}
+			else if (arguments["cmd"].compare("multipleunitaskdelete") == 0)
+			{
+				HandleMultipleUnitAskDelete(arguments);
+			}
+			else if (arguments["cmd"].compare("multipleunitdelete") == 0)
+			{
+				HandleMultipleUnitDelete(arguments);
+			}
 			else if (arguments["cmd"].compare("accessoryedit") == 0)
 			{
 				HandleAccessoryEdit(arguments);
@@ -1334,7 +1354,7 @@ namespace WebServer
 		}
 		else if (prefix.compare("slave") == 0)
 		{
-			options = GetLocoSlaveOptions();
+			options = GetMultipleUnitSlaveOptions();
 		}
 		container.AddChildTag(WebClientStatic::HtmlTagSlaveEntry(prefix, priorityString, ObjectNone, options));
 		container.AddChildTag(HtmlTag("div").AddId(prefix + "_new_" + to_string(priority + 1)));
@@ -1348,7 +1368,7 @@ namespace WebServer
 		ReplyHtmlWithHeader(HtmlTagSelectFeedbackForTrack(counter, trackID));
 	}
 
-	map<string,ObjectID> WebClient::GetLocoSlaveOptions(const LocoID locoID) const
+	map<string,ObjectID> WebClient::GetMultipleUnitSlaveOptions(const LocoID locoID) const
 	{
 		map<string, ObjectID> locoOptions;
 
@@ -1368,8 +1388,20 @@ namespace WebServer
 
 	void WebClient::HandleLocoEdit(const map<string, string>& arguments)
 	{
+		const LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
+		ReplyHtmlWithHeader(HandleLocoMultipleUnitEdit(arguments, LocoTypeLoco, locoId));
+	}
+
+	void WebClient::HandleMultipleUnitEdit(const map<string, string>& arguments)
+	{
+		const MultipleUnitID multipleUnitId = Utils::Utils::GetIntegerMapEntry(arguments, "multipleunit", MultipleUnitNone);
+		HtmlTag content = HandleLocoMultipleUnitEdit(arguments, LocoTypeMultipleUnit, multipleUnitId);
+		ReplyHtmlWithHeader(content);
+	}
+
+	HtmlTag WebClient::HandleLocoMultipleUnitEdit(const map<string, string>& arguments, const LocoType type, const LocoID locoId)
+	{
 		HtmlTag content;
-		LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
 		if (controlId == ControlNone)
 		{
@@ -1386,14 +1418,16 @@ namespace WebServer
 		Speed reducedSpeed = DefaultReducedSpeed;
 		Speed creepingSpeed = DefaultCreepingSpeed;
 		Propulsion propulsion = PropulsionOther;
-		TrainType type = TrainTypeOther;
+		TrainType trainType = TrainTypeOther;
 		LocoFunctionEntry locoFunctions[NumberOfLocoFunctions];
 		vector<Relation*> slaves;
 
 		if (locoId > LocoNone)
 		{
 			// existing loco
-			const DataModel::Loco* loco = manager.GetLoco(locoId);
+			const DataModel::LocoBase* loco = (type == LocoTypeLoco) ?
+				static_cast<LocoBase*>(manager.GetLoco(locoId)) :
+				static_cast<LocoBase*>(manager.GetMultipleUnit(locoId));
 			if (loco != nullptr)
 			{
 				controlId = loco->GetControlID();
@@ -1408,16 +1442,25 @@ namespace WebServer
 				reducedSpeed = loco->GetReducedSpeed();
 				creepingSpeed = loco->GetCreepingSpeed();
 				propulsion = loco->GetPropulsion();
-				type = loco->GetTrainType();
+				trainType = loco->GetTrainType();
 				loco->GetFunctions(locoFunctions);
-				slaves = loco->GetSlaves();
+				if (type == LocoTypeMultipleUnit)
+				{
+					const DataModel::MultipleUnit* mu = dynamic_cast<const DataModel::MultipleUnit*>(loco);
+					if (mu)
+					{
+						slaves = mu->GetSlaves();
+					}
+				}
 			}
 		}
 		else if (controlId > ControlNone)
 		{
 			// loco from hardware database
 			const DataModel::LocoConfig loco = manager.GetLocoOfConfigByMatchKey(controlId, matchKey);
-			if (loco.GetControlId() == controlId && loco.GetMatchKey() == matchKey)
+			if (loco.GetControlId() == controlId
+				&& loco.GetMatchKey() == matchKey
+				&& loco.GetType() == type)
 			{
 				protocol = loco.GetProtocol();
 				address = loco.GetAddress();
@@ -1431,7 +1474,10 @@ namespace WebServer
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
 		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("functions", Languages::TextFunctions));
-		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("slaves", Languages::TextMultipleUnit));
+		if (type == LocoTypeMultipleUnit)
+		{
+			tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("slaves", Languages::TextMultipleUnit));
+		}
 		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("automode", Languages::TextAutomode));
 		content.AddChildTag(tabMenu);
 
@@ -1460,35 +1506,35 @@ namespace WebServer
 		propulsions[PropulsionOther] = Languages::TextPropulsionOther;
 		basicContent.AddChildTag(HtmlTagSelectWithLabel("propulsion", Languages::TextPropulsion, propulsions, propulsion));
 
-		map<TrainType,Languages::TextSelector> types;
-		types[TrainTypeUnknown] = Languages::TextTrainTypeUnknown;
-		types[TrainTypeInternationalHighSpeed] = Languages::TextTrainTypeInternationalHighSpeed;
-		types[TrainTypeNationalHighSpeed] = Languages::TextTrainTypeNationalHighSpeed;
-		types[TrainTypeInternationalLongDistance] = Languages::TextTrainTypeInternationalLongDistance;
-		types[TrainTypeNationalLongDistance] = Languages::TextTrainTypeNationalLongDistance;
-		types[TrainTypeInternationalNight] = Languages::TextTrainTypeInternationalNight;
-		types[TrainTypeNationalNight] = Languages::TextTrainTypeNationalNight;
-		types[TrainTypeLongDistanceFastLocal] = Languages::TextTrainTypeLongDistanceFastLocal;
-		types[TrainTypeFastLocal] = Languages::TextTrainTypeFastLocal;
-		types[TrainTypeLocal] = Languages::TextTrainTypeLocal;
-		types[TrainTypeSuburban] = Languages::TextTrainTypeSuburban;
-		types[TrainTypeUnderground] = Languages::TextTrainTypeUnderground;
-		types[TrainTypeHistoric] = Languages::TextTrainTypeHistoric;
-		types[TrainTypeExtra] = Languages::TextTrainTypeExtra;
-		types[TrainTypePassengerWithCargo] = Languages::TextTrainTypePassengerWithCargo;
-		types[TrainTypeCargoLongDistance] = Languages::TextTrainTypeCargoLongDistance;
-		types[TrainTypeCargoLocal] = Languages::TextTrainTypeCargoLocal;
-		types[TrainTypeCargoBlock] = Languages::TextTrainTypeCargoBlock;
-		types[TrainTypeCargoTractor] = Languages::TextTrainTypeCargoTractor;
-		types[TrainTypeCargoExpress] = Languages::TextTrainTypeCargoExpress;
-		types[TrainTypeCargoWithPassenger] = Languages::TextTrainTypeCargoWithPassenger;
-		types[TrainTypeRescue] = Languages::TextTrainTypeRescue;
-		types[TrainTypeConstruction] = Languages::TextTrainTypeConstruction;
-		types[TrainTypeEmpty] = Languages::TextTrainTypeEmpty;
-		types[TrainTypeLoco] = Languages::TextTrainTypeLoco;
-		types[TrainTypeCleaning] = Languages::TextTrainTypeCleaning;
-		types[TrainTypeOther] = Languages::TextTrainTypeOther;
-		basicContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextTrainType, types, type));
+		map<TrainType,Languages::TextSelector> trainTypes;
+		trainTypes[TrainTypeUnknown] = Languages::TextTrainTypeUnknown;
+		trainTypes[TrainTypeInternationalHighSpeed] = Languages::TextTrainTypeInternationalHighSpeed;
+		trainTypes[TrainTypeNationalHighSpeed] = Languages::TextTrainTypeNationalHighSpeed;
+		trainTypes[TrainTypeInternationalLongDistance] = Languages::TextTrainTypeInternationalLongDistance;
+		trainTypes[TrainTypeNationalLongDistance] = Languages::TextTrainTypeNationalLongDistance;
+		trainTypes[TrainTypeInternationalNight] = Languages::TextTrainTypeInternationalNight;
+		trainTypes[TrainTypeNationalNight] = Languages::TextTrainTypeNationalNight;
+		trainTypes[TrainTypeLongDistanceFastLocal] = Languages::TextTrainTypeLongDistanceFastLocal;
+		trainTypes[TrainTypeFastLocal] = Languages::TextTrainTypeFastLocal;
+		trainTypes[TrainTypeLocal] = Languages::TextTrainTypeLocal;
+		trainTypes[TrainTypeSuburban] = Languages::TextTrainTypeSuburban;
+		trainTypes[TrainTypeUnderground] = Languages::TextTrainTypeUnderground;
+		trainTypes[TrainTypeHistoric] = Languages::TextTrainTypeHistoric;
+		trainTypes[TrainTypeExtra] = Languages::TextTrainTypeExtra;
+		trainTypes[TrainTypePassengerWithCargo] = Languages::TextTrainTypePassengerWithCargo;
+		trainTypes[TrainTypeCargoLongDistance] = Languages::TextTrainTypeCargoLongDistance;
+		trainTypes[TrainTypeCargoLocal] = Languages::TextTrainTypeCargoLocal;
+		trainTypes[TrainTypeCargoBlock] = Languages::TextTrainTypeCargoBlock;
+		trainTypes[TrainTypeCargoTractor] = Languages::TextTrainTypeCargoTractor;
+		trainTypes[TrainTypeCargoExpress] = Languages::TextTrainTypeCargoExpress;
+		trainTypes[TrainTypeCargoWithPassenger] = Languages::TextTrainTypeCargoWithPassenger;
+		trainTypes[TrainTypeRescue] = Languages::TextTrainTypeRescue;
+		trainTypes[TrainTypeConstruction] = Languages::TextTrainTypeConstruction;
+		trainTypes[TrainTypeEmpty] = Languages::TextTrainTypeEmpty;
+		trainTypes[TrainTypeLoco] = Languages::TextTrainTypeLoco;
+		trainTypes[TrainTypeCleaning] = Languages::TextTrainTypeCleaning;
+		trainTypes[TrainTypeOther] = Languages::TextTrainTypeOther;
+		basicContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextTrainType, trainTypes, trainType));
 
 		formContent.AddChildTag(basicContent);
 
@@ -1611,18 +1657,18 @@ namespace WebServer
 			string fNrString = "f" + nrString;
 			fDiv.AddChildTag(HtmlTagLabel("F" + nrString, fNrString + "_type"));
 
-			const DataModel::LocoFunctionType type = locoFunctions[nr].type;
+			const DataModel::LocoFunctionType functionType = locoFunctions[nr].type;
 			DataModel::LocoFunctionIcon icon = locoFunctions[nr].icon;
 			DataModel::LocoFunctionTimer timer = locoFunctions[nr].timer;
 
-			fDiv.AddChildTag(HtmlTagSelect(fNrString + "_type", functionTypes, type).AddAttribute("onchange", "onChangeLocoFunctionType(" + nrString + ");return false;"));
+			fDiv.AddChildTag(HtmlTagSelect(fNrString + "_type", functionTypes, functionType).AddAttribute("onchange", "onChangeLocoFunctionType(" + nrString + ");return false;"));
 			HtmlTagSelect selectIcon(fNrString + "_icon", functionIcons, icon);
 			HtmlTagInputInteger inputTimer(fNrString + "_timer", timer, 1, 255);
-			if (type == LocoFunctionTypeNone)
+			if (functionType == LocoFunctionTypeNone)
 			{
 				selectIcon.AddClass("hidden");
 			}
-			if (type != LocoFunctionTypeTimer)
+			if (functionType != LocoFunctionTypeTimer)
 			{
 				inputTimer.AddClass("hidden");
 			}
@@ -1634,7 +1680,7 @@ namespace WebServer
 		}
 		formContent.AddChildTag(functionsContent);
 
-		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetLocoSlaveOptions(locoId)));
+//		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetLocoSlaveOptions(locoId)));
 
 		HtmlTag automodeContent("div");
 		automodeContent.AddId("tab_automode");
@@ -1650,7 +1696,7 @@ namespace WebServer
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		ReplyHtmlWithHeader(content);
+		return content;
 	}
 
 	void WebClient::HandleLocoSave(const map<string, string>& arguments)
@@ -1709,31 +1755,34 @@ namespace WebServer
 			locoFunctions.push_back(locoFunctionEntry);
 		}
 
-
 		string result;
 
-		if (!manager.LocoSave(locoId,
-			name,
-			controlId,
-			matchKey,
-			protocol,
-			address,
-			length,
-			pushpull,
-			maxSpeed,
-			travelSpeed,
-			reducedSpeed,
-			creepingSpeed,
-			propulsion,
-			type,
-			locoFunctions,
-			result))
-		{
-			ReplyResponse(ResponseError, result);
-			return;
-		}
+			if (!manager.LocoSave(locoId,
+				name,
+				controlId,
+				matchKey,
+				protocol,
+				address,
+				length,
+				pushpull,
+				maxSpeed,
+				travelSpeed,
+				reducedSpeed,
+				creepingSpeed,
+				propulsion,
+				type,
+				locoFunctions,
+				result))
+			{
+				ReplyResponse(ResponseError, result);
+				return;
+			}
 
 		ReplyResponse(ResponseInfo, Languages::TextLocoSaved, name);
+	}
+
+	void WebClient::HandleMultipleUnitSave(__attribute__((unused)) const map<string, string>& arguments)
+	{
 	}
 
 	void WebClient::HandleLocoList()
@@ -1776,6 +1825,10 @@ namespace WebServer
 		ReplyHtmlWithHeader(content);
 	}
 
+	void WebClient::HandleMultipleUnitList()
+	{
+	}
+
 	void WebClient::HandleLocoAskDelete(const map<string, string>& arguments)
 	{
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
@@ -1806,6 +1859,36 @@ namespace WebServer
 		ReplyHtmlWithHeader(content);
 	}
 
+	void WebClient::HandleMultipleUnitAskDelete(const map<string, string>& arguments)
+	{
+		MultipleUnitID multipleUnitID = Utils::Utils::GetIntegerMapEntry(arguments, "multipleunit", MultipleUnitNone);
+
+		if (multipleUnitID == MultipleUnitNone)
+		{
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextMultipleUnitDoesNotExist);
+			return;
+		}
+
+		const DataModel::MultipleUnit* multipleUnit = manager.GetMultipleUnit(multipleUnitID);
+		if (multipleUnit == nullptr)
+		{
+			ReplyHtmlWithHeaderAndParagraph(Languages::TextMultipleUnitDoesNotExist);
+			return;
+		}
+
+		HtmlTag content;
+		const string& multipleUnitName = multipleUnit->GetName();
+		content.AddContent(HtmlTag("h1").AddContent(Languages::TextDeleteMultipleUnit));
+		content.AddContent(HtmlTag("p").AddContent(Languages::TextAreYouSureToDelete, multipleUnitName));
+		content.AddContent(HtmlTag("form").AddId("editform")
+			.AddContent(HtmlTagInputHidden("cmd", "multipleunitdelete"))
+			.AddContent(HtmlTagInputHidden("multipleunit", to_string(multipleUnitID))
+			));
+		content.AddContent(HtmlTagButtonCancel());
+		content.AddContent(HtmlTagButtonOK());
+		ReplyHtmlWithHeader(content);
+	}
+
 	void WebClient::HandleLocoDelete(const map<string, string>& arguments)
 	{
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
@@ -1825,6 +1908,27 @@ namespace WebServer
 		}
 
 		ReplyResponse(ResponseInfo, Languages::TextLocoDeleted, name);
+	}
+
+	void WebClient::HandleMultipleUnitDelete(const map<string, string>& arguments)
+	{
+		MultipleUnitID multipleUnitID = Utils::Utils::GetIntegerMapEntry(arguments, "multipleunit", MultipleUnitNone);
+		const DataModel::MultipleUnit* multipleUnit = manager.GetMultipleUnit(multipleUnitID);
+		if (multipleUnit == nullptr)
+		{
+			ReplyResponse(ResponseError, Languages::TextMultipleUnitDoesNotExist);
+			return;
+		}
+
+		string name = multipleUnit->GetName();
+		string result;
+		if (!manager.MultipleUnitDelete(multipleUnitID, result))
+		{
+			ReplyResponse(ResponseError, result);
+			return;
+		}
+
+		ReplyResponse(ResponseInfo, Languages::TextMultipleUnitDeleted, name);
 	}
 
 	HtmlTag WebClient::HtmlTagLayerSelector(const LayerID layerID) const
