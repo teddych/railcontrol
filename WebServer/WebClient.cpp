@@ -1386,115 +1386,8 @@ namespace WebServer
 		return locoOptions;
 	}
 
-	void WebClient::HandleLocoEdit(const map<string, string>& arguments)
+	HtmlTag WebClient::HtmlTagSelectPropulsion(const Propulsion propulsion)
 	{
-		const LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		ReplyHtmlWithHeader(HandleLocoMultipleUnitEdit(arguments, LocoTypeLoco, locoId));
-	}
-
-	void WebClient::HandleMultipleUnitEdit(const map<string, string>& arguments)
-	{
-		const MultipleUnitID multipleUnitId = Utils::Utils::GetIntegerMapEntry(arguments, "multipleunit", MultipleUnitNone);
-		HtmlTag content = HandleLocoMultipleUnitEdit(arguments, LocoTypeMultipleUnit, multipleUnitId);
-		ReplyHtmlWithHeader(content);
-	}
-
-	HtmlTag WebClient::HandleLocoMultipleUnitEdit(const map<string, string>& arguments, const LocoType type, const LocoID locoId)
-	{
-		HtmlTag content;
-		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
-		if (controlId == ControlNone)
-		{
-			controlId = manager.GetPossibleControlForLoco();
-		}
-		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
-		Protocol protocol = ProtocolNone;
-		Address address = AddressDefault;
-		string name = Languages::GetText(Languages::TextNew);
-		bool pushpull = false;
-		Length length = 0;
-		Speed maxSpeed = MaxSpeed;
-		Speed travelSpeed = DefaultTravelSpeed;
-		Speed reducedSpeed = DefaultReducedSpeed;
-		Speed creepingSpeed = DefaultCreepingSpeed;
-		Propulsion propulsion = PropulsionOther;
-		TrainType trainType = TrainTypeOther;
-		LocoFunctionEntry locoFunctions[NumberOfLocoFunctions];
-		vector<Relation*> slaves;
-
-		if (locoId > LocoNone)
-		{
-			// existing loco
-			const DataModel::LocoBase* loco = (type == LocoTypeLoco) ?
-				static_cast<LocoBase*>(manager.GetLoco(locoId)) :
-				static_cast<LocoBase*>(manager.GetMultipleUnit(locoId));
-			if (loco != nullptr)
-			{
-				controlId = loco->GetControlID();
-				matchKey = loco->GetMatchKey();
-				protocol = loco->GetProtocol();
-				address = loco->GetAddress();
-				name = loco->GetName();
-				pushpull = loco->GetPushpull();
-				length = loco->GetLength();
-				maxSpeed = loco->GetMaxSpeed();
-				travelSpeed = loco->GetTravelSpeed();
-				reducedSpeed = loco->GetReducedSpeed();
-				creepingSpeed = loco->GetCreepingSpeed();
-				propulsion = loco->GetPropulsion();
-				trainType = loco->GetTrainType();
-				loco->GetFunctions(locoFunctions);
-				if (type == LocoTypeMultipleUnit)
-				{
-					const DataModel::MultipleUnit* mu = dynamic_cast<const DataModel::MultipleUnit*>(loco);
-					if (mu)
-					{
-						slaves = mu->GetSlaves();
-					}
-				}
-			}
-		}
-		else if (controlId > ControlNone)
-		{
-			// loco from hardware database
-			const DataModel::LocoConfig loco = manager.GetLocoOfConfigByMatchKey(controlId, matchKey);
-			if (loco.GetControlId() == controlId
-				&& loco.GetMatchKey() == matchKey
-				&& loco.GetType() == type)
-			{
-				protocol = loco.GetProtocol();
-				address = loco.GetAddress();
-				name = loco.GetName();
-				loco.GetFunctions(locoFunctions);
-			}
-		}
-		// else new loco
-
-		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
-		HtmlTag tabMenu("div");
-		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
-		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("functions", Languages::TextFunctions));
-		if (type == LocoTypeMultipleUnit)
-		{
-			tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("slaves", Languages::TextMultipleUnit));
-		}
-		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("automode", Languages::TextAutomode));
-		content.AddChildTag(tabMenu);
-
-		HtmlTag formContent("form");
-		formContent.AddId("editform");
-		formContent.AddChildTag(HtmlTagInputHidden("cmd", "locosave"));
-		formContent.AddChildTag(HtmlTagInputHidden("loco", to_string(locoId)));
-
-		HtmlTag basicContent("div");
-		basicContent.AddId("tab_basic");
-		basicContent.AddClass("tab_content");
-		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		basicContent.AddChildTag(HtmlTagControlLoco(controlId, "loco", locoId));
-		basicContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagMatchKeyProtocolLoco(controlId, matchKey, protocol)));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
-		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
-
 		map<Propulsion,Languages::TextSelector> propulsions;
 		propulsions[PropulsionUnknown] = Languages::TextPropulsionUnknown;
 		propulsions[PropulsionSteam] = Languages::TextPropulsionSteam;
@@ -1504,8 +1397,11 @@ namespace WebServer
 		propulsions[PropulsionHydrogen] = Languages::TextPropulsionHydrogen;
 		propulsions[PropulsionAccu] = Languages::TextPropulsionAccu;
 		propulsions[PropulsionOther] = Languages::TextPropulsionOther;
-		basicContent.AddChildTag(HtmlTagSelectWithLabel("propulsion", Languages::TextPropulsion, propulsions, propulsion));
+		return HtmlTagSelectWithLabel("propulsion", Languages::TextPropulsion, propulsions, propulsion);
+	}
 
+	HtmlTag WebClient::HtmlTagSelectTrainType(const TrainType trainType)
+	{
 		map<TrainType,Languages::TextSelector> trainTypes;
 		trainTypes[TrainTypeUnknown] = Languages::TextTrainTypeUnknown;
 		trainTypes[TrainTypeInternationalHighSpeed] = Languages::TextTrainTypeInternationalHighSpeed;
@@ -1534,10 +1430,11 @@ namespace WebServer
 		trainTypes[TrainTypeLoco] = Languages::TextTrainTypeLoco;
 		trainTypes[TrainTypeCleaning] = Languages::TextTrainTypeCleaning;
 		trainTypes[TrainTypeOther] = Languages::TextTrainTypeOther;
-		basicContent.AddChildTag(HtmlTagSelectWithLabel("type", Languages::TextTrainType, trainTypes, trainType));
+		return HtmlTagSelectWithLabel("type", Languages::TextTrainType, trainTypes, trainType);
+	}
 
-		formContent.AddChildTag(basicContent);
-
+	HtmlTag WebClient::HtmlTagTabFunctions(const LocoFunctionEntry* locoFunctions)
+	{
 		HtmlTag functionsContent("div");
 		functionsContent.AddId("tab_functions");
 		functionsContent.AddClass("tab_content");
@@ -1678,10 +1575,15 @@ namespace WebServer
 			fDiv.AddChildTag(inputTimer);
 			functionsContent.AddChildTag(fDiv);
 		}
-		formContent.AddChildTag(functionsContent);
+		return functionsContent;
+	}
 
-//		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetLocoSlaveOptions(locoId)));
-
+	HtmlTag WebClient::HtmlTagTabAutomode(const bool pushpull,
+		const Speed maxSpeed,
+		const Speed travelSpeed,
+		const Speed reducedSpeed,
+		const Speed creepingSpeed)
+	{
 		HtmlTag automodeContent("div");
 		automodeContent.AddId("tab_automode");
 		automodeContent.AddClass("tab_content");
@@ -1691,18 +1593,197 @@ namespace WebServer
 		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("travelspeed", Languages::TextTravelSpeed, travelSpeed, 0, MaxSpeed));
 		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("reducedspeed", Languages::TextReducedSpeed, reducedSpeed, 0, MaxSpeed));
 		automodeContent.AddChildTag(HtmlTagInputIntegerWithLabel("creepingspeed", Languages::TextCreepingSpeed, creepingSpeed, 0, MaxSpeed));
-		formContent.AddChildTag(automodeContent);
+		return automodeContent;
+	}
+
+	void WebClient::HandleLocoEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		const LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
+		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
+		if (controlId == ControlNone)
+		{
+			controlId = manager.GetPossibleControlForLoco();
+		}
+		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
+		Protocol protocol = ProtocolNone;
+		Address address = AddressDefault;
+		string name = Languages::GetText(Languages::TextNew);
+		bool pushpull = false;
+		Length length = 0;
+		Speed maxSpeed = MaxSpeed;
+		Speed travelSpeed = DefaultTravelSpeed;
+		Speed reducedSpeed = DefaultReducedSpeed;
+		Speed creepingSpeed = DefaultCreepingSpeed;
+		Propulsion propulsion = PropulsionOther;
+		TrainType trainType = TrainTypeOther;
+		LocoFunctionEntry locoFunctions[NumberOfLocoFunctions];
+		vector<Relation*> slaves;
+
+		if (locoId > LocoNone)
+		{
+			// existing loco
+			const DataModel::Loco* loco = manager.GetLoco(locoId);
+			if (loco != nullptr)
+			{
+				controlId = loco->GetControlID();
+				matchKey = loco->GetMatchKey();
+				protocol = loco->GetProtocol();
+				address = loco->GetAddress();
+				name = loco->GetName();
+				pushpull = loco->GetPushpull();
+				length = loco->GetLength();
+				maxSpeed = loco->GetMaxSpeed();
+				travelSpeed = loco->GetTravelSpeed();
+				reducedSpeed = loco->GetReducedSpeed();
+				creepingSpeed = loco->GetCreepingSpeed();
+				propulsion = loco->GetPropulsion();
+				trainType = loco->GetTrainType();
+				loco->GetFunctions(locoFunctions);
+			}
+		}
+		else if (controlId > ControlNone)
+		{
+			// loco from hardware database
+			DataModel::LocoConfig loco = manager.GetLocoOfConfigByMatchKey(controlId, matchKey);
+
+			if ((loco.GetControlId() == controlId) && (loco.GetMatchKey() == matchKey))
+			{
+				protocol = loco.GetProtocol();
+				address = loco.GetAddress();
+				name = loco.GetName();
+				loco.GetFunctions(locoFunctions);
+			}
+		}
+		// else new loco
+
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("functions", Languages::TextFunctions));
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("automode", Languages::TextAutomode));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag formContent("form");
+		formContent.AddId("editform");
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "locosave"));
+		formContent.AddChildTag(HtmlTagInputHidden("loco", to_string(locoId)));
+
+		HtmlTag basicContent("div");
+		basicContent.AddId("tab_basic");
+		basicContent.AddClass("tab_content");
+		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
+		basicContent.AddChildTag(HtmlTagControlLoco(controlId, "loco", locoId));
+		basicContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagMatchKeyProtocolLoco(controlId, matchKey, protocol)));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
+		basicContent.AddChildTag(HtmlTagSelectPropulsion(propulsion));
+		basicContent.AddChildTag(HtmlTagSelectTrainType(trainType));
+		formContent.AddChildTag(basicContent);
+
+		formContent.AddChildTag(HtmlTagTabFunctions(locoFunctions));
+
+		formContent.AddChildTag(HtmlTagTabAutomode(pushpull, maxSpeed, travelSpeed, reducedSpeed, creepingSpeed));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
 		content.AddChildTag(HtmlTagButtonOK());
-		return content;
+		ReplyHtmlWithHeader(content);
+	}
+
+	void WebClient::HandleMultipleUnitEdit(const map<string, string>& arguments)
+	{
+		HtmlTag content;
+		const MultipleUnitID multipleUnitId = Utils::Utils::GetIntegerMapEntry(arguments, "multipleunit", MultipleUnitNone);
+		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
+		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
+		Address address = AddressDefault;
+		string name = Languages::GetText(Languages::TextNew);
+		bool pushpull = false;
+		Length length = 0;
+		Speed maxSpeed = MaxSpeed;
+		Speed travelSpeed = DefaultTravelSpeed;
+		Speed reducedSpeed = DefaultReducedSpeed;
+		Speed creepingSpeed = DefaultCreepingSpeed;
+		TrainType trainType = TrainTypeOther;
+		LocoFunctionEntry locoFunctions[NumberOfLocoFunctions];
+		vector<Relation*> slaves;
+
+		if (multipleUnitId > MultipleUnitNone)
+		{
+			// existing multiple unit
+			const DataModel::MultipleUnit* multipleUnit = manager.GetMultipleUnit(multipleUnitId);
+			if (multipleUnit != nullptr)
+			{
+				controlId = multipleUnit->GetControlID();
+				matchKey = multipleUnit->GetMatchKey();
+				address = multipleUnit->GetAddress();
+				name = multipleUnit->GetName();
+				pushpull = multipleUnit->GetPushpull();
+				length = multipleUnit->GetLength();
+				maxSpeed = multipleUnit->GetMaxSpeed();
+				travelSpeed = multipleUnit->GetTravelSpeed();
+				reducedSpeed = multipleUnit->GetReducedSpeed();
+				creepingSpeed = multipleUnit->GetCreepingSpeed();
+				trainType = multipleUnit->GetTrainType();
+				multipleUnit->GetFunctions(locoFunctions);
+				slaves = multipleUnit->GetSlaves();
+			}
+		}
+		else if (controlId > ControlNone)
+		{
+			// multiple unit from hardware database
+			DataModel::LocoConfig multipleUnit = manager.GetMultipleUnitOfConfigByMatchKey(controlId, matchKey);
+
+			if ((multipleUnit.GetControlId() == controlId) && (multipleUnit.GetMatchKey() == matchKey))
+			{
+				address = multipleUnit.GetAddress();
+				name = multipleUnit.GetName();
+				multipleUnit.GetFunctions(locoFunctions);
+			}
+		}
+		// else new multiple unit
+
+		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("functions", Languages::TextFunctions));
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("slaves", Languages::TextMultipleUnit));
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("automode", Languages::TextAutomode));
+		content.AddChildTag(tabMenu);
+
+		HtmlTag formContent("form");
+		formContent.AddId("editform");
+		formContent.AddChildTag(HtmlTagInputHidden("cmd", "multipleunitsave"));
+		formContent.AddChildTag(HtmlTagInputHidden("multipleunit", to_string(multipleUnitId)));
+
+		HtmlTag basicContent("div");
+		basicContent.AddId("tab_basic");
+		basicContent.AddClass("tab_content");
+		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
+		basicContent.AddChildTag(HtmlTagControlMultipleUnit(controlId, "multipleunit", multipleUnitId));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
+		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
+
+		basicContent.AddChildTag(HtmlTagSelectTrainType(trainType));
+		formContent.AddChildTag(basicContent);
+
+		formContent.AddChildTag(HtmlTagTabFunctions(locoFunctions));
+
+// FIXME:		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetLocoSlaveOptions(locoId)));
+
+		formContent.AddChildTag(HtmlTagTabAutomode(pushpull, maxSpeed, travelSpeed, reducedSpeed, creepingSpeed));
+
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonOK());
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleLocoSave(const map<string, string>& arguments)
 	{
 		const LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		const string name = Utils::Utils::GetStringMapEntry(arguments, "name", Languages::GetText(Languages::TextLoco));
 		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		const string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
@@ -1783,6 +1864,80 @@ namespace WebServer
 
 	void WebClient::HandleMultipleUnitSave(__attribute__((unused)) const map<string, string>& arguments)
 	{
+		const MultipleUnitID multipleUnitId = Utils::Utils::GetIntegerMapEntry(arguments, "multipleunit", MultipleUnitNone);
+		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		const string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
+		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
+		const Length length = Utils::Utils::GetIntegerMapEntry(arguments, "length", 0);
+		const bool pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", false);
+		const Speed maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
+		Speed travelSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "travelspeed", DefaultTravelSpeed);
+		if (travelSpeed > maxSpeed)
+		{
+			travelSpeed = maxSpeed;
+		}
+		Speed reducedSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "reducedspeed", DefaultReducedSpeed);
+		if (reducedSpeed > travelSpeed)
+		{
+			reducedSpeed = travelSpeed;
+		}
+		Speed creepingSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "creepingspeed", DefaultCreepingSpeed);
+		if (creepingSpeed > reducedSpeed)
+		{
+			creepingSpeed = reducedSpeed;
+		}
+		const TrainType type = static_cast<TrainType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TrainTypeOther));
+
+		vector<DataModel::LocoFunctionEntry> locoFunctions;
+		DataModel::LocoFunctionEntry locoFunctionEntry;
+		for (DataModel::LocoFunctionNr nr = 0; nr < NumberOfLocoFunctions; ++nr)
+		{
+			string nrString = "f" + to_string(nr) + "_";
+			locoFunctionEntry.nr = nr;
+			locoFunctionEntry.type = static_cast<DataModel::LocoFunctionType>(Utils::Utils::GetIntegerMapEntry(arguments, nrString + "type", DataModel::LocoFunctionTypeNone));
+			if (locoFunctionEntry.type == DataModel::LocoFunctionTypeNone)
+			{
+				continue;
+			}
+			locoFunctionEntry.icon = static_cast<DataModel::LocoFunctionIcon>(Utils::Utils::GetIntegerMapEntry(arguments, nrString + "icon", DataModel::LocoFunctionIconNone));
+			if (locoFunctionEntry.type == DataModel::LocoFunctionTypeTimer)
+			{
+				locoFunctionEntry.timer = Utils::Utils::GetIntegerMapEntry(arguments, nrString + "timer", 1);
+				if (locoFunctionEntry.timer == 0)
+				{
+					locoFunctionEntry.timer = 1;
+				}
+			}
+			else
+			{
+				locoFunctionEntry.timer = 0;
+			}
+			locoFunctions.push_back(locoFunctionEntry);
+		}
+
+		string result;
+
+		if (!manager.MultipleUnitSave(multipleUnitId,
+			name,
+			controlId,
+			matchKey,
+			address,
+			length,
+			pushpull,
+			maxSpeed,
+			travelSpeed,
+			reducedSpeed,
+			creepingSpeed,
+			type,
+			locoFunctions,
+			result))
+		{
+			ReplyResponse(ResponseError, result);
+			return;
+		}
+
+		ReplyResponse(ResponseInfo, Languages::TextMultipleUnitSaved, name);
 	}
 
 	void WebClient::HandleLocoList()
@@ -1807,6 +1962,8 @@ namespace WebServer
 				locoArgument["control"] = to_string(locoConfig.GetControlId());
 				locoArgument["matchkey"] = locoConfig.GetMatchKey();
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "locoedit_list_" + locoIdString, locoArgument)));
+				row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
+				row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
 			}
 			else
 			{
@@ -1815,6 +1972,10 @@ namespace WebServer
 				if (loco.second.IsInUse())
 				{
 					row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "locorelease_" + locoIdString, locoArgument, "hideElement('b_locorelease_" + locoIdString + "');")));
+				}
+				else
+				{
+					row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
 				}
 			}
 			table.AddChildTag(row);
@@ -1827,6 +1988,46 @@ namespace WebServer
 
 	void WebClient::HandleMultipleUnitList()
 	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextMultipleUnits));
+		HtmlTag table("table");
+		const map<string,LocoConfig> multipleUnitList = manager.MultipleUnitConfigByName();
+		map<string,string> multipleUnitArgument;
+		for (auto& multipleUnit : multipleUnitList)
+		{
+			const LocoConfig& locoConfig = multipleUnit.second;
+			HtmlTag row("tr");
+			row.AddChildTag(HtmlTag("td").AddContent(multipleUnit.first));
+			const MultipleUnitID multipleUnitId = locoConfig.GetLocoId();
+			const string& multipleUnitIdString = to_string(multipleUnitId);
+			multipleUnitArgument["multipleunit"] = multipleUnitIdString;
+			if (multipleUnitId == LocoNone)
+			{
+				multipleUnitArgument["control"] = to_string(locoConfig.GetControlId());
+				multipleUnitArgument["matchkey"] = locoConfig.GetMatchKey();
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "multipleunitedit_list_" + multipleUnitIdString, multipleUnitArgument)));
+				row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
+				row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
+			}
+			else
+			{
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "multipleunitedit_list_" + multipleUnitIdString, multipleUnitArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "multipleunitaskdelete_" + multipleUnitIdString, multipleUnitArgument)));
+				if (multipleUnit.second.IsInUse())
+				{
+					row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonCommandWide(Languages::TextRelease, "multipleunitrelease_" + multipleUnitIdString, multipleUnitArgument, "hideElement('b_locorelease_" + multipleUnitIdString + "');")));
+				}
+				else
+				{
+					row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
+				}
+			}
+			table.AddChildTag(row);
+		}
+		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
+		content.AddChildTag(HtmlTagButtonCancel());
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "multipleunitedit_0"));
+		ReplyHtmlWithHeader(content);
 	}
 
 	void WebClient::HandleLocoAskDelete(const map<string, string>& arguments)
@@ -2031,21 +2232,28 @@ namespace WebServer
 		ReplyHtmlWithHeader(content);
 	}
 
-	HtmlTag WebClient::HtmlTagControlLoco(ControlID& controlId, const string& objectType, const ObjectID objectID)
+	HtmlTag WebClient::HtmlTagControlLoco(ControlID& controlId, const string& objectType, const ObjectID objectID) const
 	{
-		std::map<ControlID,string> controls = manager.LocoControlListNames();
+		std::map<ControlID,string> controls = manager.ControlListNames(Hardware::CapabilityLoco);
 		return WebClientStatic::HtmlTagControl(controls, controlId, objectType, objectID);
 	}
 
-	HtmlTag WebClient::HtmlTagControlAccessory(ControlID& controlID, const string& objectType, const ObjectID objectID)
+	HtmlTag WebClient::HtmlTagControlMultipleUnit(ControlID& controlId, const string& objectType, const ObjectID objectID) const
 	{
-		std::map<ControlID,string> controls = manager.AccessoryControlListNames();
+		std::map<ControlID,string> controls = manager.ControlListNames(Hardware::CapabilityMultipleUnit);
+		controls[ControlNone] = Languages::GetText(Languages::TextIndependentOfControl);
+		return WebClientStatic::HtmlTagControl(controls, controlId, objectType, objectID);
+	}
+
+	HtmlTag WebClient::HtmlTagControlAccessory(ControlID& controlID, const string& objectType, const ObjectID objectID) const
+	{
+		std::map<ControlID,string> controls = manager.ControlListNames(Hardware::CapabilityAccessory);
 		return WebClientStatic::HtmlTagControl(controls, controlID, objectType, objectID);
 	}
 
-	HtmlTag WebClient::HtmlTagControlFeedback(ControlID& controlId, const string& objectType, const ObjectID objectID)
+	HtmlTag WebClient::HtmlTagControlFeedback(ControlID& controlId, const string& objectType, const ObjectID objectID) const
 	{
-		std::map<ControlID,string> controls = manager.FeedbackControlListNames();
+		std::map<ControlID,string> controls = manager.ControlListNames(Hardware::CapabilityFeedback);
 		return WebClientStatic::HtmlTagControl(controls, controlId, objectType, objectID);
 	}
 
@@ -3113,7 +3321,7 @@ namespace WebServer
 		rawContent.AddId("tab_raw");
 		rawContent.AddClass("tab_content");
 		rawContent.AddClass("narrow_label");
-		std::map<ControlID,string> controls = manager.ProgramControlListNames();
+		std::map<ControlID,string> controls = manager.ControlListNames(Hardware::CapabilityProgram);
 		if (controls.size() == 0)
 		{
 			ReplyHtmlWithHeader(HtmlTag("p").AddContent(Languages::TextNoControlSupportsProgramming));
@@ -3410,7 +3618,8 @@ namespace WebServer
 		menuConfig.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><circle r=\"7\" cx=\"14\" cy=\"14\" fill=\"black\" /><line x1=\"14\" y1=\"5\" x2=\"14\" y2=\"23\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"9.5\" y1=\"6.2\" x2=\"18.5\" y2=\"21.8\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"6.2\" y1=\"9.5\" x2=\"21.8\" y2=\"18.5\" stroke-width=\"2\" stroke=\"black\" /><line y1=\"14\" x1=\"5\" y2=\"14\" x2=\"23\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"9.5\" y1=\"21.8\" x2=\"18.5\" y2=\"6.2\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"6.2\" y1=\"18.5\" x2=\"21.8\" y2=\"9.5\" stroke-width=\"2\" stroke=\"black\" /><circle r=\"5\" cx=\"14\" cy=\"14\" fill=\"white\" /><circle r=\"4\" cx=\"24\" cy=\"24\" fill=\"black\" /><line x1=\"18\" y1=\"24\" x2=\"30\" y2=\"24\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"28.2\" y1=\"28.2\" x2=\"19.8\" y2=\"19.8\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"24\" y1=\"18\" x2=\"24\" y2=\"30\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"19.8\" y1=\"28.2\" x2=\"28.2\" y2=\"19.8\" stroke-width=\"2\" stroke=\"black\" /><circle r=\"2\" cx=\"24\" cy=\"24\" fill=\"white\" /></svg>", "settingsedit", Languages::TextEditSettings));
 		menuConfig.AddChildTag(HtmlTag().AddContent("&nbsp;&nbsp;&nbsp;"));
 		menuConfig.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polygon points=\"11,1.5 26,1.5 26,35.5 11,35.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><polygon points=\"14,4.5 23,4.5 23,8.5 14,8.5\" fill=\"white\" style=\"stroke:black;stroke-width:1;\"/><circle cx=\"15.5\" cy=\"12\" r=\"1\" fill=\"black\"/><circle cx=\"18.5\" cy=\"12\" r=\"1\" fill=\"black\"/><circle cx=\"21.5\" cy=\"12\" r=\"1\" fill=\"black\"/><circle cx=\"15.5\" cy=\"15\" r=\"1\" fill=\"black\"/><circle cx=\"18.5\" cy=\"15\" r=\"1\" fill=\"black\"/><circle cx=\"21.5\" cy=\"15\" r=\"1\" fill=\"black\"/><circle cx=\"15.5\" cy=\"18\" r=\"1\" fill=\"black\"/><circle cx=\"18.5\" cy=\"18\" r=\"1\" fill=\"black\"/><circle cx=\"21.5\" cy=\"18\" r=\"1\" fill=\"black\"/><circle cx=\"15.5\" cy=\"21\" r=\"1\" fill=\"black\"/><circle cx=\"18.5\" cy=\"21\" r=\"1\" fill=\"black\"/><circle cx=\"21.5\" cy=\"21\" r=\"1\" fill=\"black\"/><circle cx=\"18.5\" cy=\"28.5\" r=\"5\" fill=\"black\"/></svg>", "controllist", Languages::TextEditControls));
-		menuConfig.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polygon points=\"1,11 6,11 6,1 11,1 11,11 26,11 26,1 36,1 36,6 31,6 31,11 36,11 36,26 1,26\" fill=\"black\"/><circle cx=\"6\" cy=\"31\" r=\"5\" fill=\"black\"/><circle cx=\"18.5\" cy=\"31\" r=\"5\" fill=\"black\"/><circle cx=\"31\" cy=\"31\" r=\"5\" fill=\"black\"/></svg>", "locolist", Languages::TextEditLocos));
+		menuConfig.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"0,25 35,25\" fill=\"none\" stroke=\"black\"/><polygon points=\"35,22 6,22 5,19 8,10 35,10\" stroke=\"black\" fill=\"black\"/><polygon points=\"10,12 15,12 15,15 9,15\" fill=\"white\"/><polyline points=\"16,9 20,7 16,5\" stroke=\"black\" fill=\"none\"/><circle cx=\"12\" cy=\"22\" r=\"3\"/><circle cx=\"20\" cy=\"22\" r=\"3\"/></svg>", "locolist", Languages::TextEditLocos));
+		menuConfig.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"0,25 35,25\" fill=\"none\" stroke=\"black\"/><polygon points=\"0,22 0,10 12,10 15,19 14,22\" stroke=\"black\" fill=\"black\"/><polygon points=\"10,12 11,15 5,15 5,12\" fill=\"white\"/><polyline points=\"8,9 4,7 8,5\" stroke=\"black\" fill=\"none\"/><circle cx=\"8\" cy=\"22\" r=\"3\"/><circle cx=\"0\" cy=\"22\" r=\"3\"/><polygon points=\"35,22 21,22 20,19 23,10 35,10\" stroke=\"black\" fill=\"black\"/><polygon points=\"25,12 30,12 30,15 24,15\" fill=\"white\"/><polyline points=\"27,9 31,7 27,5\" stroke=\"black\" fill=\"none\"/><circle cx=\"27\" cy=\"22\" r=\"3\"/><circle cx=\"35\" cy=\"22\" r=\"3\"/><polyline points=\"0,20 35,20\" fill=\"none\" stroke=\"black\"/></svg>", "multipleunitlist", Languages::TextEditMultipleUnits));
 		menuConfig.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polygon points=\"2,31 26,31 35,21 11,21\" fill=\"white\" stroke=\"black\"/><polygon points=\"2,26 26,26 35,16 11,16\" fill=\"white\" stroke=\"black\"/><polygon points=\"2,21 26,21 35,11 11,11\" fill=\"white\" stroke=\"black\"/><polygon points=\"2,16 26,16 35,6 11,6\" fill=\"white\" stroke=\"black\"/></svg>", "layerlist", Languages::TextEditLayers));
 		menuConfig.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,12 35,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,23 35,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,10 3,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,10 6,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,10 9,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,10 12,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,10 15,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"18,10 18,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,10 21,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,10 24,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,10 27,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,10 30,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,10 33,25\" stroke=\"black\" stroke-width=\"1\"/></svg>", "tracklist", Languages::TextEditTracks));
 		menuConfig.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><polyline points=\"1,12 17,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"1,23 17,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"19,12 35,12\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"19,23 35,23\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"3,10 3,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"6,10 6,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"9,10 9,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"12,10 12,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"15,10 15,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"21,10 21,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"24,10 24,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"27,10 27,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"30,10 30,25\" stroke=\"black\" stroke-width=\"1\"/><polyline points=\"33,10 33,25\" stroke=\"black\" stroke-width=\"1\"/></svg>", "clusterlist", Languages::TextEditClusters));

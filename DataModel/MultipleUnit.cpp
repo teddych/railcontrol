@@ -34,6 +34,7 @@ namespace DataModel
 		string str;
 		str += "objectType=MultipleUnit;";
 		str += LocoBase::Serialize();
+		// FIXME: serialize slaves
 		return str;
 	}
 
@@ -45,6 +46,7 @@ namespace DataModel
 		{
 			return false;
 		}
+		// FIXME: deserialize slaves
 		LocoBase::Deserialize(arguments);
 		return true;
 	}

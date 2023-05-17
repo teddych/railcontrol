@@ -580,7 +580,7 @@ namespace Hardware
 	{
 		if (instance == nullptr)
 		{
-			return DataModel::LocoConfig();
+			return DataModel::LocoConfig(LocoTypeLoco);
 		}
 		return instance->GetLocoByMatchKey(match);
 	}

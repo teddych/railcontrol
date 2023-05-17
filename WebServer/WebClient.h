@@ -159,9 +159,10 @@ namespace WebServer
 				const DataModel::LayoutItem::LayoutRotation rotation = DataModel::LayoutItem::RotationNotRelevant,
 				const DataModel::LayoutItem::Visible visible = DataModel::LayoutItem::VisibleNotRelevant) const ;
 
-			HtmlTag HtmlTagControlLoco(ControlID& controlId, const std::string& objectType, const ObjectID objectID);
-			HtmlTag HtmlTagControlAccessory(ControlID& controlID, const std::string& objectType, const ObjectID objectID);
-			HtmlTag HtmlTagControlFeedback(ControlID& controlId, const std::string& objectType, const ObjectID objectID);
+			HtmlTag HtmlTagControlLoco(ControlID& controlId, const std::string& objectType, const ObjectID objectID) const;
+			HtmlTag HtmlTagControlMultipleUnit(ControlID& controlId, const std::string& objectType, const ObjectID objectID) const;
+			HtmlTag HtmlTagControlAccessory(ControlID& controlID, const std::string& objectType, const ObjectID objectID) const;
+			HtmlTag HtmlTagControlFeedback(ControlID& controlId, const std::string& objectType, const ObjectID objectID) const;
 
 			HtmlTag HtmlTagProtocolAccessory(const ControlID controlID, const Protocol selectedProtocol);
 
@@ -243,7 +244,14 @@ namespace WebServer
 			void HandleMultipleUnitAskDelete(const std::map<std::string, std::string>& arguments);
 			void HandleMultipleUnitDelete(const std::map<std::string, std::string>& arguments);
 
-			HtmlTag HandleLocoMultipleUnitEdit(const std::map<std::string, std::string>& arguments, const LocoType type, const LocoID locoId);
+			static HtmlTag HtmlTagSelectPropulsion(const Propulsion propulsion);
+			static HtmlTag HtmlTagSelectTrainType(const TrainType trainType);
+			static HtmlTag HtmlTagTabFunctions(const DataModel::LocoFunctionEntry* locoFunctions);
+			static HtmlTag HtmlTagTabAutomode(const bool pushpull,
+				const Speed maxSpeed,
+				const Speed travelSpeed,
+				const Speed reducedSpeed,
+				const Speed creepingSpeed);
 
 			void HandleProtocol(const std::map<std::string, std::string>& arguments);
 			void HandleLayout(const std::map<std::string,std::string>& arguments);

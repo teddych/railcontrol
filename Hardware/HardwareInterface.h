@@ -181,7 +181,7 @@ namespace Hardware
 
 			virtual DataModel::LocoConfig GetLocoByMatchKey(__attribute__((unused)) const std::string& matchKey) const
 			{
-				return DataModel::LocoConfig();
+				return DataModel::LocoConfig(LocoTypeLoco);
 			}
 
 			virtual void SetLocoIdOfMatchKey(__attribute__((unused)) const LocoID locoId,

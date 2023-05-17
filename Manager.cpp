@@ -489,7 +489,7 @@ const std::string Manager::GetControlName(const ControlID controlID)
 	return control->GetName();
 }
 
-const std::map<ControlID,std::string> Manager::LocoControlListNames() const
+const std::map<ControlID,std::string> Manager::ControlListNames(const Hardware::Capabilities capability) const
 {
 	std::map<ControlID,std::string> ret;
 	std::lock_guard<std::mutex> guard(hardwareMutex);
@@ -501,66 +501,11 @@ const std::map<ControlID,std::string> Manager::LocoControlListNames() const
 			continue;
 		}
 		ControlInterface* c = controls.at(hardware.second->GetControlID());
-		if (c->CanHandle(Hardware::CapabilityLoco) == false)
+		if (c->CanHandle(capability) == false)
 		{
 			continue;
 		}
 		ret[hardware.first] = hardware.second->GetName();
-	}
-	return ret;
-}
-
-const std::map<ControlID,std::string> Manager::AccessoryControlListNames() const
-{
-	std::map<ControlID,std::string> ret;
-	std::lock_guard<std::mutex> guard(hardwareMutex);
-	for (auto& hardware : hardwareParams)
-	{
-		std::lock_guard<std::mutex> guard2(controlMutex);
-		if (controls.count(hardware.second->GetControlID()) != 1)
-		{
-			continue;
-		}
-		ControlInterface* c = controls.at(hardware.second->GetControlID());
-		if (c->CanHandle(Hardware::CapabilityAccessory) == false)
-		{
-			continue;
-		}
-		ret[hardware.first] = hardware.second->GetName();
-	}
-	return ret;
-}
-
-const std::map<ControlID,std::string> Manager::FeedbackControlListNames() const
-{
-	std::map<ControlID,std::string> ret;
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto& control : controls)
-	{
-		if (control.second->GetControlType() != ControlTypeHardware || control.second->CanHandle(Hardware::CapabilityFeedback) == false)
-		{
-			continue;
-		}
-		ret[control.first] = control.second->GetShortName();
-	}
-	return ret;
-}
-
-const std::map<ControlID,std::string> Manager::ProgramControlListNames() const
-{
-	std::map<ControlID,std::string> ret;
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto& control : controls)
-	{
-		if (control.second->GetControlType() != ControlTypeHardware)
-		{
-			continue;
-		}
-		if (control.second->CanHandle(Hardware::CapabilityProgram) == false)
-		{
-			continue;
-		}
-		ret[control.first] = control.second->GetShortName();
 	}
 	return ret;
 }
@@ -646,7 +591,7 @@ LocoConfig Manager::GetLocoOfConfigByMatchKey(const ControlID controlId, const s
 	ControlInterface* control = GetControl(controlId);
 	if (control == nullptr)
 	{
-		return LocoConfig();
+		return LocoConfig(LocoTypeLoco);
 	}
 	return control->GetLocoByMatchKey(matchKey);
 }
@@ -1066,11 +1011,106 @@ MultipleUnit* Manager::GetMultipleUnit(const MultipleUnitID multipleUnitId) cons
 	return multipleUnits.at(multipleUnitId);
 }
 
+LocoConfig Manager::GetMultipleUnitOfConfigByMatchKey(const ControlID controlId, const string& matchKey) const
+{
+	ControlInterface* control = GetControl(controlId);
+	if (control == nullptr)
+	{
+		return LocoConfig(LocoTypeMultipleUnit);
+	}
+	return control->GetMultipleUnitByMatchKey(matchKey);
+}
+
+const map<string,DataModel::LocoConfig> Manager::MultipleUnitConfigByName() const
+{
+	map<string,DataModel::LocoConfig> out;
+	{
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (auto& multipleUnit : multipleUnits)
+		{
+			out[multipleUnit.second->GetName()] = *(multipleUnit.second);
+		}
+	}
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto& control : controls)
+	{
+		control.second->AddUnmatchedMultipleUnits(out);
+	}
+
+	return out;
+}
+
+bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
+	const string& name,
+	const ControlID controlID,
+	const std::string& matchKey,
+	const Address address,
+	const Length length,
+	const bool pushpull,
+	const Speed maxSpeed,
+	const Speed travelSpeed,
+	const Speed reducedSpeed,
+	const Speed creepingSpeed,
+	const TrainType type,
+	const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
+	string& result)
+{
+	if (!CheckControlMultipleUnitProtocolAddress(controlID, address, result))
+	{
+		return false;
+	}
+
+	MultipleUnit* multipleUnit = GetMultipleUnit(multipleUnitID);
+	if (multipleUnit == nullptr)
+	{
+		multipleUnit = CreateAndAddObject(multipleUnits, multipleUnitMutex);
+	}
+
+	if (multipleUnit == nullptr)
+	{
+		result = Languages::GetText(Languages::TextUnableToAddMultipleUnit);
+		return false;
+	}
+
+	// if we have a new object we have to update multipleUnitID
+	multipleUnitID = multipleUnit->GetID();
+
+	// FIXME: replace "M" with language dependent word
+	// FIXME: check loco and multiple unit names
+	multipleUnit->SetName(CheckObjectName(multipleUnits, multipleUnitMutex, multipleUnitID, name.size() == 0 ? "M" : name));
+	multipleUnit->SetControlID(controlID);
+	multipleUnit->SetMatchKey(matchKey);
+	multipleUnit->SetProtocol(ProtocolNone);
+	multipleUnit->SetAddress(address);
+	multipleUnit->SetLength(length);
+	multipleUnit->SetPushpull(pushpull);
+	multipleUnit->SetMaxSpeed(maxSpeed);
+	multipleUnit->SetTravelSpeed(travelSpeed);
+	multipleUnit->SetReducedSpeed(reducedSpeed);
+	multipleUnit->SetCreepingSpeed(creepingSpeed);
+	multipleUnit->SetPropulsion(PropulsionUnknown); // FIXME: get propulsion as combination of slaves
+	multipleUnit->SetTrainType(type);
+	multipleUnit->ConfigureFunctions(locoFunctions);
+	// FIXME: save slaves
+
+	// save in db
+	if (storage)
+	{
+		storage->Save(*multipleUnit);
+	}
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto& control : controls)
+	{
+		control.second->MultipleUnitSettings(multipleUnitID, name, matchKey);
+	}
+	return true;
+}
+
 bool Manager::MultipleUnitDelete(const MultipleUnitID multipleUnitID, string& result)
 {
 	MultipleUnit* multipleUnit = nullptr;
 	{
-		std::lock_guard<std::mutex> guard(locoMutex);
+		std::lock_guard<std::mutex> guard(multipleUnitMutex);
 		if (multipleUnitID == MultipleUnitNone || locos.count(multipleUnitID) != 1)
 		{
 			result = Languages::GetText(Languages::TextMultipleUnitDoesNotExist);
@@ -1090,7 +1130,7 @@ bool Manager::MultipleUnitDelete(const MultipleUnitID multipleUnitID, string& re
 			return false;
 		}
 
-		locos.erase(multipleUnitID);
+		multipleUnits.erase(multipleUnitID);
 	}
 
 	if (storage)
@@ -3837,6 +3877,9 @@ bool Manager::CheckAddressLoco(const Protocol protocol, const Address address, s
 	switch (protocol)
 	{
 		case ProtocolDCC:
+		case ProtocolDCC14:
+		case ProtocolDCC28:
+		case ProtocolDCC128:
 			if (address > 10239)
 			{
 				result.assign(Languages::GetText(Languages::TextLocoAddressDccTooHigh));
@@ -3844,7 +3887,9 @@ bool Manager::CheckAddressLoco(const Protocol protocol, const Address address, s
 			}
 			return true;
 
+		case ProtocolMM:
 		case ProtocolMM1:
+		case ProtocolMM15:
 		case ProtocolMM2:
 			if (address > 80)
 			{
@@ -3885,6 +3930,18 @@ bool Manager::CheckAddressAccessory(const Protocol protocol, const Address addre
 
 bool Manager::CheckControlProtocolAddress(const AddressType type, const ControlID controlID, const Protocol protocol, const Address address, string& result)
 {
+	if (address == AddressNone)
+	{
+		result.assign(Logger::Logger::Format(Languages::GetText(Languages::TextAddressMustBeHigherThen0)));
+		return false;
+	}
+
+	if ((type == AddressTypeMultipleUnit) && (controlID == ControlNone))
+	{
+		// multiple units do not need physical control
+		return true;
+	}
+
 	{
 		std::lock_guard<std::mutex> guard(controlMutex);
 		if (controlID < ControlIdFirstHardware || controls.count(controlID) != 1)
@@ -3893,16 +3950,32 @@ bool Manager::CheckControlProtocolAddress(const AddressType type, const ControlI
 			return false;
 		}
 		ControlInterface* control = controls.at(controlID);
-		bool ret;
-		if (type == AddressTypeLoco)
+		if (!control)
 		{
-			ret = control->LocoProtocolSupported(protocol);
+			result.assign(Languages::GetText(Languages::TextControlDoesNotExist));
+			return false;
 		}
-		else
+		bool protocolSupported;
+		switch (type)
 		{
-			ret = control->AccessoryProtocolSupported(protocol);
+			case AddressTypeLoco:
+				protocolSupported = control->LocoProtocolSupported(protocol);
+				break;
+
+			case AddressTypeMultipleUnit:
+				protocolSupported = true;
+				break;
+
+			case AddressTypeAccessory:
+				protocolSupported = control->AccessoryProtocolSupported(protocol);
+				break;
+
+			default:
+				protocolSupported = false;
+				break;
 		}
-		if (!ret)
+
+		if (!protocolSupported)
 		{
 			string protocolText;
 			if (protocol <= ProtocolEnd)
@@ -3910,15 +3983,22 @@ bool Manager::CheckControlProtocolAddress(const AddressType type, const ControlI
 				protocolText = ProtocolSymbols[protocol] + " ";
 			}
 			std::vector<Protocol> protocols;
+			switch (type)
+			{
+				case AddressTypeLoco:
+					control->LocoProtocols(protocols);
+					break;
+
+				case AddressTypeAccessory:
+					control->AccessoryProtocols(protocols);
+					break;
+
+				case AddressTypeMultipleUnit:
+				default:
+					break;
+			}
+
 			string protocolsText;
-			if (type == AddressTypeLoco)
-			{
-				control->LocoProtocols(protocols);
-			}
-			else
-			{
-				control->AccessoryProtocols(protocols);
-			}
 			for (auto p : protocols)
 			{
 				if (protocolsText.size() > 0)
@@ -3930,16 +4010,15 @@ bool Manager::CheckControlProtocolAddress(const AddressType type, const ControlI
 			result.assign(Logger::Logger::Format(Languages::GetText(Languages::TextProtocolNotSupported), protocolText, protocolsText));
 			return false;
 		}
-	}
-	if (address == 0)
-	{
-		result.assign(Logger::Logger::Format(Languages::GetText(Languages::TextAddressMustBeHigherThen0)));
-		return false;
-	}
+	} // unlock controlMutex
+
 	switch (type)
 	{
 		case AddressTypeLoco:
 			return CheckAddressLoco(protocol, address, result);
+
+		case AddressTypeMultipleUnit:
+			return true;
 
 		case AddressTypeAccessory:
 			return CheckAddressAccessory(protocol, address, result);

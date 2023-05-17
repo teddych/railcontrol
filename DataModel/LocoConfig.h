@@ -23,6 +23,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 
 #include "DataModel/Loco.h"
+#include "DataModel/MultipleUnit.h"
 #include "Hardware/LocoCache.h"
 
 namespace DataModel
@@ -90,6 +91,20 @@ namespace DataModel
 				name = loco.GetName();
 				matchKey = loco.GetMatchKey();
 				ConfigureFunctions(loco.GetFunctionStates());
+				return *this;
+			}
+
+			inline LocoConfig& operator=(const DataModel::MultipleUnit& multipleUnit)
+			{
+				controlId = multipleUnit.GetControlID();
+				locoId = multipleUnit.GetID();
+				address = multipleUnit.GetAddress();
+				protocol = ProtocolNone;
+				type = LocoTypeMultipleUnit;
+				name = multipleUnit.GetName();
+				matchKey = multipleUnit.GetMatchKey();
+				isInUse = multipleUnit.IsInUse();
+				ConfigureFunctions(multipleUnit.GetFunctionStates());
 				return *this;
 			}
 

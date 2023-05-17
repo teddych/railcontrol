@@ -214,13 +214,13 @@ class ControlInterface
 		{
 		}
 
-		virtual void MultipleUnitDelete(__attribute__((unused)) const MultipleUnitID locoID,
+		virtual void MultipleUnitDelete(__attribute__((unused)) const MultipleUnitID multipleUnitID,
 			__attribute__((unused)) const std::string& name,
 			__attribute__((unused)) const std::string& matchKey)
 		{
 		}
 
-		virtual void MultipleUnitSettings(__attribute__((unused)) const MultipleUnitID locoID,
+		virtual void MultipleUnitSettings(__attribute__((unused)) const MultipleUnitID multipleUnitID,
 			__attribute__((unused)) const std::string& name,
 			__attribute__((unused)) const std::string& matchKey)
 		{
@@ -349,7 +349,7 @@ class ControlInterface
 
 		virtual DataModel::LocoConfig GetLocoByMatchKey(__attribute__((unused)) const std::string& matchKey) const
 		{
-			return DataModel::LocoConfig();
+			return DataModel::LocoConfig(LocoTypeLoco);
 		}
 
 		virtual void AddUnmatchedMultipleUnits(__attribute__((unused)) std::map<std::string,DataModel::LocoConfig>& list) const

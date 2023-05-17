@@ -209,7 +209,7 @@ namespace Storage
 		string serialized = multipleUnit.Serialize();
 		TransactionGuard guard(this);
 		const MultipleUnitID multipleUnitID = multipleUnit.GetID();
-		sqlite.SaveObject(ObjectTypeLoco, multipleUnitID, multipleUnit.GetName(), serialized);
+		sqlite.SaveObject(ObjectTypeMultipleUnit, multipleUnitID, multipleUnit.GetName(), serialized);
 		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeMultipleUnitSlave, multipleUnitID);
 		SaveRelations(multipleUnit.GetSlaves());
 	}

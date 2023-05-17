@@ -154,6 +154,7 @@ static const std::string ProtocolSymbols[] =
 enum AddressType : uint8_t
 {
 	AddressTypeLoco = 0,
+	AddressTypeMultipleUnit,
 	AddressTypeAccessory
 };
 

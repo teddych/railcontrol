@@ -73,11 +73,10 @@ class Manager
 
 		// control (console, web, ...)
 		const std::string GetControlName(const ControlID controlID);
+
 		const std::map<std::string,Hardware::HardwareParams*> ControlListByName() const;
-		const std::map<ControlID,std::string> LocoControlListNames() const;
-		const std::map<ControlID,std::string> AccessoryControlListNames() const;
-		const std::map<ControlID,std::string> FeedbackControlListNames() const;
-		const std::map<ControlID,std::string> ProgramControlListNames() const;
+
+		const std::map<ControlID,std::string> ControlListNames(const Hardware::Capabilities capability) const;
 
 		inline const std::map<std::string,Protocol> LocoProtocolsOfControl(const ControlID controlID) const
 		{
@@ -180,6 +179,30 @@ class Manager
 
 		// multiple unit
 		DataModel::MultipleUnit* GetMultipleUnit(const MultipleUnitID multipleUnitId) const;
+
+		DataModel::LocoConfig GetMultipleUnitOfConfigByMatchKey(const ControlID controlId,
+			const std::string& matchKey) const;
+
+		const std::map<std::string,DataModel::LocoConfig> MultipleUnitConfigByName() const;
+
+		bool MultipleUnitSave
+		(
+			MultipleUnitID multipleUnitID,
+			const std::string& name,
+			const ControlID controlID,
+			const std::string& matchKey,
+			const Address address,
+			const Length length,
+			const bool pushpull,
+			const Speed maxSpeed,
+			const Speed travelSpeed,
+			const Speed reducedSpeed,
+			const Speed creepingSpeed,
+			const TrainType type,
+			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
+			// FIXME: slaves
+			std::string& result
+		);
 
 		bool MultipleUnitDelete(const MultipleUnitID multipleUnitID,
 			std::string& result);
@@ -697,12 +720,25 @@ class Manager
 		bool CheckAddressLoco(const Protocol protocol, const Address address, std::string& result);
 		bool CheckAddressAccessory(const Protocol protocol, const Address address, std::string& result);
 
-		bool CheckControlLocoProtocolAddress(const ControlID controlID, const Protocol protocol, const Address address, std::string& result)
+		inline bool CheckControlLocoProtocolAddress(const ControlID controlID,
+			const Protocol protocol,
+			const Address address,
+			std::string& result)
 		{
 			return CheckControlProtocolAddress(AddressTypeLoco, controlID, protocol, address, result);
 		}
 
-		bool CheckControlAccessoryProtocolAddress(const ControlID controlID, const Protocol protocol, const Address address, std::string& result)
+		inline bool CheckControlMultipleUnitProtocolAddress(const ControlID controlID,
+			const Address address,
+			std::string& result)
+		{
+			return CheckControlProtocolAddress(AddressTypeMultipleUnit, controlID, ProtocolNone, address, result);
+		}
+
+		inline bool CheckControlAccessoryProtocolAddress(const ControlID controlID,
+			const Protocol protocol,
+			const Address address,
+			std::string& result)
 		{
 			return CheckControlProtocolAddress(AddressTypeAccessory, controlID, protocol, address, result);
 		}
