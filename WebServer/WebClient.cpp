@@ -1370,20 +1370,19 @@ namespace WebServer
 
 	map<string,ObjectID> WebClient::GetMultipleUnitSlaveOptions(const LocoID locoID) const
 	{
-		map<string, ObjectID> locoOptions;
+		map<string, ObjectID> options;
 
 		map<string, LocoConfig> allLocos = manager.LocoConfigByName();
 		for (auto& loco : allLocos)
 		{
-			// FIXME: check if already has a master
 			LocoID slaveID = loco.second.GetLocoId();
 			if (locoID == slaveID)
 			{
 				continue;
 			}
-			locoOptions[loco.first] = slaveID;
+			options[loco.first] = slaveID;
 		}
-		return locoOptions;
+		return options;
 	}
 
 	HtmlTag WebClient::HtmlTagSelectPropulsion(const Propulsion propulsion)
@@ -1770,7 +1769,7 @@ namespace WebServer
 
 		formContent.AddChildTag(HtmlTagTabFunctions(locoFunctions));
 
-// FIXME:		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetLocoSlaveOptions(locoId)));
+		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetMultipleUnitSlaveOptions(multipleUnitId)));
 
 		formContent.AddChildTag(HtmlTagTabAutomode(pushpull, maxSpeed, travelSpeed, reducedSpeed, creepingSpeed));
 
@@ -1916,6 +1915,16 @@ namespace WebServer
 			locoFunctions.push_back(locoFunctionEntry);
 		}
 
+		vector<Relation*> slaves;
+		vector<LocoID> slaveIds = WebClientStatic::InterpretSlaveData("slave", arguments);
+		for (auto slaveId : slaveIds)
+		{
+			slaves.push_back(new Relation(&manager,
+				ObjectIdentifier(ObjectTypeMultipleUnit, multipleUnitId),
+				ObjectIdentifier(ObjectTypeLoco, slaveId),
+				Relation::TypeMultipleUnitSlave));
+		}
+
 		string result;
 
 		if (!manager.MultipleUnitSave(multipleUnitId,
@@ -1931,6 +1940,7 @@ namespace WebServer
 			creepingSpeed,
 			type,
 			locoFunctions,
+			slaves,
 			result))
 		{
 			ReplyResponse(ResponseError, result);

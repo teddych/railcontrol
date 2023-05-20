@@ -200,7 +200,7 @@ class Manager
 			const Speed creepingSpeed,
 			const TrainType type,
 			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
-			// FIXME: slaves
+			const std::vector<DataModel::Relation*>& slaves,
 			std::string& result
 		);
 

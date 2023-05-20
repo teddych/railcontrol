@@ -1053,6 +1053,7 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 	const Speed creepingSpeed,
 	const TrainType type,
 	const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
+	const std::vector<DataModel::Relation*>& slaves,
 	string& result)
 {
 	if (!CheckControlMultipleUnitProtocolAddress(controlID, address, result))
@@ -1091,7 +1092,7 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 	multipleUnit->SetPropulsion(PropulsionUnknown); // FIXME: get propulsion as combination of slaves
 	multipleUnit->SetTrainType(type);
 	multipleUnit->ConfigureFunctions(locoFunctions);
-	// FIXME: save slaves
+	multipleUnit->AssignSlaves(slaves);
 
 	// save in db
 	if (storage)
