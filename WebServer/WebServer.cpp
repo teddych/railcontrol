@@ -195,18 +195,18 @@ namespace WebServer
 		const LocoBase* loco,
 		const Speed speed)
 	{
-		stringstream command;
-		command << "locospeed;loco=" << loco->GetID() << ";speed=" << speed;
-		AddUpdate(command.str(), Languages::TextLocoSpeedIs, loco->GetName(), speed);
+		const LocoID locoId = loco->GetLocoIdWithPrefix();
+		string command = "locospeed;loco=" + to_string(locoId) + ";speed=" + to_string(speed);
+		AddUpdate(command, Languages::TextLocoSpeedIs, loco->GetName(), speed);
 	}
 
 	void WebServer::LocoBaseOrientation(__attribute__((unused)) const ControlType controlType,
 		const LocoBase* loco,
 		const Orientation orientation)
 	{
-		stringstream command;
-		command << "locoorientation;loco=" << loco->GetID() << ";orientation=" << (orientation ? "true" : "false");
-		AddUpdate(command.str(), orientation ? Languages::TextLocoDirectionOfTravelIsRight : Languages::TextLocoDirectionOfTravelIsLeft, loco->GetName());
+		const LocoID locoId = loco->GetLocoIdWithPrefix();
+		string command = "locoorientation;loco=" + to_string(locoId) + ";orientation=" + (orientation ? "true" : "false");
+		AddUpdate(command, orientation ? Languages::TextLocoDirectionOfTravelIsRight : Languages::TextLocoDirectionOfTravelIsLeft, loco->GetName());
 	}
 
 	void WebServer::LocoBaseFunction(__attribute__((unused)) const ControlType controlType,

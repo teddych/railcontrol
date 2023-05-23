@@ -228,8 +228,8 @@ namespace WebServer
 			void HandleControlList();
 			void HandleControlAskDelete(const std::map<std::string, std::string>& arguments);
 			void HandleControlDelete(const std::map<std::string, std::string>& arguments);
-			void HandleLocoSpeed(const std::map<std::string,std::string>& arguments);
-			void HandleLocoOrientation(const std::map<std::string,std::string>& arguments);
+			void HandleLocoBaseSpeed(const std::map<std::string,std::string>& arguments);
+			void HandleLocoBaseOrientation(const std::map<std::string,std::string>& arguments);
 			void HandleLocoFunction(const std::map<std::string, std::string>& arguments);
 			void HandleLocoEdit(const std::map<std::string, std::string>& arguments);
 			void HandleLocoSave(const std::map<std::string, std::string>& arguments);
@@ -243,16 +243,6 @@ namespace WebServer
 			void HandleMultipleUnitList();
 			void HandleMultipleUnitAskDelete(const std::map<std::string, std::string>& arguments);
 			void HandleMultipleUnitDelete(const std::map<std::string, std::string>& arguments);
-
-			static HtmlTag HtmlTagSelectPropulsion(const Propulsion propulsion);
-			static HtmlTag HtmlTagSelectTrainType(const TrainType trainType);
-			static HtmlTag HtmlTagTabFunctions(const DataModel::LocoFunctionEntry* locoFunctions);
-			static HtmlTag HtmlTagTabAutomode(const bool pushpull,
-				const Speed maxSpeed,
-				const Speed travelSpeed,
-				const Speed reducedSpeed,
-				const Speed creepingSpeed);
-
 			void HandleProtocol(const std::map<std::string, std::string>& arguments);
 			void HandleLayout(const std::map<std::string,std::string>& arguments);
 			void HandleAccessoryEdit(const std::map<std::string,std::string>& arguments);

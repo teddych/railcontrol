@@ -73,7 +73,7 @@ namespace DataModel
 		LocoBase::SetSpeed(speed);
 		for (auto slave : slaves)
 		{
-			manager->LocoSpeed(ControlTypeInternal, slave->ObjectID2(), speed);
+			manager->LocoBaseSpeed(ControlTypeInternal, slave->ObjectID2(), speed);
 		}
 	}
 
@@ -92,7 +92,7 @@ namespace DataModel
 		LocoBase::SetOrientation(orientation);
 		for (auto slave : slaves)
 		{
-			manager->LocoOrientation(ControlTypeInternal, slave->ObjectID2(), orientation);
+			manager->LocoBaseOrientation(ControlTypeInternal, slave->ObjectID2(), orientation);
 		}
 	}
 

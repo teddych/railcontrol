@@ -294,6 +294,11 @@ namespace DataModel
 
 			DataModel::LocoFunctionNr GetFunctionNumberFromFunctionIcon(DataModel::LocoFunctionIcon icon) const;
 
+			inline LocoID GetLocoIdWithPrefix() const
+			{
+				return GetID() + (GetObjectType() == ObjectTypeMultipleUnit ? MultipleUnitIdPrefix : 0);
+			}
+
 			LocoBase& operator=(const Hardware::LocoCacheEntry& loco);
 
 		protected:

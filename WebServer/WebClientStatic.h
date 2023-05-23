@@ -98,6 +98,15 @@ namespace WebServer
 				const Languages::TextSelector buttonValue,
 				const bool selected = false,
 				const bool hidden = false);
+
+			static HtmlTag HtmlTagSelectPropulsion(const Propulsion propulsion);
+			static HtmlTag HtmlTagSelectTrainType(const TrainType trainType);
+			static HtmlTag HtmlTagTabFunctions(const DataModel::LocoFunctionEntry* locoFunctions);
+			static HtmlTag HtmlTagTabAutomode(const bool pushpull,
+				const Speed maxSpeed,
+				const Speed travelSpeed,
+				const Speed reducedSpeed,
+				const Speed creepingSpeed);
 	};
 
 } // namespace WebServer

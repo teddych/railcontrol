@@ -753,7 +753,7 @@ bool Manager::LocoSave(LocoID locoID,
 	// if we have a new object we have to update locoID
 	locoID = loco->GetID();
 
-	loco->SetName(CheckObjectName(locos, locoMutex, locoID, name.size() == 0 ? "L" : name));
+	loco->SetName(CheckObjectName(multipleUnits, multipleUnitMutex, MultipleUnitNone, CheckObjectName(locos, locoMutex, locoID, name.size() == 0 ? "L" : name)));
 	loco->SetControlID(controlID);
 	loco->SetMatchKey(matchKey);
 	loco->SetProtocol(protocol);
@@ -844,21 +844,7 @@ bool Manager::LocoProtocolAddress(const LocoID locoID, ControlID& controlID, Pro
 	return true;
 }
 
-void Manager::LocoSpeed(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Speed speed)
-{
-	Loco* loco = GetLoco(controlID, protocol, address);
-	// nullptr check is done within submethod
-	LocoSpeed(controlType, loco, speed);
-}
-
-bool Manager::LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed)
-{
-	Loco* loco = GetLoco(locoID);
-	// nullptr check is done within submethod
-	return LocoSpeed(controlType, loco, speed);
-}
-
-bool Manager::LocoSpeed(const ControlType controlType,
+bool Manager::LocoBaseSpeed(const ControlType controlType,
 	LocoBase* loco,
 	const Speed speed)
 {
@@ -897,27 +883,7 @@ Speed Manager::LocoSpeed(const LocoID locoID) const
 	return loco->GetSpeed();
 }
 
-void Manager::LocoOrientation(const ControlType controlType,
-	const ControlID controlID, const Protocol protocol,
-	const Address address, const Orientation orientation)
-{
-	Loco* loco = GetLoco(controlID, protocol, address);
-	if (loco == nullptr)
-	{
-		return;
-	}
-	LocoOrientation(controlType, loco, orientation);
-}
-
-void Manager::LocoOrientation(const ControlType controlType,
-	const LocoID locoID,
-	const Orientation orientation)
-{
-	Loco* loco = GetLoco(locoID);
-	LocoOrientation(controlType, loco, orientation);
-}
-
-void Manager::LocoOrientation(const ControlType controlType,
+void Manager::LocoBaseOrientation(const ControlType controlType,
 	LocoBase* loco,
 	const Orientation orientation)
 {
@@ -1077,8 +1043,7 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 	multipleUnitID = multipleUnit->GetID();
 
 	// FIXME: replace "M" with language dependent word
-	// FIXME: check loco and multiple unit names
-	multipleUnit->SetName(CheckObjectName(multipleUnits, multipleUnitMutex, multipleUnitID, name.size() == 0 ? "M" : name));
+	multipleUnit->SetName(CheckObjectName(locos, locoMutex, LocoNone, CheckObjectName(multipleUnits, multipleUnitMutex, multipleUnitID, name.size() == 0 ? "M" : name)));
 	multipleUnit->SetControlID(controlID);
 	multipleUnit->SetMatchKey(matchKey);
 	multipleUnit->SetProtocol(ProtocolNone);
@@ -1147,6 +1112,30 @@ bool Manager::MultipleUnitDelete(const MultipleUnitID multipleUnitID, string& re
 	}
 	delete multipleUnit;
 	return true;
+}
+
+const map<string,LocoID> Manager::LocoBaseIdsByName() const
+{
+	map<string,LocoID> out = LocoIdsByName();
+	{
+		std::lock_guard<std::mutex> guard(multipleUnitMutex);
+		for (auto& multipleUnit : multipleUnits)
+		{
+			MultipleUnit* multipleUnitEntry = multipleUnit.second;
+			out[multipleUnitEntry->GetName()] = multipleUnitEntry->GetID() + MultipleUnitIdPrefix;
+		}
+	}
+	return out;
+}
+
+const std::string& Manager::GetLocoBaseName(const LocoID locoID) const
+{
+	const LocoBase* locoBase = GetLocoBase(locoID);
+	if (!locoBase)
+	{
+		return unknownLoco;
+	}
+	return locoBase->GetName();
 }
 
 /***************************
@@ -3494,7 +3483,7 @@ bool Manager::LocoRelease(const LocoID locoID)
 
 bool Manager::LocoReleaseInternal(Loco* loco)
 {
-	LocoSpeed(ControlTypeInternal, loco, MinSpeed);
+	LocoBaseSpeed(ControlTypeInternal, loco, MinSpeed);
 
 	bool ret = loco->Release();
 	if (ret == false)
@@ -3711,7 +3700,7 @@ void Manager::StopAllLocosImmediately(const ControlType controlType)
 	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto& loco : locos)
 	{
-		LocoSpeed(controlType, loco.second, MinSpeed);
+		LocoBaseSpeed(controlType, loco.second, MinSpeed);
 	}
 }
 

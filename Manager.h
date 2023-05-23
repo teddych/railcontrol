@@ -142,26 +142,50 @@ class Manager
 		}
 
 		bool LocoProtocolAddress(const LocoID locoID, ControlID& controlID, Protocol& protocol, Address& address) const;
-		void LocoSpeed(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const Speed speed);
-		bool LocoSpeed(const ControlType controlType, const LocoID locoID, const Speed speed);
 
-		bool LocoSpeed(const ControlType controlType,
+		inline void LocoSpeed(const ControlType controlType,
+			const ControlID controlID,
+			const Protocol protocol,
+			const Address address,
+			const Speed speed)
+		{
+			// nullptr check is done within submethod
+			LocoBaseSpeed(controlType, GetLoco(controlID, protocol, address), speed);
+		}
+
+		inline bool LocoBaseSpeed(const ControlType controlType,
+			const LocoID locoID,
+			const Speed speed)
+		{
+			// nullptr check is done within submethod
+			return LocoBaseSpeed(controlType, GetLocoBase(locoID), speed);
+		}
+
+		bool LocoBaseSpeed(const ControlType controlType,
 			DataModel::LocoBase* loco,
 			const Speed speed);
 
 		Speed LocoSpeed(const LocoID locoID) const;
 
-		void LocoOrientation(const ControlType controlType,
+		inline void LocoOrientation(const ControlType controlType,
 			const ControlID controlID,
 			const Protocol protocol,
 			const Address address,
-			const Orientation orientation);
+			const Orientation orientation)
+		{
+			// nullptr check is done within submethod
+			LocoBaseOrientation(controlType, GetLoco(controlID, protocol, address), orientation);
+		}
 
-		void LocoOrientation(const ControlType controlType,
+		inline void LocoBaseOrientation(const ControlType controlType,
 			const LocoID locoID,
-			const Orientation orientation);
+			const Orientation orientation)
+		{
+			// nullptr check is done within submethod
+			LocoBaseOrientation(controlType, GetLocoBase(locoID), orientation);
+		}
 
-		void LocoOrientation(const ControlType controlType,
+		void LocoBaseOrientation(const ControlType controlType,
 			DataModel::LocoBase* loco,
 			const Orientation orientation);
 
@@ -212,6 +236,17 @@ class Manager
 			std::string result;
 			return MultipleUnitDelete(multipleUnitId, result);
 		}
+
+		// locobase
+		inline DataModel::LocoBase* GetLocoBase(const LocoID locoId) const
+		{
+			MultipleUnitID multipleUnitId = locoId & (~MultipleUnitIdPrefix);
+			return locoId == multipleUnitId ? static_cast<DataModel::LocoBase*>(GetLoco(locoId)) : static_cast<DataModel::LocoBase*>(GetMultipleUnit(multipleUnitId));
+		}
+
+		const std::map<std::string,LocoID> LocoBaseIdsByName() const;
+
+		const std::string& GetLocoBaseName(const LocoID locoID) const;
 
 		// accessory
 		void AccessoryState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryState state);
