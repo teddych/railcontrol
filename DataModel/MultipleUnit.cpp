@@ -83,7 +83,7 @@ namespace DataModel
 		LocoBase::SetFunctionState(nr, state);
 		for (auto slave : slaves)
 		{
-			manager->LocoFunctionState(ControlTypeInternal, slave->ObjectID2(), nr, state);
+			manager->LocoBaseFunctionState(ControlTypeInternal, slave->ObjectID2(), nr, state);
 		}
 	}
 

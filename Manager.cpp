@@ -905,27 +905,12 @@ void Manager::LocoBaseOrientation(const ControlType controlType,
 	}
 }
 
-void Manager::LocoFunctionState(const ControlType controlType,
-	const ControlID controlID,
-	const Protocol protocol,
-	const Address address,
-	const DataModel::LocoFunctionNr function,
-	const DataModel::LocoFunctionState on)
-{
-	Loco* loco = GetLoco(controlID, protocol, address);
-	if (loco == nullptr)
-	{
-		return;
-	}
-	LocoFunctionState(controlType, loco, function, on);
-}
-
-void Manager::LocoFunctionState(const ControlType controlType,
+void Manager::LocoBaseFunctionState(const ControlType controlType,
 	const LocoID locoID,
 	const DataModel::LocoFunctionNr function,
 	const DataModel::LocoFunctionState on)
 {
-	Loco* loco = GetLoco(locoID);
+	LocoBase* loco = GetLocoBase(locoID);
 	if (loco == nullptr)
 	{
 		return;
@@ -936,11 +921,11 @@ void Manager::LocoFunctionState(const ControlType controlType,
 	{
 		functionInternal = loco->GetFunctionNumberFromFunctionIcon(static_cast<DataModel::LocoFunctionIcon>(function - 256));
 	}
-	LocoFunctionState(controlType, loco, functionInternal, on);
+	LocoBaseFunctionState(controlType, loco, functionInternal, on);
 }
 
-void Manager::LocoFunctionState(const ControlType controlType,
-	Loco* loco,
+void Manager::LocoBaseFunctionState(const ControlType controlType,
+	LocoBase* loco,
 	const DataModel::LocoFunctionNr function,
 	const DataModel::LocoFunctionState on)
 {

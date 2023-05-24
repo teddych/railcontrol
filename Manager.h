@@ -149,7 +149,7 @@ class Manager
 			const Address address,
 			const Speed speed)
 		{
-			// nullptr check is done within submethod
+			// nullptr check of loco is done within submethod
 			LocoBaseSpeed(controlType, GetLoco(controlID, protocol, address), speed);
 		}
 
@@ -157,7 +157,7 @@ class Manager
 			const LocoID locoID,
 			const Speed speed)
 		{
-			// nullptr check is done within submethod
+			// nullptr check of loco is done within submethod
 			return LocoBaseSpeed(controlType, GetLocoBase(locoID), speed);
 		}
 
@@ -173,7 +173,7 @@ class Manager
 			const Address address,
 			const Orientation orientation)
 		{
-			// nullptr check is done within submethod
+			// nullptr check of loco is done within submethod
 			LocoBaseOrientation(controlType, GetLoco(controlID, protocol, address), orientation);
 		}
 
@@ -181,7 +181,7 @@ class Manager
 			const LocoID locoID,
 			const Orientation orientation)
 		{
-			// nullptr check is done within submethod
+			// nullptr check of loco is done within submethod
 			LocoBaseOrientation(controlType, GetLocoBase(locoID), orientation);
 		}
 
@@ -194,10 +194,19 @@ class Manager
 			const Protocol protocol,
 			const Address address,
 			const DataModel::LocoFunctionNr function,
+			const DataModel::LocoFunctionState on)
+		{
+			// nullptr check of loco is done within submethod
+			LocoBaseFunctionState(controlType, GetLoco(controlID, protocol, address), function, on);
+		}
+
+		void LocoBaseFunctionState(const ControlType controlType,
+			const LocoID locoID,
+			const DataModel::LocoFunctionNr function,
 			const DataModel::LocoFunctionState on);
 
-		void LocoFunctionState(const ControlType controlType,
-			const LocoID locoID,
+		void LocoBaseFunctionState(const ControlType controlType,
+			DataModel::LocoBase* loco,
 			const DataModel::LocoFunctionNr function,
 			const DataModel::LocoFunctionState on);
 
@@ -648,11 +657,6 @@ class Manager
 		DataModel::Switch* GetSwitch(const ControlID controlID, const Protocol protocol, const Address address) const;
 		DataModel::Feedback* GetFeedback(const ControlID controlID, const FeedbackPin pin) const;
 		DataModel::Signal* GetSignal(const ControlID controlID, const Protocol protocol, const Address address) const;
-
-		void LocoFunctionState(const ControlType controlType,
-			DataModel::Loco* loco,
-			const DataModel::LocoFunctionNr function,
-			const DataModel::LocoFunctionState on);
 
 		void AccessoryState(const ControlType controlType, DataModel::Accessory* accessory, const DataModel::AccessoryState state, const bool force);
 		void SwitchState(const ControlType controlType, DataModel::Switch* mySwitch, const DataModel::AccessoryState state, const bool force);

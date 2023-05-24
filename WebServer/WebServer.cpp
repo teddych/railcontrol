@@ -214,9 +214,9 @@ namespace WebServer
 		const LocoFunctionNr function,
 		const LocoFunctionState state)
 	{
-		stringstream command;
-		command << "locofunction;loco=" << loco->GetID() << ";function=" << static_cast<unsigned int>(function) << ";on=" << (state ? "true" : "false");
-		AddUpdate(command.str(), state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
+		const LocoID locoId = loco->GetLocoIdWithPrefix();
+		string command = "locofunction;loco=" + to_string(locoId) + ";function=" + to_string(function) + ";on=" + (state ? "true" : "false");
+		AddUpdate(command, state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, loco->GetName(), function);
 	}
 
 	void WebServer::AccessoryState(__attribute__((unused)) const ControlType controlType, const DataModel::Accessory* accessory)

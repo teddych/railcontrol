@@ -247,7 +247,7 @@ namespace WebServer
 			}
 			else if (arguments["cmd"].compare("locoedit") == 0)
 			{
-				HandleLocoEdit(arguments);
+				HandleMultipleUnitEdit(arguments);
 			}
 			else if (arguments["cmd"].compare("locosave") == 0)
 			{
@@ -1121,7 +1121,7 @@ namespace WebServer
 		DataModel::LocoFunctionNr function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
 		DataModel::LocoFunctionState state = static_cast<DataModel::LocoFunctionState>(Utils::Utils::GetBoolMapEntry(arguments, "on"));
 
-		manager.LocoFunctionState(ControlTypeWebserver, locoID, function, state);
+		manager.LocoBaseFunctionState(ControlTypeWebserver, locoID, function, state);
 
 		ReplyHtmlWithHeaderAndParagraph(state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, manager.GetLocoName(locoID), function);
 	}
@@ -3312,8 +3312,21 @@ namespace WebServer
 		container.AddChildTag(HtmlTagButtonCommand("IV", id + "_4", buttonArguments));
 		buttonArguments.erase("speed");
 
-		id = "locoedit_" + to_string(locoID);
+		if (locoID > MultipleUnitIdPrefix)
+		{
+			const MultipleUnitID multipleUnitId = locoID & (~MultipleUnitIdPrefix);
+			id = "multipleunitedit_" + to_string(multipleUnitId);
+			buttonArguments["multipleunit"] = to_string(multipleUnitId);
+		}
+		else
+		{
+			id = "locoedit_" + to_string(locoID);
+		}
 		container.AddChildTag(HtmlTagButtonPopup("<svg width=\"36\" height=\"36\"><circle r=\"7\" cx=\"14\" cy=\"14\" fill=\"black\" /><line x1=\"14\" y1=\"5\" x2=\"14\" y2=\"23\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"9.5\" y1=\"6.2\" x2=\"18.5\" y2=\"21.8\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"6.2\" y1=\"9.5\" x2=\"21.8\" y2=\"18.5\" stroke-width=\"2\" stroke=\"black\" /><line y1=\"14\" x1=\"5\" y2=\"14\" x2=\"23\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"9.5\" y1=\"21.8\" x2=\"18.5\" y2=\"6.2\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"6.2\" y1=\"18.5\" x2=\"21.8\" y2=\"9.5\" stroke-width=\"2\" stroke=\"black\" /><circle r=\"5\" cx=\"14\" cy=\"14\" fill=\"lightgray\" /><circle r=\"4\" cx=\"24\" cy=\"24\" fill=\"black\" /><line x1=\"18\" y1=\"24\" x2=\"30\" y2=\"24\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"28.2\" y1=\"28.2\" x2=\"19.8\" y2=\"19.8\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"24\" y1=\"18\" x2=\"24\" y2=\"30\" stroke-width=\"2\" stroke=\"black\" /><line x1=\"19.8\" y1=\"28.2\" x2=\"28.2\" y2=\"19.8\" stroke-width=\"2\" stroke=\"black\" /><circle r=\"2\" cx=\"24\" cy=\"24\" fill=\"lightgray\" /></svg>", id, buttonArguments));
+		if (locoID > MultipleUnitIdPrefix)
+		{
+			buttonArguments.erase("multipleunit");
+		}
 
 		id = "locoorientation_" + to_string(locoID);
 		container.AddChildTag(HtmlTagButtonCommandToggle("<svg width=\"36\" height=\"36\">"
