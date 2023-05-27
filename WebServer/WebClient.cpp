@@ -3098,12 +3098,32 @@ namespace WebServer
 
 	void WebClient::HandleProgram()
 	{
-		unsigned int controlCountMm = 0;
-		unsigned int controlCountDcc = 0;
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextProgrammer));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("raw", Languages::TextDirect, true));
+		std::map<ControlID,string> controls = manager.ControlListNames(Hardware::CapabilityProgram);
+		if (controls.size() == 0)
+		{
+			ReplyHtmlWithHeader(HtmlTag("p").AddContent(Languages::TextNoControlSupportsProgramming));
+			return;
+		}
+		/* FIXME: Tab MM and Tab DCC incomplete
+		unsigned int controlCountMm = 0;
+		unsigned int controlCountDcc = 0;
+		for (auto control : controls)
+		{
+			Hardware::Capabilities capabilities = manager.GetCapabilities(control.first);
+			if (capabilities & Hardware::CapabilityProgramMmWrite)
+			{
+				++controlCountMm;
+			}
+			if (capabilities & (Hardware::CapabilityProgramDccDirectRead | Hardware::CapabilityProgramDccDirectWrite))
+			{
+				++controlCountDcc;
+			}
+		}
+
 		if (controlCountMm > 0)
 		{
 			tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("mm", Languages::TextMaerklinMotorola));
@@ -3112,6 +3132,7 @@ namespace WebServer
 		{
 			tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("dcc", Languages::TextDcc));
 		}
+		*/
 		content.AddChildTag(tabMenu);
 
 		HtmlTag programContent("div");
@@ -3121,16 +3142,10 @@ namespace WebServer
 		rawContent.AddId("tab_raw");
 		rawContent.AddClass("tab_content");
 		rawContent.AddClass("narrow_label");
-		std::map<ControlID,string> controls = manager.ControlListNames(Hardware::CapabilityProgram);
-		if (controls.size() == 0)
-		{
-			ReplyHtmlWithHeader(HtmlTag("p").AddContent(Languages::TextNoControlSupportsProgramming));
-			return;
-		}
 		HtmlTag controlSelector = WebClientStatic::HtmlTagControl("controlraw", controls);
 		rawContent.AddChildTag(controlSelector);
 
-		ControlID controlIdFirst = controls.begin()->first;
+		const ControlID controlIdFirst = controls.begin()->first;
 		HtmlTag programModeSelector("div");
 		programModeSelector.AddId("program_mode_selector");
 		ProgramMode programMode = ProgramModeNone;
@@ -3139,19 +3154,23 @@ namespace WebServer
 		rawContent.AddChildTag(HtmlTagCvFields(controlIdFirst, programMode));
 		programContent.AddChildTag(rawContent);
 
+		/* FIXME: Tab MM incomplete
 		HtmlTag mmContent("div");
 		mmContent.AddId("tab_mm");
 		mmContent.AddClass("tab_content");
 		mmContent.AddClass("hidden");
 		mmContent.AddContent("MM");
 		programContent.AddChildTag(mmContent);
+		*/
 
+		/* FIXME: Tab DCC incomplete
 		HtmlTag dccContent("div");
 		dccContent.AddId("tab_dcc");
 		dccContent.AddClass("tab_content");
 		dccContent.AddClass("hidden");
 		dccContent.AddContent("DCC");
 		programContent.AddChildTag(dccContent);
+		*/
 
 		content.AddChildTag(programContent);
 		content.AddChildTag(HtmlTagButtonCancel());
