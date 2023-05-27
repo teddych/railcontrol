@@ -20,3 +20,7 @@
 - In Fahrstrassen: Lokfunktion ein/aus kombiniert mit Zeit
 - In Fahrstrassen: Aktionen sortieren
 - Ausleuchtung von Gleisen aufgrund von Nachbargleis
+- Autokonversion der Protokolle bei Zentralenwechsel
+- Z21-Server
+- CS2-Server
+- Weichen in Fahrstrassen immer schalten / nur in falscher Lage schalten
