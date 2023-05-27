@@ -55,6 +55,7 @@ Manager::Manager(Config& config)
 	defaultAccessoryDuration(DataModel::DefaultAccessoryPulseDuration),
 	autoAddFeedback(false),
 	stopOnFeedbackInFreeTrack(true),
+	executeAccessoryAlways(true),
 	selectRouteApproach(DataModel::SelectRouteRandom),
 	nrOfTracksToReserve(DataModel::Loco::ReserveOne),
 	run(false),
@@ -1177,10 +1178,13 @@ void Manager::AccessoryState(const ControlType controlType, Accessory* accessory
 		return;
 	}
 
-	const DataModel::AccessoryState oldState = accessory->GetAccessoryState();
-	if (oldState == state)
+	if (!GetExecuteAccessoryAlways())
 	{
-		return;
+		const DataModel::AccessoryState oldState = accessory->GetAccessoryState();
+		if (oldState == state)
+		{
+			return;
+		}
 	}
 	accessory->SetAccessoryState(state);
 
@@ -2072,10 +2076,13 @@ void Manager::SwitchState(const ControlType controlType, Switch* mySwitch, const
 		return;
 	}
 
-	const DataModel::AccessoryState oldState = mySwitch->GetAccessoryState();
-	if (oldState == state)
+	if (!GetExecuteAccessoryAlways())
 	{
-		return;
+		const DataModel::AccessoryState oldState = mySwitch->GetAccessoryState();
+		if (oldState == state)
+		{
+			return;
+		}
 	}
 	mySwitch->SetAccessoryState(state);
 
@@ -4007,6 +4014,7 @@ bool Manager::SaveSettings(const Languages::Language language,
 	const DataModel::AccessoryPulseDuration duration,
 	const bool autoAddFeedback,
 	const bool stopOnFeedbackInFreeTrack,
+	const bool executeAccessoryAlways,
 	const DataModel::SelectRouteApproach selectRouteApproach,
 	const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve,
 	const Logger::Logger::Level logLevel
@@ -4016,6 +4024,7 @@ bool Manager::SaveSettings(const Languages::Language language,
 	this->defaultAccessoryDuration = duration;
 	this->autoAddFeedback = autoAddFeedback;
 	this->stopOnFeedbackInFreeTrack = stopOnFeedbackInFreeTrack;
+	this->executeAccessoryAlways = executeAccessoryAlways;
 	this->selectRouteApproach = selectRouteApproach;
 	this->nrOfTracksToReserve = nrOfTracksToReserve;
 	Logger::Logger::SetLogLevel(logLevel);

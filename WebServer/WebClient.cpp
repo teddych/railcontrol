@@ -2842,6 +2842,7 @@ namespace WebServer
 		const DataModel::AccessoryPulseDuration defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
 		const bool stopOnFeedbackInFreeTrack = manager.GetStopOnFeedbackInFreeTrack();
+		const bool executeAccessoryAlways = manager.GetExecuteAccessoryAlways();
 		const DataModel::SelectRouteApproach selectRouteApproach = manager.GetSelectRouteApproach();
 		const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
 
@@ -2855,6 +2856,7 @@ namespace WebServer
 		formContent.AddChildTag(WebClientStatic::HtmlTagDuration(defaultAccessoryDuration, Languages::TextDefaultSwitchingDuration));
 		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", Languages::TextAutomaticallyAddUnknownFeedbacks, "autoaddfeedback", autoAddFeedback));
 		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("stoponfeedbackinfreetrack", Languages::TextStopOnFeedbackInFreeTrack, "stoponfeedbackinfreetrack", stopOnFeedbackInFreeTrack));
+		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("executeaccessoryalways", Languages::TextExecuteAccessoryAlways, "executeaccessoryalways", executeAccessoryAlways));
 		formContent.AddChildTag(WebClientStatic::HtmlTagSelectSelectRouteApproach(selectRouteApproach, false));
 		formContent.AddChildTag(WebClientStatic::HtmlTagNrOfTracksToReserve(nrOfTracksToReserve));
 		formContent.AddChildTag(WebClientStatic::HtmlTagLogLevel());
@@ -2871,10 +2873,18 @@ namespace WebServer
 		const DataModel::AccessoryPulseDuration defaultAccessoryDuration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		const bool autoAddFeedback = Utils::Utils::GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
 		const bool stopOnFeedbackInFreeTrack = Utils::Utils::GetBoolMapEntry(arguments, "stoponfeedbackinfreetrack", manager.GetStopOnFeedbackInFreeTrack());
+		const bool executeAccessoryAlways = Utils::Utils::GetBoolMapEntry(arguments, "executeaccessoryalways", manager.GetExecuteAccessoryAlways());
 		const DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteRandom));
 		const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
 		const Logger::Logger::Level logLevel = static_cast<Logger::Logger::Level>(Utils::Utils::GetIntegerMapEntry(arguments, "loglevel", Logger::Logger::LevelInfo));
-		manager.SaveSettings(language, defaultAccessoryDuration, autoAddFeedback, stopOnFeedbackInFreeTrack, selectRouteApproach, nrOfTracksToReserve, logLevel);
+		manager.SaveSettings(language,
+			defaultAccessoryDuration,
+			autoAddFeedback,
+			stopOnFeedbackInFreeTrack,
+			executeAccessoryAlways,
+			selectRouteApproach,
+			nrOfTracksToReserve,
+			logLevel);
 		ReplyResponse(ResponseInfo, Languages::TextSettingsSaved);
 	}
 

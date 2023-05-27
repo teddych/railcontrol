@@ -604,6 +604,11 @@ class Manager
 			return stopOnFeedbackInFreeTrack;
 		}
 
+		inline bool GetExecuteAccessoryAlways() const
+		{
+			return executeAccessoryAlways;
+		}
+
 		inline DataModel::SelectRouteApproach GetSelectRouteApproach() const
 		{
 			return selectRouteApproach;
@@ -618,10 +623,11 @@ class Manager
 			const DataModel::AccessoryPulseDuration duration,
 			const bool autoAddFeedback,
 			const bool stopOnFeedbackInFreeTrack,
+			const bool executeAccessoryAlways,
 			const DataModel::SelectRouteApproach selectRouteApproach,
 			const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve,
 			const Logger::Logger::Level logLevel
-			);
+		);
 
 		ControlID GetPossibleControlForLoco() const;
 		ControlID GetPossibleControlForAccessory() const;
@@ -960,6 +966,7 @@ class Manager
 		DataModel::AccessoryPulseDuration defaultAccessoryDuration;
 		bool autoAddFeedback;
 		bool stopOnFeedbackInFreeTrack;
+		bool executeAccessoryAlways;
 		DataModel::SelectRouteApproach selectRouteApproach;
 		DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve;
 

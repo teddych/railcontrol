@@ -184,6 +184,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextEditTracks */ { "Edit tracks", "Gleise bearbeiten", "Editar vías" },
 /* TextEnglish */ { "English", "Englisch", "Ingles" },
 /* TextError */ { "error", "Fehler", "error" },
+/* TextExecuteAccessoryAlways */ { "Execute accessories always", "Schalte Zubehörartikel immer", "Simepre cambia los accesorios" },
 /* TextExecutingRoute */ { "Executing route {0}", "Führe Fahrstrasse {0} aus", "Ejecutando itinerario {0}" },
 /* TextExitRailControl */ { "Exit RailControl", "RailControl beenden", "Apagar RailControl" },
 /* TextFeedback */ { "feedback", "Rückmelder", "retroseñal" },

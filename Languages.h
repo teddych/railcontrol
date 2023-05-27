@@ -184,6 +184,7 @@ class Languages
 			TextEditTracks,
 			TextEnglish,
 			TextError,
+			TextExecuteAccessoryAlways,
 			TextExecutingRoute,
 			TextExitRailControl,
 			TextFeedback,
