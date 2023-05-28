@@ -604,9 +604,9 @@ class Manager
 			return stopOnFeedbackInFreeTrack;
 		}
 
-		inline bool GetExecuteAccessoryAlways() const
+		inline bool GetExecuteAccessory() const
 		{
-			return executeAccessoryAlways;
+			return executeAccessory;
 		}
 
 		inline DataModel::SelectRouteApproach GetSelectRouteApproach() const
@@ -619,7 +619,7 @@ class Manager
 			return nrOfTracksToReserve;
 		}
 
-		bool SaveSettings(const Languages::Language language,
+		bool SettingsSave(const Languages::Language language,
 			const DataModel::AccessoryPulseDuration duration,
 			const bool autoAddFeedback,
 			const bool stopOnFeedbackInFreeTrack,
@@ -966,7 +966,7 @@ class Manager
 		DataModel::AccessoryPulseDuration defaultAccessoryDuration;
 		bool autoAddFeedback;
 		bool stopOnFeedbackInFreeTrack;
-		bool executeAccessoryAlways;
+		bool executeAccessory;
 		DataModel::SelectRouteApproach selectRouteApproach;
 		DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve;
 

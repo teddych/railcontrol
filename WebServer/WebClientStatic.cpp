@@ -210,6 +210,14 @@ namespace WebServer
 		return content;
 	}
 
+	HtmlTag WebClientStatic::HtmlTagSelectExecuteAccessory(const bool executeAccessory)
+	{
+		map<unsigned char,Languages::TextSelector> options;
+		options[0] = Languages::TextWhenWrongPosition;
+		options[1] = Languages::TextAlways;
+		return HtmlTagSelectWithLabel("executeaccessory", Languages::TextExecuteAccessory, options, static_cast<unsigned char>(executeAccessory));
+	}
+
 	HtmlTag WebClientStatic::HtmlTagSelectSelectRouteApproach(const DataModel::SelectRouteApproach selectRouteApproach, const bool addDefault)
 	{
 		map<DataModel::SelectRouteApproach,Languages::TextSelector> options;

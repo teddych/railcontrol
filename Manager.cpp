@@ -55,7 +55,7 @@ Manager::Manager(Config& config)
 	defaultAccessoryDuration(DataModel::DefaultAccessoryPulseDuration),
 	autoAddFeedback(false),
 	stopOnFeedbackInFreeTrack(true),
-	executeAccessoryAlways(true),
+	executeAccessory(true),
 	selectRouteApproach(DataModel::SelectRouteRandom),
 	nrOfTracksToReserve(DataModel::Loco::ReserveOne),
 	run(false),
@@ -87,6 +87,7 @@ Manager::Manager(Config& config)
 	defaultAccessoryDuration = Utils::Utils::StringToInteger(storage->GetSetting("DefaultAccessoryDuration"), 250);
 	autoAddFeedback = Utils::Utils::StringToBool(storage->GetSetting("AutoAddFeedback"));
 	stopOnFeedbackInFreeTrack = Utils::Utils::StringToBool(storage->GetSetting("StopOnFeedbackInFreeTrack"), true);
+	executeAccessory = Utils::Utils::StringToBool(storage->GetSetting("ExecuteAccessory"), true);
 	selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::StringToInteger(storage->GetSetting("SelectRouteApproach")));
 	nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve"), 2));
 
@@ -1178,7 +1179,7 @@ void Manager::AccessoryState(const ControlType controlType, Accessory* accessory
 		return;
 	}
 
-	if (!GetExecuteAccessoryAlways())
+	if (!GetExecuteAccessory())
 	{
 		const DataModel::AccessoryState oldState = accessory->GetAccessoryState();
 		if (oldState == state)
@@ -2076,7 +2077,7 @@ void Manager::SwitchState(const ControlType controlType, Switch* mySwitch, const
 		return;
 	}
 
-	if (!GetExecuteAccessoryAlways())
+	if (!GetExecuteAccessory())
 	{
 		const DataModel::AccessoryState oldState = mySwitch->GetAccessoryState();
 		if (oldState == state)
@@ -4010,7 +4011,7 @@ bool Manager::CheckControlProtocolAddress(const AddressType type, const ControlI
 	}
 }
 
-bool Manager::SaveSettings(const Languages::Language language,
+bool Manager::SettingsSave(const Languages::Language language,
 	const DataModel::AccessoryPulseDuration duration,
 	const bool autoAddFeedback,
 	const bool stopOnFeedbackInFreeTrack,
@@ -4024,7 +4025,7 @@ bool Manager::SaveSettings(const Languages::Language language,
 	this->defaultAccessoryDuration = duration;
 	this->autoAddFeedback = autoAddFeedback;
 	this->stopOnFeedbackInFreeTrack = stopOnFeedbackInFreeTrack;
-	this->executeAccessoryAlways = executeAccessoryAlways;
+	this->executeAccessory = executeAccessoryAlways;
 	this->selectRouteApproach = selectRouteApproach;
 	this->nrOfTracksToReserve = nrOfTracksToReserve;
 	Logger::Logger::SetLogLevel(logLevel);
@@ -4038,6 +4039,7 @@ bool Manager::SaveSettings(const Languages::Language language,
 	storage->SaveSetting("DefaultAccessoryDuration", std::to_string(duration));
 	storage->SaveSetting("AutoAddFeedback", std::to_string(autoAddFeedback));
 	storage->SaveSetting("StopOnFeedbackInFreeTrack", std::to_string(stopOnFeedbackInFreeTrack));
+	storage->SaveSetting("ExecuteAccessory", std::to_string(executeAccessory));
 	storage->SaveSetting("SelectRouteApproach", std::to_string(static_cast<int>(selectRouteApproach)));
 	storage->SaveSetting("NrOfTracksToReserve", std::to_string(static_cast<int>(nrOfTracksToReserve)));
 	storage->SaveSetting("LogLevel", std::to_string(static_cast<int>(logLevel)));

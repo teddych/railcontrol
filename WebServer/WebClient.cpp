@@ -2840,26 +2840,55 @@ namespace WebServer
 	void WebClient::HandleSettingsEdit()
 	{
 		const DataModel::AccessoryPulseDuration defaultAccessoryDuration = manager.GetDefaultAccessoryDuration();
+		const bool executeAccessory = manager.GetExecuteAccessory();
 		const bool autoAddFeedback = manager.GetAutoAddFeedback();
 		const bool stopOnFeedbackInFreeTrack = manager.GetStopOnFeedbackInFreeTrack();
-		const bool executeAccessoryAlways = manager.GetExecuteAccessoryAlways();
 		const DataModel::SelectRouteApproach selectRouteApproach = manager.GetSelectRouteApproach();
 		const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve = manager.GetNrOfTracksToReserve();
 
 		HtmlTag content;
-		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSettings));
+		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextSettings).AddId("popup_title"));
+		HtmlTag tabMenu("div");
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("basic", Languages::TextBasic, true));
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("feedback", Languages::TextFeedback));
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("accessory", Languages::TextAccessory));
+		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("automode", Languages::TextAutomode));
+		content.AddChildTag(tabMenu);
 
 		HtmlTag formContent("form");
 		formContent.AddId("editform");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "settingssave"));
-		formContent.AddChildTag(WebClientStatic::HtmlTagLanguage());
-		formContent.AddChildTag(WebClientStatic::HtmlTagDuration(defaultAccessoryDuration, Languages::TextDefaultSwitchingDuration));
-		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", Languages::TextAutomaticallyAddUnknownFeedbacks, "autoaddfeedback", autoAddFeedback));
-		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("stoponfeedbackinfreetrack", Languages::TextStopOnFeedbackInFreeTrack, "stoponfeedbackinfreetrack", stopOnFeedbackInFreeTrack));
-		formContent.AddChildTag(HtmlTagInputCheckboxWithLabel("executeaccessoryalways", Languages::TextExecuteAccessoryAlways, "executeaccessoryalways", executeAccessoryAlways));
-		formContent.AddChildTag(WebClientStatic::HtmlTagSelectSelectRouteApproach(selectRouteApproach, false));
-		formContent.AddChildTag(WebClientStatic::HtmlTagNrOfTracksToReserve(nrOfTracksToReserve));
-		formContent.AddChildTag(WebClientStatic::HtmlTagLogLevel());
+
+		HtmlTag basicContent("div");
+		basicContent.AddId("tab_basic");
+		basicContent.AddClass("tab_content");
+		basicContent.AddChildTag(WebClientStatic::HtmlTagLanguage());
+		basicContent.AddChildTag(WebClientStatic::HtmlTagLogLevel());
+		formContent.AddChildTag(basicContent);
+
+		HtmlTag accessoryContent("div");
+		accessoryContent.AddId("tab_accessory");
+		accessoryContent.AddClass("tab_content");
+		accessoryContent.AddClass("hidden");
+		accessoryContent.AddChildTag(WebClientStatic::HtmlTagDuration(defaultAccessoryDuration, Languages::TextDefaultSwitchingDuration));
+		accessoryContent.AddChildTag(WebClientStatic::HtmlTagSelectExecuteAccessory(executeAccessory));
+		formContent.AddChildTag(accessoryContent);
+
+		HtmlTag feedbackContent("div");
+		feedbackContent.AddId("tab_feedback");
+		feedbackContent.AddClass("tab_content");
+		feedbackContent.AddClass("hidden");
+		feedbackContent.AddChildTag(HtmlTagInputCheckboxWithLabel("autoaddfeedback", Languages::TextAutomaticallyAddUnknownFeedbacks, "autoaddfeedback", autoAddFeedback));
+		feedbackContent.AddChildTag(HtmlTagInputCheckboxWithLabel("stoponfeedbackinfreetrack", Languages::TextStopOnFeedbackInFreeTrack, "stoponfeedbackinfreetrack", stopOnFeedbackInFreeTrack));
+		formContent.AddChildTag(feedbackContent);
+
+		HtmlTag automodeContent("div");
+		automodeContent.AddId("tab_automode");
+		automodeContent.AddClass("tab_content");
+		automodeContent.AddClass("hidden");
+		automodeContent.AddChildTag(WebClientStatic::HtmlTagSelectSelectRouteApproach(selectRouteApproach, false));
+		automodeContent.AddChildTag(WebClientStatic::HtmlTagNrOfTracksToReserve(nrOfTracksToReserve));
+		formContent.AddChildTag(automodeContent);
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -2870,18 +2899,18 @@ namespace WebServer
 	void WebClient::HandleSettingsSave(const map<string, string>& arguments)
 	{
 		const Languages::Language language = static_cast<Languages::Language>(Utils::Utils::GetIntegerMapEntry(arguments, "language", Languages::EN));
+		const Logger::Logger::Level logLevel = static_cast<Logger::Logger::Level>(Utils::Utils::GetIntegerMapEntry(arguments, "loglevel", Logger::Logger::LevelInfo));
 		const DataModel::AccessoryPulseDuration defaultAccessoryDuration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		const bool executeAccessory = Utils::Utils::GetBoolMapEntry(arguments, "executeaccessory", manager.GetExecuteAccessory());
 		const bool autoAddFeedback = Utils::Utils::GetBoolMapEntry(arguments, "autoaddfeedback", manager.GetAutoAddFeedback());
 		const bool stopOnFeedbackInFreeTrack = Utils::Utils::GetBoolMapEntry(arguments, "stoponfeedbackinfreetrack", manager.GetStopOnFeedbackInFreeTrack());
-		const bool executeAccessoryAlways = Utils::Utils::GetBoolMapEntry(arguments, "executeaccessoryalways", manager.GetExecuteAccessoryAlways());
 		const DataModel::SelectRouteApproach selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", DataModel::SelectRouteRandom));
 		const DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Utils::GetIntegerMapEntry(arguments, "nroftrackstoreserve", DataModel::Loco::ReserveOne));
-		const Logger::Logger::Level logLevel = static_cast<Logger::Logger::Level>(Utils::Utils::GetIntegerMapEntry(arguments, "loglevel", Logger::Logger::LevelInfo));
-		manager.SaveSettings(language,
+		manager.SettingsSave(language,
 			defaultAccessoryDuration,
 			autoAddFeedback,
 			stopOnFeedbackInFreeTrack,
-			executeAccessoryAlways,
+			executeAccessory,
 			selectRouteApproach,
 			nrOfTracksToReserve,
 			logLevel);

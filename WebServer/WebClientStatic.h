@@ -38,6 +38,8 @@ namespace WebServer
 			WebClientStatic(const WebClientStatic&) = delete;
 			WebClientStatic& operator=(const WebClientStatic&) = delete;
 
+			static HtmlTag HtmlTagSelectExecuteAccessory(const bool executeAccessory = true);
+
 			static HtmlTag HtmlTagSelectSelectRouteApproach(const DataModel::SelectRouteApproach selectRouteApproach,
 				const bool addDefault = true);
 
