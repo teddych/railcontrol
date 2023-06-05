@@ -31,7 +31,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "RailControl.h"
 #include "Storage/TransactionGuard.h"
 #include "Utils/Utils.h"
-#include "WebServer/WebServer.h"
+#include "Server/Web/WebServer.h"
 
 using namespace DataModel;
 using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
@@ -91,7 +91,7 @@ Manager::Manager(Config& config)
 	selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Utils::StringToInteger(storage->GetSetting("SelectRouteApproach")));
 	nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Utils::StringToInteger(storage->GetSetting("NrOfTracksToReserve"), 2));
 
-	controls[ControlIdWebserver] = new WebServer::WebServer(*this, config.getValue("webserveraddress", "any"), config.getValue("webserverport", 8082));
+	controls[ControlIdWebserver] = new Server::Web::WebServer(*this, config.getValue("webserveraddress", "any"), config.getValue("webserverport", 8082));
 
 	storage->AllHardwareParams(hardwareParams);
 	for (auto& hardwareParam : hardwareParams)

@@ -16,7 +16,7 @@ endif
 TMPDIR=/tmp/RailControl
 TMPDIRCYGWIN=/RailControl
 
-CXXOBJ= $(patsubst %.cpp,%.o,$(sort Version.cpp $(wildcard *.cpp)) $(wildcard WebServer/*.cpp DataModel/*.cpp Hardware/*.cpp Hardware/Protocols/*.cpp Logger/*.cpp Network/*.cpp Storage/*.cpp Utils/*.cpp))
+CXXOBJ= $(patsubst %.cpp,%.o,$(sort Version.cpp $(wildcard *.cpp)) $(wildcard Server/Web/*.cpp DataModel/*.cpp Hardware/*.cpp Hardware/Protocols/*.cpp Logger/*.cpp Network/*.cpp Storage/*.cpp Utils/*.cpp))
 COBJ= $(patsubst %.c,%.o,$(wildcard Hardware/zlib/*.c))
 OBJ=Storage/sqlite/sqlite3.o $(CXXOBJ) $(COBJ)
 
@@ -69,12 +69,12 @@ Hardware/zlib/%.o: Hardware/zlib/%.c Hardware/zlib/*.h
 Storage/sqlite/sqlite3.o: Storage/sqlite/sqlite3.c Storage/sqlite/sqlite3.h
 	$(CC) $(CFLAGSSQLITE) -c -o $@ $<
 
-%.o: %.cpp *.h DataModel/*.h Hardware/*.h Hardware/Protocols/*.h Logger/*.h Network/*.h Storage/*.h Utils/*.h WebServer/*.h
+%.o: %.cpp *.h DataModel/*.h Hardware/*.h Hardware/Protocols/*.h Logger/*.h Network/*.h Storage/*.h Utils/*.h Server/Web/*.h
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 .PHONY: clean
 clean:
-	rm -f *.o DataModel/*.o Hardware/*.o Hardware/Protocols/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Storage/sqlite/*.o Utils/*.o WebServer/*.o
+	rm -f *.o DataModel/*.o Hardware/*.o Hardware/Protocols/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Storage/sqlite/*.o Utils/*.o Server/Web/*.o
 	rm -f railcontrol
 
 clean-sqlite-shell:
