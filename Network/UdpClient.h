@@ -38,12 +38,10 @@ namespace Network
 			UdpClient(const UdpClient&) = delete;
 			UdpClient& operator=(const UdpClient&) = delete;
 
-			inline UdpClient(Logger::Logger* logger,
-				const int serverSocket,
+			inline UdpClient(const int serverSocket,
 				const struct sockaddr_storage* clientAddress,
 				const time_t timeout = 60)
-			:	logger(logger),
-				run(true),
+			:	run(true),
 				lastUsed(time(nullptr)),
 				timeout(timeout),
 				serverSocket(serverSocket),
@@ -79,9 +77,8 @@ namespace Network
 
 
 		protected:
-			inline void Send(const unsigned char* buffer, const size_t size)
+			inline virtual void Send(const unsigned char* buffer, const size_t size)
 			{
-				logger->Hex(buffer, size);
 				sendto(serverSocket, buffer, size, 0, reinterpret_cast<const struct sockaddr*>(&clientAddress), sizeof(struct sockaddr_storage));
 			}
 
@@ -90,7 +87,10 @@ namespace Network
 				run = false;
 			}
 
-			Logger::Logger* logger;
+			inline std::string AddressAsString()
+			{
+				return Utils::Network::AddressToString(&clientAddress);
+			}
 
 		private:
 			volatile bool run;

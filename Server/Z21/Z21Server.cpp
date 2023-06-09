@@ -45,7 +45,8 @@ namespace Server { namespace Z21
 	:	ControlInterface(ControlTypeZ21Server),
 		Network::UdpServer("0.0.0.0", port, "Z21Server"),
 		logger(Logger::Logger::GetLogger("Z21Server")),
-		manager(manager)
+		manager(manager),
+		lastClientID(0)
 	{
 	}
 
@@ -65,11 +66,10 @@ namespace Server { namespace Z21
 		TerminateUdpServer();
 	}
 
-	Network::UdpClient* Z21Server::UdpClientFactory(Logger::Logger* logger,
-					const int serverSocket,
-					const struct sockaddr_storage* clientAddress)
+	Network::UdpClient* Z21Server::UdpClientFactory(const int serverSocket,
+		const struct sockaddr_storage* clientAddress)
 	{
-		return reinterpret_cast<Network::UdpClient*>(new Z21Client(manager, logger, serverSocket, clientAddress));
+		return reinterpret_cast<Network::UdpClient*>(new Z21Client(++lastClientID, manager, serverSocket, clientAddress));
 	}
 
 	void Z21Server::Booster(__attribute__((unused)) const ControlType controlType,

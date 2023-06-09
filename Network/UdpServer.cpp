@@ -193,7 +193,7 @@ namespace Network
 				return client;
 			}
 		}
-		UdpClient* newClient = UdpClientFactory(logger, serverSocket, clientAddress);
+		UdpClient* newClient = UdpClientFactory(serverSocket, clientAddress);
 		clients.push_back(newClient);
 		return newClient;
 	}

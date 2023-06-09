@@ -49,8 +49,7 @@ namespace Network
 			void StartUdpServer();
 			void TerminateUdpServer();
 
-			virtual UdpClient* UdpClientFactory(Logger::Logger* logger,
-				const int serverSocket,
+			virtual UdpClient* UdpClientFactory(const int serverSocket,
 				const struct sockaddr_storage* clientAddress) = 0;
 
 		protected:

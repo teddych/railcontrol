@@ -27,19 +27,22 @@ namespace Z21Enums = Hardware::Protocols::Z21Enums;
 
 namespace Server { namespace Z21
 {
-	Z21Client::Z21Client(Manager& manager,
-		Logger::Logger* logger,
+	Z21Client::Z21Client(const unsigned int id,
+		Manager& manager,
 		const int serverSocket,
 		const struct sockaddr_storage* clientAddress)
-	:	Network::UdpClient(logger, serverSocket, clientAddress, 60),
+	:	Network::UdpClient(serverSocket, clientAddress, 60),
+		logger(Logger::Logger::GetLogger("Z21Client # " + std::to_string(id))),
 		manager(manager),
 		broadCastFlags(Z21Enums::BroadCastFlagNone)
 	{
+		logger->Debug(Languages::TextUdpConnectionEstablished, AddressAsString());
 		SendSystemStatusChanged();
 	}
 
 	Z21Client::~Z21Client()
 	{
+		logger->Debug(Languages::TextUdpConnectionClosed, AddressAsString());
 	}
 
 	void Z21Client::Work(const unsigned char* buffer, const size_t dataLength)

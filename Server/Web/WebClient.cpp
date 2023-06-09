@@ -94,9 +94,9 @@ namespace Server { namespace Web
 	void WebClient::Worker()
 	{
 		Utils::Utils::SetThreadName("WebClient");
-		logger->Debug(Languages::TextHttpConnectionOpened, id);
+		logger->Debug(Languages::TextTcpConnectionEstablished, connection->AddressAsString());
 		WorkerImpl();
-		logger->Debug(Languages::TextHttpConnectionClosed, id);
+		logger->Debug(Languages::TextTcpConnectionClosed, connection->AddressAsString());
 		terminated = true;
 	}
 
@@ -120,7 +120,7 @@ namespace Server { namespace Web
 				{
 					if (errno != ETIMEDOUT)
 					{
-						logger->Debug(Languages::TextHttpConnectionErrorReadingData, id, strerror(errno));
+						logger->Debug(Languages::TextErrorReadingData, strerror(errno));
 						return;
 					}
 					if (run == false)
@@ -150,12 +150,12 @@ namespace Server { namespace Web
 			map<string, string> headers;
 			InterpretClientRequest(lines, method, uri, protocol, arguments, headers);
 			keepalive = (Utils::Utils::GetStringMapEntry(headers, "Connection", "close").compare("keep-alive") == 0);
-			logger->Info(Languages::TextHttpConnectionRequest, id, method, uri);
+			logger->Info(Languages::TextHttpRequest, method, uri);
 
 			// if method is not implemented
 			if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0))
 			{
-				logger->Info(Languages::TextHttpConnectionNotImplemented, id, method);
+				logger->Info(Languages::TextMethodNotImplemented, id, method);
 				ResponseHtmlNotImplemented response(method);
 				connection->Send(response);
 				return;
@@ -743,7 +743,7 @@ namespace Server { namespace Web
 		{
 			ResponseHtmlNotFound response(virtualFile);
 			connection->Send(response);
-			logger->Info(Languages::TextHttpConnectionNotFound, id, virtualFile);
+			logger->Info(Languages::TextFileNotFound, virtualFile);
 			return;
 		}
 

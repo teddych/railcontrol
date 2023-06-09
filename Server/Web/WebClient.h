@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <cstring>
 #include <deque>
 #include <map>
 #include <string>
@@ -67,7 +68,7 @@ namespace Server { namespace Web
 				Network::TcpConnection* connection, // connection must be deleted after using!
 				WebServer &webserver,
 				Manager& manager)
-			:	logger(Logger::Logger::GetLogger("Webserver")),
+			:	logger(Logger::Logger::GetLogger("WebClient # " + std::to_string(id))),
 				id(id),
 				connection(connection),
 				run(false),

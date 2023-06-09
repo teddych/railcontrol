@@ -28,7 +28,6 @@ along with RailControl; see the file LICENCE. If not see
 #include "ControlInterface.h"
 #include "Logger/Logger.h"
 #include "Manager.h"
-// #include "Network/UdpClient.h"
 #include "Network/UdpServer.h"
 
 namespace Server { namespace Z21
@@ -81,13 +80,13 @@ namespace Server { namespace Z21
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
 
 		protected:
-			Network::UdpClient* UdpClientFactory(Logger::Logger* logger,
-				const int serverSocket,
+			Network::UdpClient* UdpClientFactory(const int serverSocket,
 				const struct sockaddr_storage* clientAddress) override;
 
 		private:
 			Logger::Logger* logger;
 			Manager& manager;
+			unsigned int lastClientID;
 
 			ssize_t ParseData(const unsigned char* buffer,
 				const ssize_t bufferLength,

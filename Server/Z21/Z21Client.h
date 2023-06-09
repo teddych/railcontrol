@@ -38,8 +38,8 @@ namespace Server { namespace Z21
 			Z21Client(const Z21Client&) = delete;
 			Z21Client& operator=(const Z21Client&) = delete;
 
-			Z21Client(Manager& manager,
-				Logger::Logger* logger,
+			Z21Client(const unsigned int id,
+				Manager& manager,
 				const int serverSocket,
 				const struct sockaddr_storage* clientAddress);
 
@@ -89,6 +89,14 @@ namespace Server { namespace Z21
 				const unsigned char sendBuffer[9] = { 0x09, 0x00, 0x40, 0x00, 0xF3, 0x0A, 0x01, 0x23, 0xDB };
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
+
+			inline void Send(const unsigned char* buffer, const size_t size)
+			{
+				logger->Hex(buffer, size);
+				UdpClient::Send(buffer, size);
+			}
+
+			Logger::Logger* logger;
 
 			Manager& manager;
 			Z21Enums::BroadCastFlags broadCastFlags;
