@@ -57,7 +57,7 @@ using DataModel::Track;
 namespace Server { namespace Web
 {
 	WebServer::WebServer(Manager& manager, const std::string& webserveraddress, const unsigned short port)
-	:	ControlInterface(ControlTypeWebserver),
+	:	ControlInterface(ControlTypeWebServer),
 		Network::TcpServer(webserveraddress, port, "WebServer"),
 		logger(Logger::Logger::GetLogger("WebServer")),
 		lastClientID(0),

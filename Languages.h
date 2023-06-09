@@ -784,6 +784,8 @@ class Languages
 			TextZ21DoesNotUnderstand,
 			TextZ21NotRestricted,
 			TextZ21RestrictionsUnknown,
+			TextZ21ServerStarted,
+			TextZ21ServerStopped,
 			TextZ21SmartRail2012,
 			TextZ21Start2016,
 			TextZ21StartLocked,

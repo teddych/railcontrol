@@ -295,7 +295,7 @@ namespace Server { namespace Web
 			signalState = DataModel::SignalStateDark;
 		}
 
-		manager.SignalState(ControlTypeWebserver, signalID, signalState, false);
+		manager.SignalState(ControlTypeWebServer, signalID, signalState, false);
 
 		client.ReplyHtmlWithHeaderAndParagraph(signalState ? Languages::TextSignalStateIsClear : Languages::TextSignalStateIsStop, manager.GetSignalName(signalID));
 	}

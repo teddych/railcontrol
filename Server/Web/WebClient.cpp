@@ -181,12 +181,12 @@ namespace Server { namespace Web
 				if (on)
 				{
 					ReplyHtmlWithHeaderAndParagraph(Languages::TextTurningBoosterOn);
-					manager.Booster(ControlTypeWebserver, BoosterStateGo);
+					manager.Booster(ControlTypeWebServer, BoosterStateGo);
 				}
 				else
 				{
 					ReplyHtmlWithHeaderAndParagraph(Languages::TextTurningBoosterOff);
-					manager.Booster(ControlTypeWebserver, BoosterStateStop);
+					manager.Booster(ControlTypeWebServer, BoosterStateStop);
 				}
 			}
 			else if (arguments["cmd"].compare("layeredit") == 0)
@@ -567,7 +567,7 @@ namespace Server { namespace Web
 			}
 			else if (arguments["cmd"].compare("stopallimmediately") == 0)
 			{
-				manager.StopAllLocosImmediately(ControlTypeWebserver);
+				manager.StopAllLocosImmediately(ControlTypeWebServer);
 			}
 			else if (arguments["cmd"].compare("startall") == 0)
 			{
@@ -1100,7 +1100,7 @@ namespace Server { namespace Web
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		Speed speed = Utils::Utils::GetIntegerMapEntry(arguments, "speed", MinSpeed);
 
-		manager.LocoBaseSpeed(ControlTypeWebserver, locoID, speed);
+		manager.LocoBaseSpeed(ControlTypeWebServer, locoID, speed);
 
 		ReplyHtmlWithHeaderAndParagraph(Languages::TextLocoSpeedIs, manager.GetLocoBaseName(locoID), speed);
 	}
@@ -1110,7 +1110,7 @@ namespace Server { namespace Web
 		LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		Orientation orientation = (Utils::Utils::GetBoolMapEntry(arguments, "on") ? OrientationRight : OrientationLeft);
 
-		manager.LocoBaseOrientation(ControlTypeWebserver, locoID, orientation);
+		manager.LocoBaseOrientation(ControlTypeWebServer, locoID, orientation);
 
 		ReplyHtmlWithHeaderAndParagraph(orientation == OrientationLeft ? Languages::TextLocoDirectionOfTravelIsLeft : Languages::TextLocoDirectionOfTravelIsRight, manager.GetLocoName(locoID));
 	}
@@ -1121,7 +1121,7 @@ namespace Server { namespace Web
 		DataModel::LocoFunctionNr function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
 		DataModel::LocoFunctionState state = static_cast<DataModel::LocoFunctionState>(Utils::Utils::GetBoolMapEntry(arguments, "on"));
 
-		manager.LocoBaseFunctionState(ControlTypeWebserver, locoID, function, state);
+		manager.LocoBaseFunctionState(ControlTypeWebServer, locoID, function, state);
 
 		ReplyHtmlWithHeaderAndParagraph(state ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, manager.GetLocoName(locoID), function);
 	}
@@ -2186,7 +2186,7 @@ namespace Server { namespace Web
 		AccessoryID accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
 		DataModel::AccessoryState accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? DataModel::AccessoryStateOff : DataModel::AccessoryStateOn);
 
-		manager.AccessoryState(ControlTypeWebserver, accessoryID, accessoryState, false);
+		manager.AccessoryState(ControlTypeWebServer, accessoryID, accessoryState, false);
 
 		ReplyHtmlWithHeaderAndParagraph(accessoryState ? Languages::TextAccessoryStateIsGreen : Languages::TextAccessoryStateIsRed, manager.GetAccessoryName(accessoryID));
 	}
@@ -2433,7 +2433,7 @@ namespace Server { namespace Web
 		{
 			switchState = DataModel::SwitchStateStraight;
 		}
-		manager.SwitchState(ControlTypeWebserver, switchID, switchState, false);
+		manager.SwitchState(ControlTypeWebServer, switchID, switchState, false);
 
 		ReplyHtmlWithHeaderAndParagraph(switchState ? Languages::TextSwitchStateIsStraight : Languages::TextSwitchStateIsTurnout, manager.GetSwitchName(switchID));
 	}

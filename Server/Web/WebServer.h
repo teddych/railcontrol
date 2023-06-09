@@ -55,7 +55,7 @@ namespace Server { namespace Web
 
 			inline const std::string& GetName() const override
 			{
-				static const std::string WebserverName("Webserver");
+				static const std::string WebserverName("WebServer");
 				return WebserverName;
 			}
 

@@ -784,6 +784,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextZ21DoesNotUnderstand */ { "Z21 does not understand our command", "Z21 versteht unser Kommando nicht", "Z21 no ha endendido nuestro comando" },
 /* TextZ21NotRestricted */ { "Z21 does not have any restrictions", "Z21 hat keine Restriktionen", "Z21 no tiene restricctiones" },
 /* TextZ21RestrictionsUnknown */ { "Z21 restrictions unknown", "Z21 Restriktionen unbekannt", "Z21 restricctiones desconocidos" },
+/* TextZ21ServerStarted */ { "Z21 server started", "Z21 Server wurde gestartet", "Servidor Z21 encendido" },
+/* TextZ21ServerStopped */ { "Z21 server stopped", "Z21 Server wurde beendet", "Servidor Z21 apagado" },
 /* TextZ21SmartRail2012 */ { "SmartRail", "SmartRail", "SmartRail" },
 /* TextZ21Start2016 */ { "z21 start", "z21 start", "z21 start" },
 /* TextZ21StartLocked */ { "Z21 start is locked. Impssible to use this Z21!", "Z21 start ist gesperrt. Unmöglich diese Z21 zu benutzen!", "Z21 start está limitado. Imposible usar este Z21!" },
