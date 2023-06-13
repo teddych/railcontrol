@@ -524,7 +524,7 @@ namespace Hardware
 					break;
 				}
 
-				case Z21Enums::HeaderCode:
+				case Z21Enums::HeaderGetCode:
 					switch (buffer[4])
 					{
 						case Z21Enums::FeaturesNotRestricted:
@@ -544,7 +544,7 @@ namespace Hardware
 					}
 					break;
 
-				case Z21Enums::HeaderHardwareInfo:
+				case Z21Enums::HeaderGetHardwareInfo:
 					{
 					unsigned int hardwareType = Utils::Utils::DataLittleEndianToInt(buffer + 4);
 					std::string hardwareTypeText;

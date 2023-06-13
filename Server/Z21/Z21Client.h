@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Hardware/Protocols/Z21DataTypes.h"
 #include "Network/UdpClient.h"
+#include "Utils/Utils.h"
 
 namespace Z21Enums = Hardware::Protocols::Z21Enums;
 
@@ -66,9 +67,15 @@ namespace Server { namespace Z21
 			}
 
 		private:
-			inline void SendStatusChanged()
+			inline void SendCode()
 			{
-				const unsigned char sendBuffer[8] = { 0x08, 0x00, 0x40, 0x00, 0x62, 0x22, 0x00, 0x08 };
+				const unsigned char sendBuffer[5] = { 0x05, 0x00, 0x18, 0x00, 0x00 };
+				Send(sendBuffer, sizeof(sendBuffer));
+			}
+
+			inline void SendHardwareInfo()
+			{
+				const unsigned char sendBuffer[12] = { 0x0C, 0x00, 0x1A, 0x00, 0x01, 0x02, 0x00, 0x00, 0x42, 0x01, 0x00, 0x00 };
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
 
@@ -87,6 +94,41 @@ namespace Server { namespace Z21
 			inline void SendFirmwareVersion()
 			{
 				const unsigned char sendBuffer[9] = { 0x09, 0x00, 0x40, 0x00, 0xF3, 0x0A, 0x01, 0x23, 0xDB };
+				Send(sendBuffer, sizeof(sendBuffer));
+			}
+
+			inline void SendUnknownCommand()
+			{
+				const unsigned char sendBuffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x61, 0x82, 0xE3 };
+				Send(sendBuffer, sizeof(sendBuffer));
+			}
+
+			inline void SendStatusChanged()
+			{
+				const unsigned char sendBuffer[8] = { 0x08, 0x00, 0x40, 0x00, 0x62, 0x22, 0x00, 0x08 };
+				Send(sendBuffer, sizeof(sendBuffer));
+			}
+
+			inline void SendBroadcastFlags()
+			{
+				unsigned char sendBuffer[8] = { 0x08, 0x00, 0x51, 0x00 };
+				Utils::Utils::IntToDataLittleEndian(broadCastFlags, sendBuffer + 4);
+				Send(sendBuffer, sizeof(sendBuffer));
+			}
+
+			inline void SendLocoMode(const uint16_t address)
+			{
+				unsigned char sendBuffer[7] = { 0x07, 0x00, 0x60, 0x00 };
+				*(reinterpret_cast<uint16_t*>(sendBuffer + 4)) = address;
+				sendBuffer[7] = 0x00; // we always use DCC
+				Send(sendBuffer, sizeof(sendBuffer));
+			}
+
+			inline void SendTurnoutMode(const uint16_t address)
+			{
+				unsigned char sendBuffer[7] = { 0x07, 0x00, 0x70, 0x00 };
+				*(reinterpret_cast<uint16_t*>(sendBuffer + 4)) = address;
+				sendBuffer[7] = 0x00; // we always use DCC
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
 

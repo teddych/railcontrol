@@ -72,15 +72,21 @@ namespace Server { namespace Z21
 		const uint16_t header = Utils::Utils::DataLittleEndianToShort(buffer + 2);
 		switch (header)
 		{
+			case Z21Enums::HeaderGetCode:
+				SendCode();
+				break;
+
+			case Z21Enums::HeaderGetHardwareInfo:
+				SendHardwareInfo();
+				break;
+
 			case Z21Enums::HeaderLogOff:
 				Terminate();
 				break;
 
 			case Z21Enums::HeaderSeeXHeader:
-			{
 				ParseXHeader(buffer);
 				break;
-			}
 
 			case Z21Enums::HeaderSetBroadcastFlags:
 			{
@@ -88,12 +94,38 @@ namespace Server { namespace Z21
 				break;
 			}
 
+			case Z21Enums::HeaderGetBroadcastFlags:
+				SendBroadcastFlags();
+				break;
+
+			case Z21Enums::HeaderGetLocoMode:
+			{
+				const uint16_t address = *(reinterpret_cast<const uint16_t*>(buffer + 4));
+				SendLocoMode(address);
+				break;
+			}
+
+			case Z21Enums::HeaderSetLocoMode:
+				// ignore loco mode, we always use DCC
+				break;
+
+			case Z21Enums::HeaderGetTurnoutMode:
+			{
+				const uint16_t address = *(reinterpret_cast<const uint16_t*>(buffer + 4));
+				SendTurnoutMode(address);
+				break;
+			}
+
+			case Z21Enums::HeaderSetTurnoutMode:
+				// ignore turnout mode, we always use DCC
+				break;
+
 			case Z21Enums::HeaderGetSystemState:
 				SendSystemStatusChanged();
 				break;
 
 			default:
-				// not implemented
+				SendUnknownCommand();
 				break;
 		}
 		return dataLength;
@@ -106,19 +138,34 @@ namespace Server { namespace Z21
 		{
 			case Z21Enums::XHeaderSeeDB0_1:
 				ParseDB0(buffer);
-				break;
+				return;
 
 			case Z21Enums::XHeaderSetStop:
+				if (buffer[5] != 0x80)
+				{
+					logger->Error(Languages::TextCheckSumError);
+					return;
+				}
 				manager.Booster(ControlTypeZ21Server, BoosterStateStop);
 				SendBcStopped();
-				break;
+				return;
+
+			case Z21Enums::XHeaderSetLocoBinaryState:
+				// we do not care
+				return;
 
 			case Z21Enums::XHeaderGetFirmwareVersion:
+				if ((buffer[5] != 0x0A) || (buffer[6] != 0xFB))
+				{
+					logger->Error(Languages::TextCheckSumError);
+					return;
+				}
 				SendFirmwareVersion();
-				break;
+				return;
 
 			default:
-				break;
+				SendUnknownCommand();
+				return;
 		}
 	}
 
@@ -131,23 +178,25 @@ namespace Server { namespace Z21
 				if (buffer[6] != 0x05)
 				{
 					logger->Error(Languages::TextCheckSumError);
+					return;
 				}
 				SendStatusChanged();
-				break;
+				return;
 			}
 
 			case Z21Enums::DB0SetPowerOff:
 				logger->Debug(Languages::TextBoosterIsTurnedOff);
 				manager.Booster(ControlTypeHardware, BoosterStateStop);
-				break;
+				return;
 
 			case Z21Enums::DB0SetPowerOn:
 				logger->Debug(Languages::TextBoosterIsTurnedOn);
 				manager.Booster(ControlTypeHardware, BoosterStateGo);
-				break;
+				return;
 
 			default:
-				break;
+				SendUnknownCommand();
+				return;
 		}
 	}
 }} // namespace Server::Z21

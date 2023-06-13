@@ -66,8 +66,8 @@ namespace Hardware
 			enum Header : uint16_t
 			{
 				HeaderSerialNumber        = 0x10,
-				HeaderCode                = 0x18,
-				HeaderHardwareInfo        = 0x1A,
+				HeaderGetCode             = 0x18,
+				HeaderGetHardwareInfo     = 0x1A,
 				HeaderLogOff              = 0x30,
 				HeaderSeeXHeader          = 0x40,
 				HeaderSetBroadcastFlags   = 0x50,
@@ -98,6 +98,7 @@ namespace Hardware
 				XHeaderCvResult           = 0x64,
 				XHeaderSetStop            = 0x80,
 				XHeaderBcStopped          = 0x81,
+				XHeaderSetLocoBinaryState = 0xE5,
 				XHeaderLocoInfo           = 0xEF,
 				XHeaderGetFirmwareVersion = 0xF1,
 				XHeaderFirmwareVersion    = 0xF3
