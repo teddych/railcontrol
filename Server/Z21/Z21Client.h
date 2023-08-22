@@ -120,7 +120,7 @@ namespace Server { namespace Z21
 			{
 				unsigned char sendBuffer[7] = { 0x07, 0x00, 0x60, 0x00 };
 				*(reinterpret_cast<uint16_t*>(sendBuffer + 4)) = address;
-				sendBuffer[7] = 0x00; // we always use DCC
+				sendBuffer[6] = 0x00; // we always use DCC
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
 
@@ -128,7 +128,7 @@ namespace Server { namespace Z21
 			{
 				unsigned char sendBuffer[7] = { 0x07, 0x00, 0x70, 0x00 };
 				*(reinterpret_cast<uint16_t*>(sendBuffer + 4)) = address;
-				sendBuffer[7] = 0x00; // we always use DCC
+				sendBuffer[6] = 0x00; // we always use DCC
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
 

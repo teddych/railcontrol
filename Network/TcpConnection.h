@@ -31,7 +31,6 @@ namespace Network
 	{
 		public:
 			TcpConnection() = delete;
-			TcpConnection(const TcpConnection&) = delete;
 			TcpConnection& operator=(const TcpConnection&) = delete;
 
 			inline TcpConnection(int socket,
@@ -47,6 +46,13 @@ namespace Network
 				{
 					memset(&(this->address), 0, sizeof(struct sockaddr_storage));
 				}
+			}
+
+			inline TcpConnection(const TcpConnection& other)
+			:	connectionSocket(other.connectionSocket),
+				connected(other.connected),
+				address(other.address)
+			{
 			}
 
 			inline ~TcpConnection()
