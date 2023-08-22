@@ -3872,13 +3872,20 @@ bool Manager::CheckAddressLoco(const Protocol protocol, const Address address, s
 			}
 			return true;
 
-		case ProtocolMM:
 		case ProtocolMM1:
 		case ProtocolMM15:
-		case ProtocolMM2:
 			if (address > 80)
 			{
-				result.assign(Languages::GetText(Languages::TextLocoAddressMmTooHigh));
+				result.assign(Languages::GetText(Languages::TextLocoAddressMm1TooHigh));
+				return false;
+			}
+			return true;
+
+		case ProtocolMM:
+		case ProtocolMM2:
+			if (address > 255)
+			{
+				result.assign(Languages::GetText(Languages::TextLocoAddressMm2TooHigh));
 				return false;
 			}
 			return true;
