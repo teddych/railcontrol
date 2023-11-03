@@ -2908,7 +2908,7 @@ Signal* Manager::GetSignal(const ControlID controlID, const Protocol protocol, c
 	{
 		if (signal.second->GetControlID() == controlID
 			&& signal.second->GetProtocol() == protocol
-			&& signal.second->GetAddress() == address)
+			&& signal.second->UsesAddress(address))
 		{
 			return signal.second;
 		}

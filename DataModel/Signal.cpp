@@ -116,6 +116,27 @@ namespace DataModel
 		}
 	}
 
+	bool Signal::UsesAddress(Address address) const
+	{
+		switch(GetType())
+		{
+			case SignalTypeDeCombined:
+			case SignalTypeChLMain:
+				return GetAddress() == address
+					|| GetAddress() == address + 1
+					|| GetAddress() == address + 2;
+
+			case SignalTypeChDwarf:
+				return GetAddress() == address
+					|| GetAddress() == address + 1;
+
+			case SignalTypeSimpleLeft:
+			case SignalTypeSimpleRight:
+			default:
+				return GetAddress() == address;
+		}
+	}
+
 	std::map<DataModel::AccessoryState,Signal::StateOption> Signal::GetStateOptions() const
 	{
 		std::map<DataModel::AccessoryState,Signal::StateOption> out;
