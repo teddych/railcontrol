@@ -122,18 +122,18 @@ namespace DataModel
 		{
 			case SignalTypeDeCombined:
 			case SignalTypeChLMain:
-				return GetAddress() == address
-					|| GetAddress() == address + 1
-					|| GetAddress() == address + 2;
+				return (GetAddress() == address)
+					|| (GetAddress() + 1 == address)
+					|| (GetAddress() + 2 == address);
 
 			case SignalTypeChDwarf:
-				return GetAddress() == address
-					|| GetAddress() == address + 1;
+				return (GetAddress() == address)
+					|| (GetAddress() + 2 == address);
 
 			case SignalTypeSimpleLeft:
 			case SignalTypeSimpleRight:
 			default:
-				return GetAddress() == address;
+				return (GetAddress() == address);
 		}
 	}
 
