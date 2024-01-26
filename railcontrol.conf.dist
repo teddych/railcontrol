@@ -20,3 +20,6 @@ webserveraddress = any
 # Therefore we use alternate port 8082
 webserverport = 8082
 
+# To turn on Z21 Server emulation set this to "true"
+z21server = false
+

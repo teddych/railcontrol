@@ -138,5 +138,7 @@ namespace Utils
 			}
 
 			static bool HostResolves(const std::string& host);
-	};
-}
+
+			static std::string StringToLower(const std::string& input);
+	}; // class Utils
+} // namespace Utils

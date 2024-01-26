@@ -528,4 +528,14 @@ namespace Utils
 		freeaddrinfo(result);
 		return false;
 	}
+
+	string Utils::StringToLower(const string& input)
+	{
+		string output = input;
+		for(auto& c : output)
+		{
+		   c = tolower(c);
+		}
+		return output;
+	}
 }
