@@ -529,6 +529,16 @@ namespace Utils
 		return false;
 	}
 
+	uint8_t Utils::CalcXORCheckSum(const uint8_t* const buffer, size_t length)
+	{
+		uint8_t ret = 0;
+		for (size_t i = 0; i < length; ++i)
+		{
+			ret ^= buffer[i];
+		}
+		return ret;
+	}
+
 	string Utils::StringToLower(const string& input)
 	{
 		string output = input;
