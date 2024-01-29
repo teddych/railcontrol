@@ -430,8 +430,8 @@ namespace DataModel
 
 			case SelectRouteRandom:
 			{
-			    std::random_device rd;
-			    std::mt19937 g(rd());
+			    static std::random_device rd;
+			    static std::mt19937 g(rd());
 				std::shuffle(validRoutes.begin(), validRoutes.end(), g);
 				break;
 			}
