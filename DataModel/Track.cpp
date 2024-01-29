@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <algorithm>
 #include <deque>
 #include <map>
+#include <random>
 #include <string>
 
 #include "DataModel/Feedback.h"
@@ -428,8 +429,12 @@ namespace DataModel
 		{
 
 			case SelectRouteRandom:
-				std::random_shuffle(validRoutes.begin(), validRoutes.end());
+			{
+			    std::random_device rd;
+			    std::mt19937 g(rd());
+				std::shuffle(validRoutes.begin(), validRoutes.end(), g);
 				break;
+			}
 
 			case SelectRouteMinTrackLength:
 				std::sort(validRoutes.begin(), validRoutes.end(), Route::CompareShortest);
