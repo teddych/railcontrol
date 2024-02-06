@@ -73,6 +73,10 @@ namespace Server { namespace Z21
 		const uint16_t header = Utils::Utils::DataLittleEndianToShort(buffer + 2);
 		switch (header)
 		{
+			case Z21Enums::HeaderSerialNumber:
+				SendSerialNumber();
+				break;
+
 			case Z21Enums::HeaderGetCode:
 				SendCode();
 				break;
