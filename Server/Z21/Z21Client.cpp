@@ -146,22 +146,12 @@ namespace Server { namespace Z21
 				return;
 
 			case Z21Enums::XHeaderSetStop:
-				if (buffer[5] != 0x80)
-				{
-					logger->Error(Languages::TextCheckSumError);
-					return;
-				}
 				logger->Debug(Languages::TextBoosterIsTurnedOff);
 				manager.Booster(ControlTypeZ21Server, BoosterStateStop);
 				SendBcStopped();
 				return;
 
 			case Z21Enums::XHeaderGetLocoInfo:
-				if (buffer[5] != 0xF0)
-				{
-					logger->Error(Languages::TextCheckSumError);
-					return;
-				}
 				{
 					const DataModel::Loco* const loco = manager.GetLoco(ParseLocoAddress(buffer + 6));
 					if (nullptr == loco)
@@ -191,11 +181,6 @@ namespace Server { namespace Z21
 				return;
 
 			case Z21Enums::XHeaderGetFirmwareVersion:
-				if ((buffer[5] != 0x0A) || (buffer[6] != 0xFB))
-				{
-					logger->Error(Languages::TextCheckSumError);
-					return;
-				}
 				SendFirmwareVersion();
 				return;
 
@@ -211,11 +196,6 @@ namespace Server { namespace Z21
 		{
 			case Z21Enums::DB0Status:
 			{
-				if (buffer[6] != 0x05)
-				{
-					logger->Error(Languages::TextCheckSumError);
-					return;
-				}
 				SendStatusChanged();
 				return;
 			}
