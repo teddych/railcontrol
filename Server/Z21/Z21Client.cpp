@@ -151,6 +151,7 @@ namespace Server { namespace Z21
 					logger->Error(Languages::TextCheckSumError);
 					return;
 				}
+				logger->Debug(Languages::TextBoosterIsTurnedOff);
 				manager.Booster(ControlTypeZ21Server, BoosterStateStop);
 				SendBcStopped();
 				return;
@@ -221,12 +222,12 @@ namespace Server { namespace Z21
 
 			case Z21Enums::DB0SetPowerOff:
 				logger->Debug(Languages::TextBoosterIsTurnedOff);
-				manager.Booster(ControlTypeHardware, BoosterStateStop);
+				manager.Booster(ControlTypeZ21Server, BoosterStateStop);
 				return;
 
 			case Z21Enums::DB0SetPowerOn:
 				logger->Debug(Languages::TextBoosterIsTurnedOn);
-				manager.Booster(ControlTypeHardware, BoosterStateGo);
+				manager.Booster(ControlTypeZ21Server, BoosterStateGo);
 				return;
 
 			default:
