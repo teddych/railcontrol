@@ -82,17 +82,7 @@ namespace DataModel
 	{
 		Object::Deserialize(arguments);
 		HardwareHandle::Deserialize(arguments);
-		TrackID trackFromID = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
-		if (trackFromID == TrackNone)
-		{
-			// FIXME: 2022-07-10 remove identifier later
-			ObjectIdentifier trackFromIdentifier = Utils::Utils::GetStringMapEntry(arguments, "track");
-			if (trackFromIdentifier.GetObjectType() == ObjectTypeTrack)
-			{
-				trackFromID = trackFromIdentifier.GetObjectID();
-			}
-		}
-		trackFrom = manager->GetTrack(trackFromID);
+		trackFrom = manager->GetTrack(static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone)));
 		functions.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "functions", "0"));
 		orientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "orientation", OrientationRight));
 		length = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "length", 0));

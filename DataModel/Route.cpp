@@ -117,26 +117,8 @@ namespace DataModel
 			return true;
 		}
 		fromTrack = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "fromTrack", TrackNone));
-		if (fromTrack == TrackNone)
-		{
-			// FIXME: 2022-07-10 remove identifier later
-			ObjectIdentifier fromTrackIdentifier = Utils::Utils::GetStringMapEntry(arguments, "fromTrack");
-			if (fromTrackIdentifier.GetObjectType() == ObjectTypeTrack)
-			{
-				fromTrack = fromTrackIdentifier.GetObjectID();
-			}
-		}
 		fromOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "fromorientation", OrientationRight));
 		toTrack = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "toTrack", TrackNone));
-		if (toTrack == TrackNone)
-		{
-			// FIXME: 2022-07-10 remove identifier later
-			ObjectIdentifier toTrackIdentifier = Utils::Utils::GetStringMapEntry(arguments, "toTrack");
-			if (toTrackIdentifier.GetObjectType() == ObjectTypeTrack)
-			{
-				toTrack = toTrackIdentifier.GetObjectID();
-			}
-		}
 		toOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "toorientation", OrientationRight));
 		speed = static_cast<Speed>(Utils::Utils::GetIntegerMapEntry(arguments, "speed", SpeedTravel));
 		feedbackIdReduced = Utils::Utils::GetIntegerMapEntry(arguments, "feedbackIdReduced", FeedbackNone);
