@@ -120,7 +120,7 @@ namespace DataModel
 		LocoBase::SetOrientation(orientation);
 		for (auto slave : slaves)
 		{
-			manager->LocoBaseOrientation(ControlTypeInternal, slave->ObjectIdentifier2(), orientation);
+			manager->LocoBaseOrientation(ControlTypeInternal, slave->ObjectIdentifier2(), OrientationChange);
 		}
 	}
 
