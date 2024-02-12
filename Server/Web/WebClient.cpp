@@ -3359,7 +3359,7 @@ namespace Server { namespace Web
 	void WebClient::HandleLoco(const map<string, string>& arguments)
 	{
 		string content;
-		const LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "locoBase", LocoNone);
+		const LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		const ObjectIdentifier locoBaseIdentifier(WebClientStatic::LocoIdToObjectIdentifier(locoID));
 		if (!locoBaseIdentifier.IsSet())
 		{
@@ -3378,7 +3378,7 @@ namespace Server { namespace Web
 		container.AddChildTag(HtmlTag("p").AddId("loconame").AddContent(locoBase->GetName()));
 		unsigned int speed = locoBase->GetSpeed();
 		map<string, string> buttonArguments;
-		buttonArguments["locoBase"] = to_string(locoID);
+		buttonArguments["loco"] = to_string(locoID);
 
 		string id = "locospeed_" + to_string(locoID);
 		container.AddChildTag(HtmlTagInputSliderLocoSpeed(id, MinSpeed, locoBase->GetMaxSpeed(), speed, locoID));
