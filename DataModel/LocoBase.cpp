@@ -98,11 +98,6 @@ namespace DataModel
 		return true;
 	}
 
-	bool LocoBase::GetPushpull() const
-	{
-		return pushpull;
-	}
-
 	Propulsion LocoBase::GetPropulsion() const
 	{
 		return propulsion;

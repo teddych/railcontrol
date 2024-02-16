@@ -251,6 +251,7 @@ Manager::~Manager()
 
 	{
 		Storage::TransactionGuard guard(storage);
+		DeleteAllMapEntries(multipleUnits, multipleUnitMutex);
 		DeleteAllMapEntries(locos, locoMutex);
 		DeleteAllMapEntries(routes, routeMutex);
 		DeleteAllMapEntries(clusters, clusterMutex);
@@ -1042,7 +1043,14 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 	}
 
 	// if we have a new object we have to update multipleUnitID
-	multipleUnitID = multipleUnit->GetID();
+	if (multipleUnitID == 0)
+	{
+		multipleUnitID = multipleUnit->GetID();
+		for (auto slave : slaves)
+		{
+			slave->ObjectID1(multipleUnitID);
+		}
+	}
 
 	// FIXME: replace "M" with language dependent word
 	multipleUnit->SetName(CheckObjectName(locos, locoMutex, LocoNone, CheckObjectName(multipleUnits, multipleUnitMutex, multipleUnitID, name.size() == 0 ? "M" : name)));
@@ -3687,17 +3695,6 @@ bool Manager::LocoBaseStop(const ObjectIdentifier& locoBaseIdentifier)
 bool Manager::LocoBaseStopAll()
 {
 	{
-		std::lock_guard<std::mutex> guard(locoMutex);
-		for (auto& loco : locos)
-		{
-			if (!loco.second->IsInAutoMode())
-			{
-				continue;
-			}
-			loco.second->RequestManualMode();
-		}
-	}
-	{
 		std::lock_guard<std::mutex> guard(multipleUnitMutex);
 		for (auto& multipleUnit : multipleUnits)
 		{
@@ -3708,27 +3705,23 @@ bool Manager::LocoBaseStopAll()
 			multipleUnit.second->RequestManualMode();
 		}
 	}
+	{
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (auto& loco : locos)
+		{
+			if (!loco.second->IsInAutoMode())
+			{
+				continue;
+			}
+			loco.second->RequestManualMode();
+		}
+	}
 	bool anyLocosInAutoMode = true;
 	while (anyLocosInAutoMode)
 	{
+		// FIXME: if anyLocosInAutoMode will not go to false then break anyway
 		Utils::Utils::SleepForSeconds(1);
 		anyLocosInAutoMode = false;
-		{
-			std::lock_guard<std::mutex> guard(locoMutex);
-			for (auto& loco : locos)
-			{
-				if (loco.second->IsInManualMode())
-				{
-					continue;
-				}
-				const bool locoInManualMode = loco.second->GoToManualMode();
-				if (!locoInManualMode)
-				{
-					loco.second->RequestManualMode();
-				}
-				anyLocosInAutoMode |= !locoInManualMode;
-			}
-		}
 		{
 			std::lock_guard<std::mutex> guard(multipleUnitMutex);
 			for (auto& multipleUnit : multipleUnits)
@@ -3743,6 +3736,22 @@ bool Manager::LocoBaseStopAll()
 					multipleUnit.second->RequestManualMode();
 				}
 				anyLocosInAutoMode |= !multipleUnitInManualMode;
+			}
+		}
+		{
+			std::lock_guard<std::mutex> guard(locoMutex);
+			for (auto& loco : locos)
+			{
+				if (loco.second->IsInManualMode())
+				{
+					continue;
+				}
+				const bool locoInManualMode = loco.second->GoToManualMode();
+				if (!locoInManualMode)
+				{
+					loco.second->RequestManualMode();
+				}
+				anyLocosInAutoMode |= !locoInManualMode;
 			}
 		}
 	}

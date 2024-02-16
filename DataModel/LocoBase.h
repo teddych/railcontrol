@@ -200,8 +200,6 @@ namespace DataModel
 					|| this->routeFirst != nullptr;
 			}
 
-			virtual bool GetPushpull() const;
-
 			inline Length GetLength() const
 			{
 				return length;
@@ -210,6 +208,11 @@ namespace DataModel
 			inline void SetLength(const Length length)
 			{
 				this->length = length;
+			}
+
+			inline bool GetPushpull() const
+			{
+				return pushpull;
 			}
 
 			inline Speed GetMaxSpeed() const
