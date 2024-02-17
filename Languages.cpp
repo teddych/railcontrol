@@ -540,6 +540,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextReleaseTrack */ { "Release track", "Gleis freigeben", "Liberar vía" },
 /* TextReleaseTrackAndLoco */ { "Release track and locomotive", "Gleis und Lokomotive freigeben", "Liberar vía y locomotora" },
 /* TextReleaseWhenFree */ { "Release when free", "Freigeben wenn nicht besetzt", "Liberar si no está ocupado" },
+/* TextReleasingLoco */ { "Releasing locomotive", "Lokomotive wird freigeben", "Liberando locomotora" },
+/* TextReleasingMultipleUnit */ { "Releasing multiple unit", "Mehrfachtraktion wird freigeben", "Liberando unidad múltiple" },
 /* TextRemoveBackupFile */ { "Removing backup file {0}", "Lösche Sicherungskopie {0}", "Eliminando copia de respaldo {0}" },
 /* TextRenamingFromTo */ { "Renaming from {0} to {1}", "Benenne von {0} nach {1} um", "Renombrando de {0} a {1}" },
 /* TextRestarting */ { "Restarting", "Neustart", "Reiniciando" },

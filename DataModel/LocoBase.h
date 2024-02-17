@@ -186,12 +186,6 @@ namespace DataModel
 				return this->state == LocoStateManual;
 			}
 
-			inline bool IsInAutoMode() const
-			{
-				return this->state != LocoStateManual
-					&& this->state != LocoStateTerminated;
-			}
-
 			inline bool IsInUse() const
 			{
 				return this->speed > 0

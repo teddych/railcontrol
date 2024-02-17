@@ -3723,7 +3723,7 @@ bool Manager::LocoBaseStopAll()
 		std::lock_guard<std::mutex> guard(multipleUnitMutex);
 		for (auto& multipleUnit : multipleUnits)
 		{
-			if (!multipleUnit.second->IsInAutoMode())
+			if (multipleUnit.second->IsInManualMode())
 			{
 				continue;
 			}
@@ -3734,7 +3734,7 @@ bool Manager::LocoBaseStopAll()
 		std::lock_guard<std::mutex> guard(locoMutex);
 		for (auto& loco : locos)
 		{
-			if (!loco.second->IsInAutoMode())
+			if (!loco.second->IsInManualMode())
 			{
 				continue;
 			}
@@ -3742,9 +3742,8 @@ bool Manager::LocoBaseStopAll()
 		}
 	}
 	bool anyLocosInAutoMode = true;
-	while (anyLocosInAutoMode)
+	while (anyLocosInAutoMode && !isKillRunning())
 	{
-		// FIXME: if anyLocosInAutoMode will not go to false then break anyway
 		Utils::Utils::SleepForSeconds(1);
 		anyLocosInAutoMode = false;
 		{
@@ -3779,6 +3778,25 @@ bool Manager::LocoBaseStopAll()
 				anyLocosInAutoMode |= !locoInManualMode;
 			}
 		}
+	}
+
+	for (auto& multipleUnit : multipleUnits)
+	{
+		if (multipleUnit.second->IsInManualMode())
+		{
+			continue;
+		}
+		multipleUnit.second->GetLogger()->Info(Languages::Languages::TextReleasingMultipleUnit);
+		multipleUnit.second->Release();
+	}
+	for (auto& loco : locos)
+	{
+		if (loco.second->IsInManualMode())
+		{
+			continue;
+		}
+		loco.second->GetLogger()->Info(Languages::Languages::TextReleasingLoco);
+		loco.second->Release();
 	}
 	return true;
 }
