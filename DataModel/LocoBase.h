@@ -104,7 +104,8 @@ namespace DataModel
 			inline LocoBase(Manager* manager, const std::string& serialized)
 			:	LocoBase(manager, LocoNone)
 			{
-				Deserialize(serialized);
+				LocoBase::Deserialize(serialized);
+				logger = Logger::Logger::GetLogger(GetName());
 			}
 
 			virtual ~LocoBase();
