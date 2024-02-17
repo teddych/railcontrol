@@ -105,7 +105,7 @@ namespace Server { namespace Web
 
 			void MultipleUnitDelete(const MultipleUnitID multipleUnitID,
 				const std::string& name,
-				const std::string& matchkey);
+				const std::string& matchkey) override;
 
 			void RouteDelete(const RouteID routeID, const std::string& name) override;
 			void RouteRelease(const RouteID routeID) override;
