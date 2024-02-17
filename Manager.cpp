@@ -1894,7 +1894,7 @@ bool Manager::TrackSave(TrackID trackID,
 	const LayoutItemSize height,
 	const LayoutRotation rotation,
 	const DataModel::TrackType trackType,
-	const vector<FeedbackID>& newFeedbacks,
+	const vector<FeedbackID>& newFeedbacks, // FIXME: store as relation
 	const vector<Relation*>& newSignals,
 	const DataModel::SelectRouteApproach selectRouteApproach,
 	const bool allowLocoTurn,
@@ -1919,7 +1919,14 @@ bool Manager::TrackSave(TrackID trackID,
 	}
 
 	// if we have a new object we have to update trackID
-	trackID = track->GetID();
+	if (trackID == 0)
+	{
+		trackID = track->GetID();
+		for (auto signal : newSignals)
+		{
+			signal->ObjectID1(trackID);
+		}
+	}
 
 	// update existing track
 	track->SetName(CheckObjectName(tracks, trackMutex, trackID, name.size() == 0 ? "T" : name));
@@ -2483,7 +2490,18 @@ bool Manager::RouteSave(RouteID routeID,
 	}
 
 	// if we have a new object we have to update routeID
-	routeID = route->GetID();
+	if (routeID == 0)
+	{
+		routeID = route->GetID();
+		for (auto atLock : relationsAtLock)
+		{
+			atLock->ObjectID1(routeID);
+		}
+		for (auto atUnlock : relationsAtUnlock)
+		{
+			atUnlock->ObjectID1(routeID);
+		}
+	}
 
 	// update existing route
 	route->SetName(CheckObjectName(routes, routeMutex, routeID, name.size() == 0 ? "S" : name));
@@ -3221,7 +3239,14 @@ bool Manager::ClusterSave(ClusterID clusterID,
 	}
 
 	// if we have a new object we have to update clusterID
-	clusterID = cluster->GetID();
+	if (clusterID == 0)
+	{
+		clusterID = cluster->GetID();
+		for (auto track : newTracks)
+		{
+			track->ObjectID1(clusterID);
+		}
+	}
 
 	// update existing cluster
 	cluster->SetName(CheckObjectName(clusters, clusterMutex, clusterID, name.size() == 0 ? "C" : name));
