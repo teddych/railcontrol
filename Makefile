@@ -1,5 +1,5 @@
 
-RAILCONTROL_VERSION := 22
+RAILCONTROL_VERSION := 23
 
 CFLAGSSQLITE=-g -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
 CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration -Wno-\#warnings -Wno-deprecated -Wno-deprecated-non-prototype
