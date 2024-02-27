@@ -119,6 +119,7 @@ class Manager
 			const std::string& matchKey,
 			const Protocol protocol,
 			const Address address,
+			const Address serverAddress,
 			const Length length,
 			const bool pushpull,
 			const Speed maxSpeed,
@@ -222,6 +223,7 @@ class Manager
 			const ControlID controlID,
 			const std::string& matchKey,
 			const Address address,
+			const Address serverAddress,
 			const Length length,
 			const bool pushpull,
 			const Speed maxSpeed,
@@ -653,6 +655,13 @@ class Manager
 			const DataModel::LayoutItem::LayoutItemSize posY,
 			std::string& result);
 
+		inline bool IsServerEnabled() const
+		{
+			return serverEnabled;
+		}
+
+		DataModel::ObjectIdentifier GetIdentifierOfServerAddress(const Address serverAddress) const;
+
 	private:
 		bool ControlIsOfHardwareType(const ControlID controlID, const HardwareType hardwareType);
 
@@ -843,11 +852,11 @@ class Manager
 
 		inline bool CheckIfThreeNumbers(const std::string& s)
 		{
-			size_t sSize = s.size();
+			const size_t sSize = s.size();
 			return sSize >= 3
-			&& CheckIfNumber(s.at(sSize-1))
-			&& CheckIfNumber(s.at(sSize-2))
-			&& CheckIfNumber(s.at(sSize-3));
+				&& CheckIfNumber(s.at(sSize - 1))
+				&& CheckIfNumber(s.at(sSize - 2))
+				&& CheckIfNumber(s.at(sSize - 3));
 		}
 
 		template<class ID, class T>
@@ -974,6 +983,8 @@ class Manager
 		std::thread debounceThread;
 
 		volatile bool initLocosDone;
+
+		bool serverEnabled;
 
 		const std::string unknownControl;
 		const std::string unknownLoco;

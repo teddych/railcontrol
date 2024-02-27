@@ -18,8 +18,6 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include <cstring>		//memset
-
 #include "DataModel/LocoBase.h"
 #include "DataModel/LocoFunctions.h"
 #include "Manager.h"
@@ -31,8 +29,6 @@ using DataModel::Loco;
 using DataModel::LocoBase;
 using DataModel::LocoFunctionNr;
 using DataModel::LocoFunctionState;
-
-//namespace Z21Enums = Hardware::Protocols::Z21Enums;
 
 namespace Network
 {
@@ -96,14 +92,13 @@ namespace Server { namespace Z21
 		const LocoBase* locoBase,
 		__attribute__((unused)) const Speed speed)
 	{
-		const Loco* loco = dynamic_cast<const Loco*>(locoBase);
-		if (nullptr == loco)
+		if (nullptr == locoBase)
 		{
 			return;
 		}
 		for (auto client : clients)
 		{
-			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(loco);
+			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(locoBase);
 		}
 	}
 
@@ -111,14 +106,13 @@ namespace Server { namespace Z21
 		const LocoBase* locoBase,
 		__attribute__((unused)) const Orientation orientation)
 	{
-		const Loco* loco = dynamic_cast<const Loco*>(locoBase);
-		if (nullptr == loco)
+		if (nullptr == locoBase)
 		{
 			return;
 		}
 		for (auto client : clients)
 		{
-			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(loco);
+			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(locoBase);
 		}
 	}
 
@@ -127,14 +121,13 @@ namespace Server { namespace Z21
 		__attribute__((unused)) const LocoFunctionNr function,
 		__attribute__((unused)) const LocoFunctionState state)
 	{
-		const Loco* loco = dynamic_cast<const Loco*>(locoBase);
-		if (nullptr == loco)
+		if (nullptr == locoBase)
 		{
 			return;
 		}
 		for (auto client : clients)
 		{
-			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(loco);
+			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(locoBase);
 		}
 	}
 

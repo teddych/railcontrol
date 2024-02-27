@@ -70,6 +70,7 @@ namespace DataModel
 			:	Object(locoID),
 				HardwareHandle(),
 				manager(manager),
+				serverAddress(AddressNone),
 				length(0),
 				pushpull(false),
 				maxSpeed(0),
@@ -193,6 +194,16 @@ namespace DataModel
 					|| this->state != LocoStateManual
 					|| this->trackFrom != nullptr
 					|| this->routeFirst != nullptr;
+			}
+
+			inline Address GetServerAddress() const
+			{
+				return serverAddress;
+			}
+
+			inline void SetServerAddress(const Address serverAddress)
+			{
+				this->serverAddress = serverAddress;
 			}
 
 			inline Length GetLength() const
@@ -349,6 +360,8 @@ namespace DataModel
 
 			mutable std::mutex stateMutex;
 			std::thread locoThread;
+
+			Address serverAddress;
 
 			Length length;
 			bool pushpull;

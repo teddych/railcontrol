@@ -1419,6 +1419,7 @@ namespace Server { namespace Web
 		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		Protocol protocol = ProtocolNone;
 		Address address = AddressDefault;
+		Address serverAddress = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
 		bool pushpull = false;
 		Length length = 0;
@@ -1441,6 +1442,7 @@ namespace Server { namespace Web
 				matchKey = loco->GetMatchKey();
 				protocol = loco->GetProtocol();
 				address = loco->GetAddress();
+				serverAddress = loco->GetServerAddress();
 				name = loco->GetName();
 				pushpull = loco->GetPushpull();
 				length = loco->GetLength();
@@ -1487,6 +1489,10 @@ namespace Server { namespace Web
 		basicContent.AddChildTag(HtmlTagControlLoco(controlId, "loco", locoId));
 		basicContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagMatchKeyProtocolLoco(controlId, matchKey, protocol)));
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 9999));
+		if (manager.IsServerEnabled())
+		{
+			basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("serveraddress", Languages::TextServerAddress, serverAddress, 0, 9999));
+		}
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
 		basicContent.AddChildTag(WebClientStatic::HtmlTagSelectPropulsion(propulsion));
 		basicContent.AddChildTag(WebClientStatic::HtmlTagSelectTrainType(trainType));
@@ -1510,6 +1516,7 @@ namespace Server { namespace Web
 		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		string name = Languages::GetText(Languages::TextNew);
 		bool pushpull = false;
+		Address serverAddress = AddressNone;
 		Length length = 0;
 		Speed maxSpeed = MaxSpeed;
 		Speed travelSpeed = DefaultTravelSpeed;
@@ -1529,6 +1536,7 @@ namespace Server { namespace Web
 				matchKey = multipleUnit->GetMatchKey();
 				name = multipleUnit->GetName();
 				pushpull = multipleUnit->GetPushpull();
+				serverAddress = multipleUnit->GetServerAddress();
 				length = multipleUnit->GetLength();
 				maxSpeed = multipleUnit->GetMaxSpeed();
 				travelSpeed = multipleUnit->GetTravelSpeed();
@@ -1570,6 +1578,10 @@ namespace Server { namespace Web
 		basicContent.AddClass("tab_content");
 		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		basicContent.AddChildTag(HtmlTagControlMultipleUnit(controlId, "multipleunit", multipleUnitId));
+		if (manager.IsServerEnabled())
+		{
+			basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("serveraddress", Languages::TextServerAddress, serverAddress, 0, 9999));
+		}
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
 
 		basicContent.AddChildTag(WebClientStatic::HtmlTagSelectTrainType(trainType));
@@ -1595,6 +1607,7 @@ namespace Server { namespace Web
 		const string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
+		const Address serverAddress = Utils::Utils::GetIntegerMapEntry(arguments, "serveraddress", AddressNone);
 		const Length length = Utils::Utils::GetIntegerMapEntry(arguments, "length", 0);
 		const bool pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", false);
 		const Speed maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
@@ -1651,6 +1664,7 @@ namespace Server { namespace Web
 				matchKey,
 				protocol,
 				address,
+				serverAddress,
 				length,
 				pushpull,
 				maxSpeed,
@@ -1676,6 +1690,7 @@ namespace Server { namespace Web
 		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		const string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
+		const Address serverAddress = Utils::Utils::GetIntegerMapEntry(arguments, "serveraddress", AddressNone);
 		const Length length = Utils::Utils::GetIntegerMapEntry(arguments, "length", 0);
 		const bool pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", false);
 		const Speed maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);
@@ -1740,6 +1755,7 @@ namespace Server { namespace Web
 			controlId,
 			matchKey,
 			address,
+			serverAddress,
 			length,
 			pushpull,
 			maxSpeed,

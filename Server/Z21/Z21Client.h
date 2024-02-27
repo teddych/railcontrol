@@ -73,7 +73,7 @@ namespace Server { namespace Z21
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
 
-			void SendLocoInfo(const DataModel::LocoBase* const loco);
+			void SendLocoInfo(const DataModel::LocoBase* const locoBase);
 
 		private:
 			inline void SendSerialNumber()

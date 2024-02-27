@@ -58,8 +58,6 @@ namespace Server { namespace Z21
 				return WebserverName;
 			}
 
-			void AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory) override;
-
 			void Booster(const ControlType controlType, const BoosterState status) override;
 
 			void LocoBaseOrientation(const ControlType controlType,
@@ -74,6 +72,8 @@ namespace Server { namespace Z21
 			void LocoBaseSpeed(const ControlType controlType,
 				const DataModel::LocoBase* loco,
 				const Speed speed) override;
+
+			void AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory) override;
 
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch) override;
 

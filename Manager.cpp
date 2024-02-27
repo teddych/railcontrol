@@ -62,6 +62,7 @@ Manager::Manager(Config& config)
 	run(false),
 	debounceRun(false),
 	initLocosDone(false),
+	serverEnabled(false),
 	unknownControl(Languages::GetText(Languages::TextControlDoesNotExist)),
 	unknownLoco(Languages::GetText(Languages::TextLocoDoesNotExist)),
 	unknownMultipleUnit(Languages::GetText(Languages::TextMultipleUnitDoesNotExist)),
@@ -97,6 +98,7 @@ Manager::Manager(Config& config)
 	if (config.getBoolValue("z21server", false))
 	{
 		controls[ControlIdZ21Server] = new Server::Z21::Z21Server(*this, Server::Z21::Z21Server::Z21Port);
+		serverEnabled = true;
 	}
 
 	storage->AllHardwareParams(hardwareParams);
@@ -733,6 +735,7 @@ bool Manager::LocoSave(LocoID locoID,
 	const std::string& matchKey,
 	const Protocol protocol,
 	const Address address,
+	const Address serverAddress,
 	const Length length,
 	const bool pushpull,
 	const Speed maxSpeed,
@@ -769,6 +772,7 @@ bool Manager::LocoSave(LocoID locoID,
 	loco->SetMatchKey(matchKey);
 	loco->SetProtocol(protocol);
 	loco->SetAddress(address);
+	loco->SetServerAddress(serverAddress);
 	loco->SetLength(length);
 	loco->SetPushpull(pushpull);
 	loco->SetMaxSpeed(maxSpeed);
@@ -1014,6 +1018,7 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 	const ControlID controlID,
 	const std::string& matchKey,
 	const Address address,
+	const Address serverAddress,
 	const Length length,
 	const bool pushpull,
 	const Speed maxSpeed,
@@ -1058,6 +1063,7 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 	multipleUnit->SetMatchKey(matchKey);
 	multipleUnit->SetProtocol(ProtocolNone);
 	multipleUnit->SetAddress(address);
+	multipleUnit->SetServerAddress(serverAddress);
 	multipleUnit->SetLength(length);
 	multipleUnit->SetPushpull(pushpull);
 	multipleUnit->SetMaxSpeed(maxSpeed);
@@ -4395,6 +4401,33 @@ bool Manager::LayoutItemNewPosition(const DataModel::ObjectIdentifier& identifie
 		default:
 			return false;
 	}
+}
+
+ObjectIdentifier Manager::GetIdentifierOfServerAddress(const Address serverAddress) const
+{
+	{
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (auto& loco : locos)
+		{
+			if (loco.second->GetServerAddress() == serverAddress)
+			{
+				return ObjectIdentifier(ObjectTypeLoco, loco.second->GetID());
+			}
+		}
+	}
+
+	{
+		std::lock_guard<std::mutex> guard(multipleUnitMutex);
+		for (auto& multipleUnit : multipleUnits)
+		{
+			if (multipleUnit.second->GetServerAddress() == serverAddress)
+			{
+				return ObjectIdentifier(ObjectTypeMultipleUnit, multipleUnit.second->GetID());
+			}
+		}
+	}
+
+	return ObjectIdentifier(ObjectTypeNone, ObjectNone);
 }
 
 Hardware::HardwareParams* Manager::CreateAndAddControl()
