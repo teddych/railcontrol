@@ -36,7 +36,7 @@ namespace DataModel
 			inline HardwareHandle()
 			:	controlID(ControlNone),
 			 	protocol(ProtocolNone),
-			 	address(AddressNone)
+			 	address(AddressDefault)
 			{
 			}
 
@@ -66,7 +66,14 @@ namespace DataModel
 
 			inline void SetAddress(Address address)
 			{
-				this->address = address;
+				if (address == AddressNone)
+				{
+					this->address = AddressDefault;
+				}
+				else
+				{
+					this->address = address;
+				}
 			}
 
 			inline Address GetAddress() const
