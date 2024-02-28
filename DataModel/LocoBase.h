@@ -203,7 +203,14 @@ namespace DataModel
 
 			inline void SetServerAddress(const Address serverAddress)
 			{
-				this->serverAddress = serverAddress;
+				if (serverAddress == AddressNone)
+				{
+					this->serverAddress = GetAddress();
+				}
+				else
+				{
+					this->serverAddress = serverAddress;
+				}
 			}
 
 			inline Length GetLength() const
