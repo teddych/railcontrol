@@ -35,8 +35,9 @@ namespace DataModel
 		public:
 			inline HardwareHandle()
 			:	controlID(ControlNone),
-			 	protocol(ProtocolNone),
-			 	address(AddressDefault)
+				protocol(ProtocolNone),
+				address(AddressDefault),
+				serverAddress(AddressNone)
 			{
 			}
 
@@ -81,6 +82,23 @@ namespace DataModel
 				return address;
 			}
 
+			inline void SetServerAddress(const Address serverAddress)
+			{
+				if (serverAddress == AddressNone)
+				{
+					this->serverAddress = this->address;
+				}
+				else
+				{
+					this->serverAddress = serverAddress;
+				}
+			}
+
+			inline Address GetServerAddress() const
+			{
+				return serverAddress;
+			}
+
 		protected:
 			virtual std::string Serialize() const;
 			virtual bool Deserialize(const std::map<std::string,std::string>& arguments);
@@ -89,6 +107,7 @@ namespace DataModel
 			ControlID controlID;
 			Protocol protocol;
 			Address address;
+			Address serverAddress;
 	};
 } // namespace DataModel
 

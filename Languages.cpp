@@ -564,6 +564,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSenderSocketCreated */ { "Sender socket created", "Sender socket erstellt", "Socket para enviar datos creado" },
 /* TextSenderThreadStarted */ { "Sender thread started", "Sender Thread gestartet", "Thread enviador creado" },
 /* TextSendingLocoInfo */ { "Sending LocoInfo with address {0}", "Sende LocoInfo mit Adresse {0}", "Enviando LocoInfo con dirección {0}" },
+/* TextSendingTurnoutInfo */ { "Sending TurnoutInfo with address {0}", "Sende TurnoutInfo mit Adresse {0}", "Enviando TurnoutInfo con dirección {0}" },
 /* TextSeparator */ { "<hr>", "<hr>", "<hr>" },
 /* TextSerialNumberIs */ { "Serialnumber is {0}", "Seriennummer ist {0}", "Número de serie es {0}" },
 /* TextSerialPort */ { "Serial port", "Serieller Anschluss", "Puerto serie" },

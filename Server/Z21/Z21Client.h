@@ -61,6 +61,11 @@ namespace Server { namespace Z21
 				return ((buffer[0] & 0x3F) << 8) + buffer[1];
 			}
 
+			inline uint16_t ParseAccessoryAddress(const unsigned char* buffer)
+			{
+				return ((buffer[0] << 8) + buffer[1]) + 1; // + 1 because Z21 protocol is 0 based
+			}
+
 			inline void SendPowerOff()
 			{
 				const unsigned char sendBuffer[7] = { 0x07, 0x00, 0x40, 0x00, 0x61, 0x00, 0x61 };
@@ -74,6 +79,8 @@ namespace Server { namespace Z21
 			}
 
 			void SendLocoInfo(const DataModel::LocoBase* const locoBase);
+
+			void SendTurnoutInfo(const DataModel::AccessoryBase* const accessoryBase);
 
 		private:
 			inline void SendSerialNumber()

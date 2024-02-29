@@ -59,7 +59,6 @@ namespace DataModel
 		str += ";functions=" + functions.Serialize();
 		str += ";orientation=" + to_string(orientation);
 		str += ";track=" + to_string(trackFrom ? trackFrom->GetID() : TrackNone);
-		str += ";serveraddress=" + to_string(serverAddress);
 		str += ";length=" + to_string(length);
 		str += ";pushpull=" + to_string(pushpull);
 		str += ";maxspeed=" + to_string(maxSpeed);
@@ -86,7 +85,6 @@ namespace DataModel
 		trackFrom = manager->GetTrack(static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone)));
 		functions.Deserialize(Utils::Utils::GetStringMapEntry(arguments, "functions", "0"));
 		orientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "orientation", OrientationRight));
-		serverAddress = static_cast<Address>(Utils::Utils::GetIntegerMapEntry(arguments, "serveraddress", AddressNone));
 		length = static_cast<Length>(Utils::Utils::GetIntegerMapEntry(arguments, "length", 0));
 		pushpull = Utils::Utils::GetBoolMapEntry(arguments, "pushpull", false);
 		maxSpeed = Utils::Utils::GetIntegerMapEntry(arguments, "maxspeed", MaxSpeed);

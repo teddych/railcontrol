@@ -258,9 +258,37 @@ class Manager
 
 		const std::string& GetLocoBaseName(const DataModel::ObjectIdentifier& locoBaseIdentifier) const;
 
+		// accessory base
+		inline DataModel::AccessoryBase* GetAccessoryBase(const DataModel::ObjectIdentifier& accessoryBaseIdentifier) const
+		{
+			switch (accessoryBaseIdentifier.GetObjectType())
+			{
+				case ObjectTypeAccessory:
+					return static_cast<DataModel::AccessoryBase*>(GetAccessory(accessoryBaseIdentifier.GetObjectID()));
+
+				case ObjectTypeSwitch:
+					return static_cast<DataModel::AccessoryBase*>(GetSwitch(accessoryBaseIdentifier.GetObjectID()));
+
+				case ObjectTypeSignal:
+					return static_cast<DataModel::AccessoryBase*>(GetSignal(accessoryBaseIdentifier.GetObjectID()));
+
+				default:
+					return nullptr;
+			}
+		}
+
+		void AccessoryBaseState(const ControlType controlType,
+			const ControlID controlID,
+			const Protocol protocol,
+			const Address address,
+			const DataModel::AccessoryState state);
+
+		void AccessoryBaseState(const ControlType controlType,
+			const DataModel::ObjectIdentifier& identifier,
+			const DataModel::AccessoryState state);
+
 		// accessory
-		void AccessoryState(const ControlType controlType, const ControlID controlID, const Protocol protocol, const Address address, const DataModel::AccessoryState state);
-		bool AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::AccessoryState state, const bool force);
+		bool AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::AccessoryState state, const bool force = false);
 		void AccessoryState(const ControlType controlType, const AccessoryID accessoryID, const DataModel::AccessoryState state, const bool inverted, const bool on);
 		DataModel::Accessory* GetAccessory(const AccessoryID accessoryID) const;
 
@@ -285,6 +313,7 @@ class Manager
 			const std::string& matchKey,
 			const Protocol protocol,
 			const Address address,
+			const Address serverAddress,
 			const DataModel::AccessoryType type,
 			const DataModel::AccessoryPulseDuration duration,
 			const bool inverted,
@@ -382,7 +411,7 @@ class Manager
 			std::string& result);
 
 		// switch
-		bool SwitchState(const ControlType controlType, const SwitchID switchID, const DataModel::AccessoryState state, const bool force);
+		bool SwitchState(const ControlType controlType, const SwitchID switchID, const DataModel::AccessoryState state, const bool force = false);
 		DataModel::Switch* GetSwitch(const SwitchID switchID) const;
 		const std::string& GetSwitchName(const SwitchID switchID) const;
 
@@ -403,6 +432,7 @@ class Manager
 			const std::string& matchKey,
 			const Protocol protocol,
 			const Address address,
+			const Address serverAddress,
 			const DataModel::AccessoryType type,
 			const DataModel::AccessoryPulseDuration duration,
 			const bool inverted,
@@ -505,6 +535,7 @@ class Manager
 			const std::string& matchKey,
 			const Protocol protocol,
 			const Address address,
+			const Address serverAddress,
 			const DataModel::AccessoryType type,
 			const std::map<DataModel::AccessoryState,DataModel::AddressOffset>& offsets,
 			const DataModel::AccessoryPulseDuration duration,
@@ -660,7 +691,8 @@ class Manager
 			return serverEnabled;
 		}
 
-		DataModel::ObjectIdentifier GetIdentifierOfServerAddress(const Address serverAddress) const;
+		DataModel::ObjectIdentifier GetIdentifierOfServerLocoAddress(const Address serverAddress) const;
+		DataModel::ObjectIdentifier GetIdentifierOfServerAccessoryAddress(const Address serverAddress) const;
 
 	private:
 		bool ControlIsOfHardwareType(const ControlID controlID, const HardwareType hardwareType);

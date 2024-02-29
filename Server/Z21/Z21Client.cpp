@@ -156,12 +156,23 @@ namespace Server { namespace Z21
 
 			case Z21Enums::XHeaderGetLocoInfo:
 				{
-					const DataModel::LocoBase* const locoBase = manager.GetLocoBase(manager.GetIdentifierOfServerAddress(ParseLocoAddress(buffer + 6)));
+					const DataModel::LocoBase* const locoBase = manager.GetLocoBase(manager.GetIdentifierOfServerLocoAddress(ParseLocoAddress(buffer + 6)));
 					if (nullptr == locoBase)
 					{
 						return;
 					}
 					SendLocoInfo(locoBase);
+				}
+				return;
+
+			case Z21Enums::XHeaderGetTurnoutInfo:
+				{
+					const DataModel::AccessoryBase* const accessoryBase = manager.GetAccessoryBase(manager.GetIdentifierOfServerAccessoryAddress(ParseLocoAddress(buffer + 5)));
+					if (nullptr == accessoryBase)
+					{
+						return;
+					}
+					SendTurnoutInfo(accessoryBase);
 				}
 				return;
 
@@ -182,6 +193,21 @@ namespace Server { namespace Z21
 			case Z21Enums::XHeaderSetLocoBinaryState:
 				// we do not care
 				return;
+
+			case Z21Enums::XHeaderSetTurnout:
+			{
+				const Address address = ParseAccessoryAddress(buffer + 5);
+				const ObjectIdentifier accessoryBaseIdentifier(manager.GetIdentifierOfServerAccessoryAddress(address));
+				const bool activate = (buffer[7] & 0x08) == 0x08;
+				if (!activate)
+				{
+					return;
+				}
+				const DataModel::AccessoryState state = static_cast<DataModel::AccessoryState>(buffer[7] & 0x01);
+				logger->Debug(Languages::Languages::TextReceivedAccessoryCommand, Utils::Utils::ProtocolToString(ProtocolDCC), address, state);
+				manager.AccessoryBaseState(ControlTypeZ21Server, accessoryBaseIdentifier, state);
+				return;
+			}
 
 			case Z21Enums::XHeaderGetFirmwareVersion:
 				SendFirmwareVersion();
@@ -221,7 +247,7 @@ namespace Server { namespace Z21
 
 	void Z21Client::ParseLocoDrive(const unsigned char* buffer)
 	{
-		const ObjectIdentifier locoBaseIdentifier(manager.GetIdentifierOfServerAddress(ParseLocoAddress(buffer + 6)));
+		const ObjectIdentifier locoBaseIdentifier(manager.GetIdentifierOfServerLocoAddress(ParseLocoAddress(buffer + 6)));
 		Speed speed;
 		switch(buffer[5])
 		{
@@ -297,6 +323,21 @@ namespace Server { namespace Z21
 				| (locoBase->GetFunctionState(29) & 0x01);
 		sendBuffer[sizeof(sendBuffer) - 1] = Utils::Utils::CalcXORCheckSum(sendBuffer, sizeof(sendBuffer) - 1);
 		logger->Debug(Languages::Languages::TextSendingLocoInfo, address);
+		Send(sendBuffer, sizeof(sendBuffer));
+	}
+
+	void Z21Client::SendTurnoutInfo(const DataModel::AccessoryBase* const accessoryBase)
+	{
+		unsigned char sendBuffer[9] = { 0x09, 0x00, 0x40, 0x00, 0x43 };
+		const Address address = accessoryBase->GetServerAddress();
+		if (address == AddressNone)
+		{
+			return;
+		}
+		Utils::Utils::ShortToDataBigEndian(address - 1, sendBuffer + 5); // - 1 because Z21 address is 0-based
+		sendBuffer[7] = 1 << (accessoryBase->GetAccessoryState() & 0x01);
+		sendBuffer[sizeof(sendBuffer) - 1] = Utils::Utils::CalcXORCheckSum(sendBuffer, sizeof(sendBuffer) - 1);
+		logger->Debug(Languages::Languages::TextSendingTurnoutInfo, address);
 		Send(sendBuffer, sizeof(sendBuffer));
 	}
 }} // namespace Server::Z21

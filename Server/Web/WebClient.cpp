@@ -2103,6 +2103,7 @@ namespace Server { namespace Web
 		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		Protocol protocol = ProtocolNone;
 		Address address = AddressDefault;
+		Address serverAddress = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
@@ -2118,6 +2119,7 @@ namespace Server { namespace Web
 				matchKey = accessory->GetMatchKey();
 				protocol = accessory->GetProtocol();
 				address = accessory->GetAddress();
+				serverAddress = accessory->GetServerAddress();
 				name = accessory->GetName();
 				posx = accessory->GetPosX();
 				posy = accessory->GetPosY();
@@ -2158,6 +2160,10 @@ namespace Server { namespace Web
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(WebClientStatic::HtmlTagDuration(duration));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
+		if (manager.IsServerEnabled())
+		{
+			mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("serveraddress", Languages::TextServerAddress, serverAddress, 0, 2044));
+		}
 		formContent.AddChildTag(mainContent);
 
 		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz));
@@ -2182,17 +2188,18 @@ namespace Server { namespace Web
 
 	void WebClient::HandleAccessorySave(const map<string, string>& arguments)
 	{
-		AccessoryID accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
-		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
-		Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
-		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
-		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
-		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
-		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
+		const AccessoryID accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		const string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
+		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
+		const Address serverAddress = Utils::Utils::GetIntegerMapEntry(arguments, "serveraddress", AddressNone);
+		const LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		const LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		const LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		const DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		const bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
 		if (!manager.AccessorySave(accessoryID,
 			name,
@@ -2203,6 +2210,7 @@ namespace Server { namespace Web
 			matchKey,
 			protocol,
 			address,
+			serverAddress,
 			DataModel::AccessoryTypeDefault,
 			duration,
 			inverted,
@@ -2335,6 +2343,7 @@ namespace Server { namespace Web
 		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		Protocol protocol = ProtocolNone;
 		Address address = AddressDefault;
+		Address serverAddress = AddressNone;
 		string name = Languages::GetText(Languages::TextNew);
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
@@ -2352,6 +2361,7 @@ namespace Server { namespace Web
 				matchKey = mySwitch->GetMatchKey();
 				protocol = mySwitch->GetProtocol();
 				address = mySwitch->GetAddress();
+				serverAddress = mySwitch->GetServerAddress();
 				name = mySwitch->GetName();
 				posx = mySwitch->GetPosX();
 				posy = mySwitch->GetPosY();
@@ -2402,6 +2412,10 @@ namespace Server { namespace Web
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
 		mainContent.AddChildTag(WebClientStatic::HtmlTagDuration(duration));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
+		if (manager.IsServerEnabled())
+		{
+			mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("serveraddress", Languages::TextServerAddress, serverAddress, 0, 2044));
+		}
 		formContent.AddChildTag(mainContent);
 
 		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation));
@@ -2414,19 +2428,20 @@ namespace Server { namespace Web
 
 	void WebClient::HandleSwitchSave(const map<string, string>& arguments)
 	{
-		SwitchID switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
-		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
-		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
-		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
-		Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
-		Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
-		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
-		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
-		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
-		LayoutRotation rotation = Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0);
-		DataModel::AccessoryType type = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SwitchTypeLeft));
-		DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
-		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
+		const SwitchID switchID = Utils::Utils::GetIntegerMapEntry(arguments, "switch", SwitchNone);
+		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		const ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
+		const string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
+		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
+		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
+		const Address serverAddress = Utils::Utils::GetIntegerMapEntry(arguments, "serveraddress", AddressNone);
+		const LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
+		const LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
+		const LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		const LayoutRotation rotation = Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0);
+		const DataModel::AccessoryType type = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", DataModel::SwitchTypeLeft));
+		const DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
+		const bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
 		if (!manager.SwitchSave(switchID,
 			name,
@@ -2438,6 +2453,7 @@ namespace Server { namespace Web
 			matchKey,
 			protocol,
 			address,
+			serverAddress,
 			type,
 			duration,
 			inverted,

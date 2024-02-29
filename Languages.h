@@ -564,6 +564,7 @@ class Languages
 			TextSenderSocketCreated,
 			TextSenderThreadStarted,
 			TextSendingLocoInfo,
+			TextSendingTurnoutInfo,
 			TextSeparator,
 			TextSerialNumberIs,
 			TextSerialPort,

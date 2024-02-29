@@ -121,7 +121,7 @@ namespace Server { namespace Z21
 		__attribute__((unused)) const LocoFunctionNr function,
 		__attribute__((unused)) const LocoFunctionState state)
 	{
-		if (nullptr == locoBase)
+		if (!locoBase)
 		{
 			return;
 		}
@@ -132,17 +132,32 @@ namespace Server { namespace Z21
 	}
 
 	void Z21Server::AccessoryState(__attribute__((unused)) const ControlType controlType,
-		__attribute__((unused)) const DataModel::Accessory* accessory)
+		const DataModel::Accessory* accessory)
 	{
+		AccessoryBaseState(accessory);
 	}
 
 	void Z21Server::SwitchState(__attribute__((unused)) const ControlType controlType,
-		__attribute__((unused)) const DataModel::Switch* mySwitch)
+		const DataModel::Switch* mySwitch)
 	{
+		AccessoryBaseState(mySwitch);
 	}
 
 	void Z21Server::SignalState(__attribute__((unused)) const ControlType controlType,
-		__attribute__((unused)) const DataModel::Signal* signal)
+		const DataModel::Signal* signal)
 	{
+		AccessoryBaseState(signal);
+	}
+
+	void Z21Server::AccessoryBaseState(const DataModel::AccessoryBase* accessoryBase)
+	{
+		if (!accessoryBase)
+		{
+			return;
+		}
+		for (auto client : clients)
+		{
+			reinterpret_cast<Z21Client*>(client)->SendTurnoutInfo(accessoryBase);
+		}
 	}
 }} // namespace Server::Z21

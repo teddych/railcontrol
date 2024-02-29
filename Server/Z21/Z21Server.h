@@ -95,5 +95,7 @@ namespace Server { namespace Z21
 			void ParseXHeader(const unsigned char* buffer);
 
 			void ParseDB0(const unsigned char* buffer);
+
+			void AccessoryBaseState(const DataModel::AccessoryBase* accessoryBase);
 	};
 }} // namespace Server::Z21
