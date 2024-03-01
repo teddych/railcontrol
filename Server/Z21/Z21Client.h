@@ -103,7 +103,9 @@ namespace Server { namespace Z21
 
 			inline void SendSystemStatusChanged()
 			{
-				const unsigned char sendBuffer[20] = { 0x14, 0x00, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x20, 0x4E, 0x50, 0x46, 0x00, 0x00, 0x00, 0x73 };
+				const BoosterState booster = manager.Booster();
+				const unsigned char centralState = (!booster) << 1;
+				const unsigned char sendBuffer[20] = { 0x14, 0x00, 0x84, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x20, 0x00, 0x20, 0x4E, 0x50, 0x46, centralState, 0x00, 0x00, 0x71 };
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
 
@@ -127,7 +129,10 @@ namespace Server { namespace Z21
 
 			inline void SendStatusChanged()
 			{
-				const unsigned char sendBuffer[8] = { 0x08, 0x00, 0x40, 0x00, 0x62, 0x22, 0x00, 0x08 };
+				const BoosterState booster = manager.Booster();
+				const unsigned char centralState = (!booster) << 1;
+				unsigned char sendBuffer[8] = { 0x08, 0x00, 0x40, 0x00, 0x62, 0x22, centralState };
+				sendBuffer[sizeof(sendBuffer) - 1] = Utils::Utils::CalcXORCheckSum(sendBuffer, sizeof(sendBuffer) - 1);
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
 
