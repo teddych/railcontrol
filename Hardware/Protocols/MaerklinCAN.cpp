@@ -101,21 +101,29 @@ namespace Hardware
 			Address maskedAddress = address & 0xFC00;
 			type = LocoTypeLoco;
 
-			if (maskedAddress == 0x0000 || maskedAddress == 0x3000)
+			if ((maskedAddress == 0x0000)     // MM Loco
+				|| (maskedAddress == 0x1000)  // MM Loco (unused by CS2)
+				|| (maskedAddress == 0x2000)  // MM Accessory (unused by CS2)
+				|| (maskedAddress == 0x3000)) // MM Accessory
 			{
 				protocol = ProtocolMM;
 				address &= 0x03FF;
 				return;
 			}
 
-			if (maskedAddress == 0x2000)
+			// 0x0800 is SX1 Loco (unused by CS2)
+			// 0x2800 is SX1 Accessory (unused by CS2)
+
+			if (maskedAddress == 0x2C00) // Multiple Unit
 			{
-				protocol = ProtocolMulti;
+				protocol = ProtocolMultipleUnit;
+				type = LocoTypeMultipleUnit;
 				address &= 0x03FF;
 				return;
 			}
 
-			if (maskedAddress == 0x3800 || maskedAddress == 0x3C00)
+			if ((maskedAddress == 0x3800)     // DCC Accessory
+				|| (maskedAddress == 0x3C00)) // DCC Accessory
 			{
 				protocol = ProtocolDCC;
 				address &= 0x03FF;
@@ -124,12 +132,12 @@ namespace Hardware
 
 			maskedAddress = address & 0xC000;
 			address &= 0x3FFF;
-			if (maskedAddress == 0x4000)
+			if (maskedAddress == 0x4000) // MFX Loco
 			{
 				protocol = ProtocolMFX;
 				return;
 			}
-			if (maskedAddress == 0xC000)
+			if (maskedAddress == 0xC000) // DCC Loco
 			{
 				protocol = ProtocolDCC;
 				return;
@@ -169,7 +177,7 @@ namespace Hardware
 			{
 				localID |= 0x4000;
 			}
-			else if (protocol == ProtocolMulti)
+			else if (protocol == ProtocolMultipleUnit)
 			{
 				localID |= 0x2000;
 			}
@@ -771,7 +779,7 @@ namespace Hardware
 			while (lines.size())
 			{
 				string& line = lines.front();
-				if (line.length() == 0 || line[0] != ' ')
+				if ((line.length() == 0) || (line[0] != ' '))
 				{
 					break;
 				}
@@ -806,16 +814,17 @@ namespace Hardware
 					cacheEntry.SetType(type);
 					logger->Info(Languages::TextCs2MasterLocoAddressProtocol, address, protocol);
 				}
-				else if (key.compare("funktionen") == 0
-					|| key.compare("funktionen_2") == 0
-					|| key.compare("fkt") == 0
-					|| key.compare("fkt2") == 0)
+				else if ((key.compare("funktionen") == 0)
+					|| (key.compare("funktionen_2") == 0)
+					|| (key.compare("fkt") == 0)
+					|| (key.compare("fkt2") == 0))
 				{
 					ParseCs2FileLocomotiveFunction(lines, cacheEntry);
 					continue;
 				}
 				lines.pop_front();
 			}
+
 			if (remove)
 			{
 				logger->Info(Languages::TextCs2MasterLocoRemove, name);
