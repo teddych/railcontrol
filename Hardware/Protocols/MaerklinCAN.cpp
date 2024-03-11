@@ -769,6 +769,39 @@ namespace Hardware
 			}
 		}
 
+		void MaerklinCAN::ParseCs2FileLocomotiveTraktion(deque<string>& lines, LocoCacheEntry& cacheEntry)
+		{
+			lines.pop_front();
+			Protocol protocol = ProtocolNone;
+			Address address = AddressNone;
+			string name;
+			while (lines.size())
+			{
+				string& line = lines.front();
+				string key;
+				string value;
+				bool ok = ParseCs2FileSubkeyValue(line, key, value);
+				if (ok == false)
+				{
+					break;
+				}
+				if (key.compare("lok") == 0)
+				{
+					Address input = Utils::Utils::HexToInteger(value);
+					LocoType type;
+					ParseAddressProtocol(input, address, protocol, type);
+					logger->Info(Languages::TextCs2MasterLocoSlaveProtocolAddress, Utils::Utils::ProtocolToString(protocol), address);
+				}
+				else if (key.compare("lokname") == 0)
+				{
+					name = value;
+					logger->Info(Languages::TextCs2MasterLocoSlaveName, name);
+				}
+				lines.pop_front();
+			}
+			cacheEntry.AddSlave(protocol, address, name);
+		}
+
 		void MaerklinCAN::ParseCs2FileLocomotive(deque<string>& lines)
 		{
 			lines.pop_front();
@@ -812,7 +845,7 @@ namespace Hardware
 					cacheEntry.SetAddress(address);
 					cacheEntry.SetProtocol(protocol);
 					cacheEntry.SetType(type);
-					logger->Info(Languages::TextCs2MasterLocoAddressProtocol, address, protocol);
+					logger->Info(Languages::TextCs2MasterLocoProtocolAddress, Utils::Utils::ProtocolToString(protocol), address);
 				}
 				else if ((key.compare("funktionen") == 0)
 					|| (key.compare("funktionen_2") == 0)
@@ -820,6 +853,11 @@ namespace Hardware
 					|| (key.compare("fkt2") == 0))
 				{
 					ParseCs2FileLocomotiveFunction(lines, cacheEntry);
+					continue;
+				}
+				else if (key.compare("traktion") == 0)
+				{
+					ParseCs2FileLocomotiveTraktion(lines, cacheEntry);
 					continue;
 				}
 				lines.pop_front();
@@ -921,6 +959,7 @@ namespace Hardware
 				if (line.compare("[lokomotive]") == 0)
 				{
 					ParseCs2FileLocomotives(lines);
+					locoCache.UpdateSlaves();
 					continue;
 				}
 				return;
