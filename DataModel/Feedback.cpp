@@ -37,6 +37,7 @@ namespace DataModel
 		str = "objectType=Feedback;" + LayoutItem::Serialize();
 		str += ";controlID=" + to_string(controlID);
 		str += ";pin=" + to_string(pin);
+		str += ";feedbacktype=" + to_string(feedbackType);
 		str += ";inverted=" + to_string(inverted);
 		str += ";state=" + to_string(stateCounter > 0);
 		str += ";matchkey=" + matchKey;
@@ -59,6 +60,7 @@ namespace DataModel
 		SetWidth(Width1);
 		controlID = Utils::Utils::GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 		pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin");
+		feedbackType = static_cast<FeedbackType>(Utils::Utils::GetIntegerMapEntry(arguments, "feedbacktype", FeedbackTypeStandard));
 		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted", false);
 		stateCounter = Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
 		matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");

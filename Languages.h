@@ -645,6 +645,7 @@ class Languages
 			TextStoppingRailControl,
 			TextStoppingRequestedBySignal,
 			TextStoppingRequestedByWebClient,
+			TextStandard,
 			TextStraight,
 			TextSwitch,
 			TextSwitchDeleted,

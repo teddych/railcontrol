@@ -316,6 +316,10 @@ body {
 	fill: red;
 }
 
+.feedback_item .track {
+	fill: white;
+}
+
 .track_free .track {
 	fill: white;
 }

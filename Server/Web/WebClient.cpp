@@ -2638,10 +2638,12 @@ namespace Server { namespace Web
 		string name = Languages::GetText(Languages::TextNew);
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "controlid", manager.GetPossibleControlForFeedback());
 		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
-		FeedbackPin pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin", 0);
+		FeedbackPin pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin", FeedbackPinNone);
+		DataModel::FeedbackType feedbackType = static_cast<DataModel::FeedbackType>(Utils::Utils::GetIntegerMapEntry(arguments, "feedbacktype", FeedbackTypeStandard));
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		LayoutRotation rotation = Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0);
 		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", feedbackID == FeedbackNone && ((posx || posy) && posz >= LayerUndeletable) ? DataModel::LayoutItem::VisibleYes : DataModel::LayoutItem::VisibleNo));
 		if (posz < LayerUndeletable)
 		{
@@ -2665,11 +2667,13 @@ namespace Server { namespace Web
 				matchKey = feedback->GetMatchKey();
 				controlId = feedback->GetControlID();
 				pin = feedback->GetPin();
+				feedbackType = feedback->GetFeedbackType();
 				inverted = feedback->GetInverted();
 				visible = feedback->GetVisible();
 				posx = feedback->GetPosX();
 				posy = feedback->GetPosY();
 				posz = feedback->GetPosZ();
+				rotation = feedback->GetRotation();
 			}
 		}
 		else if (controlId > ControlNone)
@@ -2697,6 +2701,11 @@ namespace Server { namespace Web
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "feedbacksave"));
 		formContent.AddChildTag(HtmlTagInputHidden("feedback", to_string(feedbackID)));
 
+		std::map<DataModel::FeedbackType, Languages::TextSelector> typeOptions;
+		typeOptions[DataModel::FeedbackTypeStandard] = Languages::TextStandard;
+		typeOptions[DataModel::FeedbackTypeStraight] = Languages::TextStraight;
+		typeOptions[DataModel::FeedbackTypeTurn] = Languages::TextTurn;
+
 		HtmlTag mainContent("div");
 		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
@@ -2704,10 +2713,11 @@ namespace Server { namespace Web
 		mainContent.AddChildTag(HtmlTagControlFeedback(controlId, "feedback", feedbackID));
 		mainContent.AddChildTag(HtmlTagMatchKeyFeedback(controlId, matchKey));
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", Languages::TextPin, pin, 1, 4096));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("feedbacktype", Languages::TextType, typeOptions, feedbackType));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		formContent.AddChildTag(mainContent);
 
-		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, visible));
+		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation, visible));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -2722,11 +2732,13 @@ namespace Server { namespace Web
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlIdNone);
 		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		FeedbackPin pin = static_cast<FeedbackPin>(Utils::Utils::GetIntegerMapEntry(arguments, "pin", FeedbackPinNone));
+		DataModel::FeedbackType feedbackType = static_cast<DataModel::FeedbackType>(Utils::Utils::GetIntegerMapEntry(arguments, "feedbacktype", FeedbackTypeStandard));
 		bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", DataModel::LayoutItem::VisibleNo));
 		LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		LayoutRotation rotation = Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0);
 		string result;
 		if (!manager.FeedbackSave(feedbackID,
 			name,
@@ -2734,9 +2746,11 @@ namespace Server { namespace Web
 			posX,
 			posY,
 			posZ,
+			rotation,
 			controlId,
 			matchKey,
 			pin,
+			feedbackType,
 			inverted,
 			result))
 		{

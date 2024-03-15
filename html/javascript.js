@@ -788,7 +788,13 @@ function onClickSwitch(event, switchID)
 
 function onClickFeedback(feedbackID)
 {
-	var element = document.getElementById('f_' + feedbackID);
+	var identifier = 'f_' + feedbackID;
+	if (modifierKeyPressed(event))
+	{
+		rotateObject(identifier);
+		return;
+	}
+	var element = document.getElementById(identifier);
 	var url = '/?cmd=feedbackstate';
 	url += '&state=' + (element.classList.contains('feedback_free') ? 'occupied' : 'free');
 	url += '&feedback=' + feedbackID;

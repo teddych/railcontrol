@@ -1530,7 +1530,7 @@ void Manager::FeedbackState(const ControlID controlID, const FeedbackPin pin, co
 	logger->Info(Languages::TextAddingFeedback, name);
 	string result;
 
-	FeedbackSave(FeedbackNone, name, DataModel::LayoutItem::VisibleNo, 0, 0, 0, controlID, "", pin, false, result);
+	FeedbackSave(FeedbackNone, name, DataModel::LayoutItem::VisibleNo, 0, 0, 0, DataModel::LayoutItem::Rotation0, controlID, "", pin, FeedbackTypeStandard, false, result);
 }
 
 void Manager::FeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state)
@@ -1626,9 +1626,11 @@ bool Manager::FeedbackSave(FeedbackID feedbackID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
+	const LayoutRotation rotation,
 	const ControlID controlID,
 	const string& matchKey,
 	const FeedbackPin pin,
+	const FeedbackType feedbackType,
 	const bool inverted,
 	string& result)
 {
@@ -1657,9 +1659,11 @@ bool Manager::FeedbackSave(FeedbackID feedbackID,
 	feedback->SetPosX(posX);
 	feedback->SetPosY(posY);
 	feedback->SetPosZ(posZ);
+	feedback->SetRotation(rotation);
 	feedback->SetControlID(controlID);
 	feedback->SetMatchKey(matchKey);
 	feedback->SetPin(pin);
+	feedback->SetFeedbackType(feedbackType);
 	feedback->SetInverted(inverted);
 
 	FeedbackSaveAndPublishSettings(feedback);
@@ -1690,6 +1694,29 @@ bool Manager::FeedbackPosition(const FeedbackID feedbackID,
 
 	feedback->SetPosX(posX);
 	feedback->SetPosY(posY);
+
+	FeedbackSaveAndPublishSettings(feedback);
+	return true;
+}
+
+bool Manager::FeedbackRotate(const FeedbackID feedbackID,
+	string& result)
+{
+	Feedback* feedback = GetFeedback(feedbackID);
+	if (feedback == nullptr)
+	{
+		result = Languages::GetText(Languages::TextFeedbackDoesNotExist);
+		return false;
+	}
+
+	LayoutRotation newRotation = feedback->GetRotation();
+	++newRotation;
+	if (!CheckLayoutItemPosition(feedback, feedback->GetPosX(), feedback->GetPosY(), feedback->GetPosZ(), LayoutItem::Width1, LayoutItem::Height1, newRotation, result))
+	{
+		return false;
+	}
+
+	feedback->SetRotation(newRotation);
 
 	FeedbackSaveAndPublishSettings(feedback);
 	return true;
@@ -4385,6 +4412,9 @@ bool Manager::LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
 	ObjectID id = identifier.GetObjectID();
 	switch (type)
 	{
+		case ObjectTypeFeedback:
+			return FeedbackRotate(id, result);
+
 		case ObjectTypeSignal:
 			return SignalRotate(id, result);
 
@@ -4398,7 +4428,6 @@ bool Manager::LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
 			return TrackRotate(id, result);
 
 		case ObjectTypeAccessory:
-		case ObjectTypeFeedback:
 		case ObjectTypeRoute:
 		default:
 			return false;
