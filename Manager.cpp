@@ -1310,6 +1310,7 @@ bool Manager::AccessorySave(AccessoryID accessoryID,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
 	const LayoutPosition posZ,
+	const LayoutRotation rotation,
 	const ControlID controlID,
 	const std::string& matchKey,
 	const Protocol protocol,
@@ -1350,12 +1351,13 @@ bool Manager::AccessorySave(AccessoryID accessoryID,
 	accessory->SetPosX(posX);
 	accessory->SetPosY(posY);
 	accessory->SetPosZ(posZ);
+	accessory->SetRotation(rotation);
 	accessory->SetControlID(controlID);
 	accessory->SetMatchKey(matchKey);
 	accessory->SetProtocol(protocol);
 	accessory->SetAddress(address);
 	accessory->SetServerAddress(serverAddress);
-	accessory->SetType(type);
+	accessory->SetAccessoryType(type);
 	accessory->SetAccessoryPulseDuration(duration);
 	accessory->SetInverted(inverted);
 
@@ -1382,6 +1384,29 @@ bool Manager::AccessoryPosition(const AccessoryID accessoryID,
 
 	accessory->SetPosX(posX);
 	accessory->SetPosY(posY);
+
+	AccessorySaveAndPublishSettings(accessory);
+	return true;
+}
+
+bool Manager::AccessoryRotate(const AccessoryID accessoryID,
+	string& result)
+{
+	Accessory* accessory = GetAccessory(accessoryID);
+	if (accessory == nullptr)
+	{
+		result = Languages::GetText(Languages::TextAccessoryDoesNotExist);
+		return false;
+	}
+
+	LayoutRotation newRotation = accessory->GetRotation();
+	++newRotation;
+	if (!CheckLayoutItemPosition(accessory, accessory->GetPosX(), accessory->GetPosY(), accessory->GetPosZ(), LayoutItem::Width1, LayoutItem::Height1, newRotation, result))
+	{
+		return false;
+	}
+
+	accessory->SetRotation(newRotation);
 
 	AccessorySaveAndPublishSettings(accessory);
 	return true;
@@ -2276,7 +2301,7 @@ bool Manager::SwitchSave(SwitchID switchID,
 	mySwitch->SetProtocol(protocol);
 	mySwitch->SetAddress(address);
 	mySwitch->SetServerAddress(serverAddress);
-	mySwitch->SetType(type);
+	mySwitch->SetAccessoryType(type);
 	mySwitch->SetAccessoryPulseDuration(duration);
 	mySwitch->SetInverted(inverted);
 
@@ -3080,7 +3105,7 @@ bool Manager::SignalSave(SignalID signalID,
 	signal->SetProtocol(protocol);
 	signal->SetAddress(address);
 	signal->SetServerAddress(serverAddress);
-	signal->SetType(type);
+	signal->SetAccessoryType(type);
 	signal->SetStateAddressOffsets(offsets);
 	signal->SetAccessoryPulseDuration(duration);
 	signal->SetInverted(inverted);
@@ -4412,6 +4437,9 @@ bool Manager::LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
 	ObjectID id = identifier.GetObjectID();
 	switch (type)
 	{
+		case ObjectTypeAccessory:
+			return AccessoryRotate(id, result);
+
 		case ObjectTypeFeedback:
 			return FeedbackRotate(id, result);
 
@@ -4427,7 +4455,6 @@ bool Manager::LayoutItemRotate(const DataModel::ObjectIdentifier& identifier,
 		case ObjectTypeTrack:
 			return TrackRotate(id, result);
 
-		case ObjectTypeAccessory:
 		case ObjectTypeRoute:
 		default:
 			return false;

@@ -2089,6 +2089,7 @@ namespace Server { namespace Web
 	{
 		HtmlTag content;
 		AccessoryID accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		string name = Languages::GetText(Languages::TextNew);
 		ControlID controlId = Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone);
 		if (controlId == ControlNone)
 		{
@@ -2098,10 +2099,11 @@ namespace Server { namespace Web
 		Protocol protocol = ProtocolNone;
 		Address address = AddressDefault;
 		Address serverAddress = AddressNone;
-		string name = Languages::GetText(Languages::TextNew);
+		DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeDefault));
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
+		LayoutRotation rotation = Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0);
 		DataModel::AccessoryPulseDuration duration = manager.GetDefaultAccessoryDuration();
 		bool inverted = false;
 		if (accessoryID > AccessoryNone)
@@ -2109,15 +2111,17 @@ namespace Server { namespace Web
 			const DataModel::Accessory* accessory = manager.GetAccessory(accessoryID);
 			if (accessory != nullptr)
 			{
+				name = accessory->GetName();
 				controlId = accessory->GetControlID();
 				matchKey = accessory->GetMatchKey();
 				protocol = accessory->GetProtocol();
 				address = accessory->GetAddress();
 				serverAddress = accessory->GetServerAddress();
-				name = accessory->GetName();
+				accessoryType = accessory->GetAccessoryType();
 				posx = accessory->GetPosX();
 				posy = accessory->GetPosY();
 				posz = accessory->GetPosZ();
+				rotation = accessory->GetRotation();
 				duration = accessory->GetAccessoryPulseDuration();
 				inverted = accessory->GetInverted();
 			}
@@ -2145,6 +2149,11 @@ namespace Server { namespace Web
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "accessorysave"));
 		formContent.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)));
 
+		std::map<DataModel::AccessoryType, Languages::TextSelector> typeOptions;
+		typeOptions[DataModel::AccessoryTypeDefault] = Languages::TextDefault;
+		typeOptions[DataModel::AccessoryTypeStraight] = Languages::TextStraight;
+		typeOptions[DataModel::AccessoryTypeTurn] = Languages::TextTurn;
+
 		HtmlTag mainContent("div");
 		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
@@ -2158,9 +2167,10 @@ namespace Server { namespace Web
 		{
 			mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("serveraddress", Languages::TextServerAddress, serverAddress, 0, 2044));
 		}
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("accessorytype", Languages::TextType, typeOptions, accessoryType));
 		formContent.AddChildTag(mainContent);
 
-		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz));
+		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(HtmlTag("form").AddId("editform").AddChildTag(formContent)));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -2189,9 +2199,11 @@ namespace Server { namespace Web
 		const Protocol protocol = static_cast<Protocol>(Utils::Utils::GetIntegerMapEntry(arguments, "protocol", ProtocolNone));
 		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
 		const Address serverAddress = Utils::Utils::GetIntegerMapEntry(arguments, "serveraddress", AddressNone);
+		const DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeDefault));
 		const LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		const LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		const LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
+		const LayoutRotation rotation = Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0);
 		const DataModel::AccessoryPulseDuration duration = Utils::Utils::GetIntegerMapEntry(arguments, "duration", manager.GetDefaultAccessoryDuration());
 		const bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		string result;
@@ -2200,12 +2212,13 @@ namespace Server { namespace Web
 			posX,
 			posY,
 			posZ,
+			rotation,
 			controlId,
 			matchKey,
 			protocol,
 			address,
 			serverAddress,
-			DataModel::AccessoryTypeDefault,
+			accessoryType,
 			duration,
 			inverted,
 			result))
@@ -2361,7 +2374,7 @@ namespace Server { namespace Web
 				posy = mySwitch->GetPosY();
 				posz = mySwitch->GetPosZ();
 				rotation = mySwitch->GetRotation();
-				type = mySwitch->GetType();
+				type = mySwitch->GetAccessoryType();
 				duration = mySwitch->GetAccessoryPulseDuration();
 				inverted = mySwitch->GetInverted();
 			}

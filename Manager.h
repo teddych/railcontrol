@@ -309,6 +309,7 @@ class Manager
 			const DataModel::LayoutItem::LayoutPosition x,
 			const DataModel::LayoutItem::LayoutPosition y,
 			const DataModel::LayoutItem::LayoutPosition z,
+			const DataModel::LayoutItem::LayoutRotation rotation,
 			const ControlID controlID,
 			const std::string& matchKey,
 			const Protocol protocol,
@@ -747,6 +748,9 @@ class Manager
 		bool TrackPosition(const TrackID trackID,
 			const DataModel::LayoutItem::LayoutPosition posX,
 			const DataModel::LayoutItem::LayoutPosition posY,
+			std::string& result);
+
+		bool AccessoryRotate(const AccessoryID accessoryID,
 			std::string& result);
 
 		bool FeedbackRotate(const FeedbackID feedbackID,

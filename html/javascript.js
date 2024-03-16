@@ -746,7 +746,13 @@ function deleteElement(elementName)
 
 function onClickAccessory(accessoryID)
 {
-	var element = document.getElementById('a_' + accessoryID);
+	var identifier = 'a_' + accessoryID;
+	if (modifierKeyPressed(event))
+	{
+		rotateObject(identifier);
+		return;
+	}
+	var element = document.getElementById(identifier);
 	var url = '/?cmd=accessorystate';
 	url += '&state=' + (element.classList.contains('accessory_off') ? 'on' : 'off');
 	url += '&accessory=' + accessoryID;
