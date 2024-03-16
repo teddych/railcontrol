@@ -358,8 +358,8 @@ class Manager
 			const ControlID controlID,
 			const std::string& matchKey,
 			const FeedbackPin pin,
-			const DataModel::FeedbackType feedbackType,
 			const bool inverted,
+			const DataModel::FeedbackType feedbackType,
 			std::string& result);
 
 		bool FeedbackDelete(const FeedbackID feedbackID,

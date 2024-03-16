@@ -1530,7 +1530,7 @@ void Manager::FeedbackState(const ControlID controlID, const FeedbackPin pin, co
 	logger->Info(Languages::TextAddingFeedback, name);
 	string result;
 
-	FeedbackSave(FeedbackNone, name, DataModel::LayoutItem::VisibleNo, 0, 0, 0, DataModel::LayoutItem::Rotation0, controlID, "", pin, FeedbackTypeStandard, false, result);
+	FeedbackSave(FeedbackNone, name, DataModel::LayoutItem::VisibleNo, 0, 0, 0, DataModel::LayoutItem::Rotation0, controlID, "", pin, false, FeedbackTypeDefault, result);
 }
 
 void Manager::FeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state)
@@ -1630,8 +1630,8 @@ bool Manager::FeedbackSave(FeedbackID feedbackID,
 	const ControlID controlID,
 	const string& matchKey,
 	const FeedbackPin pin,
-	const FeedbackType feedbackType,
 	const bool inverted,
+	const FeedbackType feedbackType,
 	string& result)
 {
 	Feedback* feedback = GetFeedback(feedbackID);
@@ -1663,8 +1663,8 @@ bool Manager::FeedbackSave(FeedbackID feedbackID,
 	feedback->SetControlID(controlID);
 	feedback->SetMatchKey(matchKey);
 	feedback->SetPin(pin);
-	feedback->SetFeedbackType(feedbackType);
 	feedback->SetInverted(inverted);
+	feedback->SetFeedbackType(feedbackType);
 
 	FeedbackSaveAndPublishSettings(feedback);
 	return true;

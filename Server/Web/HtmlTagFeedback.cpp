@@ -45,7 +45,7 @@ namespace Server { namespace Web
 				image = "<polygon class=\"track\" points=\"0,21 0,15 21,36 15,36\"/>";
 				break;
 
-			case DataModel::FeedbackTypeStandard:
+			case DataModel::FeedbackTypeDefault:
 			default:
 				break;
 		}

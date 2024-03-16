@@ -48,7 +48,7 @@ namespace Server { namespace Web
 						(feedback->GetPin() - 1) >> 4 :
 						feedback->GetPosY(),
 					onControlLayer ?
-						DataModel::FeedbackTypeStandard :
+						DataModel::FeedbackTypeDefault :
 						feedback->GetFeedbackType())
 			{
 			}

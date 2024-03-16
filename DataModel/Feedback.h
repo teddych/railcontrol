@@ -37,7 +37,7 @@ namespace DataModel
 
 	enum FeedbackType : unsigned char
 	{
-		FeedbackTypeStandard = 0,
+		FeedbackTypeDefault = 0,
 		FeedbackTypeStraight = 1,
 		FeedbackTypeTurn = 2
 	};
@@ -57,7 +57,7 @@ namespace DataModel
 			 	controlID(ControlIdNone),
 			 	pin(FeedbackPinNone),
 			 	manager(manager),
-			 	feedbackType(FeedbackTypeStandard),
+			 	feedbackType(FeedbackTypeDefault),
 			 	inverted(false),
 			 	trackID(TrackNone),
 			 	track(nullptr),
