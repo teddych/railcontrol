@@ -34,14 +34,14 @@ namespace Hardware
 		void MaerklinCAN::Init()
 		{
 			receiverThread = std::thread(&MaerklinCAN::Receiver, this);
-			cs2MasterThread = std::thread(&MaerklinCAN::Cs2MasterThread, this);
+			pingThread = std::thread(&MaerklinCAN::PingSender, this);
 		}
 
 		MaerklinCAN::~MaerklinCAN()
 		{
 			run = false;
 			receiverThread.join();
-			cs2MasterThread.join();
+			pingThread.join();
 			if (canFileData != nullptr)
 			{
 				free(canFileData);
@@ -59,8 +59,11 @@ namespace Hardware
 			}
 		}
 
-		void MaerklinCAN::Cs2MasterThread()
+		void MaerklinCAN::PingSender()
 		{
+			Utils::Utils::SetThreadName("Maerklin CAN Ping");
+			logger->Info(Languages::TextPingSenderStarted);
+
 			Wait(1);
 
 			while (run && !hasCs2Master)
@@ -72,6 +75,7 @@ namespace Hardware
 			{
 				RequestLoks();
 			}
+			logger->Info(Languages::TextTerminatingPingSender);
 		}
 
 		void MaerklinCAN::CreateCommandHeader(unsigned char* const buffer, const CanCommand command,

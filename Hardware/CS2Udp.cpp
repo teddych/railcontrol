@@ -60,7 +60,7 @@ namespace Hardware
 
 	void CS2Udp::Receiver()
 	{
-		Utils::Utils::SetThreadName("CS2Udp");
+		Utils::Utils::SetThreadName("CS2 UDP Receiver");
 		logger->Info(Languages::TextReceiverThreadStarted);
 		if (!receiverConnection.IsConnected())
 		{

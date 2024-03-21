@@ -48,7 +48,7 @@ namespace Hardware
 
 	void CS2Tcp::Receiver()
 	{
-		Utils::Utils::SetThreadName("CS2Tcp");
+		Utils::Utils::SetThreadName("CS2 TCP Receiver");
 		logger->Info(Languages::TextReceiverThreadStarted);
 		if (connection.IsConnected() == false)
 		{

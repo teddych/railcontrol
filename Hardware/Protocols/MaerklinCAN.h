@@ -437,7 +437,7 @@ namespace Hardware
 				void CreateLocalIDAccessory(unsigned char* buffer, const Protocol protocol, const Address address);
 
 				void Wait(const unsigned int duration) const;
-				void Cs2MasterThread();
+				void PingSender();
 
 				inline void SendInternal(const unsigned char* buffer)
 				{
@@ -450,7 +450,7 @@ namespace Hardware
 				CanHash hash;
 				bool hasCs2Master;
 				std::thread receiverThread;
-				std::thread cs2MasterThread;
+				std::thread pingThread;
 
 				size_t canFileDataSize;
 				CanFileCrc canFileCrc;
