@@ -361,7 +361,7 @@ namespace Storage
 	}
 
 	// save DataModelrelation
-	void SQLite::SaveRelation(const DataModel::Relation::Type type, const ObjectID objectID1, const ObjectType objectType2, const ObjectID objectID2, const Priority priority, const std::string& relation)
+	void SQLite::SaveRelation(const DataModel::Relation::RelationType type, const ObjectID objectID1, const ObjectType objectType2, const ObjectID objectID2, const Priority priority, const std::string& relation)
 	{
 		string query = "INSERT OR REPLACE INTO relations (type, objectid1, objecttype2, objectid2, priority, relation) VALUES ("
 			+ to_string(type) + ", "
@@ -374,7 +374,7 @@ namespace Storage
 	}
 
 	// delete DataModelrelaton
-	void SQLite::DeleteRelationsFrom(const DataModel::Relation::Type type, const ObjectID objectID)
+	void SQLite::DeleteRelationsFrom(const DataModel::Relation::RelationType type, const ObjectID objectID)
 	{
 		string query = "DELETE FROM relations WHERE type = " + to_string(type)
 			+ " AND objectid1 = " + to_string(objectID) + ";";
@@ -390,7 +390,7 @@ namespace Storage
 	}
 
 	// read DataModelrelations
-	void SQLite::RelationsFrom(const DataModel::Relation::Type type, const ObjectID objectID, vector<string>& relations)
+	void SQLite::RelationsFrom(const DataModel::Relation::RelationType type, const ObjectID objectID, vector<string>& relations)
 	{
 		string query = "SELECT relation FROM relations WHERE type = " + to_string(type)
 			+ " AND objectid1 = " + to_string(objectID) + " ORDER BY priority ASC;";

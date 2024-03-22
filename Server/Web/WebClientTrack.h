@@ -55,6 +55,7 @@ namespace Server { namespace Web
 			void HandleTrackBlock(const std::map<std::string, std::string>& arguments);
 			void HandleTrackOrientation(const std::map<std::string, std::string>& arguments);
 
+			std::map<std::string,ObjectID> GetFeedbackOptions(const TrackID trackId = TrackNone) const;
 			std::map<std::string,ObjectID> GetSignalOptions(const TrackID trackId = TrackNone) const;
 
 		private:
@@ -62,10 +63,6 @@ namespace Server { namespace Web
 				const bool allowLocoTurn,
 				const bool releaseWhenFree,
 				const DataModel::Cluster* cluster);
-
-			static HtmlTag HtmlTagTabTrackFeedback(const WebClient& client,
-				const std::vector<FeedbackID>& feedbacks,
-				const TrackID trackID);
 
 			Manager& manager;
 			WebClient& client;

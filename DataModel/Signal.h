@@ -104,7 +104,7 @@ namespace DataModel
 				return track;
 			}
 
-			inline void SetTrack(Track* const track)
+			inline void SetTrack(Track* const track = nullptr)
 			{
 				this->track = track;
 			}

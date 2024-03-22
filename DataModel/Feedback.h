@@ -59,7 +59,6 @@ namespace DataModel
 			 	manager(manager),
 			 	feedbackType(FeedbackTypeDefault),
 			 	inverted(false),
-			 	trackID(TrackNone),
 			 	track(nullptr),
 				stateCounter(0)
 			{
@@ -83,7 +82,7 @@ namespace DataModel
 
 			inline bool IsInUse() const
 			{
-				return IsRelatedTrackSet();
+				return track != nullptr;
 			}
 
 			inline std::string GetLayoutType() const override
@@ -140,36 +139,13 @@ namespace DataModel
 				return pin;
 			}
 
-			inline void ClearRelatedTrack()
+			inline void SetTrack(DataModel::Track* track = nullptr)
 			{
-				trackID = TrackNone;
-				track = nullptr;
-			}
-
-			inline bool IsRelatedTrackSet() const
-			{
-				return trackID != TrackNone;
-			}
-
-			inline void SetRelatedTrack(const TrackID trackID)
-			{
-				this->trackID = trackID;
-				track = nullptr;
-			}
-
-			inline TrackID GetRelatedTrack() const
-			{
-				return trackID;
-			}
-
-			inline bool CompareRelatedTrack(const TrackID trackID) const
-			{
-				return this->trackID == trackID;
+				this->track = track;
 			}
 
 			inline Track* GetTrack()
 			{
-				UpdateTrack();
 				return track;
 			}
 
@@ -191,7 +167,6 @@ namespace DataModel
 			Feedback& operator=(const Hardware::FeedbackCacheEntry& feedback);
 
 		private:
-			void UpdateTrack();
 			void UpdateTrackState(const FeedbackState state);
 
 			ControlID controlID;
@@ -200,7 +175,6 @@ namespace DataModel
 			Manager* manager;
 			FeedbackType feedbackType;
 			bool inverted;
-			TrackID trackID;
 			Track* track;
 			unsigned char stateCounter;
 			static const unsigned char MaxStateCounter = 10;

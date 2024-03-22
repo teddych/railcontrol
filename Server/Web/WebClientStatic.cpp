@@ -566,7 +566,7 @@ namespace Server { namespace Web
 			slaves.push_back(new Relation(&manager,
 				ObjectIdentifier(ObjectTypeMultipleUnit, multipleUnitID),
 				ObjectIdentifier(ObjectTypeLoco, slaveID),
-				Relation::TypeMultipleUnitSlave));
+				Relation::RelationTypeMultipleUnitSlave));
 		}
 		return slaves;
 	}

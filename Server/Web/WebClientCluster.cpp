@@ -128,7 +128,7 @@ namespace Server { namespace Web
 				tracks.push_back(new Relation(&manager,
 					ObjectIdentifier(ObjectTypeCluster, clusterID),
 					ObjectIdentifier(ObjectTypeTrack, trackId),
-					Relation::TypeClusterTrack));
+					Relation::RelationTypeClusterTrack));
 			}
 		}
 

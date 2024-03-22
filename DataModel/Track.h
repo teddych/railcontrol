@@ -92,6 +92,12 @@ namespace DataModel
 				Deserialize(serialized);
 			}
 
+			inline ~Track()
+			{
+				DeleteSignals();
+				DeleteFeedbacks();
+			}
+
 			inline ObjectType GetObjectType() const override
 			{
 				return ObjectTypeTrack;
@@ -113,16 +119,6 @@ namespace DataModel
 			inline void SetTrackType(const TrackType type)
 			{
 				this->trackType = type;
-			}
-
-			inline std::vector<FeedbackID> GetFeedbacks() const
-			{
-				return feedbacks;
-			}
-
-			inline void Feedbacks(const std::vector<FeedbackID>& feedbacks)
-			{
-				this->feedbacks = feedbacks;
 			}
 
 			bool SetFeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
@@ -228,11 +224,6 @@ namespace DataModel
 				this->allowLocoTurn = allowLocoTurn;
 			}
 
-			inline FeedbackID GetFirstFeedbackId()
-			{
-				return feedbacks.size() == 0 ? FeedbackNone : feedbacks[0];
-			}
-
 			bool Reserve(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier) override;
 			bool Lock(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier) override;
 			bool Release(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier) override;
@@ -240,14 +231,21 @@ namespace DataModel
 			bool ReserveForce(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier);
 			bool ReleaseForce(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier);
 
+			void DeleteFeedbacks();
+			void AssignFeedbacks(const std::vector<DataModel::Relation*>& newFeedbacks);
+
 			inline const std::vector<DataModel::Relation*>& GetSignals() const
 			{
 				return signals;
 			}
 
 			void DeleteSignals();
-			void DeleteSignal(DataModel::Signal* signalToDelete);
 			void AssignSignals(const std::vector<DataModel::Relation*>& newSignals);
+
+			inline const std::vector<DataModel::Relation*>& GetFeedbacks() const
+			{
+				return feedbacks;
+			}
 
 		private:
 			void PublishState() const;
@@ -264,7 +262,7 @@ namespace DataModel
 
 			std::vector<DataModel::Relation*> signals;
 			mutable std::mutex updateMutex;
-			std::vector<FeedbackID> feedbacks;
+			std::vector<DataModel::Relation*> feedbacks;
 			Cluster* cluster;
 			SelectRouteApproach selectRouteApproach;
 			DataModel::Feedback::FeedbackState trackState;

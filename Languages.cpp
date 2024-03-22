@@ -685,7 +685,6 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextTrack */ { "track", "Gleis", "vía" },
 /* TextTrackDeleted */ { "Track {0} deleted", "Gleis {0} gelöscht", "Vía {0} eliminado" },
 /* TextTrackDoesNotExist */ { "Track does not exist", "Gleis existiert nicht", "Vía no existe" },
-/* TextTrackHasAssociatedFeedback */ { "Track {0} has associated feedback {1}", "Gleis {0} hat verknüpften Rückmelder {1}", "Vía {0} tiene enlaze a retroseñal {1}" },
 /* TextTrackIsUsedByLoco */ { "Track {0} is used by locomotive {1}", "Gleis {0} wird von Lokomotive {1} benutzt", "Vía {0} está utilizado por locomotora {1}" },
 /* TextTrackIsUsedByRoute */ { "Track {0} is used by route {1}", "Gleis {0} wird von Fahrstrasse {1} benutzt", "Vía {0} está utilizado por itinerario {1}" },
 /* TextTrackSaved */ { "Track {0} saved", "Gleis {0} gespeichert", "Vía {0} guardado" },

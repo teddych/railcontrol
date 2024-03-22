@@ -70,7 +70,7 @@ namespace Storage
 	void StorageHandler::DeleteLoco(const LocoID locoID)
 	{
 		TransactionGuard guard(this);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeLocoSlave, locoID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeLocoSlave, locoID);
 		sqlite.DeleteRelationsTo(ObjectTypeLoco, locoID);
 		sqlite.DeleteObject(ObjectTypeLoco, locoID);
 	}
@@ -83,7 +83,7 @@ namespace Storage
 		{
 			MultipleUnit* multipleUnit = new MultipleUnit(manager, serializedObject);
 			const MultipleUnitID multipleUnitID = multipleUnit->GetID();
-			multipleUnit->AssignSlaves(RelationsFrom(DataModel::Relation::TypeMultipleUnitSlave, multipleUnitID));
+			multipleUnit->AssignSlaves(RelationsFrom(DataModel::Relation::RelationTypeMultipleUnitSlave, multipleUnitID));
 			multipleUnits[multipleUnitID] = multipleUnit;
 		}
 	}
@@ -91,7 +91,7 @@ namespace Storage
 	void StorageHandler::DeleteMultipleUnit(const MultipleUnitID multipleUnitID)
 	{
 		TransactionGuard guard(this);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeMultipleUnitSlave, multipleUnitID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeMultipleUnitSlave, multipleUnitID);
 		sqlite.DeleteRelationsTo(ObjectTypeMultipleUnit, multipleUnitID);
 		sqlite.DeleteObject(ObjectTypeMultipleUnit, multipleUnitID);
 	}
@@ -150,7 +150,8 @@ namespace Storage
 				continue;
 			}
 			const TrackID trackId = track->GetID();
-			track->AssignSignals(RelationsFrom(DataModel::Relation::TypeTrackSignal, trackId));
+			track->AssignFeedbacks(RelationsFrom(DataModel::Relation::RelationTypeTrackFeedback, trackId));
+			track->AssignSignals(RelationsFrom(DataModel::Relation::RelationTypeTrackSignal, trackId));
 			tracks[trackId] = track;
 		}
 	}
@@ -185,52 +186,54 @@ namespace Storage
 
 	void StorageHandler::Save(const DataModel::Route& route)
 	{
-		string serialized = route.Serialize();
+		const string serialized = route.Serialize();
 		TransactionGuard guard(this);
 		const RouteID routeID = route.GetID();
 		sqlite.SaveObject(ObjectTypeRoute, routeID, route.GetName(), serialized);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeRouteAtLock, routeID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeRouteAtLock, routeID);
 		SaveRelations(route.GetRelationsAtLock());
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeRouteAtUnlock, routeID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeRouteAtUnlock, routeID);
 		SaveRelations(route.GetRelationsAtUnlock());
 	}
 
 	void StorageHandler::Save(const DataModel::Loco& loco)
 	{
-		string serialized = loco.Serialize();
+		const string serialized = loco.Serialize();
 		TransactionGuard guard(this);
 		const LocoID locoID = loco.GetID();
 		sqlite.SaveObject(ObjectTypeLoco, locoID, loco.GetName(), serialized);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeLocoSlave, locoID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeLocoSlave, locoID);
 	}
 
 	void StorageHandler::Save(const DataModel::MultipleUnit& multipleUnit)
 	{
-		string serialized = multipleUnit.Serialize();
+		const string serialized = multipleUnit.Serialize();
 		TransactionGuard guard(this);
 		const MultipleUnitID multipleUnitID = multipleUnit.GetID();
 		sqlite.SaveObject(ObjectTypeMultipleUnit, multipleUnitID, multipleUnit.GetName(), serialized);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeMultipleUnitSlave, multipleUnitID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeMultipleUnitSlave, multipleUnitID);
 		SaveRelations(multipleUnit.GetSlaves());
 	}
 
 	void StorageHandler::Save(const DataModel::Cluster& cluster)
 	{
-		string serialized = cluster.Serialize();
+		const string serialized = cluster.Serialize();
 		TransactionGuard guard(this);
 		const ClusterID clusterID = cluster.GetID();
 		sqlite.SaveObject(ObjectTypeCluster, clusterID, cluster.GetName(), serialized);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeClusterTrack, clusterID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeClusterTrack, clusterID);
 		SaveRelations(cluster.GetTracks());
 	}
 
 	void StorageHandler::Save(const DataModel::Track& track)
 	{
-		string serialized = track.Serialize();
+		const string serialized = track.Serialize();
 		TransactionGuard guard(this);
 		const TrackID trackId = track.GetID();
 		sqlite.SaveObject(ObjectTypeTrack, trackId, track.GetName(), serialized);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeTrackSignal, trackId);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeTrackFeedback, trackId);
+		SaveRelations(track.GetFeedbacks());
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeTrackSignal, trackId);
 		SaveRelations(track.GetSignals());
 	}
 
@@ -246,8 +249,8 @@ namespace Storage
 				continue;
 			}
 			const RouteID routeID = route->GetID();
-			route->AssignRelationsAtLock(RelationsFrom(Relation::TypeRouteAtLock, routeID));
-			route->AssignRelationsAtUnlock(RelationsFrom(Relation::TypeRouteAtUnlock, routeID));
+			route->AssignRelationsAtLock(RelationsFrom(Relation::RelationTypeRouteAtLock, routeID));
+			route->AssignRelationsAtUnlock(RelationsFrom(Relation::RelationTypeRouteAtUnlock, routeID));
 			routes[routeID] = route;
 		}
 	}
@@ -255,8 +258,8 @@ namespace Storage
 	void StorageHandler::DeleteRoute(const RouteID routeID)
 	{
 		TransactionGuard guard(this);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeRouteAtLock, routeID);
-		sqlite.DeleteRelationsFrom(DataModel::Relation::TypeRouteAtUnlock, routeID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeRouteAtLock, routeID);
+		sqlite.DeleteRelationsFrom(DataModel::Relation::RelationTypeRouteAtUnlock, routeID);
 		sqlite.DeleteObject(ObjectTypeRoute, routeID);
 	}
 
@@ -315,7 +318,7 @@ namespace Storage
 				continue;
 			}
 			const ClusterID clusterId = cluster->GetID();
-			cluster->AssignTracks(RelationsFrom(DataModel::Relation::TypeClusterTrack, clusterId));
+			cluster->AssignTracks(RelationsFrom(DataModel::Relation::RelationTypeClusterTrack, clusterId));
 			clusters[clusterId] = cluster;
 		}
 	}
@@ -363,7 +366,7 @@ namespace Storage
 		}
 	}
 
-	vector<Relation*> StorageHandler::RelationsFrom(const DataModel::Relation::Type type, const ObjectID objectID)
+	vector<Relation*> StorageHandler::RelationsFrom(const DataModel::Relation::RelationType type, const ObjectID objectID)
 	{
 		vector<string> relationStrings;
 		sqlite.RelationsFrom(type, objectID, relationStrings);

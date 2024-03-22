@@ -1780,9 +1780,10 @@ const map<string,FeedbackID> Manager::FeedbacksOfTrack(const TrackID trackID) co
 	{
 		return out;
 	}
-	vector<FeedbackID> feedbacksOfTrack = track->GetFeedbacks();
-	for (auto feedbackID : feedbacksOfTrack)
+	vector<Relation*> feedbacksOfTrack = track->GetFeedbacks();
+	for (auto feedbackRelation: feedbacksOfTrack)
 	{
+		const FeedbackID feedbackID = feedbackRelation->ObjectID2();
 		Feedback* feedback = GetFeedback(feedbackID);
 		if (feedback == nullptr)
 		{
@@ -1933,49 +1934,6 @@ const map<string,TrackID> Manager::TrackListIdByName() const
 	return out;
 }
 
-const std::vector<FeedbackID> Manager::CleanupAndCheckFeedbacksForTrack(const TrackID trackID,
-	const std::vector<FeedbackID>& newFeedbacks)
-{
-	Storage::TransactionGuard guard(storage);
-	{
-		std::lock_guard<std::mutex> feedbackguard(feedbackMutex);
-		for (auto& feedback : feedbacks)
-		{
-			if (feedback.second->CompareRelatedTrack(trackID) == false)
-			{
-				continue;
-			}
-
-			feedback.second->ClearRelatedTrack();
-			if (storage != nullptr)
-			{
-				storage->Save(*feedback.second);
-			}
-		}
-	}
-
-	std::vector<FeedbackID> checkedFeedbacks;
-	for (auto& feedbackID : newFeedbacks)
-	{
-		Feedback* feedback = GetFeedback(feedbackID);
-		if (feedback == nullptr)
-		{
-			continue;
-		}
-		if (feedback->IsRelatedTrackSet())
-		{
-			continue;
-		}
-		checkedFeedbacks.push_back(feedbackID);
-		feedback->SetRelatedTrack(trackID);
-		if (storage != nullptr)
-		{
-			storage->Save(*feedback);
-		}
-	}
-	return checkedFeedbacks;
-}
-
 bool Manager::TrackSave(TrackID trackID,
 	const std::string& name,
 	const bool showName,
@@ -1985,7 +1943,7 @@ bool Manager::TrackSave(TrackID trackID,
 	const LayoutItemSize height,
 	const LayoutRotation rotation,
 	const DataModel::TrackType trackType,
-	const vector<FeedbackID>& newFeedbacks, // FIXME: store as relation
+	const vector<Relation*>& newFeedbacks,
 	const vector<Relation*>& newSignals,
 	const DataModel::SelectRouteApproach selectRouteApproach,
 	const bool allowLocoTurn,
@@ -2010,9 +1968,13 @@ bool Manager::TrackSave(TrackID trackID,
 	}
 
 	// if we have a new object we have to update trackID
-	if (trackID == 0)
+	if (trackID == TrackNone)
 	{
 		trackID = track->GetID();
+		for (auto feedback : newFeedbacks)
+		{
+			feedback->ObjectID1(trackID);
+		}
 		for (auto signal : newSignals)
 		{
 			signal->ObjectID1(trackID);
@@ -2028,7 +1990,7 @@ bool Manager::TrackSave(TrackID trackID,
 	track->SetPosY(posY);
 	track->SetPosZ(posZ);
 	track->SetTrackType(trackType);
-	track->Feedbacks(CleanupAndCheckFeedbacksForTrack(trackID, newFeedbacks));
+	track->AssignFeedbacks(newFeedbacks);
 	track->AssignSignals(newSignals);
 	track->SetSelectRouteApproach(selectRouteApproach);
 	track->SetAllowLocoTurn(allowLocoTurn);
@@ -2134,13 +2096,6 @@ bool Manager::TrackDelete(const TrackID trackID,
 		ObjectIdentifier trackIdentifier(ObjectTypeTrack, trackID);
 		if (ObjectIsPartOfRoute(trackIdentifier, track, result))
 		{
-			return false;
-		}
-
-		FeedbackID feedbackId = track->GetFirstFeedbackId();
-		if (feedbackId != FeedbackNone)
-		{
-			result = Logger::Logger::Format(Languages::GetText(Languages::TextTrackHasAssociatedFeedback), track->GetName(), GetFeedbackName(feedbackId));
 			return false;
 		}
 

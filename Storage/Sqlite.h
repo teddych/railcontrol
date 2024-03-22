@@ -44,10 +44,10 @@ namespace Storage
 			void SaveObject(const ObjectType objectType, const ObjectID objectID, const std::string& name, const std::string& object) override;
 			void DeleteObject(const ObjectType objectType, const ObjectID objectID) override;
 			void ObjectsOfType(const ObjectType objectType, std::vector<std::string>& objects) override;
-			void SaveRelation(const DataModel::Relation::Type type, const ObjectID objectID1, const ObjectType objectType2, const ObjectID objectID2, const Priority priority, const std::string& relation) override;
-			void DeleteRelationsFrom(const DataModel::Relation::Type type, const ObjectID objectID) override;
+			void SaveRelation(const DataModel::Relation::RelationType type, const ObjectID objectID1, const ObjectType objectType2, const ObjectID objectID2, const Priority priority, const std::string& relation) override;
+			void DeleteRelationsFrom(const DataModel::Relation::RelationType type, const ObjectID objectID) override;
 			void DeleteRelationsTo(const ObjectType objectType, const ObjectID objectID) override;
-			void RelationsFrom(const DataModel::Relation::Type type, const ObjectID objectID, std::vector<std::string>& relations) override;
+			void RelationsFrom(const DataModel::Relation::RelationType type, const ObjectID objectID, std::vector<std::string>& relations) override;
 			void RelationsTo(const ObjectType objectType, const ObjectID objectID, std::vector<std::string>& relations) override;
 			void SaveSetting(const std::string& key, const std::string& value) override;
 			std::string GetSetting(const std::string& key) override;

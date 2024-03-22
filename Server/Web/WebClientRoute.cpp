@@ -347,7 +347,7 @@ namespace Server { namespace Web
 			relationsAtLock.push_back(new Relation(&manager,
 				ObjectIdentifier(ObjectTypeRoute, routeID),
 				ObjectIdentifier(objectType, objectId),
-				Relation::TypeRouteAtLock,
+				Relation::RelationTypeRouteAtLock,
 				priorityAtLock,
 				state));
 			++priorityAtLock;
@@ -376,7 +376,7 @@ namespace Server { namespace Web
 			relationsAtUnlock.push_back(new Relation(&manager,
 				ObjectIdentifier(ObjectTypeRoute, routeID),
 				ObjectIdentifier(objectType, objectId),
-				Relation::TypeRouteAtUnlock,
+				Relation::RelationTypeRouteAtUnlock,
 				priorityAtUnlock,
 				state));
 			++priorityAtUnlock;

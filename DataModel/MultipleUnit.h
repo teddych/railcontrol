@@ -46,8 +46,9 @@ namespace DataModel
 				MultipleUnit::Deserialize(serialized);
 			}
 
-			virtual ~MultipleUnit()
+			inline ~MultipleUnit()
 			{
+				DeleteSlaves();
 			}
 
 			inline ObjectType GetObjectType() const override

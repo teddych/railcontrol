@@ -52,7 +52,7 @@ namespace DataModel
 		ParseArguments(serialized, arguments);
 		LockableItem::Deserialize(arguments);
 		object1.SetObjectType(static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType1")));
-		type = static_cast<Type>(Utils::Utils::GetIntegerMapEntry(arguments, "type"));
+		type = static_cast<RelationType>(Utils::Utils::GetIntegerMapEntry(arguments, "type"));
 		object1.SetObjectID(static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "objectID1")));
 		object2.SetObjectType(static_cast<ObjectType>(Utils::Utils::GetIntegerMapEntry(arguments, "objectType2")));
 		object2.SetObjectID(static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "objectID2")));

@@ -1353,7 +1353,8 @@ namespace Server { namespace Web
 		map<string, FeedbackID> feedbackOptions;
 		for (auto& feedback : feedbacks)
 		{
-			if (feedback.second->IsRelatedTrackSet() && !feedback.second->CompareRelatedTrack(trackID))
+			const Track* track = feedback.second->GetTrack();
+			if ((!track) || (track->GetID() != trackID))
 			{
 				continue;
 			}
@@ -1374,6 +1375,10 @@ namespace Server { namespace Web
 		if (prefix.compare("track") == 0)
 		{
 			options = cluster.GetTrackOptions();
+		}
+		else if (prefix.compare("feedback") == 0)
+		{
+			options = track.GetFeedbackOptions();
 		}
 		else if (prefix.compare("signal") == 0)
 		{

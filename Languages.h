@@ -685,7 +685,6 @@ class Languages
 			TextTrack,
 			TextTrackDeleted,
 			TextTrackDoesNotExist,
-			TextTrackHasAssociatedFeedback,
 			TextTrackIsUsedByLoco,
 			TextTrackIsUsedByRoute,
 			TextTrackSaved,

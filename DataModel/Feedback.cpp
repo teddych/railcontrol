@@ -41,7 +41,6 @@ namespace DataModel
 		str += ";inverted=" + to_string(inverted);
 		str += ";state=" + to_string(stateCounter > 0);
 		str += ";matchkey=" + matchKey;
-		str += ";track=" + to_string(trackID);
 		return str;
 	}
 
@@ -63,7 +62,6 @@ namespace DataModel
 		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted", false);
 		stateCounter = Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
 		matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
-		trackID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone));
 		return true;
 	}
 
@@ -82,7 +80,7 @@ namespace DataModel
 				return;
 			}
 
-			unsigned char oldStateCounter = stateCounter;
+			const unsigned char oldStateCounter = stateCounter;
 			stateCounter = MaxStateCounter;
 
 			if (oldStateCounter > 0)
@@ -95,20 +93,9 @@ namespace DataModel
 		UpdateTrackState(FeedbackStateOccupied);
 	}
 
-	void Feedback::UpdateTrack()
-	{
-		if (track != nullptr)
-		{
-			return;
-		}
-
-		track = manager->GetTrack(trackID);
-	}
-
 	void Feedback::UpdateTrackState(const FeedbackState state)
 	{
-		UpdateTrack();
-		if (track == nullptr)
+		if (!track)
 		{
 			return;
 		}

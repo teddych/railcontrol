@@ -120,7 +120,7 @@ namespace Storage
 
 		private:
 			void SaveRelations(const std::vector<DataModel::Relation*> relations);
-			std::vector<DataModel::Relation*> RelationsFrom(const DataModel::Relation::Type type, const ObjectID objectID);
+			std::vector<DataModel::Relation*> RelationsFrom(const DataModel::Relation::RelationType type, const ObjectID objectID);
 
 			Manager* manager;
 			Storage::SQLite sqlite;
