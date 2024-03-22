@@ -150,7 +150,15 @@ namespace Storage
 				continue;
 			}
 			const TrackID trackId = track->GetID();
-			track->AssignFeedbacks(RelationsFrom(DataModel::Relation::RelationTypeTrackFeedback, trackId));
+
+			// FIXME: remove later: 2024-03-22 feedback vector has been replaced by relation
+			// feedback vector was stored in track data
+			// if no feedbacks are restored from track data override with data from relation
+			const std::vector<DataModel::Relation*>& feedbacksFromOldRelation = track->GetFeedbacks();
+			if (feedbacksFromOldRelation.size() == 0)
+			{
+				track->AssignFeedbacks(RelationsFrom(DataModel::Relation::RelationTypeTrackFeedback, trackId));
+			}
 			track->AssignSignals(RelationsFrom(DataModel::Relation::RelationTypeTrackSignal, trackId));
 			tracks[trackId] = track;
 		}
