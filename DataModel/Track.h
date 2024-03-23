@@ -260,9 +260,9 @@ namespace DataModel
 			Manager* manager;
 			TrackType trackType;
 
-			std::vector<DataModel::Relation*> signals;
 			mutable std::mutex updateMutex;
 			std::vector<DataModel::Relation*> feedbacks;
+			std::vector<DataModel::Relation*> signals;
 			Cluster* cluster;
 			SelectRouteApproach selectRouteApproach;
 			DataModel::Feedback::FeedbackState trackState;

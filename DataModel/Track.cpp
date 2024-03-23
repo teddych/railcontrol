@@ -366,11 +366,11 @@ namespace DataModel
 		}
 		this->trackState = DataModel::Feedback::FeedbackStateFree;
 
-		ObjectIdentifier locoBaseIdentifier = GetLocoBase();
+		const ObjectIdentifier locoBaseIdentifier = GetLocoBase();
 		if (releaseWhenFree)
 		{
-			LocoBase* locoBase = manager->GetLocoBase(locoBaseIdentifier);
-			if (locoBase != nullptr && locoBase->IsRunningFromTrack(GetID()))
+			const LocoBase* locoBase = manager->GetLocoBase(locoBaseIdentifier);
+			if (locoBase && (locoBase->GetObjectIdentifier() == locoBaseIdentifier))
 			{
 				StopAllSignals(locoBaseIdentifier);
 				bool ret = ReleaseForceUnlocked(locoBase->GetLogger(), locoBaseIdentifier);

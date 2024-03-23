@@ -110,7 +110,7 @@ namespace DataModel
 
 			virtual ~LocoBase();
 
-			inline Logger::Logger* GetLogger()
+			inline Logger::Logger* GetLogger() const
 			{
 				return logger;
 			}
