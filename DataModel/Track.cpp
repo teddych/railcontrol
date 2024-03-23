@@ -82,21 +82,26 @@ namespace DataModel
 		}
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
-		string feedbackStrings = Utils::Utils::GetStringMapEntry(arguments, "feedbacks"); // FIXME: remove later: 2024-03-22 feedback vector has been replaced by relation
+
+		// FIXME: remove later: 2024-03-22 feedback vector has been replaced by relation
+		string feedbackStrings = Utils::Utils::GetStringMapEntry(arguments, "feedbacks");
 		deque<string> feedbackStringVector;
 		Utils::Utils::SplitString(feedbackStrings, ",", feedbackStringVector);
 		for (auto& feedbackString : feedbackStringVector)
 		{
-			FeedbackID feedbackID = Utils::Utils::StringToInteger(feedbackString);
-			if (!manager->FeedbackExists(feedbackID))
+			const FeedbackID feedbackID = Utils::Utils::StringToInteger(feedbackString);
+			Feedback* feedback = manager->GetFeedback(feedbackID);
+			if (!feedback)
 			{
 				continue;
 			}
+			feedback->SetTrack(this);
 			feedbacks.push_back(new Relation(manager,
 				ObjectIdentifier(ObjectTypeTrack, GetID()),
 				ObjectIdentifier(ObjectTypeFeedback, feedbackID),
 				Relation::RelationTypeTrackFeedback));
 		}
+
 		selectRouteApproach = static_cast<SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", SelectRouteSystemDefault));
 		trackState = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "trackstate", DataModel::Feedback::FeedbackStateFree));
 		trackStateDelayed = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "trackstatedelayed", trackState));
@@ -136,7 +141,7 @@ namespace DataModel
 		{
 			Relation* feedbackRelation = feedbacks.back();
 			Feedback* feedback = manager->GetFeedback(feedbackRelation->ObjectID2());
-			if (!feedback)
+			if (feedback)
 			{
 				feedback->SetTrack();
 			}
