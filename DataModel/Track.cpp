@@ -370,7 +370,7 @@ namespace DataModel
 		if (releaseWhenFree)
 		{
 			const LocoBase* locoBase = manager->GetLocoBase(locoBaseIdentifier);
-			if (locoBase && (locoBase->GetObjectIdentifier() == locoBaseIdentifier))
+			if (locoBase && locoBase->CheckFreeingTrack(GetID()))
 			{
 				StopAllSignals(locoBaseIdentifier);
 				bool ret = ReleaseForceUnlocked(locoBase->GetLogger(), locoBaseIdentifier);

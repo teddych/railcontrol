@@ -141,7 +141,7 @@ namespace DataModel
 
 			bool Release();
 
-			bool IsRunningFromTrack(const TrackID trackID) const;
+			bool CheckFreeingTrack(const TrackID trackID) const;
 
 			void LocationReached(const FeedbackID feedbackID);
 

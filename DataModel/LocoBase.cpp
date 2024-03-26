@@ -163,10 +163,22 @@ namespace DataModel
 		return true;
 	}
 
-	bool LocoBase::IsRunningFromTrack(const TrackID trackID) const
+	bool LocoBase::CheckFreeingTrack(const TrackID trackID) const
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		return trackFirst != nullptr && trackFrom != nullptr && trackFrom->GetID() == trackID;
+		if (trackFrom && (trackFrom->GetID() == trackID) && !trackFirst)
+		{
+			return false;
+		}
+		if (trackFirst && (trackFirst->GetID() == trackID))
+		{
+			return false;
+		}
+		if (trackSecond && (trackSecond->GetID() == trackID))
+		{
+			return false;
+		}
+		return true;
 	}
 
 	bool LocoBase::GoToAutoMode(const AutoModeType type)
