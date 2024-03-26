@@ -1767,6 +1767,14 @@ function startUp()
 			hideAllContextMenus();
 			return true;
 		}, true);
+		body.addEventListener('keydown', function(event) { 
+			if (event.key === " ") 
+			{ 
+				let on = !document.getElementById('skip_booster').classList.contains('button_on');
+				let url = '/?cmd=booster&on=' + (on ? '1' : '0') + '';fireRequestAndForget(url);
+				return false; 
+			} 
+		}, true);
 	}
 	updateLocoControls();
 	loadLoco(1);
