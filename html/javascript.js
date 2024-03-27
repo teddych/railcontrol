@@ -1756,7 +1756,7 @@ function sendTimestamp()
 
 function startUp()
 {
-	var body = document.getElementById('body');
+	let body = document.getElementById('body');
 	if (body)
 	{
 		body.addEventListener('click', function(event) {
@@ -1767,11 +1767,26 @@ function startUp()
 			hideAllContextMenus();
 			return true;
 		}, true);
-		body.addEventListener('keydown', function(event) { 
+		body.addEventListener('keydown', function(event) {
+			let popup = document.getElementById('popup');
+			if (popup)
+			{
+				let popupstyle = window.getComputedStyle(popup, null).display;
+				if (popupstyle != 'none')
+				{
+					return true;
+				}
+			}
 			if (event.key === " ") 
-			{ 
-				let on = !document.getElementById('skip_booster').classList.contains('button_on');
-				let url = '/?cmd=booster&on=' + (on ? '1' : '0') + '';fireRequestAndForget(url);
+			{
+				let booster_button = document.getElementById('skip_booster');
+				if (!booster_button)
+				{
+					return true;
+				}
+				let on = !booster_button.classList.contains('button_on');
+				let url = '/?cmd=booster&on=' + (on ? '1' : '0') + '';
+				fireRequestAndForget(url);
 				return false; 
 			} 
 		}, true);
