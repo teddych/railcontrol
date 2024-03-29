@@ -87,6 +87,7 @@ namespace DataModel
 		for (auto slave : slaves)
 		{
 			manager->LocoBaseSpeed(ControlTypeInternal, slave->ObjectIdentifier2(), speed);
+			Utils::Utils::SleepForMilliseconds(10);
 		}
 	}
 
@@ -97,6 +98,7 @@ namespace DataModel
 		for (auto slave : slaves)
 		{
 			manager->LocoBaseFunctionState(ControlTypeInternal, slave->ObjectIdentifier2(), nr, state);
+			Utils::Utils::SleepForMilliseconds(10);
 		}
 	}
 
@@ -106,6 +108,7 @@ namespace DataModel
 		for (auto slave : slaves)
 		{
 			manager->LocoBaseOrientation(ControlTypeInternal, slave->ObjectIdentifier2(), OrientationChange);
+			Utils::Utils::SleepForMilliseconds(10);
 		}
 	}
 
