@@ -192,6 +192,7 @@ class Languages
 			TextError,
 			TextErrorReadingData,
 			TextExecuteAccessory,
+			TextExecuteRoute,
 			TextExecutingRoute,
 			TextExitRailControl,
 			TextFeedback,

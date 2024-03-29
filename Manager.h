@@ -361,6 +361,7 @@ class Manager
 			const FeedbackPin pin,
 			const bool inverted,
 			const DataModel::FeedbackType feedbackType,
+			const RouteID routeId,
 			std::string& result);
 
 		bool FeedbackDelete(const FeedbackID feedbackID,

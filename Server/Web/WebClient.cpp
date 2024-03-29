@@ -2658,6 +2658,7 @@ namespace Server { namespace Web
 		string matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 		FeedbackPin pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin", FeedbackPinNone);
 		DataModel::FeedbackType feedbackType = static_cast<DataModel::FeedbackType>(Utils::Utils::GetIntegerMapEntry(arguments, "feedbacktype", FeedbackTypeDefault));
+		RouteID routeId = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
@@ -2687,6 +2688,7 @@ namespace Server { namespace Web
 				pin = feedback->GetPin();
 				inverted = feedback->GetInverted();
 				feedbackType = feedback->GetFeedbackType();
+				routeId = feedback->GetRouteId();
 				visible = feedback->GetVisible();
 				posx = feedback->GetPosX();
 				posy = feedback->GetPosY();
@@ -2724,6 +2726,14 @@ namespace Server { namespace Web
 		typeOptions[DataModel::FeedbackTypeStraight] = Languages::TextStraight;
 		typeOptions[DataModel::FeedbackTypeTurn] = Languages::TextTurn;
 
+		const std::map<string, Route*> routes = manager.RouteListByName();
+		map<string, RouteID> routeOptions;
+		routeOptions["-"] = RouteNone;
+		for (auto& track : routes)
+		{
+			routeOptions[track.first] = track.second->GetID();
+		}
+
 		HtmlTag mainContent("div");
 		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
@@ -2733,6 +2743,7 @@ namespace Server { namespace Web
 		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", Languages::TextPin, pin, 1, 4096));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("feedbacktype", Languages::TextType, typeOptions, feedbackType));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("route", Languages::TextExecuteRoute, routeOptions, routeId));
 		formContent.AddChildTag(mainContent);
 
 		formContent.AddChildTag(HtmlTagTabPosition(posx, posy, posz, rotation, visible));
@@ -2752,6 +2763,7 @@ namespace Server { namespace Web
 		const FeedbackPin pin = static_cast<FeedbackPin>(Utils::Utils::GetIntegerMapEntry(arguments, "pin", FeedbackPinNone));
 		const bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted");
 		const DataModel::FeedbackType feedbackType = static_cast<DataModel::FeedbackType>(Utils::Utils::GetIntegerMapEntry(arguments, "feedbacktype", FeedbackTypeDefault));
+		const RouteID routeId = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
 		const DataModel::LayoutItem::Visible visible = static_cast<Visible>(Utils::Utils::GetBoolMapEntry(arguments, "visible", DataModel::LayoutItem::VisibleNo));
 		const LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		const LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
@@ -2770,6 +2782,7 @@ namespace Server { namespace Web
 			pin,
 			inverted,
 			feedbackType,
+			routeId,
 			result))
 		{
 			ReplyResponse(ResponseError, result);

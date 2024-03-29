@@ -38,6 +38,7 @@ namespace DataModel
 		str += ";controlID=" + to_string(controlID);
 		str += ";pin=" + to_string(pin);
 		str += ";feedbacktype=" + to_string(feedbackType);
+		str += ";route=" + to_string(routeId);
 		str += ";inverted=" + to_string(inverted);
 		str += ";state=" + to_string(stateCounter > 0);
 		str += ";matchkey=" + matchKey;
@@ -59,6 +60,7 @@ namespace DataModel
 		controlID = Utils::Utils::GetIntegerMapEntry(arguments, "controlID", ControlIdNone);
 		pin = Utils::Utils::GetIntegerMapEntry(arguments, "pin");
 		feedbackType = static_cast<FeedbackType>(Utils::Utils::GetIntegerMapEntry(arguments, "feedbacktype", FeedbackTypeDefault));
+		routeId = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
 		inverted = Utils::Utils::GetBoolMapEntry(arguments, "inverted", false);
 		stateCounter = Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
 		matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
@@ -91,6 +93,13 @@ namespace DataModel
 
 		manager->FeedbackPublishState(this);
 		UpdateTrackState(FeedbackStateOccupied);
+
+		Route* route = manager->GetRoute(routeId);
+		if (route)
+		{
+			static Logger::Logger* logger = Logger::Logger::GetLogger(Languages::GetText(Languages::TextManager));
+			route->Execute(logger, ObjectIdentifier());
+		}
 	}
 
 	void Feedback::UpdateTrackState(const FeedbackState state)

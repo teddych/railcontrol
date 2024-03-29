@@ -192,6 +192,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextError */ { "error", "Fehler", "error" },
 /* TextErrorReadingData */ { "Error reading data: {0}", "Fehler beim Daten lesen {0}", "Error leer data: {0}" },
 /* TextExecuteAccessory */ { "Execute accessories", "Schalte Zubehörartikel", "Cambia los accesorios" },
+/* TextExecuteRoute */ { "Execute route", "Fahrstrasse ausführen", "Ejecuta itinerario" },
 /* TextExecutingRoute */ { "Executing route {0}", "Führe Fahrstrasse {0} aus", "Ejecutando itinerario {0}" },
 /* TextExitRailControl */ { "Exit RailControl", "RailControl beenden", "Apagar RailControl" },
 /* TextFeedback */ { "feedback", "Rückmelder", "retroseñal" },

@@ -58,6 +58,7 @@ namespace DataModel
 			 	pin(FeedbackPinNone),
 			 	manager(manager),
 			 	feedbackType(FeedbackTypeDefault),
+			 	routeId(RouteNone),
 			 	inverted(false),
 			 	track(nullptr),
 				stateCounter(0)
@@ -98,6 +99,16 @@ namespace DataModel
 			inline void SetFeedbackType(const FeedbackType type)
 			{
 				this->feedbackType = type;
+			}
+
+			inline RouteID GetRouteId() const
+			{
+				return routeId;
+			}
+
+			inline void SetRouteId(const RouteID routeId)
+			{
+				this->routeId = routeId;
 			}
 
 			inline void SetInverted(const bool inverted)
@@ -174,6 +185,7 @@ namespace DataModel
 
 			Manager* manager;
 			FeedbackType feedbackType;
+			RouteID routeId;
 			bool inverted;
 			Track* track;
 			unsigned char stateCounter;
