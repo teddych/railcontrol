@@ -75,6 +75,7 @@ class Languages
 			TextBaseAddress,
 			TextBasic,
 			TextBlockTrack,
+			TextBooster,
 			TextBoosterIsTurnedOff,
 			TextBoosterIsTurnedOn,
 			TextBridge,

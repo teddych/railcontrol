@@ -236,12 +236,6 @@ namespace DataModel
 			return false;
 		}
 
-		if (manager->Booster() == BoosterStateStop)
-		{
-			logger->Debug(Languages::TextBoosterIsTurnedOff);
-			return false;
-		}
-
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		for (auto relation : relationsAtLock)
 		{

@@ -75,6 +75,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextBaseAddress */ { "Baseaddress", "Basisadresse", "Dirección basica" },
 /* TextBasic */ { "Basic data", "Basisdaten", "Datos básicos" },
 /* TextBlockTrack */ { "Block track", "Blockiere Gleis", "Bloquear vía" },
+/* TextBooster */ { "Booster", "Booster", "Booster" },
 /* TextBoosterIsTurnedOff */ { "Booster is turned off", "Booster ist ausgeschaltet", "Booster está apagado" },
 /* TextBoosterIsTurnedOn */ { "Booster is turned on", "Booster ist eingeschaltet", "Booster está encendido" },
 /* TextBridge */ { "Bridge", "Brücke", "Puente" },

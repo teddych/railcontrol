@@ -226,7 +226,8 @@ enum ObjectType : uint8_t
 	ObjectTypeTimeTable = 10,
 	ObjectTypeText = 11,
 	ObjectTypePause = 12,
-	ObjectTypeMultipleUnit = 13
+	ObjectTypeMultipleUnit = 13,
+	ObjectTypeBooster = 14
 };
 
 enum Orientation : uint8_t

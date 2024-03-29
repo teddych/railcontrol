@@ -126,6 +126,10 @@ namespace DataModel
 				manager->LocoBaseOrientation(ControlTypeInternal, locoBaseIdentifier, static_cast<Orientation>(data));
 				return true;
 
+			case ObjectTypeBooster:
+				manager->Booster(ControlTypeInternal, static_cast<BoosterState>(data));
+				return true;
+
 			default:
 				return false;
 		}
@@ -167,7 +171,10 @@ namespace DataModel
 		}
 
 		const ObjectType objectType2 = ObjectType2();
-		if (objectType2 == ObjectTypeLoco || objectType2 == ObjectTypePause || objectType2 == ObjectTypeMultipleUnit)
+		if (objectType2 == ObjectTypeLoco
+			|| objectType2 == ObjectTypePause
+			|| objectType2 == ObjectTypeMultipleUnit
+			|| objectType2 == ObjectTypeBooster)
 		{
 			return true;
 		}
@@ -198,7 +205,10 @@ namespace DataModel
 		}
 
 		const ObjectType objectType2 = ObjectType2();
-		if (objectType2 == ObjectTypeLoco || objectType2 == ObjectTypePause || objectType2 == ObjectTypeMultipleUnit)
+		if (objectType2 == ObjectTypeLoco
+			|| objectType2 == ObjectTypePause
+			|| objectType2 == ObjectTypeMultipleUnit
+			|| objectType2 == ObjectTypeBooster)
 		{
 			return true;
 		}

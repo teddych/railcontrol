@@ -88,6 +88,13 @@ namespace DataModel
 			return true;
 		}
 
+		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "booster", ObjectNone));
+		if (objectID != ObjectNone)
+		{
+			objectType = ObjectTypeBooster;
+			return true;
+		}
+
 		objectType = ObjectTypeNone;
 		return false;
 	}
@@ -169,6 +176,12 @@ namespace DataModel
 		if (text.substr(0, 12).compare("multipleunit") == 0)
 		{
 			objectType = ObjectTypeMultipleUnit;
+			objectID = Utils::Utils::StringToInteger(text.substr(12), ObjectNone);
+			return *this;
+		}
+		if (text.substr(0, 7).compare("booster") == 0)
+		{
+			objectType = ObjectTypeBooster;
 			objectID = Utils::Utils::StringToInteger(text.substr(7), ObjectNone);
 			return *this;
 		}
@@ -222,6 +235,9 @@ namespace DataModel
 
 			case ObjectTypeMultipleUnit:
 				return "multipleunit";
+
+			case ObjectTypeBooster:
+				return "booster";
 		}
 		return "object";
 	}
