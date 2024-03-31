@@ -45,6 +45,33 @@ namespace Server { namespace Web
 		const DataModel::AccessoryType type = signal->GetAccessoryType();
 		switch (type)
 		{
+			case DataModel::SignalTypeDeHVBlock:
+				MenuEntry(Languages::TextSignalStateStop, idText, DataModel::SignalStateStop, "stop");
+				MenuEntry(Languages::TextSignalStateClear, idText, DataModel::SignalStateClear, "clear");
+				imageDiv.AddAttribute("onclick", "return onClickWithMenu(event, '" + identifier + "');");
+				break;
+
+			case DataModel::SignalTypeDeHVStop:
+				MenuEntry(Languages::TextSignalStateStop, idText, DataModel::SignalStateStop, "stop");
+				MenuEntry(Languages::TextSignalStateClear, idText, DataModel::SignalStateClear, "clear");
+				imageDiv.AddAttribute("onclick", "return onClickWithMenu(event, '" + identifier + "');");
+				break;
+
+			case DataModel::SignalTypeDeHVEntry:
+				MenuEntry(Languages::TextSignalStateStop, idText, DataModel::SignalStateStop, "stop");
+				MenuEntry(Languages::TextSignalStateClear, idText, DataModel::SignalStateClear, "clear");
+				MenuEntry(Languages::TextSignalStateLowSpeed, idText, DataModel::SignalStateAspect4, "aspect4");
+				imageDiv.AddAttribute("onclick", "return onClickWithMenu(event, '" + identifier + "');");
+				break;
+
+			case DataModel::SignalTypeDeHVDeparture:
+				MenuEntry(Languages::TextSignalStateStop, idText, DataModel::SignalStateStop, "stop");
+				MenuEntry(Languages::TextSignalStateClear, idText, DataModel::SignalStateClear, "clear");
+				MenuEntry(Languages::TextSignalStateLowSpeed, idText, DataModel::SignalStateAspect4, "aspect4");
+				MenuEntry(Languages::TextSignalStateShunting, idText, DataModel::SignalStateAspect7, "aspect7");
+				imageDiv.AddAttribute("onclick", "return onClickWithMenu(event, '" + identifier + "');");
+				break;
+
 			case DataModel::SignalTypeDeCombined:
 				MenuEntry(Languages::TextSignalStateStop, idText, DataModel::SignalStateStop, "stop");
 				MenuEntry(Languages::TextSignalStateClear, idText, DataModel::SignalStateClear, "clear");
@@ -119,6 +146,45 @@ namespace Server { namespace Web
 	{
 		switch (signal->GetAccessoryType())
 		{
+			case DataModel::SignalTypeDeHVBlock:
+				return "<polygon points=\"0,0 14,0 14,31 0,31\" fill=\"white\"/>"
+					"<polygon points=\"1,4 4,1 10,1 13,4 13,30 1,30\" fill=\"black\"/>"
+					"<polyline points=\"7,31 7,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<polyline points=\"4,34 10,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<circle class=\"stop\" cx=\"4\" cy=\"26\" r=\"2.5\" fill=\"red\" opacity=\"0\"/>"
+					"<circle class=\"clear\" cx=\"10\" cy=\"26\" r=\"2.5\" fill=\"lightgreen\" opacity=\"0\"/>";
+
+			case DataModel::SignalTypeDeHVStop:
+				return "<polygon points=\"0,0 14,0 14,13 0,13\" fill=\"white\"/>"
+					"<polygon points=\"1,4 4,1 10,1 13,4 13,12 1,12\" fill=\"black\"/>"
+					"<polyline points=\"7,13 7,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<polyline points=\"4,34 10,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<circle class=\"stop\" cx=\"3\" cy=\"5\" r=\"1.5\" fill=\"red\" opacity=\"0\"/>"
+					"<circle class=\"stop\" cx=\"11\" cy=\"5\" r=\"1.5\" fill=\"red\" opacity=\"0\"/>"
+					"<circle class=\"clear\" cx=\"7\" cy=\"5\" r=\"1.5\" fill=\"white\" opacity=\"0\"/>"
+					"<circle class=\"clear\" cx=\"3\" cy=\"9\" r=\"1.5\" fill=\"white\" opacity=\"0\"/>";
+
+			case DataModel::SignalTypeDeHVEntry:
+				return "<polygon points=\"0,0 14,0 14,31 0,31\" fill=\"white\"/>"
+					"<polygon points=\"1,4 4,1 10,1 13,4 13,30 1,30\" fill=\"black\"/>"
+					"<polyline points=\"7,31 7,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<polyline points=\"4,34 10,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<circle class=\"stop\" cx=\"4\" cy=\"26\" r=\"2.5\" fill=\"red\" opacity=\"0\"/>"
+					"<circle class=\"clear aspect4\" cx=\"10\" cy=\"5\" r=\"2.5\" fill=\"lightgreen\" opacity=\"0\"/>"
+					"<circle class=\"aspect4\" cx=\"10\" cy=\"26\" r=\"2.5\" fill=\"yellow\" opacity=\"0\"/>";
+
+			case DataModel::SignalTypeDeHVDeparture:
+				return "<polygon points=\"0,0 14,0 14,31 0,31\" fill=\"white\"/>"
+					"<polygon points=\"1,4 4,1 10,1 13,4 13,30 1,30\" fill=\"black\"/>"
+					"<polyline points=\"7,31 7,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<polyline points=\"4,34 10,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<circle class=\"stop aspect7\" cx=\"4\" cy=\"11\" r=\"2.5\" fill=\"red\" opacity=\"0\"/>"
+					"<circle class=\"stop\" cx=\"10\" cy=\"11\" r=\"2.5\" fill=\"red\" opacity=\"0\"/>"
+					"<circle class=\"clear aspect4\" cx=\"4\" cy=\"5\" r=\"2.5\" fill=\"lightgreen\" opacity=\"0\"/>"
+					"<circle class=\"aspect4\" cx=\"4\" cy=\"26\" r=\"2.5\" fill=\"yellow\" opacity=\"0\"/>"
+					"<circle class=\"aspect7\" cx=\"10\" cy=\"17\" r=\"1.5\" fill=\"white\" opacity=\"0\"/>"
+					"<circle class=\"aspect7\" cx=\"4\" cy=\"23\" r=\"1.5\" fill=\"white\" opacity=\"0\"/>";
+
 			case DataModel::SignalTypeDeCombined:
 				return "<polygon points=\"0,0 14,0 14,31 0,31\" fill=\"white\"/>"
 					"<polygon points=\"1,1 13,1 13,30 1,30\" fill=\"black\"/>"

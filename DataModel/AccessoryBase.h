@@ -44,6 +44,10 @@ namespace DataModel
 		SignalTypeChNMain = 14,
 		SignalTypeChNDistant = 15,
 		SignalTypeDeCombined = 20,
+		SignalTypeDeHVBlock = 21,
+		SignalTypeDeHVEntry = 22,
+		SignalTypeDeHVDeparture = 23,
+		SignalTypeDeHVStop = 24,
 
 		SwitchTypeLeft = 0,
 		SwitchTypeRight = 1,

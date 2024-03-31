@@ -91,6 +91,17 @@ namespace DataModel
 		SetStateAddressOffset(SignalStateClear, 1);
 		switch(GetAccessoryType())
 		{
+			case SignalTypeDeHVEntry:
+				SetStateAddressOffset(SignalStateAspect4, 2);
+				SetStateAddressOffset(SignalStateDark, 3);
+				break;
+
+			case SignalTypeDeHVDeparture:
+				SetStateAddressOffset(SignalStateAspect4, 2);
+				SetStateAddressOffset(SignalStateAspect7, 3);
+				SetStateAddressOffset(SignalStateDark, 4);
+				break;
+
 			case SignalTypeDeCombined:
 				SetStateAddressOffset(SignalStateStopExpected, 2);
 				SetStateAddressOffset(SignalStateAspect4, 3);
@@ -111,6 +122,8 @@ namespace DataModel
 
 			case SignalTypeSimpleLeft:
 			case SignalTypeSimpleRight:
+			case SignalTypeDeHVBlock:
+			case SignalTypeDeHVStop:
 			default:
 				break;
 		}
@@ -120,6 +133,8 @@ namespace DataModel
 	{
 		switch(GetAccessoryType())
 		{
+			case SignalTypeDeHVEntry:
+			case SignalTypeDeHVDeparture:
 			case SignalTypeDeCombined:
 			case SignalTypeChLMain:
 				return (GetAddress() == address)
@@ -130,6 +145,8 @@ namespace DataModel
 				return (GetAddress() == address)
 					|| (GetAddress() + 2 == address);
 
+			case SignalTypeDeHVBlock:
+			case SignalTypeDeHVStop:
 			case SignalTypeSimpleLeft:
 			case SignalTypeSimpleRight:
 			default:
@@ -144,6 +161,17 @@ namespace DataModel
 		out.emplace(SignalStateClear, StateOption(Languages::TextSignalStateClear, GetStateAddressOffset(SignalStateClear)));
 		switch(GetAccessoryType())
 		{
+			case SignalTypeDeHVEntry:
+				out.emplace(SignalStateAspect4, StateOption(Languages::TextSignalStateLowSpeed, GetStateAddressOffset(SignalStateAspect4)));
+				out.emplace(SignalStateDark, StateOption(Languages::TextSignalStateDark, GetStateAddressOffset(SignalStateDark)));
+				break;
+
+			case SignalTypeDeHVDeparture:
+				out.emplace(SignalStateAspect4, StateOption(Languages::TextSignalStateLowSpeed, GetStateAddressOffset(SignalStateAspect4)));
+				out.emplace(SignalStateAspect7, StateOption(Languages::TextSignalStateShunting, GetStateAddressOffset(SignalStateAspect7)));
+				out.emplace(SignalStateDark, StateOption(Languages::TextSignalStateDark, GetStateAddressOffset(SignalStateDark)));
+				break;
+
 			case SignalTypeDeCombined:
 				out.emplace(SignalStateStopExpected, StateOption(Languages::TextSignalStateStopExpected, GetStateAddressOffset(SignalStateStopExpected)));
 				out.emplace(SignalStateAspect4, StateOption(Languages::TextSignalStateShunting, GetStateAddressOffset(SignalStateAspect4)));
@@ -164,6 +192,8 @@ namespace DataModel
 
 			case SignalTypeSimpleLeft:
 			case SignalTypeSimpleRight:
+			case SignalTypeDeHVBlock:
+			case SignalTypeDeHVStop:
 			default:
 				break;
 		}
