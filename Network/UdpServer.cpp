@@ -76,7 +76,7 @@ namespace Network
 		serverAddr6.sin6_port = htons(port);
 		SocketCreateBindListen(serverAddr6.sin6_family, reinterpret_cast<struct sockaddr*>(&serverAddr6));
 
-#ifdef __CYGWIN__
+#if defined __CYGWIN__  || defined __linux__
 		struct sockaddr_in serverAddr4;
 		memset(reinterpret_cast<char*>(&serverAddr4), 0, sizeof(serverAddr4));
 		serverAddr4.sin_family = AF_INET;
