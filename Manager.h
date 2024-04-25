@@ -345,6 +345,7 @@ class Manager
 		}
 
 		const std::map<std::string,DataModel::Feedback*> FeedbackListByName() const;
+		const std::map<RouteID,std::string> RoutesOfTrack(const TrackID trackID) const;
 		const std::map<std::string,FeedbackID> FeedbacksOfTrack(const TrackID trackID) const;
 
 		const std::map<std::string,DataModel::FeedbackConfig> FeedbackConfigByName() const;
@@ -493,6 +494,7 @@ class Manager
 			const FeedbackID feedbackIdStop,
 			const FeedbackID feedbackIdOver,
 			const Pause waitAfterRelease,
+			const RouteID followUpRoute,
 			std::string& result);
 
 		bool RouteDelete(const RouteID routeID,
@@ -595,8 +597,7 @@ class Manager
 		bool TrackRelease(const TrackID trackID);
 		bool LocoBaseReleaseOnTrack(const TrackID trackID);
 
-		bool TrackStartLocoBase(const TrackID trackID,
-			const DataModel::Loco::AutoModeType type);
+		bool TrackStartLocoBase(const TrackID trackID);
 
 		bool TrackStopLocoBase(const TrackID trackID);
 		void TrackBlock(const TrackID trackID, const bool blocked);
@@ -608,15 +609,14 @@ class Manager
 			const DataModel::Route* route,
 			const DataModel::Track* track);
 
-		bool LocoBaseStart(const DataModel::ObjectIdentifier& locoBaseIdentifier,
-			const DataModel::Loco::AutoModeType type);
+		bool LocoBaseStart(const DataModel::ObjectIdentifier& locoBaseIdentifier);
 		bool LocoBaseStartAll();
 
 		bool LocoBaseStop(const DataModel::ObjectIdentifier& locoBaseIdentifier);
 		bool LocoBaseStopAll();
 		void LocoBaseStopAllImmediately(const ControlType controlType);
 
-		bool LocoBaseAddTimeTable(const DataModel::ObjectIdentifier& locoIdentifier, const DataModel::ObjectIdentifier& identifier);
+		bool LocoBaseAddTimeTable(const DataModel::ObjectIdentifier& locoIdentifier, const RouteID routeID);
 
 		inline DataModel::ObjectIdentifier GetLocoBaseIdentifierOfTrack(const TrackID trackId)
 		{

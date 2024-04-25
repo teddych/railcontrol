@@ -127,13 +127,15 @@ namespace DataModel
 				logger = Logger::Logger::GetLogger(name);
 			}
 
-			bool GoToAutoMode(const AutoModeType type = AutoModeTypeFull);
+			bool GoToAutoMode();
 
 			void RequestManualMode();
 
 			bool GoToManualMode();
 
-			bool AddTimeTable(const ObjectIdentifier& identifier);
+			void FillUpTimeTable(const Track* fromTrack, const bool allowLocoTurn);
+
+			void AddTimeTable(const RouteID routeID);
 
 			bool SetTrack(const TrackID trackID);
 
@@ -308,9 +310,6 @@ namespace DataModel
 				LocoStateAutomodeGetFirst,
 				LocoStateAutomodeGetSecond,
 				LocoStateAutomodeRunning,
-				LocoStateTimetableGetFirst,
-				LocoStateTimetableGetSecond,
-				LocoStateTimetableRunning,
 				LocoStateStopping,
 				LocoStateError
 			};
@@ -319,19 +318,15 @@ namespace DataModel
 
 			void AutoMode();
 
-			void SearchDestinationFirst();
-
 			void GetTimetableDestinationFirst();
 
-			void PrepareDestinationFirst(Route* const route, const LocoState newState);
-
-			void SearchDestinationSecond();
+			void PrepareDestinationFirst(Route* const route);
 
 			void GetTimetableDestinationSecond();
 
 			DataModel::Route* GetDestinationFromTimeTable(const Track* const track, const bool allowLocoTurn);
 
-			void PrepareDestinationSecond(Route* const route, const LocoState newState);
+			void PrepareDestinationSecond(Route* const route);
 
 			DataModel::Route* SearchDestination(const DataModel::Track* const oldToTrack, const bool allowLocoTurn);
 

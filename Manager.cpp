@@ -1774,15 +1774,31 @@ const map<string,DataModel::Feedback*> Manager::FeedbackListByName() const
 	return out;
 }
 
-const map<string,FeedbackID> Manager::FeedbacksOfTrack(const TrackID trackID) const
+const map<RouteID,string> Manager::RoutesOfTrack(const TrackID trackID) const
 {
-	map<string,FeedbackID> out;
-	Track* track = GetTrack(trackID);
+	map<RouteID,string> out;
+	const Track* track = GetTrack(trackID);
 	if (track == nullptr)
 	{
 		return out;
 	}
-	vector<Relation*> feedbacksOfTrack = track->GetFeedbacks();
+	const vector<const Route*> routesOfTrack = track->GetRoutes();
+	for (auto route : routesOfTrack)
+	{
+		out[route->GetID()] = route->GetName();
+	}
+	return out;
+}
+
+const map<string,FeedbackID> Manager::FeedbacksOfTrack(const TrackID trackID) const
+{
+	map<string,FeedbackID> out;
+	const Track* track = GetTrack(trackID);
+	if (track == nullptr)
+	{
+		return out;
+	}
+	const vector<Relation*> feedbacksOfTrack = track->GetFeedbacks();
 	for (auto feedbackRelation: feedbacksOfTrack)
 	{
 		const FeedbackID feedbackID = feedbackRelation->ObjectID2();
@@ -2509,6 +2525,7 @@ bool Manager::RouteSave(RouteID routeID,
 	const FeedbackID feedbackIdStop,
 	const FeedbackID feedbackIdOver,
 	const Pause waitAfterRelease,
+	const RouteID followUpRoute,
 	string& result)
 {
 
@@ -2580,6 +2597,7 @@ bool Manager::RouteSave(RouteID routeID,
 		route->SetMinTrainLength(minTrainLength);
 		route->SetMaxTrainLength(maxTrainLength);
 		route->SetWaitAfterRelease(waitAfterRelease);
+		route->SetFollowUpRoute(followUpRoute);
 	}
 	else
 	{
@@ -2598,6 +2616,7 @@ bool Manager::RouteSave(RouteID routeID,
 		route->SetMinTrainLength(0);
 		route->SetMaxTrainLength(0);
 		route->SetWaitAfterRelease(0);
+		route->SetFollowUpRoute(RouteNone);
 	}
 
 	//Add new route
@@ -3622,15 +3641,14 @@ bool Manager::LocoBaseReleaseOnTrack(const TrackID trackID)
 	return LocoBaseReleaseInternal(locoBase);
 }
 
-bool Manager::TrackStartLocoBase(const TrackID trackID,
-	const DataModel::Loco::AutoModeType type)
+bool Manager::TrackStartLocoBase(const TrackID trackID)
 {
 	Track* track = GetTrack(trackID);
 	if (track == nullptr)
 	{
 		return false;
 	}
-	return LocoBaseStart(track->GetLocoBase(), type);
+	return LocoBaseStart(track->GetLocoBase());
 }
 
 bool Manager::TrackStopLocoBase(const TrackID trackID)
@@ -3696,14 +3714,14 @@ bool Manager::LocoDestinationReached(const LocoBase* loco,
 	return true;
 }
 
-bool Manager::LocoBaseStart(const ObjectIdentifier& locoBaseIdentifier, const DataModel::Loco::AutoModeType type)
+bool Manager::LocoBaseStart(const ObjectIdentifier& locoBaseIdentifier)
 {
 	LocoBase* locoBase = GetLocoBase(locoBaseIdentifier);
 	if (locoBase == nullptr)
 	{
 		return false;
 	}
-	bool ret = locoBase->GoToAutoMode(type);
+	bool ret = locoBase->GoToAutoMode();
 	if (ret == false)
 	{
 		return false;
@@ -3871,14 +3889,15 @@ void Manager::LocoBaseStopAllImmediately(const ControlType controlType)
 	}
 }
 
-bool Manager::LocoBaseAddTimeTable(const ObjectIdentifier& locoIdentifier, const ObjectIdentifier& identifier)
+bool Manager::LocoBaseAddTimeTable(const ObjectIdentifier& locoIdentifier, const RouteID routeID)
 {
 	LocoBase* locoBase = GetLocoBase(locoIdentifier);
 	if (locoBase == nullptr)
 	{
 		return false;
 	}
-	return locoBase->AddTimeTable(identifier);
+	locoBase->AddTimeTable(routeID);
+	return true;
 }
 
 /***************************

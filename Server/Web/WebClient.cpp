@@ -1177,9 +1177,9 @@ namespace Server { namespace Web
 			TrackID trackId = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
 			locoBaseIdentifier = manager.GetLocoBaseIdentifierOfTrack(trackId);
 		}
-		ObjectIdentifier timetableIdentifier = Utils::Utils::GetStringMapEntry(arguments, "timetable");
-		bool ret = manager.LocoBaseAddTimeTable(locoBaseIdentifier, timetableIdentifier);
-		ReplyHtmlWithHeaderAndParagraph(ret ? "Timetable added" : "Timetable not added");
+		const RouteID routeID = static_cast<RouteID>(Utils::Utils::GetIntegerMapEntry(arguments, "route"));
+		bool ret = manager.LocoBaseAddTimeTable(locoBaseIdentifier, routeID);
+		ReplyHtmlWithHeaderAndParagraph(ret ? "Route added" : "Route not added");
 	}
 
 	HtmlTag WebClient::HtmlTagMatchKeyProtocolLoco(const ControlID controlId,
