@@ -475,12 +475,12 @@ namespace DataModel
 		{
 			return nullptr;
 		}
-		bool ret = ReserveRoute(track, allowLocoTurn, route);
+		bool ret = ExecuteRoute(track, allowLocoTurn, route);
 		if (!ret)
 		{
 			return nullptr;
 		}
-		logger->Debug(Languages::TextUsingRouteFromTimetable, route->GetID());
+		logger->Debug(Languages::TextUsingRouteFromTimetable, route->GetName());
 		return route;
 	}
 
@@ -491,13 +491,13 @@ namespace DataModel
 		{
 			return;
 		}
-		AddTimeTable(route->GetID());
+		AddTimeTable(route);
 	}
 
-	void LocoBase::AddTimeTable(const RouteID routeID)
+	void LocoBase::AddTimeTable(const Route* route)
 	{
-		timeTableQueue.Enqueue(routeID);
-		logger->Debug(Languages::TextAddingRouteToTimetable, routeID);
+		timeTableQueue.Enqueue(route->GetID());
+		logger->Debug(Languages::TextAddingRouteToTimetable, route->GetName());
 	}
 
 	void LocoBase::PrepareDestinationSecond(Route* const route)
@@ -581,15 +581,15 @@ namespace DataModel
 
 	bool LocoBase::ReserveRoute(const Track* const track, const bool allowLocoTurn, Route* const route)
 	{
-		logger->Debug(Languages::TextExecutingRoute, route->GetName());
+		logger->Debug(Languages::TextReservingRoute, route->GetName());
 
 		const ObjectIdentifier locoBaseIdentifier = GetObjectIdentifier();
-		if (route->Reserve(logger, locoBaseIdentifier) == false)
+		if (!route->Reserve(logger, locoBaseIdentifier))
 		{
 			return false;
 		}
 
-		if (route->Lock(logger, locoBaseIdentifier) == false)
+		if (!route->Lock(logger, locoBaseIdentifier))
 		{
 			route->Release(logger, locoBaseIdentifier);
 			return false;
@@ -604,7 +604,7 @@ namespace DataModel
 		}
 
 		bool canSetOrientation = newTrack->CanSetLocoBaseOrientation(route->GetToOrientation(), locoBaseIdentifier);
-		if (canSetOrientation == false)
+		if (!canSetOrientation)
 		{
 			route->Release(logger, locoBaseIdentifier);
 			newTrack->Release(logger, locoBaseIdentifier);
@@ -618,12 +618,31 @@ namespace DataModel
 			return false;
 		}
 
-		if (route->Execute(logger, locoBaseIdentifier) == false)
+		return true;
+	}
+
+	bool LocoBase::ExecuteRoute(const Track* const track, const bool allowLocoTurn, Route* const route)
+	{
+		if (route->GetLockState() == LockableItem::LockStateFree)
+		{
+			ReserveRoute(track, allowLocoTurn, route);
+		}
+
+		logger->Debug(Languages::TextExecutingRoute, route->GetName());
+
+		const ObjectIdentifier locoBaseIdentifier = GetObjectIdentifier();
+		if (!route->Execute(logger, locoBaseIdentifier))
 		{
 			route->Release(logger, locoBaseIdentifier);
-			newTrack->Release(logger, locoBaseIdentifier);
+
+			Track* newTrack = manager->GetTrack(route->GetToTrack());
+			if (newTrack)
+			{
+				newTrack->Release(logger, locoBaseIdentifier);
+			}
 			return false;
 		}
+
 		return true;
 	}
 

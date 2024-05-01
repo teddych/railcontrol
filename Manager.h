@@ -616,7 +616,7 @@ class Manager
 		bool LocoBaseStopAll();
 		void LocoBaseStopAllImmediately(const ControlType controlType);
 
-		bool LocoBaseAddTimeTable(const DataModel::ObjectIdentifier& locoIdentifier, const RouteID routeID);
+		bool LocoBaseAddTimeTable(const DataModel::ObjectIdentifier& locoBaseIdentifier, const RouteID routeID);
 
 		inline DataModel::ObjectIdentifier GetLocoBaseIdentifierOfTrack(const TrackID trackId)
 		{

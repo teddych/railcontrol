@@ -550,6 +550,7 @@ class Languages
 			TextReleasingMultipleUnit,
 			TextRemoveBackupFile,
 			TextRenamingFromTo,
+			TextReservingRoute,
 			TextRestarting,
 			TextRight,
 			TextRotation,

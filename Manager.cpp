@@ -3889,14 +3889,19 @@ void Manager::LocoBaseStopAllImmediately(const ControlType controlType)
 	}
 }
 
-bool Manager::LocoBaseAddTimeTable(const ObjectIdentifier& locoIdentifier, const RouteID routeID)
+bool Manager::LocoBaseAddTimeTable(const ObjectIdentifier& locoBaseIdentifier, const RouteID routeID)
 {
-	LocoBase* locoBase = GetLocoBase(locoIdentifier);
+	LocoBase* locoBase = GetLocoBase(locoBaseIdentifier);
 	if (locoBase == nullptr)
 	{
 		return false;
 	}
-	locoBase->AddTimeTable(routeID);
+	Route* route = GetRoute(routeID);
+	if (!route)
+	{
+		return false;
+	}
+	locoBase->AddTimeTable(route);
 	return true;
 }
 

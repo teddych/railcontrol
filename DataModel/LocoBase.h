@@ -135,7 +135,7 @@ namespace DataModel
 
 			void FillUpTimeTable(const Track* fromTrack, const bool allowLocoTurn);
 
-			void AddTimeTable(const RouteID routeID);
+			void AddTimeTable(const Route* route);
 
 			bool SetTrack(const TrackID trackID);
 
@@ -331,6 +331,8 @@ namespace DataModel
 			DataModel::Route* SearchDestination(const DataModel::Track* const oldToTrack, const bool allowLocoTurn);
 
 			bool ReserveRoute(const Track* const track, const bool allowLocoTurn, Route* const route);
+
+			bool ExecuteRoute(const Track* const track, const bool allowLocoTurn, Route* const route);
 
 			void FeedbackIdFirstReached();
 
