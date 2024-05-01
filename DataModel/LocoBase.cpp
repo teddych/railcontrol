@@ -469,8 +469,8 @@ namespace DataModel
 			return nullptr;
 		}
 
-		RouteID routeId = timeTableQueue.Dequeue();
-		Route* const route = manager->GetRoute(routeId);
+		RouteID routeID = timeTableQueue.Dequeue();
+		Route* const route = manager->GetRoute(routeID);
 		if (route->GetFromTrack() != track->GetID())
 		{
 			return nullptr;
@@ -478,6 +478,7 @@ namespace DataModel
 		bool ret = ExecuteRoute(track, allowLocoTurn, route);
 		if (!ret)
 		{
+			timeTableQueue.EnqueueFront(routeID);
 			return nullptr;
 		}
 		logger->Debug(Languages::TextUsingRouteFromTimetable, route->GetName());
@@ -496,8 +497,8 @@ namespace DataModel
 
 	void LocoBase::AddTimeTable(const Route* route)
 	{
-		timeTableQueue.Enqueue(route->GetID());
 		logger->Debug(Languages::TextAddingRouteToTimetable, route->GetName());
+		timeTableQueue.EnqueueBack(route->GetID());
 	}
 
 	void LocoBase::PrepareDestinationSecond(Route* const route)
@@ -625,7 +626,10 @@ namespace DataModel
 	{
 		if (route->GetLockState() == LockableItem::LockStateFree)
 		{
-			ReserveRoute(track, allowLocoTurn, route);
+			if (!ReserveRoute(track, allowLocoTurn, route))
+			{
+				return false;
+			}
 		}
 
 		logger->Debug(Languages::TextExecutingRoute, route->GetName());
@@ -677,11 +681,7 @@ namespace DataModel
 		if (feedbackID == feedbackIdStop)
 		{
 			manager->LocoBaseSpeed(ControlTypeInternal, this, MinSpeed);
-			if (feedbackIdFirst != 0)
-			{
-				feedbackIdsReached.Enqueue(feedbackIdFirst);
-			}
-			feedbackIdsReached.Enqueue(feedbackIdStop);
+			feedbackIdsReached.EnqueueBack(feedbackIdFirst != 0 ? feedbackIdFirst : feedbackIdStop);
 			return;
 		}
 
@@ -693,7 +693,7 @@ namespace DataModel
 			}
 			if (feedbackIdFirst != 0)
 			{
-				feedbackIdsReached.Enqueue(feedbackIdFirst);
+				feedbackIdsReached.EnqueueBack(feedbackIdFirst);
 			}
 			return;
 		}
@@ -706,7 +706,7 @@ namespace DataModel
 			}
 			if (feedbackIdFirst != 0)
 			{
-				feedbackIdsReached.Enqueue(feedbackIdFirst);
+				feedbackIdsReached.EnqueueBack(feedbackIdFirst);
 			}
 			return;
 		}
@@ -718,7 +718,7 @@ namespace DataModel
 			{
 				manager->LocoBaseSpeed(ControlTypeInternal, this, newSpeed);
 			}
-			feedbackIdsReached.Enqueue(feedbackIdFirst);
+			feedbackIdsReached.EnqueueBack(feedbackIdFirst);
 			return;
 		}
 
