@@ -925,8 +925,8 @@ namespace Server { namespace Web
 	{
 		HtmlTag tag;
 		map<RouteID,string> followUpRouteOptions = manager.RoutesOfTrack(trackID);
-		followUpRouteOptions[-1] = Languages::Languages::GetText(Languages::TextNone);
-		followUpRouteOptions[RouteNone] = Languages::Languages::GetText(Languages::TextSelectAutomatically);
+		followUpRouteOptions[RouteStop] = Languages::Languages::GetText(Languages::TextNone);
+		followUpRouteOptions[RouteAuto] = Languages::Languages::GetText(Languages::TextSelectAutomatically);
 		tag.AddChildTag(HtmlTagSelectWithLabel("followuproute", Languages::TextFollowUpRoute, followUpRouteOptions, followUpRoute));
 
 		map<string,FeedbackID> feedbacks = manager.FeedbacksOfTrack(trackID);

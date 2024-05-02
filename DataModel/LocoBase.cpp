@@ -205,6 +205,7 @@ namespace DataModel
 			return false;
 		}
 
+		followUpRoute = RouteAuto;
 		state = LocoStateAutomodeGetFirst;
 		locoThread = std::thread(&DataModel::LocoBase::AutoMode, this);
 
@@ -332,8 +333,24 @@ namespace DataModel
 						break;
 
 					case LocoStateStopping:
-						logger->Info(Languages::TextHasNotReachedDestination);
+						if (requestManualMode)
+						{
+							logger->Info(Languages::TextHasNotReachedDestination);
+							break;
+						}
 
+						if (trackSecond)
+						{
+							state = LocoStateAutomodeRunning;
+						}
+						else if (trackFirst)
+						{
+							state = LocoStateAutomodeGetSecond;
+						}
+						else
+						{
+							state = LocoStateAutomodeGetFirst;
+						}
 						break;
 
 					case LocoStateTerminated:
@@ -361,6 +378,36 @@ namespace DataModel
 		}
 	}
 
+	Route* LocoBase::GetNextDestination(const Track* const track, const bool allowLocoTurn)
+	{
+		if (timeTableQueue.IsEmpty())
+		{
+			if (followUpRoute == RouteStop)
+			{
+				RequestManualMode();
+				return nullptr;
+			}
+
+			const Route* route = nullptr;
+
+			if (followUpRoute != RouteAuto)
+			{
+				route = manager->GetRoute(followUpRoute);
+			}
+			else
+			{
+				route = SearchDestination(track, allowLocoTurn);
+			}
+
+			if (route)
+			{
+				AddTimeTable(route, route->GetFollowUpRoute());
+			}
+		}
+
+		return GetDestinationFromTimeTable(track, allowLocoTurn);
+	}
+
 	void LocoBase::GetTimetableDestinationFirst()
 	{
 		if (routeFirst != nullptr)
@@ -370,17 +417,22 @@ namespace DataModel
 			return;
 		}
 
-		if (timeTableQueue.IsEmpty())
-		{
-			FillUpTimeTable(trackFrom, true);
-		}
-
-		Route* const route = GetDestinationFromTimeTable(trackFrom, true);
+		Route* route = GetNextDestination(trackFrom, true);
 		if (route == nullptr)
 		{
 			return;
 		}
 		PrepareDestinationFirst(route);
+	}
+
+	void LocoBase::GetTimetableDestinationSecond()
+	{
+		Route* route = GetNextDestination(trackFirst, false);
+		if (route == nullptr)
+		{
+			return;
+		}
+		PrepareDestinationSecond(route);
 	}
 
 	void LocoBase::PrepareDestinationFirst(Route* const route)
@@ -447,21 +499,6 @@ namespace DataModel
 		state = LocoStateAutomodeGetSecond;
 	}
 
-	void LocoBase::GetTimetableDestinationSecond()
-	{
-		if (timeTableQueue.IsEmpty())
-		{
-			FillUpTimeTable(trackFirst, false);
-		}
-
-		Route* route = GetDestinationFromTimeTable(trackFirst, false);
-		if (route == nullptr)
-		{
-			return;
-		}
-		PrepareDestinationSecond(route);
-	}
-
 	Route* LocoBase::GetDestinationFromTimeTable(const Track* const track, const bool allowLocoTurn)
 	{
 		if (timeTableQueue.IsEmpty())
@@ -469,36 +506,29 @@ namespace DataModel
 			return nullptr;
 		}
 
-		RouteID routeID = timeTableQueue.Dequeue();
-		Route* const route = manager->GetRoute(routeID);
+		const TimeTableEntry entry = timeTableQueue.Dequeue();
+		Route* const route = manager->GetRoute(entry.first);
 		if (route->GetFromTrack() != track->GetID())
 		{
 			return nullptr;
 		}
+		logger->Debug(Languages::TextUsingRouteFromTimetable, route->GetName());
 		bool ret = ExecuteRoute(track, allowLocoTurn, route);
 		if (!ret)
 		{
-			timeTableQueue.EnqueueFront(routeID);
+			timeTableQueue.EnqueueFront(entry);
 			return nullptr;
 		}
-		logger->Debug(Languages::TextUsingRouteFromTimetable, route->GetName());
+		followUpRoute = entry.second;
 		return route;
 	}
 
-	void LocoBase::FillUpTimeTable(const Track* startTrack, const bool allowLocoTurn)
-	{
-		Route* route = SearchDestination(startTrack, allowLocoTurn);
-		if (!route)
-		{
-			return;
-		}
-		AddTimeTable(route);
-	}
-
-	void LocoBase::AddTimeTable(const Route* route)
+	void LocoBase::AddTimeTable(const Route* route, const RouteID followUpRoute)
 	{
 		logger->Debug(Languages::TextAddingRouteToTimetable, route->GetName());
-		timeTableQueue.EnqueueBack(route->GetID());
+		requestManualMode = false;
+		const TimeTableEntry entry(route->GetID(), followUpRoute);
+		timeTableQueue.EnqueueBack(entry);
 	}
 
 	void LocoBase::PrepareDestinationSecond(Route* const route)

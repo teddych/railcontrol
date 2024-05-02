@@ -3901,7 +3901,7 @@ bool Manager::LocoBaseAddTimeTable(const ObjectIdentifier& locoBaseIdentifier, c
 	{
 		return false;
 	}
-	locoBase->AddTimeTable(route);
+	locoBase->AddTimeTable(route, RouteStop);
 	return true;
 }
 

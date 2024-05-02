@@ -96,6 +96,7 @@ namespace DataModel
 				feedbackIdOver(FeedbackNone),
 				feedbackIdsReached(),
 				wait(0),
+				followUpRoute(RouteAuto),
 				matchKey("")
 			{
 				logger = Logger::Logger::GetLogger(GetName());
@@ -133,9 +134,7 @@ namespace DataModel
 
 			bool GoToManualMode();
 
-			void FillUpTimeTable(const Track* fromTrack, const bool allowLocoTurn);
-
-			void AddTimeTable(const Route* route);
+			void AddTimeTable(const Route* route, const RouteID followUpRoute);
 
 			bool SetTrack(const TrackID trackID);
 
@@ -302,6 +301,8 @@ namespace DataModel
 			Manager* manager;
 
 		private:
+			typedef std::pair<RouteID,RouteID> TimeTableEntry;
+
 			enum LocoState : unsigned char
 			{
 				LocoStateManual = 0,
@@ -317,6 +318,8 @@ namespace DataModel
 			void SetMinThreadPriorityAndThreadName();
 
 			void AutoMode();
+
+			Route* GetNextDestination(const Track* const track, const bool allowLocoTurn);
 
 			void GetTimetableDestinationFirst();
 
@@ -376,7 +379,8 @@ namespace DataModel
 			volatile FeedbackID feedbackIdOver;
 			Utils::ThreadSafeQueue<FeedbackID> feedbackIdsReached;
 			Pause wait;
-			Utils::ThreadSafeQueue<RouteID> timeTableQueue;
+			Utils::ThreadSafeQueue<TimeTableEntry> timeTableQueue;
+			RouteID followUpRoute;
 			std::string matchKey;
 
 			LocoFunctions functions;
