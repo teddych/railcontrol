@@ -101,9 +101,7 @@ namespace Server { namespace Web
 			return;
 		}
 
-		AddOnClickMenuEntry(text,
-			"fireRequestAndForget('/?cmd=signalstate&signal=" + id + "&state=" + aspect + "');",
-			"menu_" + aspect);
+		AddOnClickMenuEntry(text, "fireRequestAndForget('/?cmd=signalstate&signal=" + id + "&state=" + aspect + "');", "menu_" + aspect);
 	}
 
 	string HtmlTagSignal::GetSignalImage(const DataModel::AccessoryState state,
@@ -120,18 +118,18 @@ namespace Server { namespace Web
 		switch (signal->GetAccessoryType())
 		{
 			case DataModel::SignalTypeDeCombined:
-				return "<polygon points=\"0,0 14,0 14,31 0,31\" fill=\"white\"/>"
-					"<polygon points=\"1,1 13,1 13,30 1,30\" fill=\"black\"/>"
-					"<polyline points=\"7,31 7,34\" style=\"stroke:gray;stroke-width:2\"/>"
-					"<polyline points=\"4,34 10,34\" style=\"stroke:gray;stroke-width:2\"/>"
-					"<circle class=\"stop aspect4\" cx=\"7\" cy=\"10\" r=\"2.5\" fill=\"red\" opacity=\"0\"/>"
-					"<circle class=\"clear\" cx=\"5\" cy=\"15\" r=\"2.5\" fill=\"lightgreen\" opacity=\"0\"/>"
-					"<circle class=\"stopexpected\" cx=\"9\" cy=\"15\" r=\"2.5\" fill=\"orange\" opacity=\"0\"/>"
-					"<circle class=\"aspect4\" cx=\"7\" cy=\"19\" r=\"1.5\" fill=\"white\" opacity=\"0\"/>"
-					"<circle class=\"aspect4\" cx=\"3\" cy=\"23\" r=\"1.5\" fill=\"white\" opacity=\"0\"/>"
-					"<circle class=\"aspect7\" cx=\"5\" cy=\"19\" r=\"1.5\" fill=\"yellow\" opacity=\"0\"/>"
-					"<circle class=\"aspect7\" cx=\"9\" cy=\"19\" r=\"1.5\" fill=\"yellow\" opacity=\"0\"/>"
-					"<circle class=\"aspect7\" cx=\"7\" cy=\"23\" r=\"1.5\" fill=\"yellow\" opacity=\"0\"/>";
+				return "<polygon points=\"21,0 35,0 35,31 21,31\" fill=\"white\"/>"
+					"<polygon points=\"22,1 34,1 34,30 22,30\" fill=\"black\"/>"
+					"<polyline points=\"28,31 28,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<polyline points=\"25,34 31,34\" style=\"stroke:gray;stroke-width:2\"/>"
+					"<circle class=\"stop aspect4\" cx=\"28\" cy=\"10\" r=\"2.5\" fill=\"red\" opacity=\"0\"/>"
+					"<circle class=\"clear\" cx=\"26\" cy=\"15\" r=\"2.5\" fill=\"lightgreen\" opacity=\"0\"/>"
+					"<circle class=\"stopexpected\" cx=\"30\" cy=\"15\" r=\"2.5\" fill=\"orange\" opacity=\"0\"/>"
+					"<circle class=\"aspect4\" cx=\"28\" cy=\"19\" r=\"1.5\" fill=\"white\" opacity=\"0\"/>"
+					"<circle class=\"aspect4\" cx=\"24\" cy=\"23\" r=\"1.5\" fill=\"white\" opacity=\"0\"/>"
+					"<circle class=\"aspect7\" cx=\"26\" cy=\"19\" r=\"1.5\" fill=\"yellow\" opacity=\"0\"/>"
+					"<circle class=\"aspect7\" cx=\"30\" cy=\"19\" r=\"1.5\" fill=\"yellow\" opacity=\"0\"/>"
+					"<circle class=\"aspect7\" cx=\"28\" cy=\"23\" r=\"1.5\" fill=\"yellow\" opacity=\"0\"/>";
 
 			case DataModel::SignalTypeChLDistant:
 				return "<polygon points=\"0,13.5 2.5,11 11.5,11 14,13.5 14,25.5 11.5,28 2.5,28 0,25.5\" fill=\"black\"/>"
