@@ -98,11 +98,6 @@ namespace DataModel
 		return true;
 	}
 
-	Propulsion LocoBase::GetPropulsion() const
-	{
-		return propulsion;
-	}
-
 	bool LocoBase::SetTrack(const TrackID trackID)
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);

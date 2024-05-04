@@ -261,7 +261,10 @@ namespace DataModel
 				this->propulsion = propulsion;
 			}
 
-			virtual Propulsion GetPropulsion() const;
+			inline Propulsion GetPropulsion() const
+			{
+				return propulsion;
+			}
 
 			inline void SetTrainType(const TrainType trainType)
 			{
