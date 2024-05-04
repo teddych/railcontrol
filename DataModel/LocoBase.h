@@ -138,7 +138,7 @@ namespace DataModel
 
 			bool SetTrack(const TrackID trackID);
 
-			TrackID GetTrackId();
+			TrackID GetTrackId() const;
 
 			bool Release();
 

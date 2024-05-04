@@ -111,9 +111,18 @@ class Manager
 
 		const std::map<std::string,LocoID> LocoIdsByName() const;
 
-		bool LocoSave
-		(
-			LocoID locoID,
+		void LocoBaseSave(const DataModel::LocoBase* locoBase) const;
+
+		inline void LocoSave(const DataModel::Loco* loco) const
+		{
+			if (!storage)
+			{
+				return;
+			}
+			storage->Save(*loco);
+		}
+
+		bool LocoSave(LocoID locoID,
 			const std::string& name,
 			const ControlID controlID,
 			const std::string& matchKey,
@@ -129,8 +138,7 @@ class Manager
 			const Propulsion propulsion,
 			const TrainType type,
 			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
-			std::string& result
-		);
+			std::string& result);
 
 		bool LocoDelete(const LocoID locoID,
 			std::string& result);
@@ -217,6 +225,15 @@ class Manager
 			const std::string& matchKey) const;
 
 		const std::map<std::string,DataModel::LocoConfig> MultipleUnitConfigByName() const;
+
+		inline void MultipleUnitSave(const DataModel::MultipleUnit* multipleUnit) const
+		{
+			if (!storage)
+			{
+				return;
+			}
+			storage->Save(*multipleUnit);
+		}
 
 		bool MultipleUnitSave(MultipleUnitID multipleUnitID,
 			const std::string& name,
@@ -396,6 +413,15 @@ class Manager
 		const std::map<std::string,DataModel::Track*> TrackListByName() const;
 		const std::map<std::string,TrackID> TrackListIdByName() const;
 
+		inline void TrackSave(const DataModel::Track* track) const
+		{
+			if (!storage)
+			{
+				return;
+			}
+			storage->Save(*track);
+		}
+
 		bool TrackSave(const TrackID trackID,
 			const std::string& name,
 			const bool showName,
@@ -468,6 +494,15 @@ class Manager
 		}
 
 		const std::map<std::string,DataModel::Route*> RouteListByName() const;
+
+		inline void RouteSave(const DataModel::Route* route) const
+		{
+			if (!storage)
+			{
+				return;
+			}
+			storage->Save(*route);
+		}
 
 		bool RouteSave(RouteID routeID,
 			const std::string& name,

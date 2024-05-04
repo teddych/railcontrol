@@ -102,21 +102,18 @@ namespace DataModel
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
 		// there must not be set a track
-		if (this->trackFrom != nullptr)
+		if (trackFrom)
 		{
 			return false;
 		}
-		this->trackFrom = manager->GetTrack(trackID);
+		trackFrom = manager->GetTrack(trackID);
+		manager->LocoBaseSave(this);
 		return true;
 	}
 
-	TrackID LocoBase::GetTrackId()
+	TrackID LocoBase::GetTrackId() const
 	{
-		if (trackFrom)
-		{
-			return trackFrom->GetID();
-		}
-		return TrackNone;
+		return (trackFrom ? trackFrom->GetID() : TrackNone);
 	}
 
 	bool LocoBase::Release()
@@ -125,27 +122,27 @@ namespace DataModel
 		ForceManualMode();
 		std::lock_guard<std::mutex> Guard(stateMutex);
 
-		if (routeFirst != nullptr)
+		if (routeFirst)
 		{
 			routeFirst->Release(logger, GetObjectIdentifier());
 			routeFirst = nullptr;
 		}
-		if (routeSecond != nullptr)
+		if (routeSecond)
 		{
 			routeSecond->Release(logger, GetObjectIdentifier());
 			routeSecond = nullptr;
 		}
-		if (trackFrom != nullptr)
+		if (trackFrom)
 		{
 			trackFrom->Release(logger, GetObjectIdentifier());
 			trackFrom = nullptr;
 		}
-		if (trackFirst != nullptr)
+		if (trackFirst)
 		{
 			trackFirst->Release(logger, GetObjectIdentifier());
 			trackFirst = nullptr;
 		}
-		if (trackSecond != nullptr)
+		if (trackSecond)
 		{
 			trackSecond->Release(logger, GetObjectIdentifier());
 			trackSecond = nullptr;
@@ -155,6 +152,7 @@ namespace DataModel
 		feedbackIdCreep = FeedbackNone;
 		feedbackIdReduced = FeedbackNone;
 		feedbackIdFirst = FeedbackNone;
+		manager->LocoBaseSave(this);
 		return true;
 	}
 
@@ -179,7 +177,7 @@ namespace DataModel
 	bool LocoBase::GoToAutoMode()
 	{
 		std::lock_guard<std::mutex> Guard(stateMutex);
-		if (trackFrom == nullptr)
+		if (!trackFrom)
 		{
 			logger->Warning(Languages::TextCanNotStartNotOnTrack);
 			return false;
@@ -432,19 +430,19 @@ namespace DataModel
 
 	void LocoBase::PrepareDestinationFirst(Route* const route)
 	{
-		if (route == nullptr)
+		if (!route)
 		{
 			return;
 		}
 
 		Track* newTrack = manager->GetTrack(route->GetToTrack());
-		if (newTrack == nullptr)
+		if (!newTrack)
 		{
 			return;
 		}
 
 		bool isOrientationSet = newTrack->SetLocoOrientation(static_cast<Orientation>(route->GetToOrientation()));
-		if (isOrientationSet == false)
+		if (!isOrientationSet)
 		{
 			return;
 		}
@@ -454,7 +452,7 @@ namespace DataModel
 		if (turnLoco)
 		{
 			bool canTurnOrientation = trackFrom->SetLocoOrientation(route->GetFromOrientation());
-			if (canTurnOrientation == false)
+			if (!canTurnOrientation)
 			{
 				return;
 			}
@@ -492,6 +490,7 @@ namespace DataModel
 		}
 		manager->LocoBaseSpeed(ControlTypeInternal, this, newSpeed);
 		state = LocoStateAutomodeGetSecond;
+		manager->LocoBaseSave(this);
 	}
 
 	Route* LocoBase::GetDestinationFromTimeTable(const Track* const track, const bool allowLocoTurn)
@@ -847,11 +846,12 @@ namespace DataModel
 		feedbackIdFirstCreep = FeedbackNone;
 		feedbackIdFirstReduced = FeedbackNone;
 		feedbackIdFirst = FeedbackNone;
+		manager->LocoBaseSave(this);
 	}
 
 	void LocoBase::FeedbackIdStopReached()
 	{
-		if (routeFirst == nullptr || trackFrom == nullptr)
+		if (!routeFirst || !trackFrom)
 		{
 			manager->LocoBaseSpeed(ControlTypeInternal, this, MinSpeed);
 			state = LocoStateError;
@@ -891,6 +891,7 @@ namespace DataModel
 		feedbackIdStop = FeedbackNone;
 		feedbackIdCreep = FeedbackNone;
 		feedbackIdReduced = FeedbackNone;
+		manager->LocoBaseSave(this);
 	}
 
 	DataModel::LocoFunctionNr LocoBase::GetFunctionNumberFromFunctionIcon(DataModel::LocoFunctionIcon icon) const

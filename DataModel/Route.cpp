@@ -339,13 +339,17 @@ namespace DataModel
 				return false;
 			}
 		}
+
+		manager->RouteSave(this);
 		return true;
 	}
 
 	bool Route::Release(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		return ReleaseInternal(logger, locoBaseIdentifier);
+		bool ret = ReleaseInternal(logger, locoBaseIdentifier);
+		manager->RouteSave(this);
+		return ret;
 	}
 
 	bool Route::ReleaseInternal(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)

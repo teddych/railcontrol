@@ -729,6 +729,20 @@ const map<string,LocoID> Manager::LocoIdsByName() const
 	return out;
 }
 
+void Manager::LocoBaseSave(const DataModel::LocoBase* locoBase) const
+{
+	const DataModel::Loco* loco = dynamic_cast<const DataModel::Loco*>(locoBase);
+	if (loco)
+	{
+		LocoSave(loco);
+	}
+	const DataModel::MultipleUnit* multipleUnit = dynamic_cast<const DataModel::MultipleUnit*>(locoBase);
+	if (multipleUnit)
+	{
+		MultipleUnitSave(multipleUnit);
+	}
+}
+
 bool Manager::LocoSave(LocoID locoID,
 	const string& name,
 	const ControlID controlID,
@@ -784,10 +798,8 @@ bool Manager::LocoSave(LocoID locoID,
 	loco->ConfigureFunctions(locoFunctions);
 
 	// save in db
-	if (storage)
-	{
-		storage->Save(*loco);
-	}
+	LocoSave(loco);
+
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
@@ -1070,16 +1082,13 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 	multipleUnit->SetTravelSpeed(travelSpeed);
 	multipleUnit->SetReducedSpeed(reducedSpeed);
 	multipleUnit->SetCreepingSpeed(creepingSpeed);
-	multipleUnit->SetPropulsion(PropulsionUnknown); // FIXME: get propulsion as combination of slaves
 	multipleUnit->SetTrainType(type);
 	multipleUnit->ConfigureFunctions(locoFunctions);
 	multipleUnit->AssignSlaves(slaves);
 
 	// save in db
-	if (storage)
-	{
-		storage->Save(*multipleUnit);
-	}
+	MultipleUnitSave(multipleUnit);
+
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
@@ -2067,10 +2076,7 @@ bool Manager::TrackRotate(const TrackID trackID,
 
 void Manager::TrackSaveAndPublishSettings(const Track* const track)
 {
-	if (storage)
-	{
-		storage->Save(*track);
-	}
+	TrackSave(track);
 
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
@@ -2550,10 +2556,7 @@ bool Manager::RouteSave(RouteID routeID,
 	if (oldTrack != nullptr)
 	{
 		oldTrack->RemoveRoute(route);
-		if (storage != nullptr)
-		{
-			storage->Save(*oldTrack);
-		}
+		TrackSave(oldTrack);
 	}
 
 	// if we have a new object we have to update routeID
@@ -2624,10 +2627,7 @@ bool Manager::RouteSave(RouteID routeID,
 	if (newTrack != nullptr)
 	{
 		newTrack->AddRoute(route);
-		if (storage != nullptr)
-		{
-			storage->Save(*dynamic_cast<Track*>(newTrack));
-		}
+		TrackSave(newTrack);
 	}
 
 	RouteSaveAndPublishSettings(route);
@@ -2665,10 +2665,8 @@ bool Manager::RoutePosition(const RouteID routeID,
 
 void Manager::RouteSaveAndPublishSettings(const Route* const route)
 {
-	if (storage)
-	{
-		storage->Save(*route);
-	}
+	RouteSave(route);
+
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
@@ -3537,32 +3535,32 @@ bool Manager::TextDelete(const TextID textID, string& result)
 bool Manager::LocoBaseIntoTrack(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier, const TrackID trackID)
 {
 	Track* track = GetTrack(trackID);
-	if (track == nullptr)
+	if (!track)
 	{
 		return false;
 	}
 
 	LocoBase* locoBase = GetLocoBase(locoBaseIdentifier);
-	if (locoBase == nullptr)
+	if (!locoBase)
 	{
 		return false;
 	}
 
 	bool reserved = track->ReserveForce(logger, locoBaseIdentifier);
-	if (reserved == false)
+	if (!reserved)
 	{
 		return false;
 	}
 
 	reserved = locoBase->SetTrack(trackID);
-	if (reserved == false)
+	if (!reserved)
 	{
 		track->Release(logger, locoBaseIdentifier);
 		return false;
 	}
 
 	reserved = track->Lock(logger, locoBaseIdentifier);
-	if (reserved == false)
+	if (!reserved)
 	{
 		locoBase->Release();
 		track->Release(logger, locoBaseIdentifier);
