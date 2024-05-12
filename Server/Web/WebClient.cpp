@@ -68,6 +68,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Server/Web/WebClient.h"
 #include "Server/Web/WebClientStatic.h"
 #include "Server/Web/WebServer.h"
+#include "Utils/Integer.h"
 
 using namespace DataModel;
 using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
@@ -1364,7 +1365,7 @@ namespace Server { namespace Web
 	void WebClient::HandleSlaveAdd(const map<string, string>& arguments)
 	{
 		string priorityString = Utils::Utils::GetStringMapEntry(arguments, "priority", "1");
-		Priority priority = Utils::Utils::StringToInteger(priorityString, 1);
+		Priority priority = Utils::Integer::StringToInteger(priorityString, 1);
 		string prefix = Utils::Utils::GetStringMapEntry(arguments, "prefix");
 		HtmlTag container;
 		std::map<std::string,ObjectID> options;
