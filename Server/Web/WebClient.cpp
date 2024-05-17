@@ -3435,7 +3435,6 @@ namespace Server { namespace Web
 			ReplyHtmlWithHeaderAndParagraph(Languages::TextLocoDoesNotExist);
 			return;
 		}
-
 		HtmlTag container("div");
 		container.AddAttribute("class", "inner_loco");
 		container.AddChildTag(HtmlTag("p").AddId("loconame").AddContent(locoBase->GetName()));
@@ -3497,6 +3496,7 @@ namespace Server { namespace Web
 			}
 		}
 		buttonArguments.erase("function");
+		container.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)).AddId("loco"));
 		ReplyHtmlWithHeader(container);
 	}
 
