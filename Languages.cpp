@@ -120,6 +120,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextControlSaved */ { "Control {0} saved", "Zentrale {0} gespeichert", "Control {0} guardado" },
 /* TextControls */ { "Controls", "Zentralen", "Controls" },
 /* TextCopyingFromTo */ { "Copying from {0} to {1}", "Kopiere von {0} nach {1}", "Copiando de {0} a {1}" },
+/* TextCrcMissmatch */ { "CRC missmatch: {0} / {1}", "CRC Fehler: {0} / {1}", "Error CRC: {0} / {1}" },
 /* TextCreatingTable */ { "Creating table {0}", "Erstelle Tabelle {0}", "Creando table {0}" },
 /* TextCreepAt */ { "Creep at", "Schleichgeschwindigkeit bei", "Velocidad a rastras a" },
 /* TextCreepingSpeed */ { "Creeping speed", "Kriech Geschwindigkeit", "Velocidad a rastras" },
