@@ -142,7 +142,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextDeCombined */ { "German Ks", "Deutsches Ks", "Alemania Ks" },
 /* TextDeHVMain */ { "German H/V Main", "Deutsches H/V Hauptsignal", "Alemania H/V principal" },
 /* TextDebounceThreadStarted */ { "Debounce thread started", "Entprellthread gestartet", "Antirebote thread encendido" },
-/* TextDebounceThreadTerminated */ { "Debounce thread terminated", "Entprellthread beedet", "Antirebote thread apagado" },
+/* TextDebounceThreadTerminated */ { "Debounce thread terminated", "Entprellthread beendet", "Antirebote thread apagado" },
 /* TextDebouncer */ { "Debouncer", "Entpreller", "Antirebote" },
 /* TextDebug */ { "debug", "Entkäfern", "depurar" },
 /* TextDefault */ { "default", "standard", "predeterminado" },
