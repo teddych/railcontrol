@@ -27,11 +27,13 @@ along with RailControl; see the file LICENCE. If not see
 #include "Languages.h"
 #include "Hardware/HardwareHandler.h"
 #include "Hardware/HardwareParams.h"
+#include "Hardware/Protocols/MaerklinCANCommon.h"
 #include "Manager.h"
 #include "RailControl.h"
 #include "Storage/TransactionGuard.h"
 #include "Utils/Integer.h"
 #include "Utils/Utils.h"
+#include "Server/CS2/CS2Server.h"
 #include "Server/Web/WebServer.h"
 #include "Server/Z21/Z21Server.h"
 
@@ -99,6 +101,12 @@ Manager::Manager(Config& config)
 	if (config.getBoolValue("z21server", false))
 	{
 		controls[ControlIdZ21Server] = new Server::Z21::Z21Server(*this, Server::Z21::Z21Server::Z21Port);
+		serverEnabled = true;
+	}
+
+	if (config.getBoolValue("cs2server", false))
+	{
+		controls[ControlIdCS2Server] = new Server::CS2::CS2Server(*this);
 		serverEnabled = true;
 	}
 
@@ -3902,6 +3910,63 @@ bool Manager::LocoBaseAddTimeTable(const ObjectIdentifier& locoBaseIdentifier, c
 	}
 	locoBase->AddTimeTable(route, RouteStop);
 	return true;
+}
+
+string Manager::GetLokomotiveCs2() const
+{
+	string out("[lokomotive]\nversion\n.major=0\n.minor=3\nsession\n.id=");
+	out += "1"; // FIXME: replace with mfx-neuanmeldezähler
+	{
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (auto& loco : locos)
+		{
+			out += "\nlokomotive";
+			out += "\n.uid=" + Utils::Integer::IntegerToHex(loco.second->GetID(), 4);
+			out += "\n.name=" + loco.second->GetName();
+			out += "\n.adresse=" + to_string(loco.second->GetAddress());
+			out += "\n.typ=";
+			switch(loco.second->GetProtocol())
+			{
+				case ProtocolMM:
+					out += "mm";
+					break;
+
+				case ProtocolDCC:
+					out += "dcc";
+					break;
+
+				case ProtocolMFX:
+					out += "mfx";
+					break;
+
+				default:
+					out += "unknown";
+					break;
+			}
+			out += "\n.icon=";
+			out += "\n.symbol=";
+			out += "\n.av=0";
+			out += "\n.bv=0";
+			out += "\n.velocity=" + to_string(loco.second->GetSpeed());
+			out += "\n.richtung=" + to_string(loco.second->GetOrientation());
+			out += "\n.tachomax=120";
+			out += "\n.vmax=255";
+			out += "\n.vmin=1";
+			for (LocoFunctionNr nr = 0; nr < 32; ++nr)
+			{
+				out += "\n.funktionen";
+				if (nr >= 16)
+				{
+					out += "_2";
+				}
+				out += "\n..nr=" + to_string(nr);
+				out += "\n..typ=" + to_string(Hardware::Protocols::MaerklinCANCommon::MapLocofunctionRailControlToCs2(nr, loco.second->GetFunctionIcon(nr)));
+				out += "\n..dauer=" + to_string(loco.second->GetFunctionType(nr));
+				out += "\n..wert=" + to_string(loco.second->GetFunctionState(nr));;
+			}
+		}
+	}
+	return out;
 }
 
 /***************************

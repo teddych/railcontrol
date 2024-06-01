@@ -799,6 +799,8 @@ class Languages
 			TextWidth,
 			TextWidthIs0,
 			TextWrite,
+			TextCS2ServerStarted,
+			TextCS2ServerStopped,
 			TextZ21Black2012,
 			TextZ21Black2013,
 			TextZ21DoesNotUnderstand,

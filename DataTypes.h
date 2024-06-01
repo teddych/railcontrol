@@ -102,7 +102,8 @@ enum ControlType : uint8_t
 	ControlTypeHardware = 0,
 	ControlTypeInternal,
 	ControlTypeWebServer,
-	ControlTypeZ21Server
+	ControlTypeZ21Server,
+	ControlTypeCS2Server
 };
 
 enum ControlIDs : ControlID
@@ -110,6 +111,7 @@ enum ControlIDs : ControlID
 	ControlIdNone = 0,
 	ControlIdWebServer,
 	ControlIdZ21Server,
+	ControlIdCS2Server,
 	ControlIdFirstHardware = 10
 };
 

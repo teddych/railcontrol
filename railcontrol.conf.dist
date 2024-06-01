@@ -9,7 +9,7 @@ dbfilename = railcontrol.sqlite
 dbkeepbackups = 10
 
 # Default logkeepbackups is 10
-logkeepbackups = 10;
+logkeepbackups = 10
 
 # If this is set to any the webserver will listen to all addresses
 # If this is set to localhost the webserver will listen to the IPv6 localhost address only
@@ -22,4 +22,7 @@ webserverport = 8082
 
 # To turn on Z21 Server emulation set this to "true"
 z21server = false
+
+# To turn on CS2 Server emulation set this to "true"
+cs2server = false
 

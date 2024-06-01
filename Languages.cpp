@@ -799,6 +799,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextWidth */ { "Width", "Breite", "Anchura" },
 /* TextWidthIs0 */ { "Width is zero", "Breite ist null", "Anchura está zero" },
 /* TextWrite */ { "write", "schreiben", "escribir" },
+/* TextCS2ServerStarted */ { "CS2 server started", "CS2 Server wurde gestartet", "Servidor CS2 encendido" },
+/* TextCS2ServerStopped */ { "CS2 server stopped", "CS2 Server wurde beendet", "Servidor CS2 apagado" },
 /* TextZ21Black2012 */ { "black Z21, hardware 2012", "schwarzen Z21, Hardware 2012", "Z21 negro, hardware 2012" },
 /* TextZ21Black2013 */ { "black Z21, hardware 2013", "schwarzen Z21, Hardware 2013", "Z21 negro, hardware 2013" },
 /* TextZ21DoesNotUnderstand */ { "Z21 does not understand our command", "Z21 versteht unser Kommando nicht", "Z21 no ha endendido nuestro comando" },
