@@ -1203,7 +1203,7 @@ void Manager::AccessoryBaseState(const ControlType controlType,
 		return;
 	}
 
-	logger->Warning(Languages::TextAccessoryControlProtocolAddressDoesNotExist, controlID, protocol, address);
+	logger->Warning(Languages::TextAccessoryControlProtocolAddressDoesNotExist, controlID, Utils::Utils::ProtocolToString(protocol), address);
 }
 
 void Manager::AccessoryBaseState(const ControlType controlType,
@@ -3921,28 +3921,34 @@ string Manager::GetLokomotiveCs2() const
 		for (auto& loco : locos)
 		{
 			out += "\nlokomotive";
-			out += "\n.uid=" + Utils::Integer::IntegerToHex(loco.second->GetID(), 4);
 			out += "\n.name=" + loco.second->GetName();
-			out += "\n.adresse=" + to_string(loco.second->GetAddress());
 			out += "\n.typ=";
+			const Address address = loco.second->GetAddress();
+			uint32_t uid;
 			switch(loco.second->GetProtocol())
 			{
 				case ProtocolMM:
-					out += "mm";
+					out += "mm2_prog";
+					uid = address;
 					break;
 
 				case ProtocolDCC:
 					out += "dcc";
+					uid = address + 0xC000;
 					break;
 
 				case ProtocolMFX:
 					out += "mfx";
+					uid = address + 0x4000;
 					break;
 
 				default:
 					out += "unknown";
+					uid = 0;
 					break;
 			}
+			out += "\n.uid=0x" + Utils::Integer::IntegerToHex(uid);
+			out += "\n.adresse=0x" + Utils::Integer::IntegerToHex(address);
 			out += "\n.icon=";
 			out += "\n.symbol=";
 			out += "\n.av=0";

@@ -74,6 +74,7 @@ namespace Hardware { namespace Protocols
 			inline MaerklinCANCommon(const std::string& uid,
 				ControlID controlID,
 				Manager* manager,
+				const bool isCs2Master,
 				Logger::Logger* logger)
 			:	run(true),
 				manager(manager),
@@ -81,6 +82,7 @@ namespace Hardware { namespace Protocols
 				uid(Utils::Integer::HexToInteger(uid, 0)),
 				hash(CalcHash(this->uid)),
 				hasCs2Master(false),
+				isCs2Master(isCs2Master),
 				canFileData(nullptr),
 				canFileDataPointer(nullptr),
 				canFileDataSize(0),
@@ -403,7 +405,8 @@ namespace Hardware { namespace Protocols
 			}
 			CanUid uid;
 			CanHash hash;
-			bool hasCs2Master;
+			volatile bool hasCs2Master;
+			const bool isCs2Master;
 			std::thread receiverThread;
 			std::thread pingThread;
 

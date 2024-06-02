@@ -177,7 +177,8 @@ enum ArgumentType : uint8_t
 {
 	ArgumentTypeIpAddress = 1,
 	ArgumentTypeSerialPort = 2,
-	ArgumentTypeS88Modules = 3
+	ArgumentTypeS88Modules = 3,
+	ArgumentTypeMasterSlave = 4
 };
 
 enum HardwareType : uint8_t

@@ -52,7 +52,7 @@ namespace Hardware { namespace Protocols
 	void MaerklinCANCommon::Wait(const unsigned int duration) const
 	{
 		unsigned int wait = duration;
-		while (run && !hasCs2Master && wait)
+		while (run && (!hasCs2Master || isCs2Master) && wait)
 		{
 			Utils::Utils::SleepForSeconds(1);
 			--wait;
@@ -66,16 +66,14 @@ namespace Hardware { namespace Protocols
 
 		Wait(1);
 
-		while (run && !hasCs2Master)
+		while (run && (!hasCs2Master || isCs2Master))
 		{
 			Ping();
 			Wait(10);
 
-//			const string dataPlain = manager->GetLokomotiveCs2();
-//			const unsigned char buffer[8] = { 'l', 'o', 'k', 's', 0, 0, 0, 0};
-//			SendCompressedFile(dataPlain, buffer);
 		}
-		if (run && hasCs2Master)
+
+		if (run && hasCs2Master && !isCs2Master)
 		{
 			RequestLoks();
 		}
@@ -548,9 +546,9 @@ namespace Hardware { namespace Protocols
 		// version 4.3
 		sendBuffer[9] = 4;
 		sendBuffer[10] = 3;
-		// device type CS2 Slave (Master = 0xffff, Slave = 0xfff0)
+		// CS2 device type: Master = 0xffff, Slave = 0xfff0
 		sendBuffer[11] = 0xff;
-		sendBuffer[12] = 0xf0;
+		sendBuffer[12] = isCs2Master ? 0xff : 0xf0;
 		SendInternal(sendBuffer);
 	}
 
@@ -659,12 +657,11 @@ namespace Hardware { namespace Protocols
 		for(size_t sent = 0; sent < dataToSendSize; sent += 8)
 		{
 			Utils::Utils::Copy8Bytes(dataToSend + sent, sendBuffer + 5);
+			Utils::Utils::SleepForMilliseconds(1); // do not overload CS2 with to much data
 			SendInternal(sendBuffer);
-			Utils::Utils::SleepForMilliseconds(1);
 		}
 
 		free(dataToSend);
-		logger->Debug(dataPlain);
 	}
 
 	void MaerklinCANCommon::ParseCommandConfigData(const unsigned char* const buffer)

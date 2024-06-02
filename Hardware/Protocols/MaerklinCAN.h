@@ -169,6 +169,7 @@ namespace Hardware { namespace Protocols
 				MaerklinCANCommon("affeaffe",
 					params->GetControlID(),
 					params->GetManager(),
+					Utils::Utils::StringToBool(params->GetArg2()),
 					HardwareInterface::logger),
 				locoCache(params->GetControlID(), params->GetManager())
 			{

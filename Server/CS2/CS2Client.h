@@ -45,6 +45,7 @@ namespace Server { namespace CS2
 			:	MaerklinCANCommon("affeaffe",
 					ControlIdCS2Server,
 					&manager,
+					true,
 					Logger::Logger::GetLogger("CS2Client # " + std::to_string(id))),
 				id(id),
 				connection(connection),
