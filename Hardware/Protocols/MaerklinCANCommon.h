@@ -387,7 +387,7 @@ namespace Hardware { namespace Protocols
 
 			inline void SendInternal(const unsigned char* buffer)
 			{
-				logger->Hex(buffer, 5 + ParseLength(buffer));
+				logger->HexOut(buffer, 5 + ParseLength(buffer));
 				Send(buffer);
 			}
 			virtual void Send(const unsigned char* buffer) = 0;

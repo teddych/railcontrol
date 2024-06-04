@@ -163,7 +163,7 @@ namespace Server { namespace CS2
 			unsigned char buffer[CANCommandBufferLength];
 			memset(reinterpret_cast<char*>(&clientAddress), 0, sizeof(clientAddressLength));
 			ssize_t size = recvfrom(udpServerSocket, buffer, sizeof(buffer), 0, reinterpret_cast<struct sockaddr*>(&clientAddress), &clientAddressLength);
-			udpLogger->Hex(buffer, size);
+			udpLogger->HexIn(buffer, size);
 			if (size != CANCommandBufferLength)
 			{
 				continue;

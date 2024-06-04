@@ -65,7 +65,7 @@ int main (int argc, char* argv[])
 		}
 		else
 		{
-			logger->Hex(buffer, sizeof(buffer));
+			logger->HexIn(buffer, sizeof(buffer));
 		}
 		std::this_thread::sleep_for(std::chrono::milliseconds(100));
 	} while (runSniffer);

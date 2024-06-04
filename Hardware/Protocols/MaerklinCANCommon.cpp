@@ -369,7 +369,7 @@ namespace Hardware { namespace Protocols
 		CanResponse response = ParseResponse(buffer);
 		CanCommand command = ParseCommand(buffer);
 		CanLength length = ParseLength(buffer);
-		logger->Hex(buffer, 5 + length);
+		logger->HexIn(buffer, 5 + length);
 		const CanHash receivedHash = ParseHash(buffer);
 		if (receivedHash == hash)
 		{
