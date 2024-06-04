@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/LocoBase.h"
 #include "DataModel/LocoFunctions.h"
 #include "Manager.h"
+#include "Network/Select.h"
 #include "Network/UdpConnection.h"
 #include "Server/CS2/CS2Client.h"
 #include "Server/CS2/CS2Server.h"
