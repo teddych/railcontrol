@@ -162,39 +162,15 @@ namespace DataModel
 
 	bool Signal::UsesAddress(Address address) const
 	{
-		switch(GetAccessoryType())
+		const Address baseAddress = GetAddress();
+		for (auto offset : stateAddressMap)
 		{
-			// FIXME: get effectively used addresses
-			case SignalTypeChNMain:
-				return (GetAddress() == address)
-					|| (GetAddress() + 1 == address)
-					|| (GetAddress() + 2 == address)
-					|| (GetAddress() + 3 == address)
-					|| (GetAddress() + 4 == address)
-					|| (GetAddress() + 5 == address)
-					|| (GetAddress() + 6 == address)
-					|| (GetAddress() + 7 == address)
-					|| (GetAddress() + 8 == address)
-					|| (GetAddress() + 9 == address)
-					|| (GetAddress() + 10 == address);
-
-			case SignalTypeChLMain:
-			case SignalTypeDeCombined:
-				return (GetAddress() == address)
-					|| (GetAddress() + 1 == address)
-					|| (GetAddress() + 2 == address);
-
-			case SignalTypeChDwarf:
-			case SignalTypeDeHVMain:
-				return (GetAddress() == address)
-					|| (GetAddress() + 1 == address);
-
-			case SignalTypeSimpleLeft:
-			case SignalTypeSimpleRight:
-			case SignalTypeDeBlock:
-			default:
-				return (GetAddress() == address);
+			if ((baseAddress + (offset.second << 1)) == address)
+			{
+				return true;
+			}
 		}
+		return false;
 	}
 
 	std::map<DataModel::AccessoryState,Signal::StateOption> Signal::GetStateOptions() const
