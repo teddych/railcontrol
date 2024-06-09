@@ -78,7 +78,7 @@ namespace DataModel
 		LockableItem::Deserialize(arguments);
 		SetWidth(Width1);
 		SetVisible(VisibleYes);
-		for (int i = 0; i < SignalStateMax; ++i)
+		for (int i = 0; i <= SignalStateMax; ++i)
 		{
 			int address = Utils::Utils::GetIntegerMapEntry(arguments, "address" + std::to_string(i), -1);
 			if (address == -1)
@@ -118,6 +118,28 @@ namespace DataModel
 				SetStateAddressOffset(SignalStateAspect6, 5);
 				break;
 
+			case SignalTypeChNMain:
+				SetStateAddressOffset(SignalStateAspect2, 2);
+				SetStateAddressOffset(SignalStateAspect3, 3);
+				SetStateAddressOffset(SignalStateAspect4, 4);
+				SetStateAddressOffset(SignalStateAspect5, 5);
+				SetStateAddressOffset(SignalStateAspect6, 6);
+				SetStateAddressOffset(SignalStateAspect7, 7);
+				SetStateAddressOffset(SignalStateAspect8, 8);
+				SetStateAddressOffset(SignalStateAspect9, 9);
+				SetStateAddressOffset(SignalStateAspect10, 10);
+				SetStateAddressOffset(SignalStateStopExpected, 11);
+				SetStateAddressOffset(SignalStateAspect2Expected, 12);
+				SetStateAddressOffset(SignalStateAspect3Expected, 13);
+				SetStateAddressOffset(SignalStateAspect4Expected, 14);
+				SetStateAddressOffset(SignalStateAspect5Expected, 15);
+				SetStateAddressOffset(SignalStateAspect6Expected, 16);
+				SetStateAddressOffset(SignalStateAspect7Expected, 17);
+				SetStateAddressOffset(SignalStateAspect8Expected, 18);
+				SetStateAddressOffset(SignalStateAspect9Expected, 19);
+				SetStateAddressOffset(SignalStateAspect10Expected, 20);
+				break;
+
 			case SignalTypeDeCombined:
 				SetStateAddressOffset(SignalStateStopExpected, 2);
 				SetStateAddressOffset(SignalStateAspect4, 3);
@@ -142,6 +164,20 @@ namespace DataModel
 	{
 		switch(GetAccessoryType())
 		{
+			// FIXME: get effectively used addresses
+			case SignalTypeChNMain:
+				return (GetAddress() == address)
+					|| (GetAddress() + 1 == address)
+					|| (GetAddress() + 2 == address)
+					|| (GetAddress() + 3 == address)
+					|| (GetAddress() + 4 == address)
+					|| (GetAddress() + 5 == address)
+					|| (GetAddress() + 6 == address)
+					|| (GetAddress() + 7 == address)
+					|| (GetAddress() + 8 == address)
+					|| (GetAddress() + 9 == address)
+					|| (GetAddress() + 10 == address);
+
 			case SignalTypeChLMain:
 			case SignalTypeDeCombined:
 				return (GetAddress() == address)
@@ -177,6 +213,28 @@ namespace DataModel
 				out.emplace(SignalStateAspect3, StateOption(Languages::TextSignalStateClear60, GetStateAddressOffset(SignalStateAspect3)));
 				out.emplace(SignalStateAspect5, StateOption(Languages::TextSignalStateClear90, GetStateAddressOffset(SignalStateAspect5)));
 				out.emplace(SignalStateAspect6, StateOption(Languages::TextSignalStateShortClear, GetStateAddressOffset(SignalStateAspect6)));
+				break;
+
+			case SignalTypeChNMain:
+				out.emplace(SignalStateAspect2, StateOption(Languages::TextSignalStateClear40, GetStateAddressOffset(SignalStateAspect2)));
+				out.emplace(SignalStateAspect3, StateOption(Languages::TextSignalStateClear50, GetStateAddressOffset(SignalStateAspect3)));
+				out.emplace(SignalStateAspect4, StateOption(Languages::TextSignalStateClear60, GetStateAddressOffset(SignalStateAspect4)));
+				out.emplace(SignalStateAspect5, StateOption(Languages::TextSignalStateClear70, GetStateAddressOffset(SignalStateAspect5)));
+				out.emplace(SignalStateAspect6, StateOption(Languages::TextSignalStateClear80, GetStateAddressOffset(SignalStateAspect6)));
+				out.emplace(SignalStateAspect7, StateOption(Languages::TextSignalStateClear90, GetStateAddressOffset(SignalStateAspect7)));
+				out.emplace(SignalStateAspect8, StateOption(Languages::TextSignalStateClear100, GetStateAddressOffset(SignalStateAspect8)));
+				out.emplace(SignalStateAspect9, StateOption(Languages::TextSignalStateClear110, GetStateAddressOffset(SignalStateAspect9)));
+				out.emplace(SignalStateAspect10, StateOption(Languages::TextSignalStateClear120, GetStateAddressOffset(SignalStateAspect10)));
+				out.emplace(SignalStateStopExpected, StateOption(Languages::TextSignalStateStopExpected, GetStateAddressOffset(SignalStateStopExpected)));
+				out.emplace(SignalStateAspect2Expected, StateOption(Languages::TextSignalStateClear40Expected, GetStateAddressOffset(SignalStateAspect2Expected)));
+				out.emplace(SignalStateAspect3Expected, StateOption(Languages::TextSignalStateClear50Expected, GetStateAddressOffset(SignalStateAspect3Expected)));
+				out.emplace(SignalStateAspect4Expected, StateOption(Languages::TextSignalStateClear60Expected, GetStateAddressOffset(SignalStateAspect4Expected)));
+				out.emplace(SignalStateAspect5Expected, StateOption(Languages::TextSignalStateClear70Expected, GetStateAddressOffset(SignalStateAspect5Expected)));
+				out.emplace(SignalStateAspect6Expected, StateOption(Languages::TextSignalStateClear80Expected, GetStateAddressOffset(SignalStateAspect6Expected)));
+				out.emplace(SignalStateAspect7Expected, StateOption(Languages::TextSignalStateClear90Expected, GetStateAddressOffset(SignalStateAspect7Expected)));
+				out.emplace(SignalStateAspect8Expected, StateOption(Languages::TextSignalStateClear100Expected, GetStateAddressOffset(SignalStateAspect8Expected)));
+				out.emplace(SignalStateAspect9Expected, StateOption(Languages::TextSignalStateClear110Expected, GetStateAddressOffset(SignalStateAspect9Expected)));
+				out.emplace(SignalStateAspect10Expected, StateOption(Languages::TextSignalStateClear120Expected, GetStateAddressOffset(SignalStateAspect10Expected)));
 				break;
 
 			case SignalTypeDeCombined:
