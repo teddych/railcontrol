@@ -658,6 +658,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSignalStateIsAspect9 */ { "Signal {0} shows aspect 9", "Signal {0} zeigt Fahrtbegriff 9", "Señal {0} muestra aspecto 9" },
 /* TextSignalStateIsAspect9Expected */ { "Signal {0} shows aspect 9 expected", "Signal {0} zeigt Fahrtbegriff 9 erwarten", "Señal {0} muestra aspecto 9 esperado" },
 /* TextSignalStateIsClear */ { "Signal {0} shows clear", "Signal {0} zeigt Fahrt", "Señal {0} muestra vía libre" },
+/* TextSignalStateIsClearExpected */ { "Signal {0} shows clear expected", "Signal {0} zeigt Fahrt erwarten", "Señal {0} muestra vía libre esperado" },
 /* TextSignalStateIsDark */ { "Signal {0} is dark", "Signal {0} ist dunkel", "Señal {0} está oscura" },
 /* TextSignalStateIsStop */ { "Signal {0} shows stop", "Signal {0} zeigt Halt", "Señal {0} muestra parada" },
 /* TextSignalStateIsStopExpected */ { "Signal {0} shows stop expected", "Signal {0} zeigt Halt erwarten", "Señal {0} muestra parada esperado" },

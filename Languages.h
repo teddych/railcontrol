@@ -658,6 +658,7 @@ class Languages
 			TextSignalStateIsAspect9,
 			TextSignalStateIsAspect9Expected,
 			TextSignalStateIsClear,
+			TextSignalStateIsClearExpected,
 			TextSignalStateIsDark,
 			TextSignalStateIsStop,
 			TextSignalStateIsStopExpected,

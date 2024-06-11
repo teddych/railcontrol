@@ -62,6 +62,11 @@ namespace Server { namespace Web
 				break;
 
 			case DataModel::SignalTypeChLDistant:
+				MenuEntry(Languages::TextSignalStateStopExpected, idText, DataModel::SignalStateStopExpected, "stopexpected");
+				MenuEntry(Languages::TextSignalStateClearExpected, idText, DataModel::SignalStateClearExpected, "clearexpected");
+				MenuEntry(Languages::TextSignalStateClear40Expected, idText, DataModel::SignalStateAspect2Expected, "aspect2expected");
+				MenuEntry(Languages::TextSignalStateClear60Expected, idText, DataModel::SignalStateAspect3Expected, "aspect3expected");
+				MenuEntry(Languages::TextSignalStateClear90Expected, idText, DataModel::SignalStateAspect5Expected, "aspect5expected");
 				break;
 
 			case DataModel::SignalTypeChNMain:
@@ -189,14 +194,15 @@ namespace Server { namespace Web
 					"<circle class=\"aspect5\" cx=\"7\" cy=\"26.5\" r=\"2.5\" fill=\"lightgreen\" opacity=\"0\"/>";
 
 			case DataModel::SignalTypeChLDistant:
-				return "<polygon points=\"0,13.5 2.5,11 11.5,11 14,13.5 14,25.5 11.5,28 2.5,28 0,25.5\" fill=\"black\"/>"
-					"<polyline points=\"7,31 7,34\" style=\"stroke:gray;stroke-width:2\"/>"
+				return "<polygon points=\"0,13 3,10 11,10 14,13 14,21 11,24 3,24 0,21\" fill=\"white\"/>"
+					"<polygon points=\"1,13 3,11 11,11 13,13 13,21 11,23 3,23 1,20\" fill=\"black\"/>"
+					"<polyline points=\"7,24 7,34\" style=\"stroke:gray;stroke-width:2\"/>"
 					"<polyline points=\"4,34 10,34\" style=\"stroke:gray;stroke-width:2\"/>"
-					"<circle class=\"stop aspect2 aspect3 aspect6\" cx=\"3.5\" cy=\"14.5\" r=\"2.5\" fill=\"orange\" opacity=\"0\"/>"
-					"<circle class=\"stop\" cx=\"10.5\" cy=\"14.5\" r=\"2.5\" fill=\"orange\" opacity=\"0\"/>"
-					"<circle class=\"clear aspect3 aspect5\" cx=\"3.5\" cy=\"24.5\" r=\"2.5\" fill=\"lightgreen\" opacity=\"0\"/>"
-					"<circle class=\"clear aspect2 aspect3 aspect5 aspect6\" cx=\"10.5\" cy=\"18.5\" r=\"2.5\" fill=\"lightgreen\" opacity=\"0\"/>"
-					"<circle class=\"aspect5\" cx=\"10.5\" cy=\"24.5\" r=\"2.5\" fill=\"orange\" opacity=\"0\"/>";
+					"<circle class=\"stopexpected aspect2expected aspect3expected aspect6expected\" cx=\"3.5\" cy=\"13.5\" r=\"1.5\" fill=\"orange\" opacity=\"0\"/>"
+					"<circle class=\"stopexpected\" cx=\"10.5\" cy=\"13.5\" r=\"1.5\" fill=\"orange\" opacity=\"0\"/>"
+					"<circle class=\"clearexpected aspect3expected aspect5expected\" cx=\"3.5\" cy=\"20.5\" r=\"1.5\" fill=\"lightgreen\" opacity=\"0\"/>"
+					"<circle class=\"clearexpected aspect2expected aspect3expected aspect5expected aspect6expected\" cx=\"10.5\" cy=\"17\" r=\"1.5\" fill=\"lightgreen\" opacity=\"0\"/>"
+					"<circle class=\"aspect5expected\" cx=\"10.5\" cy=\"20.5\" r=\"1.5\" fill=\"orange\" opacity=\"0\"/>";
 
 			case DataModel::SignalTypeChNMain:
 				return

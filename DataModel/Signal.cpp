@@ -103,22 +103,34 @@ namespace DataModel
 	void Signal::ResetStateAddressMap()
 	{
 		stateAddressMap.clear();
-		SetStateAddressOffset(SignalStateStop, 0);
-		SetStateAddressOffset(SignalStateClear, 1);
 		switch(GetAccessoryType())
 		{
 			case SignalTypeChDwarf:
+				SetStateAddressOffset(SignalStateStop, 0);
+				SetStateAddressOffset(SignalStateClear, 1);
 				SetStateAddressOffset(SignalStateStopExpected, 2);
 				break;
 
 			case SignalTypeChLMain:
+				SetStateAddressOffset(SignalStateStop, 0);
+				SetStateAddressOffset(SignalStateClear, 1);
 				SetStateAddressOffset(SignalStateAspect2, 2);
 				SetStateAddressOffset(SignalStateAspect3, 3);
 				SetStateAddressOffset(SignalStateAspect5, 4);
 				SetStateAddressOffset(SignalStateAspect6, 5);
 				break;
 
+			case SignalTypeChLDistant:
+				SetStateAddressOffset(SignalStateStopExpected, 0);
+				SetStateAddressOffset(SignalStateClearExpected, 1);
+				SetStateAddressOffset(SignalStateAspect2Expected, 2);
+				SetStateAddressOffset(SignalStateAspect3Expected, 3);
+				SetStateAddressOffset(SignalStateAspect5Expected, 4);
+				break;
+
 			case SignalTypeChNMain:
+				SetStateAddressOffset(SignalStateStop, 0);
+				SetStateAddressOffset(SignalStateClear, 1);
 				SetStateAddressOffset(SignalStateAspect2, 2);
 				SetStateAddressOffset(SignalStateAspect3, 3);
 				SetStateAddressOffset(SignalStateAspect4, 4);
@@ -141,6 +153,8 @@ namespace DataModel
 				break;
 
 			case SignalTypeDeCombined:
+				SetStateAddressOffset(SignalStateStop, 0);
+				SetStateAddressOffset(SignalStateClear, 1);
 				SetStateAddressOffset(SignalStateStopExpected, 2);
 				SetStateAddressOffset(SignalStateAspect4, 3);
 				SetStateAddressOffset(SignalStateAspect7, 4);
@@ -148,6 +162,8 @@ namespace DataModel
 				break;
 
 			case SignalTypeDeHVMain:
+				SetStateAddressOffset(SignalStateStop, 0);
+				SetStateAddressOffset(SignalStateClear, 1);
 				SetStateAddressOffset(SignalStateAspect2, 2);
 				SetStateAddressOffset(SignalStateAspect3, 3);
 				break;
@@ -156,6 +172,8 @@ namespace DataModel
 			case SignalTypeSimpleRight:
 			case SignalTypeDeBlock:
 			default:
+				SetStateAddressOffset(SignalStateStop, 0);
+				SetStateAddressOffset(SignalStateClear, 1);
 				break;
 		}
 	}
@@ -176,22 +194,34 @@ namespace DataModel
 	std::map<DataModel::AccessoryState,Signal::StateOption> Signal::GetStateOptions() const
 	{
 		std::map<DataModel::AccessoryState,Signal::StateOption> out;
-		out.emplace(SignalStateStop, StateOption(Languages::TextSignalStateStop, GetStateAddressOffset(SignalStateStop)));
-		out.emplace(SignalStateClear, StateOption(Languages::TextSignalStateClear, GetStateAddressOffset(SignalStateClear)));
 		switch(GetAccessoryType())
 		{
 			case SignalTypeChDwarf:
+				out.emplace(SignalStateStop, StateOption(Languages::TextSignalStateStop, GetStateAddressOffset(SignalStateStop)));
+				out.emplace(SignalStateClear, StateOption(Languages::TextSignalStateClear, GetStateAddressOffset(SignalStateClear)));
 				out.emplace(SignalStateStopExpected, StateOption(Languages::TextSignalStateCaution, GetStateAddressOffset(SignalStateStopExpected)));
 				break;
 
 			case SignalTypeChLMain:
+				out.emplace(SignalStateStop, StateOption(Languages::TextSignalStateStop, GetStateAddressOffset(SignalStateStop)));
+				out.emplace(SignalStateClear, StateOption(Languages::TextSignalStateClear, GetStateAddressOffset(SignalStateClear)));
 				out.emplace(SignalStateAspect2, StateOption(Languages::TextSignalStateClear40, GetStateAddressOffset(SignalStateAspect2)));
 				out.emplace(SignalStateAspect3, StateOption(Languages::TextSignalStateClear60, GetStateAddressOffset(SignalStateAspect3)));
 				out.emplace(SignalStateAspect5, StateOption(Languages::TextSignalStateClear90, GetStateAddressOffset(SignalStateAspect5)));
 				out.emplace(SignalStateAspect6, StateOption(Languages::TextSignalStateShortClear, GetStateAddressOffset(SignalStateAspect6)));
 				break;
 
+			case SignalTypeChLDistant:
+				out.emplace(SignalStateStopExpected, StateOption(Languages::TextSignalStateStopExpected, GetStateAddressOffset(SignalStateStopExpected)));
+				out.emplace(SignalStateClearExpected, StateOption(Languages::TextSignalStateClearExpected, GetStateAddressOffset(SignalStateClearExpected)));
+				out.emplace(SignalStateAspect2Expected, StateOption(Languages::TextSignalStateClear40Expected, GetStateAddressOffset(SignalStateAspect2Expected)));
+				out.emplace(SignalStateAspect3Expected, StateOption(Languages::TextSignalStateClear60Expected, GetStateAddressOffset(SignalStateAspect3Expected)));
+				out.emplace(SignalStateAspect5Expected, StateOption(Languages::TextSignalStateClear90Expected, GetStateAddressOffset(SignalStateAspect5Expected)));
+				break;
+
 			case SignalTypeChNMain:
+				out.emplace(SignalStateStop, StateOption(Languages::TextSignalStateStop, GetStateAddressOffset(SignalStateStop)));
+				out.emplace(SignalStateClear, StateOption(Languages::TextSignalStateClear, GetStateAddressOffset(SignalStateClear)));
 				out.emplace(SignalStateAspect2, StateOption(Languages::TextSignalStateClear40, GetStateAddressOffset(SignalStateAspect2)));
 				out.emplace(SignalStateAspect3, StateOption(Languages::TextSignalStateClear50, GetStateAddressOffset(SignalStateAspect3)));
 				out.emplace(SignalStateAspect4, StateOption(Languages::TextSignalStateClear60, GetStateAddressOffset(SignalStateAspect4)));
@@ -214,6 +244,8 @@ namespace DataModel
 				break;
 
 			case SignalTypeDeCombined:
+				out.emplace(SignalStateStop, StateOption(Languages::TextSignalStateStop, GetStateAddressOffset(SignalStateStop)));
+				out.emplace(SignalStateClear, StateOption(Languages::TextSignalStateClear, GetStateAddressOffset(SignalStateClear)));
 				out.emplace(SignalStateStopExpected, StateOption(Languages::TextSignalStateStopExpected, GetStateAddressOffset(SignalStateStopExpected)));
 				out.emplace(SignalStateAspect4, StateOption(Languages::TextSignalStateShunting, GetStateAddressOffset(SignalStateAspect4)));
 				out.emplace(SignalStateAspect7, StateOption(Languages::TextSignalStateZs7, GetStateAddressOffset(SignalStateAspect7)));
@@ -221,6 +253,8 @@ namespace DataModel
 				break;
 
 			case SignalTypeDeHVMain:
+				out.emplace(SignalStateStop, StateOption(Languages::TextSignalStateStop, GetStateAddressOffset(SignalStateStop)));
+				out.emplace(SignalStateClear, StateOption(Languages::TextSignalStateClear, GetStateAddressOffset(SignalStateClear)));
 				out.emplace(SignalStateAspect2, StateOption(Languages::TextSignalStateSlow, GetStateAddressOffset(SignalStateAspect2)));
 				out.emplace(SignalStateAspect3, StateOption(Languages::TextSignalStateShunting, GetStateAddressOffset(SignalStateAspect3)));
 				break;
@@ -229,6 +263,8 @@ namespace DataModel
 			case SignalTypeSimpleRight:
 			case SignalTypeDeBlock:
 			default:
+				out.emplace(SignalStateStop, StateOption(Languages::TextSignalStateStop, GetStateAddressOffset(SignalStateStop)));
+				out.emplace(SignalStateClear, StateOption(Languages::TextSignalStateClear, GetStateAddressOffset(SignalStateClear)));
 				break;
 		}
 		return out;

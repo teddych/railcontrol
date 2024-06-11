@@ -111,7 +111,7 @@ namespace Server { namespace Web
 		signalTypeOptions[DataModel::SignalTypeSimpleLeft] = Languages::TextSimpleLeft;
 		signalTypeOptions[DataModel::SignalTypeSimpleRight] = Languages::TextSimpleRight;
 		signalTypeOptions[DataModel::SignalTypeChLMain] = Languages::TextChLMain;
-		//signalTypeOptions[DataModel::SignalTypeChLDistant] = Languages::TextChLDistant;
+		signalTypeOptions[DataModel::SignalTypeChLDistant] = Languages::TextChLDistant;
 		signalTypeOptions[DataModel::SignalTypeChDwarf] = Languages::TextChDwarf;
 		signalTypeOptions[DataModel::SignalTypeChNMain] = Languages::TextChNMain;
 		//signalTypeOptions[DataModel::SignalTypeChNDistant] = Languages::TextChNDistant;
@@ -303,6 +303,10 @@ namespace Server { namespace Web
 		else if (signalStateText.compare("stopexpected") == 0)
 		{
 			signalState = DataModel::SignalStateStopExpected;
+		}
+		else if (signalStateText.compare("clearexpected") == 0)
+		{
+			signalState = DataModel::SignalStateClearExpected;
 		}
 		else if (signalStateText.compare("aspect2expected") == 0)
 		{

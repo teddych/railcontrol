@@ -465,6 +465,11 @@ namespace Server { namespace Web
 				text = Languages::TextSignalStateIsStopExpected;
 				break;
 
+			case DataModel::SignalStateClearExpected:
+				stateText = "clearexpected";
+				text = Languages::TextSignalStateIsClearExpected;
+				break;
+
 			case DataModel::SignalStateAspect2Expected:
 				stateText = "aspect2expected";
 				text = Languages::TextSignalStateIsAspect2Expected;

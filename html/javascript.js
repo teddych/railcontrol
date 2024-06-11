@@ -1260,6 +1260,7 @@ function updateSignalStateDiv(element, state)
 	element.classList.remove('signal_aspect10');
 	element.classList.remove('signal_dark');
 	element.classList.remove('signal_stopexpected');
+	element.classList.remove('signal_clearexpected');
 	element.classList.remove('signal_aspect2expected');
 	element.classList.remove('signal_aspect3expected');
 	element.classList.remove('signal_aspect4expected');
@@ -1321,6 +1322,10 @@ function updateSignalStateDiv(element, state)
 
 		case 'stopexpected':
 			element.classList.add('signal_stopexpected');
+			break;
+
+		case 'clearexpected':
+			element.classList.add('signal_clearexpected');
 			break;
 
 		case 'aspect2expected':
