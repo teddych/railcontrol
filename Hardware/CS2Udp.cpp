@@ -65,6 +65,7 @@ namespace Hardware
 		if (!receiverConnection.IsConnected())
 		{
 			HardwareInterface::logger->Error(Languages::TextUnableToCreateUdpSocketForReceivingData);
+			HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 			return;
 		}
 
@@ -72,6 +73,7 @@ namespace Hardware
 		if (!ret)
 		{
 			HardwareInterface::logger->Error(Languages::TextUnableToBindUdpSocket);
+			HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 			return;
 		}
 		unsigned char buffer[CANCommandBufferLength];

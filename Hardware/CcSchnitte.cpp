@@ -63,11 +63,12 @@ namespace Hardware
 			if (!serialLine.IsConnected())
 			{
 				HardwareInterface::logger->Error(Languages::TextUnableToReceiveData);
+				HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 				return;
 			}
 			unsigned char buffer[CANCommandBufferLength];
 			ssize_t datalen = serialLine.ReceiveExact(buffer, sizeof(buffer));
-			if (run == false)
+			if (!run)
 			{
 				break;
 			}
