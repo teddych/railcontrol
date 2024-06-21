@@ -60,12 +60,9 @@ namespace Hardware
 
 	void CS2Udp::Receiver()
 	{
-		Utils::Utils::SetThreadName("CS2 UDP Receiver");
-		HardwareInterface::logger->Info(Languages::TextReceiverThreadStarted);
 		if (!receiverConnection.IsConnected())
 		{
 			HardwareInterface::logger->Error(Languages::TextUnableToCreateUdpSocketForReceivingData);
-			HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 			return;
 		}
 
@@ -73,7 +70,6 @@ namespace Hardware
 		if (!ret)
 		{
 			HardwareInterface::logger->Error(Languages::TextUnableToBindUdpSocket);
-			HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 			return;
 		}
 		unsigned char buffer[CANCommandBufferLength];
@@ -99,6 +95,5 @@ namespace Hardware
 			Parse(buffer);
 		}
 		receiverConnection.Terminate();
-		HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 } // namespace

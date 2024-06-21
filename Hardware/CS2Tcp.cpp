@@ -48,12 +48,9 @@ namespace Hardware
 
 	void CS2Tcp::Receiver()
 	{
-		Utils::Utils::SetThreadName("CS2 TCP Receiver");
-		HardwareInterface::logger->Info(Languages::TextReceiverThreadStarted);
 		if (!connection.IsConnected())
 		{
 			HardwareInterface::logger->Error(Languages::TextUnableToReceiveData);
-			HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 			return;
 		}
 
@@ -90,6 +87,5 @@ namespace Hardware
 			Parse(buffer);
 		}
 		connection.Terminate();
-		HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 } // namespace

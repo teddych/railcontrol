@@ -55,15 +55,11 @@ namespace Hardware
 
 	void CcSchnitte::Receiver()
 	{
-		Utils::Utils::SetThreadName("CC-Schnitte Receiver");
-		HardwareInterface::logger->Info(Languages::TextReceiverThreadStarted);
-
 		while (run)
 		{
 			if (!serialLine.IsConnected())
 			{
 				HardwareInterface::logger->Error(Languages::TextUnableToReceiveData);
-				HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 				return;
 			}
 			unsigned char buffer[CANCommandBufferLength];
@@ -83,6 +79,5 @@ namespace Hardware
 			}
 			Parse(buffer);
 		}
-		HardwareInterface::logger->Info(Languages::TextTerminatingReceiverThread);
 	}
 } // namespace
