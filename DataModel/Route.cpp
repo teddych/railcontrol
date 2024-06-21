@@ -323,7 +323,7 @@ namespace DataModel
 				ReleaseInternal(logger, locoBaseIdentifier);
 				return false;
 			}
-			if (track->Lock(logger, locoBaseIdentifier) == false)
+			if (!track->Lock(logger, locoBaseIdentifier))
 			{
 				ReleaseInternal(logger, locoBaseIdentifier);
 				return false;
@@ -365,7 +365,7 @@ namespace DataModel
 	void Route::ReleaseInternalWithToTrack(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)
 	{
 		Track* track = manager->GetTrack(toTrack);
-		if (!track)
+		if (track)
 		{
 			track->Release(logger, locoBaseIdentifier);
 		}
