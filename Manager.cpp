@@ -3972,7 +3972,7 @@ string Manager::GetCs2Lokomotive() const
 			}
 		}
 	}
-	return out;
+	return out + "\n";
 }
 
 string Manager::GetCs2Magnetartikel(const AccessoryBase* accessoryBase)
@@ -4007,7 +4007,7 @@ string Manager::GetCs2Magnetartikel(const AccessoryBase* accessoryBase)
 			out += "unknown";
 			break;
 	}
-	return out;
+	return out + "\n";
 }
 
 string Manager::GetCs2Magnetartikel() const
@@ -4087,7 +4087,138 @@ string Manager::GetCs2Magnetartikel() const
 			}
 		}
 	}
-	return out;
+	return out + "\n";
+}
+
+string Manager::GetCs2GBS() const
+{
+	string out("[gleisbild]\nversion\n. major=1");
+	{
+		std::lock_guard<std::mutex> guard(layerMutex);
+		for (auto& layer : layers)
+		{
+			out += "\nseite";
+			if (layer.first != LayerUndeletable)
+			{
+				out += "\n .id=" + to_string(layer.first);
+			}
+			out += "\n .name=" + layer.second->GetName();
+		}
+	}
+	return out + "\n";
+}
+
+string Manager::GetCs2GBS(const signed char gbs) const
+{
+	string out("[gleisbildseite]\nversion\n. major=1");
+	unsigned int z = gbs;
+	if (gbs == LayerUndeletable)
+	{
+		// default layer Z in CS2 is 0, in RailControl 1. So we map this.
+		--z;
+	}
+	else
+	{
+		out += "\npage=" + to_string(gbs);
+	}
+	z <<= 16;
+
+	{
+		std::lock_guard<std::mutex> guard(trackMutex);
+		for (auto& track : tracks)
+		{
+			if (gbs == track.second->GetPosZ())
+			{
+				out += "\nelement";
+				const unsigned int id = z + (track.second->GetPosX() << 8) + track.second->GetPosY();
+				out += "\n .id=0x" + Utils::Integer::IntegerToHex(id);
+				out += "\n .typ=";
+				switch(track.second->GetTrackType())
+				{
+					case TrackTypeTurn:
+						out += "bogen";
+						break;
+
+					case TrackTypeEnd:
+					case TrackTypeLink:
+						out += "prellbock";
+						break;
+
+					case TrackTypeTunnelEnd:
+						out += "prellbock";
+						break;
+
+					case TrackTypeStraight:
+					case TrackTypeBridge:
+					case TrackTypeTunnel:
+					case TrackTypeCrossingLeft:
+					case TrackTypeCrossingRight:
+					case TrackTypeCrossingSymetric:
+					default:
+						out += "gerade";
+						break;
+				}
+				out += "\n .drehung=" + to_string(track.second->GetRotation() & 0x01);
+				out += "\n .artikel=-1";
+			}
+		}
+	}
+	{
+		std::lock_guard<std::mutex> guard(accessoryMutex);
+		for (auto& accessory : accessories)
+		{
+			if (gbs == accessory.second->GetPosZ())
+			{
+				out += "\nelement";
+				const unsigned int id = z + (accessory.second->GetPosX() << 8) + accessory.second->GetPosY();
+				out += "\n .id=0x" + Utils::Integer::IntegerToHex(id);
+				out += "\n .typ=k84_einfach";
+				out += "\n .artikel=" + to_string(accessory.second->GetAddress());
+			}
+		}
+	}
+	{
+		std::lock_guard<std::mutex> guard(switchMutex);
+		for (auto& mySwitch : switches)
+		{
+			if (gbs == mySwitch.second->GetPosZ())
+			{
+				out += "\nelement";
+				const unsigned int id = z + (mySwitch.second->GetPosX() << 8) + mySwitch.second->GetPosY();
+				out += "\n .id=0x" + Utils::Integer::IntegerToHex(id);
+				out += "\n .typ=";
+				switch(mySwitch.second->GetAccessoryType())
+				{
+					case SwitchTypeLeft:
+						out += "linksweiche";
+						break;
+
+					case SwitchTypeRight:
+						out += "rechtsweiche";
+						break;
+
+					case SwitchTypeThreeWay:
+						out += "dreiwegweiche";
+						break;
+
+					case SwitchTypeMaerklinLeft:
+						out += "dkw3_li";
+						break;
+
+					case SwitchTypeMaerklinRight:
+						out += "dkw3_re";
+						break;
+
+					default:
+						break;
+				}
+				out += "\n .drehung=" + to_string(mySwitch.second->GetRotation());
+				out += "\n .artikel=" + to_string(mySwitch.second->GetAddress());
+				out += "\n .zustand=" + to_string(mySwitch.second->GetAccessoryState());
+			}
+		}
+	}
+	return out + "\n";
 }
 
 /***************************
