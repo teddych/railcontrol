@@ -264,7 +264,7 @@ namespace DataModel
 		{
 			PublishState();
 		}
-		manager->TrackSave(this);
+//		manager->TrackSave(this);
 		return ret;
 	}
 
@@ -286,7 +286,7 @@ namespace DataModel
 			this->trackStateDelayed = DataModel::Feedback::FeedbackStateFree;
 		}
 		PublishState();
-		manager->TrackSave(this);
+//		manager->TrackSave(this);
 		return true;
 	}
 
@@ -299,7 +299,7 @@ namespace DataModel
 			ret = ReleaseForceUnlocked(logger, locoBaseIdentifier);
 		}
 		PublishState();
-		manager->TrackSave(this);
+//		manager->TrackSave(this);
 		return ret;
 	}
 
