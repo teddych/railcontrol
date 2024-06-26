@@ -738,20 +738,6 @@ const map<string,LocoID> Manager::LocoIdsByName() const
 	return out;
 }
 
-void Manager::LocoBaseSave(const DataModel::LocoBase* locoBase) const
-{
-	const DataModel::Loco* loco = dynamic_cast<const DataModel::Loco*>(locoBase);
-	if (loco)
-	{
-		LocoSave(loco);
-	}
-	const DataModel::MultipleUnit* multipleUnit = dynamic_cast<const DataModel::MultipleUnit*>(locoBase);
-	if (multipleUnit)
-	{
-		MultipleUnitSave(multipleUnit);
-	}
-}
-
 bool Manager::LocoSave(LocoID locoID,
 	const string& name,
 	const ControlID controlID,

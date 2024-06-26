@@ -111,8 +111,6 @@ class Manager
 
 		const std::map<std::string,LocoID> LocoIdsByName() const;
 
-		void LocoBaseSave(const DataModel::LocoBase* locoBase) const;
-
 		inline void LocoSave(const DataModel::Loco* loco) const
 		{
 			if (!storage)

@@ -559,7 +559,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextReleasingMultipleUnit */ { "Releasing multiple unit", "Mehrfachtraktion wird freigeben", "Liberando unidad múltiple" },
 /* TextRemoveBackupFile */ { "Removing backup file {0}", "Lösche Sicherungskopie {0}", "Eliminando copia de respaldo {0}" },
 /* TextRenamingFromTo */ { "Renaming from {0} to {1}", "Benenne von {0} nach {1} um", "Renombrando de {0} a {1}" },
-/* TextReservingRoute */ { "Reserving route {0}", "Reserviere Fahrstrasse {0} aus", "Reservando itinerario {0}" },
+/* TextReservingRoute */ { "Reserving route {0}", "Reserviere Fahrstrasse {0}", "Reservando itinerario {0}" },
 /* TextRestarting */ { "Restarting", "Neustart", "Reiniciando" },
 /* TextRight */ { "right", "rechts", "derecha" },
 /* TextRotation */ { "Rotation", "Drehung", "Rotación", },
