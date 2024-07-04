@@ -117,6 +117,7 @@ class Manager
 			{
 				return;
 			}
+			Storage::TransactionGuard guard(storage);
 			storage->Save(*loco);
 		}
 
@@ -230,6 +231,7 @@ class Manager
 			{
 				return;
 			}
+			Storage::TransactionGuard guard(storage);
 			storage->Save(*multipleUnit);
 		}
 
@@ -417,6 +419,7 @@ class Manager
 			{
 				return;
 			}
+			Storage::TransactionGuard guard(storage);
 			storage->Save(*track);
 		}
 
@@ -499,6 +502,7 @@ class Manager
 			{
 				return;
 			}
+			Storage::TransactionGuard guard(storage);
 			storage->Save(*route);
 		}
 
