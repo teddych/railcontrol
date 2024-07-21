@@ -600,7 +600,7 @@ namespace DataModel
 			return nullptr;
 		}
 
-		const ObjectIdentifier locoBaseOfTrack = track->GetLocoBase();
+		const ObjectIdentifier& locoBaseOfTrack = track->GetLocoBase();
 		if (locoBaseOfTrack != GetObjectIdentifier())
 		{
 			state = LocoStateError;
@@ -669,7 +669,7 @@ namespace DataModel
 
 		logger->Debug(Languages::TextExecutingRoute, route->GetName());
 
-		const ObjectIdentifier locoBaseIdentifier = GetObjectIdentifier();
+		const ObjectIdentifier& locoBaseIdentifier = GetObjectIdentifier();
 		if (!route->Execute(logger, locoBaseIdentifier))
 		{
 			route->Release(logger, locoBaseIdentifier);
