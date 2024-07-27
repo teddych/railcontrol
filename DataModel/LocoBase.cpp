@@ -282,10 +282,7 @@ namespace DataModel
 		{
 			unsigned char pause = 0;
 			{ // sleep must be outside of locked block
-				logger->Debug("AutoMode() Trylock");
 				std::lock_guard<std::mutex> Guard(stateMutex);
-				logger->Debug("AutoMode() Locked State: {0}", state);
-				PrintInfo();
 
 				if (!feedbackIdsReached.IsEmpty())
 				{
