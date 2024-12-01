@@ -653,7 +653,9 @@ class Manager
 		bool LocoBaseStopAll();
 		void LocoBaseStopAllImmediately(const ControlType controlType);
 
-		bool LocoBaseAddTimeTable(const DataModel::ObjectIdentifier& locoBaseIdentifier, const RouteID routeID);
+		bool LocoBaseAddTimeTable(const DataModel::ObjectIdentifier& locoBaseIdentifier,
+			const RouteID routeID,
+			const bool automode);
 
 		std::string GetCs2Lokomotive() const;
 		static std::string GetCs2Magnetartikel(const DataModel::AccessoryBase* base);
