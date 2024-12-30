@@ -221,9 +221,9 @@ namespace Server { namespace Web
 	void WebClientTrack::HandleTrackSave(const map<string, string>& arguments)
 	{
 		const TrackID trackId = Utils::Utils::GetIntegerMapEntry(arguments, "track", TrackNone);
-		const string& name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		const string name = Utils::Utils::GetStringMapEntry(arguments, "name");
 		const bool showName = Utils::Utils::GetBoolMapEntry(arguments, "showname", true);
-		const string& displayName = Utils::Utils::GetStringMapEntry(arguments, "displayname");
+		const string displayName = Utils::Utils::GetStringMapEntry(arguments, "displayname");
 		const LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		const LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		const LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
