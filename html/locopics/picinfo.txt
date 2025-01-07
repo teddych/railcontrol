@@ -1,0 +1,5 @@
+width in view is 250px 
+recommended picture aspect ration: 2/1
+JPG Files
+pictures in "./html/locopics"
+picture names must be lower case without whitespaces e.g.: "BR 24" in Railcontrol -> "br24.jpg"

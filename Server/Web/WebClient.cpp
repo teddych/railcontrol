@@ -3431,6 +3431,11 @@ namespace Server { namespace Web
 			return;
 		}
 		LocoBase* locoBase = manager.GetLocoBase(locoBaseIdentifier);
+		string pic_name = locoBase->GetName();
+		transform(pic_name.begin(), pic_name.end(), pic_name.begin(), ::tolower);
+		pic_name.erase(std::remove_if(pic_name.begin(), pic_name.end(), ::isspace),pic_name.end());
+		string pic_name_html = "<object data=\"/locopics/"+pic_name+".jpg\" class=\"loco_pic\" type=\"image/jpg\"></object>";
+
 		if (locoBase == nullptr)
 		{
 			ReplyHtmlWithHeaderAndParagraph(Languages::TextLocoDoesNotExist);
@@ -3444,6 +3449,7 @@ namespace Server { namespace Web
 		buttonArguments["loco"] = to_string(locoID);
 
 		string id = "locospeed_" + to_string(locoID);
+		container.AddChildTag(HtmlTag("div").AddClass(pic_name).AddId(pic_name).AddContent(pic_name_html));
 		container.AddChildTag(HtmlTagInputSliderLocoSpeed(id, MinSpeed, locoBase->GetMaxSpeed(), speed, locoID));
 		buttonArguments["speed"] = to_string(MinSpeed);
 		container.AddChildTag(HtmlTagButtonCommand("0", id + "_0", buttonArguments));
@@ -3496,7 +3502,8 @@ namespace Server { namespace Web
 					break;
 			}
 		}
-		buttonArguments.erase("function");
+		buttonArguments.erase("function");		
+
 		container.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)).AddId("loco"));
 		ReplyHtmlWithHeader(container);
 	}
