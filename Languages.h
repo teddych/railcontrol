@@ -475,6 +475,7 @@ class Languages
 			TextObjectIsUsedByRoute,
 			TextOff,
 			TextOn,
+			TextOnPush,
 			TextOpeningSQLite,
 			TextOrientation,
 			TextOverrunAt,

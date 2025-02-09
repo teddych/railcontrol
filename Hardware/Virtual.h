@@ -79,7 +79,12 @@ namespace Hardware
 				const DataModel::LocoFunctionNr function,
 				const DataModel::LocoFunctionState on) override;
 
-			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
+			void Accessory(const Protocol protocol,
+				const Address address,
+				const DataModel::AccessoryState state,
+				const bool on,
+				const DataModel::AccessoryPulseDuration duration) override;
+
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 	};

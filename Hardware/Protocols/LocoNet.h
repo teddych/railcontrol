@@ -92,32 +92,33 @@ namespace Hardware
 					return (protocol == ProtocolServer);
 				}
 
-				virtual void Booster(const BoosterState status) override;
+				void Booster(const BoosterState status) override;
 
-				virtual void LocoSpeed(const Protocol protocol,
+				void LocoSpeed(const Protocol protocol,
 					const Address address,
 					const Speed speed) override;
 
-				virtual void LocoOrientation(const Protocol protocol,
+				void LocoOrientation(const Protocol protocol,
 					const Address address,
 					const Orientation orientation) override;
 
-				virtual void LocoFunction(const Protocol protocol,
+				void LocoFunction(const Protocol protocol,
 					const Address address,
 					const DataModel::LocoFunctionNr function,
 					const DataModel::LocoFunctionState on) override;
 
-				virtual void AccessoryOnOrOff(const Protocol protocol,
+				void Accessory(const Protocol protocol,
 					const Address address,
 					const DataModel::AccessoryState state,
-					const bool on) override;
+					const bool on,
+					__attribute__((unused)) const DataModel::AccessoryPulseDuration duration) override;
 
-				virtual void ProgramWrite(const ProgramMode mode,
+				void ProgramWrite(const ProgramMode mode,
 					const Address address,
 					const CvNumber cv,
 					const CvValue value) override;
 
-				virtual void ProgramRead(const ProgramMode mode,
+				void ProgramRead(const ProgramMode mode,
 					const Address address,
 					const CvNumber cv) override;
 

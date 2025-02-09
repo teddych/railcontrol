@@ -50,7 +50,11 @@ namespace Hardware { namespace Protocols
 				const DataModel::LocoFunctionNr function,
 				const DataModel::LocoFunctionState on);
 
-			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on);
+			void Accessory(const Protocol protocol,
+				const Address address,
+				const DataModel::AccessoryState state,
+				const bool on);
+
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv);
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value);
 

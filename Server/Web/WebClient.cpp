@@ -2156,6 +2156,7 @@ namespace Server { namespace Web
 		typeOptions[DataModel::AccessoryTypeDefault] = Languages::TextDefault;
 		typeOptions[DataModel::AccessoryTypeStraight] = Languages::TextStraight;
 		typeOptions[DataModel::AccessoryTypeTurn] = Languages::TextTurn;
+		typeOptions[DataModel::AccessoryTypeOnPush] = Languages::TextOnPush;
 
 		HtmlTag mainContent("div");
 		mainContent.AddId("tab_main");
@@ -2235,8 +2236,8 @@ namespace Server { namespace Web
 
 	void WebClient::HandleAccessoryState(const map<string, string>& arguments)
 	{
-		AccessoryID accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
-		DataModel::AccessoryState accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? DataModel::AccessoryStateOff : DataModel::AccessoryStateOn);
+		const AccessoryID accessoryID = Utils::Utils::GetIntegerMapEntry(arguments, "accessory", AccessoryNone);
+		const DataModel::AccessoryState accessoryState = (Utils::Utils::GetStringMapEntry(arguments, "state", "off").compare("off") == 0 ? DataModel::AccessoryStateOff : DataModel::AccessoryStateOn);
 
 		manager.AccessoryState(ControlTypeWebServer, accessoryID, accessoryState, false);
 

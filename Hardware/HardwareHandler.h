@@ -177,6 +177,21 @@ namespace Hardware
 			void Init(const HardwareParams* params);
 			void Close();
 			bool ProgramCheckValues(const ProgramMode mode, const CvNumber cv, const CvValue value = 1);
+
+			void AccessoryBaseState(const Protocol protocol,
+				const Address address,
+				const DataModel::AccessoryState state,
+				const DataModel::AccessoryPulseDuration duration);
+
+			static inline void AccessoryBaseStateStatic(HardwareInterface* instance,
+				const Protocol protocol,
+				const Address address,
+				const DataModel::AccessoryState state,
+				const DataModel::AccessoryPulseDuration duration)
+			{
+				Utils::Utils::SleepForMilliseconds(duration);
+				instance->Accessory(protocol, address, state, false, 0);
+			}
 	};
 } // namespace Hardware
 

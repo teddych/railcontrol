@@ -189,10 +189,11 @@ namespace Hardware
 			// return;
 		}
 
-		void LocoNet::AccessoryOnOrOff(__attribute__((unused)) const Protocol protocol,
+		void LocoNet::Accessory(__attribute__((unused)) const Protocol protocol,
 			const Address address,
 			const DataModel::AccessoryState state,
-			const bool on)
+			const bool on,
+			__attribute__((unused)) const DataModel::AccessoryPulseDuration duration)
 		{
 			logger->Info(Languages::TextSettingAccessoryOnOff, address, Languages::GetGreenRed(state), Languages::GetOnOff(on));
 			const Address addressLocoNet = address - 1;

@@ -70,7 +70,11 @@ namespace Hardware
 				const DataModel::LocoFunctionNr function,
 				const DataModel::LocoFunctionState on) override;
 
-			void AccessoryOnOrOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state, const bool on) override;
+			void Accessory(const Protocol protocol,
+				const Address address,
+				const DataModel::AccessoryState state,
+				const bool on,
+				const DataModel::AccessoryPulseDuration duration) override;
 
 		private:
 			static const unsigned char MaxS88Modules = 62;

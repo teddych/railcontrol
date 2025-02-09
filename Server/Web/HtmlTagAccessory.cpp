@@ -42,6 +42,7 @@ namespace Server { namespace Web
 				break;
 
 			case DataModel::AccessoryTypeDefault:
+			case DataModel::AccessoryTypeOnPush:
 			default:
 				break;
 		}
@@ -52,7 +53,20 @@ namespace Server { namespace Web
 		string accessoryIdString = to_string(accessory->GetID());
 		imageDiv.AddClass("accessory_item");
 		imageDiv.AddClass(state == DataModel::AccessoryStateOn ? "accessory_on" : "accessory_off");
-		imageDiv.AddAttribute("onclick", "return onClickAccessory(" + accessoryIdString + ");");
+		switch (accessory->GetAccessoryType())
+		{
+			case DataModel::AccessoryTypeOnPush:
+				imageDiv.AddAttribute("onmousedown", "return onMousePressAccessory(" + accessoryIdString + ");");
+				imageDiv.AddAttribute("onmouseup", "return onMouseReleaseAccessory(" + accessoryIdString + ");");
+				break;
+
+			case DataModel::AccessoryTypeDefault:
+			case DataModel::AccessoryTypeStraight:
+			case DataModel::AccessoryTypeTurn:
+			default:
+				imageDiv.AddAttribute("onclick", "return onClickAccessory(" + accessoryIdString + ");");
+				break;
+		}
 
 		const string& accessoryName = accessory->GetName();
 		AddToolTip(accessoryName + " (addr=" + to_string(accessory->GetAddress()) + ")");

@@ -31,9 +31,10 @@ namespace DataModel
 {
 	enum AccessoryType : unsigned char
 	{
-		AccessoryTypeDefault = 0,
+		AccessoryTypeDefault  = 0,
 		AccessoryTypeStraight = 1,
-		AccessoryTypeTurn = 2,
+		AccessoryTypeTurn     = 2,
+		AccessoryTypeOnPush   = 3,
 
 		SignalTypeSimpleLeft  =  0,
 		SignalTypeSimpleRight =  1,
@@ -48,16 +49,16 @@ namespace DataModel
 		SignalTypeDeHVDistant = 22,
 		SignalTypeDeBlock     = 23,
 
-		SwitchTypeLeft = 0,
-		SwitchTypeRight = 1,
-		SwitchTypeThreeWay = 2,
-		SwitchTypeMaerklinLeft = 3,
+		SwitchTypeLeft          = 0,
+		SwitchTypeRight         = 1,
+		SwitchTypeThreeWay      = 2,
+		SwitchTypeMaerklinLeft  = 3,
 		SwitchTypeMaerklinRight = 4
 	};
 
 	enum AccessoryState : unsigned char
 	{
-		DefaultState = 0,
+		DefaultState                = 0,
 
 		AccessoryStateOff           = 0,
 		AccessoryStateOn            = 1,

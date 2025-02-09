@@ -105,14 +105,17 @@ namespace Hardware
 			Send(command.c_str());
 		}
 
-		void EsuCAN::AccessoryOnOrOff(__attribute__((unused))  const Protocol protocol, const Address address,
-		    const DataModel::AccessoryState state, const bool on)
+		void EsuCAN::Accessory(__attribute__((unused))  const Protocol protocol,
+			const Address address,
+			const DataModel::AccessoryState state,
+			const bool on,
+			__attribute__((unused)) const DataModel::AccessoryPulseDuration duration)
 		{
-			const unsigned int accessoryId = address + OffsetAccessoryAddress;
-			if (on == false)
+			if (!on)
 			{
 				return;
 			}
+			const unsigned int accessoryId = address + OffsetAccessoryAddress;
 			SendGetHandle(accessoryId);
 			const string command = "set(" + to_string(accessoryId) + ",state[" + (state ? "0" : "1") + "])\n";
 			Send(command.c_str());

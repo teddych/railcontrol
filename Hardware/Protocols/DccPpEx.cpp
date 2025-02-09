@@ -76,8 +76,13 @@ namespace Hardware
 		void DccPpEx::Accessory(__attribute__((unused)) const Protocol protocol,
 			const Address address,
 			const DataModel::AccessoryState state,
-			__attribute((unused)) const DataModel::AccessoryPulseDuration duration)
+			const bool on,
+			__attribute__((unused)) const DataModel::AccessoryPulseDuration duration)
 		{
+			if (!on)
+			{
+				return;
+			}
 			string buffer("<a ");
 			buffer += to_string(address);
 			buffer += " ";

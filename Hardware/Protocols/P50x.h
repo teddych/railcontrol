@@ -95,8 +95,11 @@ namespace Hardware
 				    const Orientation orientation,
 				    std::vector<DataModel::LocoFunctionEntry>& functions) override;
 
-				void AccessoryOnOrOff(const Protocol protocol, const Address address,
-				    const DataModel::AccessoryState state, const bool on) override;
+				void Accessory(const Protocol protocol,
+					const Address address,
+					const DataModel::AccessoryState state,
+					const bool on,
+					const DataModel::AccessoryPulseDuration duration) override;
 
 				void CheckEventsWorker();
 

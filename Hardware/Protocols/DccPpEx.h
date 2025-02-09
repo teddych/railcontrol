@@ -86,8 +86,9 @@ namespace Hardware
 
 				void Accessory(const Protocol protocol,
 					const Address address,
-				    const DataModel::AccessoryState state,
-				    const DataModel::AccessoryPulseDuration duration) override;
+					const DataModel::AccessoryState state,
+					const bool on,
+					const DataModel::AccessoryPulseDuration duration) override;
 
 				void ProgramWrite(const ProgramMode mode,
 					const Address address,

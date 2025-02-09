@@ -96,7 +96,8 @@ namespace Hardware
 
 				bool AccessoryProtocolSupported(Protocol protocol) const override
 				{
-					return (protocol == ProtocolMM || protocol == ProtocolDCC);
+					return (protocol == ProtocolMM
+						|| protocol == ProtocolDCC);
 				}
 
 				static void GetArgumentTypesAndHint(std::map<unsigned char, ArgumentType>& argumentTypes,
@@ -122,11 +123,11 @@ namespace Hardware
 				    const Orientation orientation,
 				    std::vector<DataModel::LocoFunctionEntry>& functions) override;
 
-				void Accessory(const Protocol protocol, const Address address, const DataModel::AccessoryState state,
+				void Accessory(const Protocol protocol,
+					const Address address,
+					const DataModel::AccessoryState state,
+					const bool on,
 				    const DataModel::AccessoryPulseDuration duration) override;
-
-				void AccessoryOnOrOff(const Protocol protocol, const Address address,
-				    const DataModel::AccessoryState state, const bool on) override;
 
 				void ProgramRead(const ProgramMode mode,
 					const Address address,
@@ -194,13 +195,23 @@ namespace Hardware
 				void ProgramDccPom(const Z21Enums::PomDB0 db0,
 					const Z21Enums::PomOption option,
 					const Address address, const CvNumber cv,
-				    const CvValue value = 0);
+					const CvValue value = 0);
 
-				void LocoSpeedOrientation(const Protocol protocol, const Address address, const Speed speed,
-				    const Orientation orientation);
+				void LocoSpeedOrientation(const Protocol protocol,
+					const Address address,
+					const Speed speed,
+					const Orientation orientation);
+
 				void AccessorySender();
+
+				void AccessoryOnOrOff(const Address address,
+					const DataModel::AccessoryState state,
+					const bool on);
+
 				void HeartBeatSender();
+
 				void Receiver();
+
 				ssize_t ParseData(const unsigned char* buffer, size_t bufferLength);
 				void ParseXHeader(const unsigned char* buffer);
 				void ParseDB0(const unsigned char* buffer);
@@ -227,8 +238,6 @@ namespace Hardware
 				void SendSetTurnoutMode(const Address address, const Protocol protocol);
 				void SendSetTurnoutModeMM(const Address address);
 				void SendSetTurnoutModeDCC(const Address address);
-				void AccessoryOn(const Protocol protocol, const Address address, const DataModel::AccessoryState state);
-				void AccessoryOff(const Protocol protocol, const Address address, const DataModel::AccessoryState state);
 				int Send(const unsigned char* buffer, const size_t bufferLength);
 
 				inline int Send(const char* buffer, const size_t bufferLength)

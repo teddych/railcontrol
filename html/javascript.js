@@ -760,6 +760,45 @@ function onClickAccessory(accessoryID)
 	return false;
 }
 
+function onMousePressAccessory(accessoryID)
+{
+	var identifier = 'a_' + accessoryID;
+	if (modifierKeyPressed(event))
+	{
+		return;
+	}
+	if (event.button != 0)
+	{
+		return;
+	}
+	var element = document.getElementById(identifier);
+	var url = '/?cmd=accessorystate';
+	url += '&state=on';
+	url += '&accessory=' + accessoryID;
+	fireRequestAndForget(url);
+	return false;
+}
+
+function onMouseReleaseAccessory(accessoryID)
+{
+	var identifier = 'a_' + accessoryID;
+	if (modifierKeyPressed(event))
+	{
+		rotateObject(identifier);
+		return;
+	}
+	if (event.button != 0)
+	{
+		return;
+	}
+	var element = document.getElementById(identifier);
+	var url = '/?cmd=accessorystate';
+	url += '&state=off';
+	url += '&accessory=' + accessoryID;
+	fireRequestAndForget(url);
+	return false;
+}
+
 function onClickRoute(routeID)
 {
 	var element = document.getElementById('r_' + routeID);

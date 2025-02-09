@@ -475,6 +475,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextObjectIsUsedByRoute */ { "Object {0} is used by route {1}", "Objekt {0} wird von Fahrstrasse {1} benutzt", "Objeto {0} está utilizado por itinerario {1}" },
 /* TextOff */ { "off", "aus", "apagado" },
 /* TextOn */ { "on", "ein", "encendido" },
+/* TextOnPush */ { "on push", "beim Drücken", "al presionar" },
 /* TextOpeningSQLite */ { "Opening SQLite database with filename {0}", "Öffne SQLite Datenbank mit Dateiname {0}", "Abriendo base de datos SQLite con nombre {0}" },
 /* TextOrientation */ { "Orientation", "Ausrichtung", "Orientación" },
 /* TextOverrunAt */ { "Overrun at", "Überfahrt bei", "Pasar a" },

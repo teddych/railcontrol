@@ -260,8 +260,10 @@ namespace Hardware { namespace Protocols
 		SendInternal(buffer);
 	}
 
-	void MaerklinCANCommon::AccessoryOnOrOff(const Protocol protocol, const Address address,
-		const DataModel::AccessoryState state, const bool on)
+	void MaerklinCANCommon::Accessory(const Protocol protocol,
+		const Address address,
+		const DataModel::AccessoryState state,
+		const bool on)
 	{
 		unsigned char buffer[CANCommandBufferLength];
 		logger->Info(Languages::TextSettingAccessoryWithProtocol, Utils::Utils::ProtocolToString(protocol), address, Languages::GetGreenRed(state), Languages::GetOnOff(on));

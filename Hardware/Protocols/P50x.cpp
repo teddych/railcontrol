@@ -391,8 +391,11 @@ namespace Hardware
 			}
 		}
 
-		void P50x::AccessoryOnOrOff(__attribute__((unused))  const Protocol protocol, const Address address,
-		    const DataModel::AccessoryState state, const bool on)
+		void P50x::Accessory(__attribute__((unused))  const Protocol protocol,
+			const Address address,
+			const DataModel::AccessoryState state,
+			const bool on,
+			__attribute__((unused)) const DataModel::AccessoryPulseDuration duration)
 		{
 			if (!CheckAccessoryAddress(address))
 			{
