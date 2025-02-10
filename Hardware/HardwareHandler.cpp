@@ -348,11 +348,14 @@ namespace Hardware
 		const DataModel::AccessoryPulseDuration duration = accessory->GetAccessoryPulseDuration();
 		if (accessory->GetAccessoryType() == DataModel::AccessoryTypeOnPush)
 		{
-			if (state != DataModel::AccessoryStateOn)
+			if (state == DataModel::AccessoryStateOn)
 			{
-				return;
+				instance->Accessory(protocol, address, DataModel::DefaultState, true, duration);
 			}
-			AccessoryBaseState(protocol, address, DataModel::DefaultState, duration);
+			else
+			{
+				instance->Accessory(protocol, address, DataModel::DefaultState, false, 0);
+			}
 		}
 		else
 		{
