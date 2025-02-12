@@ -175,6 +175,30 @@ namespace Server { namespace Web
 		}
 	}
 
+	HtmlTag WebClientStatic::HtmlTagAccessoryAddress(const AccessoryType type,
+		const Address address,
+		const AddressPort port)
+	{
+		HtmlTag content;
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
+		switch (type)
+		{
+			case DataModel::AccessoryTypeOnPush:
+			{
+				map<AddressPort,Languages::TextSelector> portMap;
+				portMap[AddressPortRed] = Languages::TextRed;
+				portMap[AddressPortGreen] = Languages::TextGreen;
+				content.AddChildTag(HtmlTagSelect("port", portMap, port).AddClass("select_port"));
+				break;
+			}
+
+			default:
+				content.AddChildTag(HtmlTagInputHidden("port", std::to_string(port)));
+				break;
+		}
+		return content;
+	}
+
 	HtmlTag WebClientStatic::HtmlTagDuration(const DataModel::AccessoryPulseDuration duration, const Languages::TextSelector label)
 	{
 		std::map<string,string> durationOptions;

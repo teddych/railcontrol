@@ -167,6 +167,12 @@ enum AddressType : uint8_t
 	AddressTypeAccessory
 };
 
+enum AddressPort : uint8_t
+{
+	AddressPortRed   = 0,
+	AddressPortGreen = 1
+};
+
 enum LocoType : uint8_t
 {
 	LocoTypeLoco = 0,

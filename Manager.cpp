@@ -1342,6 +1342,7 @@ bool Manager::AccessorySave(AccessoryID accessoryID,
 	const std::string& matchKey,
 	const Protocol protocol,
 	const Address address,
+	const AddressPort port,
 	const Address serverAddress,
 	const DataModel::AccessoryType type,
 	const DataModel::AccessoryPulseDuration duration,
@@ -1383,6 +1384,7 @@ bool Manager::AccessorySave(AccessoryID accessoryID,
 	accessory->SetMatchKey(matchKey);
 	accessory->SetProtocol(protocol);
 	accessory->SetAddress(address);
+	accessory->SetPort(port);
 	accessory->SetServerAddress(serverAddress);
 	accessory->SetAccessoryType(type);
 	accessory->SetAccessoryPulseDuration(duration);

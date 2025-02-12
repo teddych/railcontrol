@@ -509,6 +509,11 @@ input {
 	width: calc(100% - 10px);
 }
 
+.select_relation_id,
+.select_relation_id .dropdown {
+	width: 250px;
+}
+
 .select_feedback,
 .select_feedback .dropdown,
 .select_track,
@@ -516,23 +521,17 @@ input {
 	width: 160px;
 }
 
-.select_delay,
-.select_delay .dropdown,
-.select_orientation,
-.select_orientation .dropdown {
-	width: 80px;
-}
-
 .select_relation_objecttype,
 .select_relation_objecttype .dropdown {
 	width: 100px;
 }
 
-.select_relation_id,
-.select_relation_id .dropdown {
-	width: 250px;
-}
-
+.select_delay,
+.select_delay .dropdown,
+.select_orientation,
+.select_orientation .dropdown,
+.select_port,
+.select_port .dropdown,
 .select_relation_state,
 .select_relation_state .dropdown {
 	width: 80px;

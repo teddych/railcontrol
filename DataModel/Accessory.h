@@ -43,7 +43,8 @@ namespace DataModel
 			inline Accessory(const AccessoryID accessoryID)
 			:	AccessoryBase(),
 				LayoutItem(accessoryID),
-				LockableItem()
+				LockableItem(),
+				port(AddressPortRed)
 			{
 			}
 
@@ -78,6 +79,19 @@ namespace DataModel
 			virtual bool Deserialize(const std::string& serialized) override;
 
 			Accessory& operator=(const Hardware::AccessoryCacheEntry& accessory);
+
+			inline void SetPort(AddressPort port)
+			{
+				this->port = port;
+			}
+
+			inline AddressPort GetPort() const
+			{
+				return port;
+			}
+
+		private:
+			AddressPort port;
 	};
 } // namespace DataModel
 

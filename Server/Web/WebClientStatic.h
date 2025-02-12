@@ -68,6 +68,10 @@ namespace Server { namespace Web
 			static HtmlTag HtmlTagProtocol(const std::map<std::string,Protocol>& protocolMap,
 				const Protocol selectedProtocol);
 
+			static HtmlTag HtmlTagAccessoryAddress(const DataModel::AccessoryType type,
+				const Address address,
+				const AddressPort port);
+
 			static inline HtmlTag HtmlTagDuration(const DataModel::AccessoryPulseDuration duration)
 			{
 				return HtmlTagDuration(duration, Languages::TextDuration);

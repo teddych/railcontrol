@@ -331,6 +331,7 @@ class Manager
 			const std::string& matchKey,
 			const Protocol protocol,
 			const Address address,
+			const AddressPort port,
 			const Address serverAddress,
 			const DataModel::AccessoryType type,
 			const DataModel::AccessoryPulseDuration duration,

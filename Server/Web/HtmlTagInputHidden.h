@@ -36,15 +36,15 @@ namespace Server { namespace Web
 
 			inline HtmlTagInputHidden(const DataModel::ObjectIdentifier& identifier)
 			:	HtmlTagInputHidden(identifier.GetObjectTypeAsString(),
-					identifier.GetObjectIdAsString())
+				identifier.GetObjectIdAsString())
 			{
 			}
 
 			inline HtmlTagInputHidden(const std::string& name,
 				const std::string& value = "")
 			:	HtmlTagInput("hidden",
-					name,
-					value)
+				name,
+				value)
 			{
 				AddClass("hidden");
 			}

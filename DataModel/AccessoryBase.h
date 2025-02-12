@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <cstdint>
 #include <ctime>
 #include <map>
 #include <string>
@@ -29,7 +30,7 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace DataModel
 {
-	enum AccessoryType : unsigned char
+	enum AccessoryType : uint8_t
 	{
 		AccessoryTypeDefault  = 0,
 		AccessoryTypeStraight = 1,
@@ -56,7 +57,7 @@ namespace DataModel
 		SwitchTypeMaerklinRight = 4
 	};
 
-	enum AccessoryState : unsigned char
+	enum AccessoryState : uint8_t
 	{
 		DefaultState                = 0,
 

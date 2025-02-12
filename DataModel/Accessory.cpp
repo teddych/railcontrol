@@ -35,6 +35,7 @@ namespace DataModel
 		str += AccessoryBase::Serialize();
 		str += ";" + LayoutItem::Serialize();
 		str += ";" + LockableItem::Serialize();
+		str += ";port=" + std::to_string(port);
 		return str;
 	}
 
@@ -50,6 +51,7 @@ namespace DataModel
 		AccessoryBase::Deserialize(arguments);
 		LayoutItem::Deserialize(arguments);
 		LockableItem::Deserialize(arguments);
+		port = static_cast<AddressPort>(Utils::Utils::GetIntegerMapEntry(arguments, "port"));
 		SetWidth(Width1);
 		SetHeight(Height1);
 		SetVisible(VisibleYes);
@@ -60,9 +62,13 @@ namespace DataModel
 	{
 		SetControlID(accessory.GetControlID());
 		SetName(accessory.GetName());
-		SetAddress(accessory.GetAddress());
 		SetProtocol(accessory.GetProtocol());
+		SetAddress(accessory.GetAddress());
+		SetPort(AddressPortRed);
 		SetMatchKey(accessory.GetMatchKey());
+		SetWidth(Width1);
+		SetHeight(Height1);
+		SetVisible(VisibleYes);
 		return *this;
 	}
 } // namespace DataModel

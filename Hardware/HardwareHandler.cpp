@@ -348,13 +348,15 @@ namespace Hardware
 		const DataModel::AccessoryPulseDuration duration = accessory->GetAccessoryPulseDuration();
 		if (accessory->GetAccessoryType() == DataModel::AccessoryTypeOnPush)
 		{
+			const AddressPort port = accessory->GetPort();
+			const DataModel::AccessoryState portAsState = static_cast<DataModel::AccessoryState>(port);
 			if (state == DataModel::AccessoryStateOn)
 			{
-				instance->Accessory(protocol, address, DataModel::DefaultState, true, duration);
+				instance->Accessory(protocol, address, portAsState, true, duration);
 			}
 			else
 			{
-				instance->Accessory(protocol, address, DataModel::DefaultState, false, 0);
+				instance->Accessory(protocol, address, portAsState, false, 0);
 			}
 		}
 		else
@@ -516,7 +518,7 @@ namespace Hardware
 
 	void HardwareHandler::ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv)
 	{
-		if (ProgramCheckValues(mode, cv) == false)
+		if (!ProgramCheckValues(mode, cv))
 		{
 			return;
 		}
@@ -530,7 +532,7 @@ namespace Hardware
 
 	void HardwareHandler::ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value)
 	{
-		if (ProgramCheckValues(mode, cv, value) == false)
+		if (!ProgramCheckValues(mode, cv, value))
 		{
 			return;
 		}
