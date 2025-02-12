@@ -181,7 +181,13 @@ namespace Server { namespace Web
 		durationOptions["0000"] = "0";
 		durationOptions["0100"] = "100";
 		durationOptions["0250"] = "250";
+		durationOptions["0500"] = "500";
 		durationOptions["1000"] = "1000";
+		durationOptions["1500"] = "1500";
+		durationOptions["2000"] = "2000";
+		durationOptions["3000"] = "3000";
+		durationOptions["4000"] = "4000";
+		durationOptions["5000"] = "5000";
 		return HtmlTagSelectWithLabel("duration", label, durationOptions, Utils::Utils::ToStringWithLeadingZeros(duration, 4));
 	}
 
