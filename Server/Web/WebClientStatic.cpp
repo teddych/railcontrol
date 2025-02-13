@@ -181,9 +181,10 @@ namespace Server { namespace Web
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTagInputIntegerWithLabel("address", Languages::TextAddress, address, 1, 2044));
-		switch (type)
+		switch (type & DataModel::AccessoryTypeSubtypeMask)
 		{
 			case DataModel::AccessoryTypeOnPush:
+			case DataModel::AccessoryTypeOnOff:
 			{
 				map<AddressPort,Languages::TextSelector> portMap;
 				portMap[AddressPortRed] = Languages::TextRed;
@@ -192,6 +193,7 @@ namespace Server { namespace Web
 				break;
 			}
 
+			case DataModel::AccessoryTypeOnOn:
 			default:
 				content.AddChildTag(HtmlTagInputHidden("port", std::to_string(port)));
 				break;

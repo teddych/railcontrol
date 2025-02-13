@@ -33,16 +33,21 @@ namespace Server { namespace Web
 	{
 		switch (accessory->GetAccessoryType())
 		{
-			case DataModel::AccessoryTypeStraight:
+			case DataModel::AccessoryTypeOnOnStraight:
+			case DataModel::AccessoryTypeOnPushStraight:
+			case DataModel::AccessoryTypeOnOffStraight:
 				image = "<polygon class=\"track\" points=\"15,0 21,0 21,36 15,36\"/>";
 				break;
 
-			case DataModel::AccessoryTypeTurn:
+			case DataModel::AccessoryTypeOnOnTurn:
+			case DataModel::AccessoryTypeOnPushTurn:
+			case DataModel::AccessoryTypeOnOffTurn:
 				image = "<polygon class=\"track\" points=\"0,21 0,15 21,36 15,36\"/>";
 				break;
 
-			case DataModel::AccessoryTypeDefault:
-			case DataModel::AccessoryTypeOnPush:
+			case DataModel::AccessoryTypeOnOnDefault:
+			case DataModel::AccessoryTypeOnPushDefault:
+			case DataModel::AccessoryTypeOnOffDefault:
 			default:
 				break;
 		}
@@ -52,19 +57,22 @@ namespace Server { namespace Web
 
 		string accessoryIdString = to_string(accessory->GetID());
 		imageDiv.AddClass("accessory_item");
-		imageDiv.AddClass(state == DataModel::AccessoryStateOn ? "accessory_on" : "accessory_off");
-		switch (accessory->GetAccessoryType())
+		switch (accessory->GetAccessoryType() & DataModel::AccessoryTypeSubtypeMask)
 		{
+			case DataModel::AccessoryTypeOnOn:
+			case DataModel::AccessoryTypeOnOff:
+				imageDiv.AddClass(state == DataModel::AccessoryStateOn ? "accessory_on" : "accessory_off");
+				imageDiv.AddAttribute("onclick", "return onClickAccessory(" + accessoryIdString + ");");
+				break;
+
 			case DataModel::AccessoryTypeOnPush:
+				imageDiv.AddClass("accessory_off");
 				imageDiv.AddAttribute("onmousedown", "return onMousePressAccessory(" + accessoryIdString + ");");
 				imageDiv.AddAttribute("onmouseup", "return onMouseReleaseAccessory(" + accessoryIdString + ");");
 				break;
 
-			case DataModel::AccessoryTypeDefault:
-			case DataModel::AccessoryTypeStraight:
-			case DataModel::AccessoryTypeTurn:
 			default:
-				imageDiv.AddAttribute("onclick", "return onClickAccessory(" + accessoryIdString + ");");
+				imageDiv.AddClass("accessory_off");
 				break;
 		}
 

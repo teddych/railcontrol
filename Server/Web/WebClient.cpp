@@ -1273,7 +1273,7 @@ namespace Server { namespace Web
 
 	void WebClient::HandleAccessoryAddress(const map<string, string>& arguments)
 	{
-		const AccessoryType type = static_cast<AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", AccessoryTypeDefault));
+		const AccessoryType type = static_cast<AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", AccessoryTypeOnOnDefault));
 		const Address address = static_cast<Address>(Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault));
 		const AddressPort port = static_cast<AddressPort>(Utils::Utils::GetIntegerMapEntry(arguments, "port", AddressPortRed));
 		ReplyHtmlWithHeader(WebClientStatic::HtmlTagAccessoryAddress(type, address, port));
@@ -2115,7 +2115,7 @@ namespace Server { namespace Web
 		Address address = AddressDefault;
 		AddressPort port = AddressPortRed;
 		Address serverAddress = AddressNone;
-		DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeDefault));
+		DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeOnOnDefault));
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
@@ -2167,10 +2167,15 @@ namespace Server { namespace Web
 		formContent.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)));
 
 		std::map<DataModel::AccessoryType, Languages::TextSelector> typeOptions;
-		typeOptions[DataModel::AccessoryTypeDefault] = Languages::TextDefault;
-		typeOptions[DataModel::AccessoryTypeStraight] = Languages::TextStraight;
-		typeOptions[DataModel::AccessoryTypeTurn] = Languages::TextTurn;
-		typeOptions[DataModel::AccessoryTypeOnPush] = Languages::TextOnPush;
+		typeOptions[DataModel::AccessoryTypeOnOnDefault] = Languages::TextAccessoryTypeOnOnDefault;
+		typeOptions[DataModel::AccessoryTypeOnOnStraight] = Languages::TextAccessoryTypeOnOnStraight;
+		typeOptions[DataModel::AccessoryTypeOnOnTurn] = Languages::TextAccessoryTypeOnOnTurn;
+		typeOptions[DataModel::AccessoryTypeOnPushDefault] = Languages::TextAccessoryTypeOnPushDefault;
+		typeOptions[DataModel::AccessoryTypeOnPushStraight] = Languages::TextAccessoryTypeOnPushStraight;
+		typeOptions[DataModel::AccessoryTypeOnPushTurn] = Languages::TextAccessoryTypeOnPushTurn;
+		typeOptions[DataModel::AccessoryTypeOnOffDefault] = Languages::TextAccessoryTypeOnOffDefault;
+		typeOptions[DataModel::AccessoryTypeOnOffStraight] = Languages::TextAccessoryTypeOnOffStraight;
+		typeOptions[DataModel::AccessoryTypeOnOffTurn] = Languages::TextAccessoryTypeOnOffTurn;
 
 		HtmlTag mainContent("div");
 		mainContent.AddId("tab_main");
@@ -2218,7 +2223,7 @@ namespace Server { namespace Web
 		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
 		const AddressPort port = static_cast<AddressPort>(Utils::Utils::GetIntegerMapEntry(arguments, "port", AddressPortRed));
 		const Address serverAddress = Utils::Utils::GetIntegerMapEntry(arguments, "serveraddress", AddressNone);
-		const DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeDefault));
+		const DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeOnOnDefault));
 		const LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		const LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		const LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);

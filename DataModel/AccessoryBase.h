@@ -32,10 +32,29 @@ namespace DataModel
 {
 	enum AccessoryType : uint8_t
 	{
-		AccessoryTypeDefault  = 0,
-		AccessoryTypeStraight = 1,
-		AccessoryTypeTurn     = 2,
-		AccessoryTypeOnPush   = 3,
+		// 2 MSB are functional type (on-on, on push, on-off)
+		AccessoryTypeOnOn            = 0x00,
+		AccessoryTypeOnPush          = 0x40,
+		AccessoryTypeOnOff           = 0x80,
+		AccessoryTypeSubtypeMask     = 0xC0,
+
+		// 6 LSB are display type (default, straight, turn, ...)
+		AccessoryTypeDefault         = 0x00,
+		AccessoryTypeStraight        = 0x01,
+		AccessoryTypeTurn            = 0x02,
+		AccessoryTypeMask            = 0x3F,
+
+		AccessoryTypeOnOnDefault     = AccessoryTypeOnOn + AccessoryTypeDefault,
+		AccessoryTypeOnOnStraight    = AccessoryTypeOnOn + AccessoryTypeStraight,
+		AccessoryTypeOnOnTurn        = AccessoryTypeOnOn + AccessoryTypeTurn,
+
+		AccessoryTypeOnPushDefault   = AccessoryTypeOnPush + AccessoryTypeDefault,
+		AccessoryTypeOnPushStraight  = AccessoryTypeOnPush + AccessoryTypeStraight,
+		AccessoryTypeOnPushTurn      = AccessoryTypeOnPush + AccessoryTypeTurn,
+
+		AccessoryTypeOnOffDefault    = AccessoryTypeOnOff + AccessoryTypeDefault,
+		AccessoryTypeOnOffStraight   = AccessoryTypeOnOff + AccessoryTypeStraight,
+		AccessoryTypeOnOffTurn       = AccessoryTypeOnOff + AccessoryTypeTurn,
 
 		SignalTypeSimpleLeft  =  0,
 		SignalTypeSimpleRight =  1,
@@ -106,7 +125,7 @@ namespace DataModel
 		public:
 			AccessoryBase()
 			:	HardwareHandle(),
-				accessoryType(AccessoryTypeDefault),
+				accessoryType(AccessoryTypeOnOnDefault),
 				accessoryState(AccessoryStateOff),
 				duration(0),
 				inverted(false),

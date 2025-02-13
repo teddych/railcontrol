@@ -346,22 +346,32 @@ namespace Hardware
 		const Address address = accessory->GetAddress();
 		const DataModel::AccessoryState state = accessory->GetInvertedAccessoryState();
 		const DataModel::AccessoryPulseDuration duration = accessory->GetAccessoryPulseDuration();
-		if (accessory->GetAccessoryType() == DataModel::AccessoryTypeOnPush)
+		switch (accessory->GetAccessoryType() & DataModel::AccessoryTypeSubtypeMask)
 		{
-			const AddressPort port = accessory->GetPort();
-			const DataModel::AccessoryState portAsState = static_cast<DataModel::AccessoryState>(port);
-			if (state == DataModel::AccessoryStateOn)
+			case DataModel::AccessoryTypeOnOn:
 			{
-				instance->Accessory(protocol, address, portAsState, true, duration);
+				AccessoryBaseState(protocol, address, state, duration);
+				break;
 			}
-			else
+
+			case DataModel::AccessoryTypeOnPush:
+			case DataModel::AccessoryTypeOnOff:
 			{
-				instance->Accessory(protocol, address, portAsState, false, 0);
+				const AddressPort port = accessory->GetPort();
+				const DataModel::AccessoryState portAsState = static_cast<DataModel::AccessoryState>(port);
+				if (state == DataModel::AccessoryStateOn)
+				{
+					instance->Accessory(protocol, address, portAsState, true, duration);
+				}
+				else
+				{
+					instance->Accessory(protocol, address, portAsState, false, 0);
+				}
+				break;
 			}
-		}
-		else
-		{
-			AccessoryBaseState(protocol, address, state, duration);
+
+			default:
+				break;
 		}
 	}
 
