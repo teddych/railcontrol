@@ -47,6 +47,7 @@ class Languages
 			TextAccessorySenderThreadStarted,
 			TextAccessoryStateIsGreen,
 			TextAccessoryStateIsRed,
+			TextAccessoryTypeHint,
 			TextAccessoryTypeOnOffDefault,
 			TextAccessoryTypeOnOffStraight,
 			TextAccessoryTypeOnOffTurn,
@@ -889,16 +890,9 @@ class Languages
 			return GetText(defaultLanguage, selector);
 		}
 
-		static const char* GetText(const Language language, const TextSelector selector)
-		{
-			if (language >= MaxLanguages || selector >= MaxTexts)
-			{
-				static const char* unknownText = "";
-				return unknownText;
-			}
+		static const char* GetText(const Language language, const TextSelector selector);
 
-			return languages[selector][language];
-		}
+		static const std::string GetText(const TextSelector text, const TextSelector tooltip);
 
 		static inline const char* GetOnOff(const bool on)
 		{

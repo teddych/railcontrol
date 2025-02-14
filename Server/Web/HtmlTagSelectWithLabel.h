@@ -66,6 +66,19 @@ namespace Server { namespace Web
 			template<typename T>
 			HtmlTagSelectWithLabel(const std::string& name,
 				const Languages::TextSelector label,
+				const Languages::TextSelector tooltip,
+				const std::map<T,Languages::TextSelector>& options,
+				const T defaultValue = 0)
+			:	HtmlTag("div")
+			{
+				HtmlTag::AddClass("input_select_with_label");
+				AddChildTag(HtmlTagLabel(label, tooltip, "s_" + name));
+				AddChildTag(HtmlTagSelect(name, options, defaultValue));
+			}
+
+			template<typename T>
+			HtmlTagSelectWithLabel(const std::string& name,
+				const Languages::TextSelector label,
 				const std::map<T,std::string>& options,
 				const T defaultValue = 0)
 			:	HtmlTag("div")

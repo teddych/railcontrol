@@ -2181,7 +2181,7 @@ namespace Server { namespace Web
 		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("accessorytype", Languages::TextType, typeOptions, accessoryType).AddAttribute("onchange", "loadAccessoryAddress('" + to_string(accessoryID) + "')"));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("accessorytype", Languages::TextType, Languages::TextAccessoryTypeHint, typeOptions, accessoryType).AddAttribute("onchange", "loadAccessoryAddress('" + to_string(accessoryID) + "')"));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlId, "accessory", accessoryID));
 		mainContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagMatchKeyProtocolAccessory(controlId, matchKey, protocol)));
 		mainContent.AddChildTag(HtmlTag("div").AddId("select_address").AddChildTag(WebClientStatic::HtmlTagAccessoryAddress(accessoryType, address, port)));

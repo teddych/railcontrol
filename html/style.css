@@ -1,7 +1,7 @@
 body {
 	background-color: black;
 	color: white;
-	font-family: verdana, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	font-size: 15px;
 	margin: 0px;
 }
@@ -258,7 +258,21 @@ body {
 	left: 32px;
 }
 
+.help {
+	background-color: yellow;
+	border: solid 1px black;
+	border-radius: 1em;
+	font-size: 12px;
+	display: inline-block;
+}
+
+.help .tooltip {
+	display: block;
+	font-size: 15px;
+}
+
 .button .tooltip,
+.help .tooltip,
 .layout_item .tooltip {
 	line-height: 1;
 	white-space: nowrap;
@@ -273,6 +287,7 @@ body {
 }
 
 .button:hover .tooltip,
+.help:hover .tooltip,
 .layout_item:hover .tooltip {
 	visibility: visible;
 }

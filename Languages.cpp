@@ -47,6 +47,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextAccessorySenderThreadStarted */ { "Accessory sender thread started", "Zubehörartikel Sender Thread gestartet", "Thread enviador accesorio creado" },
 /* TextAccessoryStateIsGreen */ { "Accessory state of {0} is now green", "Der Status des Zubehörartikels ist nun grün", "El estado del accessorio está verde" },
 /* TextAccessoryStateIsRed */ { "Accessory state of {0} is now red", "Der Status des Zubehörartikels ist nun rot", "El estado del accessorio está rojo" },
+/* TextAccessoryTypeHint */ { "on-on:<br>Each decoder has a red and a green port. While clicking on the accessory, one or the other of the ports is activated and deactivated.<br><br>on push:<br>While clicking on the accessory, the selected port is activated and while releasing again the port is deactivated.<br><br>on-off:<br>While clicking on the accessory, the selected port is activated and while clicking the second time it is deactivated.<br>Some controls and some decoders can not handle this on-off mode, especially Z21, EcOS and DCC-EX.", "ein-ein:<br>Jeder Decoder hat einen roten und einen grünen Anschluss. Beim Anklicken des Zubehörartikels wird der eine oder der andere Anschluss aktiviert und deaktiviert.<br><br>beim Drücken:<br>Beim Anklicken des Zubehörartikels wird ein Anschluss aktiviert und beim Loslassen wird der Anschluss wieder deaktiviert.<br><br>ein-aus:<br>Beim Anklicken des Zubehörartikels wird der ausgewählte Anschluss aktiviert und beim zweiten Anklicken deaktiviert.<br>Einige Zentralen und Decoder können diesen ein-aus-Modus nicht verarbeiten, insbesondere Z21, EcOS und DCC-EX.", "on-on:<br>Cada decoder tiene un puerto rojo y otro verde. Al hacer click en el accesorio, se activa y desactiva uno u otro de los puertos.<br><br>al pulsar:<br>Al hacer clic en el accesorio, se activa el puerto seleccionado y al volver a soltar se desactiva el puerto.<br><br>on-off:<br>Al hacer clic en el accesorio se activa el puerto seleccionado y al pulsar por segunda vez se desactiva.<br>Algunos controls y decoders no pueden manejar esto, especialmente Z21, EcOS y DCC-EX." },
 /* TextAccessoryTypeOnOffDefault */ { "default (on-off)", "standard (ein-aus)", "predeterminado (on-off)" },
 /* TextAccessoryTypeOnOffStraight */ { "straight (on-off)", "gerade (ein-aus)", "recto (on-off)" },
 /* TextAccessoryTypeOnOffTurn */ { "turn (on-off)", "gebogen (ein-aus)", "curvo (on-off" },
@@ -867,3 +868,23 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 };
 
 Languages::Language Languages::defaultLanguage = Languages::EN;
+
+const char* Languages::GetText(const Language language, const TextSelector selector)
+{
+	if (language >= MaxLanguages || selector >= MaxTexts)
+	{
+		static const char* unknownText = "";
+		return unknownText;
+	}
+
+	return languages[selector][language];
+}
+
+const std::string Languages::GetText(const TextSelector label, const TextSelector tooltip)
+{
+	std::string out(GetText(label));
+	out += "&nbsp;<div class=\"help\">&nbsp;?&nbsp;<div class=\"tooltip\">";
+	out += GetText(tooltip);
+	out += "</div></div>";
+	return out;
+}

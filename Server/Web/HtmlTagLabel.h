@@ -37,6 +37,11 @@ namespace Server { namespace Web
 			{
 			}
 
+			inline HtmlTagLabel(const Languages::TextSelector label, const Languages::TextSelector tooltip, const std::string& reference)
+			:	HtmlTagLabel(Languages::GetText(label, tooltip), reference)
+			{
+			}
+
 			inline HtmlTagLabel(const std::string& label, const std::string& reference)
 			:	HtmlTag("label")
 			{
