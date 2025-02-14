@@ -67,8 +67,8 @@ namespace Server { namespace Web
 
 			case DataModel::AccessoryTypeOnPush:
 				imageDiv.AddClass("accessory_off");
-				imageDiv.AddAttribute("onmousedown", "return onMousePressAccessory(" + accessoryIdString + ");");
-				imageDiv.AddAttribute("onmouseup", "return onMouseReleaseAccessory(" + accessoryIdString + ");");
+				imageDiv.AddAttribute("onpointerdown", "return onPointerDownAccessory(" + accessoryIdString + ");");
+				imageDiv.AddAttribute("onpointerup", "return onPointerUpAccessory(" + accessoryIdString + ");");
 				break;
 
 			default:

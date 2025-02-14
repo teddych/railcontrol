@@ -760,7 +760,7 @@ function onClickAccessory(accessoryID)
 	return false;
 }
 
-function onMousePressAccessory(accessoryID)
+function onPointerDownAccessory(accessoryID)
 {
 	var identifier = 'a_' + accessoryID;
 	if (modifierKeyPressed(event))
@@ -779,7 +779,7 @@ function onMousePressAccessory(accessoryID)
 	return false;
 }
 
-function onMouseReleaseAccessory(accessoryID)
+function onPointerUpAccessory(accessoryID)
 {
 	var identifier = 'a_' + accessoryID;
 	if (modifierKeyPressed(event))
