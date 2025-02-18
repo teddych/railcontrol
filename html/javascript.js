@@ -1734,7 +1734,7 @@ function loadProtocol(type, ID)
 
 function loadAccessoryAddress()
 {
-	var selectAccessoryType = document.getElementById('s_accessorytype');
+	var selectAccessoryType = document.getElementById('s_connectiontype');
 	if (!selectAccessoryType)
 	{
 		return;

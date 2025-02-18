@@ -1273,7 +1273,7 @@ namespace Server { namespace Web
 
 	void WebClient::HandleAccessoryAddress(const map<string, string>& arguments)
 	{
-		const AccessoryType type = static_cast<AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", AccessoryTypeOnOnDefault));
+		const AccessoryType type = static_cast<AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", AccessoryTypeDefault));
 		const Address address = static_cast<Address>(Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault));
 		const AddressPort port = static_cast<AddressPort>(Utils::Utils::GetIntegerMapEntry(arguments, "port", AddressPortRed));
 		ReplyHtmlWithHeader(WebClientStatic::HtmlTagAccessoryAddress(type, address, port));
@@ -2115,7 +2115,8 @@ namespace Server { namespace Web
 		Address address = AddressDefault;
 		AddressPort port = AddressPortRed;
 		Address serverAddress = AddressNone;
-		DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeOnOnDefault));
+		DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeDefault));
+		DataModel::AccessoryType connectionType;
 		LayoutPosition posx = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		LayoutPosition posy = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		LayoutPosition posz = Utils::Utils::GetIntegerMapEntry(arguments, "posz", LayerUndeletable);
@@ -2156,6 +2157,9 @@ namespace Server { namespace Web
 		}
 		// else new accessory
 
+		connectionType = static_cast<DataModel::AccessoryType>(accessoryType & DataModel::AccessoryTypeConnectionMask);
+		accessoryType = static_cast<DataModel::AccessoryType>(accessoryType & DataModel::AccessoryTypeMask);
+
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("main", Languages::TextBasic, true));
@@ -2167,24 +2171,26 @@ namespace Server { namespace Web
 		formContent.AddChildTag(HtmlTagInputHidden("accessory", to_string(accessoryID)));
 
 		std::map<DataModel::AccessoryType, Languages::TextSelector> typeOptions;
-		typeOptions[DataModel::AccessoryTypeOnOnDefault] = Languages::TextAccessoryTypeOnOnDefault;
-		typeOptions[DataModel::AccessoryTypeOnOnStraight] = Languages::TextAccessoryTypeOnOnStraight;
-		typeOptions[DataModel::AccessoryTypeOnOnTurn] = Languages::TextAccessoryTypeOnOnTurn;
-		typeOptions[DataModel::AccessoryTypeOnPushDefault] = Languages::TextAccessoryTypeOnPushDefault;
-		typeOptions[DataModel::AccessoryTypeOnPushStraight] = Languages::TextAccessoryTypeOnPushStraight;
-		typeOptions[DataModel::AccessoryTypeOnPushTurn] = Languages::TextAccessoryTypeOnPushTurn;
-		typeOptions[DataModel::AccessoryTypeOnOffDefault] = Languages::TextAccessoryTypeOnOffDefault;
-		typeOptions[DataModel::AccessoryTypeOnOffStraight] = Languages::TextAccessoryTypeOnOffStraight;
-		typeOptions[DataModel::AccessoryTypeOnOffTurn] = Languages::TextAccessoryTypeOnOffTurn;
+		typeOptions[DataModel::AccessoryTypeDefault] = Languages::TextDefault;
+		typeOptions[DataModel::AccessoryTypeStraight] = Languages::TextStraight;
+		typeOptions[DataModel::AccessoryTypeTurn] = Languages::TextTurn;
+		typeOptions[DataModel::AccessoryTypeDecoupler] = Languages::TextAccessoryTypeDecoupler;
+		typeOptions[DataModel::AccessoryTypeLight] = Languages::TextAccessoryTypeLight;
+
+		std::map<DataModel::AccessoryType, Languages::TextSelector> connectionOptions;
+		connectionOptions[DataModel::AccessoryTypeOnOn] = Languages::TextAccessoryTypeOnOn;
+		connectionOptions[DataModel::AccessoryTypeOnPush] = Languages::TextAccessoryTypeOnPush;
+		connectionOptions[DataModel::AccessoryTypeOnOff] = Languages::TextAccessoryTypeOnOff;
 
 		HtmlTag mainContent("div");
 		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		mainContent.AddChildTag(HtmlTagSelectWithLabel("accessorytype", Languages::TextType, Languages::TextAccessoryTypeHint, typeOptions, accessoryType).AddAttribute("onchange", "loadAccessoryAddress('" + to_string(accessoryID) + "')"));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("accessorytype", Languages::TextType, typeOptions, static_cast<DataModel::AccessoryType>(accessoryType & DataModel::AccessoryTypeMask)));
+		mainContent.AddChildTag(HtmlTagSelectWithLabel("connectiontype", Languages::TextConnection, Languages::TextConnectionHint, connectionOptions, connectionType).AddAttribute("onchange", "loadAccessoryAddress('" + to_string(accessoryID) + "')"));
 		mainContent.AddChildTag(HtmlTagControlAccessory(controlId, "accessory", accessoryID));
 		mainContent.AddChildTag(HtmlTag("div").AddId("select_protocol").AddChildTag(HtmlTagMatchKeyProtocolAccessory(controlId, matchKey, protocol)));
-		mainContent.AddChildTag(HtmlTag("div").AddId("select_address").AddChildTag(WebClientStatic::HtmlTagAccessoryAddress(accessoryType, address, port)));
+		mainContent.AddChildTag(HtmlTag("div").AddId("select_address").AddChildTag(WebClientStatic::HtmlTagAccessoryAddress(connectionType, address, port)));
 		mainContent.AddChildTag(WebClientStatic::HtmlTagDuration(duration));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		if (manager.IsServerEnabled())
@@ -2223,7 +2229,8 @@ namespace Server { namespace Web
 		const Address address = Utils::Utils::GetIntegerMapEntry(arguments, "address", AddressDefault);
 		const AddressPort port = static_cast<AddressPort>(Utils::Utils::GetIntegerMapEntry(arguments, "port", AddressPortRed));
 		const Address serverAddress = Utils::Utils::GetIntegerMapEntry(arguments, "serveraddress", AddressNone);
-		const DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeOnOnDefault));
+		const DataModel::AccessoryType connectionType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "connectiontype", AccessoryTypeOnOn));
+		const DataModel::AccessoryType accessoryType = static_cast<DataModel::AccessoryType>(Utils::Utils::GetIntegerMapEntry(arguments, "accessorytype", AccessoryTypeDefault) + connectionType);
 		const LayoutPosition posX = Utils::Utils::GetIntegerMapEntry(arguments, "posx", 0);
 		const LayoutPosition posY = Utils::Utils::GetIntegerMapEntry(arguments, "posy", 0);
 		const LayoutPosition posZ = Utils::Utils::GetIntegerMapEntry(arguments, "posz", 0);
