@@ -2176,6 +2176,8 @@ namespace Server { namespace Web
 		typeOptions[DataModel::AccessoryTypeTurn] = Languages::TextTurn;
 		typeOptions[DataModel::AccessoryTypeDecoupler] = Languages::TextAccessoryTypeDecoupler;
 		typeOptions[DataModel::AccessoryTypeLight] = Languages::TextAccessoryTypeLight;
+		typeOptions[DataModel::AccessoryTypeLightInhouse] = Languages::TextAccessoryTypeLightInhouse;
+		typeOptions[DataModel::AccessoryTypeLightStreet] = Languages::TextAccessoryTypeLightStreet;
 
 		std::map<DataModel::AccessoryType, Languages::TextSelector> connectionOptions;
 		connectionOptions[DataModel::AccessoryTypeOnOn] = Languages::TextAccessoryTypeOnOn;

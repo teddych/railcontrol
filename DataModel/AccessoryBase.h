@@ -44,6 +44,8 @@ namespace DataModel
 		AccessoryTypeTurn            = 0x02,
 		AccessoryTypeDecoupler       = 0x03,
 		AccessoryTypeLight           = 0x04,
+		AccessoryTypeLightInhouse    = 0x05,
+		AccessoryTypeLightStreet     = 0x06,
 		AccessoryTypeMask            = 0x3F,
 
 		SignalTypeSimpleLeft  =  0,

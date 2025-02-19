@@ -49,6 +49,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextAccessoryStateIsRed */ { "Accessory state of {0} is now red", "Der Status des Zubehörartikels ist nun rot", "El estado del accessorio está rojo" },
 /* TextAccessoryTypeDecoupler */ { "decoupler", "Entkuppler", "desacoplador" },
 /* TextAccessoryTypeLight */ { "light", "Licht", "luz" },
+/* TextAccessoryTypeLightInhouse */ { "light in house", "Licht in Haus", "luz en casa" },
+/* TextAccessoryTypeLightStreet */ { "street light", "Strassenlaterne", "farola" },
 /* TextAccessoryTypeOnOff */ { "on-off", "ein-aus", "on-off" },
 /* TextAccessoryTypeOnOn */ { "on-on", "ein-ein", "on-on" },
 /* TextAccessoryTypeOnPush */ { "on push", "beim Drücken", "al pulsar" },

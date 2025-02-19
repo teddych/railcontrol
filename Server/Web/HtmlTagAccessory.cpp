@@ -73,7 +73,28 @@ namespace Server { namespace Web
 					"<polyline points=\"25.8,13.5 31,10.5\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
 					"<polyline points=\"27,18 33,18\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
 					"<polyline points=\"25.8,22.5 31,25.5\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>";
+				break;
 
+			case DataModel::AccessoryTypeLightInhouse:
+				image = //"<polyline points=\"3,3 1.5,3.5 1,5 1,33 1.5,34.5 3,35 33,35 34.5,34.5 35,33 35,5 34.5,3.5 33,3 3,3\" stroke=\"white\" stroke-width=\"1\" fill=\"none\"/>"
+					"<polyline points=\"0,10.5 18,0.5 36,10.5\" stroke=\"white\" stroke-width=\"1\" fill=\"none\"/>"
+					"<polyline points=\"3.5,35.5 3.5,8.5 32.5,8.5 32.5,35.5 3.5,35.5\" stroke=\"white\" stroke-width=\"1\" fill=\"none\"/>"
+					"<polyline points=\"23,10 22.9,10.9 22.7,11.7 22.3,12.5 21.8,13.2 21.2,13.8 20.5,14.3 19.7,14.7 18.9,14.9 18,15 17.1,14.9 16.3,14.7 15.5,14.3 14.8,13.8 14.2,13.2 13.7,12.5 13.3,11.7 13.1,10.9 13,10\" stroke=\"white\" stroke-width=\"0\" fill=\"white\"/>"
+					"<polyline points=\"25.8,14.5 31,17.5\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
+					"<polyline points=\"22.5,17.8 25.5,23\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
+					"<polyline points=\"18,19 18,25\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
+					"<polyline points=\"13.5,17.8 10.5,23\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
+					"<polyline points=\"10.2,14.5 5,17.5\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>";
+				break;
+
+			case DataModel::AccessoryTypeLightStreet:
+				image = "<polyline points=\"4.5,36 4.5,9.5 6.5,7.5 23,3.5\" stroke=\"white\" stroke-width=\"1\" fill=\"none\"/>"
+					"<polyline points=\"23,5 22.9,5.9 22.7,6.7 22.3,7.5 21.8,8.2 21.2,8.8 20.5,9.3 19.7,9.7 18.9,9.9 18,10 17.1,9.9 16.3,9.7 15.5,9.3 14.8,8.8 14.2,8.2 13.7,7.5\" stroke=\"white\" stroke-width=\"0\" fill=\"white\"/>"
+					"<polyline points=\"25.8,9.5 31,12.5\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
+					"<polyline points=\"22.5,12.8 25.5,18\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
+					"<polyline points=\"18,14 18,20\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>"
+					"<polyline points=\"13.5,12.8 10.5,18\" stroke=\"white\" stroke-width=\"2\" class=\"accessory_on\"/>";
+				break;
 
 			default:
 				break;

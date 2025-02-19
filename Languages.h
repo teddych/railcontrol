@@ -49,6 +49,8 @@ class Languages
 			TextAccessoryStateIsRed,
 			TextAccessoryTypeDecoupler,
 			TextAccessoryTypeLight,
+			TextAccessoryTypeLightInhouse,
+			TextAccessoryTypeLightStreet,
 			TextAccessoryTypeOnOff,
 			TextAccessoryTypeOnOn,
 			TextAccessoryTypeOnPush,
