@@ -123,7 +123,7 @@ int main (int argc, char* argv[])
 	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
 
 	const bool silent = daemonize || argumentHandler.GetArgumentBool('s');
-	if (silent == false)
+	if (!silent)
 	{
 		logger->AddConsoleLogger();
 	}
@@ -139,7 +139,7 @@ int main (int argc, char* argv[])
 	logger->Info(Languages::TextCompileDate, Utils::Utils::TimestampToDate(GetVersionInfoCompileTimestamp()));
 	logger->Info(Languages::TextGitHash, GetVersionInfoGitHash());
 	logger->Info(Languages::TextGitDate, Utils::Utils::TimestampToDate(GetVersionInfoGitTimestamp()));
-	unsigned int changedFiles = GetVersionInfoGitDirty();
+	const unsigned int changedFiles = GetVersionInfoGitDirty();
 	if (changedFiles)
 	{
 		logger->Info(Languages::TextGitDirty, changedFiles);
@@ -168,34 +168,49 @@ int main (int argc, char* argv[])
 	unsigned int logKeepBackups = config.getIntValue("logkeepbackups", 10);
 	Utils::Utils::RemoveOldBackupFiles(logger, logFileName, logKeepBackups);
 
-	Manager m(config);
 
-	// wait for q followed by \n or SIGINT or SIGTERM
 	char input = 0;
 
-	do
 	{
-		if (silent == true)
+		// the main program is running in the manager.
+		Manager m(config);
+
+		// wait for q or r followed by \n or SIGINT or SIGTERM
+		do
 		{
-			Utils::Utils::SleepForSeconds(1);
-		}
-		else
-		{
-			struct timeval tv;
-			tv.tv_sec = 1;
-			tv.tv_usec = 0;
-			fd_set set;
-			FD_ZERO(&set);
-			FD_SET(STDIN_FILENO, &set);
-			int ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
-			if (ret > 0 && FD_ISSET(STDIN_FILENO, &set))
+			if (silent == true)
 			{
-				__attribute__((unused)) size_t unused = read(STDIN_FILENO, &input, sizeof(input));
+				Utils::Utils::SleepForSeconds(1);
 			}
-		}
-	} while ((input != 'q') && !isShutdownRunning());
+			else
+			{
+				struct timeval tv;
+				tv.tv_sec = 1;
+				tv.tv_usec = 0;
+				fd_set set;
+				FD_ZERO(&set);
+				FD_SET(STDIN_FILENO, &set);
+				int ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
+				if (ret > 0 && FD_ISSET(STDIN_FILENO, &set))
+				{
+					__attribute__((unused)) size_t unused = read(STDIN_FILENO, &input, sizeof(input));
+				}
+			}
+		} while ((input != 'q') && (input != 'r') && !isShutdownRunning());
 
-	logger->Info(Languages::TextStoppingRailControl);
-	return EXIT_SUCCESS;
+		logger->Info(Languages::TextStoppingRailControl);
+
+		// here the destructor of manager is called and RailControl is shut down
+	}
+
+	if (input == 'r')
+	{
+		// restart RailControl
+		return execv(argv[0], argv);
+	}
+	else
+	{
+		// quit RailControl
+		return EXIT_SUCCESS;
+	}
 }
-
