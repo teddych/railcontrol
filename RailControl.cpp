@@ -40,16 +40,13 @@ along with RailControl; see the file LICENCE. If not see
 using std::vector;
 using std::string;
 
-static volatile unsigned char stopSignalCounter;
-static const unsigned char maxStopSignalCounter = 3;
-
 void killRailControlIfNeeded(Logger::Logger* logger)
 {
-	if (++stopSignalCounter < maxStopSignalCounter)
+	if (++stopSignalCounter < MaxStopSignalCounter)
 	{
 		return;
 	}
-	logger->Info(Languages::TextReceivedSignalKill, maxStopSignalCounter);
+	logger->Info(Languages::TextReceivedSignalKill, MaxStopSignalCounter);
 	exit(1);
 }
 
@@ -67,16 +64,6 @@ void stopRailControlWebserver()
 	killRailControlIfNeeded(logger);
 }
 
-bool isShutdownRunning()
-{
-	return stopSignalCounter > 0;
-}
-
-bool isKillRunning()
-{
-	return stopSignalCounter > 1;
-}
-
 int main (int argc, char* argv[])
 {
 	std::map<std::string,char> argumentMap;
@@ -88,7 +75,7 @@ int main (int argc, char* argv[])
 	ArgumentHandler argumentHandler(argc, argv, argumentMap, 'c');
 
 	const bool help = argumentHandler.GetArgumentBool('h');
-	if (help == true)
+	if (help)
 	{
 		std::cout << "Usage: " << argv[0] << " <options>" << std::endl;
 		std::cout << "Options:" << std::endl;
@@ -101,7 +88,7 @@ int main (int argc, char* argv[])
 	}
 
 	const bool daemonize = argumentHandler.GetArgumentBool('d');
-	if (daemonize == true)
+	if (daemonize)
 	{
 		pid_t pid = fork();
 		if (pid > 0)
@@ -139,11 +126,13 @@ int main (int argc, char* argv[])
 	logger->Info(Languages::TextCompileDate, Utils::Utils::TimestampToDate(GetVersionInfoCompileTimestamp()));
 	logger->Info(Languages::TextGitHash, GetVersionInfoGitHash());
 	logger->Info(Languages::TextGitDate, Utils::Utils::TimestampToDate(GetVersionInfoGitTimestamp()));
+
 	const unsigned int changedFiles = GetVersionInfoGitDirty();
 	if (changedFiles)
 	{
 		logger->Info(Languages::TextGitDirty, changedFiles);
 	}
+
 	logger->Info(Languages::TextStartArgument, argv[0]);
 
 	const string configFileDefaultName("railcontrol.conf");
@@ -163,14 +152,13 @@ int main (int argc, char* argv[])
 	{
 		Utils::Utils::CopyFile(logger, "railcontrol.conf.dist", configFileDefaultName);
 	}
+
 	Config config(configFileName);
 
 	unsigned int logKeepBackups = config.getIntValue("logkeepbackups", 10);
 	Utils::Utils::RemoveOldBackupFiles(logger, logFileName, logKeepBackups);
 
-
 	char input = 0;
-
 	{
 		// the main program is running in the manager.
 		Manager m(config);
@@ -178,7 +166,7 @@ int main (int argc, char* argv[])
 		// wait for q or r followed by \n or SIGINT or SIGTERM
 		do
 		{
-			if (silent == true)
+			if (silent)
 			{
 				Utils::Utils::SleepForSeconds(1);
 			}
@@ -200,8 +188,7 @@ int main (int argc, char* argv[])
 
 		logger->Info(Languages::TextStoppingRailControl);
 
-		// here the destructor of manager is called and RailControl is shut down
-	}
+	}	// here the destructor of manager is called and RailControl is shut down
 
 	if (input == 'r')
 	{
