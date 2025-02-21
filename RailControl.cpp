@@ -50,17 +50,17 @@ void killRailControlIfNeeded(Logger::Logger* logger)
 	exit(1);
 }
 
-void stopRailControlSignal(int signo)
+void shutdownRailControlSignal(int signo)
 {
 	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
-	logger->Info(Languages::TextStoppingRequestedBySignal, signo);
+	logger->Info(Languages::TextShutdownRequestedBySignal, signo);
 	killRailControlIfNeeded(logger);
 }
 
-void stopRailControlWebserver()
+void shutdownRailControlWebserver()
 {
 	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
-	logger->Info(Languages::TextStoppingRequestedByWebClient);
+	logger->Info(Languages::TextShutdownRequestedByWebClient);
 	killRailControlIfNeeded(logger);
 }
 
@@ -101,8 +101,8 @@ int main (int argc, char* argv[])
 	}
 
 	stopSignalCounter = 0;
-	signal(SIGINT, stopRailControlSignal);
-	signal(SIGTERM, stopRailControlSignal);
+	signal(SIGINT, shutdownRailControlSignal);
+	signal(SIGTERM, shutdownRailControlSignal);
 
 	const string RailControl = "RailControl";
 	Utils::Utils::SetThreadName(RailControl);
@@ -186,7 +186,7 @@ int main (int argc, char* argv[])
 			}
 		} while ((input != 'q') && (input != 'r') && !isShutdownRunning());
 
-		logger->Info(Languages::TextStoppingRailControl);
+		logger->Info(Languages::TextShutdownRailControl);
 
 	}	// here the destructor of manager is called and RailControl is shut down
 
@@ -197,7 +197,7 @@ int main (int argc, char* argv[])
 	}
 	else
 	{
-		// quit RailControl
+		// exit RailControl
 		return EXIT_SUCCESS;
 	}
 }

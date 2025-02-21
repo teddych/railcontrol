@@ -26,9 +26,9 @@ static const unsigned char MaxStopSignalCounter = 3;
 
 void killRailControlIfNeeded(Logger::Logger* logger);
 
-void stopRailControlSignal(int);
+void shutdownRailControlSignal(int);
 
-void stopRailControlWebserver();
+void shutdownRailControlWebserver();
 
 inline bool isShutdownRunning()
 {
