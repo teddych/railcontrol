@@ -1191,7 +1191,7 @@ void Manager::AccessoryBaseState(const ControlType controlType,
 	const Address address,
 	const DataModel::AccessoryState state)
 {
-	Accessory* accessory = GetAccessory(controlID, protocol, address);
+	Accessory* accessory = GetAccessory(controlID, protocol, address, static_cast<AddressPort>(state));
 	if (accessory)
 	{
 		AccessoryState(controlType, accessory, accessory->CalculateInvertedAccessoryState(state), true);
@@ -1307,16 +1307,35 @@ Accessory* Manager::GetAccessory(const AccessoryID accessoryID) const
 	return accessories.at(accessoryID);
 }
 
-Accessory* Manager::GetAccessory(const ControlID controlID, const Protocol protocol, const Address address) const
+Accessory* Manager::GetAccessory(const ControlID controlID,
+	const Protocol protocol,
+	const Address address,
+	const AddressPort port) const
 {
 	std::lock_guard<std::mutex> guard(accessoryMutex);
-	for (auto& accessory : accessories)
+	for (auto& a : accessories)
 	{
-		if (accessory.second->GetControlID() == controlID
-			&& accessory.second->GetProtocol() == protocol
-			&& accessory.second->GetAddress() == address)
+		Accessory* accessory = a.second;
+		if (accessory->GetControlID() == controlID
+			&& accessory->GetProtocol() == protocol
+			&& accessory->GetAddress() == address)
 		{
-			return accessory.second;
+			switch (accessory->GetAccessoryType() & DataModel::AccessoryTypeConnectionMask)
+			{
+				case AccessoryTypeOnOn:
+					return accessory;
+
+				case AccessoryTypeOnPush:
+				case AccessoryTypeOnOff:
+					if (accessory->GetPort() == port)
+					{
+						return accessory;
+					}
+					break;
+
+				default:
+					break;
+			}
 		}
 	}
 	return nullptr;
