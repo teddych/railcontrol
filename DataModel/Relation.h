@@ -48,7 +48,7 @@ namespace DataModel
 				RelationTypeRouteAtLock       = (ObjectTypeRoute << 3),
 				RelationTypeRouteAtUnlock     = (ObjectTypeRoute << 3) + 1,
 				RelationTypeClusterTrack      = (ObjectTypeCluster << 3),
-				RelationTypeMultipleUnitSlave = (ObjectTypeMultipleUnit << 3),
+				RelationTypeMultipleUnitLoco  = (ObjectTypeMultipleUnit << 3),
 			};
 
 			typedef unsigned short Data;

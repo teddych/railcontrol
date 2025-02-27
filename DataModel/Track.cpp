@@ -70,6 +70,8 @@ namespace DataModel
 		str += LockableItem::Serialize();
 		str += ";tracktype=";
 		str += to_string(trackType);
+		str += ";master=";
+		str += to_string(masterID);
 		return str;
 	}
 
@@ -135,6 +137,7 @@ namespace DataModel
 			default:
 				break;
 		}
+		masterID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "master", TrackNone));
 		return true;
 	}
 
@@ -407,13 +410,46 @@ namespace DataModel
 		return true;
 	}
 
-	bool Track::RemoveRoute(Route* route)
+	bool Track::DeleteRoute(Route* route)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
 		size_t sizeBefore = routes.size();
 		routes.erase(std::remove(routes.begin(), routes.end(), route), routes.end());
 		size_t sizeAfter = routes.size();
 		return sizeBefore > sizeAfter;
+	}
+
+	bool Track::AddSlave(Track* track)
+	{
+		if (masterID != TrackNone)
+		{
+			return false;
+		}
+
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		for (auto& slave : slaves)
+		{
+			if (slave == track)
+			{
+				return false;
+			}
+		}
+		slaves.push_back(track);
+		return true;
+	}
+
+	bool Track::DeleteSlave(const Track* track)
+	{
+		std::lock_guard<std::mutex> Guard(updateMutex);
+		size_t sizeBefore = slaves.size();
+		slaves.erase(std::remove(slaves.begin(), slaves.end(), track), slaves.end());
+		size_t sizeAfter = slaves.size();
+		return sizeBefore > sizeAfter;
+	}
+
+	void Track::UpdateMaster()
+	{
+		masterTrack = (masterID == TrackNone ? nullptr : manager->GetTrack(masterID));
 	}
 
 	SelectRouteApproach Track::GetSelectRouteApproachCalculated() const

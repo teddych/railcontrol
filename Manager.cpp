@@ -161,9 +161,16 @@ Manager::Manager(Config& config)
 	}
 
 	storage->AllTracks(tracks);
-	for (auto& track : tracks)
+	for (auto& t : tracks)
 	{
-		logger->Info(Languages::TextLoadedTrack, track.second->GetID(), track.second->GetName());
+		Track* track = t.second;
+		track->UpdateMaster();
+		Track* master = track->GetMaster();
+		if (master)
+		{
+			master->AddSlave(track);
+		}
+		logger->Info(Languages::TextLoadedTrack, track->GetID(), track->GetName());
 	}
 
 	storage->AllSwitches(switches);
@@ -1993,13 +2000,25 @@ const map<string,DataModel::Track*> Manager::TrackListByName() const
 	return out;
 }
 
-const map<string,TrackID> Manager::TrackListIdByName() const
+const map<string,TrackID> Manager::TrackListIdByName(const TrackID excludeTrackID) const
 {
 	map<string,TrackID> out;
 	std::lock_guard<std::mutex> guard(trackMutex);
-	for (auto& track : tracks)
+	for (auto& t : tracks)
 	{
-		out[track.second->GetName()] = track.second->GetID();
+		Track* track = t.second;
+		const TrackID trackID = track->GetID();
+		if (trackID == excludeTrackID)
+		{
+			continue;
+		}
+
+		// exclude slave tracks
+		if (track->GetMaster())
+		{
+			continue;
+		}
+		out[track->GetName()] = trackID;
 	}
 	return out;
 }
@@ -2014,6 +2033,7 @@ bool Manager::TrackSave(TrackID trackID,
 	const LayoutItemSize height,
 	const LayoutRotation rotation,
 	const DataModel::TrackType trackType,
+	const TrackID master,
 	const vector<Relation*>& newFeedbacks,
 	const vector<Relation*>& newSignals,
 	const DataModel::SelectRouteApproach selectRouteApproach,
@@ -2062,6 +2082,17 @@ bool Manager::TrackSave(TrackID trackID,
 	track->SetPosY(posY);
 	track->SetPosZ(posZ);
 	track->SetTrackType(trackType);
+	Track* oldMaster = track->GetMaster();
+	if (oldMaster)
+	{
+		oldMaster->DeleteSlave(track);
+	}
+	Track* newMaster = GetTrack(master);
+	if (newMaster && !newMaster->GetMaster() && newMaster->AddSlave(track))
+	{
+		track->SetMaster(newMaster);
+		track->SetName(newMaster->GetName() + "_ext_" + to_string(trackID));
+	}
 	track->AssignFeedbacks(newFeedbacks);
 	track->AssignSignals(newSignals);
 	track->SetSelectRouteApproach(selectRouteApproach);
@@ -2606,7 +2637,7 @@ bool Manager::RouteSave(RouteID routeID,
 	Track* oldTrack = GetTrack(route->GetFromTrack());
 	if (oldTrack)
 	{
-		oldTrack->RemoveRoute(route);
+		oldTrack->DeleteRoute(route);
 		TrackSave(oldTrack);
 	}
 
@@ -2679,7 +2710,7 @@ bool Manager::RouteSave(RouteID routeID,
 		route->SetFollowUpRoute(RouteNone);
 	}
 
-	//Add new route
+	// Add new route
 	Track* newTrack = GetTrack(route->GetFromTrack());
 	if (newTrack)
 	{
@@ -3749,10 +3780,17 @@ void Manager::TrackSetLocoOrientation(const TrackID trackID, const Orientation o
 
 void Manager::TrackPublishState(const DataModel::Track* track)
 {
-	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto& control : controls)
 	{
-		control.second->TrackState(track);
+		std::lock_guard<std::mutex> guard(controlMutex);
+		for (auto& control : controls)
+		{
+			control.second->TrackState(track);
+		}
+	}
+	vector<Track*> slaves = track->GetSlaves();
+	for (Track* slave : slaves)
+	{
+		TrackPublishState(slave);
 	}
 }
 

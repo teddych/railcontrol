@@ -450,6 +450,8 @@ class Languages
 			TextMaerklinLeft,
 			TextMaerklinMotorola,
 			TextMaerklinRight,
+			TextMainTrack,
+			TextMainTrackHint,
 			TextManager,
 			TextMaster,
 			TextMaxSpeed,

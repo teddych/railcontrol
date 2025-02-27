@@ -450,6 +450,8 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextMaerklinLeft */ { "Märklin DSS left", "Märklin DKW links", "Märklin DCD izquierda" },
 /* TextMaerklinMotorola */ { "Märklin Motorola", "Märklin Motorola", "Märklin Motorola" },
 /* TextMaerklinRight */ { "Märklin DSS right", "Märklin DKW rechts", "Märklin DCD derecha" },
+/* TextMainTrack */ { "Main track", "Hauptgleis", "Vía principal" },
+/* TextMainTrackHint */ { "If a main track is selected, then this track behaves identically to the main track and is its extension", "Wenn ein Hauptgleis ausgewählt wird, dann verhält sich dieses Gleis identisch wie das Hauptgleis und ist dessen Verlängerung", "Si se selecciona una vía principal, esta vía se comporta de forma idéntica a la vía principal y es su extensión" },
 /* TextManager */ { "Manager", "Manager", "Manager" },
 /* TextMaster */ { "Master device", "Hauptgerät", "Dispositivo principal" },
 /* TextMaxSpeed */ { "Maximum speed", "Maximale Geschwindigkeit", "Velocidad máxima" },

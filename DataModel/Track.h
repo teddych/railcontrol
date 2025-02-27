@@ -73,6 +73,8 @@ namespace DataModel
 				LockableItem(),
 				manager(manager),
 				trackType(TrackTypeStraight),
+				masterID(TrackNone),
+				masterTrack(nullptr),
 				cluster(nullptr),
 				selectRouteApproach(SelectRouteSystemDefault),
 				trackState(DataModel::Feedback::FeedbackStateFree),
@@ -94,8 +96,8 @@ namespace DataModel
 
 			inline ~Track()
 			{
-				DeleteSignals();
 				DeleteFeedbacks();
+				DeleteSignals();
 			}
 
 			inline ObjectType GetObjectType() const override
@@ -104,6 +106,7 @@ namespace DataModel
 			}
 
 			std::string Serialize() const override;
+
 			bool Deserialize(const std::string& serialized) override;
 
 			inline std::string GetLayoutType() const override
@@ -129,7 +132,8 @@ namespace DataModel
 			}
 
 			bool AddRoute(Route* route);
-			bool RemoveRoute(Route* route);
+
+			bool DeleteRoute(Route* route);
 
 			inline SelectRouteApproach GetSelectRouteApproach() const
 			{
@@ -179,7 +183,7 @@ namespace DataModel
 				this->blocked = blocked;
 			}
 
-			inline ObjectIdentifier GetLocoBaseDelayed() const
+			inline const ObjectIdentifier& GetLocoBaseDelayed() const
 			{
 				return this->locoBaseDelayed;
 			}
@@ -244,17 +248,79 @@ namespace DataModel
 			void DeleteFeedbacks();
 			void AssignFeedbacks(const std::vector<DataModel::Relation*>& newFeedbacks);
 
-			inline const std::vector<DataModel::Relation*>& GetSignals() const
+			inline const std::vector<DataModel::Relation*>& GetFeedbacks() const
 			{
-				return signals;
+				return feedbacks;
 			}
 
 			void DeleteSignals();
 			void AssignSignals(const std::vector<DataModel::Relation*>& newSignals);
 
-			inline const std::vector<DataModel::Relation*>& GetFeedbacks() const
+			inline const std::vector<DataModel::Relation*>& GetSignals() const
 			{
-				return feedbacks;
+				return signals;
+			}
+
+			bool AddSlave(Track* track);
+
+			bool DeleteSlave(const Track* track);
+
+			inline std::vector<Track*> GetSlaves() const
+			{
+				return slaves;
+			}
+
+			inline Track* GetMaster() const
+			{
+				return masterTrack;
+			}
+
+			inline TrackID GetOwnMasterID() const
+			{
+				return masterID;
+			}
+
+			inline void SetMaster(Track* master)
+			{
+				masterTrack = master;
+				masterID = (masterTrack ? masterTrack->GetID() : TrackNone);
+			}
+
+			void UpdateMaster();
+
+			inline TrackID GetMasterID() const
+			{
+				return (masterTrack ? masterTrack->GetID() : GetID());
+			}
+
+			inline const std::string& GetMasterName() const
+			{
+				return (masterTrack ? masterTrack->GetName() : GetName());
+			}
+
+			inline const std::string& GetMasterDisplayName() const
+			{
+				return (masterTrack ? masterTrack->GetDisplayName() : GetDisplayName());
+			}
+
+			inline DataModel::Feedback::FeedbackState GetMasterFeedbackStateDelayed() const
+			{
+				return (masterTrack ? masterTrack->GetFeedbackStateDelayed() : GetFeedbackStateDelayed());
+			}
+
+			inline bool GetMasterBlocked() const
+			{
+				return (masterTrack ? masterTrack->GetBlocked() : GetBlocked());
+			}
+
+			inline Orientation GetMasterLocoOrientation() const
+			{
+				return (masterTrack ? masterTrack->GetLocoOrientation() : GetLocoOrientation());
+			}
+
+			inline const ObjectIdentifier& GetMasterLocoBaseDelayed() const
+			{
+				return (masterTrack ? masterTrack->GetLocoBaseDelayed() : GetLocoBaseDelayed());
 			}
 
 		private:
@@ -269,6 +335,9 @@ namespace DataModel
 
 			Manager* manager;
 			TrackType trackType;
+			TrackID masterID;
+			Track* masterTrack;
+			std::vector<Track*> slaves;
 
 			mutable std::mutex updateMutex;
 			std::vector<DataModel::Relation*> feedbacks;

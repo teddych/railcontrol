@@ -412,7 +412,8 @@ class Manager
 		}
 
 		const std::map<std::string,DataModel::Track*> TrackListByName() const;
-		const std::map<std::string,TrackID> TrackListIdByName() const;
+
+		const std::map<std::string,TrackID> TrackListIdByName(const TrackID excludeTrackID = TrackNone) const;
 
 		inline void TrackSave(const DataModel::Track* track) const
 		{
@@ -434,6 +435,7 @@ class Manager
 			const DataModel::LayoutItem::LayoutItemSize width,
 			const DataModel::LayoutItem::LayoutRotation rotation,
 			const DataModel::TrackType trackType,
+			const TrackID master,
 			const std::vector<DataModel::Relation*>& newFeedbacks,
 			const std::vector<DataModel::Relation*>& newSignals,
 			const DataModel::SelectRouteApproach selectRouteApproach,
