@@ -23,6 +23,9 @@ OBJ=Storage/sqlite/sqlite3.o $(CXXOBJ) $(COBJ)
 all: $(OBJ)
 	$(CXX) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 
+strip: all
+	strip railcontrol
+
 dist: all
 	strip railcontrol
 	mkdir $(TMPDIR)
@@ -54,6 +57,7 @@ amalgamation.cpp:
 
 amalgamation: amalgamation.o Version.cpp Storage/sqlite/sqlite3.o $(COBJ)
 	$(CXX) -g amalgamation.o Storage/sqlite/sqlite3.o Hardware/zlib/*.o -o railcontrol $(LIBSAMALGAMATION)
+	strip railcontrol
 	rm -f amalgamation.o
 	rm -f amalgamation.cpp
 
