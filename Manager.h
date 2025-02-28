@@ -435,7 +435,7 @@ class Manager
 			const DataModel::LayoutItem::LayoutItemSize width,
 			const DataModel::LayoutItem::LayoutRotation rotation,
 			const DataModel::TrackType trackType,
-			const TrackID master,
+			const TrackID main,
 			const std::vector<DataModel::Relation*>& newFeedbacks,
 			const std::vector<DataModel::Relation*>& newSignals,
 			const DataModel::SelectRouteApproach selectRouteApproach,

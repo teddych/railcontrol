@@ -117,7 +117,7 @@ namespace Server { namespace Web
 		LayoutItemSize height = Utils::Utils::GetIntegerMapEntry(arguments, "length", DataModel::LayoutItem::Height1);
 		LayoutRotation rotation = Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0);
 		DataModel::TrackType type = DataModel::TrackTypeStraight;
-		TrackID master = TrackNone;
+		TrackID main = TrackNone;
 		vector<Relation*> feedbacks;
 		vector<Relation*> signals;
 		Cluster* cluster = nullptr;
@@ -138,7 +138,7 @@ namespace Server { namespace Web
 				height = track->GetHeight();
 				rotation = track->GetRotation();
 				type = track->GetTrackType();
-				master = track->GetOwnMasterID();
+				main = track->GetOwnMainID();
 				feedbacks = track->GetFeedbacks();
 				signals = track->GetSignals();
 				cluster = track->GetCluster();
@@ -168,7 +168,7 @@ namespace Server { namespace Web
 		HtmlTag tabMenu("div");
 		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("main", Languages::TextBasic, true));
 		tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("position", Languages::TextPosition));
-		if (master != TrackNone)
+		if (main != TrackNone)
 		{
 			tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("feedbacks", Languages::TextFeedbacks).AddClass("hidden"));
 			tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("signals", Languages::TextSignals).AddClass("hidden"));
@@ -203,12 +203,12 @@ namespace Server { namespace Web
 		mainContent.AddId("tab_main");
 		mainContent.AddClass("tab_content");
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("tracktype", Languages::TextType, typeOptions, type).AddAttribute("onchange", "onChangeTrackTypeMainTrack();return false;"));
-		mainContent.AddChildTag(HtmlTagSelectTrack("master", Languages::TextMainTrack, Languages::TextMainTrackHint, master, trackID, "onChangeTrackTypeMainTrack();return false;"));
+		mainContent.AddChildTag(HtmlTagSelectTrack("main", Languages::TextMainTrack, Languages::TextMainTrackHint, main, trackID, "onChangeTrackTypeMainTrack();return false;"));
 
 		HtmlTag i_name("div");
 		i_name.AddId("i_name");
 		i_name.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
-		if (master != TrackNone)
+		if (main != TrackNone)
 		{
 			i_name.AddClass("hidden");
 		}
@@ -217,7 +217,7 @@ namespace Server { namespace Web
 		HtmlTag i_showName("div");
 		i_showName.AddId("i_showname");
 		i_showName.AddChildTag(HtmlTagInputCheckboxWithLabel("showname", Languages::TextShowName, "true", showName).AddAttribute("onchange", "onChangeTrackTypeMainTrack();return false;"));
-		if ((type != DataModel::TrackTypeStraight) && (master != TrackNone))
+		if ((type != DataModel::TrackTypeStraight) && (main != TrackNone))
 		{
 			i_showName.AddClass("hidden");
 		}
@@ -226,7 +226,7 @@ namespace Server { namespace Web
 		HtmlTag i_displayName("div");
 		i_displayName.AddId("i_displayname");
 		i_displayName.AddChildTag(HtmlTagInputTextWithLabel("displayname", Languages::TextDisplayName, displayName));
-		if ((master != TrackNone) || (type != DataModel::TrackTypeStraight) || (!showName))
+		if ((main != TrackNone) || (type != DataModel::TrackTypeStraight) || (!showName))
 		{
 			i_displayName.AddClass("hidden");
 		}
@@ -278,7 +278,7 @@ namespace Server { namespace Web
 		LayoutItemSize height;
 		const LayoutRotation rotation = Utils::Utils::GetIntegerMapEntry(arguments, "rotation", DataModel::LayoutItem::Rotation0);
 		const DataModel::TrackType type = static_cast<DataModel::TrackType>(Utils::Utils::GetIntegerMapEntry(arguments, "tracktype", DataModel::TrackTypeStraight));
-		const TrackID master = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "master", TrackNone));
+		const TrackID main = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "main", TrackNone));
 		switch (type)
 		{
 			case DataModel::TrackTypeTurn:
@@ -336,7 +336,7 @@ namespace Server { namespace Web
 			height,
 			rotation,
 			type,
-			master,
+			main,
 			feedbacks,
 			signals,
 			selectRouteApproach,

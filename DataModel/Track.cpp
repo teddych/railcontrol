@@ -70,8 +70,8 @@ namespace DataModel
 		str += LockableItem::Serialize();
 		str += ";tracktype=";
 		str += to_string(trackType);
-		str += ";master=";
-		str += to_string(masterID);
+		str += ";main=";
+		str += to_string(mainID);
 		return str;
 	}
 
@@ -137,7 +137,8 @@ namespace DataModel
 			default:
 				break;
 		}
-		masterID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "master", TrackNone));
+		mainID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "master", TrackNone)); // FIXME: 2025-02-28 can be removed later
+		mainID = static_cast<TrackID>(Utils::Utils::GetIntegerMapEntry(arguments, "main", mainID));
 		return true;
 	}
 
@@ -419,37 +420,37 @@ namespace DataModel
 		return sizeBefore > sizeAfter;
 	}
 
-	bool Track::AddSlave(Track* track)
+	bool Track::AddExtension(Track* track)
 	{
-		if (masterID != TrackNone)
+		if (mainID != TrackNone)
 		{
 			return false;
 		}
 
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		for (auto& slave : slaves)
+		for (auto& extension : extensions)
 		{
-			if (slave == track)
+			if (extension == track)
 			{
 				return false;
 			}
 		}
-		slaves.push_back(track);
+		extensions.push_back(track);
 		return true;
 	}
 
-	bool Track::DeleteSlave(const Track* track)
+	bool Track::DeleteExtension(const Track* track)
 	{
 		std::lock_guard<std::mutex> Guard(updateMutex);
-		size_t sizeBefore = slaves.size();
-		slaves.erase(std::remove(slaves.begin(), slaves.end(), track), slaves.end());
-		size_t sizeAfter = slaves.size();
+		size_t sizeBefore = extensions.size();
+		extensions.erase(std::remove(extensions.begin(), extensions.end(), track), extensions.end());
+		size_t sizeAfter = extensions.size();
 		return sizeBefore > sizeAfter;
 	}
 
-	void Track::UpdateMaster()
+	void Track::UpdateMain()
 	{
-		masterTrack = (masterID == TrackNone ? nullptr : manager->GetTrack(masterID));
+		mainTrack = (mainID == TrackNone ? nullptr : manager->GetTrack(mainID));
 	}
 
 	SelectRouteApproach Track::GetSelectRouteApproachCalculated() const

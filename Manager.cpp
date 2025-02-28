@@ -164,11 +164,11 @@ Manager::Manager(Config& config)
 	for (auto& t : tracks)
 	{
 		Track* track = t.second;
-		track->UpdateMaster();
-		Track* master = track->GetMaster();
-		if (master)
+		track->UpdateMain();
+		Track* main = track->GetMain();
+		if (main)
 		{
-			master->AddSlave(track);
+			main->AddExtension(track);
 		}
 		logger->Info(Languages::TextLoadedTrack, track->GetID(), track->GetName());
 	}
@@ -2013,8 +2013,8 @@ const map<string,TrackID> Manager::TrackListIdByName(const TrackID excludeTrackI
 			continue;
 		}
 
-		// exclude slave tracks
-		if (track->GetMaster())
+		// exclude extension tracks
+		if (track->GetMain())
 		{
 			continue;
 		}
@@ -2033,7 +2033,7 @@ bool Manager::TrackSave(TrackID trackID,
 	const LayoutItemSize height,
 	const LayoutRotation rotation,
 	const DataModel::TrackType trackType,
-	const TrackID master,
+	const TrackID main,
 	const vector<Relation*>& newFeedbacks,
 	const vector<Relation*>& newSignals,
 	const DataModel::SelectRouteApproach selectRouteApproach,
@@ -2082,16 +2082,16 @@ bool Manager::TrackSave(TrackID trackID,
 	track->SetPosY(posY);
 	track->SetPosZ(posZ);
 	track->SetTrackType(trackType);
-	Track* oldMaster = track->GetMaster();
-	if (oldMaster)
+	Track* oldMain = track->GetMain();
+	if (oldMain)
 	{
-		oldMaster->DeleteSlave(track);
+		oldMain->DeleteExtension(track);
 	}
-	Track* newMaster = GetTrack(master);
-	if (newMaster && !newMaster->GetMaster() && newMaster->AddSlave(track))
+	Track* newMain = GetTrack(main);
+	if (newMain && !newMain->GetMain() && newMain->AddExtension(track))
 	{
-		track->SetMaster(newMaster);
-		track->SetName(newMaster->GetName() + "_ext_" + to_string(trackID));
+		track->SetMain(newMain);
+		track->SetName(newMain->GetName() + "_ext_" + to_string(trackID));
 	}
 	track->AssignFeedbacks(newFeedbacks);
 	track->AssignSignals(newSignals);
@@ -3787,10 +3787,10 @@ void Manager::TrackPublishState(const DataModel::Track* track)
 			control.second->TrackState(track);
 		}
 	}
-	vector<Track*> slaves = track->GetSlaves();
-	for (Track* slave : slaves)
+	vector<Track*> extensions = track->GetExtensions();
+	for (Track* extension : extensions)
 	{
-		TrackPublishState(slave);
+		TrackPublishState(extension);
 	}
 }
 

@@ -73,8 +73,8 @@ namespace DataModel
 				LockableItem(),
 				manager(manager),
 				trackType(TrackTypeStraight),
-				masterID(TrackNone),
-				masterTrack(nullptr),
+				mainID(TrackNone),
+				mainTrack(nullptr),
 				cluster(nullptr),
 				selectRouteApproach(SelectRouteSystemDefault),
 				trackState(DataModel::Feedback::FeedbackStateFree),
@@ -126,7 +126,7 @@ namespace DataModel
 
 			bool SetFeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
 
-			inline DataModel::Feedback::FeedbackState GetFeedbackStateDelayed() const
+			inline DataModel::Feedback::FeedbackState GetStateDelayed() const
 			{
 				return trackStateDelayed;
 			}
@@ -261,66 +261,66 @@ namespace DataModel
 				return signals;
 			}
 
-			bool AddSlave(Track* track);
+			bool AddExtension(Track* track);
 
-			bool DeleteSlave(const Track* track);
+			bool DeleteExtension(const Track* track);
 
-			inline std::vector<Track*> GetSlaves() const
+			inline std::vector<Track*> GetExtensions() const
 			{
-				return slaves;
+				return extensions;
 			}
 
-			inline Track* GetMaster() const
+			inline Track* GetMain() const
 			{
-				return masterTrack;
+				return mainTrack;
 			}
 
-			inline TrackID GetOwnMasterID() const
+			inline TrackID GetOwnMainID() const
 			{
-				return masterID;
+				return mainID;
 			}
 
-			inline void SetMaster(Track* master)
+			inline void SetMain(Track* main)
 			{
-				masterTrack = master;
-				masterID = (masterTrack ? masterTrack->GetID() : TrackNone);
+				mainTrack = main;
+				mainID = (mainTrack ? mainTrack->GetID() : TrackNone);
 			}
 
-			void UpdateMaster();
+			void UpdateMain();
 
-			inline TrackID GetMasterID() const
+			inline TrackID GetMainID() const
 			{
-				return (masterTrack ? masterTrack->GetID() : GetID());
+				return (mainTrack ? mainTrack->GetID() : GetID());
 			}
 
-			inline const std::string& GetMasterName() const
+			inline const std::string& GetMainName() const
 			{
-				return (masterTrack ? masterTrack->GetName() : GetName());
+				return (mainTrack ? mainTrack->GetName() : GetName());
 			}
 
-			inline const std::string& GetMasterDisplayName() const
+			inline const std::string& GetMainDisplayName() const
 			{
-				return (masterTrack ? masterTrack->GetDisplayName() : GetDisplayName());
+				return (mainTrack ? mainTrack->GetDisplayName() : GetDisplayName());
 			}
 
-			inline DataModel::Feedback::FeedbackState GetMasterFeedbackStateDelayed() const
+			inline DataModel::Feedback::FeedbackState GetMainStateDelayed() const
 			{
-				return (masterTrack ? masterTrack->GetFeedbackStateDelayed() : GetFeedbackStateDelayed());
+				return (mainTrack ? mainTrack->GetStateDelayed() : GetStateDelayed());
 			}
 
-			inline bool GetMasterBlocked() const
+			inline bool GetMainBlocked() const
 			{
-				return (masterTrack ? masterTrack->GetBlocked() : GetBlocked());
+				return (mainTrack ? mainTrack->GetBlocked() : GetBlocked());
 			}
 
-			inline Orientation GetMasterLocoOrientation() const
+			inline Orientation GetMainLocoOrientation() const
 			{
-				return (masterTrack ? masterTrack->GetLocoOrientation() : GetLocoOrientation());
+				return (mainTrack ? mainTrack->GetLocoOrientation() : GetLocoOrientation());
 			}
 
-			inline const ObjectIdentifier& GetMasterLocoBaseDelayed() const
+			inline const ObjectIdentifier& GetMainLocoBaseDelayed() const
 			{
-				return (masterTrack ? masterTrack->GetLocoBaseDelayed() : GetLocoBaseDelayed());
+				return (mainTrack ? mainTrack->GetLocoBaseDelayed() : GetLocoBaseDelayed());
 			}
 
 		private:
@@ -335,9 +335,9 @@ namespace DataModel
 
 			Manager* manager;
 			TrackType trackType;
-			TrackID masterID;
-			Track* masterTrack;
-			std::vector<Track*> slaves;
+			TrackID mainID;
+			Track* mainTrack;
+			std::vector<Track*> extensions;
 
 			mutable std::mutex updateMutex;
 			std::vector<DataModel::Relation*> feedbacks;
