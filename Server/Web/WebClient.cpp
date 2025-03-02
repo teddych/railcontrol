@@ -1300,11 +1300,10 @@ namespace Server { namespace Web
 	{
 		HtmlTag content("div");
 		content.AddId("position");;
-		content.AddChildTag(HtmlTagInputIntegerWithLabel("posx", Languages::TextPosX, posx, 0, 255));
-		content.AddChildTag(HtmlTagInputIntegerWithLabel("posy", Languages::TextPosY, posy, 0, 255));
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("posx", Languages::TextPosX, Languages::TextHintPositionMove, posx, 0, 255));
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("posy", Languages::TextPosY, Languages::TextHintPositionMove, posy, 0, 255));
 		map<string,LayerID> layerList = manager.LayerListByName();
 		content.AddChildTag(HtmlTagSelectWithLabel("posz", Languages::TextPosZ, layerList, posz));
-		content.AddChildTag(HtmlTag("p").AddContent(Languages::GetText(Languages::TextHint)).AddContent(HtmlTag("br")).AddContent(Languages::GetText(Languages::TextHintPositionMove)));
 		return content;
 	}
 

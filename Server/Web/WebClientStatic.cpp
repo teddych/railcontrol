@@ -246,8 +246,7 @@ namespace Server { namespace Web
 		rotationOptions[DataModel::LayoutItem::Rotation90] = Languages::Text90DegClockwise;
 		rotationOptions[DataModel::LayoutItem::Rotation180] = Languages::Text180Deg;
 		rotationOptions[DataModel::LayoutItem::Rotation270] = Languages::Text90DegAntiClockwise;
-		content.AddChildTag(HtmlTagSelectWithLabel("rotation", Languages::TextRotation, rotationOptions, rotation));
-		content.AddChildTag(HtmlTag("p").AddContent(Languages::GetText(Languages::TextHint)).AddContent(HtmlTag("br")).AddContent(Languages::GetText(Languages::TextHintPositionRotate)));
+		content.AddChildTag(HtmlTagSelectWithLabel("rotation", Languages::TextRotation, Languages::TextHintPositionRotate, rotationOptions, rotation));
 		return content;
 	}
 

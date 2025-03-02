@@ -29,7 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 class Languages
 {
 	public:
-		enum TextSelector : unsigned int
+		enum TextSelector : unsigned short
 		{
 			Text180Deg,
 			Text90DegAntiClockwise,
