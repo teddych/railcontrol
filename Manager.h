@@ -413,6 +413,8 @@ class Manager
 
 		const std::map<std::string,DataModel::Track*> TrackListByName() const;
 
+		const std::map<std::string,DataModel::Track*> TrackListMasterByName() const;
+
 		const std::map<std::string,TrackID> TrackListIdByName(const TrackID excludeTrackID = TrackNone) const;
 
 		inline void TrackSave(const DataModel::Track* track) const

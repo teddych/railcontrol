@@ -2000,6 +2000,21 @@ const map<string,DataModel::Track*> Manager::TrackListByName() const
 	return out;
 }
 
+const map<string,DataModel::Track*> Manager::TrackListMasterByName() const
+{
+	map<string,DataModel::Track*> out;
+	std::lock_guard<std::mutex> guard(trackMutex);
+	for (auto& t : tracks)
+	{
+		Track* track = t.second;
+		if (track && !track->GetMain())
+		{
+			out[track->GetName()] = track;
+		}
+	}
+	return out;
+}
+
 const map<string,TrackID> Manager::TrackListIdByName(const TrackID excludeTrackID) const
 {
 	map<string,TrackID> out;

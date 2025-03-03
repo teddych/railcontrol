@@ -196,7 +196,7 @@ namespace Server { namespace Web
 	{
 		map<string, ObjectID> trackOptions;
 
-		map<string, Track*> allTracks = manager.TrackListByName();
+		map<string, Track*> allTracks = manager.TrackListMasterByName();
 		for (auto& track : allTracks)
 		{
 			Cluster* clusterOfTrack = track.second->GetCluster();
