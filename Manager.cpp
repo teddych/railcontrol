@@ -3789,7 +3789,7 @@ void Manager::TrackSetLocoOrientation(const TrackID trackID, const Orientation o
 	{
 		return;
 	}
-	track->SetLocoOrientation(orientation);
+	track->SetLocoBaseOrientation(orientation);
 	TrackPublishState(track);
 }
 

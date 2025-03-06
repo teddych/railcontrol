@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <string>
 #include <vector>
 
+#include "DataModel/Relation.h"
 #include "Manager.h"
 
 namespace Server { namespace Web
@@ -40,12 +41,24 @@ namespace Server { namespace Web
 			{}
 
 			void HandleClusterList();
+
+			static HtmlTag HtmlTagSelectTrackEntry(const std::string& priority,
+				const ObjectID objectId,
+				const std::map<std::string,ObjectID>& options);
+
+			HtmlTag HtmlTagSelectTrack(const std::vector<DataModel::Relation*>& relations,
+				const std::map<std::string,ObjectID>& options,
+				const bool allowNew = true) const;
+
 			void HandleClusterEdit(const std::map<std::string,std::string>& arguments);
+
 			void HandleClusterSave(const std::map<std::string,std::string>& arguments);
+
 			void HandleClusterAskDelete(const std::map<std::string,std::string>& arguments);
+
 			void HandleClusterDelete(const std::map<std::string,std::string>& arguments);
+
 			std::map<std::string,ObjectID> GetTrackOptions(const ClusterID clusterId = ClusterNone) const;
-			std::map<std::string,ObjectID> GetSignalOptions(const std::vector<DataModel::Relation*>&) const;
 
 		private:
 			Manager& manager;

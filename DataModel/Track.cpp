@@ -49,7 +49,7 @@ namespace DataModel
 		str += ";trackstatedelayed=";
 		str += to_string(trackStateDelayed);
 		str += ";locoorientation=";
-		str += to_string(locoOrientation);
+		str += to_string(locoBaseOrientation);
 		str += ";blocked=";
 		str += to_string(blocked);
 		str += ";locodelayed=";
@@ -109,7 +109,7 @@ namespace DataModel
 		selectRouteApproach = static_cast<SelectRouteApproach>(Utils::Utils::GetIntegerMapEntry(arguments, "selectrouteapproach", SelectRouteSystemDefault));
 		trackState = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "trackstate", DataModel::Feedback::FeedbackStateFree));
 		trackStateDelayed = static_cast<DataModel::Feedback::FeedbackState>(Utils::Utils::GetBoolMapEntry(arguments, "trackstatedelayed", trackState));
-		locoOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "locoorientation", OrientationRight));
+		locoBaseOrientation = static_cast<Orientation>(Utils::Utils::GetBoolMapEntry(arguments, "locoorientation", OrientationRight));
 		blocked = Utils::Utils::GetBoolMapEntry(arguments, "blocked", false);
 		const ObjectIdentifier& locoBaseDelayedIdentifier = GetLocoBase();
 		locoBaseDelayed.SetObjectID(Utils::Utils::GetIntegerMapEntry(arguments, "locodelayed", locoBaseDelayedIdentifier.GetObjectID()));
@@ -218,15 +218,15 @@ namespace DataModel
 		}
 	}
 
-	bool Track::SetLocoOrientation(const Orientation orientation)
+	bool Track::SetLocoBaseOrientation(const Orientation orientation)
 	{
-		if (locoOrientation == orientation)
+		if (locoBaseOrientation == orientation)
 		{
 			return true;
 		}
-		locoOrientation = orientation;
 		if (!cluster)
 		{
+			locoBaseOrientation = orientation;
 			return true;
 		}
 		return cluster->SetLocoBaseOrientation(orientation, GetLocoBase());
@@ -471,7 +471,7 @@ namespace DataModel
 			std::lock_guard<std::mutex> Guard(updateMutex);
 			for (auto route : routes)
 			{
-				if (route->FromTrackOrientation(logger, GetID(), locoOrientation, loco, allowLocoTurn))
+				if (route->FromTrackOrientation(logger, GetID(), locoBaseOrientation, loco, allowLocoTurn))
 				{
 					validRoutes.push_back(route);
 				}

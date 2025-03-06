@@ -42,7 +42,7 @@ namespace Server { namespace Web
 
 		onClickMenuDiv.AddClass(reserved ? "loco_known" : "loco_unknown");
 		onClickMenuDiv.AddClass(blocked ? "track_blocked" : "track_unblocked");
-		onClickMenuDiv.AddClass(track->GetLocoOrientation() == OrientationRight ? "orientation_right" : "orientation_left");
+		onClickMenuDiv.AddClass(track->GetLocoBaseOrientation() == OrientationRight ? "orientation_right" : "orientation_left");
 
 		const string& trackName = track->GetMainName();
 		AddOnClickMenuEntry(trackName);

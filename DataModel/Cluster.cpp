@@ -58,9 +58,8 @@ namespace DataModel
 		return true;
 	}
 
-	bool Cluster::CanSetLocoBaseOrientation(const Orientation orientation, const ObjectIdentifier& locoBaseIdentifier)
+	bool Cluster::CanSetLocoBaseOrientationUnlocked(const Orientation orientation, const ObjectIdentifier& locoBaseIdentifier)
 	{
-		std::lock_guard<std::mutex> Guard(orientationMutex);
 		if (this->orientation == orientation)
 		{
 			return true;
@@ -68,48 +67,51 @@ namespace DataModel
 		for (auto relation : tracks)
 		{
 			Track* track = dynamic_cast<Track*>(relation->GetObject2());
-			if (track == nullptr)
+			if (!track)
 			{
 				return false;
 			}
-			if (track->GetLockState() == DataModel::LockableItem::LockStateFree)
+
+			if (track->GetLocoBaseOrientation() == orientation)
 			{
 				continue;
 			}
-			if (track->GetLocoBase() == locoBaseIdentifier)
+
+			const DataModel::LockableItem::LockState lockState = track->GetLockState();
+			if (lockState == DataModel::LockableItem::LockStateFree)
 			{
 				continue;
 			}
+
+			const ObjectIdentifier& locoBaseOfTrack = track->GetLocoBase();
+			if ((lockState == DataModel::LockableItem::LockStateReserved) && locoBaseOfTrack.IsSet() && (locoBaseOfTrack == locoBaseIdentifier))
+			{
+				continue;
+			}
+
 			return false;
 		}
 		return true;
 	}
 
-	bool Cluster::SetLocoBaseOrientation(const Orientation orientation, const ObjectIdentifier& locoBaseIdentifier)
+	bool Cluster::SetLocoBaseOrientation(const Orientation orientation,
+		const ObjectIdentifier& locoBaseIdentifier)
 	{
 		std::lock_guard<std::mutex> Guard(orientationMutex);
-		if (this->orientation == orientation)
+		if (!CanSetLocoBaseOrientationUnlocked(orientation, locoBaseIdentifier))
 		{
-			return true;
-		}
-		for (auto relation : tracks)
-		{
-			Track* track = dynamic_cast<Track*>(relation->GetObject2());
-			if (track == nullptr)
-			{
-				return false;
-			}
-			if (track->GetLockState() == DataModel::LockableItem::LockStateFree)
-			{
-				continue;
-			}
-			if (track->GetLocoBase() == locoBaseIdentifier)
-			{
-				continue;
-			}
 			return false;
 		}
 		this->orientation = orientation;
+		for (auto relation : tracks)
+		{
+			Track* track = dynamic_cast<Track*>(relation->GetObject2());
+			if (!track)
+			{
+				continue;
+			}
+			track->SetLocoBaseOrientationForce(orientation);
+		}
 		return true;
 	}
 

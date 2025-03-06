@@ -254,9 +254,9 @@ namespace Server { namespace Web
 
 		formContent.AddChildTag(client.HtmlTagTabPosition(posx, posy, posz, rotation));
 
-		formContent.AddChildTag(client.HtmlTagSlaveSelect("feedback", feedbacks, GetFeedbackOptions(trackID)));
+		formContent.AddChildTag(client.HtmlTagSelectSlave("feedback", feedbacks, GetFeedbackOptions(trackID)));
 
-		formContent.AddChildTag(client.HtmlTagSlaveSelect("signal", signals, GetSignalOptions(trackID)));
+		formContent.AddChildTag(client.HtmlTagSelectSlave("signal", signals, GetSignalOptions(trackID)));
 
 		formContent.AddChildTag(HtmlTagTabTrackAutomode(selectRouteApproach, allowLocoTurn, releaseWhenFree, cluster));
 

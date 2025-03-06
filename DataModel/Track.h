@@ -79,7 +79,7 @@ namespace DataModel
 				selectRouteApproach(SelectRouteSystemDefault),
 				trackState(DataModel::Feedback::FeedbackStateFree),
 				trackStateDelayed(DataModel::Feedback::FeedbackStateFree),
-				locoOrientation(OrientationRight),
+				locoBaseOrientation(OrientationRight),
 				blocked(false),
 				locoBaseDelayed(),
 				allowLocoTurn(true),
@@ -161,17 +161,22 @@ namespace DataModel
 				const bool allowLocoTurn,
 				std::vector<Route*>& validRoutes) const;
 
-			inline Orientation GetLocoOrientation() const
+			inline Orientation GetLocoBaseOrientation() const
 			{
-				return locoOrientation;
+				return locoBaseOrientation;
 			}
 
 			inline bool CanSetLocoBaseOrientation(const Orientation orientation, const ObjectIdentifier& locoBaseIdentifier)
 			{
-				return cluster == nullptr ? true : cluster->CanSetLocoBaseOrientation(orientation, locoBaseIdentifier);
+				return cluster ? cluster->CanSetLocoBaseOrientation(orientation, locoBaseIdentifier) : true;
 			}
 
-			bool SetLocoOrientation(const Orientation orientation);
+			bool SetLocoBaseOrientation(const Orientation orientation);
+
+			inline void SetLocoBaseOrientationForce(const Orientation orientation)
+			{
+				locoBaseOrientation = orientation;
+			}
 
 			inline bool GetBlocked() const
 			{
@@ -315,7 +320,7 @@ namespace DataModel
 
 			inline Orientation GetMainLocoOrientation() const
 			{
-				return (mainTrack ? mainTrack->GetLocoOrientation() : GetLocoOrientation());
+				return (mainTrack ? mainTrack->GetLocoBaseOrientation() : GetLocoBaseOrientation());
 			}
 
 			inline const ObjectIdentifier& GetMainLocoBaseDelayed() const
@@ -347,7 +352,7 @@ namespace DataModel
 			DataModel::Feedback::FeedbackState trackState;
 			DataModel::Feedback::FeedbackState trackStateDelayed;
 			std::vector<Route*> routes;
-			Orientation locoOrientation;
+			Orientation locoBaseOrientation;
 			bool blocked;
 			ObjectIdentifier locoBaseDelayed;
 			bool allowLocoTurn;

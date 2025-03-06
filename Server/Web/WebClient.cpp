@@ -1326,7 +1326,7 @@ namespace Server { namespace Web
 		return content;
 	}
 
-	HtmlTag WebClient::HtmlTagSlaveSelect(const string& prefix,
+	HtmlTag WebClient::HtmlTagSelectSlave(const string& prefix,
 		const vector<Relation*>& relations,
 		const map<string,ObjectID>& options,
 		const bool allowNew) const
@@ -1619,7 +1619,7 @@ namespace Server { namespace Web
 
 		formContent.AddChildTag(WebClientStatic::HtmlTagTabFunctions(locoFunctions));
 
-		formContent.AddChildTag(HtmlTagSlaveSelect("slave", slaves, GetMultipleUnitSlaveOptions()));
+		formContent.AddChildTag(HtmlTagSelectSlave("slave", slaves, GetMultipleUnitSlaveOptions()));
 
 		formContent.AddChildTag(WebClientStatic::HtmlTagTabAutomode(pushpull, maxSpeed, travelSpeed, reducedSpeed, creepingSpeed));
 

@@ -469,17 +469,17 @@ namespace DataModel
 			return;
 		}
 
-		bool isOrientationSet = newTrack->SetLocoOrientation(static_cast<Orientation>(route->GetToOrientation()));
+		bool isOrientationSet = newTrack->SetLocoBaseOrientation(static_cast<Orientation>(route->GetToOrientation()));
 		if (!isOrientationSet)
 		{
 			return;
 		}
 
-		bool turnLoco = (trackFrom->GetLocoOrientation() != route->GetFromOrientation());
+		bool turnLoco = (trackFrom->GetLocoBaseOrientation() != route->GetFromOrientation());
 		Orientation newLocoOrientation = static_cast<Orientation>(orientation != turnLoco);
 		if (turnLoco)
 		{
-			bool canTurnOrientation = trackFrom->SetLocoOrientation(route->GetFromOrientation());
+			bool canTurnOrientation = trackFrom->SetLocoBaseOrientation(route->GetFromOrientation());
 			if (!canTurnOrientation)
 			{
 				return;
@@ -571,7 +571,7 @@ namespace DataModel
 			return;
 		}
 
-		const bool isOrientationSet = newTrack->SetLocoOrientation(static_cast<Orientation>(route->GetToOrientation()));
+		const bool isOrientationSet = newTrack->SetLocoBaseOrientation(static_cast<Orientation>(route->GetToOrientation()));
 		if (isOrientationSet == false)
 		{
 			return;
@@ -662,7 +662,7 @@ namespace DataModel
 			return false;
 		}
 
-		if (!allowLocoTurn && track->GetLocoOrientation() != route->GetFromOrientation())
+		if (!allowLocoTurn && track->GetLocoBaseOrientation() != route->GetFromOrientation())
 		{
 			route->Release(logger, locoBaseIdentifier);
 			newTrack->Release(logger, locoBaseIdentifier);
