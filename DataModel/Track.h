@@ -76,6 +76,7 @@ namespace DataModel
 				mainID(TrackNone),
 				mainTrack(nullptr),
 				cluster(nullptr),
+				clusterInverted(false),
 				selectRouteApproach(SelectRouteSystemDefault),
 				trackState(DataModel::Feedback::FeedbackStateFree),
 				trackStateDelayed(DataModel::Feedback::FeedbackStateFree),
@@ -166,10 +167,12 @@ namespace DataModel
 				return locoBaseOrientation;
 			}
 
-			inline bool CanSetLocoBaseOrientation(const Orientation orientation, const ObjectIdentifier& locoBaseIdentifier)
+			inline bool CanSetLocoBaseOrientation(const Orientation orientation)
 			{
-				return cluster ? cluster->CanSetLocoBaseOrientation(orientation, locoBaseIdentifier) : true;
+				return CanSetLocoBaseOrientation(orientation, GetLocoBase());
 			}
+
+			bool CanSetLocoBaseOrientation(const Orientation orientation, const ObjectIdentifier& locoBaseIdentifier);
 
 			bool SetLocoBaseOrientation(const Orientation orientation);
 
@@ -228,9 +231,16 @@ namespace DataModel
 				return cluster;
 			}
 
-			inline void SetCluster(DataModel::Cluster* const cluster)
+			inline void SetCluster(DataModel::Cluster* const cluster, const bool inverted)
 			{
 				this->cluster = cluster;
+				this->clusterInverted = inverted;
+			}
+
+			inline void DeleteCluster()
+			{
+				this->cluster = nullptr;
+				this->clusterInverted = false;
 			}
 
 			inline bool GetAllowLocoTurn() const
@@ -348,6 +358,7 @@ namespace DataModel
 			std::vector<DataModel::Relation*> feedbacks;
 			std::vector<DataModel::Relation*> signals;
 			Cluster* cluster;
+			bool clusterInverted;
 			SelectRouteApproach selectRouteApproach;
 			DataModel::Feedback::FeedbackState trackState;
 			DataModel::Feedback::FeedbackState trackStateDelayed;

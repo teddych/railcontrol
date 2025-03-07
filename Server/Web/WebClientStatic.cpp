@@ -357,12 +357,12 @@ namespace Server { namespace Web
 	vector<ObjectID> WebClientStatic::InterpretSlaveData(const string& prefix, const map<string, string>& arguments)
 	{
 		vector<ObjectID> ids;
-		unsigned int count = Utils::Utils::GetIntegerMapEntry(arguments, prefix + "counter", 0);
+		const unsigned int count = Utils::Utils::GetIntegerMapEntry(arguments, prefix + "counter", 0);
 		for (unsigned int index = 1; index <= count; ++index)
 		{
-			string indexAsString = to_string(index);
-			ObjectID id = Utils::Utils::GetIntegerMapEntry(arguments, prefix + "_id_" + indexAsString, TrackNone);
-			if (id == TrackNone)
+			const string indexAsString = to_string(index);
+			const ObjectID id = Utils::Utils::GetIntegerMapEntry(arguments, prefix + "_id_" + indexAsString, ObjectNone);
+			if (id == ObjectNone)
 			{
 				continue;
 			}

@@ -73,11 +73,14 @@ namespace Server { namespace Web
 	}
 
 	HtmlTag WebClientCluster::HtmlTagSelectTrackEntry(const string& priority,
-		const ObjectID objectId,
-		const map<string,ObjectID>& options)
+		const TrackID trackID,
+		const map<string,ObjectID>& trackOptions,
+		const Relation::Data inverted,
+		const map<string,ObjectID>& invertedOptions)
 	{
 		HtmlTag content("div");
 		content.AddId("track_priority_" + priority);
+
 		HtmlTagButton deleteButton(Languages::TextDelete, "track_delete_" + priority);
 		deleteButton.AddAttribute("onclick", "deleteElement('track_priority_" + priority + "');return false;");
 		deleteButton.AddClass("wide_button");
@@ -87,14 +90,14 @@ namespace Server { namespace Web
 		contentObject.AddId("track_object_" + priority);
 		contentObject.AddClass("inline-block");
 
-		contentObject.AddChildTag(HtmlTagSelect("track_id_" + priority, options, objectId).AddClass("select_slave_id"));
+		contentObject.AddChildTag(HtmlTagSelect("track_id_" + priority, trackOptions, trackID).AddClass("select_relation_id"));
+		contentObject.AddChildTag(HtmlTagSelect("track_inverted_" + priority, invertedOptions, inverted).AddClass("select_relation_data"));
 		content.AddChildTag(contentObject);
 		return content;
 	}
 
 	HtmlTag WebClientCluster::HtmlTagSelectTrack(const vector<Relation*>& relations,
-		const map<string,ObjectID>& options,
-		const bool allowNew) const
+		const ClusterID clusterID) const
 	{
 		HtmlTag content("div");
 		content.AddId("tab_tracks");
@@ -105,23 +108,26 @@ namespace Server { namespace Web
 		div.AddChildTag(HtmlTagInputHidden("trackcounter", to_string(relations.size())));
 		div.AddId("tracks");
 
+		const map<string,ObjectID> trackOptions = GetTrackOptions(clusterID);
+		map<string,Relation::Data> invertedOptions;
+		invertedOptions[Languages::GetText(Languages::TextDefault)] = 0;
+		invertedOptions[Languages::GetText(Languages::TextInverted2)] = 1;
 		unsigned int counter = 1;
 		for (auto relation : relations)
 		{
-			ObjectID objectID = relation->ObjectID2();
-			div.AddChildTag(HtmlTagSelectTrackEntry(to_string(counter), objectID, options));
+			const TrackID trackID = relation->ObjectID2();
+			const Relation::Data inverted = relation->GetData();
+			div.AddChildTag(HtmlTagSelectTrackEntry(to_string(counter), trackID, trackOptions, inverted, invertedOptions));
 			++counter;
 		}
 		div.AddChildTag(HtmlTag("div").AddId("track_new_" + to_string(counter)));
 
 		content.AddChildTag(div);
-		if (allowNew)
-		{
-			HtmlTagButton newTrackButton(Languages::TextNew, "newtrack");
-			newTrackButton.AddAttribute("onclick", "addSlave('track');return false;");
-			newTrackButton.AddClass("wide_button");
-			content.AddChildTag(newTrackButton);
-		}
+		HtmlTagButton newTrackButton(Languages::TextNew, "newtrack");
+		newTrackButton.AddAttribute("onclick", "addSlave('track');return false;");
+		newTrackButton.AddClass("wide_button");
+		content.AddChildTag(newTrackButton);
+
 		content.AddChildTag(HtmlTag("br"));
 		return content;
 	}
@@ -160,7 +166,7 @@ namespace Server { namespace Web
 		basicContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		formContent.AddChildTag(basicContent);
 
-		formContent.AddChildTag(HtmlTagSelectTrack(tracks, GetTrackOptions(clusterID)));
+		formContent.AddChildTag(HtmlTagSelectTrack(tracks, clusterID));
 
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(formContent));
 		content.AddChildTag(HtmlTagButtonCancel());
@@ -172,16 +178,26 @@ namespace Server { namespace Web
 	{
 		ClusterID clusterID = Utils::Utils::GetIntegerMapEntry(arguments, "cluster", ClusterNone);
 		string name = Utils::Utils::GetStringMapEntry(arguments, "name");
+		const unsigned int count = Utils::Utils::GetIntegerMapEntry(arguments, "trackcounter", 0);
 
 		vector<Relation*> tracks;
 		{
-			vector<TrackID> trackIds = WebClientStatic::InterpretSlaveData("track", arguments);
-			for (auto trackId : trackIds)
+			for (unsigned int index = 1; index <= count; ++index)
 			{
+				const string indexAsString = to_string(index);
+				const TrackID trackID = Utils::Utils::GetIntegerMapEntry(arguments, "track_id_" + indexAsString, TrackNone);
+				if (trackID == TrackNone)
+				{
+					continue;
+				}
+				const bool inverted = Utils::Utils::GetBoolMapEntry(arguments, "track_inverted_" + indexAsString, false);
+
 				tracks.push_back(new Relation(&manager,
 					ObjectIdentifier(ObjectTypeCluster, clusterID),
-					ObjectIdentifier(ObjectTypeTrack, trackId),
-					Relation::RelationTypeClusterTrack));
+					ObjectIdentifier(ObjectTypeTrack, trackID),
+					Relation::RelationTypeClusterTrack,
+					0,
+					static_cast<Relation::Data>(inverted)));
 			}
 		}
 
@@ -192,7 +208,7 @@ namespace Server { namespace Web
 			return;
 		}
 
-		client.ReplyResponse(WebClient::ResponseInfo, Languages::TextControlSaved, name);
+		client.ReplyResponse(WebClient::ResponseInfo, Languages::TextClusterSaved, name);
 	}
 
 	void WebClientCluster::HandleClusterAskDelete(const map<string, string>& arguments)

@@ -218,18 +218,39 @@ namespace DataModel
 		}
 	}
 
+	bool Track::CanSetLocoBaseOrientation(const Orientation orientation, const ObjectIdentifier& locoBaseIdentifier)
+	{
+		if (locoBaseOrientation == orientation)
+		{
+			return true;
+		}
+
+		if (cluster)
+		{
+			return cluster->CanSetLocoBaseOrientation(static_cast<Orientation>(orientation ^ clusterInverted), locoBaseIdentifier);
+		}
+
+		const DataModel::LockableItem::LockState lockState = GetLockState();
+		return ((lockState == DataModel::LockableItem::LockStateFree)
+			|| ((lockState == DataModel::LockableItem::LockStateReserved)
+				&& (!locoBaseIdentifier.IsSet()
+					|| (locoBaseIdentifier == GetLocoBase()))));
+	}
+
 	bool Track::SetLocoBaseOrientation(const Orientation orientation)
 	{
 		if (locoBaseOrientation == orientation)
 		{
 			return true;
 		}
-		if (!cluster)
+
+		if (cluster)
 		{
-			locoBaseOrientation = orientation;
-			return true;
+			return cluster->SetLocoBaseOrientation(static_cast<Orientation>(orientation ^ clusterInverted), GetLocoBase());
 		}
-		return cluster->SetLocoBaseOrientation(orientation, GetLocoBase());
+
+		locoBaseOrientation = orientation;
+		return true;
 	}
 
 	bool Track::Reserve(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)
@@ -260,6 +281,7 @@ namespace DataModel
 		{
 			return false;
 		}
+
 		this->locoBaseDelayed = locoBaseIdentifier;
 		return true;
 	}
@@ -271,6 +293,7 @@ namespace DataModel
 		{
 			PublishState();
 		}
+
 		return ret;
 	}
 
@@ -284,6 +307,7 @@ namespace DataModel
 			{
 				return false;
 			}
+
 			if (trackState != DataModel::Feedback::FeedbackStateFree)
 			{
 				return true;

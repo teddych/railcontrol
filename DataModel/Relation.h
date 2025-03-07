@@ -59,10 +59,10 @@ namespace DataModel
 				const ObjectIdentifier& object2,
 				const RelationType type,
 				const Priority priority = 0,
-				const unsigned short data = 0)
+				const Data data = 0)
 			:	manager(manager),
-			 	object1(object1),
-			 	object2(object2),
+				object1(object1),
+				object2(object2),
 				type(type),
 				priority(priority),
 				data(data)

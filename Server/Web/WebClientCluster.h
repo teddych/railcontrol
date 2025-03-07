@@ -35,20 +35,23 @@ namespace Server { namespace Web
 	{
 		public:
 			WebClientCluster() = delete;
-			WebClientCluster(Manager& manager, WebClient& client)
+
+			inline WebClientCluster(Manager& manager, WebClient& client)
 			:	manager(manager),
 				client(client)
-			{}
+			{
+			}
 
 			void HandleClusterList();
 
 			static HtmlTag HtmlTagSelectTrackEntry(const std::string& priority,
-				const ObjectID objectId,
-				const std::map<std::string,ObjectID>& options);
+				const TrackID trackID,
+				const std::map<std::string,ObjectID>& trackOptions,
+				const DataModel::Relation::Data inverted,
+				const std::map<std::string,ObjectID>& invertedOptions);
 
 			HtmlTag HtmlTagSelectTrack(const std::vector<DataModel::Relation*>& relations,
-				const std::map<std::string,ObjectID>& options,
-				const bool allowNew = true) const;
+				const ClusterID clusterID) const;
 
 			void HandleClusterEdit(const std::map<std::string,std::string>& arguments);
 

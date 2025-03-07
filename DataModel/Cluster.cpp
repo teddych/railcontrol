@@ -72,7 +72,9 @@ namespace DataModel
 				return false;
 			}
 
-			if (track->GetLocoBaseOrientation() == orientation)
+			// invert track orientation if needed (XOR) and check with desired orientation value
+			const Relation::Data invert = relation->GetData();
+			if ((track->GetLocoBaseOrientation() ^ invert) == orientation)
 			{
 				continue;
 			}
@@ -110,7 +112,9 @@ namespace DataModel
 			{
 				continue;
 			}
-			track->SetLocoBaseOrientationForce(orientation);
+			// invert orientation if needed (XOR) and set track orientation
+			const Relation::Data invert = relation->GetData();
+			track->SetLocoBaseOrientationForce(static_cast<Orientation>(orientation ^ invert));
 		}
 		return true;
 	}
@@ -121,9 +125,9 @@ namespace DataModel
 		{
 			Relation* trackRelation = tracks.back();
 			Track* track = dynamic_cast<Track*>(trackRelation->GetObject2());
-			if (track != nullptr)
+			if (track)
 			{
-				track->SetCluster(nullptr);
+				track->DeleteCluster();
 			}
 			tracks.pop_back();
 			delete trackRelation;
@@ -140,7 +144,7 @@ namespace DataModel
 			}
 			delete tracks[index];
 			tracks.erase(tracks.begin() + index);
-			trackToDelete->SetCluster(nullptr);
+			trackToDelete->DeleteCluster();
 			return;
 		}
 	}
@@ -152,9 +156,9 @@ namespace DataModel
 		for (auto trackRelation : tracks)
 		{
 			Track* track = dynamic_cast<Track*>(trackRelation->GetObject2());
-			if (track != nullptr)
+			if (track)
 			{
-				track->SetCluster(this);
+				track->SetCluster(this, static_cast<bool>(trackRelation->GetData()));
 			}
 		}
 	}
