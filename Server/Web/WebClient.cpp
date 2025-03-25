@@ -3681,7 +3681,7 @@ namespace Server { namespace Web
 			);
 		body.AddChildTag(HtmlTag("div").AddClass("reduce_locos").AddId("reduce_locos").AddContent("&lt;").AddAttribute("onclick", "reduceLocos(); return false;"));
 		body.AddChildTag(HtmlTag("div").AddClass("extend_locos").AddId("extend_locos").AddContent("&gt;").AddAttribute("onclick", "extendLocos(); return false;"));
-		body.AddChildTag(HtmlTag("div").AddClass("clock").AddId("clock").AddContent("<object data=\"/clock.svg\" class=\"clock2\" type=\"image/svg+xml\" />"));
+		body.AddChildTag(HtmlTag("div").AddClass("clock").AddId("clock").AddContent("<object data=\"/clock.svg\" class=\"clock2\" type=\"image/svg+xml\"></object>"));
 		body.AddChildTag(HtmlTag("div").AddClass("status").AddId("status"));
 		body.AddChildTag(HtmlTag("div").AddClass("popup").AddId("popup"));
 		body.AddChildTag(HtmlTag("div").AddClass("infobox").AddId("infobox"));
