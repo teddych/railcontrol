@@ -72,13 +72,15 @@ http://www.3quarks.com/en/SVGClock/index.html
     <![CDATA[
       var clock  = new Object();
 
-      clock.rotateElement = function(id, angle) {
-	    let element = document.getElementById(id);
-		if (!element) return;
+      clock.rotateElement = function(id, angle)
+      {
+        let element = document.getElementById(id);
+        if (!element) return;
         element.setAttribute('transform', 'rotate(' + angle + ', 100, 100)');
       }
 
-      clock.draw = function() {
+      clock.draw = function()
+      {
         let now     = new Date();
         let hours   = now.getHours();
         let minutes = now.getMinutes();
@@ -87,13 +89,18 @@ http://www.3quarks.com/en/SVGClock/index.html
         this.rotateElement('hourHand', 30 * hours + 0.5 * minutes);
         this.rotateElement('minuteHand', 6 * minutes + 0.1 * seconds);
         this.rotateElement('secondHand', 6 * seconds);
+      }
 
-        window.setInterval(function() {
-          clock.draw()
+      clock.update = function()
+      {
+        clock.draw();
+        setTimeout(function()
+        {
+          clock.update();
         }, 250);
-	  }
+      }
 
-	  clock.draw();
+      clock.update();
 
     ]]>
     </script>
