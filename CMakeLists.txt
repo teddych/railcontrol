@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(RAILCONTROL_VERSION "23")
+set(RAILCONTROL_VERSION "24")
 
 project(CMakeTest)
 
