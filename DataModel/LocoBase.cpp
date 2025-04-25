@@ -305,10 +305,11 @@ namespace DataModel
 							logger->Info(Languages::TextIsNowInManualMode);
 							state = LocoStateTerminated;
 							requestManualMode = false;
+							wait = 0;
 							return;
 
 						case LocoStateAutomodeGetFirst:
-							if (requestManualMode)
+							if (requestManualMode || (followUpRoute == RouteStop))
 							{
 								state = LocoStateOff;
 								break;

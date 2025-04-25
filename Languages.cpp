@@ -848,7 +848,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextValue */ { "Value", "Wert", "Valor" },
 /* TextVersion */ { "Version: {0}", "Version: {0}", "Versión: {0}" },
 /* TextVisible */ { "Visible", "Sichtbar", "Visible" },
-/* TextWaitAfterRelease */ { "Wait after release (s)", "Wartezeit nach Freigabe (s)", "Tiempo de espera despues liberar (s)" },
+/* TextWaitAfterRelease */ { "Wait after release (s)", "Wartezeit nach Auflösen (s)", "Tiempo de espera despues liberar (s)" },
 /* TextWaitingTimeBetweenMembers */ { "Waiting time between members (ms)", "Wartezeit zwischen Teilnehmern (ms)", "Tiempo de esprera entre los miembros (ms)" },
 /* TextWaitingUntilHasStopped */ { "Waiting until it has stopped", "Warte bis sie angehalten hat", "Esperando hasta ha parado" },
 /* TextWarning */ { "warning", "Warnungen", "advertencias" },
