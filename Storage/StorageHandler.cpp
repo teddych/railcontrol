@@ -51,6 +51,10 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Loco* loco = new Loco(manager, serializedObject);
+			if (!loco)
+			{
+				continue;
+			}
 			locos[loco->GetID()] = loco;
 		}
 	}
@@ -69,6 +73,10 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			MultipleUnit* multipleUnit = new MultipleUnit(manager, serializedObject);
+			if (!multipleUnit)
+			{
+				continue;
+			}
 			const MultipleUnitID multipleUnitID = multipleUnit->GetID();
 			multipleUnit->AssignSlaves(RelationsFrom(DataModel::Relation::RelationTypeMultipleUnitLoco, multipleUnitID));
 			multipleUnits[multipleUnitID] = multipleUnit;
@@ -89,7 +97,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Accessory* accessory = new Accessory(serializedObject);
-			if (accessory == nullptr)
+			if (!accessory)
 			{
 				continue;
 			}
@@ -104,7 +112,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Feedback* feedback = new Feedback(manager, serializedObject);
-			if (feedback == nullptr)
+			if (!feedback)
 			{
 				continue;
 			}
@@ -119,7 +127,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Track* track = new Track(manager, serializedObject);
-			if (track == nullptr)
+			if (!track)
 			{
 				continue;
 			}
@@ -153,7 +161,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Switch* mySwitch = new Switch(serializedObject);
-			if (mySwitch == nullptr)
+			if (!mySwitch)
 			{
 				continue;
 			}
@@ -216,7 +224,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Route* route = new Route(manager, serializedObject);
-			if (route == nullptr)
+			if (!route)
 			{
 				continue;
 			}
@@ -241,7 +249,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Layer* layer = new Layer(serializedObject);
-			if (layer == nullptr)
+			if (!layer)
 			{
 				continue;
 			}
@@ -256,7 +264,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Signal* signal = new Signal(manager, serializedObject);
-			if (signal == nullptr)
+			if (!signal)
 			{
 				continue;
 			}
@@ -277,7 +285,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Cluster* cluster = new Cluster(serializedObject);
-			if (cluster == nullptr)
+			if (!cluster)
 			{
 				continue;
 			}
@@ -294,7 +302,7 @@ namespace Storage
 		for (auto& serializedObject : serializedObjects)
 		{
 			Text* text = new Text(serializedObject);
-			if (text == nullptr)
+			if (!text)
 			{
 				continue;
 			}
@@ -319,7 +327,7 @@ namespace Storage
 		for (auto& relationString : relationStrings)
 		{
 			Relation* relation = new Relation(manager, relationString);
-			if (relation == nullptr)
+			if (!relation)
 			{
 				continue;
 			}

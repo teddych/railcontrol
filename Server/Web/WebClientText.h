@@ -23,7 +23,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <map>
 #include <string>
 
-#include "Logger/Logger.h"
 #include "Manager.h"
 
 namespace Server { namespace Web

@@ -24,80 +24,79 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace DataModel
 {
-	bool ObjectIdentifier::Deserialize(const std::map<std::string, std::string>& arguments)
+	void ObjectIdentifier::Deserialize(const std::map<std::string, std::string>& arguments)
 	{
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "track", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeTrack;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "signal", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeSignal;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "switch", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeSwitch;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "accessory", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeAccessory;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "feedback", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeFeedback;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "route", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeRoute;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "text", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeText;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "pause", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypePause;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "multipleunit", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeMultipleUnit;
-			return true;
+			return;
 		}
 
 		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "booster", ObjectNone));
 		if (objectID != ObjectNone)
 		{
 			objectType = ObjectTypeBooster;
-			return true;
+			return;
 		}
 
 		objectType = ObjectTypeNone;
-		return false;
 	}
 
 	ObjectIdentifier& ObjectIdentifier::operator=(const std::string& text)

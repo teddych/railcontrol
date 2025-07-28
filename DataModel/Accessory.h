@@ -63,20 +63,20 @@ namespace DataModel
 			{
 			}
 
-			virtual ObjectType GetObjectType() const override
+			inline ObjectType GetObjectType() const override
 			{
 				return ObjectTypeAccessory;
 			}
 
-			virtual std::string GetLayoutType() const override
+			inline std::string GetLayoutType() const override
 			{
 				return Languages::GetText(Languages::TextAccessory);
 			}
 
-			virtual std::string Serialize() const override;
+			std::string Serialize() const override;
 
 			using HardwareHandle::Deserialize;
-			virtual bool Deserialize(const std::string& serialized) override;
+			void Deserialize(const std::string& serialized) override;
 
 			Accessory& operator=(const Hardware::AccessoryCacheEntry& accessory);
 

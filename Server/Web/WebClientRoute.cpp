@@ -74,7 +74,7 @@ namespace Server { namespace Web
 	void WebClientRoute::HandleRouteEdit(const map<string, string>& arguments)
 	{
 		HtmlTag content;
-		RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
+		const RouteID routeID = Utils::Utils::GetIntegerMapEntry(arguments, "route", RouteNone);
 		string name = Languages::GetText(Languages::TextNew);
 		Delay delay = Route::DefaultDelay;
 		Route::PushpullType pushpull = Route::PushpullTypeBoth;
@@ -727,9 +727,9 @@ namespace Server { namespace Web
 			{
 				std::map<string, Route*> routes = manager.RouteListByName();
 				map<string, RouteID> routeOptions;
-				for (auto& track : routes)
+				for (auto& route : routes)
 				{
-					routeOptions[track.first] = track.second->GetID();
+					routeOptions[route.first] = route.second->GetID();
 				}
 				content.AddChildTag(HtmlTagSelect(name + "_id", routeOptions, objectId).AddClass("select_relation_id"));
 				return content;

@@ -46,7 +46,7 @@ namespace DataModel
 		return ss.str();
 	}
 
-	bool Relation::Deserialize(const std::string& serialized)
+	void Relation::Deserialize(const std::string& serialized)
 	{
 		map<string,string> arguments;
 		ParseArguments(serialized, arguments);
@@ -58,7 +58,6 @@ namespace DataModel
 		object2.SetObjectID(static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "objectID2")));
 		priority = Utils::Utils::GetIntegerMapEntry(arguments, "priority");
 		data = Utils::Utils::GetIntegerMapEntry(arguments, "data");
-		return true;
 	}
 
 	bool Relation::Execute(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier, const Delay delay)
@@ -68,7 +67,7 @@ namespace DataModel
 			case ObjectTypeAccessory:
 			{
 				bool ret = manager->AccessoryState(ControlTypeInternal, ObjectID2(), static_cast<AccessoryState>(data), true);
-				if (ret == false)
+				if (!ret)
 				{
 					return false;
 				}
@@ -78,7 +77,7 @@ namespace DataModel
 			case ObjectTypeSwitch:
 			{
 				bool ret = manager->SwitchState(ControlTypeInternal, ObjectID2(), static_cast<AccessoryState>(data), true);
-				if (ret == false)
+				if (!ret)
 				{
 					return false;
 				}
@@ -88,7 +87,7 @@ namespace DataModel
 			case ObjectTypeSignal:
 			{
 				bool ret = manager->SignalState(ControlTypeInternal, ObjectID2(), static_cast<AccessoryState>(data), true);
-				if (ret == false)
+				if (!ret)
 				{
 					return false;
 				}
@@ -164,7 +163,7 @@ namespace DataModel
 	bool Relation::Reserve(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)
 	{
 		bool ret = LockableItem::Reserve(logger, locoBaseIdentifier);
-		if (ret == false)
+		if (!ret)
 		{
 			logger->Debug(Languages::TextUnableToReserve);
 			return false;
@@ -180,7 +179,7 @@ namespace DataModel
 		}
 
 		LockableItem* lockable = GetObject2();
-		if (lockable == nullptr)
+		if (!lockable)
 		{
 			logger->Debug(Languages::TextRelationTargetNotFound);
 			LockableItem::Release(logger, locoBaseIdentifier);
@@ -188,7 +187,7 @@ namespace DataModel
 		}
 
 		Route* route = dynamic_cast<Route*>(lockable);
-		if (route != nullptr)
+		if (route)
 		{
 			return route->Reserve(logger, locoBaseIdentifier);
 		}
@@ -199,7 +198,7 @@ namespace DataModel
 	bool Relation::Lock(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)
 	{
 		bool ret = LockableItem::Lock(logger, locoBaseIdentifier);
-		if (ret == false)
+		if (!ret)
 		{
 			return false;
 		}
@@ -214,26 +213,26 @@ namespace DataModel
 		}
 
 		LockableItem* lockable = GetObject2();
-		if (lockable == nullptr)
+		if (!lockable)
 		{
 			LockableItem::Release(logger, locoBaseIdentifier);
 			return false;
 		}
 
 		Route* route = dynamic_cast<Route*>(lockable);
-		if (route != nullptr)
+		if (route)
 		{
 			return route->Lock(logger, locoBaseIdentifier);
 		}
 
 		bool retLockable = lockable->Lock(logger, locoBaseIdentifier);
-		if (retLockable == true)
+		if (retLockable)
 		{
 			return true;
 		}
 
 		Object* object = dynamic_cast<Object*>(lockable);
-		if (object == nullptr)
+		if (!object)
 		{
 			return false;
 		}
@@ -245,7 +244,7 @@ namespace DataModel
 	bool Relation::Release(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)
 	{
 		LockableItem* object = GetObject2();
-		if (object != nullptr)
+		if (object)
 		{
 			object->Release(logger, locoBaseIdentifier);
 		}

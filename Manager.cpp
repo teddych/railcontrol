@@ -2679,6 +2679,7 @@ bool Manager::RouteSave(RouteID routeID,
 	route->SetPosX(posX);
 	route->SetPosY(posY);
 	route->SetPosZ(posZ);
+	route->SetRotation(DataModel::LayoutItem::Rotation0);
 	route->SetAutomode(automode);
 	if (automode == AutomodeYes)
 	{

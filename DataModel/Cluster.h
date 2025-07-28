@@ -32,19 +32,18 @@ class Manager;
 namespace DataModel
 {
 	class Relation;
-	class Signal;
 	class Track;
 
 	class Cluster : public Object
 	{
 		public:
-			Cluster(__attribute__((unused)) Manager* manager, const ClusterID clusterID)
+			inline Cluster(__attribute__((unused)) Manager* manager, const ClusterID clusterID)
 			:	Object(clusterID),
 				orientation(OrientationRight)
 			{
 			}
 
-			Cluster(const std::string& serialized)
+			inline Cluster(const std::string& serialized)
 			:	Object(ClusterNone),
 				orientation(OrientationRight)
 			{
@@ -62,7 +61,7 @@ namespace DataModel
 			}
 
 			std::string Serialize() const override;
-			bool Deserialize(const std::string& serialized) override;
+			void Deserialize(const std::string& serialized) override;
 
 			inline bool CanSetLocoBaseOrientation(const Orientation orientation,
 				const ObjectIdentifier& locoBaseIdentifier)

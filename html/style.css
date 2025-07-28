@@ -82,7 +82,7 @@ body {
 	}
 }
 
-@media (min-width: 650px) and (max-width: 999px) {
+@media (min-width: 616px) and (max-width: 1023px) {
 	.menu_config {
 		display: none;
 	}
@@ -103,7 +103,7 @@ body {
 	}
 }
 
-@media (min-width: 1000px) {
+@media (min-width: 1024px) {
 	.menu_add,
 	.menu_config,
 	.menu_config_visible {
@@ -438,8 +438,10 @@ body {
 }
 
 .text_item,
+.loconame,
 .trackname {
 	fill: white;
+	font-size: 14px;
 }
 
 .popup {
