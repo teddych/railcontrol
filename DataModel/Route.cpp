@@ -298,11 +298,10 @@ namespace DataModel
 
 		for (auto relation : relationsAtLock)
 		{
-			bool retRelation = relation->Reserve(logger, locoBaseIdentifier);
-			if (!retRelation)
+			bool result = relation->Reserve(logger, locoBaseIdentifier);
+			if (!result)
 			{
-				const LockableItem* item = relation->GetObject2();
-				const Object* object = dynamic_cast<const Object*>(item);
+				const Object* object = relation->GetObject2();
 				const string objectName = object ? object->GetName() : Languages::GetText(Languages::TextUnknownElement);
 				logger->Debug(Languages::TextUnableToReserveRouteElement, GetName(), objectName);
 				ReleaseInternalWithToTrack(logger, locoBaseIdentifier);

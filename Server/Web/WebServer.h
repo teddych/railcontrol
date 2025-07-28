@@ -123,6 +123,9 @@ namespace Server { namespace Web
 			void ClusterSettings(const ClusterID clusterID, const std::string& name) override;
 			void TextDelete(const TextID textID, const std::string& name) override;
 			void TextSettings(const TextID textID, const std::string& name) override;
+			void CounterDelete(const CounterID counterID, const std::string& name) override;
+			void CounterSettings(const CounterID counterID, const std::string& name) override;
+			void CounterState(const DataModel::Counter* const counter);
 			void ProgramValue(const CvNumber cv, const CvValue value) override;
 
 			inline bool UpdateAvailable()

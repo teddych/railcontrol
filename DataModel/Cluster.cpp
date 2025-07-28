@@ -122,7 +122,7 @@ namespace DataModel
 		while (tracks.size() > 0)
 		{
 			Relation* trackRelation = tracks.back();
-			Track* track = dynamic_cast<Track*>(trackRelation->GetObject2());
+			Track* track = trackRelation->ObjectType2() == ObjectTypeTrack ? manager->GetTrack(trackRelation->ObjectID2()) : nullptr;
 			if (track)
 			{
 				track->DeleteCluster();

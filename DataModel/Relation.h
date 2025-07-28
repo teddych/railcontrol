@@ -109,7 +109,7 @@ namespace DataModel
 				return object2;
 			}
 
-			LockableItem* GetObject2();
+			Object* GetObject2();
 
 			inline RelationType GetType() const
 			{

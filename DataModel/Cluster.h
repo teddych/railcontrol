@@ -37,14 +37,18 @@ namespace DataModel
 	class Cluster : public Object
 	{
 		public:
-			inline Cluster(__attribute__((unused)) Manager* manager, const ClusterID clusterID)
+			inline Cluster(Manager* manager,
+				const ClusterID clusterID)
 			:	Object(clusterID),
+				manager(manager),
 				orientation(OrientationRight)
 			{
 			}
 
-			inline Cluster(const std::string& serialized)
+			inline Cluster(Manager* manager,
+				const std::string& serialized)
 			:	Object(ClusterNone),
+				manager(manager),
 				orientation(OrientationRight)
 			{
 				Deserialize(serialized);
@@ -91,6 +95,7 @@ namespace DataModel
 			bool CanSetLocoBaseOrientationUnlocked(const Orientation orientation,
 				const ObjectIdentifier& locoBaseIdentifier);
 
+			Manager* manager;
 			Orientation orientation;
 			mutable std::mutex orientationMutex;
 			std::vector<DataModel::Relation*> tracks;

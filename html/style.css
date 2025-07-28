@@ -73,7 +73,7 @@ body {
 	width: 110px;
 }
 
-@media (max-width: 649px) {
+@media (max-width: 615px) {
 	.menu_config,
 	.menu_config_visible,
 	.menu_add,
@@ -293,6 +293,7 @@ body {
 }
 
 .accessory_item .track,
+.counter_item .track,
 .feedback_item .track {
 	fill: white;
 }
@@ -437,6 +438,7 @@ body {
 	display: none;
 }
 
+.counter,
 .text_item,
 .loconame,
 .trackname {

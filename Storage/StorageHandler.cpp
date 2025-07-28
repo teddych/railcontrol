@@ -28,6 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 
 using DataModel::Accessory;
 using DataModel::Cluster;
+using DataModel::Counter;
 using DataModel::Feedback;
 using DataModel::Layer;
 using DataModel::Loco;
@@ -284,7 +285,7 @@ namespace Storage
 		sqlite.ObjectsOfType(ObjectTypeCluster, serializedObjects);
 		for (auto& serializedObject : serializedObjects)
 		{
-			Cluster* cluster = new Cluster(serializedObject);
+			Cluster* cluster = new Cluster(manager, serializedObject);
 			if (!cluster)
 			{
 				continue;
@@ -307,6 +308,21 @@ namespace Storage
 				continue;
 			}
 			texts[text->GetID()] = text;
+		}
+	}
+
+	void StorageHandler::AllCounters(std::map<CounterID,DataModel::Counter*>& counters)
+	{
+		vector<string> serializedObjects;
+		sqlite.ObjectsOfType(ObjectTypeCounter, serializedObjects);
+		for (auto& serializedObject : serializedObjects)
+		{
+			Counter* counter = new Counter(serializedObject);
+			if (!counter)
+			{
+				continue;
+			}
+			counters[counter->GetID()] = counter;
 		}
 	}
 

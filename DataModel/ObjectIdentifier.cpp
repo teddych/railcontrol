@@ -96,6 +96,13 @@ namespace DataModel
 			return;
 		}
 
+		objectID = static_cast<ObjectID>(Utils::Utils::GetIntegerMapEntry(arguments, "counter", ObjectNone));
+		if (objectID != ObjectNone)
+		{
+			objectType = ObjectTypeCounter;
+			return;
+		}
+
 		objectType = ObjectTypeNone;
 	}
 
@@ -185,6 +192,12 @@ namespace DataModel
 			objectID = Utils::Integer::StringToInteger(text.substr(7), ObjectNone);
 			return *this;
 		}
+		if (text.substr(0, 7).compare("counter") == 0)
+		{
+			objectType = ObjectTypeCounter;
+			objectID = Utils::Integer::StringToInteger(text.substr(7), ObjectNone);
+			return *this;
+		}
 		objectType = ObjectTypeTrack;
 		objectID = Utils::Integer::StringToInteger(text, ObjectNone);
 		return *this;
@@ -238,6 +251,9 @@ namespace DataModel
 
 			case ObjectTypeBooster:
 				return "booster";
+
+			case ObjectTypeCounter:
+				return "counter";
 		}
 		return "object";
 	}

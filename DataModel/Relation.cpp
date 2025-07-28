@@ -129,6 +129,9 @@ namespace DataModel
 				manager->Booster(ControlTypeInternal, static_cast<BoosterState>(data));
 				return true;
 
+			case ObjectTypeCounter:
+				return manager->Count(ObjectID2(), static_cast<CounterType>(data));
+
 			default:
 				return false;
 		}
@@ -136,7 +139,7 @@ namespace DataModel
 		return true;
 	}
 
-	LockableItem* Relation::GetObject2()
+	Object* Relation::GetObject2()
 	{
 		switch (ObjectType2())
 		{
@@ -155,6 +158,9 @@ namespace DataModel
 			case ObjectTypeRoute:
 				return manager->GetRoute(ObjectID2());
 
+			case ObjectTypeCounter:
+				return manager->GetCounter(ObjectID2());
+
 			default:
 				return nullptr;
 		}
@@ -170,15 +176,34 @@ namespace DataModel
 		}
 
 		const ObjectType objectType2 = ObjectType2();
-		if (objectType2 == ObjectTypeLoco
-			|| objectType2 == ObjectTypePause
-			|| objectType2 == ObjectTypeMultipleUnit
-			|| objectType2 == ObjectTypeBooster)
+		switch(objectType2)
 		{
-			return true;
+			case ObjectTypeLoco:
+			case ObjectTypePause:
+			case ObjectTypeMultipleUnit: // abused for loco orientation
+			case ObjectTypeBooster:
+				return true;
+
+			case ObjectTypeCounter:
+			{
+				Counter* counter = manager->GetCounter(ObjectID2());
+				if (counter)
+				{
+					return counter->Check(static_cast<CounterType>(data));
+				}
+				else
+				{
+					logger->Debug(Languages::TextRelationTargetNotFound);
+					LockableItem::Release(logger, locoBaseIdentifier);
+					return false;
+				}
+			}
+
+			default:
+				break;
 		}
 
-		LockableItem* lockable = GetObject2();
+		LockableItem* lockable = dynamic_cast<LockableItem*>(GetObject2());
 		if (!lockable)
 		{
 			logger->Debug(Languages::TextRelationTargetNotFound);
@@ -204,15 +229,34 @@ namespace DataModel
 		}
 
 		const ObjectType objectType2 = ObjectType2();
-		if (objectType2 == ObjectTypeLoco
-			|| objectType2 == ObjectTypePause
-			|| objectType2 == ObjectTypeMultipleUnit
-			|| objectType2 == ObjectTypeBooster)
+		switch(objectType2)
 		{
-			return true;
+			case ObjectTypeLoco:
+			case ObjectTypePause:
+			case ObjectTypeMultipleUnit: // abused for loco orientation
+			case ObjectTypeBooster:
+				return true;
+
+			case ObjectTypeCounter:
+			{
+				Counter* counter = manager->GetCounter(ObjectID2());
+				if (counter)
+				{
+					return counter->Check(static_cast<CounterType>(data));
+				}
+				else
+				{
+					logger->Debug(Languages::TextRelationTargetNotFound);
+					LockableItem::Release(logger, locoBaseIdentifier);
+					return false;
+				}
+			}
+
+			default:
+				break;
 		}
 
-		LockableItem* lockable = GetObject2();
+		LockableItem* lockable = dynamic_cast<LockableItem*>(GetObject2());
 		if (!lockable)
 		{
 			LockableItem::Release(logger, locoBaseIdentifier);
@@ -243,10 +287,10 @@ namespace DataModel
 
 	bool Relation::Release(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)
 	{
-		LockableItem* object = GetObject2();
-		if (object)
+		LockableItem* lockable = dynamic_cast<LockableItem*>(GetObject2());
+		if (lockable)
 		{
-			object->Release(logger, locoBaseIdentifier);
+			lockable->Release(logger, locoBaseIdentifier);
 		}
 		return LockableItem::Release(logger, locoBaseIdentifier);
 	}
