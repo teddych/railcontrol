@@ -342,8 +342,13 @@ namespace Hardware { namespace Protocols
 			{
 				pin = static_cast<FeedbackPin>(Utils::Integer::DataBigEndianToInt(buffer + 5));
 				device = (pin >> 16) & 0x000000FF;
-				bus = (pin / 1000) &0x00000003;
-				pin &= 0x000001FF;
+				bus = 0;
+				pin &= 0x0000FFFF;
+				while (pin > 1000)
+				{
+					++bus;
+					pin -= 1000;
+				}
 			}
 
 			static inline CanHash ParseHash(const unsigned char* const buffer)

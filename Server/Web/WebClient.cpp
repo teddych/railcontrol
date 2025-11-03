@@ -2870,7 +2870,7 @@ namespace Server { namespace Web
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagControlFeedback(controlId));
 		mainContent.AddChildTag(HtmlTagMatchKeyFeedback(controlId, matchKey));
-		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", Languages::TextPin, pin, 1, 4096));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", Languages::TextPin, pin, 1, 512));
 		mainContent.AddChildTag(HtmlTag("div").AddId("select_device_bus").AddChildTag(HtmlTagFeedbackDeviceBus(controlId, device, bus)));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("feedbacktype", Languages::TextType, typeOptions, feedbackType));

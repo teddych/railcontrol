@@ -69,12 +69,17 @@ namespace DataModel
 		stateCounter = Utils::Utils::GetBoolMapEntry(arguments, "state", FeedbackStateFree) ? MaxStateCounter : 0;
 		matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
 
-		// FIXME: 2025-10-05 convert CS2 feedback pin to pin/bus/device / can be removed later
-		if (pin > 1023)
+		// FIXME: 2025-11-03 convert CS2 feedback pin to pin/bus/device / can be removed later
+		if (pin > 1000)
 		{
-			device = (pin & 0x000FF000) >> 12;
-			bus = (pin & 0x00000FFF) / 1000;
-			pin &= 0x000003FF;
+			device = (pin >> 12) & 0x000000FF;
+			bus = 0;
+			pin &= 0x00000FFF;
+			while (pin > 1000)
+			{
+				++bus;
+				pin -= 1000;
+			}
 		}
 	}
 
