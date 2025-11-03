@@ -1734,12 +1734,14 @@ function dataUpdate(event)
 		url += '&feedback=' + feedbackID;
 		url += '&layer=' + layerID;
 		requestUpdateLayoutItem(elementName, url);
+		loadLayerSelector();
 	}
 	else if (command == 'feedbackdelete')
 	{
 		elementName = 'f_' + argumentMap.get('feedback');
 		deleteElement(elementName);
 		deleteElement(elementName + '_context');
+		loadLayerSelector();
 	}
 	else if ((command == 'locosettings')
 		|| (command == 'locodelete')
@@ -1899,6 +1901,39 @@ function loadAccessoryAddress()
 	url += '&type=' + type;
 	url += '&address=' + address;
 	url += '&port=' + port;
+	requestUpdateItem(elementName, url);
+}
+
+function loadDeviceBus()
+{
+	var selectControl = document.getElementById('s_control');
+	if (!selectControl)
+	{
+		return;
+	}
+	var controlID = selectControl.value;
+	var elementName = 'select_device_bus';
+	var selectDeviceBus = document.getElementById(elementName);
+	if (!selectDeviceBus)
+	{
+		return;
+	}
+	var intDevice = document.getElementById('device');
+	if (!intDevice)
+	{
+		return;
+	}
+	var device = intDevice.value;
+	var intBus = document.getElementById('bus');
+	if (!intBus)
+	{
+		return;
+	}
+	var bus = intBus.value;
+	var url = '/?cmd=devicebus';
+	url += '&control=' + controlID;
+	url += '&device=' + device;
+	url += '&bus=' + bus;
 	requestUpdateItem(elementName, url);
 }
 
