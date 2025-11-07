@@ -488,6 +488,7 @@ class Languages
 			TextMin,
 			TextMinTrackLength,
 			TextMinTrainLength,
+			TextModule,
 			TextMultipleUnit,
 			TextMultipleUnitDeleted,
 			TextMultipleUnitDoesNotExist,

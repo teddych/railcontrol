@@ -2836,7 +2836,7 @@ namespace Server { namespace Web
 		// else new feedback
 		if (pin == FeedbackPinNone)
 		{
-			pin = 1;
+			pin = FeedbackPinMin;
 		}
 
 		content.AddChildTag(HtmlTag("h1").AddContent(name).AddId("popup_title"));
@@ -2870,8 +2870,16 @@ namespace Server { namespace Web
 		mainContent.AddChildTag(HtmlTagInputTextWithLabel("name", Languages::TextName, name).AddAttribute("onkeyup", "updateName();"));
 		mainContent.AddChildTag(HtmlTagControlFeedback(controlId));
 		mainContent.AddChildTag(HtmlTagMatchKeyFeedback(controlId, matchKey));
-		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", Languages::TextPin, pin, 1, 512));
 		mainContent.AddChildTag(HtmlTag("div").AddId("select_device_bus").AddChildTag(HtmlTagFeedbackDeviceBus(controlId, device, bus)));
+		string modulePin(" ");
+		modulePin += Languages::GetText(Languages::TextModule);
+		modulePin += string(":");
+		modulePin += HtmlTag("span").AddId("calc_module").AddContent(to_string(((pin - 1) >> 4) + 1));
+		modulePin += string(" ");
+		modulePin += Languages::GetText(Languages::TextPin);
+		modulePin += string(":");
+		modulePin += HtmlTag("span").AddId("calc_pin").AddContent(to_string(((pin - 1) & 0x0F) + 1));
+		mainContent.AddChildTag(HtmlTagInputIntegerWithLabel("pin", Languages::TextPin, pin, FeedbackPinMin, FeedbackPinMax).AddContent(modulePin));
 		mainContent.AddChildTag(HtmlTagInputCheckboxWithLabel("inverted", Languages::TextInverted, "true", inverted));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("feedbacktype", Languages::TextType, typeOptions, feedbackType));
 		mainContent.AddChildTag(HtmlTagSelectWithLabel("route", Languages::TextExecuteRoute, routeOptions, routeId));

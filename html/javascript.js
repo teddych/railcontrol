@@ -513,6 +513,29 @@ function updateName()
 	return true;
 }
 
+function update_pin()
+{
+	let pinField = document.getElementById('pin');
+	if (!pinField)
+	{
+		return false;
+	}
+	let pin = pinField.value;
+	let calc_moduleField = document.getElementById('calc_module');
+	if (!calc_moduleField)
+	{
+		return false;
+	}
+	calc_moduleField.innerHTML = ((pin - 1) >> 4) + 1;
+	let calc_pinField = document.getElementById('calc_pin');
+	if (!calc_pinField)
+	{
+		return false;
+	}
+	calc_pinField.innerHTML = ((pin - 1) & 0x0F) + 1;
+	return false;
+}
+
 function getArgumentsOfHardwareType()
 {
 	var hardwareType = document.getElementById('s_hardwaretype');
@@ -2568,3 +2591,4 @@ updater.addEventListener('message', dataUpdate);
 updater.addEventListener('error', dataUpdateError);
 
 window.addEventListener('resize', updateLocoControls);
+
