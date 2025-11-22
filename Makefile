@@ -23,6 +23,9 @@ OBJ=Storage/sqlite/sqlite3.o $(CXXOBJ) $(COBJ)
 all: $(OBJ)
 	$(CXX) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 
+noupdatecheck: CXXFLAGS += -DNOUPDATECHECK
+noupdatecheck: all
+
 strip: all
 	strip railcontrol
 
