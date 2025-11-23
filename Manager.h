@@ -536,6 +536,7 @@ class Manager
 			const Length maxTrainLength,
 			const std::vector<DataModel::Relation*>& relationsAtLock,
 			const std::vector<DataModel::Relation*>& relationsAtUnlock,
+			const std::vector<DataModel::Relation*>& condition,
 			const DataModel::LayoutItem::Visible visible,
 			const DataModel::LayoutItem::LayoutPosition posX,
 			const DataModel::LayoutItem::LayoutPosition posY,

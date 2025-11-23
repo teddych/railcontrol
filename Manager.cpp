@@ -2632,6 +2632,7 @@ bool Manager::RouteSave(RouteID routeID,
 	const Length maxTrainLength,
 	const std::vector<DataModel::Relation*>& relationsAtLock,
 	const std::vector<DataModel::Relation*>& relationsAtUnlock,
+	const std::vector<DataModel::Relation*>& conditions,
 	const Visible visible,
 	const LayoutPosition posX,
 	const LayoutPosition posY,
@@ -2697,6 +2698,7 @@ bool Manager::RouteSave(RouteID routeID,
 	route->SetDelay(delay);
 	route->AssignRelationsAtLock(relationsAtLock);
 	route->AssignRelationsAtUnlock(relationsAtUnlock);
+	route->AssignRelationsConditions(conditions);
 	route->SetVisible(visible);
 	route->SetPosX(posX);
 	route->SetPosY(posY);
