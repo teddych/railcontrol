@@ -49,6 +49,8 @@ class Manager
 		Manager(Config& config);
 		~Manager();
 
+		void Warning(Languages::TextSelector textSelector);
+
 		// booster
 		inline BoosterState Booster() const
 		{

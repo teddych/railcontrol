@@ -304,6 +304,16 @@ Manager::~Manager()
 	storage = nullptr;
 }
 
+void Manager::Warning(Languages::TextSelector textSelector)
+{
+	logger->Warning(textSelector);
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (auto& control : controls)
+	{
+		control.second->Warning(textSelector);
+	}
+}
+
 /***************************
 * Booster                  *
 ***************************/
@@ -1262,6 +1272,7 @@ bool Manager::AccessoryState(const ControlType controlType, const AccessoryID ac
 {
 	if (boosterState == BoosterStateStop)
 	{
+		Warning(Languages::TextBoosterIsTurnedOff);
 		return false;
 	}
 	Accessory* accessory = GetAccessory(accessoryID);
@@ -2269,6 +2280,7 @@ bool Manager::SwitchState(const ControlType controlType, const SwitchID switchID
 {
 	if (boosterState == BoosterStateStop)
 	{
+		Warning(Languages::TextBoosterIsTurnedOff);
 		return false;
 	}
 
@@ -3114,6 +3126,7 @@ bool Manager::SignalState(const ControlType controlType, const SignalID signalID
 {
 	if (boosterState == BoosterStateStop)
 	{
+		Warning(Languages::TextBoosterIsTurnedOff);
 		return false;
 	}
 	Signal* signal = GetSignal(signalID);
