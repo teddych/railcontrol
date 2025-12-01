@@ -292,7 +292,12 @@ namespace DataModel
 					logger->Debug(Languages::TextRelationTargetNotFound);
 					return false;
 				}
-				return accessory->CheckState(static_cast<AccessoryState>(data));
+				const bool state = accessory->CheckState(static_cast<AccessoryState>(data));
+				if (state)
+				{
+					return true;
+				}
+				break;
 			}
 
 			case ObjectTypeSwitch:
@@ -303,7 +308,12 @@ namespace DataModel
 					logger->Debug(Languages::TextRelationTargetNotFound);
 					return false;
 				}
-				return mySwitch->CheckState(static_cast<AccessoryState>(data));
+				const bool state = mySwitch->CheckState(static_cast<AccessoryState>(data));
+				if (state)
+				{
+					return true;
+				}
+				break;
 			}
 
 			case ObjectTypeSignal:
@@ -314,7 +324,12 @@ namespace DataModel
 					logger->Debug(Languages::TextRelationTargetNotFound);
 					return false;
 				}
-				return signal->CheckState(static_cast<AccessoryState>(data));
+				const bool state = signal->CheckState(static_cast<AccessoryState>(data));
+				if (state)
+				{
+					return true;
+				}
+				break;
 			}
 
 			case ObjectTypeFeedback:
@@ -325,12 +340,21 @@ namespace DataModel
 					logger->Debug(Languages::TextRelationTargetNotFound);
 					return false;
 				}
-				return feedback->CheckState(static_cast<Feedback::FeedbackState>(data));
+				const bool state = feedback->CheckState(static_cast<Feedback::FeedbackState>(data));
+				if (state)
+				{
+					return true;
+				}
+				break;
 			}
 
 			default:
 				return true;
 		}
+
+		manager->Warning(Languages::TextConditionsNotFulfilled);
+		logger->Debug(Languages::TextConditionsNotFulfilled);
+		return false;
 	}
 
 	bool Relation::Release(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier)

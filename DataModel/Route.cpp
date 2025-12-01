@@ -244,7 +244,6 @@ namespace DataModel
 		const bool retCondition = CheckConditions(logger, locoBaseIdentifier);
 		if (!retCondition)
 		{
-			logger->Info(Languages::TextConditionsNotFulfilled, GetName());
 			return false;
 		}
 
@@ -279,12 +278,12 @@ namespace DataModel
 		const bool retCondition = CheckConditions(logger, locoBaseIdentifier);
 		if (!retCondition)
 		{
-			logger->Info(Languages::TextConditionsNotFulfilled, GetName());
 			return false;
 		}
 
 		if (manager->Booster() == BoosterStateStop)
 		{
+			manager->Warning(Languages::TextBoosterIsTurnedOff);
 			logger->Debug(Languages::TextBoosterIsTurnedOff);
 			return false;
 		}
@@ -331,12 +330,12 @@ namespace DataModel
 		const bool retCondition = CheckConditions(logger, locoBaseIdentifier);
 		if (!retCondition)
 		{
-			logger->Info(Languages::TextConditionsNotFulfilled, GetName());
 			return false;
 		}
 
 		if (manager->Booster() == BoosterStateStop)
 		{
+			manager->Warning(Languages::TextBoosterIsTurnedOff);
 			logger->Debug(Languages::TextBoosterIsTurnedOff);
 			return false;
 		}
