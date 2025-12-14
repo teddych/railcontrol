@@ -224,10 +224,10 @@ namespace DataModel
 		if (allowLocoTurn && locoPushpull)
 		{
 			Track* trackBase = manager->GetTrack(fromTrack);
-			if (trackBase != nullptr)
+			if (trackBase)
 			{
 				bool allowTrackTurn = trackBase->GetAllowLocoTurn();
-				if (allowTrackTurn == true)
+				if (allowTrackTurn)
 				{
 					return true;
 				}
@@ -244,6 +244,7 @@ namespace DataModel
 		const bool retCondition = CheckConditions(logger, locoBaseIdentifier);
 		if (!retCondition)
 		{
+			manager->Warning(Languages::TextConditionsNotFulfilled);
 			return false;
 		}
 
