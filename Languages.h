@@ -321,6 +321,7 @@ class Languages
 			TextIsRunningWaitingUntilDestination,
 			TextIsUpToDate,
 			TextLanguage,
+			TextLayer,
 			TextLayer1,
 			TextLayer1IsUndeletable,
 			TextLayerDeleted,

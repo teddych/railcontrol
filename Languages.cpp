@@ -321,6 +321,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextIsRunningWaitingUntilDestination */ { "Is actually running, waiting until reached its destination", "Fährt noch, warte bis sie das Ziel erreicht hat.", "Todavía está en marcha, esperando hasta ha llegado el destino" },
 /* TextIsUpToDate */ { "{0} is up to date", "{0} ist aktuell", "{0} es actual" },
 /* TextLanguage */ { "Language", "Sprache", "Idioma" },
+/* TextLayer */ { "Layer", "Schicht", "Capa" },
 /* TextLayer1 */ { "Layer 1", "Schicht 1", "Capa 1" },
 /* TextLayer1IsUndeletable */ { "Layer 1 is undeletable", "Schicht 1 ist unlöschbar", "Capa 1 no se puede eliminar" },
 /* TextLayerDeleted */ { "Layer {0} deleted", "Schicht {0} gelöscht", "Capa {0} eliminado" },

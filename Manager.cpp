@@ -428,7 +428,7 @@ bool Manager::ControlSave(ControlID controlID,
 	// if we have a new object we have to update controlID
 	controlID = params->GetControlID();
 
-	params->SetName(CheckObjectName(hardwareParams, hardwareMutex, controlID, name.size() == 0 ? "C" : name));
+	params->SetName(CheckObjectName(hardwareParams, hardwareMutex, controlID, name.size() == 0 ? Languages::GetText(Languages::TextControl) : name));
 	params->SetHardwareType(hardwareType);
 	params->SetArg1(arg1);
 	params->SetArg2(arg2);
@@ -830,7 +830,7 @@ bool Manager::LocoSave(LocoID locoID,
 	// if we have a new object we have to update locoID
 	locoID = loco->GetID();
 
-	loco->SetName(CheckObjectName(multipleUnits, multipleUnitMutex, MultipleUnitNone, CheckObjectName(locos, locoMutex, locoID, name.size() == 0 ? "L" : name)));
+	loco->SetName(CheckObjectName(multipleUnits, multipleUnitMutex, MultipleUnitNone, CheckObjectName(locos, locoMutex, locoID, name.size() == 0 ? Languages::GetText(Languages::TextLoco) : name)));
 	loco->SetControlID(controlID);
 	loco->SetMatchKey(matchKey);
 	loco->SetProtocol(protocol);
@@ -1120,7 +1120,7 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 	}
 
 	// FIXME: replace "M" with language dependent word
-	multipleUnit->SetName(CheckObjectName(locos, locoMutex, LocoNone, CheckObjectName(multipleUnits, multipleUnitMutex, multipleUnitID, name.size() == 0 ? "M" : name)));
+	multipleUnit->SetName(CheckObjectName(locos, locoMutex, LocoNone, CheckObjectName(multipleUnits, multipleUnitMutex, multipleUnitID, name.size() == 0 ? Languages::GetText(Languages::TextMultipleUnit) : name)));
 	multipleUnit->SetControlID(controlID);
 	multipleUnit->SetMatchKey(matchKey);
 	multipleUnit->SetProtocol(ProtocolNone);
@@ -1428,7 +1428,7 @@ bool Manager::AccessorySave(AccessoryID accessoryID,
 	accessoryID = accessory->GetID();
 
 	// update existing accessory
-	accessory->SetName(CheckObjectName(accessories, accessoryMutex, accessoryID, name.size() == 0 ? "A" : name));
+	accessory->SetName(CheckObjectName(accessories, accessoryMutex, accessoryID, name.size() == 0 ? Languages::GetText(Languages::TextAccessory) : name));
 	accessory->SetPosX(posX);
 	accessory->SetPosY(posY);
 	accessory->SetPosZ(posZ);
@@ -1775,7 +1775,7 @@ bool Manager::FeedbackSave(FeedbackID feedbackID,
 	// if we have a new object we have to update feedbackID
 	feedbackID = feedback->GetID();
 
-	feedback->SetName(CheckObjectName(feedbacks, feedbackMutex, feedbackID, name.size() == 0 ? "F" : name));
+	feedback->SetName(CheckObjectName(feedbacks, feedbackMutex, feedbackID, name.size() == 0 ? Languages::GetText(Languages::TextFeedback) : name));
 	feedback->SetVisible(visible);
 	feedback->SetPosX(posX);
 	feedback->SetPosY(posY);
@@ -2128,7 +2128,7 @@ bool Manager::TrackSave(TrackID trackID,
 	}
 
 	// update existing track
-	track->SetName(CheckObjectName(tracks, trackMutex, trackID, name.size() == 0 ? "T" : name));
+	track->SetName(CheckObjectName(tracks, trackMutex, trackID, name.size() == 0 ? Languages::GetText(Languages::TextTrack) : name));
 	track->SetShowName(showName);
 	track->SetDisplayName(displayName);
 	track->SetHeight(height);
@@ -2403,7 +2403,7 @@ bool Manager::SwitchSave(SwitchID switchID,
 	switchID = mySwitch->GetID();
 
 	// update existing switch
-	mySwitch->SetName(CheckObjectName(switches, switchMutex, switchID, name.size() == 0 ? "S" : name));
+	mySwitch->SetName(CheckObjectName(switches, switchMutex, switchID, name.size() == 0 ? Languages::GetText(Languages::TextSwitch) : name));
 	mySwitch->SetPosX(posX);
 	mySwitch->SetPosY(posY);
 	mySwitch->SetPosZ(posZ);
@@ -2713,7 +2713,7 @@ bool Manager::RouteSave(RouteID routeID,
 	}
 
 	// update existing route
-	route->SetName(CheckObjectName(routes, routeMutex, routeID, name.size() == 0 ? "S" : name));
+	route->SetName(CheckObjectName(routes, routeMutex, routeID, name.size() == 0 ? Languages::GetText(Languages::TextRoute) : name));
 	route->SetDelay(delay);
 	route->AssignRelationsAtLock(relationsAtLock);
 	route->AssignRelationsAtUnlock(relationsAtUnlock);
@@ -2983,7 +2983,7 @@ bool Manager::LayerSave(LayerID layerID, const std::string&name, std::string& re
 	layerID = layer->GetID();
 
 	// update existing layer
-	layer->SetName(CheckObjectName(layers, layerMutex, layerID, name.size() == 0 ? "L" : name));
+	layer->SetName(CheckObjectName(layers, layerMutex, layerID, name.size() == 0 ? Languages::GetText(Languages::TextLayer) : name));
 
 	// save in db
 	if (storage)
@@ -3255,7 +3255,7 @@ bool Manager::SignalSave(SignalID signalID,
 	// if we have a new object we have to update locoID
 	signalID = signal->GetID();
 
-	signal->SetName(CheckObjectName(signals, signalMutex, signalID, name.size() == 0 ? "S" : name));
+	signal->SetName(CheckObjectName(signals, signalMutex, signalID, name.size() == 0 ? Languages::GetText(Languages::TextSignal) : name));
 	signal->SetPosX(posX);
 	signal->SetPosY(posY);
 	signal->SetPosZ(posZ);
@@ -3507,7 +3507,7 @@ bool Manager::ClusterSave(ClusterID clusterID,
 	}
 
 	// update existing cluster
-	cluster->SetName(CheckObjectName(clusters, clusterMutex, clusterID, name.size() == 0 ? "C" : name));
+	cluster->SetName(CheckObjectName(clusters, clusterMutex, clusterID, name.size() == 0 ? Languages::GetText(Languages::TextCluster) : name));
 	cluster->AssignTracks(newTracks);
 
 	// save in db
@@ -3610,7 +3610,7 @@ bool Manager::TextSave(TextID textID,
 	textID = text->GetID();
 
 	// update existing text
-	text->SetName(CheckObjectName(texts, textMutex, textID, name.size() == 0 ? "T" : name));
+	text->SetName(CheckObjectName(texts, textMutex, textID, name.size() == 0 ? Languages::GetText(Languages::TextText) : name));
 	text->SetPosX(posX);
 	text->SetPosY(posY);
 	text->SetPosZ(posZ);
@@ -3777,7 +3777,7 @@ bool Manager::CounterSave(CounterID counterID,
 	counterID = counter->GetID();
 
 	// update existing counter
-	counter->SetName(CheckObjectName(counters, counterMutex, counterID, name.size() == 0 ? "C" : name));
+	counter->SetName(CheckObjectName(counters, counterMutex, counterID, name.size() == 0 ? Languages::GetText(Languages::TextCounter) : name));
 	counter->SetMax(max);
 	counter->SetMin(min);
 	counter->SetPosX(posX);
