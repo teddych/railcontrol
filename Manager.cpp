@@ -68,6 +68,7 @@ Manager::Manager(Config& config)
 	nrOfTracksToReserve(DataModel::Loco::ReserveOne),
 	run(false),
 	debounceRun(false),
+	controlCheckerRun(false),
 	initLocosDone(false),
 	serverEnabled(false),
 	unknownControl(Languages::GetText(Languages::TextControlDoesNotExist)),
@@ -222,6 +223,9 @@ Manager::Manager(Config& config)
 		}
 	}
 
+	controlCheckerRun = true;
+	controlCheckerThread = std::thread(&Manager::ControlCheckerWorker, this);
+
 	run = true;
 	InitLocos();
 }
@@ -232,6 +236,9 @@ Manager::~Manager()
 	{
 		Utils::Utils::SleepForSeconds(1);
 	}
+
+	controlCheckerRun = false;
+	controlCheckerThread.join();
 
 	debounceRun = false;
 	debounceThread.join();
@@ -4966,6 +4973,24 @@ void Manager::DebounceWorker()
 		Utils::Utils::SleepForMilliseconds(250);
 	}
 	logger->Info(Languages::TextDebounceThreadTerminated);
+}
+
+void Manager::ControlCheckerWorker()
+{
+	Utils::Utils::SetThreadName(Languages::GetText(Languages::TextControlChecker));
+	logger->Info(Languages::TextControlCheckerThreadStarted);
+	while (controlCheckerRun)
+	{
+		{
+			std::lock_guard<std::mutex> guard(controlMutex);
+			for (auto& control : controls)
+			{
+				control.second->CheckHealth();
+			}
+		}
+		Utils::Utils::SleepForSeconds(2);
+	}
+	logger->Info(Languages::TextControlCheckerThreadTerminated);
 }
 
 template<class ID, class T>

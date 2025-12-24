@@ -992,6 +992,8 @@ class Manager
 
 		void DebounceWorker();
 
+		void ControlCheckerWorker();
+
 		template<class ID, class T>
 		T* CreateAndAddObject(std::map<ID,T*>& objects, std::mutex& mutex);
 
@@ -1151,6 +1153,8 @@ class Manager
 		volatile bool run;
 		volatile bool debounceRun;
 		std::thread debounceThread;
+		volatile bool controlCheckerRun;
+		std::thread controlCheckerThread;
 
 		volatile bool initLocosDone;
 
