@@ -114,7 +114,7 @@ namespace DataModel
 		Route* route = manager->GetRoute(routeId);
 		if (route)
 		{
-			route->Execute(logger, ObjectIdentifier());
+			route->Execute(logger, (track ? track->GetLocoBase() : ObjectIdentifier()));
 		}
 	}
 
