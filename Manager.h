@@ -827,11 +827,6 @@ class Manager
 
 		void SwitchState(const ControlType controlType, DataModel::Switch* mySwitch, const DataModel::AccessoryState state, const bool force);
 
-		static inline void FeedbackState(DataModel::Feedback* feedback, const DataModel::Feedback::FeedbackState state)
-		{
-			feedback->SetState(state);
-		}
-
 		bool AccessoryPosition(const AccessoryID accessoryID,
 			const DataModel::LayoutItem::LayoutPosition posX,
 			const DataModel::LayoutItem::LayoutPosition posY,

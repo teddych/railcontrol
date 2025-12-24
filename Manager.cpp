@@ -1630,7 +1630,7 @@ void Manager::FeedbackState(const ControlID controlID,
 	Feedback* feedback = GetFeedback(controlID, pin, device, bus);
 	if (feedback)
 	{
-		FeedbackState(feedback, state);
+		feedback->SetState(logger, state);
 		return;
 	}
 
@@ -1655,7 +1655,7 @@ void Manager::FeedbackState(const FeedbackID feedbackID, const DataModel::Feedba
 	{
 		return;
 	}
-	FeedbackState(feedback, state);
+	feedback->SetState(logger, state);
 }
 
 void Manager::FeedbackPublishState(const Feedback* feedback)
