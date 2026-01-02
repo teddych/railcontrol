@@ -1,6 +1,39 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(RAILCONTROL_VERSION "24")
+find_package(Git QUIET)
+if(NOT Git_FOUND)
+	message(WARNING "Git not found")
+	return()
+endif()
+
+execute_process(
+	COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE RAILCONTROL_VERSION
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process(
+	COMMAND ${GIT_EXECUTABLE} log -1 --format=%H
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE GIT_HASH
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process(
+	COMMAND ${GIT_EXECUTABLE} log -1 --format=%at
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE GIT_TIMESTAMP
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+execute_process(
+	COMMAND ${GIT_EXECUTABLE} status -s
+	COMMAND wc -l
+	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+	OUTPUT_VARIABLE GIT_DIRTY
+	OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+# Version starts with v
+string(REGEX REPLACE "^v" "" RAILCONTROL_VERSION "${RAILCONTROL_VERSION}")
 
 project(railcontrol VERSION ${RAILCONTROL_VERSION})
 
@@ -272,9 +305,7 @@ Utils/Network.h
 Utils/ThreadSafeQueue.h
 Utils/Utils.cpp
 Utils/Utils.h
-Version.cpp
-Version.cpp.dummy
-Version.cpp.in
+${CMAKE_CURRENT_BINARY_DIR}/Version.cpp
 Version.h
 Hardware/zlib/adler32.c
 Hardware/zlib/compress.c
@@ -316,12 +347,6 @@ set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads dl)
 
-target_include_directories(${PROJECT_NAME} PRIVATE .)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
-add_custom_command(OUTPUT Version.cpp Version.cpp.dummy
-	DEPENDS Version.cpp.in
-	COMMAND git status -s| wc -l > ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt
-	COMMAND sed s/@COMPILE_TIMESTAMP@/${COMPILE_TIMESTAMP}/ < ${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in | sed s/@GIT_HASH@/`git log -1 --format=%H`/ | sed s/@GIT_TIMESTAMP@/`git log -1 --format=%at`/ | sed s,@GIT_DIRTY@,`cat ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt`, | sed s/@RAILCONTROL_VERSION@/${RAILCONTROL_VERSION}/ > ${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp
-	COMMAND rm ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt
-	COMMENT "Creating Version.cpp")
-
+configure_file(Version.cpp.in Version.cpp @ONLY)
