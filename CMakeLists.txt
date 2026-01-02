@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.5)
 
 set(RAILCONTROL_VERSION "24")
 
-project(CMakeTest)
+project(railcontrol VERSION ${RAILCONTROL_VERSION})
 
 STRING(TIMESTAMP COMPILE_TIMESTAMP "%s" UTC)
 
-add_executable(railcontrol
+add_executable(${PROJECT_NAME}
 Storage/sqlite/sqlite3.c
 Storage/sqlite/sqlite3.h
 Storage/sqlite/sqlite3ext.h
@@ -314,9 +314,9 @@ set(CMAKE_C_FLAGS "-g -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-target_link_libraries(railcontrol PRIVATE Threads::Threads dl)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads dl)
 
-target_include_directories(railcontrol PRIVATE .)
+target_include_directories(${PROJECT_NAME} PRIVATE .)
 
 add_custom_command(OUTPUT Version.cpp Version.cpp.dummy
 	DEPENDS Version.cpp.in
