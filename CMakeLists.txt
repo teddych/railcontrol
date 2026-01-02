@@ -4,6 +4,8 @@ set(RAILCONTROL_VERSION "24")
 
 project(CMakeTest)
 
+STRING(TIMESTAMP COMPILE_TIMESTAMP "%s" UTC)
+
 add_executable(railcontrol
 Storage/sqlite/sqlite3.c
 Storage/sqlite/sqlite3.h
@@ -319,7 +321,7 @@ target_include_directories(railcontrol PRIVATE .)
 add_custom_command(OUTPUT Version.cpp Version.cpp.dummy
 	DEPENDS Version.cpp.in
 	COMMAND git status -s| wc -l > ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt
-	COMMAND sed s/@COMPILE_TIMESTAMP@/`date +%s`/ < ${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in | sed s/@GIT_HASH@/`git log -1 --format=%H`/ | sed s/@GIT_TIMESTAMP@/`git log -1 --format=%at`/ | sed s,@GIT_DIRTY@,`cat ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt`, | sed s/@RAILCONTROL_VERSION@/${RAILCONTROL_VERSION}/ > ${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp
+	COMMAND sed s/@COMPILE_TIMESTAMP@/${COMPILE_TIMESTAMP}/ < ${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in | sed s/@GIT_HASH@/`git log -1 --format=%H`/ | sed s/@GIT_TIMESTAMP@/`git log -1 --format=%at`/ | sed s,@GIT_DIRTY@,`cat ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt`, | sed s/@RAILCONTROL_VERSION@/${RAILCONTROL_VERSION}/ > ${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp
 	COMMAND rm ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt
 	COMMENT "Creating Version.cpp")
 

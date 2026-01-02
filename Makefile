@@ -20,6 +20,8 @@ CXXOBJ= $(patsubst %.cpp,%.o,$(sort Version.cpp $(wildcard *.cpp)) $(wildcard Se
 COBJ= $(patsubst %.c,%.o,$(wildcard Hardware/zlib/*.c))
 OBJ=Storage/sqlite/sqlite3.o $(CXXOBJ) $(COBJ)
 
+SOURCE_DATE_EPOCH?=$(shell date +%s)
+
 all: $(OBJ)
 	$(CXX) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
 
@@ -95,7 +97,7 @@ tools:
 
 .PHONY: Version.cpp
 Version.cpp: Version.cpp.in
-	sed -e s/@COMPILE_TIMESTAMP@/`date +%s`/ \
+	sed -e s/@COMPILE_TIMESTAMP@/$(SOURCE_DATE_EPOCH)/ \
 	    -e s/@GIT_HASH@/`git log -1 --format=%H`/ \
 	    -e s/@GIT_TIMESTAMP@/`git log -1 --format=%at`/ \
 	    -e "s/@GIT_DIRTY@/`git status -s| wc -l`/" \
