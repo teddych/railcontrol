@@ -95,10 +95,9 @@ tools:
 
 .PHONY: Version.cpp
 Version.cpp: Version.cpp.in
-	sed s/@COMPILE_TIMESTAMP@/`date +%s`/ < Version.cpp.in \
-	| sed s/@GIT_HASH@/`git log -1 --format=%H`/ \
-	| sed s/@GIT_TIMESTAMP@/`git log -1 --format=%at`/ \
-	| sed "s/@GIT_DIRTY@/`git status -s| wc -l`/" \
-	| sed s/@RAILCONTROL_VERSION@/$(RAILCONTROL_VERSION)/ \
-	> Version.cpp
-
+	sed -e s/@COMPILE_TIMESTAMP@/`date +%s`/ \
+	    -e s/@GIT_HASH@/`git log -1 --format=%H`/ \
+	    -e s/@GIT_TIMESTAMP@/`git log -1 --format=%at`/ \
+	    -e "s/@GIT_DIRTY@/`git status -s| wc -l`/" \
+	    -e s/@RAILCONTROL_VERSION@/$(RAILCONTROL_VERSION)/ \
+	    < $< > $@
