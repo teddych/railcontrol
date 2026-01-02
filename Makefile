@@ -1,5 +1,15 @@
-
-RAILCONTROL_VERSION := 24
+ifeq ("$(wildcard .git)", "")
+RAILCONTROL_VERSION=$(shell cat VERSION | sed s/v//)
+GIT_HASH=$(shell cat VERSION_GIT_HASH)
+GIT_TIMESTAMP=$(shell cat VERSION_GIT_TIMESTAMP)
+GIT_DIRTY=0
+else
+.PHONY: Version.cpp
+RAILCONTROL_VERSION=$(shell git describe --tags --abbrev=0 | sed s/v//)
+GIT_HASH=$(shell git log -1 --format=%H)
+GIT_TIMESTAMP=$(shell git log -1 --format=%at)
+GIT_DIRTY=$(shell git status -s | wc -l)
+endif
 
 CFLAGSSQLITE=-g -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
 CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration -Wno-\#warnings -Wno-deprecated -Wno-deprecated-non-prototype
@@ -95,11 +105,10 @@ test:
 tools:
 	make -C tools
 
-.PHONY: Version.cpp
-Version.cpp: Version.cpp.in
+Version.cpp: Version.cpp.in VERSION VERSION_GIT_HASH VERSION_GIT_TIMESTAMP
 	sed -e s/@COMPILE_TIMESTAMP@/$(SOURCE_DATE_EPOCH)/ \
-	    -e s/@GIT_HASH@/`git log -1 --format=%H`/ \
-	    -e s/@GIT_TIMESTAMP@/`git log -1 --format=%at`/ \
-	    -e "s/@GIT_DIRTY@/`git status -s| wc -l`/" \
+	    -e s/@GIT_HASH@/$(GIT_HASH)/ \
+	    -e s/@GIT_TIMESTAMP@/$(GIT_TIMESTAMP)/ \
+	    -e s/@GIT_DIRTY@/$(GIT_DIRTY)/ \
 	    -e s/@RAILCONTROL_VERSION@/$(RAILCONTROL_VERSION)/ \
 	    < $< > $@
