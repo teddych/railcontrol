@@ -18,25 +18,54 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
+#include <cstdlib>
+#include <iostream>
+
 #include "Utils/Path.h"
 
 namespace Utils::Path
 {
 	std::filesystem::path getConfDir()
 	{
-		const std::filesystem::path dir(".");
+		const std::filesystem::path dir;
+		// systemd may set this if ConfigurationDirectory= is set for a service
+		const char* env_p = std::getenv("CONFIGURATION_DIRECTORY");
+		if (env_p)
+		{
+			std::filesystem::path dir(env_p);
+		}
+		else
+		{
+			std::filesystem::path dir(".");
+		}
+
 		return dir;
 	}
 
 	std::filesystem::path getDataDir()
 	{
+#ifdef RAILCONTROL_DATADIR
+		const std::filesystem::path dir(RAILCONTROL_DATADIR);
+#else
 		const std::filesystem::path dir(".");
+#endif
 		return dir;
 	}
 
 	std::filesystem::path getStateDir()
 	{
-		const std::filesystem::path dir(".");
+		const std::filesystem::path dir;
+		// systemd may set this if StateDirectory= is set for a service
+		const char* env_p = std::getenv("STATE_DIRECTORY");
+		if (env_p)
+		{
+			std::filesystem::path dir(env_p);
+		}
+		else
+		{
+			std::filesystem::path dir(".");
+		}
+
 		return dir;
 	}
 }

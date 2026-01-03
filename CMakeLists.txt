@@ -383,12 +383,21 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 configure_file(Version.cpp.in Version.cpp @ONLY)
 
-set(CMAKE_INSTALL_BINDIR ".")
-set(DATADIR ".")
+option(USE_GNU_INSTALL "Install according to GNU coding standards" OFF)
+if(USE_GNU_INSTALL)
+	include(GNUInstallDirs)
+	set(DATADIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+	target_compile_definitions(${PROJECT_NAME} PRIVATE RAILCONTROL_DATADIR="${DATADIR}")
+else()
+	set(CMAKE_INSTALL_BINDIR ".")
+	set(CMAKE_INSTALL_DOCDIR "doc")
+	set(DATADIR ".")
+endif()
 
 install(TARGETS ${PROJECT_NAME})
 install(FILES railcontrol.conf.dist DESTINATION ${DATADIR})
 install(DIRECTORY html DESTINATION ${DATADIR})
+install(DIRECTORY ${PROJECT_BINARY_DIR}/doc DESTINATION ${CMAKE_INSTALL_DOCDIR})
 
 include(CPack)
 
