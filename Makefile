@@ -32,8 +32,10 @@ OBJ=Storage/sqlite/sqlite3.o $(CXXOBJ) $(COBJ)
 
 SOURCE_DATE_EPOCH?=$(shell date +%s)
 
-all: $(OBJ)
-	$(CXX) $(LDFLAGS) $(OBJ) -o railcontrol $(LIBS)
+all: railcontrol
+
+railcontrol: $(OBJ)
+	$(CXX) $(LDFLAGS) $(OBJ) -o $@ $(LIBS)
 
 noupdatecheck: CXXFLAGS += -DNOUPDATECHECK
 noupdatecheck: all
