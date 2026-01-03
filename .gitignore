@@ -20,6 +20,7 @@ amalgamation.cpp
 svg/*
 Version.cpp
 .settings/
+build/
 CMakeCache.txt
 CMakeFiles/*
 cmake_install.cmake

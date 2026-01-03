@@ -1,10 +1,55 @@
 cmake_minimum_required(VERSION 3.5)
 
-set(RAILCONTROL_VERSION "24")
+if(EXISTS "${CMAKE_SOURCE_DIR}/.git")
+	find_package(Git QUIET)
+	if(NOT Git_FOUND)
+		message(WARNING "Git not found")
+		return()
+	endif()
 
-project(CMakeTest)
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} describe --tags --abbrev=0
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_VARIABLE RAILCONTROL_VERSION
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} log -1 --format=%H
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_VARIABLE GIT_HASH
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} log -1 --format=%at
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_VARIABLE GIT_TIMESTAMP
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+	execute_process(
+		COMMAND ${GIT_EXECUTABLE} status -s
+		COMMAND wc -l
+		WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+		OUTPUT_VARIABLE GIT_DIRTY
+		OUTPUT_STRIP_TRAILING_WHITESPACE
+	)
+else()
+	file(READ VERSION RAILCONTROL_VERSION)
+	string(STRIP ${RAILCONTROL_VERSION} RAILCONTROL_VERSION)
+	file(READ VERSION_GIT_HASH GIT_HASH)
+	string(STRIP ${GIT_HASH} GIT_HASH)
+	file(READ VERSION_GIT_TIMESTAMP GIT_TIMESTAMP)
+	string(STRIP ${GIT_TIMESTAMP} GIT_TIMESTAMP)
+	set(GIT_DIRTY 0)
+endif()
 
-add_executable(railcontrol
+# Version starts with v
+string(REGEX REPLACE "^v" "" RAILCONTROL_VERSION "${RAILCONTROL_VERSION}")
+
+project(railcontrol VERSION ${RAILCONTROL_VERSION})
+
+STRING(TIMESTAMP COMPILE_TIMESTAMP "%s" UTC)
+
+add_executable(${PROJECT_NAME}
 Storage/sqlite/sqlite3.c
 Storage/sqlite/sqlite3.h
 Storage/sqlite/sqlite3ext.h
@@ -270,9 +315,7 @@ Utils/Network.h
 Utils/ThreadSafeQueue.h
 Utils/Utils.cpp
 Utils/Utils.h
-Version.cpp
-Version.cpp.dummy
-Version.cpp.in
+${CMAKE_CURRENT_BINARY_DIR}/Version.cpp
 Version.h
 Hardware/zlib/adler32.c
 Hardware/zlib/compress.c
@@ -307,19 +350,13 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
-set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -pedantic -Werror")
-set(CMAKE_C_FLAGS "-g -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP -Wno-implicit-function-declaration -Wno-return-local-addr")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -Wextra -pedantic -Werror")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP -Wno-implicit-function-declaration -Wno-return-local-addr")
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
-target_link_libraries(railcontrol PRIVATE Threads::Threads dl)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads dl)
 
-target_include_directories(railcontrol PRIVATE .)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
-add_custom_command(OUTPUT Version.cpp Version.cpp.dummy
-	DEPENDS Version.cpp.in
-	COMMAND git status -s| wc -l > ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt
-	COMMAND sed s/@COMPILE_TIMESTAMP@/`date +%s`/ < ${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp.in | sed s/@GIT_HASH@/`git log -1 --format=%H`/ | sed s/@GIT_TIMESTAMP@/`git log -1 --format=%at`/ | sed s,@GIT_DIRTY@,`cat ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt`, | sed s/@RAILCONTROL_VERSION@/${RAILCONTROL_VERSION}/ > ${CMAKE_CURRENT_SOURCE_DIR}/Version.cpp
-	COMMAND rm ${CMAKE_CURRENT_SOURCE_DIR}/git_dirty.txt
-	COMMENT "Creating Version.cpp")
-
+configure_file(Version.cpp.in Version.cpp @ONLY)
