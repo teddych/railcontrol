@@ -27,8 +27,15 @@ TMPDIR=/tmp/RailControl
 TMPDIRCYGWIN=/RailControl
 
 CXXOBJ= $(patsubst %.cpp,%.o,$(sort Version.cpp $(wildcard *.cpp)) $(wildcard Server/Web/*.cpp Server/CS2/*.cpp Server/Z21/*.cpp DataModel/*.cpp Hardware/*.cpp Hardware/Protocols/*.cpp Logger/*.cpp Network/*.cpp Storage/*.cpp Utils/*.cpp))
+
+ifdef USE_SYSTEM_LIBRARIES
+LIBS+= -lsqlite3 -lz
+OBJ=$(CXXOBJ)
+else
+CXXFLAGS+= -IStorage/sqlite -IHardware/zlib
 COBJ= $(patsubst %.c,%.o,$(wildcard Hardware/zlib/*.c))
 OBJ=Storage/sqlite/sqlite3.o $(CXXOBJ) $(COBJ)
+endif
 
 SOURCE_DATE_EPOCH?=$(shell date +%s)
 

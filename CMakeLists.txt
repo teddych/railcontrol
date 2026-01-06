@@ -50,9 +50,6 @@ project(railcontrol VERSION ${RAILCONTROL_VERSION})
 STRING(TIMESTAMP COMPILE_TIMESTAMP "%s" UTC)
 
 add_executable(${PROJECT_NAME}
-Storage/sqlite/sqlite3.c
-Storage/sqlite/sqlite3.h
-Storage/sqlite/sqlite3ext.h
 Manager.cpp
 Manager.h
 Server/Web/WebClient.cpp
@@ -317,33 +314,56 @@ Utils/Utils.cpp
 Utils/Utils.h
 ${CMAKE_CURRENT_BINARY_DIR}/Version.cpp
 Version.h
-Hardware/zlib/adler32.c
-Hardware/zlib/compress.c
-Hardware/zlib/crc32.c
-Hardware/zlib/crc32.h
-Hardware/zlib/deflate.c
-Hardware/zlib/deflate.h
-Hardware/zlib/gzclose.c
-Hardware/zlib/gzguts.h
-Hardware/zlib/gzlib.c
-Hardware/zlib/gzread.c
-Hardware/zlib/gzwrite.c
-Hardware/zlib/infback.c
-Hardware/zlib/inffast.c
-Hardware/zlib/inffast.h
-Hardware/zlib/inffixed.h
-Hardware/zlib/inflate.c
-Hardware/zlib/inflate.h
-Hardware/zlib/inftrees.c
-Hardware/zlib/inftrees.h
-Hardware/zlib/trees.c
-Hardware/zlib/trees.h
-Hardware/zlib/uncompr.c
-Hardware/zlib/zconf.h
-Hardware/zlib/zlib.h
-Hardware/zlib/zutil.c
-Hardware/zlib/zutil.h
 )
+
+option(USE_SYSTEM_LIBRARIES "Build with system libraries" OFF)
+
+if (USE_SYSTEM_LIBRARIES)
+	find_package(SQLite3)
+	target_link_libraries(${PROJECT_NAME} PRIVATE SQLite::SQLite3)
+
+	find_package(ZLIB)
+	target_link_libraries(${PROJECT_NAME} PRIVATE ZLIB::ZLIB)
+else()
+	target_include_directories(${PROJECT_NAME} PRIVATE Storage/sqlite)
+	add_library(sqlite3 STATIC
+		Storage/sqlite/sqlite3.c
+		Storage/sqlite/sqlite3.h
+		Storage/sqlite/sqlite3ext.h
+	)
+	target_link_libraries(${PROJECT_NAME} PRIVATE sqlite3)
+
+	target_include_directories(${PROJECT_NAME} PRIVATE Hardware/zlib)
+	add_library(zlib STATIC
+		Hardware/zlib/adler32.c
+		Hardware/zlib/compress.c
+		Hardware/zlib/crc32.c
+		Hardware/zlib/crc32.h
+		Hardware/zlib/deflate.c
+		Hardware/zlib/deflate.h
+		Hardware/zlib/gzclose.c
+		Hardware/zlib/gzguts.h
+		Hardware/zlib/gzlib.c
+		Hardware/zlib/gzread.c
+		Hardware/zlib/gzwrite.c
+		Hardware/zlib/infback.c
+		Hardware/zlib/inffast.c
+		Hardware/zlib/inffast.h
+		Hardware/zlib/inffixed.h
+		Hardware/zlib/inflate.c
+		Hardware/zlib/inflate.h
+		Hardware/zlib/inftrees.c
+		Hardware/zlib/inftrees.h
+		Hardware/zlib/trees.c
+		Hardware/zlib/trees.h
+		Hardware/zlib/uncompr.c
+		Hardware/zlib/zconf.h
+		Hardware/zlib/zlib.h
+		Hardware/zlib/zutil.c
+		Hardware/zlib/zutil.h
+	)
+	target_link_libraries(${PROJECT_NAME} PRIVATE zlib)
+endif()
 
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 set(CMAKE_CXX_STANDARD 11)
