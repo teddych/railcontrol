@@ -380,3 +380,12 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads dl)
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 configure_file(Version.cpp.in Version.cpp @ONLY)
+
+set(CMAKE_INSTALL_BINDIR ".")
+set(DATADIR ".")
+
+install(TARGETS ${PROJECT_NAME})
+install(FILES railcontrol.conf.dist DESTINATION ${DATADIR})
+install(DIRECTORY html DESTINATION ${DATADIR})
+
+include(CPack)
