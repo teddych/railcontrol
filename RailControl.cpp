@@ -35,6 +35,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Network/Select.h"
 #include "RailControl.h"
 #include "Version.h"
+#include "Utils/Paths.h"
 #include "Utils/Utils.h"
 
 using std::vector;
@@ -152,7 +153,7 @@ int main (int argc, char* argv[])
 
 	logger->Info(Languages::TextStartArgument, argv[0]);
 
-	const string configFileDefaultName("railcontrol.conf");
+	const string configFileDefaultName = Utils::Paths::getConfDir() / "railcontrol.conf";
 	string configFileName = argumentHandler.GetArgumentString('c', configFileDefaultName);
 	if (configFileName.compare("") == 0)
 	{
@@ -167,7 +168,8 @@ int main (int argc, char* argv[])
 
 	if (configFileName.compare(configFileDefaultName) == 0 && !Utils::Utils::FileExists(configFileDefaultName))
 	{
-		Utils::Utils::CopyFile(logger, "railcontrol.conf.dist", configFileDefaultName);
+		const std::filesystem::path defaultConfDistPath = Utils::Paths::getDataDir() / "railcontrol.conf.dist";
+		Utils::Utils::CopyFile(logger, defaultConfDistPath, configFileDefaultName);
 	}
 
 	Config config(configFileName);

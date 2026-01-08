@@ -310,6 +310,8 @@ Utils/Integer.h
 Utils/Network.cpp
 Utils/Network.h
 Utils/ThreadSafeQueue.h
+Utils/Paths.cpp
+Utils/Paths.h
 Utils/Utils.cpp
 Utils/Utils.h
 ${CMAKE_CURRENT_BINARY_DIR}/Version.cpp
