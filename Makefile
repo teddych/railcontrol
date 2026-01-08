@@ -104,6 +104,7 @@ Storage/sqlite/sqlite3.o: Storage/sqlite/sqlite3.c Storage/sqlite/sqlite3.h
 clean:
 	rm -f *.o DataModel/*.o Hardware/*.o Hardware/Protocols/*.o Hardware/zlib/*.o Logger/*.o Network/*.o Storage/*.o Storage/sqlite/*.o Utils/*.o Server/Web/*.o Server/CS2/*.o Server/Z21/*.o
 	rm -f railcontrol
+	rm -f Documentation/de/index.html Documentation/en/index.html Documentation/es/index.html
 
 clean-sqlite-shell:
 	make -C Storage/sqlite clean
@@ -121,3 +122,111 @@ Version.cpp: Version.cpp.in VERSION VERSION_GIT_HASH VERSION_GIT_TIMESTAMP
 	    -e s/@GIT_DIRTY@/$(GIT_DIRTY)/ \
 	    -e s/@RAILCONTROL_VERSION@/$(RAILCONTROL_VERSION)/ \
 	    < $< > $@
+
+doc:
+	pandoc --toc --toc-depth=2 --standalone --css=../style.css \
+		--template=Documentation/template.html \
+		--metadata-file=Documentation/de/metadata.yaml \
+		Documentation/de/index.md \
+		Documentation/de/startup-arguments.md \
+		Documentation/de/general-settings.md \
+		Documentation/de/config-controls.md \
+		Documentation/de/config-intellibox.md \
+		Documentation/de/config-mastercontrol2.md \
+		Documentation/de/config-mastercontrol.md \
+		Documentation/de/config-redbox.md \
+		Documentation/de/config-twincenter.md \
+		Documentation/de/control-6051.md \
+		Documentation/de/control-cc-schnitte.md \
+		Documentation/de/control-cs2-tcp.md \
+		Documentation/de/control-cs2-udp.md \
+		Documentation/de/control-hsi88.md \
+		Documentation/de/control-opendcc-z1.md \
+		Documentation/de/control-z21.md \
+		Documentation/de/config-rs232-usb.md \
+		Documentation/de/config-locomotives.md \
+		Documentation/de/config-multipleunits.md \
+		Documentation/de/config-layers.md \
+		Documentation/de/config-tracks.md \
+		Documentation/de/config-groups.md \
+		Documentation/de/config-switches.md \
+		Documentation/de/config-signals.md \
+		Documentation/de/config-accessories.md \
+		Documentation/de/config-routes.md \
+		Documentation/de/config-feedbacks.md \
+		Documentation/de/config-texts.md \
+		Documentation/de/config-counter.md \
+		Documentation/de/automatic.md \
+		--output=Documentation/de/index.html
+	pandoc --toc --toc-depth=2 --standalone --css=../style.css \
+		--template=Documentation/template.html \
+		--metadata-file=Documentation/en/metadata.yaml \
+		Documentation/en/index.md \
+		Documentation/en/startup-arguments.md \
+		Documentation/en/general-settings.md \
+		Documentation/en/config-controls.md \
+		Documentation/en/config-intellibox.md \
+		Documentation/en/config-mastercontrol2.md \
+		Documentation/en/config-mastercontrol.md \
+		Documentation/en/config-redbox.md \
+		Documentation/en/config-twincenter.md \
+		Documentation/en/control-6051.md \
+		Documentation/en/control-cc-schnitte.md \
+		Documentation/en/control-cs2-tcp.md \
+		Documentation/en/control-cs2-udp.md \
+		Documentation/en/control-hsi88.md \
+		Documentation/en/control-opendcc-z1.md \
+		Documentation/en/control-z21.md \
+		Documentation/en/config-rs232-usb.md \
+		Documentation/en/config-locomotives.md \
+		Documentation/en/config-multipleunits.md \
+		Documentation/en/config-layers.md \
+		Documentation/en/config-tracks.md \
+		Documentation/en/config-groups.md \
+		Documentation/en/config-switches.md \
+		Documentation/en/config-signals.md \
+		Documentation/en/config-accessories.md \
+		Documentation/en/config-routes.md \
+		Documentation/en/config-feedbacks.md \
+		Documentation/en/config-texts.md \
+		Documentation/en/config-counter.md \
+		Documentation/en/automatic.md \
+		--output=Documentation/en/index.html
+	pandoc --toc --toc-depth=2 --standalone --css=../style.css \
+		--template=Documentation/template.html \
+		--metadata-file=Documentation/es/metadata.yaml \
+		Documentation/es/index.md \
+		Documentation/es/startup-arguments.md \
+		Documentation/es/general-settings.md \
+		Documentation/es/config-controls.md \
+		Documentation/es/config-intellibox.md \
+		Documentation/es/config-mastercontrol2.md \
+		Documentation/es/config-mastercontrol.md \
+		Documentation/es/config-redbox.md \
+		Documentation/es/config-twincenter.md \
+		Documentation/es/control-6051.md \
+		Documentation/es/control-cc-schnitte.md \
+		Documentation/es/control-cs2-tcp.md \
+		Documentation/es/control-cs2-udp.md \
+		Documentation/es/control-hsi88.md \
+		Documentation/es/control-opendcc-z1.md \
+		Documentation/es/control-z21.md \
+		Documentation/es/config-rs232-usb.md \
+		Documentation/es/config-locomotives.md \
+		Documentation/es/config-multipleunits.md \
+		Documentation/es/config-layers.md \
+		Documentation/es/config-tracks.md \
+		Documentation/es/config-groups.md \
+		Documentation/es/config-switches.md \
+		Documentation/es/config-signals.md \
+		Documentation/es/config-accessories.md \
+		Documentation/es/config-routes.md \
+		Documentation/es/config-feedbacks.md \
+		Documentation/es/config-texts.md \
+		Documentation/es/config-counter.md \
+		Documentation/es/automatic.md \
+		--output=Documentation/es/index.html
+
+doc-for-web:
+	echo 'Nothing to do: The directory structure in Documentation/$LANGUAGE/documentation-$LANGUAGE already is in place.'
+
