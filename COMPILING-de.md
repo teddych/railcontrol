@@ -40,8 +40,6 @@ make
 
 Anschliessend ist die Datei railcontrol.exe zu starten.
 
-Dieter hat eine [ausführliche Schritt für Schritt Anleitung](https://www.railcontrol.org/forum/download/file.php?id=93) erstellt.
-
 ## Aktualisieren
 
 Ein Update kann folgendermassen durchgeführt werden:
