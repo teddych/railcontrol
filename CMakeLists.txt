@@ -519,7 +519,7 @@ add_custom_command(
     OUTPUT ${OUTPUT_HTML_EN}
     COMMAND pandoc --toc --toc-depth=2 --standalone --css=../style.css
                    --template=Documentation/template.html
-                   --metadata title="RailControl for Modelrailways" ${DOC_EN}
+                   --metadata-file=Documentation/en/metadata.yaml ${DOC_EN}
                    --output=${OUTPUT_HTML_EN}
     DEPENDS ${DOC_EN}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
@@ -531,7 +531,7 @@ add_custom_command(
     OUTPUT ${OUTPUT_HTML_ES}
     COMMAND pandoc --toc --toc-depth=2 --standalone --css=../style.css
                    --template=Documentation/template.html
-                   --metadata title="RailControl for Modelrailways" ${DOC_ES}
+                   --metadata-file=Documentation/es/metadata.yaml ${DOC_ES}
                    --output=${OUTPUT_HTML_ES}
     DEPENDS ${DOC_ES}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
