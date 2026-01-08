@@ -26,6 +26,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <cstring>    // memset
 #include <dirent.h>
 #include <fstream>
+#include <filesystem>
 #include <iostream>   // cout
 #include <netdb.h>
 #include <string>
@@ -195,11 +196,7 @@ namespace Utils
 	void Utils::CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to)
 	{
 		logger->Info(Languages::TextCopyingFromTo, from, to);
-		std::ifstream source(from, std::ios::binary);
-		std::ofstream destination(to, std::ios::binary);
-		destination << source.rdbuf();
-		source.close();
-		destination.close();
+		std::filesystem::copy_file(from, to);
 	}
 
 	void Utils::RenameFile(Logger::Logger* logger, const std::string& from, const std::string& to)
