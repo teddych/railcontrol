@@ -41,6 +41,15 @@ jobs:
         env:
           CC: gcc
           CXX: g++
+      - name: Set up Python for tests
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+      - name: Install test dependencies
+        run: pip install -r requirements.txt
+      - name: Test
+        run: make test
 
   cmake:
     name: "${{ matrix.os }} with cmake"
@@ -63,6 +72,15 @@ jobs:
         run: |
           cmake -B build
           cmake --build build -j${{ steps.cpu-cores.outputs.count }}
+      - name: Set up Python for tests
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.14'
+          cache: 'pip'
+      - name: Install test dependencies
+        run: pip install -r requirements.txt
+      - name: Test
+        run: ctest --test-dir build --verbose
 
   # A dummy job that you can mark as a required check instead of each individual test
   test-suite:
