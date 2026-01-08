@@ -505,7 +505,7 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/es)
 
 add_custom_command(
     OUTPUT ${OUTPUT_HTML_DE}
-    COMMAND pandoc --toc=true --toc-depth=2 --standalone --css=../style.css
+    COMMAND pandoc --toc --toc-depth=2 --standalone --css=../style.css
                    --template=Documentation/template.html
                    --metadata-file=Documentation/de/metadata.yaml ${DOC_DE}
                    --output=${OUTPUT_HTML_DE}
@@ -517,7 +517,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT ${OUTPUT_HTML_EN}
-    COMMAND pandoc --toc=true --toc-depth=2 --standalone --css=../style.css
+    COMMAND pandoc --toc --toc-depth=2 --standalone --css=../style.css
                    --template=Documentation/template.html
                    --metadata title="RailControl for Modelrailways" ${DOC_EN}
                    --output=${OUTPUT_HTML_EN}
@@ -529,7 +529,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT ${OUTPUT_HTML_ES}
-    COMMAND pandoc --toc=true --toc-depth=2 --standalone --css=../style.css
+    COMMAND pandoc --toc --toc-depth=2 --standalone --css=../style.css
                    --template=Documentation/template.html
                    --metadata title="RailControl for Modelrailways" ${DOC_ES}
                    --output=${OUTPUT_HTML_ES}
