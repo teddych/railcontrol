@@ -110,7 +110,7 @@ clean-sqlite-shell:
 	make -C Storage/sqlite clean
 
 test: railcontrol
-	pytest
+	pytest -vv
 
 tools:
 	make -C tools
