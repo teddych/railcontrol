@@ -51,7 +51,7 @@ namespace Server { namespace Web
 
 			void Work(Network::TcpConnection* connection) override;
 
-			void Warning(__attribute__((unused)) Languages::TextSelector textSelector)
+			void Warning(__attribute__((unused)) Languages::TextSelector textSelector) override
 			{
 				AddUpdate("warning", textSelector);
 			}
@@ -130,7 +130,7 @@ namespace Server { namespace Web
 			void TextSettings(const TextID textID, const std::string& name) override;
 			void CounterDelete(const CounterID counterID, const std::string& name) override;
 			void CounterSettings(const CounterID counterID, const std::string& name) override;
-			void CounterState(const DataModel::Counter* const counter);
+			void CounterState(const DataModel::Counter* const counter) override;
 			void ProgramValue(const CvNumber cv, const CvValue value) override;
 
 			inline bool UpdateAvailable()
