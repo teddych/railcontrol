@@ -310,6 +310,8 @@ Utils/Integer.h
 Utils/Network.cpp
 Utils/Network.h
 Utils/ThreadSafeQueue.h
+Utils/Paths.cpp
+Utils/Paths.h
 Utils/Utils.cpp
 Utils/Utils.h
 ${CMAKE_CURRENT_BINARY_DIR}/Version.cpp
@@ -366,7 +368,7 @@ else()
 endif()
 
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS_DEBUG "-O0")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
@@ -381,8 +383,15 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
 configure_file(Version.cpp.in Version.cpp @ONLY)
 
-set(CMAKE_INSTALL_BINDIR ".")
-set(DATADIR ".")
+option(USE_GNU_INSTALL "Install according to GNU coding standards" OFF)
+if(USE_GNU_INSTALL)
+	include(GNUInstallDirs)
+	set(DATADIR "${CMAKE_INSTALL_DATADIR}/${PROJECT_NAME}")
+	target_compile_definitions(${PROJECT_NAME} PRIVATE RAILCONTROL_DATADIR="${DATADIR}")
+else()
+	set(CMAKE_INSTALL_BINDIR ".")
+	set(DATADIR ".")
+endif()
 
 install(TARGETS ${PROJECT_NAME})
 install(FILES railcontrol.conf.dist DESTINATION ${DATADIR})
