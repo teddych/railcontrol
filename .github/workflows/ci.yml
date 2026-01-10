@@ -6,6 +6,7 @@ on:
   push:
     branches:
       - master
+      - Test-MacOS-CI
 
 concurrency:
   group: ${{ github.ref_name }}-${{ github.workflow }}
