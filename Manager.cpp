@@ -634,14 +634,14 @@ string Manager::GetLocoList() const
 {
 	string out;
 	std::lock_guard<std::mutex> guard(locoMutex);
-	for (auto& loco : locos)
+	for (auto& l : locos)
 	{
-		Loco* l = loco.second;
-		out += to_string(l->GetID()) + ";";
-		out += to_string(l->GetSpeed()) + ";";
-		out += to_string(l->GetOrientation()) + ";";
-		out += to_string(l->GetTrackId()) + ";";
-		out += l->GetName() + "\n";
+		Loco* loco = l.second;
+		out += to_string(loco->GetID()) + ";";
+		out += to_string(loco->GetSpeed()) + ";";
+		out += to_string(loco->GetOrientation()) + ";";
+		out += to_string(loco->GetTrackId()) + ";";
+		out += loco->GetName() + "\n";
 	}
 	return out;
 }
@@ -690,12 +690,12 @@ const LocoConfig Manager::GetLocoOfConfigByMatchKey(const ControlID controlId, c
 Loco* Manager::GetLocoByMatchKey(const ControlID controlId, const string& matchKey) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
-	for (auto& loco : locos)
+	for (auto& l : locos)
 	{
-		Loco* locoConfig = loco.second;
-		if (locoConfig->GetControlID() == controlId && locoConfig->GetMatchKey().compare(matchKey) == 0)
+		Loco* loco = l.second;
+		if (loco->GetControlID() == controlId && loco->GetMatchKey().compare(matchKey) == 0)
 		{
-			return loco.second;
+			return loco;
 		}
 	}
 	return nullptr;
@@ -740,13 +740,14 @@ const map<string,LocoConfig> Manager::GetUnmatchedLocosOfControl(const ControlID
 Loco* Manager::GetLocoInternal(const ControlID controlID, const Protocol protocol, const Address address) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
-	for (auto& loco : locos)
+	for (auto& l : locos)
 	{
-		if (loco.second->GetControlID() == controlID
-			&& loco.second->GetProtocol() == protocol
-			&& loco.second->GetAddress() == address)
+		Loco* loco = l.second;
+		if (loco->GetControlID() == controlID
+			&& loco->GetProtocol() == protocol
+			&& loco->GetAddress() == address)
 		{
-			return loco.second;
+			return loco;
 		}
 	}
 	return nullptr;
@@ -765,21 +766,23 @@ const map<string,LocoID> Manager::LocoBaseListFree() const
 	map<string,LocoID> out;
 	{
 		std::lock_guard<std::mutex> guard(locoMutex);
-		for (auto& loco : locos)
+		for (auto& l : locos)
 		{
-			if (!loco.second->IsInUse())
+			Loco* loco = l.second;
+			if (!loco->IsInUse())
 			{
-				out[loco.second->GetName()] = loco.second->GetID();
+				out[loco->GetName()] = loco->GetID();
 			}
 		}
 	}
 	{
 		std::lock_guard<std::mutex> guard(multipleUnitMutex);
-		for (auto& multipleUnit : multipleUnits)
+		for (auto& m : multipleUnits)
 		{
-			if (!multipleUnit.second->IsInUse())
+			MultipleUnit* multipleUnit = m.second;
+			if (!multipleUnit->IsInUse())
 			{
-				out[multipleUnit.second->GetName()] = multipleUnit.second->GetID() + MultipleUnitIdPrefix;
+				out[multipleUnit->GetName()] = multipleUnit->GetID() + MultipleUnitIdPrefix;
 			}
 		}
 	}
@@ -791,9 +794,10 @@ const map<string,DataModel::LocoConfig> Manager::LocoConfigByName() const
 	map<string,DataModel::LocoConfig> out;
 	{
 		std::lock_guard<std::mutex> guard(locoMutex);
-		for (auto& loco : locos)
+		for (auto& l : locos)
 		{
-			out[loco.second->GetName()] = *(loco.second);
+			Loco* loco = l.second;
+			out[loco->GetName()] = *loco;
 		}
 	}
 	std::lock_guard<std::mutex> guard(controlMutex);
@@ -810,10 +814,10 @@ const map<string,LocoID> Manager::LocoIdsByName() const
 	map<string,LocoID> out;
 	{
 		std::lock_guard<std::mutex> guard(locoMutex);
-		for (auto& loco : locos)
+		for (auto& l : locos)
 		{
-			Loco* locoEntry = loco.second;
-			out[locoEntry->GetName()] = locoEntry->GetID();
+			Loco* loco = l.second;
+			out[loco->GetName()] = loco->GetID();
 		}
 	}
 	return out;
@@ -4469,6 +4473,7 @@ bool Manager::LocoBaseStart(const ObjectIdentifier& locoBaseIdentifier)
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
+		// FIXME: replace LocoBase with Lococonfig
 		control.second->LocoBaseStart(locoBase);
 	}
 	return true;
@@ -4532,9 +4537,11 @@ bool Manager::LocoBaseStop(const ObjectIdentifier& locoBaseIdentifier)
 	{
 		Utils::Utils::SleepForSeconds(1);
 	}
+
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
+		// FIXME: replace LocoBase with Lococonfig
 		control.second->LocoBaseStop(locoBase);
 	}
 	return true;
@@ -4544,24 +4551,26 @@ bool Manager::LocoBaseStopAll()
 {
 	{
 		std::lock_guard<std::mutex> guard(multipleUnitMutex);
-		for (auto& multipleUnit : multipleUnits)
+		for (auto& m : multipleUnits)
 		{
-			if (multipleUnit.second->IsInManualMode())
+			MultipleUnit* multipleUnit = m.second;
+			if (multipleUnit->IsInManualMode())
 			{
 				continue;
 			}
-			multipleUnit.second->RequestManualMode();
+			multipleUnit->RequestManualMode();
 		}
 	}
 	{
 		std::lock_guard<std::mutex> guard(locoMutex);
-		for (auto& loco : locos)
+		for (auto& l : locos)
 		{
-			if (!loco.second->IsInManualMode())
+			Loco* loco = l.second;
+			if (!loco->IsInManualMode())
 			{
 				continue;
 			}
-			loco.second->RequestManualMode();
+			loco->RequestManualMode();
 		}
 	}
 	bool anyLocosInAutoMode = true;
@@ -4571,58 +4580,62 @@ bool Manager::LocoBaseStopAll()
 		anyLocosInAutoMode = false;
 		{
 			std::lock_guard<std::mutex> guard(multipleUnitMutex);
-			for (auto& multipleUnit : multipleUnits)
+			for (auto& m : multipleUnits)
 			{
-				if (multipleUnit.second->IsInManualMode())
+				MultipleUnit* multipleUnit = m.second;
+				if (multipleUnit->IsInManualMode())
 				{
 					continue;
 				}
-				const bool multipleUnitInManualMode = multipleUnit.second->GoToManualMode();
+				const bool multipleUnitInManualMode = multipleUnit->GoToManualMode();
 				if (!multipleUnitInManualMode)
 				{
-					multipleUnit.second->RequestManualMode();
+					multipleUnit->RequestManualMode();
 				}
 				anyLocosInAutoMode |= !multipleUnitInManualMode;
 			}
 		}
 		{
 			std::lock_guard<std::mutex> guard(locoMutex);
-			for (auto& loco : locos)
+			for (auto& l : locos)
 			{
-				if (loco.second->IsInManualMode())
+				Loco* loco = l.second;
+				if (loco->IsInManualMode())
 				{
 					continue;
 				}
-				const bool locoInManualMode = loco.second->GoToManualMode();
+				const bool locoInManualMode = loco->GoToManualMode();
 				if (!locoInManualMode)
 				{
-					loco.second->RequestManualMode();
+					loco->RequestManualMode();
 				}
 				anyLocosInAutoMode |= !locoInManualMode;
 			}
 		}
 	}
 
-	for (auto& multipleUnit : multipleUnits)
 	// FIXME: why no mutex?
+	for (auto& m : multipleUnits)
 	{
-		if (multipleUnit.second->IsInManualMode())
+		MultipleUnit* multipleUnit = m.second;
+		if (multipleUnit->IsInManualMode())
 		{
 			continue;
 		}
-		multipleUnit.second->GetLogger()->Info(Languages::Languages::TextReleasingMultipleUnit);
-		multipleUnit.second->Release();
+		multipleUnit->GetLogger()->Info(Languages::Languages::TextReleasingMultipleUnit);
+		multipleUnit->Release();
 	}
-	for (auto& loco : locos)
 
 	// FIXME: why no mutex?
+	for (auto& l : locos)
 	{
-		if (loco.second->IsInManualMode())
+		Loco* loco = l.second;
+		if (loco->IsInManualMode())
 		{
 			continue;
 		}
-		loco.second->GetLogger()->Info(Languages::Languages::TextReleasingLoco);
-		loco.second->Release();
+		loco->GetLogger()->Info(Languages::Languages::TextReleasingLoco);
+		loco->Release();
 	}
 	return true;
 }
