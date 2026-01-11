@@ -89,7 +89,7 @@ namespace Hardware
 				locoId(LocoNone),
 				protocol(ProtocolNone),
 				address(AddressNone),
-				type(LocoTypeLoco),
+				type(LocoTypeNone),
 				matchKey("")
 			{
 			}

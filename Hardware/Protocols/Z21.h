@@ -112,16 +112,16 @@ namespace Hardware
 				void LocoOrientation(const Protocol protocol, const Address address, const Orientation orientation)
 				    override;
 
-				void LocoFunction(const Protocol protocol,
+				void LocoFunctionState(const Protocol protocol,
 				    const Address address,
 				    const DataModel::LocoFunctionNr function,
 				    const DataModel::LocoFunctionState on) override;
 
-				void LocoSpeedOrientationFunctions(const Protocol protocol,
+				void LocoSpeedOrientationFunctionStates(const Protocol protocol,
 				    const Address address,
 				    const Speed speed,
 				    const Orientation orientation,
-				    std::vector<DataModel::LocoFunctionEntry>& functions) override;
+				    const std::vector<DataModel::LocoFunctionEntry>& functions) override;
 
 				void Accessory(const Protocol protocol,
 					const Address address,

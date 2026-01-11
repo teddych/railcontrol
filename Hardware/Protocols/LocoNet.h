@@ -102,7 +102,7 @@ namespace Hardware
 					const Address address,
 					const Orientation orientation) override;
 
-				void LocoFunction(const Protocol protocol,
+				void LocoFunctionState(const Protocol protocol,
 					const Address address,
 					const DataModel::LocoFunctionNr function,
 					const DataModel::LocoFunctionState on) override;

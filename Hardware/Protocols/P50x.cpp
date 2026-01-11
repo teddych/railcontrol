@@ -218,7 +218,7 @@ namespace Hardware
 			SendXLok(address);
 		}
 
-		void P50x::LocoFunction(__attribute__((unused))  const Protocol protocol,
+		void P50x::LocoFunctionState(__attribute__((unused))  const Protocol protocol,
 		    const Address address,
 		    const DataModel::LocoFunctionNr function,
 		    const DataModel::LocoFunctionState on)
@@ -255,11 +255,11 @@ namespace Hardware
 			SendXFunc34(address);
 		}
 
-		void P50x::LocoSpeedOrientationFunctions(__attribute__((unused))  const Protocol protocol,
+		void P50x::LocoSpeedOrientationFunctionStates(__attribute__((unused))  const Protocol protocol,
 		    const Address address,
 		    const Speed speed,
 		    const Orientation orientation,
-		    std::vector<DataModel::LocoFunctionEntry>& functions)
+		    const std::vector<DataModel::LocoFunctionEntry>& functions)
 		{
 			if (!CheckLocoAddress(address))
 			{

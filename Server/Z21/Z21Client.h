@@ -78,7 +78,7 @@ namespace Server { namespace Z21
 				Send(sendBuffer, sizeof(sendBuffer));
 			}
 
-			void SendLocoInfo(const DataModel::LocoBase* const locoBase);
+			void SendLocoInfo(const DataModel::LocoConfig& locoConfig);
 
 			void SendTurnoutInfo(const DataModel::AccessoryBase* const accessoryBase);
 

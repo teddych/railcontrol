@@ -94,7 +94,7 @@ namespace Hardware
 			SendLocoOrientationF0F4(slot, orientationF0F4);
 		}
 
-		void LocoNet::LocoFunction(__attribute__((unused)) const Protocol protocol,
+		void LocoNet::LocoFunctionState(__attribute__((unused)) const Protocol protocol,
 			const Address address,
 			const DataModel::LocoFunctionNr function,
 			const DataModel::LocoFunctionState on)

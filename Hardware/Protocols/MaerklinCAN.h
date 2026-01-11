@@ -105,7 +105,7 @@ namespace Hardware { namespace Protocols
 				MaerklinCANCommon::LocoOrientation(protocol, address, orientation);
 			}
 
-			void LocoFunction(const Protocol protocol,
+			void LocoFunctionState(const Protocol protocol,
 				const Address address,
 				const DataModel::LocoFunctionNr function,
 				const DataModel::LocoFunctionState on) override

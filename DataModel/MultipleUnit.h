@@ -60,6 +60,11 @@ namespace DataModel
 
 			void Deserialize(const std::string& serialized) override;
 
+			inline LocoType GetLocoType() const override
+			{
+				return LocoTypeMultipleUnit;
+			}
+
 			void CalculatePropulsion();
 
 			void DeleteSlaves();

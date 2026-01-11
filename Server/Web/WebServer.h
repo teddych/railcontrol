@@ -78,20 +78,17 @@ namespace Server { namespace Web
 				const DataModel::Route* route,
 				const DataModel::Track* track) override;
 
-			void LocoBaseOrientation(const ControlType controlType,
-				const DataModel::LocoBase* loco,
-				const Orientation direction) override;
-
-			void LocoBaseFunction(const ControlType controlType,
-				const DataModel::LocoBase* loco,
-				const DataModel::LocoFunctionNr function,
-				const DataModel::LocoFunctionState on) override;
-
-			void LocoBaseRelease(const DataModel::LocoBase* loco) override;
-
 			void LocoBaseSpeed(const ControlType controlType,
-				const DataModel::LocoBase* loco,
-				const Speed speed) override;
+				const DataModel::LocoConfig& locoConfig) override;
+
+			void LocoBaseOrientation(const ControlType controlType,
+				const DataModel::LocoConfig& locoConfig) override;
+
+			void LocoBaseFunctionState(const ControlType controlType,
+				const DataModel::LocoConfig& locoConfig,
+				const DataModel::LocoFunctionNr function) override;
+
+			void LocoBaseRelease(const DataModel::LocoConfig& locoConfig) override;
 
 			void LocoBaseStart(const DataModel::LocoBase* loco) override;
 			void LocoBaseStop(const DataModel::LocoBase* loco) override;
@@ -168,6 +165,11 @@ namespace Server { namespace Web
 			void AddUpdateInternal(const std::string& data);
 
 			void LogBrowserInfo(const std::string& webserveraddress, const unsigned short port);
+
+			static inline LocoID LocoIDWithPrefix(const LocoID locoID, const LocoType type)
+			{
+				return locoID + (type == LocoTypeMultipleUnit ? MultipleUnitIdPrefix : 0);
+			}
 
 			Logger::Logger* logger;
 			unsigned int lastClientID;

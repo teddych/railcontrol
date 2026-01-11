@@ -128,6 +128,8 @@ namespace DataModel
 				logger = Logger::Logger::GetLogger(name);
 			}
 
+			virtual LocoType GetLocoType() const = 0;
+
 			bool GoToAutoMode();
 
 			void RequestManualMode();
@@ -171,6 +173,11 @@ namespace DataModel
 			inline void GetFunctions(LocoFunctionEntry* out) const
 			{
 				functions.GetFunctions(out);
+			}
+
+			inline const LocoFunctions& GetFunctions() const
+			{
+				return functions;
 			}
 
 			inline void ConfigureFunctions(const std::vector<LocoFunctionEntry>& newEntries)
@@ -303,11 +310,6 @@ namespace DataModel
 			DataModel::LocoFunctionType GetFunctionType(const DataModel::LocoFunctionNr nr) const
 			{
 				return functions.GetFunctionType(nr);
-			}
-
-			inline LocoID GetLocoIdWithPrefix() const
-			{
-				return GetID() + (GetObjectType() == ObjectTypeMultipleUnit ? MultipleUnitIdPrefix : 0);
 			}
 
 			LocoBase& operator=(const Hardware::LocoCacheEntry& loco);

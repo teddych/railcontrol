@@ -213,49 +213,6 @@ namespace Server { namespace CS2
 		}
 	}
 
-	void CS2Server::LocoBaseSpeed(__attribute__((unused)) const ControlType controlType,
-		const LocoBase* locoBase,
-		__attribute__((unused)) const Speed speed)
-	{
-		if (nullptr == locoBase)
-		{
-			return;
-		}
-//		for (auto client : clients)
-//		{
-//			reinterpret_cast<CS2Client*>(client)->SendLocoInfo(locoBase);
-//		}
-	}
-
-	void CS2Server::LocoBaseOrientation(__attribute__((unused)) const ControlType controlType,
-		const LocoBase* locoBase,
-		__attribute__((unused)) const Orientation orientation)
-	{
-		if (nullptr == locoBase)
-		{
-			return;
-		}
-//		for (auto client : clients)
-//		{
-//			reinterpret_cast<CS2Client*>(client)->SendLocoInfo(locoBase);
-//		}
-	}
-
-	void CS2Server::LocoBaseFunction(__attribute__((unused)) const ControlType controlType,
-		const LocoBase* locoBase,
-		__attribute__((unused)) const LocoFunctionNr function,
-		__attribute__((unused)) const LocoFunctionState state)
-	{
-		if (!locoBase)
-		{
-			return;
-		}
-//		for (auto client : clients)
-//		{
-//			reinterpret_cast<CS2Client*>(client)->SendLocoInfo(locoBase);
-//		}
-	}
-
 	void CS2Server::AccessoryState(__attribute__((unused)) const ControlType controlType,
 		const DataModel::Accessory* accessory)
 	{
@@ -272,19 +229,6 @@ namespace Server { namespace CS2
 		const DataModel::Signal* signal)
 	{
 		AccessoryBaseState(signal);
-	}
-
-	void CS2Server::AccessoryBaseState(const DataModel::AccessoryBase* accessoryBase)
-	{
-		if (!accessoryBase)
-		{
-			return;
-		}
-//		for (auto client : clients)
-//		{
-//			reinterpret_cast<CS2Client*>(client)->SendTurnoutInfo(accessoryBase);
-//		}
-
 	}
 
 	void CS2Server::Work(Network::TcpConnection* connection)

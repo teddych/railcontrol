@@ -64,6 +64,11 @@ namespace DataModel
 
 			void Deserialize(const std::string& serialized) override;
 
+			inline LocoType GetLocoType() const override
+			{
+				return LocoTypeLoco;
+			}
+
 			Loco& operator=(const Hardware::LocoCacheEntry& loco);
 	};
 } // namespace DataModel

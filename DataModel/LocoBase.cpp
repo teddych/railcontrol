@@ -111,12 +111,12 @@ namespace DataModel
 
 	TrackID LocoBase::GetTrackId() const
 	{
+		std::lock_guard<std::mutex> Guard(stateMutex);
 		return (trackFrom ? trackFrom->GetID() : TrackNone);
 	}
 
 	bool LocoBase::Release()
 	{
-		manager->LocoBaseSpeed(ControlTypeInternal, this, MinSpeed);
 		ForceManualMode();
 		{
 			std::lock_guard<std::mutex> Guard(stateMutex);
@@ -381,7 +381,6 @@ namespace DataModel
 
 						case LocoStateError:
 							logger->Error(Languages::TextIsInErrorState);
-							manager->LocoBaseSpeed(ControlTypeInternal, this, MinSpeed);
 							if (requestManualMode)
 							{
 								state = LocoStateOff;
@@ -390,6 +389,11 @@ namespace DataModel
 					}
 					pause = 1;
 				}
+			}
+
+			if (state == LocoStateError)
+			{
+				manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), MinSpeed);
 			}
 
 			ReleaseRouteAndTrack();
@@ -486,7 +490,7 @@ namespace DataModel
 			}
 			manager->TrackPublishState(trackFrom);
 		}
-		manager->LocoBaseOrientation(ControlTypeInternal, this, newLocoOrientation);
+		manager->LocoBaseOrientation(ControlTypeInternal, GetObjectIdentifier(), newLocoOrientation);
 		logger->Info(Languages::TextHeadingToVia, newTrack->GetName(), route->GetName());
 
 		trackFirst = newTrack;
@@ -521,8 +525,10 @@ namespace DataModel
 			default:
 				newSpeed = creepingSpeed;
 				break;
+
+			// FIXME: default = MinSpeed
 		}
-		manager->LocoBaseSpeed(ControlTypeInternal, this, newSpeed);
+		manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), newSpeed);
 		state = LocoStateAutomodeGetSecond;
 	}
 
@@ -744,7 +750,7 @@ namespace DataModel
 
 	void LocoBase::LocationStopReached()
 	{
-		manager->LocoBaseSpeed(ControlTypeInternal, this, MinSpeed);
+		manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), MinSpeed);
 		feedbackIdsReached.EnqueueBack(feedbackIdStop);
 	}
 
@@ -762,7 +768,7 @@ namespace DataModel
 	{
 		if (speed > creepingSpeed)
 		{
-			manager->LocoBaseSpeed(ControlTypeInternal, this, creepingSpeed);
+			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), creepingSpeed);
 		}
 		if (feedbackIdFirst != FeedbackNone)
 		{
@@ -784,7 +790,7 @@ namespace DataModel
 	{
 		if (speed > reducedSpeed)
 		{
-			manager->LocoBaseSpeed(ControlTypeInternal, this, reducedSpeed);
+			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), reducedSpeed);
 		}
 		if (feedbackIdFirst != 0)
 		{
@@ -796,14 +802,14 @@ namespace DataModel
 	{
 		if (feedbackID == feedbackIdFirstReduced)
 		{
-			Route::Speed routeSpeed = routeSecond->GetSpeed();
+			const Route::Speed routeSpeed = routeSecond->GetSpeed();
 			switch (routeSpeed)
 			{
 				case Route::SpeedReduced:
 				case Route::SpeedCreeping:
 					if (speed > reducedSpeed)
 					{
-						manager->LocoBaseSpeed(ControlTypeInternal, this, reducedSpeed);
+						manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), reducedSpeed);
 					}
 					break;
 
@@ -814,13 +820,13 @@ namespace DataModel
 
 		if (feedbackID == feedbackIdFirstCreep)
 		{
-			Route::Speed routeSpeed = routeSecond->GetSpeed();
+			const Route::Speed routeSpeed = routeSecond->GetSpeed();
 			switch (routeSpeed)
 			{
 				case Route::SpeedCreeping:
 					if (speed > creepingSpeed)
 					{
-						manager->LocoBaseSpeed(ControlTypeInternal, this, creepingSpeed);
+						manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), creepingSpeed);
 					}
 					break;
 
@@ -831,10 +837,10 @@ namespace DataModel
 
 		if (feedbackID == feedbackIdFirst)
 		{
-			Speed newSpeed = GetRouteSpeed(routeSecond->GetSpeed());
+			const Speed newSpeed = GetRouteSpeed(routeSecond->GetSpeed());
 			if (speed > newSpeed)
 			{
-				manager->LocoBaseSpeed(ControlTypeInternal, this, newSpeed);
+				manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), newSpeed);
 			}
 			feedbackIdsReached.EnqueueBack(feedbackIdFirst);
 		}
@@ -877,7 +883,7 @@ namespace DataModel
 
 		if (feedbackID == feedbackIdOver)
 		{
-			manager->LocoBaseSpeed(ControlTypeInternal, this, MinSpeed);
+			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), MinSpeed);
 			manager->Booster(ControlTypeInternal, BoosterStateStop);
 			logger->Error(Languages::TextHitOverrun, manager->GetFeedbackName(feedbackID));
 		}
@@ -903,7 +909,7 @@ namespace DataModel
 	{
 		if (!routeFirst || !trackFrom)
 		{
-			manager->LocoBaseSpeed(ControlTypeInternal, this, MinSpeed);
+			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), MinSpeed);
 			state = LocoStateError;
 			logger->Error(Languages::TextIsInAutomodeWithoutRouteTrack);
 			return;
@@ -912,7 +918,7 @@ namespace DataModel
 		Speed newSpeed = GetRouteSpeed(routeSecond->GetSpeed());
 		if (speed != newSpeed)
 		{
-			manager->LocoBaseSpeed(ControlTypeInternal, this, newSpeed);
+			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), newSpeed);
 		}
 
 		ShiftRoute();
@@ -943,7 +949,7 @@ namespace DataModel
 	{
 		if (!routeFirst || !trackFrom)
 		{
-			manager->LocoBaseSpeed(ControlTypeInternal, this, MinSpeed);
+			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), MinSpeed);
 			state = LocoStateError;
 			logger->Error(Languages::TextIsInAutomodeWithoutRouteTrack);
 			return;

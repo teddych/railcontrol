@@ -156,11 +156,6 @@ namespace DataModel
 				return name;
 			}
 
-			inline void SetName(const std::string& name)
-			{
-				this->name = name;
-			}
-
 			inline std::string GetMatchKey() const
 			{
 				return matchKey;

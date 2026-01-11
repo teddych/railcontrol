@@ -19,6 +19,7 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include "DataModel/LocoBase.h"
+#include "DataModel/LocoConfig.h"
 #include "DataModel/LocoFunctions.h"
 #include "Manager.h"
 #include "Server/Z21/Z21Client.h"
@@ -27,6 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 
 using DataModel::Loco;
 using DataModel::LocoBase;
+using DataModel::LocoConfig;
 using DataModel::LocoFunctionNr;
 using DataModel::LocoFunctionState;
 
@@ -88,46 +90,11 @@ namespace Server { namespace Z21
 		}
 	}
 
-	void Z21Server::LocoBaseSpeed(__attribute__((unused)) const ControlType controlType,
-		const LocoBase* locoBase,
-		__attribute__((unused)) const Speed speed)
+	void Z21Server::SendLocoInfo(const LocoConfig& locoConfig)
 	{
-		if (nullptr == locoBase)
-		{
-			return;
-		}
 		for (auto client : clients)
 		{
-			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(locoBase);
-		}
-	}
-
-	void Z21Server::LocoBaseOrientation(__attribute__((unused)) const ControlType controlType,
-		const LocoBase* locoBase,
-		__attribute__((unused)) const Orientation orientation)
-	{
-		if (nullptr == locoBase)
-		{
-			return;
-		}
-		for (auto client : clients)
-		{
-			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(locoBase);
-		}
-	}
-
-	void Z21Server::LocoBaseFunction(__attribute__((unused)) const ControlType controlType,
-		const LocoBase* locoBase,
-		__attribute__((unused)) const LocoFunctionNr function,
-		__attribute__((unused)) const LocoFunctionState state)
-	{
-		if (!locoBase)
-		{
-			return;
-		}
-		for (auto client : clients)
-		{
-			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(locoBase);
+			reinterpret_cast<Z21Client*>(client)->SendLocoInfo(locoConfig);
 		}
 	}
 

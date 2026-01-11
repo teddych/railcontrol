@@ -64,19 +64,6 @@ namespace Server { namespace CS2
 
 			void Booster(const ControlType controlType, const BoosterState status) override;
 
-			void LocoBaseOrientation(const ControlType controlType,
-				const DataModel::LocoBase* loco,
-				const Orientation direction) override;
-
-			void LocoBaseFunction(const ControlType controlType,
-				const DataModel::LocoBase* loco,
-				const DataModel::LocoFunctionNr function,
-				const DataModel::LocoFunctionState on) override;
-
-			void LocoBaseSpeed(const ControlType controlType,
-				const DataModel::LocoBase* loco,
-				const Speed speed) override;
-
 			void AccessoryState(const ControlType controlType, const DataModel::Accessory* accessory) override;
 
 			void SwitchState(const ControlType controlType, const DataModel::Switch* mySwitch) override;
@@ -92,8 +79,6 @@ namespace Server { namespace CS2
 			bool runUdp;
 			std::thread udpServerThread;
 			int udpServerSocket;
-
-			void AccessoryBaseState(const DataModel::AccessoryBase* accessoryBase);
 
 			void CleanUpClients();
 

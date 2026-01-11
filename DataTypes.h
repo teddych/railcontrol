@@ -186,7 +186,8 @@ enum AddressPort : uint8_t
 
 enum LocoType : uint8_t
 {
-	LocoTypeLoco = 0,
+	LocoTypeNone = 0,
+	LocoTypeLoco,
 	LocoTypeMultipleUnit
 };
 

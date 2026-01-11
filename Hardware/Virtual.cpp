@@ -55,7 +55,7 @@ namespace Hardware
 	}
 
 	// set loco function
-	void Virtual::LocoFunction(const Protocol protocol,
+	void Virtual::LocoFunctionState(const Protocol protocol,
 		const Address address,
 		const DataModel::LocoFunctionNr function,
 		const DataModel::LocoFunctionState on)

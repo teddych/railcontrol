@@ -58,7 +58,7 @@ namespace Hardware
 			LocoSpeedOrientation(address, speed, orientation);
 		}
 
-		void DccPpEx::LocoFunction(__attribute__((unused)) const Protocol protocol,
+		void DccPpEx::LocoFunctionState(__attribute__((unused)) const Protocol protocol,
 			const Address address,
 			const DataModel::LocoFunctionNr function,
 			const DataModel::LocoFunctionState on)

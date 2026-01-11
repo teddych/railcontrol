@@ -106,7 +106,7 @@ namespace Hardware
 		SendTwoBytes(speedMM, addressMM);
 	}
 
-	void M6051::LocoFunction(__attribute__((unused)) const Protocol protocol,
+	void M6051::LocoFunctionState(__attribute__((unused)) const Protocol protocol,
 		const Address address,
 		const DataModel::LocoFunctionNr function,
 		const DataModel::LocoFunctionState on)

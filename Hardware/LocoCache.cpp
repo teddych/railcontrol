@@ -18,6 +18,7 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
+#include "DataModel/ObjectIdentifier.h"
 #include "Hardware/LocoCache.h"
 #include "Manager.h"
 
@@ -38,27 +39,29 @@ namespace Hardware
 
 	void LocoCache::Save(LocoCacheEntry& entry, const std::string& oldMatchKey)
 	{
+		// FIXME: move this to Manager to always use locoMutex and use it only once
 		const std::string& matchKey = entry.GetMatchKey();
 		DataModel::Loco* loco = nullptr;
 
-		const bool matchKeyChanged = matchKey.compare(oldMatchKey) != 0;
+		const bool matchKeyChanged = (matchKey.compare(oldMatchKey) != 0);
 		if (matchKeyChanged)
 		{
 			const LocoID locoId = Delete(oldMatchKey);
-			loco = manager->GetLoco(locoId);
+			// FIXME: remove GetLocoBaseInternal here
+			loco = dynamic_cast<DataModel::Loco*>(manager->GetLocoBaseInternal(DataModel::ObjectIdentifier(ObjectTypeLoco, locoId)));
 		}
 
-		if (loco == nullptr)
+		if (!loco)
 		{
 			loco = manager->GetLocoByMatchKey(GetControlId(), oldMatchKey);
 		}
 
-		if (loco == nullptr && matchKeyChanged)
+		if (!loco && matchKeyChanged)
 		{
 			loco = manager->GetLocoByMatchKey(GetControlId(), matchKey);
 		}
 
-		if (loco != nullptr)
+		if (loco)
 		{
 			entry.SetLocoID(loco->GetID());
 			*loco = entry;
