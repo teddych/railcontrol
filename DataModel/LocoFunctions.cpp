@@ -61,7 +61,7 @@ namespace DataModel
 		}
 		for (const LocoFunctionEntry& newEntry : newEntries)
 		{
-			LocoFunctionNr nr = newEntry.nr;
+			const LocoFunctionNr nr = newEntry.nr;
 			LocoFunctionState state = entries[nr].state;
 			entries[nr] = newEntry;
 			entries[nr].state = state;

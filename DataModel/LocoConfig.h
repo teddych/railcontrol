@@ -74,7 +74,7 @@ namespace DataModel
 				speed(loco.GetSpeed()),
 				orientation(loco.GetOrientation())
 			{
-				ConfigureFunctionStates(loco.GetFunctionStates());
+				SetFunctionStates(loco.GetFunctionStates());
 			}
 
 			inline LocoConfig(const Hardware::LocoCacheEntry& loco)
@@ -99,7 +99,7 @@ namespace DataModel
 				speed(MinSpeed),
 				orientation(OrientationLeft)
 			{
-				ConfigureFunctionStates(loco.GetFunctionStates());
+				SetFunctionStates(loco.GetFunctionStates());
 			}
 
 			inline LocoConfig(const DataModel::MultipleUnit& multipleUnit)
@@ -124,7 +124,7 @@ namespace DataModel
 				speed(multipleUnit.GetSpeed()),
 				orientation(multipleUnit.GetOrientation())
 			{
-				ConfigureFunctionStates(multipleUnit.GetFunctionStates());
+				SetFunctionStates(multipleUnit.GetFunctionStates());
 			}
 
 			inline LocoConfig(const DataModel::LocoBase& locoBase)
@@ -148,7 +148,7 @@ namespace DataModel
 				speed(locoBase.GetSpeed()),
 				orientation(locoBase.GetOrientation())
 			{
-				ConfigureFunctionStates(locoBase.GetFunctionStates());
+				SetFunctionStates(locoBase.GetFunctionStates());
 			}
 
 			inline LocoConfig& operator=(const DataModel::Loco& loco)
@@ -162,7 +162,7 @@ namespace DataModel
 				name = loco.GetName();
 				matchKey = loco.GetMatchKey();
 				isInUse = loco.IsInUse();
-				ConfigureFunctionStates(loco.GetFunctionStates());
+				SetFunctionStates(loco.GetFunctionStates());
 				pushpull = loco.GetPushpull();
 				length = loco.GetLength();
 				maxSpeed = loco.GetMaxSpeed();
@@ -188,7 +188,7 @@ namespace DataModel
 				name = locoCache.GetName();
 				matchKey = locoCache.GetMatchKey();
 				isInUse = false;
-				ConfigureFunctionStates(locoCache.GetFunctionStates());
+				SetFunctionStates(locoCache.GetFunctionStates());
 				pushpull = false;
 				length = 0;
 				maxSpeed = MinSpeed;
@@ -214,7 +214,7 @@ namespace DataModel
 				name = multipleUnit.GetName();
 				matchKey = multipleUnit.GetMatchKey();
 				isInUse = multipleUnit.IsInUse();
-				ConfigureFunctionStates(multipleUnit.GetFunctionStates());
+				SetFunctionStates(multipleUnit.GetFunctionStates());
 				pushpull = multipleUnit.GetPushpull();
 				length = multipleUnit.GetLength();
 				maxSpeed = multipleUnit.GetMaxSpeed();
@@ -240,7 +240,7 @@ namespace DataModel
 				name = locoBase.GetName();
 				matchKey = locoBase.GetMatchKey();
 				isInUse = locoBase.IsInUse();
-				ConfigureFunctionStates(locoBase.GetFunctionStates());
+				SetFunctionStates(locoBase.GetFunctionStates());
 				pushpull = locoBase.GetPushpull();
 				length = locoBase.GetLength();
 				maxSpeed = locoBase.GetMaxSpeed();
@@ -330,9 +330,9 @@ namespace DataModel
 				functions.GetFunctions(out);
 			}
 
-			inline void ConfigureFunctionStates(const std::vector<LocoFunctionEntry>& newEntries)
+			inline void SetFunctionStates(const std::vector<LocoFunctionEntry>& newEntries)
 			{
-				functions.ConfigureFunctions(newEntries);
+				functions.SetFunctionStates(newEntries);
 			}
 
 			inline bool GetPushpull() const

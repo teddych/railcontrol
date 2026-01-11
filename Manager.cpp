@@ -739,7 +739,6 @@ const map<string,LocoConfig> Manager::GetUnmatchedLocosOfControl(const ControlID
 
 Loco* Manager::GetLocoInternal(const ControlID controlID, const Protocol protocol, const Address address) const
 {
-	std::lock_guard<std::mutex> guard(locoMutex);
 	for (auto& l : locos)
 	{
 		Loco* loco = l.second;
@@ -1289,7 +1288,7 @@ bool Manager::LocoBaseSpeed(const ControlType controlType,
 bool Manager::LocoBaseSpeedInternal(LocoBase* locoBase,
 	const Speed speed)
 {
-	const Speed newSpeed = std::max(MaxSpeed,speed);
+	const Speed newSpeed = std::min(MaxSpeed, speed);
 	const string& locoName = locoBase->GetName();
 	const Speed oldSpeed = locoBase->GetSpeed();
 	if (oldSpeed == newSpeed)
