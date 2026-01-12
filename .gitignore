@@ -1,9 +1,9 @@
 railcontrol
 railcontrol.conf
 railcontrol.exe
-railcontrol.sqlite
-railcontrol.sqlite-journal
-railcontrol.sqlite.*
+*.sqlite
+*.sqlite-journal
+*.sqlite.*
 railcontrol.log
 railcontrol.log.*
 *.tar.xz
@@ -11,6 +11,7 @@ railcontrol.log.*
 Storage/sqlite/sqlite3
 *.o
 *.so
+*.a
 *.bak
 test/testloco
 tools/Cc-Schnitte-Sniffer
@@ -24,4 +25,5 @@ build/
 CMakeCache.txt
 CMakeFiles/*
 cmake_install.cmake
+*.cmake
 .idea/
