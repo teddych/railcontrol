@@ -45,12 +45,12 @@ railcontrol: $(OBJ)
 	$(CXX) $(LDFLAGS) $(OBJ) -o $@ $(LIBS)
 
 noupdatecheck: CXXFLAGS += -DNOUPDATECHECK
-noupdatecheck: all
+noupdatecheck: railcontrol
 
-strip: all
+strip: railcontrol
 	strip railcontrol
 
-dist: all
+dist: railcontrol
 	strip railcontrol
 	mkdir $(TMPDIR)
 	cp -r \
@@ -61,7 +61,7 @@ dist: all
 	( cd $(TMPDIR)/.. && tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz RailControl/* )
 	rm -r $(TMPDIR)
 
-dist-cygwin: all
+dist-cygwin: railcontrol
 	strip railcontrol.exe
 	mkdir $(TMPDIRCYGWIN)
 	cp -r \
