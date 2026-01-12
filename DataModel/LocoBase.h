@@ -148,7 +148,7 @@ namespace DataModel
 
 			bool CheckFreeingTrack(const TrackID trackID) const;
 
-			void LocationReached(const FeedbackID feedbackID);
+			Speed LocationReached(const FeedbackID feedbackID);
 
 			virtual void SetSpeed(const Speed speed);
 
@@ -364,34 +364,37 @@ namespace DataModel
 
 			bool GoToAutoModeInternal(const LocoState newState);
 
-			Speed GetRouteSpeed(const Route::Speed routeSpeed);
+			Speed GetRouteSpeed(const Route::Speed routeSpeed) const;
 
-			void LocationStopReached(const FeedbackID feedbackID, const Delay stopDelay);
+			Speed LocationStopReached(const FeedbackID feedbackID,
+				const Delay stopDelay);
 
-			void LocationStopReached();
+			Speed LocationStopReached();
 
-			static inline void LocationStopReachedStatic(LocoBase* locoBase, const FeedbackID feedbackID, const Delay stopDelay)
-			{
-				locoBase->LocationStopReached(feedbackID, stopDelay);
-			}
+			static void LocationStopReachedStatic(Manager* manager,
+				LocoBase* locoBase,
+				const FeedbackID feedbackID,
+				const Delay stopDelay);
 
-			void LocationCreepReached(const FeedbackID feedbackID, const Delay creepDelay);
+			Speed LocationCreepReached(const FeedbackID feedbackID,
+				const Delay creepDelay);
 
-			void LocationCreepReached();
+			Speed LocationCreepReached();
 
-			static inline void LocationCreepReachedStatic(LocoBase* locoBase, const FeedbackID feedbackID, const Delay creepDelay)
-			{
-				locoBase->LocationCreepReached(feedbackID, creepDelay);
-			}
+			static void LocationCreepReachedStatic(Manager* manager,
+				LocoBase* locoBase,
+				const FeedbackID feedbackID,
+				const Delay creepDelay);
 
-			void LocationReducedReached(const FeedbackID feedbackID, const Delay reducedDelay);
+			Speed LocationReducedReached(const FeedbackID feedbackID,
+				const Delay reducedDelay);
 
-			void LocationReducedReached();
+			Speed LocationReducedReached();
 
-			static inline void LocationReducedReachedStatic(LocoBase* locoBase, const FeedbackID feedbackID, const Delay reducedDelay)
-			{
-				locoBase->LocationReducedReached(feedbackID, reducedDelay);
-			}
+			static void LocationReducedReachedStatic(Manager* manager,
+				LocoBase* locoBase,
+				const FeedbackID feedbackID,
+				const Delay reducedDelay);
 
 			mutable std::mutex stateMutex;
 			std::thread locoThread;

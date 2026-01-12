@@ -720,7 +720,7 @@ namespace DataModel
 		return true;
 	}
 
-	Speed LocoBase::GetRouteSpeed(const Route::Speed routeSpeed)
+	Speed LocoBase::GetRouteSpeed(const Route::Speed routeSpeed) const
 	{
 		switch (routeSpeed)
 		{
@@ -738,68 +738,93 @@ namespace DataModel
 		}
 	}
 
-	void LocoBase::LocationStopReached(const FeedbackID feedbackID, const Delay stopDelay)
+	Speed LocoBase::LocationStopReached(const FeedbackID feedbackID,
+		const Delay stopDelay)
 	{
 		Utils::Utils::SleepForMilliseconds(stopDelay * 100);
 		if (feedbackID != feedbackIdStop)
 		{
-			return;
+			return speed;
 		}
-		LocationStopReached();
+		return LocationStopReached();
 	}
 
-	void LocoBase::LocationStopReached()
+	Speed LocoBase::LocationStopReached()
 	{
-		manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), MinSpeed);
 		feedbackIdsReached.EnqueueBack(feedbackIdStop);
+		return MinSpeed;
 	}
 
-	void LocoBase::LocationCreepReached(const FeedbackID feedbackID, const Delay creepDelay)
+	void LocoBase::LocationStopReachedStatic(Manager* manager,
+		LocoBase* locoBase,
+		const FeedbackID feedbackID,
+		const Delay stopDelay)
+	{
+		const Speed newSpeed = locoBase->LocationStopReached(feedbackID, stopDelay);
+		manager->LocoBaseSpeed(ControlTypeInternal, locoBase->GetObjectIdentifier(), newSpeed);
+	}
+
+	Speed LocoBase::LocationCreepReached(const FeedbackID feedbackID,
+		const Delay creepDelay)
 	{
 		Utils::Utils::SleepForMilliseconds(creepDelay * 100);
 		if (feedbackID != feedbackIdCreep)
 		{
-			return;
+			return speed;
 		}
-		LocationCreepReached();
+		return LocationCreepReached();
 	}
 
-	void LocoBase::LocationCreepReached()
+	Speed LocoBase::LocationCreepReached()
 	{
-		if (speed > creepingSpeed)
-		{
-			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), creepingSpeed);
-		}
 		if (feedbackIdFirst != FeedbackNone)
 		{
 			feedbackIdsReached.EnqueueBack(feedbackIdFirst);
 		}
+		return std::min(speed, creepingSpeed);
 	}
 
-	void LocoBase::LocationReducedReached(const FeedbackID feedbackID, const Delay reducedDelay)
+	void LocoBase::LocationCreepReachedStatic(Manager* manager,
+		LocoBase* locoBase,
+		const FeedbackID feedbackID,
+		const Delay creepDelay)
+	{
+		const Speed newSpeed = locoBase->LocationCreepReached(feedbackID, creepDelay);
+		manager->LocoBaseSpeed(ControlTypeInternal, locoBase->GetObjectIdentifier(), newSpeed);
+	}
+
+	Speed LocoBase::LocationReducedReached(const FeedbackID feedbackID,
+		const Delay reducedDelay)
 	{
 		Utils::Utils::SleepForMilliseconds(reducedDelay * 100);
 		if (feedbackID != feedbackIdReduced)
 		{
-			return;
+			return speed;
 		}
-		LocationReducedReached();
+		return LocationReducedReached();
 	}
 
-	void LocoBase::LocationReducedReached()
+	Speed LocoBase::LocationReducedReached()
 	{
-		if (speed > reducedSpeed)
-		{
-			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), reducedSpeed);
-		}
 		if (feedbackIdFirst != 0)
 		{
 			feedbackIdsReached.EnqueueBack(feedbackIdFirst);
 		}
+		return std::min(speed, reducedSpeed);
 	}
 
-	void LocoBase::LocationReached(const FeedbackID feedbackID)
+	void LocoBase::LocationReducedReachedStatic(Manager* manager,
+		LocoBase* locoBase,
+		const FeedbackID feedbackID,
+		const Delay reducedDelay)
 	{
+		const Speed newSpeed = locoBase->LocationReducedReached(feedbackID, reducedDelay);
+		manager->LocoBaseSpeed(ControlTypeInternal, locoBase->GetObjectIdentifier(), newSpeed);
+	}
+
+	Speed LocoBase::LocationReached(const FeedbackID feedbackID)
+	{
+		Speed newSpeed = speed;
 		if (feedbackID == feedbackIdFirstReduced)
 		{
 			const Route::Speed routeSpeed = routeSecond->GetSpeed();
@@ -807,10 +832,7 @@ namespace DataModel
 			{
 				case Route::SpeedReduced:
 				case Route::SpeedCreeping:
-					if (speed > reducedSpeed)
-					{
-						manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), reducedSpeed);
-					}
+					newSpeed = std::min(speed, reducedSpeed);
 					break;
 
 				default:
@@ -824,10 +846,7 @@ namespace DataModel
 			switch (routeSpeed)
 			{
 				case Route::SpeedCreeping:
-					if (speed > creepingSpeed)
-					{
-						manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), creepingSpeed);
-					}
+					newSpeed = std::min(speed, creepingSpeed);
 					break;
 
 				default:
@@ -837,11 +856,8 @@ namespace DataModel
 
 		if (feedbackID == feedbackIdFirst)
 		{
-			const Speed newSpeed = GetRouteSpeed(routeSecond->GetSpeed());
-			if (speed > newSpeed)
-			{
-				manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), newSpeed);
-			}
+			const Speed nextSpeed = GetRouteSpeed(routeSecond->GetSpeed());
+			newSpeed = std::min(speed, nextSpeed);
 			feedbackIdsReached.EnqueueBack(feedbackIdFirst);
 		}
 
@@ -849,11 +865,11 @@ namespace DataModel
 		{
 			if (reducedDelay)
 			{
-				__attribute((unused)) auto r = std::async(std::launch::async, LocationReducedReachedStatic, this, feedbackID, reducedDelay);
+				__attribute((unused)) auto r = std::async(std::launch::async, LocationReducedReachedStatic, manager, this, feedbackID, reducedDelay);
 			}
 			else
 			{
-				LocationReducedReached();
+				newSpeed = LocationReducedReached();
 			}
 		}
 
@@ -861,11 +877,11 @@ namespace DataModel
 		{
 			if (creepDelay)
 			{
-				__attribute((unused)) auto r = std::async(std::launch::async, LocationCreepReachedStatic, this, feedbackID, creepDelay);
+				__attribute((unused)) auto r = std::async(std::launch::async, LocationCreepReachedStatic, manager, this, feedbackID, creepDelay);
 			}
 			else
 			{
-				LocationCreepReached();
+				newSpeed = LocationCreepReached();
 			}
 		}
 
@@ -873,20 +889,22 @@ namespace DataModel
 		{
 			if (stopDelay)
 			{
-				__attribute((unused)) auto r = std::async(std::launch::async, LocationStopReachedStatic, this, feedbackID, stopDelay);
+				__attribute((unused)) auto r = std::async(std::launch::async, LocationStopReachedStatic, manager, this, feedbackID, stopDelay);
 			}
 			else
 			{
-				LocationStopReached();
+				newSpeed = LocationStopReached();
 			}
 		}
 
 		if (feedbackID == feedbackIdOver)
 		{
-			manager->LocoBaseSpeed(ControlTypeInternal, GetObjectIdentifier(), MinSpeed);
 			manager->Booster(ControlTypeInternal, BoosterStateStop);
 			logger->Error(Languages::TextHitOverrun, manager->GetFeedbackName(feedbackID));
+			newSpeed = MinSpeed;
 		}
+
+		return newSpeed;
 	}
 
 	void LocoBase::SetSpeed(const Speed speed)

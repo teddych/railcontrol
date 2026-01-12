@@ -1504,8 +1504,9 @@ bool Manager::LocationReached(const DataModel::ObjectIdentifier& locoBaseIdentif
 {
 	const ObjectType type = locoBaseIdentifier.GetObjectType();
 	std::mutex& mutex = (type == ObjectTypeLoco ? locoMutex : multipleUnitMutex);
-	LocoBase* locoBase = nullptr;
+	LocoConfig locoConfig(LocoTypeNone);
 	{
+		LocoBase* locoBase = nullptr;
 		std::lock_guard<std::mutex> guard(mutex);
 		if (type == ObjectTypeLoco)
 		{
@@ -1521,8 +1522,15 @@ bool Manager::LocationReached(const DataModel::ObjectIdentifier& locoBaseIdentif
 			return false;
 		}
 
-		locoBase->LocationReached(feedbackID);
+		const Speed newSpeed = locoBase->LocationReached(feedbackID);
+		const bool change = LocoBaseSpeedInternal(locoBase, newSpeed);
+		if (!change)
+		{
+			return true;
+		}
+		locoConfig = *locoBase;
 	}
+	LocoBasePublishSpeed(ControlTypeInternal, locoConfig);
 	return true;
 }
 
