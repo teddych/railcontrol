@@ -212,30 +212,20 @@ namespace Utils
 		const std::string &filename,
 		unsigned int keepBackups)
 	{
-		DIR *dir = opendir(".");
-		if (dir == nullptr)
-		{
-			return;
-		}
-		struct dirent *ent;
+		const std::filesystem::path path(filename);
+
 		std::vector < string > fileNames;
 		const string filenameSearch = filename + ".";
 		const size_t filenameSearchLength = filenameSearch.length() + 10;
-		while (true)
+
+		for (auto& p: std::filesystem::directory_iterator("."))
 		{
-			ent = readdir(dir);
-			if (ent == nullptr)
+			auto f = p.path().filename().string();
+			if (f.length() == filenameSearchLength || f.find(filenameSearch) == string::npos)
 			{
-				break;
+				fileNames.push_back(p.path());
 			}
-			string fileName = ent->d_name;
-			if (fileName.length() != filenameSearchLength || fileName.find(filenameSearch) == string::npos)
-			{
-				continue;
-			}
-			fileNames.push_back(ent->d_name);
 		}
-		closedir(dir);
 		std::sort(fileNames.begin(), fileNames.end());
 
 		size_t numberOfFiles = fileNames.size();
