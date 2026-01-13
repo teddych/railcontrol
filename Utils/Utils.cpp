@@ -218,7 +218,7 @@ namespace Utils
 		const string filenameSearch = filename + ".";
 		const size_t filenameSearchLength = filenameSearch.length() + 10;
 
-		for (auto& p: std::filesystem::directory_iterator("."))
+		for (auto& p: std::filesystem::directory_iterator(path.parent_path()))
 		{
 			auto f = p.path().filename().string();
 			if (f.length() == filenameSearchLength || f.find(filenameSearch) == string::npos)
