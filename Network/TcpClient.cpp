@@ -50,19 +50,19 @@ namespace Network
 	    ok = ConnectWithTimeout(sock, reinterpret_cast<struct sockaddr*>(addressPointer), sizeof(address));
 	    if (ok < 0)
 	    {
-	    	Languages::TextSelector text;
-	    	switch (errno)
-	    	{
-	    		case ECONNREFUSED:
-	    			text = Languages::TextConnectionRefused;
-	    			break;
+	   	Languages::TextSelector text;
+	   	switch (errno)
+	   	{
+	   		case ECONNREFUSED:
+	   			text = Languages::TextConnectionRefused;
+	   			break;
 
-	    		case ENETUNREACH:
-	    			text = Languages::TextNetworkUnreachable;
-	    			break;
+	   		case ENETUNREACH:
+	   			text = Languages::TextNetworkUnreachable;
+	   			break;
 
-	    		default:
-	    			text = Languages::TextConnectionFailed;
+	   		default:
+	   			text = Languages::TextConnectionFailed;
 		    }
 			logger->Error(text, host, port);
 	        close(sock);

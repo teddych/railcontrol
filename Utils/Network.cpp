@@ -35,7 +35,7 @@ namespace Utils
 	    switch(sockaddr->ss_family) {
 	        case AF_INET:
 	        {
-	        	const struct sockaddr_in* sa4 = reinterpret_cast<const struct sockaddr_in*>(sockaddr);
+	       	const struct sockaddr_in* sa4 = reinterpret_cast<const struct sockaddr_in*>(sockaddr);
 	            inet_ntop(AF_INET, &(sa4->sin_addr), buffer, sizeof(buffer));
 	            port = ntohs(sa4->sin_port);
 	            break;
@@ -43,7 +43,7 @@ namespace Utils
 
 	        case AF_INET6:
 	        {
-	        	const struct sockaddr_in6* sa6 = reinterpret_cast<const struct sockaddr_in6*>(sockaddr);
+	       	const struct sockaddr_in6* sa6 = reinterpret_cast<const struct sockaddr_in6*>(sockaddr);
 	            inet_ntop(AF_INET6, &(sa6->sin6_addr), buffer, sizeof(buffer));
 	            port = ntohs(sa6->sin6_port);
 	            break;
