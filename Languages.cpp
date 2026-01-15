@@ -69,6 +69,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextAddress */ { "Address", "Adresse", "Dirección" },
 /* TextAddressMustBeHigherThen0 */ { "Address must be higher then 0", "Adresse muss grösser sein als 0", "Dirección tiene que ser mas que 0" },
 /* TextAddresses */ { "Addresses", "Adressen", "Direcciónes" },
+/* TextAllLocosInManualMode */ { "All locos are in manual mode now", "Alle Lokomotiven sind nun im Modus manuell", "Todas las locomotoras están en modo manual" },
 /* TextAllTrains */ { "all trains", "alle Züge", "todos los trenes" },
 /* TextAllowLocoTurn */ { "Allow turn locomotive orientation", "Fahrtrichtung der Lokomotive drehen erlauben", "Permitir girar la dirección de viaje" },
 /* TextAllowedPropulsions */ { "Allowed propulsions", "Erlaubte Antriebe", "Tipos de propulsiones permitios" },

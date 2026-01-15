@@ -661,15 +661,21 @@ class Manager
 		void TrackPublishState(const DataModel::Track* track);
 		bool RouteRelease(const RouteID routeID);
 
-		bool LocoDestinationReached(const DataModel::LocoBase* loco,
-			const DataModel::Route* route,
-			const DataModel::Track* track);
+		bool LocoDestinationReached(const DataModel::ObjectIdentifier& locoIdentifier,
+			const std::string& locoName,
+			const RouteID routeID,
+			const std::string& routeName,
+			const TrackID trackID,
+			const std::string& trackName);
 
 		bool LocoBaseStart(const DataModel::ObjectIdentifier& locoBaseIdentifier);
+
 		bool LocoBaseStartAll();
 
 		bool LocoBaseStop(const DataModel::ObjectIdentifier& locoBaseIdentifier);
+
 		bool LocoBaseStopAll();
+
 		void LocoBaseStopAllImmediately(const ControlType controlType);
 
 		bool LocoBaseAddTimeTable(const DataModel::ObjectIdentifier& locoBaseIdentifier,
@@ -812,7 +818,8 @@ class Manager
 			const DataModel::LocoConfig& locoConfig,
 			const DataModel::LocoFunctionNr function);
 
-		void LocoBasePublishRelease(DataModel::LocoConfig& locoConfig);
+		void LocoBasePublishRelease(const DataModel::ObjectIdentifier& locoIdentifier,
+			const std::string& locoName);
 
 		DataModel::Accessory* GetAccessory(const ControlID controlID,
 			const Protocol protocol,

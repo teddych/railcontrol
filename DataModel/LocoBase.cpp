@@ -976,11 +976,11 @@ namespace DataModel
 		if (routeSecond)
 		{
 			// this happens when FeedbackIdFirst has been missed
-			manager->LocoDestinationReached(this, routeSecond, trackSecond);
+			manager->LocoDestinationReached(GetObjectIdentifier(), GetName(), routeSecond->GetID(), routeSecond->GetName(), trackSecond->GetID(), trackSecond->GetName());
 		}
 		else
 		{
-			manager->LocoDestinationReached(this, routeFirst, trackFirst);
+			manager->LocoDestinationReached(GetObjectIdentifier(), GetName(), routeFirst->GetID(), routeFirst->GetName(), trackFirst->GetID(), trackFirst->GetName());
 		}
 		logger->Info(Languages::TextReachedItsDestination);
 

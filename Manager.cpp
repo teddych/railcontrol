@@ -4285,8 +4285,9 @@ bool Manager::LocoBaseIntoTrack(Logger::Logger* logger, const ObjectIdentifier& 
 
 bool Manager::LocoRelease(const LocoID locoID)
 {
-	LocoBaseSpeed(ControlTypeInternal, ObjectIdentifier(ObjectTypeLoco, locoID), MinSpeed);
-	LocoConfig locoConfig;
+	const ObjectIdentifier locoIdentifier(ObjectTypeLoco, locoID);
+	LocoBaseSpeed(ControlTypeInternal, locoIdentifier, MinSpeed);
+	string locoName;
 	{
 		std::lock_guard<std::mutex> guard(locoMutex);
 		Loco* loco = GetLocoInternal(locoID);
@@ -4300,16 +4301,17 @@ bool Manager::LocoRelease(const LocoID locoID)
 		{
 			return false;
 		}
-		locoConfig = *loco;
+		locoName = loco->GetName();
 	}
-	LocoBasePublishRelease(locoConfig);
+	LocoBasePublishRelease(locoIdentifier, locoName);
 	return true;
 }
 
 bool Manager::MultipleUnitRelease(const MultipleUnitID multipleUnitID)
 {
-	LocoBaseSpeed(ControlTypeInternal, ObjectIdentifier(ObjectTypeMultipleUnit, multipleUnitID), MinSpeed);
-	LocoConfig locoConfig;
+	const ObjectIdentifier multipleUnitIdentifier(ObjectTypeMultipleUnit, multipleUnitID);
+	LocoBaseSpeed(ControlTypeInternal, multipleUnitIdentifier, MinSpeed);
+	string multipleUnitName;
 	{
 		std::lock_guard<std::mutex> guard(multipleUnitMutex);
 		MultipleUnit* multipleUnit = GetMultipleUnitInternal(multipleUnitID);
@@ -4322,18 +4324,19 @@ bool Manager::MultipleUnitRelease(const MultipleUnitID multipleUnitID)
 		{
 			return false;
 		}
-		locoConfig = *multipleUnit;
+		multipleUnitName = multipleUnit->GetName();
 	}
-	LocoBasePublishRelease(locoConfig);
+	LocoBasePublishRelease(multipleUnitIdentifier, multipleUnitName);
 	return true;
 }
 
-void Manager::LocoBasePublishRelease(LocoConfig& locoConfig)
+void Manager::LocoBasePublishRelease(const ObjectIdentifier& locoIdentifier,
+	const string& locoName)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoBaseRelease(locoConfig);
+		control.second->LocoBaseRelease(locoIdentifier, locoName);
 	}
 }
 
@@ -4440,14 +4443,17 @@ bool Manager::RouteRelease(const RouteID routeID)
 	return route->Release(logger, route->GetLocoBase());
 }
 
-bool Manager::LocoDestinationReached(const LocoBase* loco,
-	const Route* route,
-	const Track* track)
+bool Manager::LocoDestinationReached(const ObjectIdentifier& locoIdentifier,
+	const string& locoName,
+	const RouteID routeID,
+	const string& routeName,
+	const TrackID trackID,
+	const string& trackName)
 {
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		control.second->LocoBaseDestinationReached(loco, route, track);
+		control.second->LocoBaseDestinationReached(locoIdentifier, locoName, routeID, routeName, trackID, trackName);
 	}
 	return true;
 }
@@ -4455,9 +4461,10 @@ bool Manager::LocoDestinationReached(const LocoBase* loco,
 bool Manager::LocoBaseStart(const ObjectIdentifier& locoBaseIdentifier)
 {
 	const ObjectType type = locoBaseIdentifier.GetObjectType();
+	string locoName;
 	std::mutex& mutex = (type == ObjectTypeLoco ? locoMutex : multipleUnitMutex);
-	LocoBase* locoBase = nullptr;
 	{
+		LocoBase* locoBase = nullptr;
 		std::lock_guard<std::mutex> guard(mutex);
 		if (type == ObjectTypeLoco)
 		{
@@ -4476,12 +4483,12 @@ bool Manager::LocoBaseStart(const ObjectIdentifier& locoBaseIdentifier)
 		{
 			return false;
 		}
+		locoName = locoBase->GetName();
 	}
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		// FIXME: replace LocoBase with Lococonfig
-		control.second->LocoBaseStart(locoBase);
+		control.second->LocoBaseStart(locoBaseIdentifier, locoName);
 	}
 	return true;
 }
@@ -4518,9 +4525,13 @@ bool Manager::LocoBaseStartAll()
 bool Manager::LocoBaseStop(const ObjectIdentifier& locoBaseIdentifier)
 {
 	const ObjectType type = locoBaseIdentifier.GetObjectType();
+	string locoName;
+	bool stopRequested = false;
 	std::mutex& mutex = (type == ObjectTypeLoco ? locoMutex : multipleUnitMutex);
-	LocoBase* locoBase = nullptr;
+	while (true)
 	{
+		LocoBase* locoBase = nullptr;
+		{
 			std::lock_guard<std::mutex> guard(mutex);
 			if (type == ObjectTypeLoco)
 			{
@@ -4538,18 +4549,24 @@ bool Manager::LocoBaseStop(const ObjectIdentifier& locoBaseIdentifier)
 			{
 				return true;
 			}
-			locoBase->RequestManualMode();
-	}
-	while (!locoBase->GoToManualMode())
-	{
+			if (!stopRequested)
+			{
+				locoBase->RequestManualMode();
+				locoName = locoBase->GetName();
+			}
+			if (locoBase->GoToManualMode())
+			{
+				break;
+			}
+		}
+
 		Utils::Utils::SleepForSeconds(1);
 	}
 
 	std::lock_guard<std::mutex> guard(controlMutex);
 	for (auto& control : controls)
 	{
-		// FIXME: replace LocoBase with Lococonfig
-		control.second->LocoBaseStop(locoBase);
+		control.second->LocoBaseStop(locoBaseIdentifier, locoName);
 	}
 	return true;
 }

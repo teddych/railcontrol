@@ -53,6 +53,7 @@ using DataModel::LocoBase;
 using DataModel::LocoConfig;
 using DataModel::LocoFunctionNr;
 using DataModel::LocoFunctionState;
+using DataModel::ObjectIdentifier;
 using DataModel::Route;
 using DataModel::Track;
 
@@ -590,11 +591,12 @@ namespace Server { namespace Web
 		AddUpdate(command, Languages::TextCounterUpdated, counter->GetName());
 	}
 
-	void WebServer::LocoBaseRelease(const DataModel::LocoConfig& locoConfig)
+	void WebServer::LocoBaseRelease(const ObjectIdentifier& locoIdentifier,
+		const string& locoName)
 	{
 		string command("locorelease;loco=");
-		command += locoConfig.GetObjectIdentifier();
-		AddUpdate(command, Languages::TextLocoIsReleased, locoConfig.GetName());
+		command += locoIdentifier;
+		AddUpdate(command, Languages::TextLocoIsReleased, locoName);
 	}
 
 	void WebServer::RouteRelease(const RouteID routeID)
@@ -604,67 +606,72 @@ namespace Server { namespace Web
 		AddUpdate(command.str(), Languages::TextRouteIsReleased, manager.GetRouteName(routeID));
 	}
 
-	void WebServer::LocoBaseDestinationReached(const LocoBase* loco,
-		const Route* route,
-		const Track* track)
+	void WebServer::LocoBaseDestinationReached(const ObjectIdentifier& locoIdentifier,
+		const string& locoName,
+		const RouteID routeID,
+		const string& routeName,
+		const TrackID trackID,
+		const string& trackName)
 	{
 		string command("locoDestinationReached;loco=");
-		command += loco->GetObjectIdentifier();
+		command += locoIdentifier;
 		command += ";route=";
-		command += to_string(route->GetID());
+		command += to_string(routeID);
 		command += ";track=";
-		command += to_string(track->GetID());
-		AddUpdate(command, Languages::TextLocoHasReachedDestination, loco->GetName(), track->GetName(), route->GetName());
+		command += to_string(trackID);
+		AddUpdate(command, Languages::TextLocoHasReachedDestination, locoName, trackName, routeName);
 	}
 
-	void WebServer::LocoBaseStart(const DataModel::LocoBase* loco)
+	void WebServer::LocoBaseStart(const ObjectIdentifier& locoIdentifier,
+		const string& locoName)
 	{
 		string command("locoStart;loco=");
-		command += loco->GetObjectIdentifier();
-		AddUpdate(command, Languages::TextLocoIsInAutoMode, loco->GetName());
+		command += locoIdentifier;
+		AddUpdate(command, Languages::TextLocoIsInAutoMode, locoName);
 	}
 
-	void WebServer::LocoBaseStop(const DataModel::LocoBase* loco)
+	void WebServer::LocoBaseStop(const ObjectIdentifier& locoIdentifier,
+		const string& locoName)
 	{
 		string command("locoStop;loco=");
-		command += loco->GetObjectIdentifier();
-		AddUpdate(command, Languages::TextLocoIsInManualMode, loco->GetName());
+		command += locoIdentifier;
+		AddUpdate(command, Languages::TextLocoIsInManualMode, locoName);
 	}
 
 	void WebServer::LocoSettings(const LocoID locoID,
-		const std::string& name,
+		const std::string& locoName,
 		__attribute__((unused)) const std::string& matchKey)
 	{
-		stringstream command;
-		command << "locosettings;loco=" << locoID;
-		AddUpdate(command.str(), Languages::TextLocoUpdated, name);
+		string command("locosettings;loco=");
+		command += to_string(locoID);
+		AddUpdate(command, Languages::TextLocoUpdated, locoName);
 	}
 
 	void WebServer::LocoDelete(const LocoID locoID,
-		const std::string& name,
+		const std::string& locoName,
 		__attribute__((unused)) const std::string& matchkey)
 	{
-		stringstream command;
-		command << "locodelete;loco=" << locoID;
-		AddUpdate(command.str(), Languages::TextLocoDeleted, name);
+		string command("locodelete;loco=");
+		command += to_string(locoID);
+		AddUpdate(command, Languages::TextLocoDeleted, locoName);
 	}
 
 	void WebServer::MultipleUnitSettings(const MultipleUnitID multipleUnitID,
-		const std::string& name,
+		const std::string& multipleUnitName,
 		__attribute__((unused)) const std::string& matchKey)
 	{
-		stringstream command;
-		command << "multipleunitsettings;loco=" << multipleUnitID;
-		AddUpdate(command.str(), Languages::TextLocoUpdated, name);
+		string command("multipleunitsettings;loco=");
+		command += to_string(multipleUnitID);
+		AddUpdate(command, Languages::TextLocoUpdated, multipleUnitName);
 	}
 
 	void WebServer::MultipleUnitDelete(const MultipleUnitID multipleUnitID,
-		const std::string& name,
+		const std::string& multipleUnitName,
 		__attribute__((unused)) const std::string& matchkey)
 	{
-		stringstream command;
-		command << "multipleunitdelete;loco=" << multipleUnitID;
-		AddUpdate(command.str(), Languages::TextLocoDeleted, name);
+		string command("multipleunitdelete;loco=");
+		command += to_string(multipleUnitID);
+		AddUpdate(command, Languages::TextLocoDeleted, multipleUnitName);
 	}
 
 	void WebServer::LayerSettings(const LayerID layerID, const std::string& name)

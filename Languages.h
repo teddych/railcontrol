@@ -69,6 +69,7 @@ class Languages
 			TextAddress,
 			TextAddressMustBeHigherThen0,
 			TextAddresses,
+			TextAllLocosInManualMode,
 			TextAllTrains,
 			TextAllowLocoTurn,
 			TextAllowedPropulsions,

@@ -165,9 +165,12 @@ class ControlInterface
 		{
 		}
 
-		virtual void LocoBaseDestinationReached(__attribute__((unused)) const DataModel::LocoBase* loco,
-			__attribute__((unused)) const DataModel::Route* route,
-			__attribute__((unused)) const DataModel::Track* track)
+		virtual void LocoBaseDestinationReached(__attribute__((unused)) const DataModel::ObjectIdentifier& locoIdentifier,
+			__attribute__((unused)) const std::string& locoName,
+			__attribute__((unused)) const RouteID routeID,
+			__attribute__((unused)) const std::string& routeName,
+			__attribute__((unused)) const TrackID trackID,
+			__attribute__((unused)) const std::string& trackName)
 		{
 		}
 
@@ -198,15 +201,18 @@ class ControlInterface
 			}
 		}
 
-		virtual void LocoBaseRelease(__attribute__((unused)) const DataModel::LocoConfig& locoConfig)
+		virtual void LocoBaseRelease(__attribute__((unused)) const DataModel::ObjectIdentifier& locoIdentifier,
+			__attribute__((unused)) const std::string& locoName)
 		{
 		}
 
-		virtual void LocoBaseStart(__attribute__((unused)) const DataModel::LocoBase* loco)
+		virtual void LocoBaseStart(__attribute__((unused)) const DataModel::ObjectIdentifier& locoIdentifier,
+			__attribute__((unused)) const std::string& locoName)
 		{
 		}
 
-		virtual void LocoBaseStop(__attribute__((unused)) const DataModel::LocoBase* loco)
+		virtual void LocoBaseStop(__attribute__((unused)) const DataModel::ObjectIdentifier& locoIdentifier,
+				__attribute__((unused)) const std::string& locoName)
 		{
 		}
 
