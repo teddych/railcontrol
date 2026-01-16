@@ -30,6 +30,8 @@ void shutdownRailControlSignal(int);
 
 void shutdownRailControlWebserver();
 
+void segvHandler(int, siginfo_t*, void*);
+
 inline bool isShutdownRunning()
 {
 	return stopSignalCounter > 0;

@@ -176,7 +176,7 @@ namespace Utils
 		return output;
 	}
 
-	std::string Integer::IntegerToHex(const unsigned int input, const unsigned int size)
+	std::string Integer::IntegerToHex(const unsigned long int input, const unsigned int size)
 	{
 		if (input == 0)
 		{
@@ -184,7 +184,7 @@ namespace Utils
 		}
 		std::string output;
 
-		unsigned int decimal = input;
+		unsigned long int decimal = input;
 		unsigned int internalSize = 0;
 		while (decimal)
 		{

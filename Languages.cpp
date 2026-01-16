@@ -727,6 +727,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextSignalStateZs7 */ { "Caution Zs 7", "Vorsichtssignal Zs 7", "Cuidado Zs 7" },
 /* TextSignalUpdated */ { "Signal {0} updated", "Signal {0} aktualisiert", "Señal {0} actualizado" },
 /* TextSignals */ { "Signals", "Signale", "Señales" },
+/* TextSigSegvReceived */ { "SIGSEGV received at address 0x{0}. Exiting without cleanup.", "SIGSEGV empfangen an Adresse 0x{0}. Beende ohne Aufräumen.", "SIGSEGV recibido en dirección 0x{0}. Terminando sin limpiar." },
 /* TextSimpleLeft */ { "simple left", "einfach links", "simple izquierda" },
 /* TextSimpleRight */ { "simple right", "einfach rechts", "simple derecha" },
 /* TextSlotHasAddress */ { "Slot {0} has address {1}", "Slot {0} hat Adresse {1}", "Slot {0} tiene dirección {1}" },

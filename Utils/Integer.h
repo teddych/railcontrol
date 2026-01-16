@@ -47,7 +47,7 @@ namespace Utils
 			static void ShortToDataLittleEndian(const uint16_t i, unsigned char* buffer);
 			static uint16_t DataLittleEndianToShort(const unsigned char* buffer);
 			static std::string IntegerToBCD(const unsigned int input);
-			static std::string IntegerToHex(const unsigned int input, const unsigned int size = 1);
+			static std::string IntegerToHex(const unsigned long int input, const unsigned int size = 1);
 
 	}; // class Integer
 } // namespace Utils

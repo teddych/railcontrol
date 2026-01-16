@@ -727,6 +727,7 @@ class Languages
 			TextSignalStateZs7,
 			TextSignalUpdated,
 			TextSignals,
+			TextSigSegvReceived,
 			TextSimpleLeft,
 			TextSimpleRight,
 			TextSlotHasAddress,

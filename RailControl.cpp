@@ -64,6 +64,16 @@ void shutdownRailControlWebserver()
 	killRailControlIfNeeded(logger);
 }
 
+void segvHandler(__attribute__((unused)) int signo,
+	siginfo_t* info,
+	__attribute__((unused)) void* ucontext)
+{
+	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
+	logger->Error(Languages::TextSigSegvReceived, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
+
+	exit(EXIT_FAILURE);
+}
+
 char readFromStdIn(const time_t sec, const long int usec)
 {
 	char input = 0;
@@ -120,6 +130,12 @@ int main (int argc, char* argv[])
 	stopSignalCounter = 0;
 	signal(SIGINT, shutdownRailControlSignal);
 	signal(SIGTERM, shutdownRailControlSignal);
+
+	struct sigaction sa;
+	sa.sa_sigaction = segvHandler;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_flags = SA_SIGINFO;
+	sigaction(SIGSEGV, &sa, nullptr);
 
 	const string RailControl = "RailControl";
 	Utils::Utils::SetThreadName(RailControl);
