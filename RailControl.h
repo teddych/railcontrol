@@ -20,6 +20,8 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <signal.h>
+
 static volatile unsigned char stopSignalCounter;
 static const unsigned char MaxStopSignalCounter = 3;
 

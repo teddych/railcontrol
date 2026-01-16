@@ -22,7 +22,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <cstdlib>		//exit(0);
 #include <cstring>		//memset
 #include <iostream>
-#include <signal.h>
 #include <sstream>
 #include <unistd.h>		//close; isatty
 #include <vector>
