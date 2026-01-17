@@ -655,7 +655,7 @@ set(PANDOC_OPTS --toc --toc-depth=2
 
 add_custom_command(
     OUTPUT ${OUTPUT_HTML_DE}
-    COMMAND pandoc ${PANDOC_OPTS}
+    COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
                    --metadata-file=Documentation/de/metadata.yaml
                    --output=${OUTPUT_HTML_DE} ${DOC_DE}
     DEPENDS ${DOC_DE}
@@ -666,7 +666,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT ${OUTPUT_HTML_EN}
-    COMMAND pandoc ${PANDOC_OPTS}
+    COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
                    --metadata-file=Documentation/en/metadata.yaml
                    --output=${OUTPUT_HTML_EN} ${DOC_EN}
     DEPENDS ${DOC_EN}
@@ -677,7 +677,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT ${OUTPUT_HTML_ES}
-    COMMAND pandoc ${PANDOC_OPTS}
+    COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
                    --metadata-file=Documentation/es/metadata.yaml
                    --output=${OUTPUT_HTML_ES} ${DOC_ES}
     DEPENDS ${DOC_ES}
@@ -753,7 +753,7 @@ set(PANDOC_CHUNKEDOPTS --toc --toc-depth=2
                        --split-level=1)
 add_custom_command(
     OUTPUT ${OUTPUT_CHUNKEDHTML_DE}/index.html
-    COMMAND pandoc ${PANDOC_CHUNKEDOPTS}
+    COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
                    --resource-path=".:Documentation:Documentation/de:doc:doc/de"
                    --metadata-file=Documentation/de/metadata.yaml
                    --output=${OUTPUT_CHUNKEDHTML_DE} ${DOC_DE}
@@ -765,7 +765,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT ${OUTPUT_CHUNKEDHTML_EN}/index.html
-    COMMAND pandoc ${PANDOC_CHUNKEDOPTS}
+    COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
                    --resource-path=".:Documentation:Documentation/en:doc:doc/en"
                    --metadata-file=Documentation/en/metadata.yaml
                    --output=${OUTPUT_CHUNKEDHTML_EN} ${DOC_EN}
@@ -777,7 +777,7 @@ add_custom_command(
 
 add_custom_command(
     OUTPUT ${OUTPUT_CHUNKEDHTML_ES}/index.html
-    COMMAND pandoc ${PANDOC_CHUNKEDOPTS}
+    COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
                    --resource-path="doc/en:Documentation/en:.:Documentation:Documentation/es:doc:doc/es"
                    --metadata-file=Documentation/es/metadata.yaml
                    --output=${OUTPUT_CHUNKEDHTML_ES} ${DOC_ES}
