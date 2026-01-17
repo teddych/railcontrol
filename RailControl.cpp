@@ -26,6 +26,11 @@ along with RailControl; see the file LICENCE. If not see
 #include <unistd.h>		//close; isatty
 #include <vector>
 
+#ifdef __GLIBC__
+#include <execinfo.h>
+#include <ucontext.h>
+#endif
+
 #include "ArgumentHandler.h"
 #include "Hardware/HardwareHandler.h"
 #include "Languages.h"
@@ -65,10 +70,27 @@ void shutdownRailControlWebserver()
 
 void segvHandler(__attribute__((unused)) int signo,
 	siginfo_t* info,
-	__attribute__((unused)) void* ucontext)
+	__attribute__((unused)) void* secret)
 {
 	Logger::Logger* logger = Logger::Logger::GetLogger("Main");
+
+#ifdef __GLIBC__
+	logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
+
+	static const int MaxTrace = 16;
+	void* trace[MaxTrace];
+
+	const int traceSize = backtrace(trace, MaxTrace);
+
+	char** messages = backtrace_symbols(trace, traceSize);
+
+	for(int i = 0; i < traceSize; ++i)
+	{
+		logger->Error(Languages::TextBacktraceLine, i, messages[i]);
+	}
+#else
 	logger->Error(Languages::TextSigSegvReceived, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
+#endif
 
 	exit(EXIT_FAILURE);
 }
