@@ -4661,6 +4661,7 @@ bool Manager::LocoBaseStopAll()
 		loco->GetLogger()->Info(Languages::Languages::TextReleasingLoco);
 		loco->Release();
 	}
+	logger->Info(Languages::Languages::TextAllLocosInManualMode);
 	return true;
 }
 
