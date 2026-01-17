@@ -47,7 +47,8 @@ using std::string;
 
 void killRailControlIfNeeded(Logger::Logger* logger)
 {
-	if (++stopSignalCounter < MaxStopSignalCounter)
+	stopSignalCounter = stopSignalCounter + 1;
+	if (stopSignalCounter < MaxStopSignalCounter)
 	{
 		return;
 	}
