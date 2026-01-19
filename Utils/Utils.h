@@ -68,8 +68,8 @@ namespace Utils
 				return (stat(name.c_str(), &buffer) == 0);
 			}
 
-			static void CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to);
-			static void RenameFile(Logger::Logger* logger, const std::string& from, const std::string& to);
+			static bool CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to);
+			static bool RenameFile(Logger::Logger* logger, const std::string& from, const std::string& to);
 
 			static void RemoveOldBackupFiles (Logger::Logger *logger,
 				const std::string &filename,

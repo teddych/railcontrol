@@ -202,7 +202,7 @@ int main (int argc, char* argv[])
 		configFileName = configFileDefaultName;
 	}
 
-	if (configFileName.compare(configFileDefaultName) == 0 && !Utils::Utils::FileExists(configFileDefaultName))
+	if ((configFileName.compare(configFileDefaultName) == 0) && (!Utils::Utils::FileExists(configFileDefaultName)))
 	{
 		Utils::Utils::CopyFile(logger, "railcontrol.conf.dist", configFileDefaultName);
 	}

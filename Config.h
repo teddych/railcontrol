@@ -26,6 +26,10 @@ along with RailControl; see the file LICENCE. If not see
 class Config
 {
 	public:
+		Config() = delete;
+		Config(const Config&) = delete;
+		Config& operator=(const Config&) = delete;
+
 		Config(const std::string& fileName);
 		const std::string& getStringValue(const std::string& key, const std::string& defaultValue);
 		int getIntValue(const std::string& key, const int defaultValue);
