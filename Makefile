@@ -1,5 +1,5 @@
 ifeq ("$(wildcard .git)", "")
-RAILCONTROL_VERSION=$(shell cat VERSION | sed s/v//)
+RAILCONTROL_VERSION=$(shell cat VERSION_RAILCONTROL | sed s/v//)
 GIT_HASH=$(shell cat VERSION_GIT_HASH)
 GIT_TIMESTAMP=$(shell cat VERSION_GIT_TIMESTAMP)
 GIT_DIRTY=0
@@ -115,11 +115,11 @@ test:
 tools:
 	make -C tools
 
-Version.cpp: Version.cpp.in VERSION VERSION_GIT_HASH VERSION_GIT_TIMESTAMP
+Version.cpp: Version.cpp.in VERSION_RAILCONTROL VERSION_GIT_HASH VERSION_GIT_TIMESTAMP
 	sed -e s/@COMPILE_TIMESTAMP@/$(SOURCE_DATE_EPOCH)/ \
 	    -e s/@GIT_HASH@/$(GIT_HASH)/ \
 	    -e s/@GIT_TIMESTAMP@/$(GIT_TIMESTAMP)/ \
-	    -e s/@GIT_DIRTY@/$(GIT_DIRTY)/ \
+	    -e "s/@GIT_DIRTY@/$(GIT_DIRTY)/" \
 	    -e s/@RAILCONTROL_VERSION@/$(RAILCONTROL_VERSION)/ \
 	    < $< > $@
 
