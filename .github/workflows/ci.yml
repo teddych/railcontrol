@@ -15,6 +15,7 @@ jobs:
   make:
     name: "${{ matrix.os }} with make"
     runs-on: "${{ matrix.os }}"
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -44,6 +45,7 @@ jobs:
   cmake:
     name: "${{ matrix.os }} with cmake"
     runs-on: "${{ matrix.os }}"
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
