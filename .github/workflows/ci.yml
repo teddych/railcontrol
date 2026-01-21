@@ -31,8 +31,11 @@ jobs:
         if: runner.os == 'Windows'
         with:
           packages: gcc-core gcc-g++
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
       - name: Build
-        run: make -j$(nproc)
+        run: make -j${{ steps.cpu-cores.outputs.count }}
         shell: bash
         env:
           CC: gcc
@@ -51,10 +54,13 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v2
+        id: cpu-cores
       - name: Build
         run: |
           cmake -B build
-          cmake --build build -j$(nproc)
+          cmake --build build -j${{ steps.cpu-cores.outputs.count }}
 
   # A dummy job that you can mark as a required check instead of each individual test
   test-suite:
