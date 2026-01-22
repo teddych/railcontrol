@@ -70,6 +70,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Server/Web/WebClientStatic.h"
 #include "Server/Web/WebServer.h"
 #include "Utils/Integer.h"
+#include "Utils/Path.h"
 
 using namespace DataModel;
 using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
@@ -780,14 +781,8 @@ namespace Server { namespace Web
 
 	void WebClient::DeliverFile(const string& virtualFile)
 	{
-		std::stringstream ss;
-		char workingDir[128];
-		if (getcwd(workingDir, sizeof(workingDir)))
-		{
-			ss << workingDir << "/html" << virtualFile;
-		}
-		string sFile = ss.str();
-		const char* realFile = sFile.c_str();
+		const std::filesystem::path virtualFilePath = Utils::Path::getDataDir() / "html" / virtualFile;
+		const char* realFile = virtualFilePath.c_str();
 		FILE* f = fopen(realFile, "r");
 		if (f == nullptr)
 		{
