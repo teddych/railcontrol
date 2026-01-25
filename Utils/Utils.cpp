@@ -1,7 +1,7 @@
 /*
 RailControl - Model Railway Control Software
 
-Copyright (c) 2017-2025 by Teddy / Dominik Mahrer - www.railcontrol.org
+Copyright (c) 2017-2026 by Teddy / Dominik Mahrer - www.railcontrol.org
 
 RailControl is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -192,47 +192,70 @@ namespace Utils
 		return output;
 	}
 
-	void Utils::CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to)
+	bool Utils::CopyFile(Logger::Logger* logger, const std::string& from, const std::string& to)
 	{
-		logger->Info(Languages::TextCopyingFromTo, from, to);
 		std::ifstream source(from, std::ios::binary);
+		if (!source.is_open())
+		{
+			return false;
+		}
 		std::ofstream destination(to, std::ios::binary);
+		if (!destination.is_open())
+		{
+			return false;
+		}
 		destination << source.rdbuf();
 		source.close();
 		destination.close();
+		logger->Info(Languages::TextCopyingFromTo, from, to);
+		return true;
 	}
 
-	void Utils::RenameFile(Logger::Logger* logger, const std::string& from, const std::string& to)
+	bool Utils::RenameFile(Logger::Logger* logger, const std::string& from, const std::string& to)
 	{
-		if (logger != nullptr)
+		const bool ret = std::rename(from.c_str(), to.c_str());
+		if (ret && logger)
 		{
 			logger->Info(Languages::TextRenamingFromTo, from, to);
 		}
-		std::rename(from.c_str(), to.c_str());
+		return ret;
 	}
 
 	void Utils::RemoveOldBackupFiles (Logger::Logger *logger,
-		const std::string &filename,
+		const string &pathFile,
 		unsigned int keepBackups)
 	{
-		DIR *dir = opendir(".");
-		if (dir == nullptr)
+		size_t posDirSeperator = pathFile.find_last_of('/');
+		DIR* dir;
+		string path;
+		string file;
+		if (posDirSeperator == string::npos)
+		{
+			file = pathFile;
+		}
+		else
+		{
+			path = pathFile.substr(0, posDirSeperator + 1);
+			file = pathFile.substr(posDirSeperator + 1);
+		}
+		dir= opendir(path.length() ? path.c_str() : ".");
+		if (!dir)
 		{
 			return;
 		}
 		struct dirent *ent;
 		std::vector < string > fileNames;
-		const string filenameSearch = filename + ".";
+		const string filenameSearch = file + ".";
 		const size_t filenameSearchLength = filenameSearch.length() + 10;
 		while (true)
 		{
 			ent = readdir(dir);
-			if (ent == nullptr)
+			if (!ent)
 			{
 				break;
 			}
-			string fileName = ent->d_name;
-			if (fileName.length() != filenameSearchLength || fileName.find(filenameSearch) == string::npos)
+			const string fileName = ent->d_name;
+			if ((fileName.length() != filenameSearchLength) || (fileName.find(filenameSearch) == string::npos))
 			{
 				continue;
 			}
@@ -242,7 +265,7 @@ namespace Utils
 		std::sort(fileNames.begin(), fileNames.end());
 
 		size_t numberOfFiles = fileNames.size();
-		if (numberOfFiles == 0 || numberOfFiles < keepBackups)
+		if ((numberOfFiles == 0) || (numberOfFiles < keepBackups))
 		{
 			return;
 		}
@@ -257,8 +280,9 @@ namespace Utils
 			}
 
 			--removeBackups;
-			logger->Info(Languages::TextRemoveBackupFile, fileName);
-			remove(fileName.c_str());
+			const string fileToDelete(path + fileName);
+			logger->Info(Languages::TextRemoveBackupFile, fileToDelete);
+			remove(fileToDelete.c_str());
 		}
 	}
 

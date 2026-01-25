@@ -1,7 +1,7 @@
 /*
 RailControl - Model Railway Control Software
 
-Copyright (c) 2017-2025 by Teddy / Dominik Mahrer - www.railcontrol.org
+Copyright (c) 2017-2026 by Teddy / Dominik Mahrer - www.railcontrol.org
 
 RailControl is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
@@ -734,7 +734,7 @@ namespace Hardware { namespace Protocols
 			return;
 		}
 		free(canFile->data);
-		canFiles.erase(static_cast<vector<Hardware::Protocols::MaerklinCANCommon::CanFile>::iterator>(canFile));
+		canFiles.erase(canFiles.begin() + (canFile - canFiles.data()));
 	}
 
 	struct MaerklinCANCommon::CanFile* MaerklinCANCommon::GetCanFile(const CanHash canHash)

@@ -1,5 +1,5 @@
 ifeq ("$(wildcard .git)", "")
-RAILCONTROL_VERSION=$(shell cat VERSION | sed s/v//)
+RAILCONTROL_VERSION=$(shell cat VERSION_RAILCONTROL | sed s/v//)
 GIT_HASH=$(shell cat VERSION_GIT_HASH)
 GIT_TIMESTAMP=$(shell cat VERSION_GIT_TIMESTAMP)
 GIT_DIRTY=0
@@ -12,7 +12,7 @@ GIT_DIRTY=$(shell git status -s | wc -l)
 endif
 
 CFLAGSSQLITE=-g -O2 -DSQLITE_ENABLE_FTS4 -DSQLITE_ENABLE_JSON1 -DSQLITE_ENABLE_RTREE -DHAVE_USLEEP
-CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration -Wno-\#warnings -Wno-deprecated -Wno-deprecated-non-prototype
+CFLAGSZLIB=-g -O2 -Wno-implicit-function-declaration
 CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11 -D_GNU_SOURCE
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11
 LDFLAGS=-g
@@ -45,12 +45,12 @@ railcontrol: $(OBJ)
 	$(CXX) $(LDFLAGS) $(OBJ) -o $@ $(LIBS)
 
 noupdatecheck: CXXFLAGS += -DNOUPDATECHECK
-noupdatecheck: all
+noupdatecheck: railcontrol
 
-strip: all
+strip: railcontrol
 	strip railcontrol
 
-dist: all
+dist: railcontrol
 	strip railcontrol
 	mkdir $(TMPDIR)
 	cp -r \
@@ -61,7 +61,7 @@ dist: all
 	( cd $(TMPDIR)/.. && tar cvJf railcontrol.`date +"%Y%m%d"`.tar.xz RailControl/* )
 	rm -r $(TMPDIR)
 
-dist-cygwin: all
+dist-cygwin: railcontrol
 	strip railcontrol.exe
 	mkdir $(TMPDIRCYGWIN)
 	cp -r \
@@ -115,11 +115,11 @@ test:
 tools:
 	make -C tools
 
-Version.cpp: Version.cpp.in VERSION VERSION_GIT_HASH VERSION_GIT_TIMESTAMP
+Version.cpp: Version.cpp.in VERSION_RAILCONTROL VERSION_GIT_HASH VERSION_GIT_TIMESTAMP
 	sed -e s/@COMPILE_TIMESTAMP@/$(SOURCE_DATE_EPOCH)/ \
 	    -e s/@GIT_HASH@/$(GIT_HASH)/ \
 	    -e s/@GIT_TIMESTAMP@/$(GIT_TIMESTAMP)/ \
-	    -e s/@GIT_DIRTY@/$(GIT_DIRTY)/ \
+	    -e "s/@GIT_DIRTY@/$(GIT_DIRTY)/" \
 	    -e s/@RAILCONTROL_VERSION@/$(RAILCONTROL_VERSION)/ \
 	    < $< > $@
 
