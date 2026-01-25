@@ -16,6 +16,9 @@ install, execute in a terminal
 sudo apt install railcontrol
 ```
 
+**Note:** Debian-specific documentation is located in the directory
+`/usr/share/doc/railcontrol`.
+
 # Configuration-File
 In the extracted archive there is a template of the configuration file (railcontrol.conf.dist). At first start of RailControl it will be copied to railcontrol.conf. Usually it is not needed to change any settings in the config file.
 
