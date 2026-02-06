@@ -389,6 +389,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 configure_file(Version.cpp.in Version.cpp @ONLY)
 
 set(CMAKE_INSTALL_BINDIR ".")
+set(CMAKE_INSTALL_DOCDIR "doc")
 set(DATADIR ".")
 
 install(TARGETS ${PROJECT_NAME})
@@ -558,6 +559,7 @@ add_custom_command(
 )
 
 if(PANDOC_EXECUTABLE)
+	install(DIRECTORY ${OUTPUT_HTML}/ DESTINATION ${CMAKE_INSTALL_DOCDIR})
 	add_custom_target(doc ALL
 		DEPENDS ${OUTPUT_HTML_DE_INDEX} ${OUTPUT_HTML_EN_INDEX} ${OUTPUT_HTML_ES_INDEX}
 	)
