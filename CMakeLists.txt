@@ -435,46 +435,7 @@ set(DOC_DE
 	Documentation/de/config-counter.md
 	Documentation/de/automatic.md
 )
-
-set(DOCDATA_DE
-    ${PROJECT_SOURCE_DIR}/Documentation/de/config_layers_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/control_list_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/counter_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/counter_position_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/cs2_config_can_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/cs2_config_ip_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/cs2_tcp_config_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/cs2_udp_config_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/feedback_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/feedback_position_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/groups_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/groups_tracks_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/locomotives_automode_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/locomotives_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/locomotives_functions_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/multipleunits_automode_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/multipleunits_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/multipleunits_functions_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/multipleunits_multipleunits_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/routes_atlock_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/routes_atunlock_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/routes_automode_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/routes_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/routes_position_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/settings_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/signals_addresses_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/signals_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/signals_position_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/switches_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/switches_position_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/texts_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/texts_position_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/tracks_automode_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/tracks_basics_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/tracks_feedbacks_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/track_signals_de.png
-    ${PROJECT_SOURCE_DIR}/Documentation/de/tracks_position_de.png
-)
+file(GLOB DOCDATA_DE Documentation/de/*.png)
 
 set(DOC_EN
 	Documentation/en/index.md
@@ -508,43 +469,7 @@ set(DOC_EN
 	Documentation/en/config-counter.md
 	Documentation/en/automatic.md
 )
-set(DOCDATA_EN
-    ${PROJECT_SOURCE_DIR}/Documentation/en/config_layers_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/control_list_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/counter_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/counter_position_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/cs2_tcp_config_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/cs2_udp_config_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/feedback_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/feedback_position_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/groups_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/groups_tracks_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/locomotives_automode_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/locomotives_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/locomotives_functions_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/multipleunits_automode_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/multipleunits_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/multipleunits_functions_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/multipleunits_multipleunits_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/routes_atlock_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/routes_atunlock_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/routes_automode_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/routes_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/routes_position_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/settings_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/signals_addresses_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/signals_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/signals_position_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/switches_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/switches_position_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/texts_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/texts_position_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/tracks_automode_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/tracks_basics_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/tracks_feedbacks_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/track_signals_en.png
-    ${PROJECT_SOURCE_DIR}/Documentation/en/tracks_position_en.png
-)
+file(GLOB DOCDATA_EN Documentation/en/*.png)
 
 set(DOC_ES
 	Documentation/es/index.md
@@ -578,68 +503,9 @@ set(DOC_ES
 	Documentation/es/config-counter.md
 	Documentation/es/automatic.md
 )
-set(DOCDATA_ES
-    ${PROJECT_SOURCE_DIR}/Documentation/es/config_layers_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/control_list_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/cs2_tcp_config_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/cs2_udp_config_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/feedback_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/feedback_position_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/groups_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/groups_tracks_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/locomotives_automode_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/locomotives_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/locomotives_functions_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/multipleunits_automode_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/multipleunits_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/multipleunits_functions_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/multipleunits_multipleunits_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/routes_atlock_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/routes_atunlock_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/routes_automode_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/routes_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/routes_position_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/settings_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/signals_addresses_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/signals_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/signals_position_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/switches_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/switches_position_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/texts_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/texts_position_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/tracks_automode_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/tracks_basics_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/tracks_feedbacks_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/track_signals_es.png
-    ${PROJECT_SOURCE_DIR}/Documentation/es/tracks_position_es.png
-)
+file(GLOB DOCDATA_ES Documentation/es/*.png)
 
-set(DOCDATA
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_accessory.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_booster.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_control.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_counter.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_feedback.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_fullscreen.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_group.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_layer.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_loco.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_menu.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_multipleunit.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_program.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_quit.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_route.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_settings.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_signalgreen.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_signal.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_signalred.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_stop.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_street.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_switch.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_text.png
-    ${PROJECT_SOURCE_DIR}/Documentation/menu_track.png
-    ${PROJECT_SOURCE_DIR}/Documentation/style.css
-)
+file(GLOB DOCDATA Documentation/menu_*.png Documentation/style.css)
 
 set(OUTPUT_HTML ${CMAKE_BINARY_DIR}/doc)
 set(OUTPUT_HTML_DE ${OUTPUT_HTML}/de)
