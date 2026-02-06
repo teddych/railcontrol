@@ -695,37 +695,10 @@ add_custom_target(doc
     DEPENDS ${OUTPUT_HTML_DE_INDEX} ${OUTPUT_HTML_EN_INDEX} ${OUTPUT_HTML_ES_INDEX}
 )
 
-foreach(DOCDATA ${DOCDATA})
-    add_custom_command(TARGET doc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${DOCDATA}
-            ${OUTPUT_HTML}
-    )
-endforeach()
-
-foreach(DOCDATA_DE ${DOCDATA_DE})
-    add_custom_command(TARGET doc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${DOCDATA_DE}
-            ${OUTPUT_HTML_DE}
-    )
-endforeach()
-
-foreach(DOCDATA_EN ${DOCDATA_EN})
-    add_custom_command(TARGET doc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${DOCDATA_EN}
-            ${OUTPUT_HTML_EN}
-    )
-endforeach()
-
-foreach(DOCDATA_ES ${DOCDATA_ES})
-    add_custom_command(TARGET doc POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy
-            ${DOCDATA_ES}
-            ${OUTPUT_HTML_ES}
-    )
-endforeach()
+file(COPY ${DOCDATA} DESTINATION ${OUTPUT_HTML})
+file(COPY ${DOCDATA_DE} DESTINATION ${OUTPUT_HTML_DE})
+file(COPY ${DOCDATA_EN} DESTINATION ${OUTPUT_HTML_EN})
+file(COPY ${DOCDATA_ES} DESTINATION ${OUTPUT_HTML_ES})
 
 add_custom_target(doc-for-web
     DEPENDS doc
