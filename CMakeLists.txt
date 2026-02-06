@@ -365,6 +365,13 @@ else()
 	target_link_libraries(${PROJECT_NAME} PRIVATE zlib)
 endif()
 
+option(USE_CPPTRACE "Build with cpptrace library" OFF)
+
+if (USE_CPPTRACE)
+	find_package(cpptrace CONFIG REQUIRED)
+	target_link_libraries(${PROJECT_NAME} PRIVATE cpptrace::cpptrace)
+endif()
+
 set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
