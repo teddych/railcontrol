@@ -20,7 +20,6 @@ amalgamation.cpp
 .*.swp
 svg/*
 Version.cpp
-.settings/
 build/
 CMakeCache.txt
 CMakeFiles/*
