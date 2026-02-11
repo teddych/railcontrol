@@ -32,18 +32,20 @@ namespace Hardware
 		{
 			public:
 				Z21LocoCacheEntry()
-					: speed(MinSpeed),
-					    orientation(OrientationRight),
-					    functions(0),
-					    protocol(ProtocolNone)
+				:	speed(MinSpeed),
+					orientation(OrientationRight),
+					functions(0),
+					protocol(ProtocolNone)
 				{
 				}
 
-				Z21LocoCacheEntry(const Speed speed, const Orientation orientation, const Protocol protocol)
-					: speed(speed),
-					    orientation(orientation),
-					    functions(0),
-					    protocol(protocol)
+				Z21LocoCacheEntry(const Speed speed,
+					const Orientation orientation,
+					const Protocol protocol)
+				:	speed(speed),
+					orientation(orientation),
+					functions(0),
+					protocol(protocol)
 				{
 				}
 
@@ -99,16 +101,18 @@ namespace Hardware
 					return cache[address].orientation;
 				}
 
-				void SetSpeedOrientationProtocol(const Address address, const Speed speed,
-				    const Orientation orientation, const Protocol protocol)
+				inline void SetSpeedOrientationProtocol(const Address address,
+					const Speed speed,
+					const Orientation orientation,
+					const Protocol protocol)
 				{
 					Z21LocoCacheEntry entry(speed, orientation, protocol);
 					cache[address] = entry;
 				}
 
-				void SetFunction(const Address address,
-				    const DataModel::LocoFunctionNr function,
-				    const bool on)
+				inline void SetFunction(const Address address,
+					const DataModel::LocoFunctionNr function,
+					const bool on)
 				{
 					Z21LocoCacheEntry entry = GetData(address);
 					uint32_t mask = ~(1 << function);
@@ -117,7 +121,7 @@ namespace Hardware
 					cache[address] = entry;
 				}
 
-				uint32_t GetFunctions(const Address address)
+				inline uint32_t GetFunctions(const Address address)
 				{
 					if (cache.count(address) == 0)
 					{
@@ -126,14 +130,14 @@ namespace Hardware
 					return cache[address].functions;
 				}
 
-				void SetProtocol(const Address address, const Protocol protocol)
+				inline void SetProtocol(const Address address, const Protocol protocol)
 				{
 					Z21LocoCacheEntry entry = GetData(address);
 					entry.protocol = protocol;
 					cache[address] = entry;
 				}
 
-				Protocol GetProtocol(const Address address)
+				inline Protocol GetProtocol(const Address address)
 				{
 					if (cache.count(address) == 0)
 					{

@@ -172,7 +172,7 @@ namespace Server { namespace Z21
 				const Address address = ParseLocoAddress(buffer + 5);
 				logger->Debug("Address: {0}", address);
 				const DataModel::AccessoryBase* const accessoryBase = manager.GetAccessoryBase(manager.GetIdentifierOfServerAccessoryAddress(address));
-				if (nullptr == accessoryBase)
+				if (!accessoryBase)
 				{
 					return;
 				}
