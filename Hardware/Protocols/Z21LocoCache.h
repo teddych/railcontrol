@@ -58,24 +58,23 @@ namespace Hardware
 			public:
 				Z21LocoCache& operator=(const Z21LocoCache&) = delete;
 
-				Z21LocoCacheEntry GetData(const Address address)
+				inline Z21LocoCacheEntry GetData(const Address address)
 				{
 					if (cache.count(address) == 1)
 					{
 						return cache[address];
 					}
-					Z21LocoCacheEntry entry;
-					return entry;
+					return Z21LocoCacheEntry();
 				}
 
-				void SetSpeed(const Address address, const Speed speed)
+				inline void SetSpeed(const Address address, const Speed speed)
 				{
 					Z21LocoCacheEntry entry = GetData(address);
 					entry.speed = speed;
 					cache[address] = entry;
 				}
 
-				Speed GetSpeed(const Address address)
+				inline Speed GetSpeed(const Address address)
 				{
 					if (cache.count(address) == 0)
 					{
@@ -84,14 +83,14 @@ namespace Hardware
 					return cache[address].speed;
 				}
 
-				void SetOrientation(const Address address, const Orientation orientation)
+				inline void SetOrientation(const Address address, const Orientation orientation)
 				{
 					Z21LocoCacheEntry entry = GetData(address);
 					entry.orientation = orientation;
 					cache[address] = entry;
 				}
 
-				Orientation GetOrientation(const Address address)
+				inline Orientation GetOrientation(const Address address)
 				{
 					if (cache.count(address) == 0)
 					{

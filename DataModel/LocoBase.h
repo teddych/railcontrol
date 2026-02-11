@@ -170,11 +170,6 @@ namespace DataModel
 				return functions.GetFunctionStates();
 			}
 
-			inline void GetFunctions(LocoFunctionEntry* out) const
-			{
-				functions.GetFunctions(out);
-			}
-
 			inline const LocoFunctions& GetFunctions() const
 			{
 				return functions;
