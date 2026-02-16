@@ -773,6 +773,20 @@ add_custom_target(chunked-doc
     DEPENDS ${OUTPUT_CHUNKEDHTML_DE}/index.html ${OUTPUT_CHUNKEDHTML_EN}/index.html ${OUTPUT_CHUNKEDHTML_ES}/index.html
 )
 
+# Required for pandoc --write=chunkedhtml
+#
+# In that mode, pandoc is not idempotent and the target directories we want it
+# to write to, need to be gone before it is called one more time.
+# I.e., if you're working on the chunked HTML output, ideally call
+# cmake [...] --clean-first --target chunked-doc
+set_property(
+    TARGET chunked-doc
+    APPEND
+    PROPERTY ADDITIONAL_CLEAN_FILES
+    ${CMAKE_BINARY_DIR}/chunkedhtml/de
+    ${CMAKE_BINARY_DIR}/chunkedhtml/en
+    ${CMAKE_BINARY_DIR}/chunkedhtml/es)
+
 foreach(DOCDATA ${DOCDATA})
     add_custom_command(TARGET chunked-doc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
