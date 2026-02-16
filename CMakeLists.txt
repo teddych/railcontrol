@@ -435,6 +435,7 @@ set(DOC_DE
 	Documentation/de/config-counter.md
 	Documentation/de/automatic.md
 )
+
 set(DOCDATA_DE
     ${PROJECT_SOURCE_DIR}/Documentation/de/config_layers_de.png
     ${PROJECT_SOURCE_DIR}/Documentation/de/control_list_de.png
@@ -640,13 +641,17 @@ set(DOCDATA
     ${PROJECT_SOURCE_DIR}/Documentation/style.css
 )
 
-set(OUTPUT_HTML_DE ${CMAKE_BINARY_DIR}/doc/de/index.html)
-set(OUTPUT_HTML_EN ${CMAKE_BINARY_DIR}/doc/en/index.html)
-set(OUTPUT_HTML_ES ${CMAKE_BINARY_DIR}/doc/es/index.html)
+set(OUTPUT_HTML ${CMAKE_BINARY_DIR}/doc)
+set(OUTPUT_HTML_DE ${OUTPUT_HTML}/de)
+set(OUTPUT_HTML_DE_INDEX ${OUTPUT_HTML_DE}/index.html)
+set(OUTPUT_HTML_EN ${OUTPUT_HTML}/en)
+set(OUTPUT_HTML_EN_INDEX ${OUTPUT_HTML_EN}/index.html)
+set(OUTPUT_HTML_ES ${OUTPUT_HTML}/es)
+set(OUTPUT_HTML_ES_INDEX ${OUTPUT_HTML_ES}/index.html)
 
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/de)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/en)
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/doc/es)
+file(MAKE_DIRECTORY ${OUTPUT_HTML_DE})
+file(MAKE_DIRECTORY ${OUTPUT_HTML_EN})
+file(MAKE_DIRECTORY ${OUTPUT_HTML_ES})
 
 set(PANDOC_OPTS --toc --toc-depth=2
                 --standalone
@@ -654,47 +659,47 @@ set(PANDOC_OPTS --toc --toc-depth=2
                 --template=Documentation/template.html)
 
 add_custom_command(
-    OUTPUT ${OUTPUT_HTML_DE}
+    OUTPUT ${OUTPUT_HTML_DE_INDEX}
     COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
                    --metadata-file=Documentation/de/metadata.yaml
-                   --output=${OUTPUT_HTML_DE} ${DOC_DE}
-    DEPENDS ${DOC_DE}
+		   --output=${OUTPUT_HTML_DE_INDEX} ${DOC_DE}
+    DEPENDS ${DOC_DE} ${OUTPUT_HTML_DE}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Generating German HTML documentation"
     VERBATIM
 )
 
 add_custom_command(
-    OUTPUT ${OUTPUT_HTML_EN}
+    OUTPUT ${OUTPUT_HTML_EN_INDEX}
     COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
                    --metadata-file=Documentation/en/metadata.yaml
-                   --output=${OUTPUT_HTML_EN} ${DOC_EN}
-    DEPENDS ${DOC_EN}
+		   --output=${OUTPUT_HTML_EN_INDEX} ${DOC_EN}
+    DEPENDS ${DOC_EN} ${OUTPUT_HTML_EN}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Generating English HTML documentation"
     VERBATIM
 )
 
 add_custom_command(
-    OUTPUT ${OUTPUT_HTML_ES}
+    OUTPUT ${OUTPUT_HTML_ES_INDEX}
     COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
                    --metadata-file=Documentation/es/metadata.yaml
-                   --output=${OUTPUT_HTML_ES} ${DOC_ES}
-    DEPENDS ${DOC_ES}
+                   --output=${OUTPUT_HTML_ES_INDEX} ${DOC_ES}
+    DEPENDS ${DOC_ES} ${OUTPUT_HTML_ES}
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Generating Spanish HTML documentation"
     VERBATIM
 )
 
 add_custom_target(doc
-    DEPENDS ${OUTPUT_HTML_DE} ${OUTPUT_HTML_EN} ${OUTPUT_HTML_ES}
+    DEPENDS ${OUTPUT_HTML_DE_INDEX} ${OUTPUT_HTML_EN_INDEX} ${OUTPUT_HTML_ES_INDEX}
 )
 
 foreach(DOCDATA ${DOCDATA})
     add_custom_command(TARGET doc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             ${DOCDATA}
-            ${PROJECT_BINARY_DIR}/doc
+            ${OUTPUT_HTML}
     )
 endforeach()
 
@@ -702,7 +707,7 @@ foreach(DOCDATA_DE ${DOCDATA_DE})
     add_custom_command(TARGET doc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             ${DOCDATA_DE}
-            ${PROJECT_BINARY_DIR}/doc/de
+            ${OUTPUT_HTML_DE}
     )
 endforeach()
 
@@ -710,7 +715,7 @@ foreach(DOCDATA_EN ${DOCDATA_EN})
     add_custom_command(TARGET doc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             ${DOCDATA_EN}
-            ${PROJECT_BINARY_DIR}/doc/en
+            ${OUTPUT_HTML_EN}
     )
 endforeach()
 
@@ -718,7 +723,7 @@ foreach(DOCDATA_ES ${DOCDATA_ES})
     add_custom_command(TARGET doc POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
             ${DOCDATA_ES}
-            ${PROJECT_BINARY_DIR}/doc/es
+            ${OUTPUT_HTML_ES}
     )
 endforeach()
 
