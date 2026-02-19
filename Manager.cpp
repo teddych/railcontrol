@@ -18,10 +18,10 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include <future>
 #include <iostream>
 #include <set>
 #include <sstream>
+#include <thread>
 #include <unistd.h>
 
 #include "DataModel/LayoutItem.h"
@@ -345,7 +345,8 @@ void Manager::Booster(const ControlType controlType, const BoosterState state)
 		return;
 	}
 
-	__attribute__((unused)) auto r = std::async(std::launch::async, InitLocosStatic, this);
+	std::thread t(InitLocosStatic, this);
+	t.detach();
 	initLocosDone = true;
 }
 
@@ -3068,7 +3069,8 @@ void Manager::RouteExecuteAsync(Logger::Logger* logger, const RouteID routeID)
 	{
 		return;
 	}
-	__attribute__((unused)) auto r = std::async(std::launch::async, Route::ExecuteStatic, logger, route);
+	std::thread t(Route::ExecuteStatic, logger, route);
+	t.detach();
 }
 
 string Manager::GetRouteList() const

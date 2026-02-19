@@ -18,7 +18,8 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include "DataModel/Loco.h"
+#include <thread>
+
 #include "DataModel/LocoFunctions.h"
 #include "DataTypes.h"
 #include "Logger/Logger.h"
@@ -431,7 +432,8 @@ namespace Hardware
 		const DataModel::AccessoryPulseDuration duration)
 	{
 		instance->Accessory(protocol, address, state, true, duration);
-		__attribute((unused)) auto r = std::async(std::launch::async, AccessoryBaseStateStatic, instance, protocol, address, state, duration);
+		std::thread t(AccessoryBaseStateStatic, instance, protocol, address, state, duration);
+		t.detach();
 	}
 
 	void HardwareHandler::SwitchSettings(const SwitchID switchId,
