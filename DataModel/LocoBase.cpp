@@ -158,7 +158,8 @@ namespace DataModel
 			feedbackIdReduced = FeedbackNone;
 			feedbackIdFirst = FeedbackNone;
 		}
-		ReleaseRouteAndTrack();
+		std::thread t(ReleaseRouteAndTrackStatic, this);
+		t.detach();
 		return true;
 	}
 
