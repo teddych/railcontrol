@@ -1607,7 +1607,11 @@ Logger::Logger* Manager::CheckFreeingTrack(const DataModel::ObjectIdentifier& lo
 			return nullptr;
 		}
 
-		locoBase->CheckFreeingTrack(trackID);
+		const bool freeOK = locoBase->CheckFreeingTrack(trackID);
+		if (!freeOK)
+		{
+			return nullptr;
+		}
 
 		return locoBase->GetLogger();
 	}
