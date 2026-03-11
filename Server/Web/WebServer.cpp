@@ -223,7 +223,7 @@ namespace Server { namespace Web
 
 	{
 		const LocoID locoIDwithPrefix = LocoIDWithPrefix(locoID, locoType);
-		string command = "locoorientation;loco=" + to_string(locoIDwithPrefix) + ";orientation=" + (orientation ? "true" : "false");
+		const string command("locoorientation;loco=" + to_string(locoIDwithPrefix) + ";orientation=" + (orientation ? "true" : "false"));
 		AddUpdate(command, orientation ? Languages::TextLocoDirectionOfTravelIsRight : Languages::TextLocoDirectionOfTravelIsLeft, name);
 	}
 
@@ -240,7 +240,7 @@ namespace Server { namespace Web
 	{
 		const bool stateBool = (state != DataModel::LocoFunctionStateOff);
 		const LocoID locoIDwithPrefix = LocoIDWithPrefix(locoID, locoType);
-		string command = "locofunction;loco=" + to_string(locoIDwithPrefix) + ";function=" + to_string(function) + ";on=" + (stateBool ? "true" : "false");
+		const string command("locofunction;loco=" + to_string(locoIDwithPrefix) + ";function=" + to_string(function) + ";on=" + (stateBool ? "true" : "false"));
 		AddUpdate(command, stateBool ? Languages::TextLocoFunctionIsOn : Languages::TextLocoFunctionIsOff, name, function);
 	}
 
@@ -254,11 +254,11 @@ namespace Server { namespace Web
 
 	void WebServer::AccessorySettings(const AccessoryID accessoryID,
 		const std::string& name,
+		const DataModel::LayoutItem::LayoutPosition posZ,
 		__attribute__((unused)) const std::string& matchkey)
 	{
-		stringstream command;
-		command << "accessorysettings;accessory=" << accessoryID;
-		AddUpdate(command.str(), Languages::TextAccessoryUpdated, name);
+		const string command("accessorysettings;accessory=" + to_string(accessoryID) + ";layer=" + to_string(posZ));
+		AddUpdate(command, Languages::TextAccessoryUpdated, name);
 	}
 
 	void WebServer::AccessoryDelete(const AccessoryID accessoryID,
@@ -277,11 +277,12 @@ namespace Server { namespace Web
 		AddUpdate(command.str(), state ? Languages::TextFeedbackStateIsOn : Languages::TextFeedbackStateIsOff, name);
 	}
 
-	void WebServer::FeedbackSettings(const FeedbackID feedbackID, const std::string& name)
+	void WebServer::FeedbackSettings(const FeedbackID feedbackID,
+		const std::string& name,
+		const DataModel::LayoutItem::LayoutPosition posZ)
 	{
-		stringstream command;
-		command << "feedbacksettings;feedback=" << feedbackID;
-		AddUpdate(command.str(), Languages::TextFeedbackUpdated, name);
+		const string command("feedbacksettings;feedback=" + to_string(feedbackID) + ";layer=" + to_string(posZ));
+		AddUpdate(command, Languages::TextFeedbackUpdated, name);
 	}
 
 	void WebServer::FeedbackDelete(const FeedbackID feedbackID, const std::string& name)
@@ -291,11 +292,12 @@ namespace Server { namespace Web
 		AddUpdate(command.str(), Languages::TextFeedbackDeleted, name);
 	}
 
-	void WebServer::RouteSettings(const RouteID routeID, const std::string& name)
+	void WebServer::RouteSettings(const RouteID routeID,
+		const std::string& name,
+		const DataModel::LayoutItem::LayoutPosition posZ)
 	{
-		stringstream command;
-		command << "routesettings;route=" << routeID;
-		AddUpdate(command.str(), Languages::TextRouteUpdated, name);
+		const string command("routesettings;route=" + to_string(routeID) + ";layer=" + to_string(posZ));
+		AddUpdate(command, Languages::TextRouteUpdated, name);
 	}
 
 	void WebServer::RouteDelete(const RouteID routeID, const std::string& name)
@@ -334,11 +336,11 @@ namespace Server { namespace Web
 
 	void WebServer::SwitchSettings(const SwitchID switchID,
 		const std::string& name,
+		const DataModel::LayoutItem::LayoutPosition posZ,
 		__attribute__((unused)) const std::string& matchKey)
 	{
-		stringstream command;
-		command << "switchsettings;switch=" << switchID;
-		AddUpdate(command.str(), Languages::TextSwitchUpdated, name);
+		const string command("switchsettings;switch=" + to_string(switchID) + ";layer=" + to_string(posZ));
+		AddUpdate(command, Languages::TextSwitchUpdated, name);
 	}
 
 	void WebServer::SwitchDelete(const SwitchID switchID,
@@ -363,13 +365,13 @@ namespace Server { namespace Web
 		const string blockedText = (blocked ? "true" : "false");
 		const string reservedText = (reserved ? "true" : "false");
 		const string orientationText = (orientation ? "true" : "false");
-		string command = "trackstate;track="
+		const string command("trackstate;track="
 			+ to_string(track->GetID())
 			+ ";occupied=" + occupiedText
 			+ ";reserved=" + reservedText
 			+ ";blocked=" + blockedText
 			+ ";orientation=" + orientationText
-			+ ";loconame=" + locoName;
+			+ ";loconame=" + locoName);
 
 		if (track->GetMain())
 		{
@@ -407,11 +409,12 @@ namespace Server { namespace Web
 		}
 	}
 
-	void WebServer::TrackSettings(const TrackID trackID, const std::string& name)
+	void WebServer::TrackSettings(const TrackID trackID,
+		const std::string& name,
+		const DataModel::LayoutItem::LayoutPosition posZ)
 	{
-		stringstream command;
-		command << "tracksettings;track=" << trackID;
-		AddUpdate(command.str(), Languages::TextTrackUpdated, name);
+		const string command("tracksettings;track=" + to_string(trackID) + ";layer=" + to_string(posZ));
+		AddUpdate(command, Languages::TextTrackUpdated, name);
 	}
 
 	void WebServer::TrackDelete(const TrackID trackID, const std::string& name)
@@ -545,17 +548,17 @@ namespace Server { namespace Web
 				break;
 		}
 		const string signalIdText(to_string(signal->GetID()));
-		const string command = "signal;signal=" + signalIdText + ";state=" + stateText;
+		const string command("signal;signal=" + signalIdText + ";state=" + stateText);
 		AddUpdate(command, text, signal->GetName());
 	}
 
 	void WebServer::SignalSettings(const SignalID signalID,
 		const std::string& name,
+		const DataModel::LayoutItem::LayoutPosition posZ,
 		__attribute__((unused)) const std::string& matchKey)
 	{
-		stringstream command;
-		command << "signalsettings;signal=" << signalID;
-		AddUpdate(command.str(), Languages::TextSignalUpdated, name);
+		const string command("signalsettings;signal=" + to_string(signalID) + ";layer=" + to_string(posZ));
+		AddUpdate(command, Languages::TextSignalUpdated, name);
 	}
 
 	void WebServer::SignalDelete(const SignalID signalID,
@@ -581,33 +584,37 @@ namespace Server { namespace Web
 		AddUpdate(command.str(), Languages::TextClusterDeleted, name);
 	}
 
-	void WebServer::TextSettings(const TextID textID, const std::string& name)
+	void WebServer::TextSettings(const TextID textID,
+		const std::string& name,
+		const DataModel::LayoutItem::LayoutPosition posZ)
 	{
-		string command = "textsettings;text=" + to_string(textID);
+		const string command("textsettings;text=" + to_string(textID) + ";layer=" + to_string(posZ));
 		AddUpdate(command, Languages::TextTextUpdated, name);
 	}
 
 	void WebServer::TextDelete(const TextID textID, const std::string& name)
 	{
-		string command = "textdelete;text=" + to_string(textID);
+		const string command("textdelete;text=" + to_string(textID));
 		AddUpdate(command, Languages::TextTextDeleted, name);
 	}
 
-	void WebServer::CounterSettings(const CounterID counterID, const std::string& name)
+	void WebServer::CounterSettings(const CounterID counterID,
+		const std::string& name,
+		const DataModel::LayoutItem::LayoutPosition posZ)
 	{
-		const string command = "countersettings;counter=" + to_string(counterID);
+		const string command("countersettings;counter=" + to_string(counterID) + ";layer=" + to_string(posZ));
 		AddUpdate(command, Languages::TextCounterUpdated, name);
 	}
 
 	void WebServer::CounterDelete(const CounterID counterID, const std::string& name)
 	{
-		const string command = "counterdelete;counter=" + to_string(counterID);
+		const string command("counterdelete;counter=" + to_string(counterID));
 		AddUpdate(command, Languages::TextCounterDeleted, name);
 	}
 
 	void WebServer::CounterState(const DataModel::Counter* const counter)
 	{
-		const string command ="counterstate;counter=" + to_string(counter->GetID()) + ";count=" + to_string(counter->GetCounter());
+		const string command("counterstate;counter=" + to_string(counter->GetID()) + ";count=" + to_string(counter->GetCounter()));
 		AddUpdate(command, Languages::TextCounterUpdated, counter->GetName());
 	}
 
