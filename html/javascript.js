@@ -1772,7 +1772,7 @@ function dataUpdate(event)
 	}
 	else if (command == 'countersettings')
 	{
-		updateCounter(argumentMap.get('counter'));
+		updateCounter(argumentMap);
 	}
 	else if (command == 'counterdelete')
 	{
