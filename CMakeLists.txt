@@ -386,7 +386,13 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads dl)
 
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_SOURCE_DIR})
 
+# generate Version.cpp each time railcontrol is compiled
 configure_file(Version.cpp.in Version.cpp @ONLY)
+set(STAMP_FILE "${CMAKE_CURRENT_BINARY_DIR}/force_rebuild.stamp")
+add_custom_target(force_rebuild ALL COMMAND ${CMAKE_COMMAND} -E touch "${STAMP_FILE}" BYPRODUCTS "${STAMP_FILE}" COMMENT "Updating stamp to force recompilation of Version.cpp")
+set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" PROPERTIES OBJECT_DEPENDS "${STAMP_FILE}")
+add_dependencies(${PROJECT_NAME} force_rebuild)
+
 
 set(CMAKE_INSTALL_BINDIR ".")
 set(CMAKE_INSTALL_DOCDIR "doc")
