@@ -289,14 +289,15 @@ namespace DataModel
 
 			inline LocoFunctionNr GetFunctionNrFromFunctionIcon(const LocoFunctionIcon icon) const
 			{
-				if (icon < 256)
+				if (icon < NumberOfLocoFunctions)
 				{
 					// icon is function number
 					return icon;
 				}
+				const LocoFunctionIcon realIcon = static_cast<LocoFunctionIcon>(icon - 256);
 				for (int i = 0; i < NumberOfLocoFunctions; ++i)
 				{
-					if (entries[i].icon == icon)
+					if (entries[i].icon == realIcon)
 					{
 						// icon is found in config of functions
 						return i;
