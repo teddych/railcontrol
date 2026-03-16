@@ -87,16 +87,46 @@ namespace Hardware
 			Hardware::Capabilities GetCapabilities() const override;
 
 			void LocoBaseSpeed(const ControlType controlType,
-				const DataModel::LocoConfig& locoConfig) override;
+				const ControlID controlID,
+				const LocoID locoID,
+				const LocoType locoType,
+				const Protocol protocol,
+				const Address address,
+				const Address serverAddress,
+				const std::string& name,
+				const Speed speed) override;
 
 			void LocoBaseOrientation(const ControlType controlType,
-				const DataModel::LocoConfig& locoConfig) override;
+				const ControlID controlID,
+				const LocoID locoID,
+				const LocoType locoType,
+				const Protocol protocol,
+				const Address address,
+				const Address serverAddress,
+				const std::string& name,
+				const Orientation orientation) override;
 
 			void LocoBaseFunctionState(const ControlType controlType,
-				const DataModel::LocoConfig& locoConfig,
-				const DataModel::LocoFunctionNr function) override;
+				const ControlID controlID,
+				const LocoID locoID,
+				const LocoType locoType,
+				const Protocol protocol,
+				const Address address,
+				const Address serverAddress,
+				const std::string& name,
+				const DataModel::LocoFunctionNr function,
+				const DataModel::LocoFunctionState state) override;
 
-			void LocoBaseSpeedOrientationFunctionStates(const DataModel::LocoConfig& locoConfig) override;
+			void LocoBaseSpeedOrientationFunctionStates(const ControlID controlID,
+				const LocoID locoID,
+				const LocoType locoType,
+				const Protocol protocol,
+				const Address address,
+				const Address serverAddress,
+				const std::string& name,
+				const Speed speed,
+				const Orientation orientation,
+				const std::vector<DataModel::LocoFunctionEntry>& functions) override;
 
 			void LocoProtocols(std::vector<Protocol>& protocols) const override;
 
@@ -112,6 +142,7 @@ namespace Hardware
 
 			void AccessorySettings(const AccessoryID accessoryId,
 				const std::string& name,
+				const DataModel::LayoutItem::LayoutPosition posz,
 				const std::string& matchKey) override;
 
 			void AccessoryDelete(const AccessoryID accessoryId,
@@ -120,6 +151,7 @@ namespace Hardware
 
 			void SwitchSettings(const SwitchID switchId,
 				const std::string& name,
+				const DataModel::LayoutItem::LayoutPosition posz,
 				const std::string& matchKey) override;
 
 			void SwitchDelete(const SwitchID switchId,
@@ -130,6 +162,7 @@ namespace Hardware
 
 			void SignalSettings(const SignalID signalId,
 				const std::string& name,
+				const DataModel::LayoutItem::LayoutPosition posz,
 				const std::string& matchKey) override;
 
 			void SignalDelete(const SignalID signalId,
@@ -144,7 +177,9 @@ namespace Hardware
 			void FeedbackDelete(const FeedbackID feedbackID, const std::string& name) override;
 
 			// FIXME: matchKey is missing
-			void FeedbackSettings(const FeedbackID feedbackID, const std::string& name) override;
+			void FeedbackSettings(const FeedbackID feedbackID,
+				const std::string& name,
+				const DataModel::LayoutItem::LayoutPosition posz) override;
 
 			void AddUnmatchedLocos(std::map<std::string,DataModel::LocoConfig>& list) const override;
 			std::map<std::string,DataModel::LocoConfig> GetUnmatchedLocos(const std::string& matchKey) const override;
@@ -193,6 +228,7 @@ namespace Hardware
 				const DataModel::AccessoryState state,
 				const DataModel::AccessoryPulseDuration duration)
 			{
+				Utils::Utils::SetThreadName("AccessoryBaseStateStatic");
 				Utils::Utils::SleepForMilliseconds(duration);
 				instance->Accessory(protocol, address, state, false, 0);
 			}

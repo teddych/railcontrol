@@ -22,7 +22,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <mutex>
 #include <string>
-#include <thread>
 #include <vector>
 
 #include "DataTypes.h"
@@ -144,8 +143,6 @@ namespace DataModel
 
 			bool Release();
 
-			void ReleaseRouteAndTrack();
-
 			bool CheckFreeingTrack(const TrackID trackID) const;
 
 			Speed LocationReached(const FeedbackID feedbackID);
@@ -168,11 +165,6 @@ namespace DataModel
 			inline std::vector<DataModel::LocoFunctionEntry> GetFunctionStates() const
 			{
 				return functions.GetFunctionStates();
-			}
-
-			inline void GetFunctions(LocoFunctionEntry* out) const
-			{
-				functions.GetFunctions(out);
 			}
 
 			inline const LocoFunctions& GetFunctions() const
@@ -300,14 +292,17 @@ namespace DataModel
 				return matchKey;
 			}
 
-			DataModel::LocoFunctionNr GetFunctionNumberFromFunctionIcon(const DataModel::LocoFunctionIcon icon) const;
+			inline DataModel::LocoFunctionNr GetFunctionNrFromFunctionIcon(const DataModel::LocoFunctionIcon icon) const
+			{
+				return functions.GetFunctionNrFromFunctionIcon(icon);
+			}
 
-			DataModel::LocoFunctionIcon GetFunctionIcon(const DataModel::LocoFunctionNr nr) const
+			inline DataModel::LocoFunctionIcon GetFunctionIcon(const DataModel::LocoFunctionNr nr) const
 			{
 				return functions.GetFunctionIcon(nr);
 			}
 
-			DataModel::LocoFunctionType GetFunctionType(const DataModel::LocoFunctionNr nr) const
+			inline DataModel::LocoFunctionType GetFunctionType(const DataModel::LocoFunctionNr nr) const
 			{
 				return functions.GetFunctionType(nr);
 			}
@@ -395,6 +390,14 @@ namespace DataModel
 				LocoBase* locoBase,
 				const FeedbackID feedbackID,
 				const Delay reducedDelay);
+
+			void ReleaseRouteAndTrack();
+
+			static inline void ReleaseRouteAndTrackStatic(LocoBase* locoBase)
+			{
+				Utils::Utils::SetThreadName("ReleaseRouteAndTrackStatic");
+				locoBase->ReleaseRouteAndTrack();
+			}
 
 			mutable std::mutex stateMutex;
 			std::thread locoThread;

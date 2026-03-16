@@ -34,8 +34,6 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/ObjectIdentifier.h"
 #include "Hardware/HardwareHandler.h"
 #include "RailControl.h"
-#include "Utils/Utils.h"
-#include "Version.h"
 #include "Server/Web/HtmlTagAccessory.h"
 #include "Server/Web/HtmlTagButtonCancel.h"
 #include "Server/Web/HtmlTagButtonCommand.h"
@@ -70,6 +68,8 @@ along with RailControl; see the file LICENCE. If not see
 #include "Server/Web/WebClientStatic.h"
 #include "Server/Web/WebServer.h"
 #include "Utils/Integer.h"
+#include "Utils/Utils.h"
+#include "Version.h"
 
 using namespace DataModel;
 using LayoutPosition = DataModel::LayoutItem::LayoutPosition;
@@ -1183,7 +1183,7 @@ namespace Server { namespace Web
 	void WebClient::HandleLocoFunction(const map<string, string>& arguments)
 	{
 		const LocoID locoID = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
-		const DataModel::LocoFunctionNr function = Utils::Utils::GetIntegerMapEntry(arguments, "function", 0);
+		const DataModel::LocoFunctionIcon function = static_cast<LocoFunctionIcon>(Utils::Utils::GetIntegerMapEntry(arguments, "function", 0));
 		const DataModel::LocoFunctionState state = static_cast<DataModel::LocoFunctionState>(Utils::Utils::GetBoolMapEntry(arguments, "on"));
 
 		const ObjectIdentifier locoBaseIdentifier(WebClientStatic::LocoIdToObjectIdentifier(locoID));

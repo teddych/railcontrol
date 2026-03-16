@@ -179,7 +179,7 @@ class Manager
 
 		bool LocoBaseFunctionState(const ControlType controlType,
 			const DataModel::ObjectIdentifier& locoBaseIdentifier,
-			const DataModel::LocoFunctionNr function,
+			const DataModel::LocoFunctionIcon icon,
 			const DataModel::LocoFunctionState state);
 
 		// multiple unit
@@ -751,6 +751,7 @@ class Manager
 
 		inline static void ProgramDccValueStatic(Manager* manager, const CvNumber cv, const CvValue value)
 		{
+			Utils::Utils::SetThreadName("ProgramDccValueStatic");
 			manager->ProgramValue(cv, value);
 		}
 
@@ -802,21 +803,42 @@ class Manager
 			const Speed speed);
 
 		void LocoBasePublishSpeed(const ControlType controlType,
-			const DataModel::LocoConfig& locoConfig);
+			const ControlID controlID,
+			const LocoID locoID,
+			const LocoType locoType,
+			const Protocol protocol,
+			const Address address,
+			const Address serverAddress,
+			const std::string& name,
+			const Speed speed);
 
 		bool LocoBaseOrientation(DataModel::LocoBase* loco,
 			const Orientation orientation);
 
 		void LocoBasePublishOrientation(const ControlType controlType,
-			const DataModel::LocoConfig& locoConfig);
+			const ControlID controlID,
+			const LocoID locoID,
+			const LocoType locoType,
+			const Protocol protocol,
+			const Address address,
+			const Address serverAddress,
+			const std::string& name,
+			const Orientation orientation);
 
 		bool LocoBaseFunctionState(DataModel::LocoBase* loco,
 			const DataModel::LocoFunctionNr function,
 			const DataModel::LocoFunctionState on);
 
 		void LocoBasePublishFunctionState(const ControlType controlType,
-			const DataModel::LocoConfig& locoConfig,
-			const DataModel::LocoFunctionNr function);
+			const ControlID controlID,
+			const LocoID locoID,
+			const LocoType locoType,
+			const Protocol protocol,
+			const Address address,
+			const Address serverAddress,
+			const std::string& name,
+			const DataModel::LocoFunctionNr function,
+			const DataModel::LocoFunctionState state);
 
 		void LocoBasePublishRelease(const DataModel::ObjectIdentifier& locoIdentifier,
 			const std::string& locoName);
@@ -1082,6 +1104,7 @@ class Manager
 
 		static inline void InitLocosStatic(Manager* manager)
 		{
+			Utils::Utils::SetThreadName("InitLocosStatic");
 			manager->InitLocos();
 		}
 

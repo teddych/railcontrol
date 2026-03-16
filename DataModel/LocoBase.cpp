@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <algorithm>
 #include <map>
 #include <string>
+#include <thread>
 
 #include "DataModel/LocoBase.h"
 #include "DataModel/Track.h"
@@ -157,7 +158,8 @@ namespace DataModel
 			feedbackIdReduced = FeedbackNone;
 			feedbackIdFirst = FeedbackNone;
 		}
-		ReleaseRouteAndTrack();
+		std::thread t(ReleaseRouteAndTrackStatic, this);
+		t.detach();
 		return true;
 	}
 
@@ -495,16 +497,16 @@ namespace DataModel
 
 		trackFirst = newTrack;
 		routeFirst = route;
-		feedbackIdFirstReduced = FeedbackNone;
-		feedbackIdFirstCreep = FeedbackNone;
 		feedbackIdFirst = FeedbackNone;
-		feedbackIdReduced = routeFirst->GetFeedbackIdReduced();
-		reducedDelay = routeFirst->GetReducedDelay();
-		feedbackIdCreep = routeFirst->GetFeedbackIdCreep();
-		creepDelay = routeFirst->GetCreepDelay();
+		feedbackIdFirstCreep = FeedbackNone;
+		feedbackIdFirstReduced = FeedbackNone;
+		feedbackIdOver = routeFirst->GetFeedbackIdOver();
 		feedbackIdStop = routeFirst->GetFeedbackIdStop();
 		stopDelay = routeFirst->GetStopDelay();
-		feedbackIdOver = routeFirst->GetFeedbackIdOver();
+		feedbackIdCreep = routeFirst->GetFeedbackIdCreep();
+		creepDelay = routeFirst->GetCreepDelay();
+		feedbackIdReduced = routeFirst->GetFeedbackIdReduced();
+		reducedDelay = routeFirst->GetReducedDelay();
 
 		wait = routeFirst->GetWaitAfterRelease();
 
@@ -591,8 +593,11 @@ namespace DataModel
 		feedbackIdFirstReduced = feedbackIdReduced;
 		feedbackIdOver = routeSecond->GetFeedbackIdOver();
 		feedbackIdStop = routeSecond->GetFeedbackIdStop();
+		stopDelay = routeSecond->GetStopDelay();
 		feedbackIdCreep = routeSecond->GetFeedbackIdCreep();
+		creepDelay = routeSecond->GetCreepDelay();
 		feedbackIdReduced = routeSecond->GetFeedbackIdReduced();
+		reducedDelay = routeSecond->GetReducedDelay();
 
 		wait = routeSecond->GetWaitAfterRelease();
 
@@ -760,6 +765,7 @@ namespace DataModel
 		const FeedbackID feedbackID,
 		const Delay stopDelay)
 	{
+		Utils::Utils::SetThreadName("LocationStopReachedStatic");
 		const Speed newSpeed = locoBase->LocationStopReached(feedbackID, stopDelay);
 		manager->LocoBaseSpeed(ControlTypeInternal, locoBase->GetObjectIdentifier(), newSpeed);
 	}
@@ -789,6 +795,7 @@ namespace DataModel
 		const FeedbackID feedbackID,
 		const Delay creepDelay)
 	{
+		Utils::Utils::SetThreadName("LocationCreepReachedStatic");
 		const Speed newSpeed = locoBase->LocationCreepReached(feedbackID, creepDelay);
 		manager->LocoBaseSpeed(ControlTypeInternal, locoBase->GetObjectIdentifier(), newSpeed);
 	}
@@ -818,6 +825,7 @@ namespace DataModel
 		const FeedbackID feedbackID,
 		const Delay reducedDelay)
 	{
+		Utils::Utils::SetThreadName("LocationReducedReachedStatic");
 		const Speed newSpeed = locoBase->LocationReducedReached(feedbackID, reducedDelay);
 		manager->LocoBaseSpeed(ControlTypeInternal, locoBase->GetObjectIdentifier(), newSpeed);
 	}
@@ -865,7 +873,8 @@ namespace DataModel
 		{
 			if (reducedDelay)
 			{
-				__attribute((unused)) auto r = std::async(std::launch::async, LocationReducedReachedStatic, manager, this, feedbackID, reducedDelay);
+				std::thread t(LocationReducedReachedStatic, manager, this, feedbackID, reducedDelay);
+				t.detach();
 			}
 			else
 			{
@@ -877,7 +886,8 @@ namespace DataModel
 		{
 			if (creepDelay)
 			{
-				__attribute((unused)) auto r = std::async(std::launch::async, LocationCreepReachedStatic, manager, this, feedbackID, creepDelay);
+				std::thread t(LocationCreepReachedStatic, manager, this, feedbackID, creepDelay);
+				t.detach();
 			}
 			else
 			{
@@ -889,7 +899,8 @@ namespace DataModel
 		{
 			if (stopDelay)
 			{
-				__attribute((unused)) auto r = std::async(std::launch::async, LocationStopReachedStatic, manager, this, feedbackID, stopDelay);
+				std::thread t(LocationStopReachedStatic, manager, this, feedbackID, stopDelay);
+				t.detach();
 			}
 			else
 			{
@@ -1025,18 +1036,6 @@ namespace DataModel
 
 		releaseRouteQueue.EnqueueBack(removeRoute);
 		releaseTrackQueue.EnqueueBack(removeTrack);
-	}
-
-	DataModel::LocoFunctionNr LocoBase::GetFunctionNumberFromFunctionIcon(const DataModel::LocoFunctionIcon icon) const
-	{
-		for (DataModel::LocoFunctionNr nr = 0; nr < NumberOfLocoFunctions; ++nr)
-		{
-			if (icon == functions.GetFunctionIcon(nr))
-			{
-				return nr;
-			}
-		}
-		return NumberOfLocoFunctions;
 	}
 
 	LocoBase& LocoBase::operator=(const Hardware::LocoCacheEntry& loco)
