@@ -784,7 +784,7 @@ namespace Server { namespace Web
 		char workingDir[128];
 		if (getcwd(workingDir, sizeof(workingDir)))
 		{
-			ss << workingDir << "/html" << virtualFile;
+			ss << HTML_DATA_PATH << virtualFile;
 		}
 		string sFile = ss.str();
 		const char* realFile = sFile.c_str();

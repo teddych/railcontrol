@@ -46,6 +46,7 @@ endif()
 string(REGEX REPLACE "^v" "" RAILCONTROL_VERSION "${RAILCONTROL_VERSION}")
 
 project(railcontrol VERSION ${RAILCONTROL_VERSION})
+include(GNUInstallDirs)
 
 STRING(TIMESTAMP COMPILE_TIMESTAMP "%s" UTC)
 
@@ -393,14 +394,28 @@ add_custom_target(rebuild_version ALL COMMAND ${CMAKE_COMMAND} -E touch "${STAMP
 set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/Version.cpp" PROPERTIES OBJECT_DEPENDS "${STAMP_FILE}")
 add_dependencies(${PROJECT_NAME} rebuild_version)
 
+# Option to install right into the source tree for development purposes
+# Usage:
+# $ cmake -B <build dir> -DINSTALL_IN_PLACE=1
+# $ cmake --build <build dir> ...
+# $ cmake --install <build dir>
+#
+# Default: Install to directories as defined by the GNUInstallDir module
+option(INSTALL_IN_PLACE "Install into the source tree (For testing and development)" OFF)
 
-set(CMAKE_INSTALL_BINDIR ".")
-set(CMAKE_INSTALL_DOCDIR "doc")
-set(DATADIR ".")
+if(INSTALL_IN_PLACE)
+	set(CMAKE_INSTALL_PREFIX .)
+	set(CMAKE_INSTALL_BINDIR .)
+	set(CMAKE_INSTALL_SYSCONFDIR .)
+	set(CMAKE_INSTALL_DOCDIR doc)
+	target_compile_definitions(railcontrol PRIVATE HTML_DATA_PATH=\"./html\")
+else()
+	target_compile_definitions(railcontrol PRIVATE HTML_DATA_PATH=\"${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/railcontrol/html\")
+	install(DIRECTORY html DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/railcontrol)
+endif()
 
-install(TARGETS ${PROJECT_NAME})
-install(FILES railcontrol.conf.dist DESTINATION ${DATADIR})
-install(DIRECTORY html DESTINATION ${DATADIR})
+install(TARGETS ${PROJECT_NAME} DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES railcontrol.conf.dist TYPE SYSCONF RENAME railcontrol.conf)
 
 include(CPack)
 

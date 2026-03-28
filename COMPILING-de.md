@@ -93,6 +93,39 @@ Ein Update kann folgendermassen durchgeführt werden:
 git pull
 make
 ```
+## Kompilieren mit cmake
+
+cmake Unterstützung befindet sich noch in Entwicklung. Falls das Bauen mit cmake
+nicht klappt, benutze GNU Make.
+
+Konfiguriere das Bauen außerhalb der Quelltextverzeichnisse
+
+```
+cmake -B build
+```
+
+Kompilieren RailControl mittels
+
+```
+cmake --build build
+```
+
+Installiere RailControl (als root) mittels
+
+```
+cmake --install build
+```
+
+### cmake Entwickler-Modus
+
+Um RailControl zu entwickeln, "installiere" RailControl in die Git Arbeitskopie.
+Das Ergebnis ist ähnlich zum Bauen mit GNU Make.
+
+```
+cmake -B build -DINSTALL_IN_PLACE=1
+cmake --build build
+cmake --install build
+```
 
 # Kompilieren unter Mac OS X
 
