@@ -98,6 +98,40 @@ git pull
 make
 ```
 
+## Compile with cmake
+
+cmake support is work in progress. In case the cmake build fails on your system,
+please build with GNU Make.
+
+Configure the out-of-tree build directory
+
+```
+cmake -B build
+```
+
+Compile RailControl with
+
+```
+cmake --build build
+```
+
+Install RailControl (as root) with
+
+```
+cmake --install build
+```
+
+### cmake develper mode
+
+To develop RailControl, "install" RailControl in the checked out working copy.
+This is similar to building RailControl with GNU Make.
+
+```
+cmake -B build -DINSTALL_IN_PLACE=1
+cmake --build build
+cmake --install build
+```
+
 # Compile under Mac OS X
 
 The required developer tools can be installed in a terminal with:
