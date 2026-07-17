@@ -1,0 +1,22 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "make -j 12",
+			"type": "shell",
+			"command": "C:/cygwin64/bin/bash.exe",
+			"args": [
+				"-lc",
+				"cd /cygdrive/d/Repositories/railcontrol && make -j ${NUMBER_OF_PROCESSORS:-2}"
+			],
+			"options": {
+				"cwd": "${workspaceFolder:railcontrol}"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": "$gcc"
+		}
+	]
+}
