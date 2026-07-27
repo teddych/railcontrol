@@ -232,6 +232,8 @@ Server/Web/HtmlTagInput.cpp
 Server/Web/HtmlTagInput.h
 Server/Web/HtmlTagInputCheckbox.h
 Server/Web/HtmlTagInputCheckboxWithLabel.h
+Server/Web/HtmlTagInputDelay.cpp
+Server/Web/HtmlTagInputDelay.h
 Server/Web/HtmlTagInputHidden.h
 Server/Web/HtmlTagInputInteger.cpp
 Server/Web/HtmlTagInputInteger.h

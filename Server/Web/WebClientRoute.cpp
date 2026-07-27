@@ -32,6 +32,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Server/Web/HtmlTagButtonPopupWide.h"
 #include "Server/Web/HtmlTagButtonSwapRelation.h"
 #include "Server/Web/HtmlTagInputCheckboxWithLabel.h"
+#include "Server/Web/HtmlTagInputDelay.h"
 #include "Server/Web/HtmlTagInputHidden.h"
 #include "Server/Web/HtmlTagInputIntegerWithLabel.h"
 #include "Server/Web/HtmlTagInputTextWithLabel.h"
@@ -934,29 +935,7 @@ namespace Server { namespace Web
 
 			case ObjectTypePause:
 			{
-				map<unsigned int,string> time;
-				time[1u] = "0.1s";
-				time[2u] = "0.2s";
-				time[3u] = "0.3s";
-				time[4u] = "0.4s";
-				time[5u] = "0.5s";
-				time[6u] = "0.6s";
-				time[7u] = "0.7s";
-				time[8u] = "0.8s";
-				time[9u] = "0.9s";
-				time[10u] = "1s";
-				time[15u] = "1.5s";
-				time[20u] = "2s";
-				time[25u] = "2.5s";
-				time[30u] = "3s";
-				time[40u] = "4s";
-				time[50u] = "5s";
-				time[60u] = "6s";
-				time[70u] = "7s";
-				time[80u] = "8s";
-				time[90u] = "9s";
-				time[100u] = "10s";
-				content.AddChildTag(HtmlTagSelect(name + "_state", time, static_cast<unsigned int>(state)).AddClass("select_relation_state"));
+				content.AddChildTag(HtmlTagInputDelay(name + "_state", static_cast<unsigned int>(state), 1, 600).AddClass("select_relation_state"));
 				return content;
 			}
 

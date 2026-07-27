@@ -700,6 +700,78 @@ function decrementIntegerValue(name, min)
 	execFunctionByName('update_' + name);
 }
 
+function updateDelayValue(name, value)
+{
+	var input = document.getElementById(name + '_value');
+	var display = document.getElementById(name);
+	if (!input || !display)
+	{
+		return;
+	}
+
+	input.value = value;
+	display.value = (value / 10).toFixed(1);
+
+	execFunctionByName('update_' + name);
+}
+
+function checkDelayValue(name, min, max)
+{
+	if (min > max)
+	{
+		return;
+	}
+	var display = document.getElementById(name);
+	if (!display)
+	{
+		return;
+	}
+
+	var value = Math.round(parseFloat(display.value) * 10);
+	if (isNaN(value) || value < min)
+	{
+		value = min;
+	}
+	else if (value > max)
+	{
+		value = max;
+	}
+
+	updateDelayValue(name, value);
+}
+
+function incrementDelayValue(name, max)
+{
+	var input = document.getElementById(name + '_value');
+	if (!input)
+	{
+		return;
+	}
+	var value = parseInt(input.value) + 1;
+	if (value > max)
+	{
+		return;
+	}
+
+	updateDelayValue(name, value);
+}
+
+function decrementDelayValue(name, min)
+{
+	var input = document.getElementById(name + '_value');
+	if (!input)
+	{
+		return;
+	}
+	var value = parseInt(input.value) - 1;
+	if (value < min)
+	{
+		return;
+	}
+
+	updateDelayValue(name, value);
+}
+
 function update_valueraw()
 {
 	var element = document.getElementById('valueraw');

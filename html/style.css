@@ -484,6 +484,18 @@ label {
 	display: inline-block;
 }
 
+.div_delay {
+	position: relative;
+}
+
+.div_delay .delay_unit {
+	pointer-events: none;
+	position: absolute;
+	right: 18px;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
 .function_line label {
 	width: 40px;
 }
