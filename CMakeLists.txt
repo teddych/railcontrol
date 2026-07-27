@@ -218,9 +218,7 @@ Server/Web/HtmlTagButtonCommandPressRelease.h
 Server/Web/HtmlTagButtonCommandToggle.cpp
 Server/Web/HtmlTagButtonCommandToggle.h
 Server/Web/HtmlTagButtonCommandWide.h
-Server/Web/HtmlTagButtonMinus.h
 Server/Web/HtmlTagButtonOK.h
-Server/Web/HtmlTagButtonPlus.h
 Server/Web/HtmlTagButtonPopup.cpp
 Server/Web/HtmlTagButtonPopup.h
 Server/Web/HtmlTagButtonPopupWide.h

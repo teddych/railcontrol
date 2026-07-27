@@ -20,9 +20,6 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <string>
 
-#include "Server/Web/HtmlTagButtonMinus.h"
-#include "Server/Web/HtmlTagButtonPlus.h"
-#include "Server/Web/HtmlTagInput.h"
 #include "Server/Web/HtmlTagInputInteger.h"
 
 namespace Server { namespace Web
@@ -34,12 +31,18 @@ namespace Server { namespace Web
 		std::string maxString = std::to_string(max);
 		AddId("d_" + name);
 		AddClass("div_integer");
-		HtmlTagInput input("text", name, std::to_string(value));
+
+		HtmlTag input("input");
+		input.AddAttribute("type", "number");
+		input.AddAttribute("min", minString);
+		input.AddAttribute("max", maxString);
+		input.AddAttribute("step", "1");
+		input.AddAttribute("value", std::to_string(value));
+		input.AddId(name);
 		input.AddClass("integer");
+		input.AddAttribute("onfocus", "this.select();");
+		input.AddAttribute("onclick", "this.select();");
 		input.AddAttribute("oninput", "checkIntegerValue('" + name + "', " + minString + ", " + maxString + ");");
 		AddChildTag(input);
-
-		AddChildTag(HtmlTagButtonMinus(name, min));
-		AddChildTag(HtmlTagButtonPlus(name, max));
 	}
 }} // namespace Server::Web
