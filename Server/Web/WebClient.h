@@ -203,7 +203,30 @@ namespace Server { namespace Web
 		private:
 			void InterpretClientRequest(const std::deque<std::string>& lines, std::string& method, std::string& uri, std::string& protocol, std::map<std::string,std::string>& arguments, std::map<std::string,std::string>& headers);
 			void HandleLoco(const std::map<std::string, std::string>& arguments);
+
 			void PrintMainHTML();
+
+			std::string GetUriWithArguments(const std::string& method,
+				const std::string& uri,
+				const std::map<std::string,std::string>& arguments) const;
+
+			void ParseUrlEncodedArguments(const std::string& encodedArguments,
+				std::map<std::string,std::string>& arguments);
+
+			void ParseMultipartFormData(const std::string& body,
+				const std::string& boundary,
+				std::map<std::string,std::string>& arguments,
+				std::string& file);
+
+			std::string GetHeaderParameter(const std::string& headerValue,
+				const std::string& parameterName);
+
+			std::string GetHeader(const std::map<std::string,std::string>& headers,
+				const std::string& key,
+				const std::string& defaultValue = "");
+
+			std::string ReformatLocoImage(const std::string& image) const;
+
 			void DeliverFile(const std::string& file);
 			void DeliverFileInternal(FILE* f, const char* realFile, const std::string& file);
 			HtmlTag HtmlTagLocoSelector(const std::string& selector, const LocoID locoID = LocoNone) const;
@@ -247,7 +270,8 @@ namespace Server { namespace Web
 			void HandleLocoBaseOrientation(const std::map<std::string,std::string>& arguments);
 			void HandleLocoFunction(const std::map<std::string, std::string>& arguments);
 			void HandleLocoEdit(const std::map<std::string, std::string>& arguments);
-			void HandleLocoSave(const std::map<std::string, std::string>& arguments);
+			void HandleLocoSave(const std::map<std::string, std::string>& arguments, const std::string& postFile);
+			void HandleLocoImage(const std::string& uri);
 			void HandleLocoList();
 			void HandleLocoAskDelete(const std::map<std::string, std::string>& arguments);
 			void HandleLocoDelete(const std::map<std::string, std::string>& arguments);

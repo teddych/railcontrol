@@ -1013,3 +1013,8 @@ button:active {
 	border-radius: 0 8px 8px 0;
 	left: 252px;
 }
+
+img {
+	width: 235px;
+	height: 100px;
+}

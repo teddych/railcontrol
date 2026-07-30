@@ -34,5 +34,7 @@ namespace DataModel
 
 		protected:
 			static void ParseArguments(const std::string& serialized, std::map<std::string,std::string>& arguments);
+			static std::string SerializeBinaryData(const std::string& data);
+			static std::string DeserializeBinaryData(const std::string& data);
 	};
 } // namespace DataModel

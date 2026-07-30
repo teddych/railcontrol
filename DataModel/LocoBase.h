@@ -96,7 +96,8 @@ namespace DataModel
 				feedbackIdsReached(),
 				wait(0),
 				followUpRoute(RouteAuto),
-				matchKey("")
+				matchKey(""),
+				image()
 			{
 				logger = Logger::Logger::GetLogger(GetName());
 			}
@@ -292,6 +293,16 @@ namespace DataModel
 				return matchKey;
 			}
 
+			inline const std::string& GetImage() const
+			{
+				return image;
+			}
+
+			inline void SetImage(const std::string& image)
+			{
+				this->image = image;
+			}
+
 			inline DataModel::LocoFunctionNr GetFunctionNrFromFunctionIcon(const DataModel::LocoFunctionIcon icon) const
 			{
 				return functions.GetFunctionNrFromFunctionIcon(icon);
@@ -439,6 +450,7 @@ namespace DataModel
 			Utils::ThreadSafeQueue<TimeTableEntry> timeTableQueue;
 			RouteID followUpRoute;
 			std::string matchKey;
+			std::string image;
 
 			LocoFunctions functions;
 

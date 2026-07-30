@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <deque>
 
 #include "DataModel/Serializable.h"
+#include "Utils/Integer.h"
 #include "Utils/Utils.h"
 
 using std::deque;
@@ -29,6 +30,32 @@ using std::map;
 
 namespace DataModel
 {
+	string Serializable::SerializeBinaryData(const string& data)
+	{
+		static const char hex[] = "0123456789abcdef";
+		string encoded;
+		encoded.reserve(data.size() * 2);
+		for (const unsigned char value : data)
+		{
+			encoded += hex[value >> 4];
+			encoded += hex[value & 0x0F];
+		}
+		return encoded;
+	}
+
+	string Serializable::DeserializeBinaryData(const string& data)
+	{
+		string decoded;
+		decoded.reserve(data.size() / 2);
+		for (size_t pos = 0; pos + 1 < data.size(); pos += 2)
+		{
+			const unsigned char highNibble = Utils::Integer::HexToChar(data[pos]);
+			const unsigned char lowNibble = Utils::Integer::HexToChar(data[pos + 1]);
+			decoded += static_cast<char>((highNibble << 4) + lowNibble);
+		}
+		return decoded;
+	}
+
 	void Serializable::ParseArguments(const string& serialized, map<string, string>& arguments)
 	{
 		deque<string> parts;

@@ -40,6 +40,7 @@ namespace DataModel
 				address(AddressNone),
 				serverAddress(AddressNone),
 				isInUse(false),
+				image(),
 				pushpull(false),
 				length(0),
 				maxSpeed(MinSpeed),
@@ -63,6 +64,7 @@ namespace DataModel
 				name(loco.GetName()),
 				matchKey(loco.GetMatchKey()),
 				isInUse(loco.IsInUse()),
+				image(loco.GetImage()),
 				pushpull(loco.GetPushpull()),
 				length(loco.GetLength()),
 				maxSpeed(loco.GetMaxSpeed()),
@@ -87,6 +89,7 @@ namespace DataModel
 				name(loco.GetName()),
 				matchKey(loco.GetMatchKey()),
 				isInUse(false),
+				image(),
 				pushpull(false),
 				length(0),
 				maxSpeed(MinSpeed),
@@ -112,6 +115,7 @@ namespace DataModel
 				name(multipleUnit.GetName()),
 				matchKey(multipleUnit.GetMatchKey()),
 				isInUse(multipleUnit.IsInUse()),
+				image(multipleUnit.GetImage()),
 				pushpull(multipleUnit.GetPushpull()),
 				length(multipleUnit.GetLength()),
 				maxSpeed(multipleUnit.GetMaxSpeed()),
@@ -137,6 +141,7 @@ namespace DataModel
 				name(locoBase.GetName()),
 				matchKey(locoBase.GetMatchKey()),
 				isInUse(locoBase.IsInUse()),
+				image(locoBase.GetImage()),
 				pushpull(locoBase.GetPushpull()),
 				length(locoBase.GetLength()),
 				maxSpeed(locoBase.GetMaxSpeed()),
@@ -209,6 +214,11 @@ namespace DataModel
 			inline bool IsInUse() const
 			{
 				return isInUse;
+			}
+
+			inline const std::string& GetImage() const
+			{
+				return image;
 			}
 
 			inline std::vector<DataModel::LocoFunctionEntry> GetFunctionStates() const
@@ -291,6 +301,7 @@ namespace DataModel
 			const std::string name;
 			const std::string matchKey;
 			const bool isInUse;
+			const std::string image;
 			LocoFunctions functions;
 			const bool pushpull;
 			const Length length;

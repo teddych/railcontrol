@@ -26,26 +26,22 @@ along with RailControl; see the file LICENCE. If not see
 
 namespace Server { namespace Web
 {
-	class HtmlTagInputDelay : public HtmlTag
+	class HtmlTagImage : public HtmlTag
 	{
 		public:
-			HtmlTagInputDelay() = delete;
-			HtmlTagInputDelay(HtmlTagInputDelay&) = delete;
-			HtmlTagInputDelay& operator=(HtmlTagInputDelay&) = delete;
+			HtmlTagImage() = delete;
+			HtmlTagImage(const HtmlTagImage&) = delete;
+			HtmlTagImage& operator=(const HtmlTagImage&) = delete;
 
-			HtmlTagInputDelay(const std::string& name, const int value, const int min, const int max);
-
-			inline virtual HtmlTag AddClass(const std::string& className) override
+			inline HtmlTagImage(const std::string& src,
+				const std::string& alt)
+			: HtmlTag("img")
 			{
-				if (childTags.size() > 1)
-				{
-					childTags[1].AddClass(className);
-				}
-				else
-				{
-					HtmlTag::AddClass(className);
-				}
-				return *this;
+				AddAttribute("src", src);
+                if (alt.length() > 0)
+                {
+                    AddAttribute("alt", alt);
+                }
 			}
 	};
 }} // namespace Server::Web

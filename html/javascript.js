@@ -2382,8 +2382,10 @@ function addInfoBox(type, info)
 
 function submitEditForm()
 {
-	var url = '/?';
+	var body = '';
 	var form = document.getElementById('editform');
+	var hasFileInput = false;
+	var parameterCount = 0;
 	var i = 0;
 	while (true)
 	{
@@ -2392,25 +2394,30 @@ function submitEditForm()
 		{
 			break;
 		}
+		if (formElement.type == 'file')
+		{
+			hasFileInput = true;
+		}
 		if (formElement.name.substr(0, 5) == "skip_")
 		{
 			++i;
 			continue;
 		}
-		if (i > 0)
+		if (parameterCount > 0)
 		{
-			url += '&';
+			body += '&';
 		}
-		url += formElement.name;
-		url += '=';
+		body += encodeURIComponent(formElement.name);
+		body += '=';
 		if (formElement.type == 'checkbox')
 		{
-			url += formElement.checked;
+			body += encodeURIComponent(formElement.checked);
 		}
 		else
 		{
-			url += encodeURIComponent(formElement.value);
+			body += encodeURIComponent(formElement.value);
 		}
+		++parameterCount;
 		++i;
 	}
 	var xmlHttp = new XMLHttpRequest();
@@ -2422,8 +2429,16 @@ function submitEditForm()
 		var response = xmlHttp.responseText;
 		addInfoBox(response[21], response.substring(22, response.length - 7));
 	}
-	xmlHttp.open('GET', url, true);
-	xmlHttp.send(null);
+	xmlHttp.open('POST', '/', true);
+	if (hasFileInput)
+	{
+		xmlHttp.send(new FormData(form));
+	}
+	else
+	{
+		xmlHttp.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+		xmlHttp.send(body);
+	}
 	return false;
 }
 

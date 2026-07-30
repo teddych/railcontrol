@@ -96,6 +96,8 @@ class Manager
 
 		const DataModel::LocoConfig GetLoco(const LocoID locoID) const;
 
+		std::string GetLocoImage(const LocoID locoID) const;
+
 		const DataModel::LocoConfig GetLocoOfConfigByMatchKey(const ControlID controlId, const std::string& matchKey) const;
 
 		DataModel::Loco* GetLocoByMatchKey(const ControlID controlId, const std::string& matchKey) const;
@@ -134,6 +136,7 @@ class Manager
 			const Speed creepingSpeed,
 			const Propulsion propulsion,
 			const TrainType type,
+			const std::string& image,
 			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
 			std::string& result);
 

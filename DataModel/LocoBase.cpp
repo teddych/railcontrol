@@ -69,6 +69,7 @@ namespace DataModel
 		str += ";propulsion=" + to_string(propulsion);
 		str += ";type=" + to_string(trainType);
 		str += ";matchkey=" + matchKey;
+		str += ";image=" + SerializeBinaryData(image);
 		return str;
 	}
 
@@ -96,6 +97,7 @@ namespace DataModel
 		propulsion = static_cast<Propulsion>(Utils::Utils::GetIntegerMapEntry(arguments, "propulsion", PropulsionUnknown));
 		trainType = static_cast<TrainType>(Utils::Utils::GetIntegerMapEntry(arguments, "type", TrainTypeUnknown));
 		matchKey = Utils::Utils::GetStringMapEntry(arguments, "matchkey");
+		image = DeserializeBinaryData(Utils::Utils::GetStringMapEntry(arguments, "image"));
 	}
 
 	bool LocoBase::SetTrack(const TrackID trackID)

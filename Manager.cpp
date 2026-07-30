@@ -691,6 +691,17 @@ const LocoConfig Manager::GetLoco(const LocoID locoID) const
 	return LocoConfig(*loco);
 }
 
+string Manager::GetLocoImage(const LocoID locoID) const
+{
+	std::lock_guard<std::mutex> guard(locoMutex);
+	const Loco* loco = GetLocoInternal(locoID);
+	if (!loco)
+	{
+		return string();
+	}
+	return loco->GetImage();
+}
+
 const string& Manager::GetLocoName(const LocoID locoID) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
@@ -871,6 +882,7 @@ bool Manager::LocoSave(LocoID locoID,
 	const Speed creepingSpeed,
 	const Propulsion propulsion,
 	const TrainType type,
+	const string& image,
 	const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
 	string& result)
 {
@@ -912,6 +924,10 @@ bool Manager::LocoSave(LocoID locoID,
 		loco->SetCreepingSpeed(creepingSpeed);
 		loco->SetPropulsion(propulsion);
 		loco->SetTrainType(type);
+		if (!image.empty())
+		{
+			loco->SetImage(image);
+		}
 		loco->ConfigureFunctions(locoFunctions);
 
 		// save in db

@@ -19,7 +19,10 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include <algorithm>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>		//memset
+#include <fstream>
 #include <netinet/in.h>
 #include <signal.h>
 #include <sstream>
@@ -46,9 +49,11 @@ along with RailControl; see the file LICENCE. If not see
 #include "Server/Web/HtmlTagButtonPopupWide.h"
 #include "Server/Web/HtmlTagCounter.h"
 #include "Server/Web/HtmlTagFeedback.h"
+#include "Server/Web/HtmlTagImage.h"
 #include "Server/Web/HtmlTagInputCheckbox.h"
 #include "Server/Web/HtmlTagInputCheckboxWithLabel.h"
 #include "Server/Web/HtmlTagInputHidden.h"
+#include "Server/Web/HtmlTagInputImageWithLabel.h"
 #include "Server/Web/HtmlTagInputIntegerWithLabel.h"
 #include "Server/Web/HtmlTagInputSliderLocoSpeed.h"
 #include "Server/Web/HtmlTagInputTextWithLabel.h"
@@ -109,15 +114,13 @@ namespace Server { namespace Web
 
 		while (run && keepalive)
 		{
-			const int BufferSize = 8192;
-			char buffer[BufferSize];
-			memset(buffer, 0, BufferSize);
+			const size_t ReceiveBufferSize = 8192;
+			char buffer[ReceiveBufferSize];
 
-			int pos = 0;
-			string s;
-			while (pos < BufferSize - 1 && s.find("\n\n") == string::npos && run)
+			string request;
+			while (request.find("\r\n\r\n") == string::npos && run)
 			{
-				int ret = connection->Receive(buffer + pos, BufferSize - 1 - pos, 0);
+				int ret = connection->Receive(buffer, ReceiveBufferSize, 0);
 				if (ret == -1)
 				{
 					if (errno != ETIMEDOUT)
@@ -125,20 +128,31 @@ namespace Server { namespace Web
 						logger->Debug(Languages::TextErrorReadingData, strerror(errno));
 						return;
 					}
-					if (run == false)
+					if (!run)
 					{
 						return;
 					}
 					continue;
 				}
-				pos += ret;
-				s = string(buffer);
-				Utils::Utils::ReplaceString(s, string("\r\n"), string("\n"));
-				Utils::Utils::ReplaceString(s, string("\r"), string("\n"));
+				if (ret == 0)
+				{
+					return;
+				}
+				request.append(buffer, ret);
 			}
 
+			size_t headerEnd = request.find("\r\n\r\n");
+			size_t bodyStart = headerEnd + 4;
+			if (headerEnd == string::npos)
+			{
+				return;
+			}
+
+			string header = request.substr(0, headerEnd);
+			string body = request.substr(bodyStart);
+
 			deque<string> lines;
-			Utils::Utils::SplitString(s, string("\n"), lines);
+			Utils::Utils::SplitString(header, string("\r\n"), lines);
 
 			if (lines.size() <= 1)
 			{
@@ -151,11 +165,58 @@ namespace Server { namespace Web
 			map<string, string> arguments;
 			map<string, string> headers;
 			InterpretClientRequest(lines, method, uri, protocol, arguments, headers);
-			keepalive = (Utils::Utils::GetStringMapEntry(headers, "Connection", "close").compare("keep-alive") == 0);
-			logger->Info(Languages::TextHttpRequest, method, uri);
+			const int contentLengthHeader = Utils::Integer::StringToInteger(GetHeader(headers, "Content-Length", "0"), 0);
+			const size_t contentLength = contentLengthHeader > 0 ? static_cast<size_t>(contentLengthHeader) : 0;
+			while (body.length() < contentLength && run)
+			{
+				int ret = connection->Receive(buffer, std::min(ReceiveBufferSize, contentLength - body.length()), 0);
+				if (ret == -1)
+				{
+					if (errno != ETIMEDOUT)
+					{
+						logger->Debug(Languages::TextErrorReadingData, strerror(errno));
+						return;
+					}
+					if (!run)
+					{
+						return;
+					}
+					continue;
+				}
+				if (ret == 0)
+				{
+					return;
+				}
+				body.append(buffer, ret);
+			}
+			if (body.length() > contentLength)
+			{
+				body.resize(contentLength);
+			}
+			string postFile;
+			if (method.compare("POST") == 0)
+			{
+				const string contentType = GetHeader(headers, "Content-Type");
+				const string contentTypeLower = Utils::Utils::StringToLower(contentType);
+				if (contentTypeLower.find("multipart/form-data") == 0)
+				{
+					ParseMultipartFormData(body, GetHeaderParameter(contentType, "boundary"), arguments, postFile);
+				}
+				else
+				{
+					ParseUrlEncodedArguments(body, arguments);
+				}
+			}
+			keepalive = (GetHeader(headers, "Connection", "close").compare("keep-alive") == 0);
+			logger->Info(Languages::TextHttpRequest, method, GetUriWithArguments(method, uri, arguments));
+			if (!postFile.empty())
+			{
+				logger->Debug(Languages::TextUploadedFileContent);
+				logger->HexIn(postFile);
+			}
 
 			// if method is not implemented
-			if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0))
+			if ((method.compare("GET") != 0) && (method.compare("HEAD") != 0) && (method.compare("POST") != 0))
 			{
 				logger->Info(Languages::TextMethodNotImplemented, id, method);
 				ResponseHtmlNotImplemented response(method);
@@ -163,8 +224,11 @@ namespace Server { namespace Web
 				return;
 			}
 
+			const string cmd = Utils::Utils::GetStringMapEntry(arguments, "cmd");
+			const string locoImagePrefix = "/images/locos/";
+
 			// handle requests
-			if (uri.compare("/") == 0)
+			if (uri.compare("/") == 0 && cmd.empty())
 			{
 				PrintMainHTML();
 				if (server.UpdateAvailable())
@@ -172,16 +236,16 @@ namespace Server { namespace Web
 					server.AddUpdate("warning", Languages::TextRailControlUpdateAvailable);
 				}
 			}
-			else if (arguments["cmd"].compare("askshutdown") == 0)
+			else if (cmd.compare("askshutdown") == 0)
 			{
 				HandleAskShutdown();
 			}
-			else if (arguments["cmd"].compare("shutdown") == 0)
+			else if (cmd.compare("shutdown") == 0)
 			{
 				ReplyResponse(ResponseInfo, Languages::TextShutdownRailControl);
 				shutdownRailControlWebserver();
 			}
-			else if (arguments["cmd"].compare("booster") == 0)
+			else if (cmd.compare("booster") == 0)
 			{
 				bool on = Utils::Utils::GetBoolMapEntry(arguments, "on");
 				if (on)
@@ -195,519 +259,523 @@ namespace Server { namespace Web
 					manager.Booster(ControlTypeWebServer, BoosterStateStop);
 				}
 			}
-			else if (arguments["cmd"].compare("layeredit") == 0)
+			else if (cmd.compare("layeredit") == 0)
 			{
 				HandleLayerEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("layersave") == 0)
+			else if (cmd.compare("layersave") == 0)
 			{
 				HandleLayerSave(arguments);
 			}
-			else if (arguments["cmd"].compare("layerlist") == 0)
+			else if (cmd.compare("layerlist") == 0)
 			{
 				HandleLayerList();
 			}
-			else if (arguments["cmd"].compare("layeraskdelete") == 0)
+			else if (cmd.compare("layeraskdelete") == 0)
 			{
 				HandleLayerAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("layerdelete") == 0)
+			else if (cmd.compare("layerdelete") == 0)
 			{
 				HandleLayerDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("controledit") == 0)
+			else if (cmd.compare("controledit") == 0)
 			{
 				HandleControlEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("controlsave") == 0)
+			else if (cmd.compare("controlsave") == 0)
 			{
 				HandleControlSave(arguments);
 			}
-			else if (arguments["cmd"].compare("controllist") == 0)
+			else if (cmd.compare("controllist") == 0)
 			{
 				HandleControlList();
 			}
-			else if (arguments["cmd"].compare("controlaskdelete") == 0)
+			else if (cmd.compare("controlaskdelete") == 0)
 			{
 				HandleControlAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("controldelete") == 0)
+			else if (cmd.compare("controldelete") == 0)
 			{
 				HandleControlDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("loco") == 0)
+			else if (cmd.compare("loco") == 0)
 			{
 				HandleLoco(arguments);
 			}
-			else if (arguments["cmd"].compare("locospeed") == 0)
+			else if (cmd.compare("locospeed") == 0)
 			{
 				HandleLocoBaseSpeed(arguments);
 			}
-			else if (arguments["cmd"].compare("locoorientation") == 0)
+			else if (cmd.compare("locoorientation") == 0)
 			{
 				HandleLocoBaseOrientation(arguments);
 			}
-			else if (arguments["cmd"].compare("locofunction") == 0)
+			else if (cmd.compare("locofunction") == 0)
 			{
 				HandleLocoFunction(arguments);
 			}
-			else if (arguments["cmd"].compare("locoedit") == 0)
+			else if (cmd.compare("locoedit") == 0)
 			{
 				HandleLocoEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("locosave") == 0)
+			else if (cmd.compare("locosave") == 0)
 			{
-				HandleLocoSave(arguments);
+				HandleLocoSave(arguments, postFile);
 			}
-			else if (arguments["cmd"].compare("locolist") == 0)
+			else if (cmd.compare("locolist") == 0)
 			{
 				HandleLocoList();
 			}
-			else if (arguments["cmd"].compare("locoaskdelete") == 0)
+			else if (cmd.compare("locoaskdelete") == 0)
 			{
 				HandleLocoAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("locodelete") == 0)
+			else if (cmd.compare("locodelete") == 0)
 			{
 				HandleLocoDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("locorelease") == 0)
+			else if (cmd.compare("locorelease") == 0)
 			{
 				HandleLocoRelease(arguments);
 			}
-			else if (arguments["cmd"].compare("locoaddtimetable") == 0)
+			else if (cmd.compare("locoaddtimetable") == 0)
 			{
 				HandleLocoAddTimeTable(arguments);
 			}
-			else if (arguments["cmd"].compare("multipleunitedit") == 0)
+			else if (cmd.compare("multipleunitedit") == 0)
 			{
 				HandleMultipleUnitEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("multipleunitsave") == 0)
+			else if (cmd.compare("multipleunitsave") == 0)
 			{
 				HandleMultipleUnitSave(arguments);
 			}
-			else if (arguments["cmd"].compare("multipleunitlist") == 0)
+			else if (cmd.compare("multipleunitlist") == 0)
 			{
 				HandleMultipleUnitList();
 			}
-			else if (arguments["cmd"].compare("multipleunitaskdelete") == 0)
+			else if (cmd.compare("multipleunitaskdelete") == 0)
 			{
 				HandleMultipleUnitAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("multipleunitdelete") == 0)
+			else if (cmd.compare("multipleunitdelete") == 0)
 			{
 				HandleMultipleUnitDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("multipleunitrelease") == 0)
+			else if (cmd.compare("multipleunitrelease") == 0)
 			{
 				HandleMultipleUnitRelease(arguments);
 			}
-			else if (arguments["cmd"].compare("accessoryedit") == 0)
+			else if (cmd.compare("accessoryedit") == 0)
 			{
 				HandleAccessoryEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("accessorysave") == 0)
+			else if (cmd.compare("accessorysave") == 0)
 			{
 				HandleAccessorySave(arguments);
 			}
-			else if (arguments["cmd"].compare("accessorystate") == 0)
+			else if (cmd.compare("accessorystate") == 0)
 			{
 				HandleAccessoryState(arguments);
 			}
-			else if (arguments["cmd"].compare("accessorylist") == 0)
+			else if (cmd.compare("accessorylist") == 0)
 			{
 				HandleAccessoryList();
 			}
-			else if (arguments["cmd"].compare("accessoryaskdelete") == 0)
+			else if (cmd.compare("accessoryaskdelete") == 0)
 			{
 				HandleAccessoryAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("accessorydelete") == 0)
+			else if (cmd.compare("accessorydelete") == 0)
 			{
 				HandleAccessoryDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("accessoryget") == 0)
+			else if (cmd.compare("accessoryget") == 0)
 			{
 				HandleAccessoryGet(arguments);
 			}
-			else if (arguments["cmd"].compare("accessoryrelease") == 0)
+			else if (cmd.compare("accessoryrelease") == 0)
 			{
 				HandleAccessoryRelease(arguments);
 			}
-			else if (arguments["cmd"].compare("switchedit") == 0)
+			else if (cmd.compare("switchedit") == 0)
 			{
 				HandleSwitchEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("switchsave") == 0)
+			else if (cmd.compare("switchsave") == 0)
 			{
 				HandleSwitchSave(arguments);
 			}
-			else if (arguments["cmd"].compare("switchstate") == 0)
+			else if (cmd.compare("switchstate") == 0)
 			{
 				HandleSwitchState(arguments);
 			}
-			else if (arguments["cmd"].compare("switchstates") == 0)
+			else if (cmd.compare("switchstates") == 0)
 			{
 				route.HandleRelationSwitchStates(arguments);
 			}
-			else if (arguments["cmd"].compare("switchlist") == 0)
+			else if (cmd.compare("switchlist") == 0)
 			{
 				HandleSwitchList();
 			}
-			else if (arguments["cmd"].compare("switchaskdelete") == 0)
+			else if (cmd.compare("switchaskdelete") == 0)
 			{
 				HandleSwitchAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("switchdelete") == 0)
+			else if (cmd.compare("switchdelete") == 0)
 			{
 				HandleSwitchDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("switchget") == 0)
+			else if (cmd.compare("switchget") == 0)
 			{
 				HandleSwitchGet(arguments);
 			}
-			else if (arguments["cmd"].compare("switchrelease") == 0)
+			else if (cmd.compare("switchrelease") == 0)
 			{
 				HandleSwitchRelease(arguments);
 			}
-			else if (arguments["cmd"].compare("signaladdresses") == 0)
+			else if (cmd.compare("signaladdresses") == 0)
 			{
 				signal.HandleSignalAddresses(arguments);
 			}
-			else if (arguments["cmd"].compare("signaledit") == 0)
+			else if (cmd.compare("signaledit") == 0)
 			{
 				signal.HandleSignalEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("signalsave") == 0)
+			else if (cmd.compare("signalsave") == 0)
 			{
 				signal.HandleSignalSave(arguments);
 			}
-			else if (arguments["cmd"].compare("signalstate") == 0)
+			else if (cmd.compare("signalstate") == 0)
 			{
 				signal.HandleSignalState(arguments);
 			}
-			else if (arguments["cmd"].compare("signalstates") == 0)
+			else if (cmd.compare("signalstates") == 0)
 			{
 				signal.HandleSignalStates(arguments);
 			}
-			else if (arguments["cmd"].compare("signallist") == 0)
+			else if (cmd.compare("signallist") == 0)
 			{
 				signal.HandleSignalList();
 			}
-			else if (arguments["cmd"].compare("signalaskdelete") == 0)
+			else if (cmd.compare("signalaskdelete") == 0)
 			{
 				signal.HandleSignalAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("signaldelete") == 0)
+			else if (cmd.compare("signaldelete") == 0)
 			{
 				signal.HandleSignalDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("signalget") == 0)
+			else if (cmd.compare("signalget") == 0)
 			{
 				signal.HandleSignalGet(arguments);
 			}
-			else if (arguments["cmd"].compare("signalrelease") == 0)
+			else if (cmd.compare("signalrelease") == 0)
 			{
 				signal.HandleSignalRelease(arguments);
 			}
-			else if (arguments["cmd"].compare("routeedit") == 0)
+			else if (cmd.compare("routeedit") == 0)
 			{
 				route.HandleRouteEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("routesave") == 0)
+			else if (cmd.compare("routesave") == 0)
 			{
 				route.HandleRouteSave(arguments);
 			}
-			else if (arguments["cmd"].compare("routelist") == 0)
+			else if (cmd.compare("routelist") == 0)
 			{
 				route.HandleRouteList();
 			}
-			else if (arguments["cmd"].compare("routeaskdelete") == 0)
+			else if (cmd.compare("routeaskdelete") == 0)
 			{
 				route.HandleRouteAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("routedelete") == 0)
+			else if (cmd.compare("routedelete") == 0)
 			{
 				route.HandleRouteDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("routeget") == 0)
+			else if (cmd.compare("routeget") == 0)
 			{
 				route.HandleRouteGet(arguments);
 			}
-			else if (arguments["cmd"].compare("routeexecute") == 0)
+			else if (cmd.compare("routeexecute") == 0)
 			{
 				route.HandleRouteExecute(arguments);
 			}
-			else if (arguments["cmd"].compare("routerelease") == 0)
+			else if (cmd.compare("routerelease") == 0)
 			{
 				route.HandleRouteRelease(arguments);
 			}
-			else if (arguments["cmd"].compare("textedit") == 0)
+			else if (cmd.compare("textedit") == 0)
 			{
 				text.HandleTextEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("textsave") == 0)
+			else if (cmd.compare("textsave") == 0)
 			{
 				text.HandleTextSave(arguments);
 			}
-			else if (arguments["cmd"].compare("textlist") == 0)
+			else if (cmd.compare("textlist") == 0)
 			{
 				text.HandleTextList();
 			}
-			else if (arguments["cmd"].compare("textaskdelete") == 0)
+			else if (cmd.compare("textaskdelete") == 0)
 			{
 				text.HandleTextAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("textdelete") == 0)
+			else if (cmd.compare("textdelete") == 0)
 			{
 				text.HandleTextDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("textget") == 0)
+			else if (cmd.compare("textget") == 0)
 			{
 				text.HandleTextGet(arguments);
 			}
-			else if (arguments["cmd"].compare("trackedit") == 0)
+			else if (cmd.compare("trackedit") == 0)
 			{
 				track.HandleTrackEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("tracksave") == 0)
+			else if (cmd.compare("tracksave") == 0)
 			{
 				track.HandleTrackSave(arguments);
 			}
-			else if (arguments["cmd"].compare("tracklist") == 0)
+			else if (cmd.compare("tracklist") == 0)
 			{
 				track.HandleTrackList();
 			}
-			else if (arguments["cmd"].compare("trackaskdelete") == 0)
+			else if (cmd.compare("trackaskdelete") == 0)
 			{
 				track.HandleTrackAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("trackdelete") == 0)
+			else if (cmd.compare("trackdelete") == 0)
 			{
 				track.HandleTrackDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("trackget") == 0)
+			else if (cmd.compare("trackget") == 0)
 			{
 				track.HandleTrackGet(arguments);
 			}
-			else if (arguments["cmd"].compare("tracksetloco") == 0)
+			else if (cmd.compare("tracksetloco") == 0)
 			{
 				track.HandleTrackSetLoco(arguments);
 			}
-			else if (arguments["cmd"].compare("trackrelease") == 0)
+			else if (cmd.compare("trackrelease") == 0)
 			{
 				track.HandleTrackRelease(arguments);
 			}
-			else if (arguments["cmd"].compare("trackstartloco") == 0)
+			else if (cmd.compare("trackstartloco") == 0)
 			{
 				track.HandleTrackStartLoco(arguments);
 			}
-			else if (arguments["cmd"].compare("trackstoploco") == 0)
+			else if (cmd.compare("trackstoploco") == 0)
 			{
 				track.HandleTrackStopLoco(arguments);
 			}
-			else if (arguments["cmd"].compare("trackblock") == 0)
+			else if (cmd.compare("trackblock") == 0)
 			{
 				track.HandleTrackBlock(arguments);
 			}
-			else if (arguments["cmd"].compare("trackorientation") == 0)
+			else if (cmd.compare("trackorientation") == 0)
 			{
 				track.HandleTrackOrientation(arguments);
 			}
-			else if (arguments["cmd"].compare("feedbackedit") == 0)
+			else if (cmd.compare("feedbackedit") == 0)
 			{
 				HandleFeedbackEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("feedbacksave") == 0)
+			else if (cmd.compare("feedbacksave") == 0)
 			{
 				HandleFeedbackSave(arguments);
 			}
-			else if (arguments["cmd"].compare("feedbackstate") == 0)
+			else if (cmd.compare("feedbackstate") == 0)
 			{
 				HandleFeedbackState(arguments);
 			}
-			else if (arguments["cmd"].compare("feedbacklist") == 0)
+			else if (cmd.compare("feedbacklist") == 0)
 			{
 				HandleFeedbackList();
 			}
-			else if (arguments["cmd"].compare("feedbackaskdelete") == 0)
+			else if (cmd.compare("feedbackaskdelete") == 0)
 			{
 				HandleFeedbackAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("feedbackdelete") == 0)
+			else if (cmd.compare("feedbackdelete") == 0)
 			{
 				HandleFeedbackDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("feedbackget") == 0)
+			else if (cmd.compare("feedbackget") == 0)
 			{
 				HandleFeedbackGet(arguments);
 			}
-			else if (arguments["cmd"].compare("feedbacksoftrack") == 0)
+			else if (cmd.compare("feedbacksoftrack") == 0)
 			{
 				route.HandleFeedbacksOfTrack(arguments);
 			}
-			else if (arguments["cmd"].compare("devicebus") == 0)
+			else if (cmd.compare("devicebus") == 0)
 			{
 				HandleFeedbackDeviceBus(arguments);
 			}
-			else if (arguments["cmd"].compare("protocol") == 0)
+			else if (cmd.compare("protocol") == 0)
 			{
 				HandleProtocol(arguments);
 			}
-			else if (arguments["cmd"].compare("accessoryaddress") == 0)
+			else if (cmd.compare("accessoryaddress") == 0)
 			{
 				HandleAccessoryAddress(arguments);
 			}
-			else if (arguments["cmd"].compare("feedbackadd") == 0)
+			else if (cmd.compare("feedbackadd") == 0)
 			{
 				HandleFeedbackAdd(arguments);
 			}
-			else if (arguments["cmd"].compare("relationadd") == 0)
+			else if (cmd.compare("relationadd") == 0)
 			{
 				route.HandleRelationAdd(arguments);
 			}
-			else if (arguments["cmd"].compare("relationobject") == 0)
+			else if (cmd.compare("relationobject") == 0)
 			{
 				route.HandleRelationObject(arguments);
 			}
-			else if (arguments["cmd"].compare("layout") == 0)
+			else if (cmd.compare("layout") == 0)
 			{
 				HandleLayout(arguments);
 			}
-			else if (arguments["cmd"].compare("locoselector") == 0)
+			else if (cmd.compare("locoselector") == 0)
 			{
 				HandleLocoSelector(arguments);
 			}
-			else if (arguments["cmd"].compare("layerselector") == 0)
+			else if (cmd.compare("layerselector") == 0)
 			{
 				HandleLayerSelector(arguments);
 			}
-			else if (arguments["cmd"].compare("stopallimmediately") == 0)
+			else if (cmd.compare("stopallimmediately") == 0)
 			{
 				manager.LocoBaseStopAllImmediately(ControlTypeWebServer);
 			}
-			else if (arguments["cmd"].compare("startall") == 0)
+			else if (cmd.compare("startall") == 0)
 			{
 				manager.LocoBaseStartAll();
 			}
-			else if (arguments["cmd"].compare("stopall") == 0)
+			else if (cmd.compare("stopall") == 0)
 			{
 				manager.LocoBaseStopAll();
 			}
-			else if (arguments["cmd"].compare("settingsedit") == 0)
+			else if (cmd.compare("settingsedit") == 0)
 			{
 				HandleSettingsEdit();
 			}
-			else if (arguments["cmd"].compare("settingssave") == 0)
+			else if (cmd.compare("settingssave") == 0)
 			{
 				HandleSettingsSave(arguments);
 			}
-			else if (arguments["cmd"].compare("slaveadd") == 0)
+			else if (cmd.compare("slaveadd") == 0)
 			{
 				HandleSlaveAdd(arguments);
 			}
-			else if (arguments["cmd"].compare("timestamp") == 0)
+			else if (cmd.compare("timestamp") == 0)
 			{
 				HandleTimestamp(arguments);
 			}
-			else if (arguments["cmd"].compare("controlarguments") == 0)
+			else if (cmd.compare("controlarguments") == 0)
 			{
 				HandleControlArguments(arguments);
 			}
-			else if (arguments["cmd"].compare("program") == 0)
+			else if (cmd.compare("program") == 0)
 			{
 				HandleProgram();
 			}
-			else if (arguments["cmd"].compare("programmodeselector") == 0)
+			else if (cmd.compare("programmodeselector") == 0)
 			{
 				HandleProgramModeSelector(arguments);
 			}
-			else if (arguments["cmd"].compare("programread") == 0)
+			else if (cmd.compare("programread") == 0)
 			{
 				HandleProgramRead(arguments);
 			}
-			else if (arguments["cmd"].compare("programwrite") == 0)
+			else if (cmd.compare("programwrite") == 0)
 			{
 				HandleProgramWrite(arguments);
 			}
-			else if (arguments["cmd"].compare("getcvfields") == 0)
+			else if (cmd.compare("getcvfields") == 0)
 			{
 				HandleCvFields(arguments);
 			}
-			else if (arguments["cmd"].compare("clusterlist") == 0)
+			else if (cmd.compare("clusterlist") == 0)
 			{
 				cluster.HandleClusterList();
 			}
-			else if (arguments["cmd"].compare("clusteredit") == 0)
+			else if (cmd.compare("clusteredit") == 0)
 			{
 				cluster.HandleClusterEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("clustersave") == 0)
+			else if (cmd.compare("clustersave") == 0)
 			{
 				cluster.HandleClusterSave(arguments);
 			}
-			else if (arguments["cmd"].compare("clusteraskdelete") == 0)
+			else if (cmd.compare("clusteraskdelete") == 0)
 			{
 				cluster.HandleClusterAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("clusterdelete") == 0)
+			else if (cmd.compare("clusterdelete") == 0)
 			{
 				cluster.HandleClusterDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("counterlist") == 0)
+			else if (cmd.compare("counterlist") == 0)
 			{
 				counter.HandleCounterList();
 			}
-			else if (arguments["cmd"].compare("counteredit") == 0)
+			else if (cmd.compare("counteredit") == 0)
 			{
 				counter.HandleCounterEdit(arguments);
 			}
-			else if (arguments["cmd"].compare("countersave") == 0)
+			else if (cmd.compare("countersave") == 0)
 			{
 				counter.HandleCounterSave(arguments);
 			}
-			else if (arguments["cmd"].compare("counteraskdelete") == 0)
+			else if (cmd.compare("counteraskdelete") == 0)
 			{
 				counter.HandleCounterAskDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("counterdelete") == 0)
+			else if (cmd.compare("counterdelete") == 0)
 			{
 				counter.HandleCounterDelete(arguments);
 			}
-			else if (arguments["cmd"].compare("counterget") == 0)
+			else if (cmd.compare("counterget") == 0)
 			{
 				counter.HandleCounterGet(arguments);
 			}
-			else if (arguments["cmd"].compare("counterincrement") == 0)
+			else if (cmd.compare("counterincrement") == 0)
 			{
 				counter.HandleCounterIncrement(arguments);
 			}
-			else if (arguments["cmd"].compare("counterdecrement") == 0)
+			else if (cmd.compare("counterdecrement") == 0)
 			{
 				counter.HandleCounterDecrement(arguments);
 			}
-			else if (arguments["cmd"].compare("newposition") == 0)
+			else if (cmd.compare("newposition") == 0)
 			{
 				HandleNewPosition(arguments);
 			}
-			else if (arguments["cmd"].compare("rotate") == 0)
+			else if (cmd.compare("rotate") == 0)
 			{
 				HandleRotate(arguments);
 			}
-			else if (arguments["cmd"].compare("getlocolist") == 0)
+			else if (cmd.compare("getlocolist") == 0)
 			{
 				string s = manager.GetLocoList();
 				connection->Send(ResponseCsv(s));
 			}
-			else if (arguments["cmd"].compare("getroutelist") == 0)
+			else if (cmd.compare("getroutelist") == 0)
 			{
 				string s = manager.GetRouteList();
 				connection->Send(ResponseCsv(s));
 			}
-			else if (arguments["cmd"].compare("updater") == 0)
+			else if (cmd.compare("updater") == 0)
 			{
 				HandleUpdater(headers);
+			}
+			else if (uri.compare(0, locoImagePrefix.length(), locoImagePrefix) == 0)
+			{
+				HandleLocoImage(uri);
 			}
 			else
 			{
@@ -725,9 +793,9 @@ namespace Server { namespace Web
 
 		for (auto& line : lines)
 		{
+			deque<string> list;
 			if (line.find("HTTP/1.") == string::npos)
 			{
-				deque<string> list;
 				Utils::Utils::SplitString(line, string(": "), list);
 				if (list.size() == 2)
 				{
@@ -736,7 +804,6 @@ namespace Server { namespace Web
 				continue;
 			}
 
-			deque<string> list;
 			Utils::Utils::SplitString(line, string(" "), list);
 			if (list.size() != 3)
 			{
@@ -762,20 +829,184 @@ namespace Server { namespace Web
 				continue;
 			}
 
-			deque<string> argumentStrings;
-			Utils::Utils::SplitString(uriParts[1], "&", argumentStrings);
-			for (auto& argument : argumentStrings)
+			ParseUrlEncodedArguments(uriParts[1], arguments);
+		}
+	}
+
+	string WebClient::GetUriWithArguments(const string& method,
+		const string& uri,
+		const map<string,string>& arguments) const
+	{
+		if (method.compare("POST") != 0 || arguments.empty())
+		{
+			return uri;
+		}
+
+		const size_t queryStart = uri.find("?");
+		const string baseUri = queryStart == string::npos ? uri : uri.substr(0, queryStart);
+		string fullUri = baseUri + "?";
+		bool firstArgument = true;
+		for (auto& argument : arguments)
+		{
+			if (!firstArgument)
 			{
-				if (argument.length() == 0)
-				{
-					continue;
-				}
+				fullUri += "&";
+			}
+			fullUri += Utils::Utils::UrlEncode(argument.first) + "=" + Utils::Utils::UrlEncode(argument.second);
+			firstArgument = false;
+		}
+		return fullUri;
+	}
+
+	void WebClient::ParseUrlEncodedArguments(const string& encodedArguments,
+		map<string,string>& arguments)
+	{
+		deque<string> argumentStrings;
+		Utils::Utils::SplitString(encodedArguments, "&", argumentStrings);
+		for (auto& argument : argumentStrings)
+		{
+			if (argument.length() == 0)
+			{
+				continue;
+			}
+			string key;
+			string value;
+			Utils::Utils::SplitString(argument, "=", key, value);
+			Utils::Utils::ReplaceString(key, "+", " ");
+			Utils::Utils::ReplaceString(value, "+", " ");
+			arguments[Utils::Utils::UrlDecode(key)] = Utils::Utils::UrlDecode(value);
+		}
+	}
+
+	void WebClient::ParseMultipartFormData(const string& body,
+		const string& boundary,
+		map<string,string>& arguments,
+		string& file)
+	{
+		if (boundary.empty())
+		{
+			return;
+		}
+
+		const string delimiter = "--" + boundary;
+		bool fileStored = false;
+		size_t delimiterStart = body.find(delimiter);
+		while (delimiterStart != string::npos)
+		{
+			size_t partStart = delimiterStart + delimiter.length();
+			if (body.compare(partStart, 2, "--") == 0)
+			{
+				return;
+			}
+			if (body.compare(partStart, 2, "\r\n") != 0)
+			{
+				return;
+			}
+			partStart += 2;
+
+			const size_t headerEnd = body.find("\r\n\r\n", partStart);
+			if (headerEnd == string::npos)
+			{
+				return;
+			}
+
+			map<string,string> partHeaders;
+			deque<string> headerLines;
+			Utils::Utils::SplitString(body.substr(partStart, headerEnd - partStart), "\r\n", headerLines);
+			for (auto& headerLine : headerLines)
+			{
 				string key;
 				string value;
-				Utils::Utils::SplitString(argument, "=", key, value);
-				arguments[key] = Utils::Utils::UrlDecode(value);
+				Utils::Utils::SplitString(headerLine, ": ", key, value);
+				if (!key.empty())
+				{
+					partHeaders[key] = value;
+				}
+			}
+
+			const size_t dataStart = headerEnd + 4;
+			const size_t nextDelimiter = body.find("\r\n" + delimiter, dataStart);
+			if (nextDelimiter == string::npos)
+			{
+				return;
+			}
+
+			const string contentDisposition = GetHeader(partHeaders, "Content-Disposition");
+			const string name = GetHeaderParameter(contentDisposition, "name");
+			const string filename = GetHeaderParameter(contentDisposition, "filename");
+			if (!name.empty())
+			{
+				const string data = body.substr(dataStart, nextDelimiter - dataStart);
+				if (filename.empty())
+				{
+					arguments[name] = data;
+				}
+				else if (!fileStored)
+				{
+					file = data;
+					fileStored = true;
+				}
+			}
+
+			delimiterStart = nextDelimiter + 2;
+		}
+	}
+
+	string WebClient::GetHeaderParameter(const string& headerValue,
+		const string& parameterName)
+	{
+		deque<string> parts;
+		Utils::Utils::SplitString(headerValue, ";", parts);
+		const string parameterNameLower = Utils::Utils::StringToLower(parameterName);
+		for (auto& part : parts)
+		{
+			const size_t equalsPos = part.find("=");
+			if (equalsPos == string::npos)
+			{
+				continue;
+			}
+			string key = part.substr(0, equalsPos);
+			string value = part.substr(equalsPos + 1);
+			const size_t keyStart = key.find_first_not_of(" \t");
+			const size_t keyEnd = key.find_last_not_of(" \t");
+			if (keyStart == string::npos)
+			{
+				continue;
+			}
+			key = key.substr(keyStart, keyEnd - keyStart + 1);
+			if (Utils::Utils::StringToLower(key).compare(parameterNameLower) != 0)
+			{
+				continue;
+			}
+
+			const size_t valueStart = value.find_first_not_of(" \t");
+			const size_t valueEnd = value.find_last_not_of(" \t");
+			if (valueStart == string::npos)
+			{
+				return "";
+			}
+			value = value.substr(valueStart, valueEnd - valueStart + 1);
+			if (value.length() >= 2 && value.front() == '"' && value.back() == '"')
+			{
+				value = value.substr(1, value.length() - 2);
+			}
+			return value;
+		}
+		return "";
+	}
+
+	string WebClient::GetHeader(const map<string,string>& headers,
+		const string& key,
+		const string& defaultValue)
+	{
+		for (auto& header : headers)
+		{
+			if (Utils::Utils::StringToLower(header.first).compare(Utils::Utils::StringToLower(key)) == 0)
+			{
+				return header.second;
 			}
 		}
+		return defaultValue;
 	}
 
 	void WebClient::DeliverFile(const string& virtualFile)
@@ -1518,6 +1749,7 @@ namespace Server { namespace Web
 		Speed creepingSpeed = DefaultCreepingSpeed;
 		Propulsion propulsion = PropulsionOther;
 		TrainType trainType = TrainTypeOther;
+		bool hasImage = false;
 		LocoFunctionEntry locoFunctions[NumberOfLocoFunctions];
 		vector<Relation*> slaves;
 
@@ -1541,6 +1773,7 @@ namespace Server { namespace Web
 				creepingSpeed = loco.GetCreepingSpeed();
 				propulsion = loco.GetPropulsion();
 				trainType = loco.GetTrainType();
+				hasImage = !loco.GetImage().empty();
 				loco.GetFunctionStates(locoFunctions);
 			}
 		}
@@ -1568,6 +1801,7 @@ namespace Server { namespace Web
 
 		HtmlTag formContent("form");
 		formContent.AddId("editform");
+		formContent.AddAttribute("enctype", "multipart/form-data");
 		formContent.AddChildTag(HtmlTagInputHidden("cmd", "locosave"));
 		formContent.AddChildTag(HtmlTagInputHidden("loco", to_string(locoID)));
 
@@ -1585,6 +1819,11 @@ namespace Server { namespace Web
 		basicContent.AddChildTag(HtmlTagInputIntegerWithLabel("length", Languages::TextTrainLength, length, 0, 99999));
 		basicContent.AddChildTag(WebClientStatic::HtmlTagSelectPropulsion(propulsion));
 		basicContent.AddChildTag(WebClientStatic::HtmlTagSelectTrainType(trainType));
+		basicContent.AddChildTag(HtmlTagInputImageWithLabel("image", Languages::TextImage));
+		if (hasImage)
+		{
+			basicContent.AddChildTag(HtmlTagImage("/images/locos/" + to_string(locoID) + "/", name));
+		}
 		formContent.AddChildTag(basicContent);
 
 		formContent.AddChildTag(WebClientStatic::HtmlTagTabFunctions(locoFunctions));
@@ -1689,7 +1928,70 @@ namespace Server { namespace Web
 		ReplyHtmlWithHeader(content);
 	}
 
-	void WebClient::HandleLocoSave(const map<string, string>& arguments)
+	string WebClient::ReformatLocoImage(const string& image) const
+	{
+		if (image.empty())
+		{
+			return image;
+		}
+
+		char inputTemplate[] = "/tmp/railcontrol-loco-image-in-XXXXXX";
+		char outputTemplate[] = "/tmp/railcontrol-loco-image-out-XXXXXX";
+		const int inputFile = mkstemp(inputTemplate);
+		const int outputFile = mkstemp(outputTemplate);
+		if (inputFile < 0 || outputFile < 0)
+		{
+			if (inputFile >= 0)
+			{
+				close(inputFile);
+				remove(inputTemplate);
+			}
+			if (outputFile >= 0)
+			{
+				close(outputFile);
+				remove(outputTemplate);
+			}
+			return image;
+		}
+
+		close(inputFile);
+		close(outputFile);
+		{
+			std::ofstream input(inputTemplate, std::ios::binary);
+			if (!input.is_open())
+			{
+				remove(inputTemplate);
+				remove(outputTemplate);
+				return image;
+			}
+			input.write(image.data(), image.size());
+		}
+
+		const string commandArguments = " \"" + string(inputTemplate) + "\" -auto-orient -resize \"470x>\" -gravity center -crop 470x200+0+0 +repage \"png:" + string(outputTemplate) + "\"";
+		int ret = system(("magick" + commandArguments).c_str());
+		if (ret != 0)
+		{
+			ret = system(("convert" + commandArguments).c_str());
+		}
+
+		string reformattedImage;
+		if (ret == 0)
+		{
+			std::ifstream output(outputTemplate, std::ios::binary);
+			if (output.is_open())
+			{
+				std::ostringstream buffer;
+				buffer << output.rdbuf();
+				reformattedImage = buffer.str();
+			}
+		}
+
+		remove(inputTemplate);
+		remove(outputTemplate);
+		return reformattedImage.empty() ? image : reformattedImage;
+	}
+
+	void WebClient::HandleLocoSave(const map<string, string>& arguments, const string& postFile)
 	{
 		const LocoID locoId = Utils::Utils::GetIntegerMapEntry(arguments, "loco", LocoNone);
 		const string name = Utils::Utils::GetStringMapEntry(arguments, "name", Languages::GetText(Languages::TextLoco));
@@ -1747,6 +2049,7 @@ namespace Server { namespace Web
 		}
 
 		string result;
+		const string image = ReformatLocoImage(postFile);
 
 			if (!manager.LocoSave(locoId,
 				name,
@@ -1763,6 +2066,7 @@ namespace Server { namespace Web
 				creepingSpeed,
 				propulsion,
 				type,
+				image,
 				locoFunctions,
 				result))
 			{
@@ -1771,6 +2075,36 @@ namespace Server { namespace Web
 			}
 
 		ReplyResponse(ResponseInfo, Languages::TextLocoSaved, name);
+	}
+
+	void WebClient::HandleLocoImage(const string& uri)
+	{
+		const string prefix = "/images/locos/";
+		const size_t idStart = prefix.length();
+		const size_t idEnd = uri.find('/', idStart);
+		const string id = idEnd == string::npos ? uri.substr(idStart) : uri.substr(idStart, idEnd - idStart);
+		const LocoID locoID = Utils::Integer::StringToInteger(id, LocoNone);
+		const string image = manager.GetLocoImage(locoID);
+		if (image.empty())
+		{
+			ResponseHtmlNotFound response(uri);
+			connection->Send(response);
+			return;
+		}
+
+		Response response;
+		response.AddHeader("Cache-Control", "no-cache, must-revalidate");
+		response.AddHeader("Pragma", "no-cache");
+		response.AddHeader("Expires", "Sun, 12 Feb 2016 00:00:00 GMT");
+		response.AddHeader("Content-Length", to_string(image.size()));
+		response.AddHeader("Content-Type", "image/png");
+		connection->Send(response);
+
+		if (headOnly)
+		{
+			return;
+		}
+		connection->Send(image);
 	}
 
 	void WebClient::HandleMultipleUnitSave(__attribute__((unused)) const map<string, string>& arguments)
@@ -3593,6 +3927,10 @@ namespace Server { namespace Web
 		HtmlTag container("div");
 		container.AddAttribute("class", "inner_loco");
 		container.AddChildTag(HtmlTag("p").AddId("loconame").AddContent(locoConfig.GetName()));
+		if (!locoConfig.GetImage().empty())
+		{
+			container.AddChildTag(HtmlTagImage("/images/locos/" + to_string(objectID) + "/", locoConfig.GetName()));
+		}
 		unsigned int speed = locoConfig.GetSpeed();
 		map<string, string> buttonArguments;
 		buttonArguments["loco"] = to_string(locoBaseID);
