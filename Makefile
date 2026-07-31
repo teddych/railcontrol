@@ -54,7 +54,13 @@ dist-cygwin: railcontrol
 		/cygdrive/c/Windows/SYSTEM32/ntdll.dll \
 		/cygdrive/c/Windows/system32/KERNELBASE.dll \
 		/cygdrive/c/Windows/system32/kernel32.dll \
+		/usr/bin/cyggcc_s-seh-1.dll \
 		/usr/bin/cygwin1.dll \
+		/usr/bin/cygstdc++-6.dll \
+		/usr/bin/cygsqlite3-0.dll \
+		/usr/bin/cygz.dll \
+		/usr/bin/cygintl-8.dll \
+		/usr/bin/cygiconv-2.dll \
 		html \
 		railcontrol.conf.dist \
 		railcontrol.exe \
