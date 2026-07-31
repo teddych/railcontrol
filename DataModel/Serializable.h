@@ -36,5 +36,9 @@ namespace DataModel
 			static void ParseArguments(const std::string& serialized, std::map<std::string,std::string>& arguments);
 			static std::string SerializeBinaryData(const std::string& data);
 			static std::string DeserializeBinaryData(const std::string& data);
+
+		private:
+			static const char Base64Alphabet[];
+			static signed char DecodeBase64Value(const char character);
 	};
 } // namespace DataModel

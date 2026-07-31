@@ -21,7 +21,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <deque>
 
 #include "DataModel/Serializable.h"
-#include "Utils/Integer.h"
 #include "Utils/Utils.h"
 
 using std::deque;
@@ -30,36 +29,42 @@ using std::map;
 
 namespace DataModel
 {
+	const char Serializable::Base64Alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
 	void Serializable::ParseArguments(const string& serialized, map<string, string>& arguments)
 	{
 		deque<string> parts;
 		Utils::Utils::SplitString(serialized, ";", parts);
 		for (auto& part : parts)
 		{
-			if (part.length() == 0)
+			const size_t pos = part.find('=');
+			if (pos == string::npos)
 			{
 				continue;
 			}
-			deque<string> keyValue;
-			Utils::Utils::SplitString(part, "=", keyValue);
-			if (keyValue.size() < 2)
-			{
-				continue;
-			}
-			string value = keyValue[1];
-			arguments[keyValue[0]] = value;
+			arguments[part.substr(0, pos)] = part.substr(pos + 1);
 		}
 	}
 
 	string Serializable::SerializeBinaryData(const string& data)
 	{
-		static const char hex[] = "0123456789abcdef";
 		string encoded;
-		encoded.reserve(data.size() * 2);
-		for (const unsigned char value : data)
+		encoded.reserve(((data.size() + 2) / 3) * 4);
+		for (size_t pos = 0; pos < data.size(); pos += 3)
 		{
-			encoded += hex[value >> 4];
-			encoded += hex[value & 0x0F];
+			const unsigned char byte1 = data[pos];
+			const unsigned char byte2 = pos + 1 < data.size() ? data[pos + 1] : 0;
+			const unsigned char byte3 = pos + 2 < data.size() ? data[pos + 2] : 0;
+			encoded += Base64Alphabet[byte1 >> 2];
+			encoded += Base64Alphabet[((byte1 & 0x03) << 4) | (byte2 >> 4)];
+			if (pos + 1 < data.size())
+			{
+				encoded += Base64Alphabet[((byte2 & 0x0F) << 2) | (byte3 >> 6)];
+			}
+			if (pos + 2 < data.size())
+			{
+				encoded += Base64Alphabet[byte3 & 0x3F];
+			}
 		}
 		return encoded;
 	}
@@ -67,13 +72,49 @@ namespace DataModel
 	string Serializable::DeserializeBinaryData(const string& data)
 	{
 		string decoded;
-		decoded.reserve(data.size() / 2);
-		for (size_t pos = 0; pos + 1 < data.size(); pos += 2)
+		decoded.reserve((data.size() / 4) * 3);
+		unsigned int buffer = 0;
+		unsigned int bits = 0;
+		for (const char character : data)
 		{
-			const unsigned char highNibble = Utils::Integer::HexToChar(data[pos]);
-			const unsigned char lowNibble = Utils::Integer::HexToChar(data[pos + 1]);
-			decoded += static_cast<char>((highNibble << 4) + lowNibble);
+			const signed char value = DecodeBase64Value(character);
+			if (value < 0)
+			{
+				continue;
+			}
+			buffer = (buffer << 6) | value;
+			bits += 6;
+			if (bits >= 8)
+			{
+				bits -= 8;
+				decoded += static_cast<char>((buffer >> bits) & 0xFF);
+			}
 		}
 		return decoded;
+	}
+
+	signed char Serializable::DecodeBase64Value(const char character)
+	{
+		if (character >= 'A' && character <= 'Z')
+		{
+			return character - 'A';
+		}
+		if (character >= 'a' && character <= 'z')
+		{
+			return character - 'a' + 26;
+		}
+		if (character >= '0' && character <= '9')
+		{
+			return character - '0' + 52;
+		}
+		if (character == '+')
+		{
+			return 62;
+		}
+		if (character == '/')
+		{
+			return 63;
+		}
+		return -1;
 	}
 }
