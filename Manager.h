@@ -137,6 +137,7 @@ class Manager
 			const Propulsion propulsion,
 			const TrainType type,
 			const std::string& image,
+			const std::string& cs2image,
 			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
 			std::string& result);
 

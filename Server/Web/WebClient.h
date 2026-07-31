@@ -225,7 +225,9 @@ namespace Server { namespace Web
 				const std::string& key,
 				const std::string& defaultValue = "");
 
-			std::string ReformatLocoImage(const std::string& image) const;
+			std::string ReformatLocoImage(const std::string& image,
+				const unsigned int width,
+				const unsigned int height) const;
 
 			void DeliverFile(const std::string& file);
 			void DeliverFileInternal(FILE* f, const char* realFile, const std::string& file);

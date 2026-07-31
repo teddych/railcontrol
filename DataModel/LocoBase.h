@@ -97,7 +97,8 @@ namespace DataModel
 				wait(0),
 				followUpRoute(RouteAuto),
 				matchKey(""),
-				image()
+				image(),
+				cs2image()
 			{
 				logger = Logger::Logger::GetLogger(GetName());
 			}
@@ -303,6 +304,16 @@ namespace DataModel
 				this->image = image;
 			}
 
+			inline const std::string& GetCs2Image() const
+			{
+				return cs2image;
+			}
+
+			inline void SetCs2Image(const std::string& cs2image)
+			{
+				this->cs2image = cs2image;
+			}
+
 			inline DataModel::LocoFunctionNr GetFunctionNrFromFunctionIcon(const DataModel::LocoFunctionIcon icon) const
 			{
 				return functions.GetFunctionNrFromFunctionIcon(icon);
@@ -451,6 +462,7 @@ namespace DataModel
 			RouteID followUpRoute;
 			std::string matchKey;
 			std::string image;
+			std::string cs2image;
 
 			LocoFunctions functions;
 

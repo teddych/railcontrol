@@ -883,6 +883,7 @@ bool Manager::LocoSave(LocoID locoID,
 	const Propulsion propulsion,
 	const TrainType type,
 	const string& image,
+	const string& cs2image,
 	const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
 	string& result)
 {
@@ -927,6 +928,10 @@ bool Manager::LocoSave(LocoID locoID,
 		if (!image.empty())
 		{
 			loco->SetImage(image);
+		}
+		if (!cs2image.empty())
+		{
+			loco->SetCs2Image(cs2image);
 		}
 		loco->ConfigureFunctions(locoFunctions);
 

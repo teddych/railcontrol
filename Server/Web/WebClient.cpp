@@ -1928,7 +1928,9 @@ namespace Server { namespace Web
 		ReplyHtmlWithHeader(content);
 	}
 
-	string WebClient::ReformatLocoImage(const string& image) const
+	string WebClient::ReformatLocoImage(const string& image,
+		const unsigned int width,
+		const unsigned int height) const
 	{
 		if (image.empty())
 		{
@@ -1967,7 +1969,8 @@ namespace Server { namespace Web
 			input.write(image.data(), image.size());
 		}
 
-		const string commandArguments = " \"" + string(inputTemplate) + "\" -auto-orient -resize \"470x>\" -gravity center -crop 470x200+0+0 +repage \"png:" + string(outputTemplate) + "\"";
+		const string imageSize = to_string(width) + "x" + to_string(height);
+		const string commandArguments = " \"" + string(inputTemplate) + "\" -auto-orient -resize \"" + to_string(width) + "x>\" -gravity center -crop " + imageSize + "+0+0 +repage \"png:" + string(outputTemplate) + "\"";
 		int ret = system(("magick" + commandArguments).c_str());
 		if (ret != 0)
 		{
@@ -2049,7 +2052,8 @@ namespace Server { namespace Web
 		}
 
 		string result;
-		const string image = ReformatLocoImage(postFile);
+		const string image = ReformatLocoImage(postFile, 235, 100);
+		const string cs2image = ReformatLocoImage(postFile, 128, 48);
 
 			if (!manager.LocoSave(locoId,
 				name,
@@ -2067,6 +2071,7 @@ namespace Server { namespace Web
 				propulsion,
 				type,
 				image,
+				cs2image,
 				locoFunctions,
 				result))
 			{

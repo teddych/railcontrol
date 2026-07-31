@@ -30,6 +30,27 @@ using std::map;
 
 namespace DataModel
 {
+	void Serializable::ParseArguments(const string& serialized, map<string, string>& arguments)
+	{
+		deque<string> parts;
+		Utils::Utils::SplitString(serialized, ";", parts);
+		for (auto& part : parts)
+		{
+			if (part.length() == 0)
+			{
+				continue;
+			}
+			deque<string> keyValue;
+			Utils::Utils::SplitString(part, "=", keyValue);
+			if (keyValue.size() < 2)
+			{
+				continue;
+			}
+			string value = keyValue[1];
+			arguments[keyValue[0]] = value;
+		}
+	}
+
 	string Serializable::SerializeBinaryData(const string& data)
 	{
 		static const char hex[] = "0123456789abcdef";
@@ -54,26 +75,5 @@ namespace DataModel
 			decoded += static_cast<char>((highNibble << 4) + lowNibble);
 		}
 		return decoded;
-	}
-
-	void Serializable::ParseArguments(const string& serialized, map<string, string>& arguments)
-	{
-		deque<string> parts;
-		Utils::Utils::SplitString(serialized, ";", parts);
-		for (auto& part : parts)
-		{
-			if (part.length() == 0)
-			{
-				continue;
-			}
-			deque<string> keyValue;
-			Utils::Utils::SplitString(part, "=", keyValue);
-			if (keyValue.size() < 2)
-			{
-				continue;
-			}
-			string value = keyValue[1];
-			arguments[keyValue[0]] = value;
-		}
 	}
 }
