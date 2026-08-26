@@ -40,69 +40,28 @@ After connecting with the browser, the important functions and configurations ca
 
 These are the functions from left to right:
 
-![](../menu_quit.png "Button Quit")  
-Terminating RailControl-server, including stopping all trains
-
-![](../menu_booster.png "Button Booster")  
-Turn on/off current on the track
-
-![](../menu_stop.png "Button Stop")  
-Stopping all trains immediately (speed zero)
-
-![](../menu_signalred.png "Button Signal Red")  
-Stopping all trains in automode at the next signal / at end of street
-
-![](../menu_signalgreen.png "Button Signal Green")  
-Putting all trains into automode
-
-![](../menu_fullscreen.png "Button Full Screen")  
-Show RailControl in full screen.
-
-![](../menu_program.png "Button Program")  
-CV-Programming. Is only displayed when the control and its API support it.
-
-![](../menu_menu.png "Button Menu")  
-On narrow screens the second part of the menu can be made visible.
-
-![](../menu_settings.png "Button Settings")  
-[General Settings](#general-settings)
-
-![](../menu_control.png "Button Control")  
-[Configuration of controls](#configuration-of-controls)
-
-![](../menu_loco.png "Button Loco")  
-[Configuration of locomotives](#configuration-of-locomotives)
-
-![](../menu_multipleunit.png "Button Multiple Unit")  
-[Configuration of Multiple Units](#configuration-of-multiple-units)
-
-![](../menu_layer.png "Button Layer")  
-[Configuration of layers](#configuration-of-layers)
-
-![](../menu_track.png "Button Track")  
-[Configuration of tracks](#configuration-of-tracks)
-
-![](../menu_group.png "Button Track Group")  
-[Configuration of trackgroups](#configuration-of-trackgroups)
-
-![](../menu_switch.png "Button Switch")  
-[Configuration of switches](#configuration-of-switches)
-
-![](../menu_signal.png "Button Signal")  
-[Configuration of signals](#configuration-of-signals)
-
-![](../menu_accessory.png "Button Accessory")  
-[Configuration of accessories](#configuration-of-accessories)
-
-![](../menu_feedback.png "Button Feedback")  
-[Configuration of feedbacks](#configuration-of-feedbacks)
-
-![](../menu_route.png "Button Route")  
-[Configuration of routes](#configuration-of-routes)
-
-![](../menu_counter.png "Button Counter")  
-[Configuration of counters](#configuration-of-counters)
-
-![](../menu_text.png "Button Text")  
-[Configuration of texts](#configuration-of-texts)
+| | |
+|---|---|
+| ![](../menu_quit.png "Button Quit") | Terminating RailControl-server, including stopping all trains |
+| ![](../menu_booster.png "Button Booster") | Turn on/off current on the track |
+| ![](../menu_stop.png "Button Stop") | Stopping all trains immediately (speed zero) |
+| ![](../menu_signalred.png "Button Signal Red") | Stopping all trains in automode at the next signal / at end of street |
+| ![](../menu_signalgreen.png "Button Signal Green") | Putting all trains into automode |
+| ![](../menu_fullscreen.png "Button Full Screen") | Show RailControl in full screen. |
+| ![](../menu_program.png "Button Program") | CV-Programming. Is only displayed when the control and its API support it. |
+| ![](../menu_menu.png "Button Menu") | On narrow screens the second part of the menu can be made visible. |
+| ![](../menu_settings.png "Button Settings") | [General Settings](#general-settings) |
+| ![](../menu_control.png "Button Control") | [Configuration of controls](#configuration-of-controls) |
+| ![](../menu_loco.png "Button Loco") | [Configuration of locomotives](#configuration-of-locomotives) |
+| ![](../menu_multipleunit.png "Button Multiple Unit") | [Configuration of Multiple Units](#configuration-of-multiple-units) |
+| ![](../menu_layer.png "Button Layer") | [Configuration of layers](#configuration-of-layers) |
+| ![](../menu_track.png "Button Track") | [Configuration of tracks](#configuration-of-tracks) |
+| ![](../menu_group.png "Button Track Group") | [Configuration of trackgroups](#configuration-of-trackgroups) |
+| ![](../menu_switch.png "Button Switch") | [Configuration of switches](#configuration-of-switches) |
+| ![](../menu_signal.png "Button Signal") | [Configuration of signals](#configuration-of-signals) |
+| ![](../menu_accessory.png "Button Accessory") | [Configuration of accessories](#configuration-of-accessories) |
+| ![](../menu_feedback.png "Button Feedback") | [Configuration of feedbacks](#configuration-of-feedbacks) |
+| ![](../menu_route.png "Button Route") | [Configuration of routes](#configuration-of-routes) |
+| ![](../menu_counter.png "Button Counter") | [Configuration of counters](#configuration-of-counters) |
+| ![](../menu_text.png "Button Text") | [Configuration of texts](#configuration-of-texts) |
 

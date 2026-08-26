@@ -39,69 +39,28 @@ Las funciones importantes y la configuración son accesibles en la barra de men�
 
 Desde la izquierda hasta la derecha son:
 
-![](../menu_quit.png "Button Quit")  
-Acabar el servidor RailControl (con parar todos los trenes)
-
-![](../menu_booster.png "Button Booster")  
-Encender y apagar la corriente de vía
-
-![](../menu_stop.png "Button Stop")  
-Parar todos los trenes inmediatamente (velocidad cero)
-
-![](../menu_signalred.png "Button Signal Red")  
-Parar todos los trenes en el modo automático al fin del itinerario
-
-![](../menu_signalgreen.png "Button Signal Green")  
-Poner todos los trenes en el modo automático
-
-![](../menu_fullscreen.png "Button Full Screen")  
-Mostrar RailControl en modo pantalla completa
-
-![](../menu_program.png "Button Program")  
-Programación CV. Se muestra solamente si el control y su API lo admiten
-
-![](../menu_menu.png "Button Menu")  
-En pantallas estrechas se puede mostrar la segunda parte del menú
-
-![](../menu_settings.png "Button Settings")  
-[Opciones generales](#opciones-generales)
-
-![](../menu_control.png "Button Control")  
-[Configuración de los controles](#configuración-de-los-controles)
-
-![](../menu_loco.png "Button Loco")  
-[Configuración de las locomotoras](#configuración-de-las-locomotoras)
-
-![](../menu_multipleunit.png "Button Multiple Unit")  
-[Configuración de las unidades múltiples](#configuración-de-las-unidades-múltiples)
-
-![](../menu_layer.png "Button Layer")  
-[Configuración de las capas](#configuración-de-las-capas)
-
-![](../menu_track.png "Button Track")  
-[Configuración de las vías](#configuración-de-las-vías)
-
-![](../menu_group.png "Button Track Group")  
-[Configuración de los grupos de vía](#configuración-de-los-grupos-de-vía)
-
-![](../menu_switch.png "Button Switch")  
-[Configuración de los desvíos](#configuración-de-los-desvíos)
-
-![](../menu_signal.png "Button Signal")  
-[Configuración de las señales](#configuración-de-las-señales)
-
-![](../menu_accessory.png "Button Accessory")  
-[Configuración de los accesorios](#configuración-de-los-accesorios)
-
-![](../menu_feedback.png "Button Feedback")  
-[Configuración de las retroseñales](#configuración-de-las-retroseñales)
-
-![](../menu_route.png "Button Route")  
-[Configuración de los itinerarios](#configuración-de-los-itinerarios)
-
-![](../menu_counter.png "Button Counter")  
-TODO Configuration of counters and linkage to section
-
-![](../menu_text.png "Button Text")  
-[Configuración de los textos](#configuración-de-los-textos)
+| | |
+|---|---|
+| ![](../menu_quit.png "Button Quit") | Acabar el servidor RailControl (con parar todos los trenes) |
+| ![](../menu_booster.png "Button Booster") | Encender y apagar la corriente de vía |
+| ![](../menu_stop.png "Button Stop") | Parar todos los trenes inmediatamente (velocidad cero) |
+| ![](../menu_signalred.png "Button Signal Red") | Parar todos los trenes en el modo automático al fin del itinerario |
+| ![](../menu_signalgreen.png "Button Signal Green") | Poner todos los trenes en el modo automático |
+| ![](../menu_fullscreen.png "Button Full Screen") | Mostrar RailControl en modo pantalla completa |
+| ![](../menu_program.png "Button Program") | Programación CV. Se muestra solamente si el control y su API lo admiten |
+| ![](../menu_menu.png "Button Menu") | En pantallas estrechas se puede mostrar la segunda parte del menú |
+| ![](../menu_settings.png "Button Settings") | [Opciones generales](#opciones-generales) |
+| ![](../menu_control.png "Button Control") | [Configuración de los controles](#configuración-de-los-controles) |
+| ![](../menu_loco.png "Button Loco") | [Configuración de las locomotoras](#configuración-de-las-locomotoras) |
+| ![](../menu_multipleunit.png "Button Multiple Unit") | [Configuración de las unidades múltiples](#configuración-de-las-unidades-múltiples) |
+| ![](../menu_layer.png "Button Layer") | [Configuración de las capas](#configuración-de-las-capas) |
+| ![](../menu_track.png "Button Track") | [Configuración de las vías](#configuración-de-las-vías) |
+| ![](../menu_group.png "Button Track Group") | [Configuración de los grupos de vía](#configuración-de-los-grupos-de-vía) |
+| ![](../menu_switch.png "Button Switch") | [Configuración de los desvíos](#configuración-de-los-desvíos) |
+| ![](../menu_signal.png "Button Signal") | [Configuración de las señales](#configuración-de-las-señales) |
+| ![](../menu_accessory.png "Button Accessory") | [Configuración de los accesorios](#configuración-de-los-accesorios) |
+| ![](../menu_feedback.png "Button Feedback") | [Configuración de las retroseñales](#configuración-de-las-retroseñales) |
+| ![](../menu_route.png "Button Route") | [Configuración de los itinerarios](#configuración-de-los-itinerarios) |
+| ![](../menu_counter.png "Button Counter") | TODO Configuration of counters and linkage to section |
+| ![](../menu_text.png "Button Text") | [Configuración de los textos](#configuración-de-los-textos) |
 

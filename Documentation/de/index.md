@@ -40,69 +40,28 @@ Die wichtigen Funktionen und Konfigurationen sind in der Menüleiste zu erreiche
 
 Es sind dies von links nach rechts:
 
-![](../menu_quit.png "Button Quit")  
-Beenden von RailControl-Server (mit vorherigem Anhalten aller Züge)
-
-![](../menu_booster.png "Button Booster")  
-Gleisstrom Ein-/Ausschalten
-
-![](../menu_stop.png "Button Stop")  
-Alle Züge sofort anhalten (Fahrgeschwindigkeit Null)
-
-![](../menu_signalred.png "Button Signal Red")  
-Alle Züge im Automatikmodus am nächsten Signal/Fahrstraßenende anhalten
-
-![](../menu_signalgreen.png "Button Signal Green")  
-Alle Züge in den Automatikmodus versetzten
-
-![](../menu_fullscreen.png "Button Full Screen")  
-RailControl im Vollbild anzeigen
-
-![](../menu_program.png "Button Program")  
-CV-Programmierung. Wird nur angezeigt, wenn die Zentrale und deren API das unterstützt.
-
-![](../menu_menu.png "Button Menu")  
-Auf schmalen Bildschirmen kann der zweite Teil des Menus sichtbar gemacht werden
-
-![](../menu_settings.png "Button Settings")  
-[Allgemeine Einstellungen](#allgemeine-einstellungen)
-
-![](../menu_control.png "Button Control")  
-[Konfiguration der Zentralen](#konfiguration-der-zentralen)
-
-![](../menu_loco.png "Button Loco")  
-[Konfiguration der Lokomotiven](#konfiguration-der-lokomotiven)
-
-![](../menu_multipleunit.png "Button Multiple Unit")  
-[Konfiguration der Mehrfachtraktionen](#konfiguration-der-mehrfachtraktionen)
-
-![](../menu_layer.png "Button Layer")  
-[Konfiguration der Schichten](#konfiguration-der-schichten)
-
-![](../menu_track.png "Button Track")  
-[Konfiguration der Gleise](#konfiguration-der-gleise)
-
-![](../menu_group.png "Button Track Group")  
-[Konfiguration der Gleisgruppen](#konfiguration-der-gleisgruppen)
-
-![](../menu_switch.png "Button Switch")  
-[Konfiguration der Weichen](#konfiguration-der-weichen)
-
-![](../menu_signal.png "Button Signal")  
-[Konfiguration der Signale](#konfiguration-der-signale)
-
-![](../menu_accessory.png "Button Accessory")  
-[Konfiguration der Zubehörartikel](#konfiguration-der-zubehörartikel)
-
-![](../menu_feedback.png "Button Feedback")  
-[Konfiguration der Rückmelder](#konfiguration-der-rückmelder)
-
-![](../menu_route.png "Button Route")  
-[Konfiguration der Fahrstraßen](#konfiguration-der-fahrstraßen)
-
-![](../menu_counter.png "Button Counter")  
-[Konfiguration der Zähler](#konfiguration-der-zähler)
-
-![](../menu_text.png "Button Text")  
-[Konfiguration der Texte](#konfiguration-der-texte)
+| | |
+|---|---|
+| ![](../menu_quit.png "Button Quit") | Beenden von RailControl-Server (mit vorherigem Anhalten aller Züge) |
+| ![](../menu_booster.png "Button Booster") | Gleisstrom Ein-/Ausschalten |
+| ![](../menu_stop.png "Button Stop") | Alle Züge sofort anhalten (Fahrgeschwindigkeit Null) |
+| ![](../menu_signalred.png "Button Signal Red") | Alle Züge im Automatikmodus am nächsten Signal/Fahrstraßenende anhalten |
+| ![](../menu_signalgreen.png "Button Signal Green") | Alle Züge in den Automatikmodus versetzten |
+| ![](../menu_fullscreen.png "Button Full Screen") | RailControl im Vollbild anzeigen |
+| ![](../menu_program.png "Button Program") | CV-Programmierung. Wird nur angezeigt, wenn die Zentrale und deren API das unterstützt. |
+| ![](../menu_menu.png "Button Menu") | Auf schmalen Bildschirmen kann der zweite Teil des Menus sichtbar gemacht werden |
+| ![](../menu_settings.png "Button Settings") | [Allgemeine Einstellungen](#allgemeine-einstellungen) |
+| ![](../menu_control.png "Button Control") | [Konfiguration der Zentralen](#konfiguration-der-zentralen) |
+| ![](../menu_loco.png "Button Loco") | [Konfiguration der Lokomotiven](#konfiguration-der-lokomotiven) |
+| ![](../menu_multipleunit.png "Button Multiple Unit") | [Konfiguration der Mehrfachtraktionen](#konfiguration-der-mehrfachtraktionen) |
+| ![](../menu_layer.png "Button Layer") | [Konfiguration der Schichten](#konfiguration-der-schichten) |
+| ![](../menu_track.png "Button Track") | [Konfiguration der Gleise](#konfiguration-der-gleise) |
+| ![](../menu_group.png "Button Track Group") | [Konfiguration der Gleisgruppen](#konfiguration-der-gleisgruppen) |
+| ![](../menu_switch.png "Button Switch") | [Konfiguration der Weichen](#konfiguration-der-weichen) |
+| ![](../menu_signal.png "Button Signal") | [Konfiguration der Signale](#konfiguration-der-signale) |
+| ![](../menu_accessory.png "Button Accessory") | [Konfiguration der Zubehörartikel](#konfiguration-der-zubehörartikel) |
+| ![](../menu_feedback.png "Button Feedback") | [Konfiguration der Rückmelder](#konfiguration-der-rückmelder) |
+| ![](../menu_route.png "Button Route") | [Konfiguration der Fahrstraßen](#konfiguration-der-fahrstraßen) |
+| ![](../menu_counter.png "Button Counter") | [Konfiguration der Zähler](#konfiguration-der-zähler) |
+| ![](../menu_text.png "Button Text") | [Konfiguration der Texte](#konfiguration-der-texte) |
 
