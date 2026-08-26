@@ -1,7 +1,7 @@
 # TODO Configuration of Counters
 
 ## Basic data
-![](counter_basics_en.png)
+![](counter_basics_es.png)
 
 ### Name
 
@@ -13,7 +13,7 @@
  
 
 ## Position
-![](counter_position_en.png)
+![](counter_position_es.png)
 
 
 

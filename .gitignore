@@ -18,6 +18,7 @@ Version.cpp
 amalgamation.cpp
 build/
 cmake_install.cmake
+chunkedhtml/*
 doc/*
 gmon.out
 railcontrol

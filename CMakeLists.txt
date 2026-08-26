@@ -555,6 +555,8 @@ set(DOC_ES
 set(DOCDATA_ES
 	${PROJECT_SOURCE_DIR}/Documentation/es/config_layers_es.png
 	${PROJECT_SOURCE_DIR}/Documentation/es/control_list_es.png
+	${PROJECT_SOURCE_DIR}/Documentation/es/counter_basics_es.png
+	${PROJECT_SOURCE_DIR}/Documentation/es/counter_position_es.png
 	${PROJECT_SOURCE_DIR}/Documentation/es/cs2_tcp_config_es.png
 	${PROJECT_SOURCE_DIR}/Documentation/es/cs2_udp_config_es.png
 	${PROJECT_SOURCE_DIR}/Documentation/es/feedback_basics_es.png
@@ -623,6 +625,10 @@ set(OUTPUT_HTML_EN_INDEX ${OUTPUT_HTML_EN}/index.html)
 set(OUTPUT_HTML_ES ${OUTPUT_HTML}/es)
 set(OUTPUT_HTML_ES_INDEX ${OUTPUT_HTML_ES}/index.html)
 
+file(RELATIVE_PATH OUTPUT_HTML_DE_INDEX_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_HTML_DE_INDEX})
+file(RELATIVE_PATH OUTPUT_HTML_EN_INDEX_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_HTML_EN_INDEX})
+file(RELATIVE_PATH OUTPUT_HTML_ES_INDEX_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_HTML_ES_INDEX})
+
 file(MAKE_DIRECTORY ${OUTPUT_HTML_DE})
 file(MAKE_DIRECTORY ${OUTPUT_HTML_EN})
 file(MAKE_DIRECTORY ${OUTPUT_HTML_ES})
@@ -634,10 +640,11 @@ set(PANDOC_OPTS --toc --toc-depth=2
 
 add_custom_command(
 	OUTPUT ${OUTPUT_HTML_DE_INDEX}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_HTML_DE}
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
 		--metadata-file=Documentation/de/metadata.yaml
-		--output=${OUTPUT_HTML_DE_INDEX} ${DOC_DE}
-	DEPENDS ${DOC_DE} ${OUTPUT_HTML_DE}
+		--output=${OUTPUT_HTML_DE_INDEX_PANDOC} ${DOC_DE}
+	DEPENDS ${DOC_DE}
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	COMMENT "Generating German HTML documentation"
 	VERBATIM
@@ -645,10 +652,11 @@ add_custom_command(
 
 add_custom_command(
 	OUTPUT ${OUTPUT_HTML_EN_INDEX}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_HTML_EN}
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
 		--metadata-file=Documentation/en/metadata.yaml
-		--output=${OUTPUT_HTML_EN_INDEX} ${DOC_EN}
-	DEPENDS ${DOC_EN} ${OUTPUT_HTML_EN}
+		--output=${OUTPUT_HTML_EN_INDEX_PANDOC} ${DOC_EN}
+	DEPENDS ${DOC_EN}
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	COMMENT "Generating English HTML documentation"
 	VERBATIM
@@ -656,10 +664,11 @@ add_custom_command(
 
 add_custom_command(
 	OUTPUT ${OUTPUT_HTML_ES_INDEX}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_HTML_ES}
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_OPTS}
 		--metadata-file=Documentation/es/metadata.yaml
-		--output=${OUTPUT_HTML_ES_INDEX} ${DOC_ES}
-	DEPENDS ${DOC_ES} ${OUTPUT_HTML_ES}
+		--output=${OUTPUT_HTML_ES_INDEX_PANDOC} ${DOC_ES}
+	DEPENDS ${DOC_ES}
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	COMMENT "Generating Spanish HTML documentation"
 	VERBATIM
@@ -697,7 +706,18 @@ add_custom_command(TARGET doc-for-web POST_BUILD
 set(OUTPUT_CHUNKEDHTML_DE ${CMAKE_BINARY_DIR}/chunkedhtml/de)
 set(OUTPUT_CHUNKEDHTML_EN ${CMAKE_BINARY_DIR}/chunkedhtml/en)
 set(OUTPUT_CHUNKEDHTML_ES ${CMAKE_BINARY_DIR}/chunkedhtml/es)
+file(RELATIVE_PATH OUTPUT_CHUNKEDHTML_DE_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_CHUNKEDHTML_DE})
+file(RELATIVE_PATH OUTPUT_CHUNKEDHTML_EN_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_CHUNKEDHTML_EN})
+file(RELATIVE_PATH OUTPUT_CHUNKEDHTML_ES_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_CHUNKEDHTML_ES})
 file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/chunkedhtml)
+
+set(PANDOC_RESOURCE_PATH_SEPARATOR ":")
+if(WIN32 OR PANDOC_EXECUTABLE MATCHES "^/cygdrive/")
+	set(PANDOC_RESOURCE_PATH_SEPARATOR "\;")
+endif()
+set(PANDOC_RESOURCE_PATH_DE ".${PANDOC_RESOURCE_PATH_SEPARATOR}Documentation${PANDOC_RESOURCE_PATH_SEPARATOR}Documentation/de${PANDOC_RESOURCE_PATH_SEPARATOR}doc${PANDOC_RESOURCE_PATH_SEPARATOR}doc/de")
+set(PANDOC_RESOURCE_PATH_EN ".${PANDOC_RESOURCE_PATH_SEPARATOR}Documentation${PANDOC_RESOURCE_PATH_SEPARATOR}Documentation/en${PANDOC_RESOURCE_PATH_SEPARATOR}doc${PANDOC_RESOURCE_PATH_SEPARATOR}doc/en")
+set(PANDOC_RESOURCE_PATH_ES ".${PANDOC_RESOURCE_PATH_SEPARATOR}Documentation${PANDOC_RESOURCE_PATH_SEPARATOR}Documentation/es${PANDOC_RESOURCE_PATH_SEPARATOR}doc${PANDOC_RESOURCE_PATH_SEPARATOR}doc/es")
 
 set(PANDOC_CHUNKEDOPTS --toc --toc-depth=2
 	--standalone
@@ -711,9 +731,9 @@ set(PANDOC_CHUNKEDOPTS --toc --toc-depth=2
 add_custom_command(
 	OUTPUT ${OUTPUT_CHUNKEDHTML_DE}/index.html
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
-		--resource-path=".:Documentation:Documentation/de:doc:doc/de"
+		"--resource-path=${PANDOC_RESOURCE_PATH_DE}"
 		--metadata-file=Documentation/de/metadata.yaml
-		--output=${OUTPUT_CHUNKEDHTML_DE} ${DOC_DE}
+		--output=${OUTPUT_CHUNKEDHTML_DE_PANDOC} ${DOC_DE}
 	DEPENDS ${DOC_DE}
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	COMMENT "Generating German Chunked HTML documentation"
@@ -723,9 +743,9 @@ add_custom_command(
 add_custom_command(
 	OUTPUT ${OUTPUT_CHUNKEDHTML_EN}/index.html
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
-		--resource-path=".:Documentation:Documentation/en:doc:doc/en"
+		"--resource-path=${PANDOC_RESOURCE_PATH_EN}"
 		--metadata-file=Documentation/en/metadata.yaml
-		--output=${OUTPUT_CHUNKEDHTML_EN} ${DOC_EN}
+		--output=${OUTPUT_CHUNKEDHTML_EN_PANDOC} ${DOC_EN}
 	DEPENDS ${DOC_EN}
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	COMMENT "Generating English Chunked HTML documentation"
@@ -735,9 +755,9 @@ add_custom_command(
 add_custom_command(
 	OUTPUT ${OUTPUT_CHUNKEDHTML_ES}/index.html
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
-		--resource-path="doc/en:Documentation/en:.:Documentation:Documentation/es:doc:doc/es"
+		"--resource-path=${PANDOC_RESOURCE_PATH_ES}"
 		--metadata-file=Documentation/es/metadata.yaml
-		--output=${OUTPUT_CHUNKEDHTML_ES} ${DOC_ES}
+		--output=${OUTPUT_CHUNKEDHTML_ES_PANDOC} ${DOC_ES}
 	DEPENDS ${DOC_ES}
 	WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
 	COMMENT "Generating Spanish Chunked HTML documentation"
