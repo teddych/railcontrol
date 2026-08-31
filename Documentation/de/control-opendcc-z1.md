@@ -1,4 +1,4 @@
-## Konfiguration der OpenDCC Z1
+## OpenDCC Z1 {#opendcc-z1}
 
 Für die Konfiguration der OpenDCC Z1 muss die serielle Schnittstelle angegeben werden unter der die Zentrale im Betriebssystem eingebunden ist.
 

@@ -1,8 +1,8 @@
-## Configuración de Märklin Central Station 2/3 (CS2/3) con TCP (reciente)
+## Märklin Central Station 2/3 (CS2/3) con TCP (reciente) {#märklin-central-station-23-cs23-con-tcp-reciente}
 
 La nueva conexion entre RailControl y Märklin CS2/CS3 es TCP. Está explicado en está pagina.
 
-La vieja [opción UDP](#configuración-de-märklin-central-station-23-cs23-con-udp-anticuado) no es recomendida.
+La vieja [opción UDP](#märklin-central-station-23-cs23-con-udp-anticuado) no es recomendida.
 
 ### Configuración CS2/CS3
 

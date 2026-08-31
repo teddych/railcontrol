@@ -50,7 +50,7 @@ Desde la izquierda hasta la derecha son:
 | ![](../menu_program.png "Button Program") | Programación CV. Se muestra solamente si el control y su API lo admiten |
 | ![](../menu_menu.png "Button Menu") | En pantallas estrechas se puede mostrar la segunda parte del menú |
 | ![](../menu_settings.png "Button Settings") | [Opciones generales](#opciones-generales) |
-| ![](../menu_control.png "Button Control") | [Configuración de los controles](#configuración-de-los-controles) |
+| ![](../menu_control.png "Button Control") | [Configuración de los controles](#configuración-de-controles) |
 | ![](../menu_loco.png "Button Loco") | [Configuración de las locomotoras](#configuración-de-las-locomotoras) |
 | ![](../menu_multipleunit.png "Button Multiple Unit") | [Configuración de las unidades múltiples](#configuración-de-las-unidades-múltiples) |
 | ![](../menu_layer.png "Button Layer") | [Configuración de las capas](#configuración-de-las-capas) |

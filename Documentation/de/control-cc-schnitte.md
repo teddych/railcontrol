@@ -1,4 +1,4 @@
-## Konfiguration der CC-Schnitte
+## CC-Schnitte {#cc-schnitte}
 
 Für die Konfiguration der CC-Schnitte muss lediglich die serielle Schnittstelle angegeben werden unter der die CC-Schnitte im Betriebssystem eingebunden ist.
 

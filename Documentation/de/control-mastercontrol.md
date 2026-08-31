@@ -1,4 +1,4 @@
-## Konfiguration der Tams MasterControl
+## Tams MasterControl {#tams-mastercontrol}
 
 Für die Konfiguration der Tams MasterControl muss die serielle Schnittstelle angegeben werden unter der die Zentrale im Betriebssystem eingebunden ist.
 

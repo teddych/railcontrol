@@ -1,4 +1,4 @@
-## Configuración de Tams MasterControl
+## Tams MasterControl {#tams-mastercontrol}
 
 Para configurar Tams MasterControl se tiene que seleccionar el puerto serial.
 

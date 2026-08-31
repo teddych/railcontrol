@@ -1,4 +1,4 @@
-## Configuration of Fleischmann Twin-Center
+## Fleischmann Twin-Center {#fleischmann-twin-center}
 
 To configure a Fleischmann Twin-Center there has to be selected the serial port.
 

@@ -1,4 +1,4 @@
-## Configuration of Tams MasterControl 2
+## Tams MasterControl 2 {#tams-mastercontrol-2}
 
 To configure a Tams MasterControl there has to be selected IP address that was configured on the device. To configure an IP address on the device consult the user's manual of the MasterControl 2.
 

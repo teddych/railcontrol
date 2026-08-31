@@ -29,8 +29,9 @@ header nav ul li a {
   text-decoration: none;
 }
 
-main {
-  padding: 1em 2em;
+#language-selector,
+#content {
+  margin: 1em;
 }
 
 footer {
@@ -51,6 +52,19 @@ footer {
     padding: 1em;
 }
 
+#TOC ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+#TOC ul ul {
+  padding-left: 1em;
+}
+
+#TOC a {
+  text-decoration: none;
+}
+
 th,
 td {
   vertical-align: middle;
@@ -64,13 +78,11 @@ col:nth-child(2) {
   width: auto !important;
 }
 
-th:first-child,
 td:first-child {
   width: 1px;
   white-space: nowrap;
 }
 
-th:first-child img,
 td:first-child img {
   display: block;
 }

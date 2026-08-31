@@ -1,4 +1,4 @@
-## Configuratión de Roco Z21
+## Roco Z21 {#roco-z21}
 
 RailControl está soportando todos los Z21, que están desbloqueado para comunicar sobre LAN.
 

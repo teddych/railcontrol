@@ -1,8 +1,8 @@
-## Configuration of Märklin Central Station 2/3 (CS2/3) with TCP (new)
+## Märklin Central Station 2/3 (CS2/3) with TCP (new) {#märklin-central-station-23-cs23-with-tcp-new}
 
 The new but undocumented connection to a CS2/CS3 with TCP is described here.
 
-There is also an old and documented [connection to a Central Station 2/3 with UDP](#configuration-of-märklin-central-station-23-cs23-with-udp-old).
+There is also an old and documented [connection to a Central Station 2/3 with UDP](#märklin-central-station-23-cs23-with-udp-old).
 
 ### Configuration of the CS2/CS3
 

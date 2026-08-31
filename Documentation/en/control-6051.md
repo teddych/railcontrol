@@ -1,4 +1,4 @@
-## Configuration of Märklin Interface 6050/6051
+## Märklin Interface 6050/6051 {#märklin-interface-60506051}
 
 To configure a Märklin Interface 6050/6051 there has only to be selected the serial port.
 

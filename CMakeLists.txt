@@ -382,19 +382,19 @@ set(DOC_DE
 	Documentation/de/startup-arguments.md
 	Documentation/de/general-settings.md
 	Documentation/de/config-controls.md
-	Documentation/de/config-intellibox.md
-	Documentation/de/config-mastercontrol2.md
-	Documentation/de/config-mastercontrol.md
-	Documentation/de/config-redbox.md
-	Documentation/de/config-twincenter.md
-	Documentation/de/control-6051.md
 	Documentation/de/control-cc-schnitte.md
+	Documentation/de/control-twincenter.md
+	Documentation/de/control-hsi88.md
 	Documentation/de/control-cs2-tcp.md
 	Documentation/de/control-cs2-udp.md
-	Documentation/de/control-hsi88.md
+	Documentation/de/control-6051.md
 	Documentation/de/control-opendcc-z1.md
 	Documentation/de/control-z21.md
-	Documentation/de/config-rs232-usb.md
+	Documentation/de/control-mastercontrol.md
+	Documentation/de/control-mastercontrol2.md
+	Documentation/de/control-redbox.md
+	Documentation/de/control-intellibox.md
+	Documentation/de/control-rs232-usb.md
 	Documentation/de/config-locomotives.md
 	Documentation/de/config-multipleunits.md
 	Documentation/de/config-layers.md
@@ -455,19 +455,19 @@ set(DOC_EN
 	Documentation/en/startup-arguments.md
 	Documentation/en/general-settings.md
 	Documentation/en/config-controls.md
-	Documentation/en/config-intellibox.md
-	Documentation/en/config-mastercontrol2.md
-	Documentation/en/config-mastercontrol.md
-	Documentation/en/config-redbox.md
-	Documentation/en/config-twincenter.md
-	Documentation/en/control-6051.md
 	Documentation/en/control-cc-schnitte.md
+	Documentation/en/control-twincenter.md
+	Documentation/en/control-hsi88.md
 	Documentation/en/control-cs2-tcp.md
 	Documentation/en/control-cs2-udp.md
-	Documentation/en/control-hsi88.md
+	Documentation/en/control-6051.md
 	Documentation/en/control-opendcc-z1.md
 	Documentation/en/control-z21.md
-	Documentation/en/config-rs232-usb.md
+	Documentation/en/control-mastercontrol.md
+	Documentation/en/control-mastercontrol2.md
+	Documentation/en/control-redbox.md
+	Documentation/en/control-intellibox.md
+	Documentation/en/control-rs232-usb.md
 	Documentation/en/config-locomotives.md
 	Documentation/en/config-multipleunits.md
 	Documentation/en/config-layers.md
@@ -525,19 +525,19 @@ set(DOC_ES
 	Documentation/es/startup-arguments.md
 	Documentation/es/general-settings.md
 	Documentation/es/config-controls.md
-	Documentation/es/config-intellibox.md
-	Documentation/es/config-mastercontrol2.md
-	Documentation/es/config-mastercontrol.md
-	Documentation/es/config-redbox.md
-	Documentation/es/config-twincenter.md
-	Documentation/es/control-6051.md
 	Documentation/es/control-cc-schnitte.md
+	Documentation/es/control-twincenter.md
+	Documentation/es/control-hsi88.md
 	Documentation/es/control-cs2-tcp.md
 	Documentation/es/control-cs2-udp.md
-	Documentation/es/control-hsi88.md
+	Documentation/es/control-6051.md
 	Documentation/es/control-opendcc-z1.md
 	Documentation/es/control-z21.md
-	Documentation/es/config-rs232-usb.md
+	Documentation/es/control-mastercontrol.md
+	Documentation/es/control-mastercontrol2.md
+	Documentation/es/control-redbox.md
+	Documentation/es/control-intellibox.md
+	Documentation/es/control-rs232-usb.md
 	Documentation/es/config-locomotives.md
 	Documentation/es/config-multipleunits.md
 	Documentation/es/config-layers.md
@@ -629,14 +629,23 @@ file(RELATIVE_PATH OUTPUT_HTML_DE_INDEX_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_HTML
 file(RELATIVE_PATH OUTPUT_HTML_EN_INDEX_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_HTML_EN_INDEX})
 file(RELATIVE_PATH OUTPUT_HTML_ES_INDEX_PANDOC ${CMAKE_SOURCE_DIR} ${OUTPUT_HTML_ES_INDEX})
 
-file(MAKE_DIRECTORY ${OUTPUT_HTML_DE})
-file(MAKE_DIRECTORY ${OUTPUT_HTML_EN})
-file(MAKE_DIRECTORY ${OUTPUT_HTML_ES})
-
 set(PANDOC_OPTS --toc --toc-depth=2
 	--standalone
 	--css=../style.css
 	--template=Documentation/template.html)
+
+add_custom_target(docdata
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_HTML}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_HTML_DE}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_HTML_EN}
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${OUTPUT_HTML_ES}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DOCDATA} ${OUTPUT_HTML}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DOCDATA_DE} ${OUTPUT_HTML_DE}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DOCDATA_EN} ${OUTPUT_HTML_EN}
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different ${DOCDATA_ES} ${OUTPUT_HTML_ES}
+	COMMENT "Copying HTML documentation assets"
+	VERBATIM
+)
 
 add_custom_command(
 	OUTPUT ${OUTPUT_HTML_DE_INDEX}
@@ -677,14 +686,12 @@ add_custom_command(
 if(PANDOC_EXECUTABLE)
 	install(DIRECTORY ${OUTPUT_HTML}/ DESTINATION ${CMAKE_INSTALL_DOCDIR})
 	add_custom_target(doc ALL
-		DEPENDS ${OUTPUT_HTML_DE_INDEX} ${OUTPUT_HTML_EN_INDEX} ${OUTPUT_HTML_ES_INDEX}
+		DEPENDS docdata
+			${OUTPUT_HTML_DE_INDEX}
+			${OUTPUT_HTML_EN_INDEX}
+			${OUTPUT_HTML_ES_INDEX}
 	)
 endif()
-
-file(COPY ${DOCDATA} DESTINATION ${OUTPUT_HTML})
-file(COPY ${DOCDATA_DE} DESTINATION ${OUTPUT_HTML_DE})
-file(COPY ${DOCDATA_EN} DESTINATION ${OUTPUT_HTML_EN})
-file(COPY ${DOCDATA_ES} DESTINATION ${OUTPUT_HTML_ES})
 
 add_custom_target(doc-for-web
 	DEPENDS doc

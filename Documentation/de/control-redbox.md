@@ -1,4 +1,4 @@
-## Konfiguration der Tams RedBox
+## Tams RedBox {#tams-redbox}
 
 Für die Konfiguration der Tams RedBox muss die serielle Schnittstelle angegeben werden unter der die Zentrale im Betriebssystem eingebunden ist.
 

@@ -1,4 +1,4 @@
-## Configuration of HSI-88 RS232
+## HSI-88 RS232 {#hsi-88-rs232}
 
 RailControl only supports HSI-88-RS232. The USB version is not supported.
 

@@ -1,4 +1,4 @@
-## Configuration of CC-Schnitte
+## CC-Schnitte {#cc-schnitte}
 
 To configure a CC-Schnitte there has only to be selected the serial port.
 

@@ -12,22 +12,22 @@ Unten gibt es einen Butten "Neu", damit kann eine weitere Zentrale angelegt werd
 RailControl unterstützt zur Zeit folgende Zentralen:
 
 * Arduino 	DCC-EX (formerly DCC++EX formerly DCC++)
-* CAN-Digital-Bahn 	[CC-Schnitte 2.1](#configuration-of-cc-schnitte)
+* CAN-Digital-Bahn 	[CC-Schnitte 2.1](#cc-schnitte)
 * Digikejis 	DR5000
 * ESU 	ECoS/Central Station Reloaded
-* Fleischmann 	[Twin-Center](#configuration-of-fleischmann-twin-center)
-* LDT 	[HSI-88 RS232](#configuration-of-hsi-88-rs232)
+* Fleischmann 	[Twin-Center](#fleischmann-twin-center)
+* LDT 	[HSI-88 RS232](#hsi-88-rs232)
 * KM-1 	System Control 7
-* Märklin 	[Central Station 2/3 with TCP (new)](#konfiguration-der-märklin-central-station-23-cs23-mit-tcp-neu)
-* Märklin 	[Central Station 2/3 with UDP (old)](#konfiguration-der-märklin-central-station-23-cs23-mit-udp-alt)
-* Märklin 	[Interface 6050/6051](#konfiguration-des-märklin-interfaces-60506051)
-* OpenDCC 	[OpenDCC Z1](#konfiguration-der-opendcc-z1)
-* Roco 	[Z21/z21](#konfiguration-der-roco-z21)
-* Tams 	[MasterControl](#konfiguration-der-tams-mastercontrol)
-* Tams 	[MasterControl 2](#konfiguration-der-tams-mastercontrol-2)
-* Tams 	[RedBox](#konfiguration-der-tams-redbox)
+* Märklin 	[Central Station 2/3 with TCP (new)](#märklin-central-station-23-cs23-mit-tcp-neu)
+* Märklin 	[Central Station 2/3 with UDP (old)](#märklin-central-station-23-cs23-mit-udp-alt)
+* Märklin 	[Interface 6050/6051](#märklin-interface-60506051)
+* OpenDCC 	[OpenDCC Z1](#opendcc-z1)
+* Roco 	[Z21/z21](#roco-z21)
+* Tams 	[MasterControl](#tams-mastercontrol)
+* Tams 	[MasterControl 2](#tams-mastercontrol-2)
+* Tams 	[RedBox](#tams-redbox)
 * Uhlenbrock 	Adapter 63120
 * Uhlenbrock 	Adapter 63820
-* Uhlenbrock 	[Intellibox](#konfiguration-der-uhlenbrock-intellibox)
+* Uhlenbrock 	[Intellibox](#uhlenbrock-intellibox)
 * Uhlenbrock 	Intellibox II
 

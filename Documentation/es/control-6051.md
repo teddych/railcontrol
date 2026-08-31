@@ -1,4 +1,4 @@
-## Configuratión de Märklin Interface 6050/6051
+## Märklin Interface 6050/6051 {#märklin-interface-60506051}
 
 Para configurar CC-Schnitte solamente se tiene que seleccionar el puerto serial.
 

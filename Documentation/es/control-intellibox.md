@@ -1,4 +1,4 @@
-## Configuración de Uhlenbrock Intellibox
+## Uhlenbrock Intellibox {#uhlenbrock-intellibox}
 
 Para configurar Uhlenbrock Intellibox se tiene que seleccionar el puerto serial.
 

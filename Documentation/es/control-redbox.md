@@ -1,4 +1,4 @@
-## Configuración de Tams RedBox
+## Tams RedBox {#tams-redbox}
 
 Para configurar Tams RedBox se tiene que seleccionar el puerto serial.
 

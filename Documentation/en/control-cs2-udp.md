@@ -1,8 +1,8 @@
-## Configuration of Märklin Central Station 2/3 (CS2/3) with UDP (old)
+## Märklin Central Station 2/3 (CS2/3) with UDP (old) {#märklin-central-station-23-cs23-with-udp-old}
 
 The old and documented connection version is UDP. This is described here.
 
-There is a new and undocumented [connection verison of the Central Station 2/3 with TCP](#configuration-of-märklin-central-station-23-cs23-with-tcp-new), which should be prefered.
+There is a new and undocumented [connection verison of the Central Station 2/3 with TCP](#märklin-central-station-23-cs23-with-tcp-new), which should be prefered.
 
 To use RailControl with a Central Station 2/3 from Märklin with UDP we recommend to use a fix IP address. It is also posible to use DHCP but it is more complex and therefore not explained here.
 

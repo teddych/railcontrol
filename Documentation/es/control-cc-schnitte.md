@@ -1,4 +1,4 @@
-## Configuración de CC-Schnitte
+## CC-Schnitte {#cc-schnitte}
 
 Para configurar CC-Schnitte solamente se tiene que seleccionar el puerto serial.
 

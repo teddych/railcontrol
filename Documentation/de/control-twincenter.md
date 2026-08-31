@@ -1,4 +1,4 @@
-## Konfiguration der Fleischmann Twin-Center
+## Fleischmann Twin-Center {#fleischmann-twin-center}
 
 Für die Konfiguration der Fleischmann Twin-Center muss die serielle Schnittstelle angegeben werden unter der die Zentrale im Betriebssystem eingebunden ist.
 

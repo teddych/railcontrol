@@ -1,4 +1,4 @@
-## Konfiguration der Uhlenbrock Intellibox
+## Uhlenbrock Intellibox {#uhlenbrock-intellibox}
 
 Für die Konfiguration der Uhlenbrock Intellibox muss die serielle Schnittstelle angegeben werden unter der die Zentrale im Betriebssystem eingebunden ist.
 

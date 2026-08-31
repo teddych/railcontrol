@@ -1,4 +1,4 @@
-## Configuration of OpenDCC Z1
+## OpenDCC Z1 {#opendcc-z1}
 
 To configure a OpenDCC Z1 there has to be selected the serial port.
 

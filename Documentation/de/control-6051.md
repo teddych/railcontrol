@@ -1,4 +1,4 @@
-## Konfiguration des Märklin Interfaces 6050/6051
+## Märklin Interface 6050/6051 {#märklin-interface-60506051}
 
 Für die Konfiguration des Märklin Interfaces 6050/6051 muss lediglich die serielle Schnittstelle angegeben werden unter der das Interface im Betriebssystem eingebunden ist.
 

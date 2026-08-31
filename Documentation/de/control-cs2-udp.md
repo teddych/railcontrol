@@ -1,8 +1,8 @@
-## Konfiguration der Märklin Central Station 2/3 (CS2/3) mit UDP (alt)
+## Märklin Central Station 2/3 (CS2/3) mit UDP (alt) {#märklin-central-station-23-cs23-mit-udp-alt}
 
 Die alte und dokumentierte Variante der Anbindung einer Central Station 2/3 ist mit UDP, wessen konfiguration hier beschrieben ist.
 
-Es gibt eine neue, von Märklin nicht dokumentierte [Anbindung der Central Station 2/3 mit TCP](#konfiguration-der-märklin-central-station-23-cs23-mit-tcp-neu), welche dieser Anbindung vorzuziehen ist.
+Es gibt eine neue, von Märklin nicht dokumentierte [Anbindung der Central Station 2/3 mit TCP](#märklin-central-station-23-cs23-mit-tcp-neu), welche dieser Anbindung vorzuziehen ist.
 
 Damit RailControl mit der Central Station 2/3 von Märklin mit UDP sprechen kann muss diese entsprechend konfiguriert werden. Wir empfehlen dringend der CS2/CS3 eine feste IP-Adresse zu verteilen. Prinzipiell ist DHCP auch möglich aber etwas komplexer, entsprechend raten wir davon ab.
 
