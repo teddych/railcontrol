@@ -1,55 +1,55 @@
 # Configuración de las unidades múltiples
-RailControl soporta unidades múltiples. Por esto todas las locomotoras deben que correr en el mismo nivel de velocidad. Además todas las locomotoras deben conocer la orientación absoluta y el mismo numero de niveles de velocidad. Especialmente Märklin Motorola 1 no conoce la orientación absoluta.
+RailControl soporta unidades múltiples. Para ello, todas las locomotoras deben circular a la misma velocidad en el mismo nivel de marcha. Además, todas las locomotoras deben conocer la orientación absoluta y tener el mismo número de niveles de velocidad. Märklin Motorola 1, en particular, no conoce la orientación absoluta.
 
-En la pantalla principal se puede ir a la configuración de las unidades múltiples con el icono ![](../menu_multipleunit.png). Una otra posibilidad es usar el icono ![](../menu_settings.png) en la unidad múltiple selectionada.
+En la pantalla principal se puede ir a la configuración de las unidades múltiples con el icono ![](../menu_multipleunit.png). Otra posibilidad es usar el icono ![](../menu_settings.png) en la unidad múltiple seleccionada.
 
-## Datos basicos
+## Datos básicos
 ![](multipleunits_basics_es.png)
 
 ### Nombre
-El nombre de la unidade múltiple es la unica identificación. El mismo nombre solo puede ser usado una vez.
+El nombre de la unidad múltiple es la identificación única. El mismo nombre sólo puede usarse una vez.
 
 ### Longitud del tren
-Longitud del tren, preferido en cm. Está usado en el modo automatico para decidir si un tren puede entrar un itinerario o una vía de destino.
+Longitud del tren, preferiblemente en cm. Se usa en el modo automático para decidir si un tren puede entrar en un itinerario o en una vía de destino.
 
 ### Tipo de tren
-El tipo del tren. Está usado en el modo automatico para decidir si un tren puede usar un itinerario.
+El tipo del tren. Se usa en el modo automático para decidir si un tren puede usar un itinerario.
 
 ## Funciones
 ![](multipleunits_functions_es.png)
 
-Depende de los decoders en las locomotoras, se puede asignar hasta 32 funciones por locomotora. Siempre se cuenta deste cero. Las functiones usadas están reenviados a todas las locomotoras.
+Según los decodificadores de las locomotoras, se pueden asignar hasta 32 funciones por locomotora. Siempre se cuenta desde cero. Las funciones usadas se reenvían a todas las locomotoras.
 
-### Typo
+### Tipo
 RailControl conoce dos tipos de funciones: la función permanente y la función de instantánea.
 
-Se puede activar la función permanente con un clic y desactivar con un segundo clic. Es para el luz, el sonido de condución, el modo de maniobra y otras acciones permanentes.
+Se puede activar la función permanente con un clic y desactivarla con un segundo clic. Es para la luz, el sonido de conducción, el modo de maniobra y otras acciones permanentes.
 
-La función de instantánea esta activa durante el clic. Es para el cuerno, descoplar, anuncios de voz y control de grúa.
+La función de instantánea está activa durante el clic. Es para el claxon, desacoplar, anuncios de voz y control de grúa.
 
-### Simbolo
-En RailControl hay tantos simbolos disponibles para seleccionar.
+### Símbolo
+En RailControl hay varios símbolos disponibles para seleccionar.
 
 ## Unidades múltiples
 ![](multipleunits_multipleunits_es.png)
 
-Se puede añadir locomotoras a esta unidad múltiple. Despues todas las locomotoras tienen la misma actitud.
+Se pueden añadir locomotoras a esta unidad múltiple. Después, todas las locomotoras se comportan de la misma manera.
 
-## Autómodo
+## Modo automático
 ![](multipleunits_automode_es.png)
 
 ### Tren push-pull
-Un tren push-pull puede correr en ambos direcciones. En el autómodo RailControl puede cambiar la dirección de marcha. Si tren push-pull no está seleccionado RailControl no cambia la dirección de marcha.
+Un tren push-pull puede circular en ambas direcciones. En el modo automático RailControl puede cambiar la dirección de marcha. Si el tren push-pull no está seleccionado, RailControl no cambia la dirección de marcha.
 
 ### Velocidad máxima
 Se puede ajustar la velocidad máxima. Es importante en el modo manual. Si se cambia la velocidad desde el control se puede exceder la velocidad máxima.
 
 ### Velocidad de viaje
-Es la velocidad que RailControl usa en el autómodo normalmente.
+Es la velocidad que RailControl usa normalmente en el modo automático.
 
 ### Velocidad reducido
-Es la velocidad que RailControl usa en el autómodo cuando la primera retroseñal ha llegado.
+Es la velocidad que RailControl usa en el modo automático cuando se alcanza la primera retroseñal.
 
 ### Velocidad a rastas
-Es la velocidad que RailControl usa  en el autómodo cuande la segunda retroseñal ha llegado.
+Es la velocidad que RailControl usa en el modo automático cuando se alcanza la segunda retroseñal.
 

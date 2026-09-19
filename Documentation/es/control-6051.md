@@ -2,7 +2,7 @@
 
 Para configurar CC-Schnitte solamente se tiene que seleccionar el puerto serial.
 
-Especialmente bajo Linux se tiene que considerar la pagina [Convertidor de RS-232 a USB](#convertidor-de-rs-232-a-usb) .
+Especialmente bajo Linux se tiene que considerar la página [Convertidor de RS-232 a USB](#convertidor-de-rs-232-a-usb).
 
-Porque los principios del protocolo este control no puede procesar retroseñales muy cortas. Por esto está recomendado usar otras posibiliidades de retroseñales para la operación automatica.
+Por los principios del protocolo, este control no puede procesar retroseñales muy cortas. Por esto se recomienda usar otras posibilidades de retroseñales para la operación automática.
 

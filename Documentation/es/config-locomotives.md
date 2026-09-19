@@ -1,16 +1,16 @@
 # Configuración de las locomotoras
-Cada locomotora en la maqueta tiene que ser configurado para ser controlado por RailControl.
+Cada locomotora en la maqueta tiene que estar configurada para ser controlada por RailControl.
 
-En la pantalla principal se puede ir a la configuración de las locomotoras con el icono ![](../menu_loco.png). Una otra posibilidad es usar el icono ![](../menu_settings.png) en la locomotora selectionada.
+En la pantalla principal se puede ir a la configuración de las locomotoras con el icono ![](../menu_loco.png). Otra posibilidad es usar el icono ![](../menu_settings.png) en la locomotora seleccionada.
 
-## Datos basicos
+## Datos básicos
 ![](locomotives_basics_es.png)
 
 ### Nombre
-El nombre de la locomotora es la unica identificación. El mismo nombre solo puede ser usado una vez. Algunos controls usan el nombre para syncronizar la base de datos de las locomotoras (por ejemplo Märklin CS2/CS3).
+El nombre de la locomotora es la identificación única. El mismo nombre sólo puede usarse una vez. Algunos controles usan el nombre para sincronizar la base de datos de las locomotoras (por ejemplo Märklin CS2/CS3).
 
 ### Control
-Si hay más que un control configurado en RailControl, se tiene que seleccionar el control que controla la locomotora. Si solamente un control está configurado en RailControl el campo de selección no está visible.
+Si hay más de un control configurado en RailControl, se tiene que seleccionar el control que controla la locomotora. Si solamente hay un control configurado en RailControl, el campo de selección no está visible.
 
 ### Protocolo
 Si un control soporta más de un protocolo, se tiene que seleccionar el protocolo que controla la locomotora. Si el control solamente soporta un protocolo, el campo de selección no está visible.
@@ -19,44 +19,44 @@ Si un control soporta más de un protocolo, se tiene que seleccionar el protocol
 La dirección que controla la locomotora.
 
 ### Longitud del tren
-Longitud del tren, preferido en cm. Está usado en el modo automatico para decidir si un tren puede entrar un itinerario o una vía de destino.
+Longitud del tren, preferiblemente en cm. Se usa en el modo automático para decidir si un tren puede entrar en un itinerario o en una vía de destino.
 
 ### Propulsión
-La propulsión del tren. Está usado en el modo automatico para decidir si un tren puede usar un itinerario.
+La propulsión del tren. Se usa en el modo automático para decidir si un tren puede usar un itinerario.
 
 ### Tipo de tren
-El tipo del tren. Está usado en el modo automatico para decidir si un tren puede usar un itinerario.
+El tipo del tren. Se usa en el modo automático para decidir si un tren puede usar un itinerario.
 
 ## Funciones
 ![](locomotives_functions_es.png)
 
-Depende del decoder en la locomotora, se puede asignar hasta 32 funciones por locomotora. Siempre se cuenta deste cero.
+Según el decodificador de la locomotora, se pueden asignar hasta 32 funciones por locomotora. Siempre se cuenta desde cero.
 
-### Typo
+### Tipo
 RailControl conoce dos tipos de funciones: la función permanente y la función de instantánea.
 
-Se puede activar la función permanente con un clic y desactivar con un segundo clic. Es para el luz, el sonido de condución, el modo de maniobra y otras acciones permanentes.
+Se puede activar la función permanente con un clic y desactivarla con un segundo clic. Es para la luz, el sonido de conducción, el modo de maniobra y otras acciones permanentes.
 
-La función de instantánea esta activa durante el clic. Es para el cuerno, descoplar, anuncios de voz y control de grúa.
+La función de instantánea está activa durante el clic. Es para el claxon, desacoplar, anuncios de voz y control de grúa.
 
-### Simbolo
-En RailControl hay tantos simbolos disponibles para seleccionar.
+### Símbolo
+En RailControl hay varios símbolos disponibles para seleccionar.
 
-## Autómodo
+## Modo automático
 ![](locomotives_automode_es.png)
 
 ### Tren push-pull
-Un tren push-pull puede correr en ambos direcciones. En el autómodo RailControl puede cambiar la dirección de marcha. Si tren push-pull no está seleccionado RailControl no cambia la dirección de marcha.
+Un tren push-pull puede circular en ambas direcciones. En el modo automático RailControl puede cambiar la dirección de marcha. Si el tren push-pull no está seleccionado, RailControl no cambia la dirección de marcha.
 
 ### Velocidad máxima
 Se puede ajustar la velocidad máxima. Es importante en el modo manual. Si se cambia la velocidad desde el control se puede exceder la velocidad máxima.
 
 ### Velocidad de viaje
-Es la velocidad que RailControl usa en el autómodo normalmente.
+Es la velocidad que RailControl usa normalmente en el modo automático.
 
 ### Velocidad reducido
-Es la velocidad que RailControl usa en el autómodo cuando la primera retroseñal ha llegado.
+Es la velocidad que RailControl usa en el modo automático cuando se alcanza la primera retroseñal.
 
 ### Velocidad a rastas
-Es la velocidad que RailControl usa  en el autómodo cuande la segunda retroseñal ha llegado.
+Es la velocidad que RailControl usa en el modo automático cuando se alcanza la segunda retroseñal.
 

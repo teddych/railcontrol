@@ -1,9 +1,10 @@
 ## Roco Z21 {#roco-z21}
 
-RailControl está soportando todos los Z21, que están desbloqueado para comunicar sobre LAN.
+RailControl soporta todas las Z21 que están desbloqueadas para comunicarse por LAN.
 
-In la configuración por defecto la dirección IP del Z21 está 192.168.0.111. Si el Z21 está operado con el router designado no es necesario de hacer otras ajustes. En RailControl se tiene que configurar la dirección IP 192.168.0.111.
-Configuratión Firewall
+En la configuración por defecto, la dirección IP de la Z21 es 192.168.0.111. Si la Z21 se usa con el router previsto, no es necesario hacer otros ajustes. En RailControl se tiene que configurar la dirección IP 192.168.0.111.
 
-Normalmente la configuración por defecto es suficiente. Solamente la puerta 21105 de UDP para datos saliendo tiene que estar abierta.
+### Configuración Firewall
+
+Normalmente la configuración por defecto es suficiente. Solamente el puerto UDP 21105 para datos salientes tiene que estar abierto.
 

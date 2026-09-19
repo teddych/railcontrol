@@ -1,38 +1,38 @@
 # Configuración de las retroseñales
 En la pantalla principal se puede ir a la configuración de las retroseñales con el icono ![](../menu_feedback.png).
 
-Retroseñales están necesario en operación automática para detectar la posición de los trenes. Así RailControl puede parar los trenes cuando los han llegado su destino.
+Las retroseñales son necesarias en la operación automática para detectar la posición de los trenes. Así RailControl puede parar los trenes cuando han llegado a su destino.
 
-## Datos basicos
+## Datos básicos
 ![](feedback_basics_es.png)
 
 ### Nombre
-Cada retroseñal necesita un nombre inequívoco. Si el nombre no está indicado RailControl crea un nombre. Si el nombre ya existe RailControl añade un numero al nombre para hacer el nombre inequívoco.
+Cada retroseñal necesita un nombre inequívoco. Si el nombre no está indicado, RailControl crea un nombre. Si el nombre ya existe, RailControl añade un número al nombre para hacerlo inequívoco.
 
 ### Control
-Si hay más que un control configurado en RailControl, se tiene que seleccionar el control que controla la retroseñal. Si solamente un control está configurado en RailControl el campo de selección no está visible.
+Si hay más de un control configurado en RailControl, se tiene que seleccionar el control que controla la retroseñal. Si solamente hay un control configurado en RailControl, el campo de selección no está visible.
 
 ### Contacto
-El numero del contacto físico. La mayoría de los controls empiezan numerar con uno. Algunos controls conocen algoritmos complicados para los números de los contactos. Por favor contacte la documentación del control y/o de los retroseñales.
+El número del contacto físico. La mayoría de los controles empiezan a numerar con uno. Algunos controles usan algoritmos complicados para los números de los contactos. Consulte la documentación del control y/o de las retroseñales.
 
-Cunado no está claro cual contacto físico tiene cual numero, se puede activar "Añadir retroseñales desconosidas automaticamente" en los [opciones generales](#opciones-generales). Con eso RailControl añade los retroseñales desconosidas automaticamente. Despues en la capa del control las retroseñales están visibles.
+Cuando no está claro qué contacto físico tiene qué número, se puede activar "Añadir retroseñales desconocidas automáticamente" en las [opciones generales](#opciones-generales). Con eso RailControl añade las retroseñales desconocidas automáticamente. Después, las retroseñales están visibles en la capa del control.
 
 ### Invertido
-Se puede invertir la logica de las retroseñales. Normalmente un retroseñal cerrado está interpretado como activo. Cuando una retroseñal abierta sería interpretado como activo se puede invertir aquí.
+Se puede invertir la lógica de las retroseñales. Normalmente una retroseñal cerrada se interpreta como activa. Si una retroseñal abierta debe interpretarse como activa, se puede invertir aquí.
 
 ## Posición
 ![](feedback_position_es.png)
 
 ### Visible
-Se puede mostrar una retroseñal en el diagrama de vías o no. Cuando una retroseñal está asociado a una vía, el estado cumulado de todas retroseñales está mostrado en la vía. En este caso se puede hacer invisible la retroseñal. En todos casos los retroseñales están visible en la capa del control.
+Se puede mostrar una retroseñal en el diagrama de vías o no. Cuando una retroseñal está asociada a una vía, el estado acumulado de todas las retroseñales se muestra en la vía. En este caso se puede hacer invisible la retroseñal. En todos los casos, las retroseñales están visibles en la capa del control.
 
-Cuando una retroseñal no está visible los campos proximos están invisible también.
+Cuando una retroseñal no está visible, los campos próximos también están invisibles.
 
 ### Posición X
-La posición del elemento en cuadros deste la izquierda en el diagrama de vías. Se empieza a contar con zero.
+La posición del elemento en cuadros desde la izquierda en el diagrama de vías. Se empieza a contar con cero.
 
 ### Posición Y
-La posición del elemento en cuadros deste arriba en el diagrama de vías. Se empieza a contar con zero.
+La posición del elemento en cuadros desde arriba en el diagrama de vías. Se empieza a contar con cero.
 
 ### Capa
 La capa en que el elemento está visible.

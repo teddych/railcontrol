@@ -1,15 +1,15 @@
 # Descargar
-Se puede descargar RailControl de la pagina [Download](https://www.railcontrol.org/index.php/es/download-es).
+Se puede descargar RailControl de la página [Download](https://www.railcontrol.org/index.php/es/download-es).
 
 ## Instalación
-Se puede extraer el archivo descargado en qualquier lugar de la computadora.
+Se puede extraer el archivo descargado en cualquier lugar de la computadora.
 
 ### Instalación en Windows
 En Windows se tiene que extraer el archivo en una subcarpeta. D:\\ no vale, D:\\Modelismo está bien.
 
-### Instalación en  Debian GNU/Linux
+### Instalación en Debian GNU/Linux
 
-Deste Debian GNU/Linux 13 "trixie" RailControl está incluido en Debian. Se puede installar con este commando:
+Desde Debian GNU/Linux 13 "trixie", RailControl está incluido en Debian. Se puede instalar con este comando:
 
 ```
 sudo apt install railcontrol
@@ -19,20 +19,20 @@ sudo apt install railcontrol
 `/usr/share/doc/railcontrol`.
 
 ## Fichero de la configuración
-En el archivo extraido hay una plantilla de archivo de la configuración (railcontrol.conf.dist). Durante el primero inicio de RailControl la plantilla está copiado a railcontrol.conf. Normalmente no es necesario cambiar algo en el archivo de configuración.
+En el archivo extraído hay una plantilla de archivo de configuración (railcontrol.conf.dist). Durante el primer inicio de RailControl, la plantilla se copia a railcontrol.conf. Normalmente no es necesario cambiar nada en el archivo de configuración.
 
 ## Arrancar RailControl
-Con un doble clic en railcontrol.exe (Windows) o railcontrol (otras sistemas) se puede poner en marcha RailControl. Está recomendado utilizar RailControl en un terminal para recibir más informaciones sobre RailControl. Tambien en un terminal se puede cambiar el funcionamiento de Railcontrol con argumentos de inicio.
+Con un doble clic en railcontrol.exe (Windows) o railcontrol (otros sistemas) se puede poner en marcha RailControl. Se recomienda utilizar RailControl en un terminal para recibir más información sobre RailControl. También en un terminal se puede cambiar el funcionamiento de RailControl con argumentos de inicio.
 
 ## Terminar RailControl
-Se puede terminar RailControl por entrar q+Enter o Ctrl+C en el terminal de RailControl o usar el botón en el navegador internet.
+Se puede terminar RailControl introduciendo q+Enter o Ctrl+C en el terminal de RailControl, o usando el botón en el navegador de internet.
 
-**Importante: Usar la X arriba en la derecha del terminal de RailControl puede dar problemas para guardar los ajustes y puede dar problemas para arrancar Railcontrol otra vez.**
+**Importante: Usar la X arriba a la derecha del terminal de RailControl puede causar problemas al guardar los ajustes y al arrancar RailControl otra vez.**
 
-Entrar q+Enter o Ctrl+C en el terminal o usar el botton en el navegador multiples veces va a terminar RailControl de inmediatamente. Usa eso opción solamente si RailControl no termina correctamente.
+Introducir q+Enter o Ctrl+C en el terminal, o usar el botón en el navegador varias veces, terminará RailControl inmediatamente. Use esta opción solamente si RailControl no termina correctamente.
 
 ## Navegador Internet
-Despues poner RailControl en marcha, se puede conectar a RailControl con un navegador internet actual. RailControl muestra los enlaces posibles durante el inicio. Se puede copiar uno de los enlaces al navegador internet. Los enlaces con localhost, 127.0.0.1 y [::1] solamente funcionan en el mismo dispositivo como RailControl.
+Después de poner RailControl en marcha, se puede conectar a RailControl con un navegador de internet actual. RailControl muestra los enlaces posibles durante el inicio. Se puede copiar uno de los enlaces al navegador de internet. Los enlaces con localhost, 127.0.0.1 y [::1] solamente funcionan en el mismo dispositivo que RailControl.
 
 # Funciones y configuración
 Las funciones importantes y la configuración son accesibles en la barra de menú:
@@ -41,10 +41,10 @@ Desde la izquierda hasta la derecha son:
 
 | | |
 |---|---|
-| ![](../menu_quit.png "Button Quit") | Acabar el servidor RailControl (con parar todos los trenes) |
+| ![](../menu_quit.png "Button Quit") | Terminar el servidor RailControl (parando todos los trenes) |
 | ![](../menu_booster.png "Button Booster") | Encender y apagar la corriente de vía |
 | ![](../menu_stop.png "Button Stop") | Parar todos los trenes inmediatamente (velocidad cero) |
-| ![](../menu_signalred.png "Button Signal Red") | Parar todos los trenes en el modo automático al fin del itinerario |
+| ![](../menu_signalred.png "Button Signal Red") | Parar todos los trenes en modo automático al final del itinerario |
 | ![](../menu_signalgreen.png "Button Signal Green") | Poner todos los trenes en el modo automático |
 | ![](../menu_fullscreen.png "Button Full Screen") | Mostrar RailControl en modo pantalla completa |
 | ![](../menu_program.png "Button Program") | Programación CV. Se muestra solamente si el control y su API lo admiten |
@@ -61,6 +61,6 @@ Desde la izquierda hasta la derecha son:
 | ![](../menu_accessory.png "Button Accessory") | [Configuración de los accesorios](#configuración-de-los-accesorios) |
 | ![](../menu_feedback.png "Button Feedback") | [Configuración de las retroseñales](#configuración-de-las-retroseñales) |
 | ![](../menu_route.png "Button Route") | [Configuración de los itinerarios](#configuración-de-los-itinerarios) |
-| ![](../menu_counter.png "Button Counter") | TODO Configuration of counters and linkage to section |
+| ![](../menu_counter.png "Button Counter") | [Configuración de los contadores](#configuración-de-los-contadores) |
 | ![](../menu_text.png "Button Text") | [Configuración de los textos](#configuración-de-los-textos) |
 
