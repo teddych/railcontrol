@@ -144,7 +144,11 @@ namespace Server { namespace Web
 					{
 						const string& orientationSign = track->GetMainLocoOrientation() == OrientationRight ? "&rarr; " : "&larr; ";
 						const string locoOrientationName = orientationSign + locoName;
-						image += "<text class=\"loconame\" x=\"-" + textPositionX + "\" y=\"11\" id=\"" + identifier + "_text_loconame\" transform=\"rotate(270 0,0)\">" + locoName + "</text>";
+						image += "<text class=\"loconame\" x=\"-" + textPositionX + "\" y=\"11\" id=\"" + identifier + "_text_loconame\" transform=\"rotate(270 0,0)\">" + locoOrientationName + "</text>";
+					}
+					else
+					{
+						image += "<text class=\"loconame\" x=\"-" + textPositionX + "\" y=\"11\" id=\"" + identifier + "_text_loconame\" transform=\"rotate(270 0,0)\"></text>";
 					}
 				}
 				if (track->GetShowName())
