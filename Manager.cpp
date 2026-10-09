@@ -2644,9 +2644,9 @@ bool Manager::TrackSave(TrackID trackID,
 		oldMain->DeleteExtension(track);
 	}
 	Track* newMain = GetTrack(main);
+	track->SetMain(newMain);
 	if (newMain && !newMain->GetMain() && newMain->AddExtension(track))
 	{
-		track->SetMain(newMain);
 		track->SetName(newMain->GetName() + "_ext_" + to_string(trackID));
 	}
 	track->AssignFeedbacks(newFeedbacks);
