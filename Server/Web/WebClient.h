@@ -229,9 +229,14 @@ namespace Server { namespace Web
 				const unsigned int width,
 				const unsigned int height) const;
 
-			void DeliverFile(const std::string& file);
-			void DeliverFileInternal(FILE* f, const char* realFile, const std::string& file);
+			void DeliverFile(const std::string& virtualFile);
+
+			void DeliverFileInternal(FILE* filePointer,
+				const std::string& realFile,
+				const std::string& virtualFile);
+
 			HtmlTag HtmlTagLocoSelector(const std::string& selector, const LocoID locoID = LocoNone) const;
+
 			HtmlTag HtmlTagLayerSelector(const LayerID layerID = LayerNone) const;
 
 			HtmlTag HtmlTagMatchKeyProtocolLoco(const ControlID controlID,

@@ -1011,16 +1011,22 @@ namespace Server { namespace Web
 
 	void WebClient::DeliverFile(const string& virtualFile)
 	{
-		std::stringstream ss;
-		char workingDir[128];
-		if (getcwd(workingDir, sizeof(workingDir)))
+		string realFile;
+		FILE* filePointer = nullptr;
+#ifdef HTML_DATA_PATH
+		realFile = string(HTML_DATA_PATH) + virtualFile;
+		filePointer = fopen(realFile.c_str(), "r");
+		if (!filePointer)
+#endif
 		{
-			ss << workingDir << "/html" << virtualFile;
+			char workingDir[128];
+			if (getcwd(workingDir, sizeof(workingDir)))
+			{
+				realFile = string(workingDir) + "/html" + virtualFile;
+				filePointer = fopen(realFile.c_str(), "r");
+			}
 		}
-		string sFile = ss.str();
-		const char* realFile = sFile.c_str();
-		FILE* f = fopen(realFile, "r");
-		if (f == nullptr)
+		if (!filePointer)
 		{
 			ResponseHtmlNotFound response(virtualFile);
 			connection->Send(response);
@@ -1028,14 +1034,16 @@ namespace Server { namespace Web
 			return;
 		}
 
-		DeliverFileInternal(f, realFile, virtualFile);
-		fclose(f);
+		DeliverFileInternal(filePointer, realFile.c_str(), virtualFile);
+		fclose(filePointer);
 	}
 
-	void WebClient::DeliverFileInternal(FILE* f, const char* realFile, const string& virtualFile)
+	void WebClient::DeliverFileInternal(FILE* filePointer,
+		const string& realFile,
+		const string& virtualFile)
 	{
 		struct stat s;
-		int rc = stat(realFile, &s);
+		int rc = stat(realFile.c_str(), &s);
 		if (rc != 0)
 		{
 			return;
@@ -1089,7 +1097,7 @@ namespace Server { namespace Web
 			return;
 		}
 
-		size_t r = fread(buffer, 1, s.st_size, f);
+		size_t r = fread(buffer, 1, s.st_size, filePointer);
 		connection->Send(buffer, r, 0);
 		free(buffer);
 	}
