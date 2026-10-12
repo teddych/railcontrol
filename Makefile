@@ -89,7 +89,7 @@ clean:
 	rm -f railcontrol
 	rm -f Documentation/de/index.html Documentation/en/index.html Documentation/es/index.html
 	rm -rf doc
-	rm -rf Documentation/chunkedhtml
+	rm -rf chunkedhtml
 
 test:
 	pytest -vv
@@ -234,6 +234,11 @@ doc: ; mkdir -p doc/de doc/en doc/es && cp $(DOCDATA) doc && cp Documentation/de
 doc-for-web:
 	echo 'Nothing to do: The directory structure in Documentation/$LANGUAGE/documentation-$LANGUAGE already is in place.'
 
+PANDOC_RESOURCE_PATH_SEPARATOR=:
+ifeq ($(OS),Windows_NT)
+PANDOC_RESOURCE_PATH_SEPARATOR=;
+endif
+
 PANDOC_CHUNKEDOPTS=--toc --toc-depth=2 \
                    --standalone \
                    --css=../style.css \
@@ -246,19 +251,19 @@ chunked-doc:
 	# pandoc stops with an error if the target directory for chunked HTML
 	# output already exists. So we unconditionally toss everything and
 	# create an empty directory.
-	rm -rf Documentation/chunkedhtml
-	mkdir -p Documentation/chunkedhtml
+	rm -rf chunkedhtml
+	mkdir -p chunkedhtml
 	pandoc $(PANDOC_CHUNKEDOPTS) \
-		--resource-path=".:Documentation:Documentation/de:doc:doc/de" \
+		--resource-path=".$(PANDOC_RESOURCE_PATH_SEPARATOR)Documentation$(PANDOC_RESOURCE_PATH_SEPARATOR)Documentation/de$(PANDOC_RESOURCE_PATH_SEPARATOR)doc$(PANDOC_RESOURCE_PATH_SEPARATOR)doc/de" \
 		--metadata-file=Documentation/de/metadata.yaml \
-		--output=Documentation/chunkedhtml/de $(DOC_DE)
+		--output=chunkedhtml/de $(DOC_DE)
 	pandoc $(PANDOC_CHUNKEDOPTS) \
-		--resource-path=".:Documentation:Documentation/en:doc:doc/en" \
+		--resource-path=".$(PANDOC_RESOURCE_PATH_SEPARATOR)Documentation$(PANDOC_RESOURCE_PATH_SEPARATOR)Documentation/en$(PANDOC_RESOURCE_PATH_SEPARATOR)doc$(PANDOC_RESOURCE_PATH_SEPARATOR)doc/en" \
 		--metadata-file=Documentation/en/metadata.yaml \
-		--output=Documentation/chunkedhtml/en $(DOC_EN)
+		--output=chunkedhtml/en $(DOC_EN)
 	pandoc $(PANDOC_CHUNKEDOPTS) \
-		--resource-path="doc/en:Documentation/en:.:Documentation:Documentation/es:doc:doc/es" \
+		--resource-path="doc/en$(PANDOC_RESOURCE_PATH_SEPARATOR)Documentation/en$(PANDOC_RESOURCE_PATH_SEPARATOR).$(PANDOC_RESOURCE_PATH_SEPARATOR)Documentation$(PANDOC_RESOURCE_PATH_SEPARATOR)Documentation/es$(PANDOC_RESOURCE_PATH_SEPARATOR)doc$(PANDOC_RESOURCE_PATH_SEPARATOR)doc/es" \
 		--metadata-file=Documentation/es/metadata.yaml \
-		--output=Documentation/chunkedhtml/es $(DOC_ES)
-	cp $(DOCDATA) Documentation/chunkedhtml
+		--output=chunkedhtml/es $(DOC_ES)
+	cp $(DOCDATA) chunkedhtml
 

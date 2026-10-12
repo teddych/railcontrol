@@ -753,6 +753,7 @@ set(PANDOC_CHUNKEDOPTS --toc --toc-depth=2
 
 add_custom_command(
 	OUTPUT ${OUTPUT_CHUNKEDHTML_DE}/index.html
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/chunkedhtml
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
 		"--resource-path=${PANDOC_RESOURCE_PATH_DE}"
 		--metadata-file=Documentation/de/metadata.yaml
@@ -765,6 +766,7 @@ add_custom_command(
 
 add_custom_command(
 	OUTPUT ${OUTPUT_CHUNKEDHTML_EN}/index.html
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/chunkedhtml
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
 		"--resource-path=${PANDOC_RESOURCE_PATH_EN}"
 		--metadata-file=Documentation/en/metadata.yaml
@@ -777,6 +779,7 @@ add_custom_command(
 
 add_custom_command(
 	OUTPUT ${OUTPUT_CHUNKEDHTML_ES}/index.html
+	COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/chunkedhtml
 	COMMAND ${PANDOC_EXECUTABLE} ${PANDOC_CHUNKEDOPTS}
 		"--resource-path=${PANDOC_RESOURCE_PATH_ES}"
 		--metadata-file=Documentation/es/metadata.yaml
@@ -803,9 +806,7 @@ set_property(
 	TARGET chunked-doc
 	APPEND
 	PROPERTY ADDITIONAL_CLEAN_FILES
-		${CMAKE_BINARY_DIR}/chunkedhtml/de
-		${CMAKE_BINARY_DIR}/chunkedhtml/en
-		${CMAKE_BINARY_DIR}/chunkedhtml/es
+		${CMAKE_BINARY_DIR}/chunkedhtml
 )
 
 foreach(DOCDATA ${DOCDATA})
