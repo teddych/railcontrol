@@ -11,7 +11,7 @@ GIT_TIMESTAMP=$(shell git log -1 --format=%at)
 GIT_DIRTY=$(shell git status -s | wc -l)
 endif
 
-CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11 -D_GNU_SOURCE
+CXXFLAGS=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11 -D_GNU_SOURCE -DHTML_DATA_PATH=\"./html\"
 CXXFLAGSAMALGAMATION=-I. -g -O2 -Wall -Wextra -pedantic -Werror -Wno-missing-braces -std=c++11
 LDFLAGS=-g
 LIBS=-lpthread -ldl -lsqlite3 -lz
