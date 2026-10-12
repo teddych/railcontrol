@@ -2,86 +2,86 @@
 
 El código fuente está disponible en [GitHub RailControl](https://github.com/teddych/railcontrol).
 
-El código fuente está publicado bajo la licencia Open-Source [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
+El código fuente está publicado bajo la licencia Open Source [GPLv3](https://www.gnu.org/licenses/gpl-3.0.html).
 
-Se puede comilar RailControl sobre todos sistemas posix que ofrecen un compilador GCC o clang. Se probó RailControl sobre los siguientes sistemas:
+RailControl debería poder compilarse en todos los sistemas POSIX que tengan instalado un compilador GCC o clang. RailControl se ha probado en los siguientes sistemas:
 
   * Windows con Cygwin
   * Ubuntu Linux
   * Mac OS X
 
-# Compilar sobre Windows
+# Compilar en Windows
 
-RailControl necesita un entorno posix. Windows no ofrece un entorno posix, pero [cygwin](https://www.cygwin.com/) ofrece los funciones de posix para Windows. Para instalar las heremientas necesitades se tiene que seleccionar los paquetes siquientes:
+RailControl necesita un entorno POSIX. Windows no ofrece un entorno POSIX de forma nativa, pero [Cygwin](https://www.cygwin.com/) proporciona las funciones POSIX para Windows. Para instalar las herramientas de desarrollo necesarias se deben seleccionar los siguientes paquetes adicionales:
 
 ```
-gcc-g++ 
-make 
+gcc-g++
+make
 git
 libsqlite3-devel
 zlib-devel
 ```
 
-Despues de instalar cygwin se puede consegir el codigo fuente con:
+Después de instalar Cygwin se puede obtener el código fuente en una terminal de Cygwin con:
 
 ```
 git clone https://github.com/teddych/railcontrol.git
 ```
 
-Ahora el codigo fuente está en el directorio railcontrol. Se puede cambiar in eso directorio con
+El código fuente está ahora en el directorio railcontrol. Se puede cambiar a este directorio con:
 
 ```
 cd railcontrol
 ```
 
-Entonces se puede compilar RailControl con
+Ahora se puede compilar RailControl con:
 
 ```
 make
 ```
 
-Despues el archivo railcontrol.exe puede ser iniciado.
+Después se puede iniciar el archivo railcontrol.exe.
 
 ## Actualizar
 
-Se puede actualizar RailVontrol con:
+Se puede actualizar RailControl con:
 
 ```
 git pull
 make
 ```
 
-## 32-bit Cygwin
+## Cygwin de 32 bits
 
-Hay una version de cygwin con 32 bit, pero esta version no está más soportado. Basicamente RailControl tiene que funcionar en un entorno 32 bit, per no soportamos eso.
+Existe una versión de Cygwin de 32 bits, pero ya no recibe soporte. Básicamente RailControl debería funcionar en un entorno de 32 bits, pero no damos soporte general para ello.
 
-# Compilar sobre Linux o entono POSIX
+# Compilar en Linux o en un entorno POSIX
 
-Se puede instalar las heremientas requerido con:
+En sistemas basados en Debian se pueden instalar las herramientas de desarrollo necesarias con el siguiente comando (puede variar en distribuciones Linux que no estén basadas en Debian):
 
 ```
 sudo apt-get install g++ binutils make git libsqlite3-dev zlib1g-dev
 ```
 
-Despues de instalar cygwin se puede consegir el codigo fuente con:
+Después de instalar las herramientas de desarrollo se puede obtener el código fuente con:
 
 ```
 git clone https://github.com/teddych/railcontrol.git
 ```
 
-Ahora el codigo fuente está en el directorio railcontrol. Se puede cambiar in eso directorio con
+El código fuente está ahora en el directorio railcontrol. Se puede cambiar a este directorio con:
 
 ```
 cd railcontrol
 ```
 
-Entonces se puede compilar RailControl con
+Ahora se puede compilar RailControl con:
 
 ```
 make
 ```
 
-Despues el archivo railcontrol puede ser iniciado.
+Después se puede iniciar el archivo railcontrol:
 
 ```
 ./railcontrol
@@ -89,40 +89,40 @@ Despues el archivo railcontrol puede ser iniciado.
 
 ## Actualizar
 
-Se puede actualizar railcontrol con:
+Se puede actualizar RailControl con:
 
 ```
 git pull
 make
 ```
 
-## TODO TRANSLATE Compile with cmake
+## Compilar con cmake
 
-cmake support is work in progress. In case the cmake build fails on your system,
-please build with GNU Make.
+El soporte para cmake todavía está en desarrollo. Si la compilación con cmake falla en tu sistema,
+usa GNU Make.
 
-Configure the out-of-tree build directory
+Configura el directorio de compilación fuera del árbol de fuentes:
 
 ```
 cmake -B build
 ```
 
-Compile RailControl with
+Compila RailControl con:
 
 ```
 cmake --build build
 ```
 
-Install RailControl (as root) with
+Instala RailControl (como root) con:
 
 ```
 cmake --install build
 ```
 
-### cmake develper mode
+### Modo de desarrollo con cmake
 
-To develop RailControl, "install" RailControl in the checked out working copy.
-This is similar to building RailControl with GNU Make.
+Para desarrollar RailControl, "instala" RailControl en la copia de trabajo de Git.
+El resultado es similar a compilar RailControl con GNU Make.
 
 ```
 cmake -B build -DINSTALL_IN_PLACE=1
@@ -130,9 +130,9 @@ cmake --build build
 cmake --install build
 ```
 
-# Compilar sobre Mac OS X
+# Compilar en Mac OS X
 
-Se puede instalar las heremientas requerido con:
+Se pueden instalar las herramientas de desarrollo necesarias en una terminal con:
 
 ```
 sudo xcode-select --install
@@ -144,25 +144,25 @@ SQLite y zlib se pueden instalar con [Homebrew](https://brew.sh/):
 brew install sqlite zlib
 ```
 
-Despues de instalar cygwin se puede consegir el codigo fuente con:
+Después de instalar las herramientas de desarrollo se puede obtener el código fuente con:
 
 ```
 git clone https://github.com/teddych/railcontrol.git
 ```
 
-Ahora el codigo fuente está en el directorio railcontrol. Se puede cambiar in eso directorio con
+El código fuente está ahora en el directorio railcontrol. Se puede cambiar a este directorio con:
 
 ```
 cd railcontrol
 ```
 
-Entonces se puede compilar RailControl con
+Ahora se puede compilar RailControl con:
 
 ```
 make
 ```
 
-Despues el archivo railcontrol puede ser iniciado.
+Después se puede iniciar el archivo railcontrol:
 
 ```
 ./railcontrol
@@ -170,7 +170,7 @@ Despues el archivo railcontrol puede ser iniciado.
 
 ## Actualizar
 
-Se puede actualizar railcontrol con:
+Se puede actualizar RailControl con:
 
 ```
 git pull
