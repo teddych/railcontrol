@@ -88,6 +88,7 @@ clean:
 	rm -f *.o DataModel/*.o Hardware/*.o Hardware/Protocols/*.o Logger/*.o Network/*.o Storage/*.o Utils/*.o Server/Web/*.o Server/CS2/*.o Server/Z21/*.o
 	rm -f railcontrol
 	rm -f Documentation/de/index.html Documentation/en/index.html Documentation/es/index.html
+	rm -rf doc
 	rm -rf Documentation/chunkedhtml
 
 test:
@@ -108,19 +109,19 @@ DOC_DE=Documentation/de/index.md \
            Documentation/de/startup-arguments.md \
            Documentation/de/general-settings.md \
            Documentation/de/config-controls.md \
-           Documentation/de/config-intellibox.md \
-           Documentation/de/config-mastercontrol2.md \
-           Documentation/de/config-mastercontrol.md \
-           Documentation/de/config-redbox.md \
-           Documentation/de/config-twincenter.md \
-           Documentation/de/control-6051.md \
            Documentation/de/control-cc-schnitte.md \
+           Documentation/de/control-twincenter.md \
+           Documentation/de/control-hsi88.md \
            Documentation/de/control-cs2-tcp.md \
            Documentation/de/control-cs2-udp.md \
-           Documentation/de/control-hsi88.md \
+           Documentation/de/control-6051.md \
            Documentation/de/control-opendcc-z1.md \
            Documentation/de/control-z21.md \
-           Documentation/de/config-rs232-usb.md \
+           Documentation/de/control-mastercontrol.md \
+           Documentation/de/control-mastercontrol2.md \
+           Documentation/de/control-redbox.md \
+           Documentation/de/control-intellibox.md \
+           Documentation/de/control-rs232-usb.md \
            Documentation/de/config-locomotives.md \
            Documentation/de/config-multipleunits.md \
            Documentation/de/config-layers.md \
@@ -139,19 +140,19 @@ DOC_EN=Documentation/en/index.md \
            Documentation/en/startup-arguments.md \
            Documentation/en/general-settings.md \
            Documentation/en/config-controls.md \
-           Documentation/en/config-intellibox.md \
-           Documentation/en/config-mastercontrol2.md \
-           Documentation/en/config-mastercontrol.md \
-           Documentation/en/config-redbox.md \
-           Documentation/en/config-twincenter.md \
-           Documentation/en/control-6051.md \
            Documentation/en/control-cc-schnitte.md \
+           Documentation/en/control-twincenter.md \
+           Documentation/en/control-hsi88.md \
            Documentation/en/control-cs2-tcp.md \
            Documentation/en/control-cs2-udp.md \
-           Documentation/en/control-hsi88.md \
+           Documentation/en/control-6051.md \
            Documentation/en/control-opendcc-z1.md \
            Documentation/en/control-z21.md \
-           Documentation/en/config-rs232-usb.md \
+           Documentation/en/control-mastercontrol.md \
+           Documentation/en/control-mastercontrol2.md \
+           Documentation/en/control-redbox.md \
+           Documentation/en/control-intellibox.md \
+           Documentation/en/control-rs232-usb.md \
            Documentation/en/config-locomotives.md \
            Documentation/en/config-multipleunits.md \
            Documentation/en/config-layers.md \
@@ -170,19 +171,19 @@ DOC_ES=Documentation/es/index.md \
            Documentation/es/startup-arguments.md \
            Documentation/es/general-settings.md \
            Documentation/es/config-controls.md \
-           Documentation/es/config-intellibox.md \
-           Documentation/es/config-mastercontrol2.md \
-           Documentation/es/config-mastercontrol.md \
-           Documentation/es/config-redbox.md \
-           Documentation/es/config-twincenter.md \
-           Documentation/es/control-6051.md \
            Documentation/es/control-cc-schnitte.md \
+           Documentation/es/control-twincenter.md \
+           Documentation/es/control-hsi88.md \
            Documentation/es/control-cs2-tcp.md \
            Documentation/es/control-cs2-udp.md \
-           Documentation/es/control-hsi88.md \
+           Documentation/es/control-6051.md \
            Documentation/es/control-opendcc-z1.md \
            Documentation/es/control-z21.md \
-           Documentation/es/config-rs232-usb.md \
+           Documentation/es/control-mastercontrol.md \
+           Documentation/es/control-mastercontrol2.md \
+           Documentation/es/control-redbox.md \
+           Documentation/es/control-intellibox.md \
+           Documentation/es/control-rs232-usb.md \
            Documentation/es/config-locomotives.md \
            Documentation/es/config-multipleunits.md \
            Documentation/es/config-layers.md \
@@ -197,7 +198,8 @@ DOC_ES=Documentation/es/index.md \
            Documentation/es/config-counter.md \
            Documentation/es/automatic.md
 
-DOCDATA=Documentation/menu_accessory.png \
+DOCDATA=Documentation/index.html \
+        Documentation/menu_accessory.png \
         Documentation/menu_booster.png \
         Documentation/menu_control.png \
         Documentation/menu_counter.png \
@@ -227,19 +229,7 @@ PANDOC_OPTS=--toc --toc-depth=2 \
             --css=../style.css \
             --template=Documentation/template.html
 
-doc:
-	pandoc $(PANDOC_OPTS) \
-		--metadata-file=Documentation/de/metadata.yaml \
-		--output=Documentation/de/index.html \
-		$(DOC_DE)
-	pandoc $(PANDOC_OPTS) \
-		--metadata-file=Documentation/en/metadata.yaml \
-		--output=Documentation/en/index.html \
-		$(DOC_EN)
-	pandoc $(PANDOC_OPTS) \
-		--metadata-file=Documentation/es/metadata.yaml \
-		--output=Documentation/es/index.html \
-		$(DOC_ES)
+doc: ; mkdir -p doc/de doc/en doc/es && cp $(DOCDATA) doc && cp Documentation/de/*.png doc/de && cp Documentation/en/*.png doc/en && cp Documentation/es/*.png doc/es && pandoc $(PANDOC_OPTS) --metadata-file=Documentation/de/metadata.yaml --output=doc/de/index.html $(DOC_DE) && pandoc $(PANDOC_OPTS) --metadata-file=Documentation/en/metadata.yaml --output=doc/en/index.html $(DOC_EN) && pandoc $(PANDOC_OPTS) --metadata-file=Documentation/es/metadata.yaml --output=doc/es/index.html $(DOC_ES)
 
 doc-for-web:
 	echo 'Nothing to do: The directory structure in Documentation/$LANGUAGE/documentation-$LANGUAGE already is in place.'

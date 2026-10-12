@@ -606,6 +606,7 @@ set(DOCDATA_ES
 )
 
 set(DOCDATA
+	${PROJECT_SOURCE_DIR}/Documentation/index.html
 	${PROJECT_SOURCE_DIR}/Documentation/menu_accessory.png
 	${PROJECT_SOURCE_DIR}/Documentation/menu_booster.png
 	${PROJECT_SOURCE_DIR}/Documentation/menu_control.png
