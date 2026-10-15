@@ -573,7 +573,7 @@ namespace Server { namespace Web
 			row.AddChildTag(HtmlTag("td").AddContent(route.first));
 			const string& routeIdString = to_string(route.second->GetID());
 			routeArgument["route"] = routeIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "routeedit_list_" + routeIdString, routeArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "routeedit_" + routeIdString, routeArgument, "routelist")));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "routeaskdelete_" + routeIdString, routeArgument)));
 			if (route.second->IsInUse())
 			{
@@ -583,7 +583,7 @@ namespace Server { namespace Web
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "routeedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "routeedit_0", "routelist"));
 		client.ReplyHtmlWithHeader(content);
 	}
 

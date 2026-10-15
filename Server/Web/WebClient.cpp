@@ -1237,7 +1237,7 @@ namespace Server { namespace Web
 			row.AddChildTag(HtmlTag("td").AddContent(layer.first));
 			string layerIdString = to_string(layer.second);
 			layerArgument["layer"] = layerIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "layeredit_list_" + layerIdString, layerArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "layeredit_" + layerIdString, layerArgument, "layerlist")));
 			if (layer.second != LayerUndeletable)
 			{
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "layeraskdelete_" + layerIdString, layerArgument)));
@@ -1246,7 +1246,7 @@ namespace Server { namespace Web
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "layeredit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "layeredit_0", "layerlist"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -1385,13 +1385,13 @@ namespace Server { namespace Web
 			row.AddChildTag(HtmlTag("td").AddContent(hardware.first));
 			string controlIdString = to_string(hardware.second->GetControlID());
 			hardwareArgument["control"] = controlIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "controledit_list_" + controlIdString, hardwareArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "controledit_" + controlIdString, hardwareArgument, "controllist")));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "controlaskdelete_" + controlIdString, hardwareArgument)));
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "controledit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "controledit_0", "controllist"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -2225,13 +2225,13 @@ namespace Server { namespace Web
 			{
 				locoArgument["control"] = to_string(locoConfig.GetControlID());
 				locoArgument["matchkey"] = locoConfig.GetMatchKey();
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "locoedit_list_0", locoArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "locoedit_0", locoArgument, "locolist")));
 				row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
 				row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
 			}
 			else
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "locoedit_list_" + locoIdString, locoArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "locoedit_" + locoIdString, locoArgument, "locolist")));
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "locoaskdelete_" + locoIdString, locoArgument)));
 				if (loco.second.IsInUse())
 				{
@@ -2246,7 +2246,7 @@ namespace Server { namespace Web
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "locoedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "locoedit_0", "locolist"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -2269,13 +2269,13 @@ namespace Server { namespace Web
 			{
 				multipleUnitArgument["control"] = to_string(locoConfig.GetControlID());
 				multipleUnitArgument["matchkey"] = locoConfig.GetMatchKey();
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "multipleunitedit_list_" + multipleUnitIdString, multipleUnitArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "multipleunitedit_" + multipleUnitIdString, multipleUnitArgument, "multipleunitlist")));
 				row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
 				row.AddChildTag(HtmlTag("td").AddContent("&nbsp;"));
 			}
 			else
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "multipleunitedit_list_" + multipleUnitIdString, multipleUnitArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "multipleunitedit_" + multipleUnitIdString, multipleUnitArgument, "multipleunitlist")));
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "multipleunitaskdelete_" + multipleUnitIdString, multipleUnitArgument)));
 				if (multipleUnit.second.IsInUse())
 				{
@@ -2290,7 +2290,7 @@ namespace Server { namespace Web
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "multipleunitedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "multipleunitedit_0", "multipleunitlist"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -2730,11 +2730,11 @@ namespace Server { namespace Web
 			{
 				accessoryArgument["control"] = to_string(accessoryConfig.GetControlId());
 				accessoryArgument["matchkey"] = accessoryConfig.GetMatchKey();
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "accessoryedit_" + accessoryIdString, accessoryArgument, "accessorylist")));
 			}
 			else
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "accessoryedit_list_" + accessoryIdString, accessoryArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "accessoryedit_" + accessoryIdString, accessoryArgument, "accessorylist")));
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "accessoryaskdelete_" + accessoryIdString, accessoryArgument)));
 				if (accessoryConfig.IsInUse())
 				{
@@ -2745,7 +2745,7 @@ namespace Server { namespace Web
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "accessoryedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "accessoryedit_0", "accessorylist"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -2985,11 +2985,11 @@ namespace Server { namespace Web
 			{
 				switchArgument["control"] = to_string(switchConfig.GetControlId());
 				switchArgument["matchkey"] = switchConfig.GetMatchKey();
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "switchedit_list_" + switchIdString, switchArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "switchedit_" + switchIdString, switchArgument, "switchlist")));
 			}
 			else
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "switchedit_list_" + switchIdString, switchArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "switchedit_" + switchIdString, switchArgument, "switchlist")));
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "switchaskdelete_" + switchIdString, switchArgument)));
 				if (switchConfig.IsInUse())
 				{
@@ -3000,7 +3000,7 @@ namespace Server { namespace Web
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "switchedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "switchedit_0", "switchlist"));
 		ReplyHtmlWithHeader(content);
 	}
 
@@ -3307,18 +3307,18 @@ namespace Server { namespace Web
 			{
 				feedbackArgument["control"] = to_string(feedbackConfig.GetControlId());
 				feedbackArgument["matchkey"] = feedbackConfig.GetMatchKey();
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "feedbackedit_list_" + feedbackIdString, feedbackArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "feedbackedit_" + feedbackIdString, feedbackArgument, "feedbacklist")));
 			}
 			else
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "feedbackedit_list_" + feedbackIdString, feedbackArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "feedbackedit_" + feedbackIdString, feedbackArgument, "feedbacklist")));
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "feedbackaskdelete_" + feedbackIdString, feedbackArgument)));
 			}
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "feedbackedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "feedbackedit_0", "feedbacklist"));
 		ReplyHtmlWithHeader(content);
 	}
 

@@ -137,13 +137,13 @@ namespace Server { namespace Web
 			row.AddChildTag(HtmlTag("td").AddContent(text.first));
 			const string& textIdString = to_string(text.second->GetID());
 			textArgument["text"] = textIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "textedit_list_" + textIdString, textArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "textedit_" + textIdString, textArgument, "textlist")));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "textaskdelete_" + textIdString, textArgument)));
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "textedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "textedit_0", "textlist"));
 		client.ReplyHtmlWithHeader(content);
 	}
 

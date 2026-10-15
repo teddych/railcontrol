@@ -140,13 +140,13 @@ namespace Server { namespace Web
 			row.AddChildTag(HtmlTag("td").AddContent(counter.first));
 			const string& counterIdString = to_string(counter.second->GetID());
 			counterArgument["counter"] = counterIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "counteredit_list_" + counterIdString, counterArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "counteredit_" + counterIdString, counterArgument, "counterlist")));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "counteraskdelete_" + counterIdString, counterArgument)));
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "counteredit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "counteredit_0", "counterlist"));
 		client.ReplyHtmlWithHeader(content);
 	}
 

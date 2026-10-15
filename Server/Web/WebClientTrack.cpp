@@ -394,7 +394,7 @@ namespace Server { namespace Web
 			row.AddChildTag(HtmlTag("td").AddContent(track.first));
 			const string& trackIdString = to_string(track.second->GetID());
 			trackArgument["track"] = trackIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "trackedit_list_" + trackIdString, trackArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "trackedit_" + trackIdString, trackArgument, "tracklist")));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "trackaskdelete_" + trackIdString, trackArgument)));
 			if (track.second->IsInUse())
 			{
@@ -404,7 +404,7 @@ namespace Server { namespace Web
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "trackedit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "trackedit_0", "tracklist"));
 		client.ReplyHtmlWithHeader(content);
 	}
 

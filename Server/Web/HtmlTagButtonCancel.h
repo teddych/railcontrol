@@ -32,7 +32,7 @@ namespace Server { namespace Web
 			inline HtmlTagButtonCancel()
 			:	HtmlTagButton(HtmlTag("span").AddContent("&#x2718;"), "popup_cancel")
 			{
-				AddAttribute("onclick", "document.getElementById('popup').style.display = 'none'; return false;");
+				AddAttribute("onclick", "cancelEditForm(); return false;");
 				AddClass("wide_button");
 			}
 	};

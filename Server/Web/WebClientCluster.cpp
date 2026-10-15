@@ -62,13 +62,13 @@ namespace Server { namespace Web
 			row.AddChildTag(HtmlTag("td").AddContent(cluster.first));
 			const string& clusterIdString = to_string(cluster.second->GetID());
 			clusterArgument["cluster"] = clusterIdString;
-			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "clusteredit_list_" + clusterIdString, clusterArgument)));
+			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "clusteredit_" + clusterIdString, clusterArgument, "clusterlist")));
 			row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "clusteraskdelete_" + clusterIdString, clusterArgument)));
 			table.AddChildTag(row);
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "clusteredit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "clusteredit_0", "clusterlist"));
 		client.ReplyHtmlWithHeader(content);
 	}
 

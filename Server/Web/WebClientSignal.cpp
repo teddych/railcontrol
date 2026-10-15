@@ -371,11 +371,11 @@ namespace Server { namespace Web
 			{
 				signalArgument["control"] = to_string(signalConfig.GetControlId());
 				signalArgument["matchkey"] = signalConfig.GetMatchKey();
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "signaledit_list_" + signalIdString, signalArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextImport, "signaledit_" + signalIdString, signalArgument, "signallist")));
 			}
 			else
 			{
-				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "signaledit_list_" + signalIdString, signalArgument)));
+				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextEdit, "signaledit_" + signalIdString, signalArgument, "signallist")));
 				row.AddChildTag(HtmlTag("td").AddChildTag(HtmlTagButtonPopupWide(Languages::TextDelete, "signalaskdelete_" + signalIdString, signalArgument)));
 				if (signalConfig.IsInUse())
 				{
@@ -386,7 +386,7 @@ namespace Server { namespace Web
 		}
 		content.AddChildTag(HtmlTag("div").AddClass("popup_content").AddChildTag(table));
 		content.AddChildTag(HtmlTagButtonCancel());
-		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "signaledit_0"));
+		content.AddChildTag(HtmlTagButtonPopupWide(Languages::TextNew, "signaledit_0", "signallist"));
 		client.ReplyHtmlWithHeader(content);
 	}
 

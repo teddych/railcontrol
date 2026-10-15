@@ -36,26 +36,28 @@ namespace Server { namespace Web
 			HtmlTagButtonPopup(const std::string& value,
 				const std::string& command,
 				const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(),
+				const std::string& prevCmd = "",
 				const std::string& tooltip = "");
 
 			HtmlTagButtonPopup(const Languages::TextSelector value,
 			const std::string& command,
 			const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(),
+			const std::string& prevCmd = "",
 			const std::string& tooltip = "")
-			:	HtmlTagButtonPopup(Languages::GetText(value), command, arguments, tooltip)
+			:	HtmlTagButtonPopup(Languages::GetText(value), command, arguments, prevCmd, tooltip)
 			{}
 
 			HtmlTagButtonPopup(const std::string& value,
 			const std::string& command,
 			const std::map<std::string,std::string>& arguments,
 			const Languages::TextSelector tooltip)
-			:	HtmlTagButtonPopup(value, command, arguments, Languages::GetText(tooltip))
+			:	HtmlTagButtonPopup(value, command, arguments, "", Languages::GetText(tooltip))
 			{}
 
 			HtmlTagButtonPopup(const std::string& value,
 			const std::string& command,
 			const Languages::TextSelector tooltip)
-			:	HtmlTagButtonPopup(value, command, std::map<std::string,std::string>(), Languages::GetText(tooltip))
+			:	HtmlTagButtonPopup(value, command, std::map<std::string,std::string>(), "", Languages::GetText(tooltip))
 			{}
 	};
 }} // namespace Server::Web

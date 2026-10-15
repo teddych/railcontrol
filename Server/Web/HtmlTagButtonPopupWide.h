@@ -35,8 +35,17 @@ namespace Server { namespace Web
 			inline HtmlTagButtonPopupWide(const Languages::TextSelector value,
 				const std::string& command,
 				const std::map<std::string,std::string>& arguments = std::map<std::string,std::string>(),
+				const std::string& prevCmd = "",
 				const std::string& tooltip = "")
-			:	HtmlTagButtonPopup(value, command, arguments, tooltip)
+			:	HtmlTagButtonPopup(value, command, arguments, prevCmd, tooltip)
+			{
+				AddClass("wide_button");
+			}
+
+			inline HtmlTagButtonPopupWide(const Languages::TextSelector value,
+				const std::string& command,
+				const std::string& prevCmd)
+			:	HtmlTagButtonPopup(value, command, std::map<std::string,std::string>(), prevCmd)
 			{
 				AddClass("wide_button");
 			}

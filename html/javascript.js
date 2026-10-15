@@ -1952,8 +1952,18 @@ function dataUpdateError()
 	checkAvailability();
 }
 
-function loadPopup(url)
+function addUrlParameter(url, name, value)
 {
+	return url + (url.indexOf('?') == -1 ? '?' : '&') + name + '=' + encodeURIComponent(value);
+}
+
+function loadPopup(url, prevCmd)
+{
+	if (prevCmd != undefined && prevCmd != '')
+	{
+		url = addUrlParameter(url, 'prevcmd', prevCmd);
+	}
+
 	url += '&posx=' + window.layoutPosX;
 	url += '&posy=' + window.layoutPosY;
 	url += '&posz=' + document.getElementById('s_layer').value;
@@ -1965,6 +1975,18 @@ function loadPopup(url)
 		}
 		var popup = document.getElementById('popup');
 		popup.innerHTML = xmlHttp.responseText;
+		if (prevCmd != undefined && prevCmd != '')
+		{
+			var form = document.getElementById('editform');
+			if (form)
+			{
+				var input = document.createElement('input');
+				input.type = 'hidden';
+				input.name = 'prevcmd';
+				input.value = prevCmd;
+				form.appendChild(input);
+			}
+		}
 		popup.style.display = 'block';
 	}
 	xmlHttp.open('GET', url, true);
@@ -2355,6 +2377,37 @@ function hidePopup()
 	popup.style.display = 'none';
 }
 
+function cancelEditForm()
+{
+	var form = document.getElementById('editform');
+	if (!form)
+	{
+		hidePopup();
+		return;
+	}
+	var prevCmd = '';
+	var i = 0;
+	while (true)
+	{
+		var formElement = form[i];
+		if (formElement == undefined)
+		{
+			break;
+		}
+		if (formElement.name == 'prevcmd')
+		{
+			prevCmd = formElement.value;
+		}
+		++i;
+	}
+	if (prevCmd != '')
+	{
+		loadPopup('/?cmd=' + prevCmd);
+		return;
+	}
+	hidePopup();
+}
+
 var infoID = 0;
 
 function addInfoBox(type, info)
@@ -2398,6 +2451,7 @@ function submitEditForm()
 	var form = document.getElementById('editform');
 	var hasFileInput = false;
 	var parameterCount = 0;
+	var prevCmd = '';
 	var i = 0;
 	while (true)
 	{
@@ -2414,6 +2468,10 @@ function submitEditForm()
 		{
 			++i;
 			continue;
+		}
+		if (formElement.name == 'prevcmd')
+		{
+			prevCmd = formElement.value;
 		}
 		if (parameterCount > 0)
 		{
@@ -2440,6 +2498,14 @@ function submitEditForm()
 		}
 		var response = xmlHttp.responseText;
 		addInfoBox(response[21], response.substring(22, response.length - 7));
+		if (response[21] == 'i' && prevCmd != '')
+		{
+			loadPopup('/?cmd=' + prevCmd);
+		}
+		else if (response[21] == 'i')
+		{
+			hidePopup();
+		}
 	}
 	xmlHttp.open('POST', '/', true);
 	if (hasFileInput)

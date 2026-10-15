@@ -18,8 +18,6 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include <sstream>
-
 #include "Utils/Utils.h"
 #include "Server/Web/HtmlTagButtonPopup.h"
 #include "Server/Web/HtmlTagInput.h"
@@ -29,19 +27,19 @@ namespace Server { namespace Web
 	HtmlTagButtonPopup::HtmlTagButtonPopup(const std::string& value,
 		const std::string& command,
 		const std::map<std::string,std::string>& arguments,
+		const std::string& prevCmd,
 		const std::string& tooltip)
 	:	HtmlTagButton(value, command, tooltip)
 	{
 		std::string cmd = Utils::Utils::StringBeforeDelimiter(command, "_");
-		std::stringstream ss;
-		ss << "var myUrl = '/?cmd=" << cmd;
+		std::string script = "var myUrl = '/?cmd=" + cmd;
 		for (auto& argument : arguments) {
 
-			ss << "&" << argument.first << "=" << argument.second;
+			script += "&" + argument.first + "=" + argument.second;
 		}
-		ss <<"';"
-			"loadPopup(myUrl);"
-			"return false;";
-		AddAttribute("onclick", ss.str());
+		script += "';";
+		script += "loadPopup(myUrl, '" + prevCmd + "');";
+		script += "return false;";
+		AddAttribute("onclick", script);
 	}
 }} // namespace Server::Web
