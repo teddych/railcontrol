@@ -3,10 +3,10 @@ En la pantalla principal se puede ir a la configuración de los itinerarios con 
 
 ## En general
 ### Modo manual
-En modo manual se pueden usar itinerarios para cambiar el estado de varios elementos con un clic. Los elementos pueden ser desvíos, señales y accesorios.
+En modo manual se pueden usar itinerarios para cambiar el estado de varios elementos con un clic. Los elementos pueden ser desvíos, semáforos y accesorios.
 
 ### Modo automática
-En modo automática, los itinerarios son los elementos más importantes. Los trenes siempre circulan en itinerarios de una vía de inicio a una vía de destino. Todos los elementos intermedios (desvíos, señales, vías y accesorios) deben registrarse en la pestaña "Durante bloquear". Estos elementos están reservados para el tren que circula por la ruta. Entonces otros trenes ya no pueden usar estos elementos. Cuando el tren ha alcanzado la vía de destino, la vía de inicio y todos los elementos intermedios se liberan y otros trenes pueden usarlos.
+En modo automática, los itinerarios son los elementos más importantes. Los trenes siempre circulan en itinerarios de una vía de inicio a una vía de destino. Todos los elementos intermedios (desvíos, semáforos, vías y accesorios) deben registrarse en la pestaña "Durante bloquear". Estos elementos están reservados para el tren que circula por la ruta. Entonces otros trenes ya no pueden usar estos elementos. Cuando el tren ha alcanzado la vía de destino, la vía de inicio y todos los elementos intermedios se liberan y otros trenes pueden usarlos.
 
 En modo automática, RailControl puede cambiar el estado de los elementos cuando el tren alcanza la vía de destino (pestaña "Durante liberar").
 
@@ -22,16 +22,16 @@ No se pueden operar los elementos registrados en las pestañas "Durante bloquear
 ## Durante bloquear
 ![](routes_atlock_es.png)
 
-Aquí se pueden registrar desvíos, señales, accesorios, vías y funciones de locomotoras.
+Aquí se pueden registrar desvíos, semáforos, accesorios, vías y funciones de locomotoras.
 
-En modo manual, cuando la ruta se opera con un clic del ratón, los desvíos, señales y accesorios se operan según el estado registrado. Las vías y funciones de locomotoras no tienen efecto en modo manual.
+En modo manual, cuando la ruta se opera con un clic del ratón, los desvíos, semáforos y accesorios se operan según el estado registrado. Las vías y funciones de locomotoras no tienen efecto en modo manual.
 
 En modo automática, cuando el itinerario es operado por la locomotora, todos los elementos registrados en "Durante bloquear" están reservados. Entonces estos elementos no pueden usarse por modo manual ni por otros trenes en modo automática. Después se opera el estado registrado de todos los elementos. Cuando la locomotora ha alcanzado la vía de destino, todos los elementos se liberan y pueden ser usados por otros itinerarios u operados manualmente.
 
 ## Durante liberar
 ![](routes_atunlock_es.png)
 
-Aquí se pueden registrar desvíos, señales, accesorios, vías y funciones de locomotoras.
+Aquí se pueden registrar desvíos, semáforos, accesorios, vías y funciones de locomotoras.
 
 En modo manual, cuando el itinerario se opera con un clic del ratón, estos elementos no se tienen en cuenta.
 

@@ -57,7 +57,7 @@ Desde la izquierda hasta la derecha son:
 | ![](../menu_track.png "Button Track") | [Configuración de las vías](#configuración-de-las-vías) |
 | ![](../menu_group.png "Button Track Group") | [Configuración de los grupos de vía](#configuración-de-los-grupos-de-vía) |
 | ![](../menu_switch.png "Button Switch") | [Configuración de los desvíos](#configuración-de-los-desvíos) |
-| ![](../menu_signal.png "Button Signal") | [Configuración de las señales](#configuración-de-las-señales) |
+| ![](../menu_signal.png "Button Signal") | [Configuración de los semáforos](#configuración-de-los-semáforos) |
 | ![](../menu_accessory.png "Button Accessory") | [Configuración de los accesorios](#configuración-de-los-accesorios) |
 | ![](../menu_feedback.png "Button Feedback") | [Configuración de las retroseñales](#configuración-de-las-retroseñales) |
 | ![](../menu_route.png "Button Route") | [Configuración de los itinerarios](#configuración-de-los-itinerarios) |

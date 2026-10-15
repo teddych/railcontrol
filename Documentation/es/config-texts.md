@@ -5,7 +5,7 @@ En la pantalla principal se puede ir a la configuración de los textos con el ic
 ![](texts_basics_es.png)
 
 ### Nombre
-Cada señal necesita un nombre inequívoco.
+Cada texto necesita un nombre inequívoco.
 
 El nombre es también mostrado en el diagrama de vías.
 

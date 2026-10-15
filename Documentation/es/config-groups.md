@@ -14,6 +14,6 @@ Cada grupo de vías necesita un nombre inequívoco. Si el nombre no está indica
 
 Se puede seleccionar todas las vías que son parte del grupo de vías.
 
-## Señales
-Obsoleto. Solamente se muestra si ya hay señales configuradas. Se eliminará en versiones futuras.
+## Semáforos
+Obsoleto. Solamente se muestra si ya hay semáforos configurados. Se eliminará en versiones futuras.
 

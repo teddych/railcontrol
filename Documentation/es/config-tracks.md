@@ -64,10 +64,10 @@ Se puede rotar los elementos en pasos de 90 grados.
 
 Se pueden asignar una o más retroseñales a cada vía. Las retroseñales indican la ocupación de la vía. En el modo automático, la vía de destino de los itinerarios requiere una retroseñal asignada.
 
-## Señales
+## Semáforos
 ![](track_signals_es.png)
 
-Se pueden asociar una o más señales a una vía. Las señales asociadas se ponen en indicación de parada cuando un itinerario saliente se libera o cuando en modo automático está seleccionado "Liberar si no está ocupado" y la vía está libre (todas las retroseñales están libres).
+Se pueden asociar uno o más semáforos a una vía. Los semáforos asociados se ponen en indicación de parada cuando un itinerario saliente se libera o cuando en modo automático está seleccionado "Liberar si no está ocupado" y la vía está libre (todas las retroseñales están libres).
 
 ## Modo automático
 ![](tracks_automode_es.png)
