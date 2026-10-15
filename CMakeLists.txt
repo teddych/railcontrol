@@ -311,6 +311,8 @@ Utils/Integer.h
 Utils/Network.cpp
 Utils/Network.h
 Utils/ThreadSafeQueue.h
+Utils/Unwind.cpp
+Utils/Unwind.h
 Utils/Utils.cpp
 Utils/Utils.h
 ${CMAKE_CURRENT_BINARY_DIR}/Version.cpp

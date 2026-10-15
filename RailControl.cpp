@@ -42,6 +42,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Network/Select.h"
 #include "RailControl.h"
 #include "Version.h"
+#include "Utils/Unwind.h"
 #include "Utils/Utils.h"
 
 using std::vector;
@@ -97,6 +98,21 @@ void segvHandler(__attribute__((unused)) int signo,
 	const int traceSize = backtrace(trace, MaxTrace);
 
 	char** messages = backtrace_symbols(trace, traceSize);
+
+	for(int i = 0; i < traceSize; ++i)
+	{
+		logger->Error(Languages::TextBacktraceLine, i, messages[i]);
+	}
+
+#elif defined(__CYGWIN__)
+	logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
+
+	static const int MaxTrace = 16;
+	void* trace[MaxTrace];
+
+	const int traceSize = Utils::Unwind::GenerateBacktrace(trace, MaxTrace);
+	vector<string> messages;
+	Utils::Unwind::SymbolizeBacktraceFrames(trace, traceSize, messages);
 
 	for(int i = 0; i < traceSize; ++i)
 	{
