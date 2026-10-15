@@ -92,29 +92,32 @@ void segvHandler(__attribute__((unused)) int signo,
 #elif defined(__GLIBC__)
 	logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
 
-	static const int MaxTrace = 16;
+	static const int MaxTrace = 32;
+	static const int SkipTraceFrames = 1;
 	void* trace[MaxTrace];
 
 	const int traceSize = backtrace(trace, MaxTrace);
 
 	char** messages = backtrace_symbols(trace, traceSize);
 
-	for(int i = 0; i < traceSize; ++i)
+	for(int i = SkipTraceFrames; i < traceSize; ++i)
 	{
-		logger->Error(Languages::TextBacktraceLine, i, messages[i]);
+		logger->Error(Languages::TextBacktraceLine, i - SkipTraceFrames, messages[i]);
 	}
 
 #elif defined(__CYGWIN__)
 	logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
 
-	static const int MaxTrace = 16;
+	static const int MaxTrace = 32;
+	static const int SkipTraceFrames = 2;
 	void* trace[MaxTrace];
 
 	const int traceSize = Utils::Unwind::GenerateBacktrace(trace, MaxTrace);
+	const int skippedTraceSize = traceSize > SkipTraceFrames ? traceSize - SkipTraceFrames : 0;
 	vector<string> messages;
-	Utils::Unwind::SymbolizeBacktraceFrames(trace, traceSize, messages);
+	Utils::Unwind::SymbolizeBacktraceFrames(trace + SkipTraceFrames, skippedTraceSize, messages);
 
-	for(int i = 0; i < traceSize; ++i)
+	for(int i = 0; i < skippedTraceSize; ++i)
 	{
 		logger->Error(Languages::TextBacktraceLine, i, messages[i]);
 	}
