@@ -33,9 +33,8 @@ namespace Network
 {
 	void TcpConnection::Terminate() const
 	{
-		if (connected)
+		if (connected.exchange(false))
 		{
-			connected = false;
 			close(connectionSocket);
 		}
 	}

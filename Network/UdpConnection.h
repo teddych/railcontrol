@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include <arpa/inet.h>
+#include <atomic>
 #include <string>
 
 #include "Logger/Logger.h"
@@ -63,10 +64,18 @@ namespace Network
 			}
 
 			int Receive(char* buffer, const size_t bufferLength);
+			int Receive(char* buffer, const size_t bufferLength, const std::atomic_bool& run);
 
 			inline int Receive(unsigned char* buffer, const size_t bufferLength)
 			{
 				return Receive(reinterpret_cast<char*>(buffer), bufferLength);
+			}
+
+			inline int Receive(unsigned char* buffer,
+				const size_t bufferLength,
+				const std::atomic_bool& run)
+			{
+				return Receive(reinterpret_cast<char*>(buffer), bufferLength, run);
 			}
 
 		private:
@@ -74,7 +83,7 @@ namespace Network
 
 			Logger::Logger* const logger;
 			int connectionSocket;
-			volatile bool connected;
+			std::atomic_bool connected;
 			struct sockaddr sockaddr;
 			std::string server;
 			unsigned short port;

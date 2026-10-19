@@ -35,6 +35,7 @@ namespace Hardware
 			CS2Tcp& operator=(const CS2Tcp&) = delete;
 
 			CS2Tcp(const HardwareParams* params);
+			~CS2Tcp();
 
 			static void GetArgumentTypesAndHint(std::map<unsigned char,ArgumentType>& argumentTypes, std::string& hint)
 			{

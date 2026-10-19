@@ -341,8 +341,8 @@ namespace Server { namespace Web
 			Logger::Logger* logger;
 			unsigned int id;
 			Network::TcpConnection* connection;
-			volatile std::atomic<bool> run;
-			volatile std::atomic<bool> terminated;
+			volatile std::atomic_bool run;
+			volatile std::atomic_bool terminated;
 			WebServer& server;
 			std::thread clientThread;
 			Manager& manager;

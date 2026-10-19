@@ -99,9 +99,8 @@ namespace Network
 
 	void UdpConnection::Terminate()
 	{
-		if (connected)
+		if (connected.exchange(false))
 		{
-			connected = false;
 			close(connectionSocket);
 		}
 	}
@@ -125,15 +124,26 @@ namespace Network
 			errno = ECONNRESET;
 			return -1;
 		}
-		ssize_t ret;
-		do
+		ssize_t ret = recvfrom(connectionSocket, buffer, bufferLength, 0, NULL, NULL);
+		if (ret < 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
 		{
-			if (!connected)
-			{
-				return 0;
-			}
-			ret = recvfrom(connectionSocket, buffer, bufferLength, 0, NULL, NULL);
-		} while(ret < 0 && errno == EAGAIN);
+			return 0;
+		}
 		return ret;
+	}
+
+	int UdpConnection::Receive(char* buffer,
+		const size_t bufferLength,
+		const std::atomic_bool& run)
+	{
+		while (run)
+		{
+			const int ret = Receive(buffer, bufferLength);
+			if (ret != 0)
+			{
+				return ret;
+			}
+		}
+		return 0;
 	}
 }

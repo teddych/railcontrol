@@ -35,8 +35,14 @@ namespace Hardware
 		{
 			HardwareInterface::logger->Error(Languages::TextUnableToCreateTcpSocket, params->GetArg1(), CS2Port);
 			SetCommunicationError();
+			return;
 		}
 		Init();
+	}
+
+	CS2Tcp::~CS2Tcp()
+	{
+		Stop();
 	}
 
 	void CS2Tcp::Send(const unsigned char* buffer)

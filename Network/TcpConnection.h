@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <atomic>
 #include <cstring>
 #include <string>
 
@@ -50,7 +51,7 @@ namespace Network
 
 			inline TcpConnection(const TcpConnection& other)
 			:	connectionSocket(other.connectionSocket),
-				connected(other.connected),
+				connected(other.connected.load()),
 				address(other.address)
 			{
 			}
@@ -97,7 +98,7 @@ namespace Network
 
 		private:
 			mutable int connectionSocket;
-			mutable volatile bool connected;
+			mutable std::atomic_bool connected;
 			struct sockaddr_storage address;
 	};
 }

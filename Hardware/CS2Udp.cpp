@@ -32,14 +32,27 @@ namespace Hardware
 	{
 		HardwareInterface::logger->Info(Languages::TextStarting, GetFullName());
 
-		if (senderConnection.IsConnected())
-		{
-			HardwareInterface::logger->Info(Languages::TextSenderSocketCreated);
-		}
-		else
+		if (!senderConnection.IsConnected())
 		{
 			HardwareInterface::logger->Error(Languages::TextUnableToCreateUdpSocketForSendingData);
 			SetCommunicationError();
+			return;
+		}
+
+		HardwareInterface::logger->Info(Languages::TextSenderSocketCreated);
+
+		if (!receiverConnection.IsConnected())
+		{
+			HardwareInterface::logger->Error(Languages::TextUnableToCreateUdpSocketForReceivingData);
+			SetCommunicationError();
+			return;
+		}
+
+		if (!receiverConnection.Bind())
+		{
+			HardwareInterface::logger->Error(Languages::TextUnableToBindUdpSocket);
+			SetCommunicationError();
+			return;
 		}
 
 		Init();
@@ -47,7 +60,7 @@ namespace Hardware
 
 	CS2Udp::~CS2Udp()
 	{
-		receiverConnection.Terminate();
+		Stop();
 		HardwareInterface::logger->Info(Languages::TextTerminatingSenderSocket);
 	}
 
@@ -69,17 +82,10 @@ namespace Hardware
 			return;
 		}
 
-		bool ret = receiverConnection.Bind();
-		if (!ret)
-		{
-			HardwareInterface::logger->Error(Languages::TextUnableToBindUdpSocket);
-			SetCommunicationError();
-			return;
-		}
 		unsigned char buffer[CANCommandBufferLength];
 		while(run)
 		{
-			ssize_t datalen = receiverConnection.Receive(buffer, CANCommandBufferLength);
+			ssize_t datalen = receiverConnection.Receive(buffer, CANCommandBufferLength, run);
 			if (!run)
 			{
 				break;

@@ -38,6 +38,11 @@ namespace Hardware
 	{
 		HardwareInterface::logger->Info(Languages::TextStarting, GetFullName());
 
+		if (!serialLine.IsConnected())
+		{
+			SetCommunicationError();
+			return;
+		}
 		Init();
 	}
 

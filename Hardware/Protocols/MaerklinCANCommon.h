@@ -20,6 +20,8 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <atomic>
+
 #include "DataModel/AccessoryBase.h"
 #include "DataModel/LocoFunctions.h"
 #include "Hardware/Capabilities.h"
@@ -117,7 +119,7 @@ namespace Hardware { namespace Protocols
 
 			static const unsigned char CANCommandBufferLength = 13;
 
-			volatile bool run;
+			std::atomic_bool run;
 
 			Manager* manager;
 
@@ -428,7 +430,7 @@ namespace Hardware { namespace Protocols
 
 			CanUid uid;
 			CanHash hash;
-			volatile bool hasCs2Main;
+			std::atomic_bool hasCs2Main;
 			const bool isCs2Main;
 			std::thread receiverThread;
 			std::thread pingThread;
