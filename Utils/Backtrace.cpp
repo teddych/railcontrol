@@ -21,14 +21,17 @@ along with RailControl; see the file LICENCE. If not see
 #include "Utils/Backtrace.h"
 
 #if !defined(USE_CPPTRACE) && (defined(__CYGWIN__) || defined(__GLIBC__))
+
 #include <cstdio>
 #include <cstdint>
 #include <iomanip>
+#include <map>
 #include <sstream>
 #include <unistd.h>
 
 #if defined(__GLIBC__)
 #include <execinfo.h>
+#include <link.h>
 #endif
 
 #include "Languages.h"
@@ -40,6 +43,39 @@ using std::vector;
 
 namespace Utils
 {
+#if defined(__GLIBC__)
+	namespace
+	{
+		struct FrameModule
+		{
+			uintptr_t address;
+			uintptr_t loadBias;
+			string path;
+		};
+
+		int FindFrameModule(struct dl_phdr_info* info, size_t, void* argument)
+		{
+			FrameModule& frame = *static_cast<FrameModule*>(argument);
+			for (unsigned int i = 0; i < info->dlpi_phnum; ++i)
+			{
+				const auto& segment = info->dlpi_phdr[i];
+				if (segment.p_type != PT_LOAD)
+				{
+					continue;
+				}
+				const uintptr_t start = info->dlpi_addr + segment.p_vaddr;
+				if (frame.address >= start && frame.address - start < segment.p_memsz)
+				{
+					frame.loadBias = info->dlpi_addr;
+					frame.path = info->dlpi_name;
+					return 1;
+				}
+			}
+			return 0;
+		}
+	}
+#endif
+
 	string Backtrace::ReadAddr2LineOutputLine(FILE* pipe)
 	{
 		char buffer[512];
@@ -126,31 +162,57 @@ namespace Utils
 			return;
 		}
 
-		string command = "/usr/bin/addr2line -f -C -e " + ShellQuote(GetExecutablePath());
+		const string executablePath = GetExecutablePath();
+		std::map<string, vector<int>> moduleFrames;
+		vector<uintptr_t> symbolAddresses;
 		for(int i = 0; i < traceSize; ++i)
 		{
-			const string addressString = "0x" + Integer::IntegerToHex(reinterpret_cast<unsigned long>(trace[i]), 12);
-			messages.push_back(addressString);
-			command += " " + addressString;
-		}
-		command += " 2>/dev/null";
-
-		FILE* pipe = popen(command.c_str(), "r");
-		if (!pipe)
-		{
-			return;
-		}
-
-		for(int i = 0; i < traceSize; ++i)
-		{
-			const string functionName = ReadAddr2LineOutputLine(pipe);
-			const string fileAndLine = ReadAddr2LineOutputLine(pipe);
-			if (!functionName.empty() && !fileAndLine.empty() && (functionName != "??" || fileAndLine != "??:0"))
+			const uintptr_t address = reinterpret_cast<uintptr_t>(trace[i]);
+			messages.push_back("0x" + Integer::IntegerToHex(address, 12));
+			string modulePath = executablePath;
+			uintptr_t symbolAddress = address;
+#if defined(__GLIBC__)
+			FrameModule frame = { address, 0, "" };
+			if (dl_iterate_phdr(FindFrameModule, &frame) != 0)
 			{
-				messages[i] += ": " + functionName + " at " + fileAndLine;
+				// ELF load bias is zero for non-PIE executables.
+				symbolAddress -= frame.loadBias;
+				if (!frame.path.empty())
+				{
+					modulePath = frame.path;
+				}
 			}
+#endif
+			symbolAddresses.push_back(symbolAddress);
+			moduleFrames[modulePath].push_back(i);
 		}
-		pclose(pipe);
+
+		for (const auto& module : moduleFrames)
+		{
+			string command = "/usr/bin/addr2line -f -C -e " + ShellQuote(module.first);
+			for (const int i : module.second)
+			{
+				command += " 0x" + Integer::IntegerToHex(symbolAddresses[i], 12);
+			}
+			command += " 2>/dev/null";
+
+			FILE* pipe = popen(command.c_str(), "r");
+			if (!pipe)
+			{
+				continue;
+			}
+
+			for (const int i : module.second)
+			{
+				const string functionName = ReadAddr2LineOutputLine(pipe);
+				const string fileAndLine = ReadAddr2LineOutputLine(pipe);
+				if (!functionName.empty() && !fileAndLine.empty() && (functionName != "??" || fileAndLine != "??:0"))
+				{
+					messages[i] += ": " + functionName + " at " + fileAndLine;
+				}
+			}
+			pclose(pipe);
+		}
 	}
 
 #if defined(__CYGWIN__)
