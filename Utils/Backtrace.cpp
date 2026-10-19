@@ -18,13 +18,21 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
-#include "Utils/Unwind.h"
+#include "Utils/Backtrace.h"
 
-#if !defined(USE_CPPTRACE) && defined(__CYGWIN__)
+#if !defined(USE_CPPTRACE) && (defined(__CYGWIN__) || defined(__GLIBC__))
 #include <cstdio>
 #include <cstdint>
+#include <iomanip>
+#include <sstream>
 #include <unistd.h>
 
+#if defined(__GLIBC__)
+#include <execinfo.h>
+#endif
+
+#include "Languages.h"
+#include "Logger/Logger.h"
 #include "Utils/Integer.h"
 
 using std::string;
@@ -32,7 +40,7 @@ using std::vector;
 
 namespace Utils
 {
-	static string ReadAddr2LineOutputLine(FILE* pipe)
+	string Backtrace::ReadAddr2LineOutputLine(FILE* pipe)
 	{
 		char buffer[512];
 		if (fgets(buffer, sizeof(buffer), pipe) == nullptr)
@@ -48,7 +56,7 @@ namespace Utils
 		return line;
 	}
 
-	static string ShellQuote(const string& value)
+	string Backtrace::ShellQuote(const string& value)
 	{
 		string quoted("'");
 		for (const char character : value)
@@ -66,7 +74,7 @@ namespace Utils
 		return quoted;
 	}
 
-	static string GetExecutablePath()
+	string Backtrace::GetExecutablePath()
 	{
 		char buffer[4096];
 		const ssize_t length = readlink("/proc/self/exe", buffer, sizeof(buffer) - 1);
@@ -78,12 +86,75 @@ namespace Utils
 		return string(buffer);
 	}
 
-	static string BacktraceAddressString(void* address)
+	string Backtrace::FrameNumberString(const int frameNumber)
 	{
-		return "0x" + Integer::IntegerToHex(reinterpret_cast<unsigned long>(address), 8);
+		std::stringstream frameNumberString;
+		frameNumberString << std::setfill(' ') << std::setw(2) << frameNumber;
+		return frameNumberString.str();
 	}
 
-	_Unwind_Reason_Code Unwind::CollectBacktrace(struct _Unwind_Context* context, void* argument)
+	void Backtrace::LogBacktrace(const unsigned long address)
+	{
+		Logger::Logger* logger = Logger::Logger::GetLogger("Backtrace");
+
+		logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Integer::IntegerToHex(address, 8));
+
+		static const int MaxTrace = 32;
+		static const int SkipTraceFrames = 3;
+		void* trace[MaxTrace];
+
+#if defined(__GLIBC__)
+		const int traceSize = backtrace(trace, MaxTrace);
+#else
+		const int traceSize = GenerateUnwindBacktrace(trace, MaxTrace);
+#endif
+		const int skippedTraceSize = traceSize > SkipTraceFrames ? traceSize - SkipTraceFrames : 0;
+		vector<string> messages;
+		SymbolizeBacktraceFrames(trace + SkipTraceFrames, skippedTraceSize, messages);
+
+		for(int i = 0; i < skippedTraceSize; ++i)
+		{
+			logger->Error(Languages::TextBacktraceLine, FrameNumberString(i), messages[i]);
+		}
+	}
+
+	void Backtrace::SymbolizeBacktraceFrames(void** trace, const int traceSize, vector<string>& messages)
+	{
+		messages.clear();
+		if (traceSize <= 0)
+		{
+			return;
+		}
+
+		string command = "/usr/bin/addr2line -f -C -e " + ShellQuote(GetExecutablePath());
+		for(int i = 0; i < traceSize; ++i)
+		{
+			const string addressString = "0x" + Integer::IntegerToHex(reinterpret_cast<unsigned long>(trace[i]), 12);
+			messages.push_back(addressString);
+			command += " " + addressString;
+		}
+		command += " 2>/dev/null";
+
+		FILE* pipe = popen(command.c_str(), "r");
+		if (!pipe)
+		{
+			return;
+		}
+
+		for(int i = 0; i < traceSize; ++i)
+		{
+			const string functionName = ReadAddr2LineOutputLine(pipe);
+			const string fileAndLine = ReadAddr2LineOutputLine(pipe);
+			if (!functionName.empty() && !fileAndLine.empty() && (functionName != "??" || fileAndLine != "??:0"))
+			{
+				messages[i] += ": " + functionName + " at " + fileAndLine;
+			}
+		}
+		pclose(pipe);
+	}
+
+#if defined(__CYGWIN__)
+	_Unwind_Reason_Code Backtrace::CollectUnwindBacktrace(struct _Unwind_Context* context, void* argument)
 	{
 		BacktraceState* state = static_cast<BacktraceState*>(argument);
 		uintptr_t instructionPointer = _Unwind_GetIP(context);
@@ -102,46 +173,12 @@ namespace Utils
 		return _URC_NO_REASON;
 	}
 
-	int Unwind::GenerateBacktrace(void** trace, const int maxTrace)
+	int Backtrace::GenerateUnwindBacktrace(void** trace, const int maxTrace)
 	{
 		BacktraceState state = { trace, trace + maxTrace };
-		_Unwind_Backtrace(CollectBacktrace, &state);
+		_Unwind_Backtrace(CollectUnwindBacktrace, &state);
 		return state.current - trace;
 	}
-
-	void Unwind::SymbolizeBacktraceFrames(void** trace, const int traceSize, vector<string>& messages)
-	{
-		messages.clear();
-		if (traceSize <= 0)
-		{
-			return;
-		}
-
-		string command = "/usr/bin/addr2line -f -C -e " + ShellQuote(GetExecutablePath());
-		for(int i = 0; i < traceSize; ++i)
-		{
-			const string addressString = BacktraceAddressString(trace[i]);
-			messages.push_back(addressString);
-			command += " " + addressString;
-		}
-		command += " 2>/dev/null";
-
-		FILE* pipe = popen(command.c_str(), "r");
-		if (pipe == nullptr)
-		{
-			return;
-		}
-
-		for(int i = 0; i < traceSize; ++i)
-		{
-			const string functionName = ReadAddr2LineOutputLine(pipe);
-			const string fileAndLine = ReadAddr2LineOutputLine(pipe);
-			if (!functionName.empty() && !fileAndLine.empty() && (functionName != "??" || fileAndLine != "??:0"))
-			{
-				messages[i] += ": " + functionName + " at " + fileAndLine;
-			}
-		}
-		pclose(pipe);
-	}
+#endif
 } // namespace Utils
 #endif

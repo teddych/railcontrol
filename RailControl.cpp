@@ -24,14 +24,9 @@ along with RailControl; see the file LICENCE. If not see
 #include <iostream>
 #include <sstream>
 #include <unistd.h>		//close; isatty
-#include <vector>
 
 #if defined(USE_CPPTRACE)
 #include <cpptrace/cpptrace.hpp>
-
-#elif defined(__GLIBC__)
-#include <execinfo.h>
-#include <ucontext.h>
 #endif
 
 #include "ArgumentHandler.h"
@@ -42,10 +37,9 @@ along with RailControl; see the file LICENCE. If not see
 #include "Network/Select.h"
 #include "RailControl.h"
 #include "Version.h"
-#include "Utils/Unwind.h"
+#include "Utils/Backtrace.h"
 #include "Utils/Utils.h"
 
-using std::vector;
 using std::string;
 
 void killRailControlIfNeeded(Logger::Logger* logger)
@@ -77,9 +71,9 @@ void segvHandler(__attribute__((unused)) int signo,
 	siginfo_t* info,
 	__attribute__((unused)) void* secret)
 {
-	Logger::Logger* logger = Logger::Logger::GetLogger("System");
-
 #if defined(USE_CPPTRACE)
+	Logger::Logger* logger = Logger::Logger::GetLogger("Backtrace");
+
 	logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
 	struct cpptrace::stacktrace trace = cpptrace::generate_trace();
 	unsigned int nr = 0;
@@ -89,40 +83,11 @@ void segvHandler(__attribute__((unused)) int signo,
 		++nr;
 	}
 
-#elif defined(__GLIBC__)
-	logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
-
-	static const int MaxTrace = 32;
-	static const int SkipTraceFrames = 1;
-	void* trace[MaxTrace];
-
-	const int traceSize = backtrace(trace, MaxTrace);
-
-	char** messages = backtrace_symbols(trace, traceSize);
-
-	for(int i = SkipTraceFrames; i < traceSize; ++i)
-	{
-		logger->Error(Languages::TextBacktraceLine, i - SkipTraceFrames, messages[i]);
-	}
-
-#elif defined(__CYGWIN__)
-	logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
-
-	static const int MaxTrace = 32;
-	static const int SkipTraceFrames = 2;
-	void* trace[MaxTrace];
-
-	const int traceSize = Utils::Unwind::GenerateBacktrace(trace, MaxTrace);
-	const int skippedTraceSize = traceSize > SkipTraceFrames ? traceSize - SkipTraceFrames : 0;
-	vector<string> messages;
-	Utils::Unwind::SymbolizeBacktraceFrames(trace + SkipTraceFrames, skippedTraceSize, messages);
-
-	for(int i = 0; i < skippedTraceSize; ++i)
-	{
-		logger->Error(Languages::TextBacktraceLine, i, messages[i]);
-	}
+#elif defined(__GLIBC__) || defined(__CYGWIN__)
+	Utils::Backtrace::LogBacktrace(reinterpret_cast<unsigned long>(info->si_addr));
 
 #else
+	Logger::Logger* logger = Logger::Logger::GetLogger("Backtrace");
 	logger->Error(Languages::TextSigSegvReceived, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
 #endif
 

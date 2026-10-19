@@ -20,33 +20,48 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#if !defined(USE_CPPTRACE) && (defined(__CYGWIN__) || defined(__GLIBC__))
+
+#include <cstdio>
 #include <string>
 #include <vector>
 
-#if !defined(USE_CPPTRACE) && defined(__CYGWIN__)
+#if defined(__CYGWIN__)
 #include <unwind.h>
 #ifdef CopyFile
 #undef CopyFile
 #endif
+#endif
 
 namespace Utils
 {
-	class Unwind
+	class Backtrace
 	{
 		public:
-			Unwind() = delete;
-			Unwind(const Unwind&) = delete;
-			Unwind& operator=(const Unwind&) = delete;
+			Backtrace() = delete;
+			Backtrace(const Backtrace&) = delete;
+			Backtrace& operator=(const Backtrace&) = delete;
 
+			static void LogBacktrace(const unsigned long address);
+			static void SymbolizeBacktraceFrames(void** trace, const int traceSize, std::vector<std::string>& messages);
+
+		private:
+			static std::string ReadAddr2LineOutputLine(FILE* pipe);
+			static std::string ShellQuote(const std::string& value);
+			static std::string GetExecutablePath();
+			static std::string FrameNumberString(const int frameNumber);
+
+#if defined(__CYGWIN__)
+		public:
 			struct BacktraceState
 			{
 				void** current;
 				void** end;
 			};
 
-			static _Unwind_Reason_Code CollectBacktrace(struct _Unwind_Context* context, void* argument);
-			static int GenerateBacktrace(void** trace, const int maxTrace);
-			static void SymbolizeBacktraceFrames(void** trace, const int traceSize, std::vector<std::string>& messages);
+			static _Unwind_Reason_Code CollectUnwindBacktrace(struct _Unwind_Context* context, void* argument);
+			static int GenerateUnwindBacktrace(void** trace, const int maxTrace);
+#endif
 	};
 } // namespace Utils
 #endif
