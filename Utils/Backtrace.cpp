@@ -136,7 +136,12 @@ namespace Utils
 		logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Integer::IntegerToHex(address, 8));
 
 		static const int MaxTrace = 32;
+#if defined(__GLIBC__)
 		static const int SkipTraceFrames = 3;
+#else
+		static const int SkipTraceFrames = 9;
+#endif
+
 		void* trace[MaxTrace];
 
 #if defined(__GLIBC__)
