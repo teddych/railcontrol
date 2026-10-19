@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <atomic>
 #include <cstring>
 #include <deque>
 #include <map>
@@ -72,10 +73,10 @@ namespace Server { namespace Web
 			:	logger(Logger::Logger::GetLogger("WebClient # " + std::to_string(id))),
 				id(id),
 				connection(connection),
-				run(false),
+				run(true),
 				terminated(false),
 				server(webserver),
-				clientThread(&WebClient::Worker, this),
+				clientThread(),
 				manager(manager),
 				cluster(manager, *this),
 				track(manager, *this, logger),
@@ -86,6 +87,7 @@ namespace Server { namespace Web
 				headOnly(false),
 				buttonID(0)
 			{
+				clientThread = std::thread(&WebClient::Worker, this);
 			}
 
 			~WebClient();
@@ -339,8 +341,8 @@ namespace Server { namespace Web
 			Logger::Logger* logger;
 			unsigned int id;
 			Network::TcpConnection* connection;
-			volatile bool run;
-			bool terminated;
+			volatile std::atomic<bool> run;
+			volatile std::atomic<bool> terminated;
 			WebServer& server;
 			std::thread clientThread;
 			Manager& manager;

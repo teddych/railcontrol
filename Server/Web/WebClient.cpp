@@ -109,7 +109,6 @@ namespace Server { namespace Web
 
 	void WebClient::WorkerImpl()
 	{
-		run = true;
 		bool keepalive = true;
 
 		while (run && keepalive)
