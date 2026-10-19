@@ -2,3 +2,4 @@ VERSION_RAILCONTROL export-subst
 VERSION_GIT_HASH export-subst
 VERSION_GIT_TIMESTAMP export-subst
 *.h linguist-language=C++
+* text=auto eol=lf
