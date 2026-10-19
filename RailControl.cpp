@@ -140,6 +140,7 @@ int main (int argc, char* argv[])
 	sigemptyset(&sa.sa_mask);
 	sa.sa_flags = SA_SIGINFO;
 	sigaction(SIGSEGV, &sa, nullptr);
+	sigaction(SIGABRT, &sa, nullptr);
 
 	const string RailControl = "RailControl";
 	Utils::Utils::SetThreadName(RailControl);
