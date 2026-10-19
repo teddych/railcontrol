@@ -25,10 +25,6 @@ along with RailControl; see the file LICENCE. If not see
 #include <sstream>
 #include <unistd.h>		//close; isatty
 
-#if defined(USE_CPPTRACE)
-#include <cpptrace/cpptrace.hpp>
-#endif
-
 #include "ArgumentHandler.h"
 #include "Hardware/HardwareHandler.h"
 #include "Languages.h"
@@ -71,19 +67,7 @@ void segvHandler(__attribute__((unused)) int signo,
 	siginfo_t* info,
 	__attribute__((unused)) void* secret)
 {
-#if defined(USE_CPPTRACE)
-	Logger::Logger* logger = Logger::Logger::GetLogger("Backtrace");
-
-	logger->Error(Languages::TextSigSegvReceivedWithBacktrace, Utils::Integer::IntegerToHex(reinterpret_cast<unsigned long>(info->si_addr), 8));
-	struct cpptrace::stacktrace trace = cpptrace::generate_trace();
-	unsigned int nr = 0;
-	for(struct cpptrace::stacktrace_frame& frame : trace.frames)
-	{
-		logger->Error(Languages::TextBacktraceLine, nr, frame.to_string());
-		++nr;
-	}
-
-#elif defined(__GLIBC__) || defined(__CYGWIN__)
+#if defined(__GLIBC__) || defined(__CYGWIN__)
 	Utils::Backtrace::LogBacktrace(reinterpret_cast<unsigned long>(info->si_addr));
 
 #else

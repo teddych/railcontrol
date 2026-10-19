@@ -20,7 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Utils/Backtrace.h"
 
-#if !defined(USE_CPPTRACE) && (defined(__CYGWIN__) || defined(__GLIBC__))
+#if defined(__CYGWIN__) || defined(__GLIBC__)
 
 #include <cstdio>
 #include <cstdint>
