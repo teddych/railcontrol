@@ -56,7 +56,7 @@ namespace Server { namespace Web
 #ifdef __CYGWIN__
 				vector<unsigned char> comPorts;
 				bool ret = Utils::Utils::GetComPorts(comPorts);
-				if (ret == false || comPorts.size() == 0)
+				if (!ret || comPorts.size() == 0)
 				{
 					break;
 				}
@@ -82,9 +82,20 @@ namespace Server { namespace Web
 			{
 				argumentName = Languages::TextDeviceType;
 				map<string,string> mainSecondaryOptions;
-				mainSecondaryOptions["1"] = Languages::Languages::GetText(Languages::Languages::TextSecondaryDevice);
-				mainSecondaryOptions["0"] = Languages::Languages::GetText(Languages::Languages::TextMainDevice);
+				mainSecondaryOptions[to_string(ArgumentTypeCS2MS2CS2MainDevice)] = Languages::Languages::GetText(Languages::Languages::TextCS2MainDevice);
+				mainSecondaryOptions[to_string(ArgumentTypeCS2MS2CS2SecondaryDevice)] = Languages::Languages::GetText(Languages::Languages::TextCS2SecondaryDevice);
 				return HtmlTagSelectWithLabel(argumentNumber, argumentName, mainSecondaryOptions, value);
+			}
+
+			case ArgumentTypeCS2MS2:
+			{
+				argumentName = Languages::TextDeviceType;
+				map<string,string> cs2ms2Options;
+				cs2ms2Options[to_string(ArgumentTypeCS2MS2CS2MainDevice)] = Languages::Languages::GetText(Languages::Languages::TextCS2MainDevice);
+				cs2ms2Options[to_string(ArgumentTypeCS2MS2CS2SecondaryDevice)] = Languages::Languages::GetText(Languages::Languages::TextCS2SecondaryDevice);
+				cs2ms2Options[to_string(ArgumentTypeCS2MS2MS2Device)] = Languages::Languages::GetText(Languages::Languages::TextMS2Device);
+				cs2ms2Options[to_string(ArgumentTypeCS2MS2NoDevice)] = Languages::Languages::GetText(Languages::Languages::TextNoDevice);
+				return HtmlTagSelectWithLabel(argumentNumber, argumentName, cs2ms2Options, value);
 			}
 
 			default:

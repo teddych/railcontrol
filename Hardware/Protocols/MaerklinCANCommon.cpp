@@ -19,8 +19,11 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include <cstring>
+#include <ctime>
 #include <deque>
+#include <sstream>
 
+#include "DataModel/LocoConfig.h"
 #include "Hardware/Protocols/MaerklinCANCommon.h"
 #include "Hardware/ZLib.h"
 
@@ -63,7 +66,7 @@ namespace Hardware { namespace Protocols
 	void MaerklinCANCommon::Wait(const unsigned int duration) const
 	{
 		unsigned int wait = duration;
-		while (run && (!hasCs2Main || isCs2Main) && wait)
+		while (run && (!hasCs2Main || isCs2MainEmulation) && wait)
 		{
 			Utils::Utils::SleepForSeconds(1);
 			--wait;
@@ -85,13 +88,13 @@ namespace Hardware { namespace Protocols
 
 		Wait(1);
 
-		while (run && (!hasCs2Main || isCs2Main))
+		while (run && (!hasCs2Main || isCs2MainEmulation))
 		{
 			Ping();
 			Wait(10);
 		}
 
-		if (run && hasCs2Main && !isCs2Main)
+		if (run && hasCs2Main && !isCs2MainEmulation)
 		{
 			RequestLoks();
 		}
@@ -108,14 +111,7 @@ namespace Hardware { namespace Protocols
 		buffer[1] = (command << 1) | (response & 0x01);
 		Utils::Integer::ShortToDataBigEndian(hash, buffer + 2);
 		buffer[4] = length;
-		buffer[5] = 0;
-		buffer[6] = 0;
-		buffer[7] = 0;
-		buffer[8] = 0;
-		buffer[9] = 0;
-		buffer[10] = 0;
-		buffer[11] = 0;
-		buffer[12] = 0;
+		std::memset(buffer + 5, 0, 8);
 	}
 
 	void MaerklinCANCommon::ParseAddressProtocol(const Address input,
@@ -805,45 +801,230 @@ namespace Hardware { namespace Protocols
 		sendBuffer[10] = 3;
 		// CS2 device type: Main = 0xffff, Secondary = 0xfff0
 		sendBuffer[11] = 0xff;
-		sendBuffer[12] = isCs2Main ? 0xff : 0xf0;
+		sendBuffer[12] = isCs2MainEmulation ? 0xff : 0xf0;
 		SendInternal(sendBuffer);
+	}
+
+	string MaerklinCANCommon::GetMs2LocoNames(const size_t offset, const size_t count) const
+	{
+		const std::map<string,LocoID> locoIds = manager->LocoIdsByName();
+		string out("[lokomotive]");
+		size_t index = 0;
+		size_t sent = 0;
+		for (const auto& loco : locoIds)
+		{
+			if (index < offset)
+			{
+				++index;
+				continue;
+			}
+			if (sent >= count)
+			{
+				break;
+			}
+			out += "\nlok\n .nr=" + std::to_string(index);
+			out += "\n .name=" + loco.first;
+			++index;
+			++sent;
+		}
+		out += "\nnumloks\n .wert=" + std::to_string(locoIds.size());
+		return out + "\n";
+	}
+
+	string MaerklinCANCommon::GetMs2LocoInfo(const string& name) const
+	{
+		const DataModel::LocoConfig loco = manager->GetLocoByName(name);
+		if (!loco.IsValid())
+		{
+			return string();
+		}
+
+		uint32_t uid = loco.GetAddress();
+		string protocol;
+		switch (loco.GetProtocol())
+		{
+			case ProtocolMM:
+				protocol = "mm2";
+				break;
+
+			case ProtocolDCC:
+				uid += 0xC000;
+				protocol = "dcc";
+				break;
+
+			case ProtocolMFX:
+				uid += 0x4000;
+				protocol = "mfx";
+				break;
+
+			default:
+				protocol = "unknown";
+				break;
+		}
+
+		string out("[lokomotive]\nlok");
+		out += "\n .uid=0x" + Utils::Integer::IntegerToHex(uid);
+		out += "\n .name=" + loco.GetName();
+		out += "\n .adresse=0x" + Utils::Integer::IntegerToHex(loco.GetAddress());
+		out += "\n .typ=" + protocol;
+		if (loco.GetProtocol() == ProtocolMFX)
+		{
+			out += "\n .mfxsid=0x" + Utils::Integer::IntegerToHex(loco.GetLocoID());
+			out += "\n .mfxuid=0xffffffff"; // FIXME: mfxuid is not available in the current DataModel, so just return 0xffffffff for now
+		}
+		out += "\n .volume=100";
+		out += "\n .vmax=" + std::to_string(loco.GetMaxSpeed() >> 2); // vmax is 0..255, speed is 0..1023, so divide by 4
+		out += "\n .vmin=1";
+
+		DataModel::LocoFunctionEntry functions[DataModel::NumberOfLocoFunctions];
+		loco.GetFunctionStates(functions);
+		for (DataModel::LocoFunctionNr nr = 0; nr < 16; ++nr)
+		{
+			out += "\n .fkt\n ..nr=";
+			out += std::to_string(nr);
+			out += "\n ..typ=";
+			out += std::to_string(MapLocofunctionRailControlToCs2(nr, functions[nr].icon));
+		}
+		for (DataModel::LocoFunctionNr nr = 16; nr <= DataModel::NumberOfLocoFunctions; ++nr)
+		{
+			out += "\n .fkt2\n ..nr2=";
+			out += std::to_string(nr);
+			out += "\n ..typ2=";
+			out += std::to_string(MapLocofunctionRailControlToCs2(nr, functions[nr].icon));
+		}
+		return out + "\n";
 	}
 
 	void MaerklinCANCommon::ParseCommandRequestConfigData(const unsigned char* const buffer)
 	{
-		if ((buffer[5] == 'l')
-			&& (buffer[6] == 'o')
-			&& (buffer[7] == 'k')
-			&& (buffer[8] == 's')
-			&& (buffer[9] == 0x00)
-			&& (buffer[10] == 0x00)
-			&& (buffer[11] == 0x00)
-			&& (buffer[12] == 0x00))
+		if (!isCs2MainEmulation || ParseLength(buffer) != 8)
+		{
+			return;
+		}
+		const CanHash requestHash = ParseHash(buffer);
+		// The first 8-byte request names the file. Loknamen, lokinfo and version
+		// files need a follow-up frame. Keep each request by sender hash until
+		// its follow-up arrives, then send the configuration.
+		const auto pendingRequest = configRequests.find(requestHash);
+		if (pendingRequest != configRequests.end())
+		{
+			if (pendingRequest->second.type == ConfigRequestVersion)
+			{
+				// Version requests end with eight ASCII 'f' bytes, not 0xff bytes.
+				if (std::memcmp(buffer + 5, "ffffffff", 8) == 0)
+				{
+					const string& request = pendingRequest->second.data;
+					SendUncompressedFile(request.substr(8),
+						reinterpret_cast<const unsigned char*>(request.data()), requestHash);
+				}
+				configRequests.erase(pendingRequest);
+				return;
+			}
+			if (pendingRequest->second.type == ConfigRequestLocoNames)
+			{
+				// The next frame supplies the offset and number of names to send.
+				const string parameters(reinterpret_cast<const char*>(buffer + 5), 8);
+				std::istringstream parameterStream(parameters);
+				size_t offset;
+				size_t count;
+				if (parameterStream >> offset >> count)
+				{
+					const string data = GetMs2LocoNames(offset, count);
+					SendUncompressedFile(data, buffer + 5, requestHash);
+				}
+				configRequests.erase(pendingRequest);
+				return;
+			}
+
+			// A zero-filled frame ends the lokinfo name, which may span several frames.
+			bool endOfRequest = true;
+			for (size_t i = 0; i < 8; ++i)
+			{
+				if (buffer[5 + i] != 0)
+				{
+					endOfRequest = false;
+					break;
+				}
+			}
+			if (endOfRequest)
+			{
+				const string data = GetMs2LocoInfo(pendingRequest->second.data);
+				SendUncompressedFile(data, buffer + 5, requestHash);
+				configRequests.erase(pendingRequest);
+				return;
+			}
+			for (size_t i = 0;
+				i < 8 && buffer[5 + i] != 0 && pendingRequest->second.data.size() < 255;
+				++i)
+			{
+				pendingRequest->second.data += static_cast<char>(buffer[5 + i]);
+			}
+			return;
+		}
+
+		if (std::memcmp(buffer + 5, "loknamen", 8) == 0)
+		{
+			configRequests.emplace(requestHash, ConfigRequest{ConfigRequestLocoNames, string()});
+			return;
+		}
+		if (std::memcmp(buffer + 5, "lokinfo\0", 8) == 0)
+		{
+			configRequests.emplace(requestHash, ConfigRequest{ConfigRequestLocoInfo, string()});
+			return;
+		}
+		if (std::memcmp(buffer + 5, "ldbver\0\0", 8) == 0)
+		{
+			const std::time_t now = std::time(nullptr);
+			std::tm localTime = {};
+			localtime_r(&now, &localTime);
+			string data(" .version=16"); // FIXME: this is the version of the loco database, but we don't have a way to get it from the DataModel, so just return 16 for now
+			data += "\n .monat=" + std::to_string(localTime.tm_mon + 1);
+			data += "\n .jahr=" + std::to_string(localTime.tm_year + 1900);
+			data += "\n .anzahl=" + std::to_string(manager->NumberOfLocos());
+			configRequests.emplace(requestHash, ConfigRequest{ConfigRequestVersion,
+				string(reinterpret_cast<const char*>(buffer + 5), 8) + data + "\n"});
+			return;
+		}
+
+		struct VersionFile
+		{
+			unsigned char name[8];
+			const char* data;
+		};
+		static const VersionFile versionFiles[] =
+		{
+			{{'l', 'a', 'n', 'g', 'v', 'e', 'r', 0x00}, " .vhigh=4\n .vlow=1\n .bytes=68223\n"},
+			{{'m', 'f', 'x', 'v', 'e', 'r', 0x00, 0x00}, " .vhigh=0\n .vlow=3\n .bytes=1902\n"},
+			{{'m', 'f', 'x', 'b', 'v', 'e', 'r', 0x00}, " .vhigh=0\n .vlow=3\n .bytes=772\n"},
+			{{'m', 's', '2', 'v', 'e', 'r', 0x00, 0x00}, " .vhigh=4\n .vlow=1\n .bytes=92932\n"},
+			{{'m', 's', '2', 'x', 'v', 'e', 'r', 0x00}, " .vhigh=4\n .vlow=1\n .bytes=155003\n"},
+			{{'m', 's', '2', 'y', 'v', 'e', 'r', 0x00}, " .vhigh=4\n .vlow=1\n .bytes=122880\n"},
+			{{'g', 'b', '2', 'v', 'e', 'r', 0x00, 0x00}, " .vhigh=1\n .vlow=62\n .bytes=26648\n"}
+		};
+		for (const VersionFile& versionFile : versionFiles)
+		{
+			if (std::memcmp(buffer + 5, versionFile.name, 8) == 0)
+			{
+				configRequests.emplace(requestHash, ConfigRequest{ConfigRequestVersion,
+					string(reinterpret_cast<const char*>(buffer + 5), 8) + versionFile.data});
+				return;
+			}
+		}
+
+		if (std::memcmp(buffer + 5, "loks\0\0\0\0", 8) == 0)
 		{
 			const string dataPlain = manager->GetCs2Lokomotive();
 			SendCompressedFile(dataPlain, buffer + 5);
 		}
-		else if ((buffer[5] == 'm')
-			&& (buffer[6] == 'a')
-			&& (buffer[7] == 'g')
-			&& (buffer[8] == 's')
-			&& (buffer[9] == 0x00)
-			&& (buffer[10] == 0x00)
-			&& (buffer[11] == 0x00)
-			&& (buffer[12] == 0x00))
+		else if (std::memcmp(buffer + 5, "mags\0\0\0\0", 8) == 0)
 		{
 			const string dataPlain = manager->GetCs2Magnetartikel();
 			SendCompressedFile(dataPlain, buffer + 5);
 		}
-		else if ((buffer[5] == 'g')
-			&& (buffer[6] == 'b')
-			&& (buffer[7] == 's')
-			&& (buffer[12] == 0x00)) // we need a null here to prevent parsing errors
+		else if (std::memcmp(buffer + 5, "gbs", 3) == 0
+			&& buffer[12] == 0x00) // we need a null here to prevent parsing errors
 		{
-			if ((buffer[8] == 0x00)
-				&& (buffer[9] == 0x00)
-				&& (buffer[10] == 0x00)
-				&& (buffer[11] == 0x00))
+			if (std::memcmp(buffer + 5, "gbs\0\0\0\0\0", 8) == 0)
 			{
 				const string dataPlain = manager->GetCs2GBS();
 				SendCompressedFile(dataPlain, buffer + 5);
@@ -856,14 +1037,7 @@ namespace Hardware { namespace Protocols
 				SendCompressedFile(dataPlain, buffer + 5);
 			}
 		}
-		else if ((buffer[5] == 'f')
-			&& (buffer[6] == 's')
-			&& (buffer[7] == 0x00)
-			&& (buffer[8] == 0x00)
-			&& (buffer[9] == 0x00)
-			&& (buffer[10] == 0x00)
-			&& (buffer[11] == 0x00)
-			&& (buffer[12] == 0x00))
+		else if (std::memcmp(buffer + 5, "fs\0\0\0\0\0\0", 8) == 0)
 		{
 			// we send an empty configuration
 			const string dataPlain = "[fahrstrassen]\nversion\n .minor=4\n";
@@ -874,8 +1048,39 @@ namespace Hardware { namespace Protocols
 	void MaerklinCANCommon::SendCompressedFile(const string& dataPlain, const unsigned char* fileName)
 	{
 		logger->Debug(dataPlain);
-		const uint32_t dataPlainSize = dataPlain.size();
+		const uint32_t dataPlainSize = static_cast<uint32_t>(dataPlain.size());
+		const string dataCompressed = ZLib::Compress(dataPlain);
+		const uint32_t dataCompressedSize = static_cast<uint32_t>(dataCompressed.size());
+		const uint32_t dataSize = dataCompressedSize + 4;
 
+		// Keep the historical compressed-file padding, including an extra block
+		// when the data size is already a multiple of 8.
+		const uint32_t dataToSendSize = (dataSize + 8) & 0xFFFFFFF8;
+		vector<unsigned char> dataToSend(dataToSendSize, 0);
+		Utils::Integer::IntToDataBigEndian(dataPlainSize, dataToSend.data());
+		std::memcpy(dataToSend.data() + 4, dataCompressed.data(), dataCompressedSize);
+
+		SendFile(dataToSend, dataSize, fileName);
+	}
+
+	void MaerklinCANCommon::SendUncompressedFile(const string& data,
+		const unsigned char* fileName,
+		const CanHash destinationHash)
+	{
+		logger->Debug(data);
+		const uint32_t dataSize = static_cast<uint32_t>(data.size());
+		const uint32_t dataToSendSize = (dataSize + 7) & 0xFFFFFFF8;
+		vector<unsigned char> dataToSend(dataToSendSize, 0);
+		std::memcpy(dataToSend.data(), data.data(), dataSize);
+
+		SendFile(dataToSend, dataSize, fileName, &destinationHash);
+	}
+
+	void MaerklinCANCommon::SendFile(const vector<unsigned char>& data,
+		const uint32_t dataSize,
+		const unsigned char* fileName,
+		const CanHash* destinationHash)
+	{
 		unsigned char sendBuffer[CANCommandBufferLength];
 		if (fileName)
 		{
@@ -885,42 +1090,30 @@ namespace Hardware { namespace Protocols
 			SendInternal(sendBuffer);
 		}
 
-		const string dataCompressed = ZLib::Compress(dataPlain);
-		const unsigned char* const dataCompressedPtr = reinterpret_cast<const unsigned char*>(dataCompressed.c_str());
-		const uint32_t dataCompressedSize = dataCompressed.size();
-
-		// prepare data
-		const uint32_t dataToSendSize = (4 + dataCompressedSize + 8) & 0xFFFFFFF8;
-		unsigned char* const dataToSend = reinterpret_cast<unsigned char*>(malloc(dataToSendSize));
-
-		// set last 8 bytes to 0 (fill up last data packet)
-		const uint64_t eightBytes = 0;
-		Utils::Utils::Copy8Bytes(&eightBytes, dataToSend + dataToSendSize - 8);
-
-		// set first 4 bytes to length of uncompressed data size
-		Utils::Integer::IntToDataBigEndian(dataPlainSize, dataToSend);
-
-		// copy compressed data to out buffer
-		std::memcpy(dataToSend + 4, dataCompressedPtr, dataCompressedSize);
-
-		const CanFileCrc crc = CalcCrc(dataToSend, dataToSendSize);
+		const CanFileCrc crc = CalcCrc(data.data(), data.size());
 
 		// send first data packet
 		CreateCommandHeader(sendBuffer, CanCommandConfigData, CanResponseCommand, 6);
-		Utils::Integer::IntToDataBigEndian(dataCompressedSize + 4, sendBuffer + 5);
+		if (destinationHash)
+		{
+			Utils::Integer::ShortToDataBigEndian(*destinationHash, sendBuffer + 2);
+		}
+		Utils::Integer::IntToDataBigEndian(dataSize, sendBuffer + 5);
 		Utils::Integer::ShortToDataBigEndian(crc, sendBuffer + 9);
 		SendInternal(sendBuffer);
 
 		// send following data packets
 		CreateCommandHeader(sendBuffer, CanCommandConfigData, CanResponseCommand, 8);
-		for(size_t sent = 0; sent < dataToSendSize; sent += 8)
+		if (destinationHash)
 		{
-			Utils::Utils::Copy8Bytes(dataToSend + sent, sendBuffer + 5);
+			Utils::Integer::ShortToDataBigEndian(*destinationHash, sendBuffer + 2);
+		}
+		for(size_t sent = 0; sent < data.size(); sent += 8)
+		{
+			Utils::Utils::Copy8Bytes(data.data() + sent, sendBuffer + 5);
 			Utils::Utils::SleepForMilliseconds(2); // do not overload CS2 with too much data
 			SendInternal(sendBuffer);
 		}
-
-		free(dataToSend);
 	}
 
 	void MaerklinCANCommon::DeleteCanFile(MaerklinCANCommon::CanFile* canFile)

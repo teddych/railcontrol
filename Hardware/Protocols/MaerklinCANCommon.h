@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include <atomic>
+#include <map>
 
 #include "DataModel/AccessoryBase.h"
 #include "DataModel/LocoFunctions.h"
@@ -88,7 +89,7 @@ namespace Hardware { namespace Protocols
 				uid(Utils::Integer::HexToInteger(uid, 0)),
 				hash(CalcHash(this->uid)),
 				hasCs2Main(false),
-				isCs2Main(isCs2Main),
+				isCs2MainEmulation(isCs2Main),
 				controlID(controlID)
 			{
 				logger->Debug(Languages::TextMyUidHash, uid, Utils::Integer::IntegerToHex(hash));
@@ -173,26 +174,6 @@ namespace Hardware { namespace Protocols
 				CanDeviceCs2Secondary   = 0xfff0, // undocumented
 				CanDeviceCs2Main        = 0xffff
 			};
-
-//				enum CanFileType : uint8_t
-//				{
-//					CanFileTypeNone,
-//					CanFileTypeLokinfo,
-//					CanFileTypeLoknamen,
-//					CanFileTypeMaginfo,
-//					CanFileTypeLokdb,
-//					CanFileTypeLang,
-//					CanFileTypeLdbver,
-//					CanFileTypeLangver,
-//					CanFileTypeLoks,
-//					CanFileTypeMags,
-//					CanFileTypeGbs,
-//					CanFileTypeFs,
-//					CanFileTypeLokstat,
-//					CanFileTypeMagstat,
-//					CanFileTypeGbsstat,
-//					CanFileTypeFsstat
-//				};
 
 			enum LocoFunctionCs2Icon : uint8_t
 			{
@@ -297,6 +278,18 @@ namespace Hardware { namespace Protocols
 				size_t crcSize;
 			};
 
+			enum ConfigRequestType : uint8_t
+			{
+				ConfigRequestLocoNames,
+				ConfigRequestLocoInfo
+			};
+
+			struct ConfigRequest
+			{
+				ConfigRequestType type;
+				std::string data;
+			};
+
 			void CreateCommandHeader(unsigned char* const buffer,
 				const CanCommand command,
 				const CanResponse response,
@@ -381,8 +374,25 @@ namespace Hardware { namespace Protocols
 			void ParseResponseLocoFunction(const unsigned char* const buffer);
 			void ParseResponseAccessory(const unsigned char* const buffer);
 			void ParseCommandPing(const unsigned char* const buffer);
+
 			void ParseCommandRequestConfigData(const unsigned char* const buffer);
-			void SendCompressedFile(const std::string& dataPlain, const unsigned char* fileName = nullptr);
+
+			std::string GetMs2LocoNames(const size_t offset,
+				const size_t count) const;
+
+			std::string GetMs2LocoInfo(const std::string& name) const;
+
+			void SendCompressedFile(const std::string& dataPlain,
+				const unsigned char* fileName = nullptr);
+
+			void SendUncompressedFile(const std::string& data,
+				const unsigned char* fileName,
+				const CanHash destinationHash);
+
+			void SendFile(const std::vector<unsigned char>& data,
+				const uint32_t dataSize,
+				const unsigned char* fileName,
+				const CanHash* destinationHash = nullptr);
 
 			void DeleteCanFile(CanFile* canFile);
 
@@ -430,12 +440,13 @@ namespace Hardware { namespace Protocols
 
 			CanUid uid;
 			CanHash hash;
-			std::atomic_bool hasCs2Main;
-			const bool isCs2Main;
+			std::atomic_bool hasCs2Main; // true if a CS2 main station is detected on the CAN bus
+			const bool isCs2MainEmulation; // true if this is a CS2 main station emulation (e.g. for a CS2 secondary station or an MS2)
 			std::thread receiverThread;
 			std::thread pingThread;
 
 			std::vector<struct CanFile> canFiles;
+			std::map<CanHash,ConfigRequest> configRequests;
 
 			ControlID controlID;
 

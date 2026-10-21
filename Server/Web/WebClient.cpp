@@ -1726,7 +1726,7 @@ namespace Server { namespace Web
 	{
 		map<string, ObjectID> options;
 
-		map<string, LocoConfig> allLocos = manager.LocoConfigByName();
+		map<string, LocoConfig> allLocos = manager.LocoConfigsByName();
 		for (auto& loco : allLocos)
 		{
 			options[loco.first] = loco.second.GetLocoID();
@@ -2208,7 +2208,7 @@ namespace Server { namespace Web
 		HtmlTag content;
 		content.AddChildTag(HtmlTag("h1").AddContent(Languages::TextLocos));
 		HtmlTag table("table");
-		const map<string,LocoConfig> locoList = manager.LocoConfigByName();
+		const map<string,LocoConfig> locoList = manager.LocoConfigsByName();
 		map<string,string> locoArgument;
 		for (auto& loco : locoList)
 		{

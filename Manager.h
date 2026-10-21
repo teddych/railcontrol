@@ -93,8 +93,10 @@ class Manager
 
 		// loco
 		std::string GetLocoList() const;
+		size_t NumberOfLocos() const;
 
 		const DataModel::LocoConfig GetLoco(const LocoID locoID) const;
+		const DataModel::LocoConfig GetLocoByName(const std::string& name) const;
 
 		std::string GetLocoImage(const LocoID locoID) const;
 
@@ -235,7 +237,7 @@ class Manager
 		// locobase
 		const std::map<std::string,LocoID> LocoBaseListFree() const;
 
-		const std::map<std::string,DataModel::LocoConfig> LocoConfigByName() const;
+		const std::map<std::string,DataModel::LocoConfig> LocoConfigsByName() const;
 
 		const DataModel::LocoConfig GetLocoBase(const DataModel::ObjectIdentifier& locoBaseIdentifier) const;
 

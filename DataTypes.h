@@ -196,7 +196,16 @@ enum ArgumentType : uint8_t
 	ArgumentTypeIpAddress = 1,
 	ArgumentTypeSerialPort = 2,
 	ArgumentTypeS88Modules = 3,
-	ArgumentTypeMainSecundary = 4
+	ArgumentTypeMainSecundary = 4,
+	ArgumentTypeCS2MS2 = 5
+};
+
+enum ArgumentTypeCS2MS2 : uint8_t
+{
+	ArgumentTypeCS2MS2CS2MainDevice = 0,
+	ArgumentTypeCS2MS2CS2SecondaryDevice = 1,
+	ArgumentTypeCS2MS2MS2Device = 2,
+	ArgumentTypeCS2MS2NoDevice = 3
 };
 
 enum HardwareType : uint8_t

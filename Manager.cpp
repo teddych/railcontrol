@@ -683,6 +683,12 @@ string Manager::GetLocoList() const
 	return out;
 }
 
+size_t Manager::NumberOfLocos() const
+{
+	std::lock_guard<std::mutex> guard(locoMutex);
+	return locos.size();
+}
+
 const LocoConfig Manager::GetLoco(const LocoID locoID) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
@@ -692,6 +698,20 @@ const LocoConfig Manager::GetLoco(const LocoID locoID) const
 		return LocoConfig(LocoTypeNone);
 	}
 	return LocoConfig(*loco);
+}
+
+const LocoConfig Manager::GetLocoByName(const string& name) const
+{
+	std::lock_guard<std::mutex> guard(locoMutex);
+	for (const auto& l : locos)
+	{
+		const Loco* loco = l.second;
+		if (loco->GetName() == name)
+		{
+			return LocoConfig(*loco);
+		}
+	}
+	return LocoConfig(LocoTypeNone);
 }
 
 string Manager::GetLocoImage(const LocoID locoID) const
@@ -836,7 +856,7 @@ const map<string,LocoID> Manager::LocoBaseListFree() const
 	return out;
 }
 
-const map<string,DataModel::LocoConfig> Manager::LocoConfigByName() const
+const map<string,DataModel::LocoConfig> Manager::LocoConfigsByName() const
 {
 	map<string,DataModel::LocoConfig> out;
 	{

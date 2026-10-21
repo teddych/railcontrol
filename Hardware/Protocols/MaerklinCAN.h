@@ -173,7 +173,7 @@ namespace Hardware { namespace Protocols
 				MaerklinCANCommon("affeaffe",
 					params->GetControlID(),
 					params->GetManager(),
-					Utils::Utils::StringToBool(params->GetArg2()),
+					IsCS2MainEmulation(params->GetArg2()),
 					HardwareInterface::logger),
 				locoCache(params->GetControlID(), params->GetManager())
 			{
@@ -204,6 +204,12 @@ namespace Hardware { namespace Protocols
 			}
 
 		private:
+			static inline bool IsCS2MainEmulation(const std::string arg)
+			{
+				const int value = Utils::Integer::StringToInteger(arg, 0);
+				return (value != ArgumentTypeCS2MS2CS2MainDevice);
+			}
+
 			LocoCache locoCache;
 	};
 }} // namespace
