@@ -19,6 +19,7 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include <iostream>
+#include <limits>
 #include <set>
 #include <sstream>
 #include <thread>
@@ -57,6 +58,7 @@ using Storage::StorageParams;
 Manager::Manager(Config& config)
 :	logger(Logger::Logger::GetLogger(Languages::GetText(Languages::TextManager))),
 	boosterState(BoosterStateStop),
+	lastMfxSid(0),
 	storage(nullptr),
 	startupInitLocos(StartupInitLocosAll),
 	defaultAccessoryDuration(DataModel::DefaultAccessoryPulseDuration),
@@ -100,6 +102,7 @@ Manager::Manager(Config& config)
 	executeAccessory = Utils::Utils::StringToBool(storage->GetSetting("ExecuteAccessory"), true);
 	selectRouteApproach = static_cast<DataModel::SelectRouteApproach>(Utils::Integer::StringToInteger(storage->GetSetting("SelectRouteApproach")));
 	nrOfTracksToReserve = static_cast<DataModel::Loco::NrOfTracksToReserve>(Utils::Integer::StringToInteger(storage->GetSetting("NrOfTracksToReserve"), 2));
+	lastMfxSid = static_cast<Address>(Utils::Integer::StringToInteger(storage->GetSetting("LastMfxSid"), 0));
 
 	controls[ControlIdWebServer] = new Server::Web::WebServer(*this, config.getStringValue("webserveraddress", "any"), config.getIntValue("webserverport", 8082));
 
@@ -714,6 +717,31 @@ const LocoConfig Manager::GetLocoByName(const string& name) const
 	return LocoConfig(LocoTypeNone);
 }
 
+LocoConfig Manager::GetLocoByMfxUid(const uint32_t mfxUid) const
+{
+	std::lock_guard<std::mutex> guard(locoMutex);
+	for (const auto& entry : locos)
+	{
+		const Loco* loco = entry.second;
+		if (loco->GetMfxUid() == mfxUid)
+		{
+			return LocoConfig(*loco);
+		}
+	}
+	return LocoConfig(LocoTypeNone);
+}
+
+Address Manager::GetFreeMfxSid()
+{
+	++lastMfxSid;
+	if (storage)
+	{
+		TransactionGuard storageGuard(storage);
+		storage->SaveSetting("LastMfxSid", to_string(lastMfxSid));
+	}
+	return lastMfxSid;;
+}
+
 string Manager::GetLocoImage(const LocoID locoID) const
 {
 	std::lock_guard<std::mutex> guard(locoMutex);
@@ -896,6 +924,7 @@ bool Manager::LocoSave(LocoID locoID,
 	const std::string& matchKey,
 	const Protocol protocol,
 	const Address address,
+	const MfxUid mfxUid,
 	const Address serverAddress,
 	const Length length,
 	const bool pushpull,
@@ -939,6 +968,10 @@ bool Manager::LocoSave(LocoID locoID,
 		loco->SetMatchKey(matchKey);
 		loco->SetProtocol(protocol);
 		loco->SetAddress(address);
+		if (mfxUid != 0)
+		{
+			loco->SetMfxUid(mfxUid);
+		}
 		loco->SetServerAddress(serverAddress);
 		loco->SetLength(length);
 		loco->SetPushpull(pushpull);
@@ -5652,6 +5685,10 @@ T* Manager::CreateAndAddObject(std::map<ID,T*>& objects)
 		{
 			newObjectID = object.first;
 		}
+	}
+	if (newObjectID == std::numeric_limits<ID>::max())
+	{
+		return nullptr;
 	}
 	++newObjectID;
 	T* newObject = new T(this, newObjectID);

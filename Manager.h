@@ -96,7 +96,12 @@ class Manager
 		size_t NumberOfLocos() const;
 
 		const DataModel::LocoConfig GetLoco(const LocoID locoID) const;
+
 		const DataModel::LocoConfig GetLocoByName(const std::string& name) const;
+
+		DataModel::LocoConfig GetLocoByMfxUid(const uint32_t mfxUid) const;
+
+		Address GetFreeMfxSid();
 
 		std::string GetLocoImage(const LocoID locoID) const;
 
@@ -129,6 +134,7 @@ class Manager
 			const std::string& matchKey,
 			const Protocol protocol,
 			const Address address,
+			const MfxUid mfxUid,
 			const Address serverAddress,
 			const Length length,
 			const bool pushpull,
@@ -1137,6 +1143,7 @@ class Manager
 		// loco
 		std::map<LocoID,DataModel::Loco*> locos;
 		mutable std::mutex locoMutex;
+		Address lastMfxSid;
 
 		// multiple unit
 		std::map<LocoID,DataModel::MultipleUnit*> multipleUnits;

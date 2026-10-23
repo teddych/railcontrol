@@ -37,12 +37,14 @@ namespace DataModel
 			Loco& operator=(const Loco&) = delete;
 
 			inline Loco(Manager* manager, const LocoID locoID)
-			:	LocoBase(manager, locoID)
+			:	LocoBase(manager, locoID),
+				mfxUid(0)
 			{
 			}
 
 			inline Loco(Manager* manager, const std::string& serialized)
-			:	LocoBase(manager, serialized)
+			:	LocoBase(manager, serialized),
+				mfxUid(0)
 			{
 				Loco::Deserialize(serialized);
 			}
@@ -65,6 +67,19 @@ namespace DataModel
 				return LocoTypeLoco;
 			}
 
+			inline uint32_t GetMfxUid() const
+			{
+				return mfxUid;
+			}
+
+			inline void SetMfxUid(const uint32_t uid)
+			{
+				mfxUid = uid;
+			}
+
 			Loco& operator=(const Hardware::LocoCacheEntry& loco);
+
+		private:
+			uint32_t mfxUid;
 	};
 } // namespace DataModel

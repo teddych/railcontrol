@@ -34,6 +34,7 @@ typedef ObjectID LocoID;
 typedef uint16_t Address;
 typedef uint16_t Speed;
 typedef uint32_t Length;
+typedef uint32_t MfxUid;
 
 // multiple unit
 typedef ObjectID MultipleUnitID;

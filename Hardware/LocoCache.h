@@ -90,6 +90,7 @@ namespace Hardware
 				protocol(ProtocolNone),
 				address(AddressNone),
 				type(LocoTypeNone),
+				mfxUid(0),
 				matchKey("")
 			{
 			}
@@ -147,6 +148,16 @@ namespace Hardware
 			inline void SetType(LocoType type)
 			{
 				this->type = type;
+			}
+
+			inline uint32_t GetMfxUid() const
+			{
+				return mfxUid;
+			}
+
+			inline void SetMfxUid(const uint32_t uid)
+			{
+				mfxUid = uid;
 			}
 
 			inline void SetFunction(const DataModel::LocoFunctionNr nr,
@@ -211,6 +222,7 @@ namespace Hardware
 			Protocol protocol;
 			Address address;
 			LocoType type;
+			uint32_t mfxUid;
 			std::string matchKey;
 			DataModel::LocoFunctions functions;
 			std::vector<LocoCacheEntrySlave> slaves;

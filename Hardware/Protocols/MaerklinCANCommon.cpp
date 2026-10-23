@@ -61,6 +61,7 @@ namespace Hardware { namespace Protocols
 		{
 			pingThread.join();
 		}
+		pendingMfxBindings.clear();
 	}
 
 	void MaerklinCANCommon::Wait(const unsigned int duration) const
@@ -88,9 +89,22 @@ namespace Hardware { namespace Protocols
 
 		Wait(1);
 
+		bool discoverySent = false;
 		while (run && (!hasCs2Main || isCs2MainEmulation))
 		{
-			Ping();
+			SendBootloaderCan();
+			Utils::Utils::SleepForMilliseconds(10);
+			SendPing();
+			if (isCs2MainEmulation)
+			{
+				// The MS2 starts discovery with a one-byte, zero-range request.
+				// Initiate it once after the booster is on so the Gleisbox can report new mfx UIDs.
+				if (!discoverySent && manager->Booster() == BoosterStateGo)
+				{
+					SendDiscovery();
+					discoverySent = true;
+				}
+			}
 			Wait(10);
 		}
 
@@ -169,6 +183,44 @@ namespace Hardware { namespace Protocols
 		address = 0;
 	}
 
+	const char* MaerklinCANCommon::DeviceTypeAsString(const uint16_t deviceType)
+	{
+		switch (deviceType)
+		{
+			case CanDeviceGfp:
+				return "Gleisformat Prozessor";
+
+			case CanDeviceGleisbox:
+			case CanDeviceGleisbox_2:
+				return "Gleisbox";
+
+			case CanDeviceConnect6021:
+				return "Connect 6021";
+
+			case CanDeviceMs2:
+			case CanDeviceMs2_2:
+			case CanDeviceMs2_3:
+			case CanDeviceMs2_4:
+				return "MS2";
+
+			case CanDeviceWireless:
+				return "Wireless";
+
+			case CanDeviceCs2Main:
+				return "CS2 Main";
+
+			case CanDeviceCs2Secondary:
+			case CanDeviceCs2Secondary_2:
+				return "CS2 Secondary";
+
+			case CanDeviceLinkS88:
+				return "Link S88";
+
+			default:
+				return "unknown";
+		}
+	}
+
 	MaerklinCANCommon::CanFileCrc MaerklinCANCommon::CalcCrc(const unsigned char *data, const size_t length)
 	{
 		// Maerklin uses CRC-16-CCITT with seed 0xffff and with polynom 0x1021 -> x^16 + x^12 +x^5 + 1
@@ -231,7 +283,7 @@ namespace Hardware { namespace Protocols
 		string uidString = Utils::Integer::IntegerToHex(uid);
 		// FIXME: params->SetArg5(uidString);
 		hash = CalcHash(uid);
-		logger->Info(Languages::TextMyUidHash, uidString, Utils::Integer::IntegerToHex(hash));
+		logger->Info(Languages::TextMaerklinCanStarting, uidString, Utils::Integer::IntegerToHex(hash), Languages::GetOnOff(isCs2MainEmulation));
 	}
 
 	void MaerklinCANCommon::CreateLocalIDLoco(unsigned char* buffer,
@@ -406,10 +458,25 @@ namespace Hardware { namespace Protocols
 		SendInternal(buffer);
 	}
 
-	void MaerklinCANCommon::Ping()
+	void MaerklinCANCommon::SendPing()
 	{
 		unsigned char buffer[CANCommandBufferLength];
 		CreateCommandHeader(buffer, CanCommandPing, CanResponseCommand, 0);
+		SendInternal(buffer);
+	}
+
+	void MaerklinCANCommon::SendBootloaderCan()
+	{
+		unsigned char buffer[CANCommandBufferLength];
+		CreateCommandHeader(buffer, CanCommandBootloaderCan, CanResponseCommand, 0);
+		SendInternal(buffer);
+	}
+
+	void MaerklinCANCommon::SendDiscovery()
+	{
+		unsigned char buffer[CANCommandBufferLength];
+		CreateCommandHeader(buffer, CanCommandDiscovery, CanResponseCommand, 1);
+		buffer[5] = 0; // mfx programming track discovery
 		SendInternal(buffer);
 	}
 
@@ -437,9 +504,9 @@ namespace Hardware { namespace Protocols
 		const CanHash receivedHash = ParseHash(buffer);
 		if (receivedHash == hash)
 		{
-			uint16_t deviceType = Utils::Integer::DataBigEndianToShort(buffer + 11);
 			if (command == CanCommandPing && response)
 			{
+				uint16_t deviceType = Utils::Integer::DataBigEndianToShort(buffer + 11);
 				if (deviceType == CanDeviceCs2Main)
 				{
 					hasCs2Main = true;
@@ -457,15 +524,15 @@ namespace Hardware { namespace Protocols
 			switch (command)
 			{
 				case CanCommandDiscovery:
-					ParseDiscovery(buffer);
+					ParseResponseDiscovery(buffer); // FIXME: This is a response, not a command. The function name is misleading.
 					return;
 
 				case CanCommandMfxBind:
-					ParseMfxBind(buffer);
+					ParseResponseMfxBind(buffer); // FIXME: This is a response, not a command. The function name is misleading.
 					return;
 
 				case CanCommandMfxVerify:
-					ParseMfxVerify(buffer);
+					ParseResponseMfxVerify(buffer); // FIXME: This is a response, not a command. The function name is misleading.
 					return;
 
 				case CanCommandS88Event:
@@ -478,6 +545,10 @@ namespace Hardware { namespace Protocols
 
 				case CanCommandPing:
 					ParseResponsePing(buffer);
+					return;
+
+				case CanCommandBootloaderCan:
+					ParseResponseBootloaderCan(buffer);
 					return;
 
 				case CanCommandLocoSpeed:
@@ -508,15 +579,15 @@ namespace Hardware { namespace Protocols
 				return;
 
 			case CanCommandDiscovery:
-				ParseDiscovery(buffer);
+				ParseResponseDiscovery(buffer);
 				return;
 
 			case CanCommandMfxBind:
-				ParseMfxBind(buffer);
+				ParseResponseMfxBind(buffer);
 				return;
 
 			case CanCommandMfxVerify:
-				ParseMfxVerify(buffer);
+				ParseResponseMfxVerify(buffer);
 				return;
 
 			case CanCommandRequestConfigData:
@@ -529,6 +600,10 @@ namespace Hardware { namespace Protocols
 
 			case CanCommandPing:
 				ParseCommandPing(buffer);
+				return;
+
+			case CanCommandBootloaderCan:
+				ParseCommandBootloaderCan(buffer);
 				return;
 
 			default:
@@ -556,7 +631,7 @@ namespace Hardware { namespace Protocols
 		}
 		if (protocol >= 64 && protocol <= 96)
 		{
-			return "mfx main track range=" + std::to_string(protocol - 64) + " (raw=" + std::to_string(protocol) + ")";
+			return "mfx main track range=" + std::to_string(protocol);
 		}
 
 		switch (protocol)
@@ -600,12 +675,7 @@ namespace Hardware { namespace Protocols
 		return "unknown protocol/range=" + std::to_string(protocol);
 	}
 
-	static bool MaerklinCANDiscoveryIsMfx(const uint8_t protocol)
-	{
-		return protocol <= 32 || (protocol >= 64 && protocol <= 96);
-	}
-
-	void MaerklinCANCommon::ParseDiscovery(const unsigned char* const buffer)
+	void MaerklinCANCommon::ParseResponseDiscovery(const unsigned char* const buffer)
 	{
 		const CanLength length = ParseLength(buffer);
 		string details = MaerklinCANHeaderDetails(buffer);
@@ -652,10 +722,33 @@ namespace Hardware { namespace Protocols
 				details += ", unsupported discovery length";
 				break;
 		}
-		logger->Info(Languages::TextMaerklinCANFrameReceived, "Discovery", details);
+		logger->Debug(Languages::TextMaerklinCANFrameReceived, "Discovery", details);
+		// DLC 6 contains an intermediate ASK; only DLC 5 reports a complete UID.
+		if (!isCs2MainEmulation || (length != 5))
+		{
+			return;
+		}
+
+		const MfxUid mfxUid = ParseUid(buffer);
+		logger->Info(Languages::TextMfxLocoDetected, Utils::Integer::IntegerToHex(mfxUid, 8));
+
+		const DataModel::LocoConfig loco = manager->GetLocoByMfxUid(mfxUid);
+		const Address mfxSid = (loco.GetType() != LocoTypeLoco ? manager->GetFreeMfxSid() : loco.GetAddress());
+		pendingMfxBindings[mfxUid] = mfxSid;
+		SendMfxBind(mfxUid, mfxSid);
 	}
 
-	void MaerklinCANCommon::ParseMfxBind(const unsigned char* const buffer)
+	void MaerklinCANCommon::SendMfxBind(const MfxUid mfxUid, const Address mfxSid)
+	{
+		unsigned char sendBuffer[CANCommandBufferLength];
+		CreateCommandHeader(sendBuffer, CanCommandMfxBind, CanResponseCommand, 6);
+		Utils::Integer::IntToDataBigEndian(mfxUid, sendBuffer + 5);
+		Utils::Integer::ShortToDataBigEndian(mfxSid, sendBuffer + 9);
+		SendInternal(sendBuffer);
+		logger->Debug(Languages::TextMfxBindSent, Utils::Integer::IntegerToHex(mfxUid, 8), mfxSid);
+	}
+
+	void MaerklinCANCommon::ParseResponseMfxBind(const unsigned char* const buffer)
 	{
 		string details = MaerklinCANHeaderDetails(buffer);
 		if (ParseLength(buffer) == 6)
@@ -670,10 +763,39 @@ namespace Hardware { namespace Protocols
 		{
 			details += ", unsupported bind length";
 		}
-		logger->Info(Languages::TextMaerklinCANFrameReceived, "MFX Bind", details);
+		logger->Debug(Languages::TextMaerklinCANFrameReceived, "MFX Bind", details);
+
+		if (!isCs2MainEmulation || ParseLength(buffer) != 6)
+		{
+			return;
+		}
+		const MfxUid mfxUid = ParseUid(buffer);
+		const auto pending = pendingMfxBindings.find(mfxUid);
+		if (pending == pendingMfxBindings.end())
+		{
+			return;
+		}
+
+		const Address mfxSid = Utils::Integer::DataBigEndianToShort(buffer + 9);
+		if (pending->second != mfxSid)
+		{
+			return;
+		}
+
+		SendMfxVerify(mfxUid, mfxSid);
 	}
 
-	void MaerklinCANCommon::ParseMfxVerify(const unsigned char* const buffer)
+	void MaerklinCANCommon::SendMfxVerify(const MfxUid mfxUid, const Address mfxSid)
+	{
+		unsigned char sendBuffer[CANCommandBufferLength];
+		CreateCommandHeader(sendBuffer, CanCommandMfxVerify, CanResponseCommand, 6);
+		Utils::Integer::IntToDataBigEndian(mfxUid, sendBuffer + 5);
+		Utils::Integer::ShortToDataBigEndian(mfxSid, sendBuffer + 9);
+		SendInternal(sendBuffer);
+		logger->Debug(Languages::TextMfxVerifySent, Utils::Integer::IntegerToHex(mfxUid, 8), mfxSid);
+	}
+
+	void MaerklinCANCommon::ParseResponseMfxVerify(const unsigned char* const buffer)
 	{
 		const CanLength length = ParseLength(buffer);
 		string details = MaerklinCANHeaderDetails(buffer);
@@ -690,15 +812,60 @@ namespace Hardware { namespace Protocols
 			}
 			if (length == 7)
 			{
-				details += ", ask=0x" + Utils::Integer::IntegerToHex(buffer[11], 2)
-					+ " (" + std::to_string(buffer[11]) + ")";
+				details += ", ask=0x" + Utils::Integer::IntegerToHex(buffer[11], 2);
 			}
 		}
 		else
 		{
 			details += ", unsupported verify length";
 		}
-		logger->Info(Languages::TextMaerklinCANFrameReceived, "MFX Verify", details);
+		logger->Debug(Languages::TextMaerklinCANFrameReceived, "MFX Verify", details);
+		if (!isCs2MainEmulation
+			|| (ParseResponse(buffer) != CanResponseResponse)
+			|| ((length != 6) && (length != 7)))
+		{
+			return;
+		}
+
+		const MfxUid mfxUid = ParseUid(buffer);
+		const auto pending = pendingMfxBindings.find(mfxUid);
+		if (pending == pendingMfxBindings.end())
+		{
+			return;
+		}
+
+		const Address mfxSid = Utils::Integer::DataBigEndianToShort(buffer + 9);
+		const Address storedMfxSid = pending->second;
+		if (mfxSid != storedMfxSid)
+		{
+			return;
+		}
+
+		DataModel::LocoConfig loco = manager->GetLocoByMfxUid(mfxUid);
+
+		std::string result;
+		manager->LocoSave(loco.GetLocoID(),
+			loco.GetName().empty() ? "mfx loco " + std::to_string(mfxSid) : loco.GetName(),
+			controlID,
+			loco.GetMatchKey(),
+			ProtocolMFX,
+			mfxSid,
+			mfxUid,
+			loco.GetLocoID(),
+			loco.GetLength(),
+			loco.GetPushpull(),
+			loco.GetMaxSpeed(),
+			loco.GetTravelSpeed(),
+			loco.GetReducedSpeed(),
+			loco.GetCreepingSpeed(),
+			loco.GetPropulsion(),
+			loco.GetTrainType(),
+			loco.GetImage(),
+			loco.GetCs2Image(),
+			loco.GetFunctionStates(),
+			result);
+
+		pendingMfxBindings.erase(pending);
 	}
 
 	void MaerklinCANCommon::ParseCommandSystem(const unsigned char* const buffer)
@@ -789,19 +956,53 @@ namespace Hardware { namespace Protocols
 
 	void MaerklinCANCommon::ParseCommandPing(const unsigned char* const buffer)
 	{
-		if ((buffer[4] == 8) && (Utils::Integer::DataBigEndianToInt(buffer + 5) != uid))
+		if ((ParseLength(buffer) == 8) && (Utils::Integer::DataBigEndianToInt(buffer + 5) != uid))
 		{
 			return;
 		}
 		unsigned char sendBuffer[CANCommandBufferLength];
 		CreateCommandHeader(sendBuffer, CanCommandPing, CanResponseResponse, 8);
 		Utils::Integer::IntToDataBigEndian(uid, sendBuffer + 5);
-		// version 4.3
-		sendBuffer[9] = 4;
-		sendBuffer[10] = 3;
+
+		// CS2 version to emulate
+		sendBuffer[9] = EmulateCS2VersionMajor;
+		sendBuffer[10] = EmulateCS2VersionMinor;
+
 		// CS2 device type: Main = 0xffff, Secondary = 0xfff0
 		sendBuffer[11] = 0xff;
 		sendBuffer[12] = isCs2MainEmulation ? 0xff : 0xf0;
+		SendInternal(sendBuffer);
+		logger->Debug(Languages::TextSendingPingResponse, Utils::Integer::IntegerToHex(uid, 8),  Languages::GetText(isCs2MainEmulation ? Languages::TextCS2MainDevice : Languages::TextCS2SecondaryDevice));
+	}
+
+	void MaerklinCANCommon::ParseCommandBootloaderCan(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 0)
+		{
+			return;
+		}
+
+	}
+
+	void MaerklinCANCommon::ParseResponseBootloaderCan(const unsigned char* const buffer)
+	{
+		if (ParseLength(buffer) != 8)
+		{
+			return;
+		}
+
+		const uint16_t deviceType = Utils::Integer::DataBigEndianToShort(buffer + 11);
+		const string hash = Utils::Integer::IntegerToHex(Utils::Integer::DataBigEndianToShort(buffer + 2));
+		const unsigned char deviceId = buffer[8];
+		const unsigned char majorVersion = buffer[9];
+		const unsigned char minorVersion = buffer[10];
+		logger->Debug(Languages::TextBootloaderCanUpdateRequest, DeviceTypeAsString(deviceType), hash, deviceId, majorVersion, minorVersion);
+
+		// answer with the same UID is required to satisfy the bootloader
+		unsigned char sendBuffer[CANCommandBufferLength];
+		CreateCommandHeader(sendBuffer, CanCommandBootloaderCan, CanResponseCommand, 5);
+		std::memcpy(sendBuffer + 5, buffer + 5, 4); // echo back the UID
+		sendBuffer[9] = 0x11; // unknown, but seems to satisfy the bootloader
 		SendInternal(sendBuffer);
 	}
 
@@ -869,8 +1070,8 @@ namespace Hardware { namespace Protocols
 		out += "\n .typ=" + protocol;
 		if (loco.GetProtocol() == ProtocolMFX)
 		{
-			out += "\n .mfxsid=0x" + Utils::Integer::IntegerToHex(loco.GetLocoID());
-			out += "\n .mfxuid=0xffffffff"; // FIXME: mfxuid is not available in the current DataModel, so just return 0xffffffff for now
+			out += "\n .mfxsid=0x" + Utils::Integer::IntegerToHex(loco.GetAddress());
+			out += "\n .mfxuid=0x" + Utils::Integer::IntegerToHex(loco.GetMfxUid(), 8);
 		}
 		out += "\n .volume=100";
 		out += "\n .vmax=" + std::to_string(loco.GetMaxSpeed() >> 2); // vmax is 0..255, speed is 0..1023, so divide by 4
@@ -1276,57 +1477,15 @@ namespace Hardware { namespace Protocols
 	void MaerklinCANCommon::ParseResponsePing(const unsigned char* const buffer)
 	{
 		const uint16_t deviceType = Utils::Integer::DataBigEndianToShort(buffer + 11);
-		char* deviceString = nullptr;
-		switch (deviceType)
+		if (deviceType == CanDeviceCs2Main)
 		{
-			case CanDeviceGfp:
-				deviceString = const_cast<char*>("Gleisformat Prozessor");
-				break;
-
-			case CanDeviceGleisbox:
-			case CanDeviceGleisbox_2:
-				deviceString = const_cast<char*>("Gleisbox");
-				break;
-
-			case CanDeviceConnect6021:
-				deviceString = const_cast<char*>("Connect 6021");
-				break;
-
-			case CanDeviceMs2:
-			case CanDeviceMs2_2:
-			case CanDeviceMs2_3:
-			case CanDeviceMs2_4:
-				deviceString = const_cast<char*>("MS2");
-				break;
-
-			case CanDeviceWireless:
-				deviceString = const_cast<char*>("Wireless");
-				break;
-
-			case CanDeviceCs2Main:
-				deviceString = const_cast<char*>("CS2 Main");
-				hasCs2Main = true;
-				break;
-
-			case CanDeviceCs2Secondary:
-			case CanDeviceCs2Secondary_2:
-				deviceString = const_cast<char*>("CS2 Secondary");
-				break;
-
-			case CanDeviceLinkS88:
-				deviceString = const_cast<char*>("Link S88");
-				hasCs2Main = true;
-				break;
-
-			default:
-				deviceString = const_cast<char*>("unknown");
-				break;
+			hasCs2Main = true;
 		}
 		const string hash = Utils::Integer::IntegerToHex(Utils::Integer::DataBigEndianToShort(buffer + 2));
 		const unsigned char deviceId = buffer[8];
 		const unsigned char majorVersion = buffer[9];
 		const unsigned char minorVersion = buffer[10];
-		logger->Debug(Languages::TextDeviceOnCanBus, deviceString, hash, deviceId, majorVersion, minorVersion);
+		logger->Debug(Languages::TextDeviceOnCanBus, DeviceTypeAsString(deviceType), hash, deviceId, majorVersion, minorVersion);
 	}
 
 	bool MaerklinCANCommon::ParseCs2FileKeyValue(const string& line, string& key, string& value)
@@ -1480,6 +1639,10 @@ namespace Hardware { namespace Protocols
 				cacheEntry.SetProtocol(protocol);
 				cacheEntry.SetType(type);
 				logger->Info(Languages::TextCs2MainLocoProtocolAddress, Utils::Utils::ProtocolToString(protocol), address);
+			}
+			else if (key.compare("mfxuid") == 0)
+			{
+				cacheEntry.SetMfxUid(static_cast<CanUid>(Utils::Integer::HexToInteger(value)));
 			}
 			else if ((key.compare("funktionen") == 0)
 				|| (key.compare("funktionen_2") == 0)

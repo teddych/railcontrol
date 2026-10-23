@@ -81,18 +81,18 @@ namespace Hardware { namespace Protocols
 			inline MaerklinCANCommon(const std::string& uid,
 				ControlID controlID,
 				Manager* manager,
-				const bool isCs2Main,
+				const bool isCs2MainEmulation,
 				Logger::Logger* logger)
 			:	run(true),
 				manager(manager),
 				logger(logger),
-				uid(Utils::Integer::HexToInteger(uid, 0)),
+				uid(Utils::Integer::HexToInteger(uid)),
 				hash(CalcHash(this->uid)),
 				hasCs2Main(false),
-				isCs2MainEmulation(isCs2Main),
+				isCs2MainEmulation(isCs2MainEmulation),
 				controlID(controlID)
 			{
-				logger->Debug(Languages::TextMyUidHash, uid, Utils::Integer::IntegerToHex(hash));
+				logger->Debug(Languages::TextMaerklinCanStarting, uid, Utils::Integer::IntegerToHex(hash, 4), Languages::GetOnOff(isCs2MainEmulation));
 			}
 
 			void Init();
@@ -102,7 +102,6 @@ namespace Hardware { namespace Protocols
 
 			void Parse(const unsigned char* buffer);
 
-			void Ping();
 			void RequestLoks();
 
 			void ReceiverInternal();
@@ -141,6 +140,7 @@ namespace Hardware { namespace Protocols
 				CanCommandAccessory         = 0x0B,
 				CanCommandS88Event          = 0x11,
 				CanCommandPing              = 0x18,
+				CanCommandBootloaderCan     = 0x1B,
 				CanCommandRequestConfigData = 0x20,
 				CanCommandConfigData        = 0x21,
 				CanCommandHello             = 0x42
@@ -281,7 +281,8 @@ namespace Hardware { namespace Protocols
 			enum ConfigRequestType : uint8_t
 			{
 				ConfigRequestLocoNames,
-				ConfigRequestLocoInfo
+				ConfigRequestLocoInfo,
+				ConfigRequestVersion
 			};
 
 			struct ConfigRequest
@@ -365,15 +366,21 @@ namespace Hardware { namespace Protocols
 				return Utils::Integer::DataBigEndianToInt(buffer + 5);
 			}
 
+			static inline bool MaerklinCANDiscoveryIsMfx(const uint8_t protocol)
+			{
+				return protocol <= 32 || (protocol >= 64 && protocol <= 96);
+			}
+
 			void ParseCommandSystem(const unsigned char* const buffer);
-			void ParseDiscovery(const unsigned char* const buffer);
-			void ParseMfxBind(const unsigned char* const buffer);
-			void ParseMfxVerify(const unsigned char* const buffer);
+			void ParseResponseDiscovery(const unsigned char* const buffer);
+			void ParseResponseMfxBind(const unsigned char* const buffer);
+			void ParseResponseMfxVerify(const unsigned char* const buffer);
 			void ParseResponseLocoSpeed(const unsigned char* const buffer);
 			void ParseResponseLocoDirection(const unsigned char* const buffer);
 			void ParseResponseLocoFunction(const unsigned char* const buffer);
 			void ParseResponseAccessory(const unsigned char* const buffer);
 			void ParseCommandPing(const unsigned char* const buffer);
+			void ParseCommandBootloaderCan(const unsigned char* const buffer);
 
 			void ParseCommandRequestConfigData(const unsigned char* const buffer);
 
@@ -409,6 +416,7 @@ namespace Hardware { namespace Protocols
 			void ParseResponseS88Event(const unsigned char* const buffer);
 			void ParseResponseReadConfig(const unsigned char* const buffer);
 			void ParseResponsePing(const unsigned char* const buffer);
+			void ParseResponseBootloaderCan(const unsigned char* const buffer);
 
 			bool ParseCs2FileKeyValue(const std::string& line, std::string& key, std::string& value);
 			bool ParseCs2FileSubkeyValue(const std::string& line, std::string& key, std::string& value);
@@ -420,6 +428,8 @@ namespace Hardware { namespace Protocols
 			void ParseCs2FileLocomotives(std::deque<std::string>& lines);
 			void ParseCs2File(std::deque<std::string>& lines);
 
+			static const char* DeviceTypeAsString(const uint16_t deviceType);
+
 			static CanFileCrc CalcCrc(const unsigned char *data, const size_t length);
 
 			static CanHash CalcHash(const CanUid uid);
@@ -430,6 +440,11 @@ namespace Hardware { namespace Protocols
 
 			void Wait(const unsigned int duration) const;
 			void PingSender();
+			void SendPing();
+			void SendBootloaderCan();
+			void SendDiscovery();
+			void SendMfxBind(const MfxUid mfxUid, const Address sid);
+			void SendMfxVerify(const MfxUid mfxUid, const Address sid);
 
 			inline void SendInternal(const unsigned char* buffer)
 			{
@@ -447,8 +462,12 @@ namespace Hardware { namespace Protocols
 
 			std::vector<struct CanFile> canFiles;
 			std::map<CanHash,ConfigRequest> configRequests;
+			std::map<MfxUid,Address> pendingMfxBindings;
 
 			ControlID controlID;
+
+			static const uint8_t EmulateCS2VersionMajor = 4;
+			static const uint8_t EmulateCS2VersionMinor = 3;
 
 			static const uint8_t MaxNrOfCs2FunctionIcons = 128;
 			static const DataModel::LocoFunctionIcon LocoFunctionMapCs2ToRailControl[MaxNrOfCs2FunctionIcons];

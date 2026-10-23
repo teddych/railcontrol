@@ -38,6 +38,7 @@ namespace DataModel
 		string str;
 		str += "objectType=Loco;";
 		str += LocoBase::Serialize();
+		str += ";mfxuid=" + to_string(mfxUid);
 		return str;
 	}
 
@@ -51,6 +52,7 @@ namespace DataModel
 			return;
 		}
 		LocoBase::Deserialize(arguments);
+		mfxUid = static_cast<uint32_t>(Utils::Utils::GetIntegerMapEntry(arguments, "mfxuid", 0));
 	}
 
 	Loco& Loco::operator=(const Hardware::LocoCacheEntry& loco)
@@ -60,6 +62,7 @@ namespace DataModel
 		SetProtocol(loco.GetProtocol());
 		SetName(loco.GetName());
 		SetMatchKey(loco.GetMatchKey());
+		SetMfxUid(loco.GetMfxUid());
 		ConfigureFunctions(loco.GetFunctionStates());
 		return *this;
 	}

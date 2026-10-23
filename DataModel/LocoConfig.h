@@ -38,16 +38,17 @@ namespace DataModel
 				locoID(LocoNone),
 				protocol(ProtocolNone),
 				address(AddressNone),
+				mfxUid(0),
 				serverAddress(AddressNone),
 				isInUse(false),
 				image(),
 				cs2image(),
 				pushpull(false),
 				length(0),
-				maxSpeed(MinSpeed),
-				travelSpeed(MinSpeed),
-				reducedSpeed(MinSpeed),
-				creepingSpeed(MinSpeed),
+				maxSpeed(MaxSpeed),
+				travelSpeed(DefaultTravelSpeed),
+				reducedSpeed(DefaultReducedSpeed),
+				creepingSpeed(DefaultCreepingSpeed),
 				propulsion(PropulsionUnknown),
 				trainType(TrainTypeUnknown),
 				speed(MinSpeed),
@@ -61,6 +62,7 @@ namespace DataModel
 				locoID(loco.GetID()),
 				protocol(loco.GetProtocol()),
 				address(loco.GetAddress()),
+				mfxUid(loco.GetMfxUid()),
 				serverAddress(loco.GetServerAddress()),
 				name(loco.GetName()),
 				matchKey(loco.GetMatchKey()),
@@ -87,6 +89,7 @@ namespace DataModel
 				locoID(loco.GetLocoID()),
 				protocol(loco.GetProtocol()),
 				address(loco.GetAddress()),
+				mfxUid(loco.GetMfxUid()),
 				serverAddress(AddressNone),
 				name(loco.GetName()),
 				matchKey(loco.GetMatchKey()),
@@ -114,6 +117,7 @@ namespace DataModel
 				locoID(multipleUnit.GetID()),
 				protocol(multipleUnit.GetProtocol()),
 				address(multipleUnit.GetAddress()),
+				mfxUid(0),
 				serverAddress(multipleUnit.GetServerAddress()),
 				name(multipleUnit.GetName()),
 				matchKey(multipleUnit.GetMatchKey()),
@@ -141,6 +145,7 @@ namespace DataModel
 				locoID(locoBase.GetID()),
 				protocol(locoBase.GetProtocol()),
 				address(locoBase.GetAddress()),
+				mfxUid(0),
 				serverAddress(locoBase.GetServerAddress()),
 				name(locoBase.GetName()),
 				matchKey(locoBase.GetMatchKey()),
@@ -199,6 +204,11 @@ namespace DataModel
 			inline Address GetAddress() const
 			{
 				return address;
+			}
+
+			inline uint32_t GetMfxUid() const
+			{
+				return mfxUid;
 			}
 
 			inline Address GetServerAddress() const
@@ -312,6 +322,7 @@ namespace DataModel
 			const LocoID locoID;
 			const Protocol protocol;
 			const Address address;
+			const uint32_t mfxUid;
 			const Address serverAddress;
 			const std::string name;
 			const std::string matchKey;
