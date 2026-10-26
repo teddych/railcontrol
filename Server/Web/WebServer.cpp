@@ -694,7 +694,7 @@ namespace Server { namespace Web
 
 	void WebServer::ProgramValue(const CvNumber cv, const CvValue value)
 	{
-		const string command("dcccvvalue;cv=" + to_string(cv) + ";value=" + to_string(value));
+		const string command("cvvalue;cv=" + to_string(cv) + ";value=" + to_string(value));
 		AddUpdate(command, Languages::TextProgramReadValue , static_cast<int>(cv), static_cast<int>(value));
 	}
 

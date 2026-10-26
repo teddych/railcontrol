@@ -544,6 +544,12 @@ namespace Hardware
 
 	bool HardwareHandler::ProgramCheckValues(const ProgramMode mode, const CvNumber cv, const CvValue value)
 	{
+		if (mode == ProgramModeMfx)
+		{
+			// allow all CVs 0-65535 and values 0-255 for mfx programming mode
+			return true;
+		}
+
 		if (cv == 0)
 		{
 			// CVs are one based, so CV zero is not allowed
@@ -555,30 +561,24 @@ namespace Hardware
 			// It would destroy some DCC decoders. Therefore we do not allow this.
 			return false;
 		}
-		CvNumber maxCv;
+
+		// check if CV is in range for the programming mode
 		switch (mode)
 		{
 			case ProgramModeMm:
 			case ProgramModeMmPom:
-				maxCv = 0x100;
-				break;
+				return (cv <= 0x100);
 
 			case ProgramModeDccRegister:
 			case ProgramModeDccPage:
 			case ProgramModeDccDirect:
 			case ProgramModeDccPomLoco:
 			case ProgramModeDccPomAccessory:
-				maxCv = 0x400;
-				break;
-
-			case ProgramModeMfx:
-				maxCv = 0x4000;
-				break;
+				return (cv <= 0x400);
 
 			default:
 				return false;
 		}
-		return (cv <= maxCv);
 	}
 
 	void HardwareHandler::ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv)

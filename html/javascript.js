@@ -390,6 +390,7 @@ function onClickProgramRead(cv)
 		return false;
 	}
 	valueElement.value = '-';
+	update_valueraw();
 
 	var url = '?cmd=programread&control=' + control + '&mode=' + mode + '&address=' + address + '&cv=' + cv;
 	fireRequestAndForget(url);
@@ -772,6 +773,33 @@ function decrementDelayValue(name, min)
 	updateDelayValue(name, value);
 }
 
+function updateProgramHex(name)
+{
+	var raw = document.getElementById(name + 'raw');
+	var hex = document.getElementById(name + 'hex');
+	if (!raw || !hex)
+	{
+		return;
+	}
+	var value = Number(raw.value);
+	hex.value = raw.value !== '' && Number.isInteger(value) && value >= 0 ? '0x' + value.toString(16).toUpperCase().padStart(2, '0') : '';
+}
+
+function update_addressraw()
+{
+	updateProgramHex('address');
+}
+
+function update_cvraw()
+{
+	updateProgramHex('cv');
+}
+
+function update_indexraw()
+{
+	updateProgramHex('index');
+}
+
 function update_valueraw()
 {
 	var element = document.getElementById('valueraw');
@@ -779,6 +807,7 @@ function update_valueraw()
 	{
 		return;
 	}
+	updateProgramHex('value');
 	for (var bit = 0; bit < 8; ++bit)
 	{
 		updateCvBit(bit, (element.value >> bit) & 0x01);
@@ -814,6 +843,7 @@ function updateCvValue()
 		return;
 	}
 	element.value = value;
+	update_valueraw();
 }
 
 function setToggleButton(elementName, on)
@@ -1925,18 +1955,31 @@ function dataUpdate(event)
 	{
 		loadLayerSelector();
 	}
-	else if (command == 'dcccvvalue')
+	else if (command == 'cvvalue')
 	{
-		var cv = argumentMap.get('cv');
-		var cvElementName = 'cvraw';
-		var cvElement = document.getElementById(cvElementName);
+		let cv = argumentMap.get('cv');
+		let index = cv >> 10;
+		cv &= 0x3FF;
+
+		let cvElementName = 'cvraw';
+		let cvElement = document.getElementById(cvElementName);
 		if (cvElement)
 		{
 			cvElement.value = cv;
+			updateProgramHex('cv');
 		}
-		var value = argumentMap.get('value');
-		var valueElementName = 'valueraw';
-		var valueElement = document.getElementById(valueElementName);
+
+		let indexElementName = 'indexraw';
+		let indexElement = document.getElementById(indexElementName);
+		if (indexElement)
+		{
+			indexElement.value = index;
+			updateProgramHex('index');
+		}
+
+		let value = argumentMap.get('value');
+		let valueElementName = 'valueraw';
+		let valueElement = document.getElementById(valueElementName);
 		if (valueElement)
 		{
 			valueElement.value = value;

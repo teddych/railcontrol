@@ -381,7 +381,9 @@ namespace Hardware { namespace Protocols
 		SendInternal(buffer);
 	}
 
-	void MaerklinCANCommon::ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv)
+	void MaerklinCANCommon::ProgramRead(const ProgramMode mode,
+		const Address address,
+		const CvNumber cv)
 	{
 		Address addressInternal = address;
 		Protocol protocol = ProtocolNone;
@@ -393,7 +395,7 @@ namespace Hardware { namespace Protocols
 				break;
 
 			case ProgramModeMfx:
-				logger->Info(Languages::TextProgramMfxRead, address, cv);
+				logger->Info(Languages::TextProgramMfxRead, address, cv & 0x3FF, cv >> 10);
 				protocol = ProtocolMFX;
 				break;
 
@@ -408,7 +410,9 @@ namespace Hardware { namespace Protocols
 		SendInternal(buffer);
 	}
 
-	void MaerklinCANCommon::ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv,
+	void MaerklinCANCommon::ProgramWrite(const ProgramMode mode,
+		const Address address,
+		const CvNumber cv,
 		const CvValue value)
 	{
 		Address addressInternal = address;
@@ -441,7 +445,7 @@ namespace Hardware { namespace Protocols
 				break;
 
 			case ProgramModeMfx:
-				logger->Info(Languages::TextProgramMfxWrite, address, cv, value);
+				logger->Info(Languages::TextProgramMfxWrite, address, cv & 0x3FF, cv >> 10, value);
 				protocol = ProtocolMFX;
 				controlFlags = 1 << 7;
 				break;
@@ -1470,7 +1474,7 @@ namespace Hardware { namespace Protocols
 		}
 		CvNumber cv = Utils::Integer::DataBigEndianToShort(buffer + 9);
 		CvValue value = buffer[11];
-		logger->Info(Languages::TextProgramReadValue, cv, value);
+		logger->Info(Languages::TextProgramReadMfxValue, cv & 0x3FFFF, cv >> 6, value);
 		manager->ProgramValue(cv, value);
 	}
 

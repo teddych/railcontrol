@@ -3617,13 +3617,13 @@ namespace Server { namespace Web
 		switch (programMode)
 		{
 			case ProgramModeMmPom:
-				content.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0xFF));
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0xFF).AddChildTag(HtmlTagInputText("addresshex", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
 				break;
 
 			case ProgramModeMfx:
 			case ProgramModeDccPomLoco:
 			case ProgramModeDccPomAccessory:
-				content.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0x4000));
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("addressraw", Languages::TextAddress, 1, 1, 0x4000).AddChildTag(HtmlTagInputText("addresshex", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
 				break;
 
 			default:
@@ -3633,8 +3633,24 @@ namespace Server { namespace Web
 
 		switch (programMode)
 		{
+			case ProgramModeMm:
+			case ProgramModeMmPom:
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 1, 1, 256).AddChildTag(HtmlTagInputText("cvhex", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
+				break;
+
 			case ProgramModeMfx:
-				content.AddChildTag(HtmlTagInputIntegerWithLabel("indexraw", Languages::TextIndex, 0, 0, 0x3F));
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 0, 0, 1023).AddChildTag(HtmlTagInputText("cvhex", "0x00", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
+				break;
+
+			default:
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 1, 1, 1024).AddChildTag(HtmlTagInputText("cvhex", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
+				break;
+		}
+
+		switch (programMode)
+		{
+			case ProgramModeMfx:
+				content.AddChildTag(HtmlTagInputIntegerWithLabel("indexraw", Languages::TextIndex, 0, 0, 0x3F).AddChildTag(HtmlTagInputText("indexhex", "0x00", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
 				break;
 
 			default:
@@ -3642,19 +3658,7 @@ namespace Server { namespace Web
 				break;
 		}
 
-		switch (programMode)
-		{
-			case ProgramModeMm:
-			case ProgramModeMmPom:
-				content.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 1, 1, 256));
-				break;
-
-			default:
-				content.AddChildTag(HtmlTagInputIntegerWithLabel("cvraw", Languages::TextCV, 1, 1, 1024));
-				break;
-		}
-
-		content.AddChildTag(HtmlTagInputIntegerWithLabel("valueraw", Languages::TextValue, 0, 0, 255));
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("valueraw", Languages::TextValue, 0, 0, 255).AddChildTag(HtmlTagInputText("valuehex", "0x00", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
 
 		content.AddChildTag(HtmlTag("br"));
 		content.AddChildTag(HtmlTagInput8BitValueWithLabel());

@@ -575,6 +575,7 @@ class Languages
 			TextProgramModeMm,
 			TextProgramModeMmPom,
 			TextProgramReadValue,
+			TextProgramReadMfxValue,
 			TextProgrammer,
 			TextProgrammingMode,
 			TextPropulsion,
