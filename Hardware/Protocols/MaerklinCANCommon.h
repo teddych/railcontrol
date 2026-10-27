@@ -29,15 +29,18 @@ along with RailControl; see the file LICENCE. If not see
 #include "Hardware/HardwareInterface.h"
 #include "Hardware/HardwareParams.h"
 #include "Hardware/LocoCache.h"
+#include "Hardware/Protocols/DecoderMfx.h"
 #include "Logger/Logger.h"
 #include "Utils/Integer.h"
 
-// CAN protocol specification at http://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
-// Very interesting is also http://www.mbernstein.de/modellbahn/can/bem.htm
+// CAN protocol specification:  https://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
+// Additions to CAN protocol:   http://www.mbernstein.de/modellbahn/can/bem.htm
+// Additions to CAN protocol:   https://modellbahn.mahrer.net/technisches/maerklin_can/
+// mfx decoder specification:   https://www.skrauss.de/modellbahn/Schienenformat.pdf
 
 namespace Hardware { namespace Protocols
 {
-	class MaerklinCANCommon
+	class MaerklinCANCommon : protected DecoderMfx
 	{
 		public:
 			MaerklinCANCommon() = delete;
@@ -83,14 +86,12 @@ namespace Hardware { namespace Protocols
 				Manager* manager,
 				const bool isCs2MainEmulation,
 				Logger::Logger* logger)
-			:	run(true),
-				manager(manager),
-				logger(logger),
+			:	DecoderMfx(manager, controlID, logger),
+				run(true),
 				uid(Utils::Integer::HexToInteger(uid)),
 				hash(CalcHash(this->uid)),
 				hasCs2Main(false),
-				isCs2MainEmulation(isCs2MainEmulation),
-				controlID(controlID)
+				isCs2MainEmulation(isCs2MainEmulation)
 			{
 				logger->Debug(Languages::TextMaerklinCanStarting, uid, Utils::Integer::IntegerToHex(hash, 4), Languages::GetOnOff(isCs2MainEmulation));
 			}
@@ -120,10 +121,6 @@ namespace Hardware { namespace Protocols
 			static const unsigned char CANCommandBufferLength = 13;
 
 			std::atomic_bool run;
-
-			Manager* manager;
-
-			Logger::Logger* logger;
 
 		private:
 			enum CanCommand : unsigned char
@@ -260,6 +257,127 @@ namespace Hardware { namespace Protocols
 				LocoFunctionCs2IconStairsLight,
 				LocoFunctionCs2IconFillWater,
 				LocoFunctionCs2IconBreak2
+			};
+
+			enum MfxDecoderBlock : uint8_t
+			{
+				MfxDecoderBlockDecoderProperties = 0x01,
+				MfxDecoderBlockFunctions = 0x02,
+				MfxDecoderBlockAutomaticFunctions = 0x03,
+				MfxDecoderBlockFunctionMapping = 0x04,
+				MfxDecoderBlockDrivingProperties = 0x05,
+				MfxDecoderBlockHardwareFunctions = 0x06,
+				MfxDecoderBlockAdditionalProtocols = 0x07,
+				MfxDecoderBlockSoundSettings = 0x08,
+				MfxDecoderBlockSpecialOptions = 0x09,
+				MfxDecoderBlockMfxPlus = 0x0A
+			};
+
+			// CA types 00 and 01 have the same meaning in every block.
+			enum MfxDecoderCAType : uint8_t
+			{
+				MfxDecoderCATypeBlockDescription = 0x01
+			};
+
+			enum MfxDecoderDecoderPropertiesCAType : uint8_t
+			{
+				MfxDecoderDecoderPropertiesCATypeManufacturer = 0x10,
+				MfxDecoderDecoderPropertiesCATypeProduction = 0x11,
+				MfxDecoderDecoderPropertiesCATypeBootloader = 0x12,
+				MfxDecoderDecoderPropertiesCATypeFirmware = 0x13,
+				MfxDecoderDecoderPropertiesCATypeProtocol = 0x14,
+				MfxDecoderDecoderPropertiesCATypeUnknown15 = 0x15,
+				MfxDecoderDecoderPropertiesCATypeLocoIdentification = 0x16,
+				MfxDecoderDecoderPropertiesCATypeBlockTable = 0x17,
+				MfxDecoderDecoderPropertiesCATypeLocoName = 0x18,
+				MfxDecoderDecoderPropertiesCATypeUserData = 0x19,
+				MfxDecoderDecoderPropertiesCATypeUnknown1A = 0x1A,
+				MfxDecoderDecoderPropertiesCATypeHardware = 0x1B
+			};
+
+			enum MfxDecoderFunctionsCAType : uint8_t
+			{
+				MfxDecoderFunctionsCATypeDrivefunction = 0x10,
+				MfxDecoderFunctionsCATypeSwitchingFunction = 0x11
+			};
+
+			enum MfxDecoderAutomaticFunctionsCAType : uint8_t
+			{
+				MfxDecoderAutomaticFunctionsCATypeStopped = 0x10,
+				MfxDecoderAutomaticFunctionsCATypeMoving = 0x11,
+				MfxDecoderAutomaticFunctionsCATypeSensorInput = 0x12
+			};
+
+			enum MfxDecoderFunctionMappingCAType : uint8_t
+			{
+				MfxDecoderFunctionMappingCATypeSymbol = 0x10,
+				MfxDecoderFunctionMappingCATypeForward = 0x12,
+				MfxDecoderFunctionMappingCATypeReverse = 0x13
+			};
+
+			enum MfxDecoderDrivingPropertiesCAType : uint8_t
+			{
+				MfxDecoderDrivingPropertiesCATypeMotors = 0x10,
+				MfxDecoderDrivingPropertiesCATypeMotorType = 0x11,
+				MfxDecoderDrivingPropertiesCATypeMotorFrequency = 0x12,
+				MfxDecoderDrivingPropertiesCATypeAccelerationBraking = 0x13,
+				MfxDecoderDrivingPropertiesCATypeTrim = 0x14,
+				MfxDecoderDrivingPropertiesCATypeLoadControl = 0x15,
+				MfxDecoderDrivingPropertiesCATypeBrakingSection = 0x16,
+				MfxDecoderDrivingPropertiesCATypeSpeedCurve = 0x17,
+				MfxDecoderDrivingPropertiesCATypeSpeedometer = 0x18,
+				MfxDecoderDrivingPropertiesCATypeReverse = 0x19
+			};
+
+			enum MfxDecoderHardwareFunctionsCAType : uint8_t
+			{
+				MfxDecoderHardwareFunctionsCATypeOutput = 0x10,
+				MfxDecoderHardwareFunctionsCATypeInternal = 0x11,
+				MfxDecoderHardwareFunctionsCATypeSound = 0x12
+			};
+
+			enum MfxDecoderAdditionalProtocolsCAType : uint8_t
+			{
+				MfxDecoderAdditionalProtocolsCATypeProtocol = 0x10,
+				MfxDecoderAdditionalProtocolsCATypeConfiguration = 0x11,
+				MfxDecoderAdditionalProtocolsCATypeEnabledFunctions = 0x12,
+				// Type 13 holds MM or DCC addresses, depending on the protocol.
+				MfxDecoderAdditionalProtocolsCATypeAddresses = 0x13,
+				MfxDecoderAdditionalProtocolsCATypeAnalogVoltage = 0x14
+			};
+
+			enum MfxDecoderSoundSettingsCAType : uint8_t
+			{
+				MfxDecoderSoundSettingsCATypeVolume = 0x10,
+				MfxDecoderSoundSettingsCATypeDieselElectric = 0x11,
+				MfxDecoderSoundSettingsCATypeSteam = 0x12,
+				MfxDecoderSoundSettingsCATypeSpeed = 0x13,
+				MfxDecoderSoundSettingsCATypeRandomSound = 0x14,
+				MfxDecoderSoundSettingsCATypeBrakingSound = 0x15,
+				MfxDecoderSoundSettingsCATypeAutomaticSounds = 0x16
+			};
+
+			enum MfxDecoderSpecialOptionsCAType : uint8_t
+			{
+				MfxDecoderSpecialOptionsCATypeStorageA = 0x10,
+				MfxDecoderSpecialOptionsCATypeStorageB = 0x11,
+				MfxDecoderSpecialOptionsCATypeOutputPorts = 0x12
+			};
+
+			enum MfxDecoderMfxPlusCAType : uint8_t
+			{
+				MfxDecoderMfxPlusCATypeCurrentSupplies = 0x10,
+				MfxDecoderMfxPlusCATypeMaximumSupplies = 0x11,
+				MfxDecoderMfxPlusCATypeConsumption = 0x12,
+				MfxDecoderMfxPlusCATypeReserve = 0x13,
+				MfxDecoderMfxPlusCATypeEmergencySpeed = 0x14,
+				MfxDecoderMfxPlusCATypeDrivingTime = 0x15,
+				MfxDecoderMfxPlusCATypeDistance = 0x16,
+				MfxDecoderMfxPlusCATypeLoad = 0x17,
+				MfxDecoderMfxPlusCATypeGearRatio = 0x18,
+				MfxDecoderMfxPlusCATypeInterval = 0x19,
+				MfxDecoderMfxPlusCATypeMode = 0x1A,
+				MfxDecoderMfxPlusCATypeCab = 0x1B
 			};
 
 			typedef unsigned char CanPrio;
@@ -443,6 +561,8 @@ namespace Hardware { namespace Protocols
 			void SendPing();
 			void SendBootloaderCan();
 			void SendDiscovery();
+			Address RegisterMfxDiscovery(const MfxUid mfxUid);
+			bool IsPendingMfxBinding(const MfxUid mfxUid, const Address sid) const;
 			void SendMfxBind(const MfxUid mfxUid, const Address sid);
 			void SendMfxVerify(const MfxUid mfxUid, const Address sid);
 
@@ -463,8 +583,6 @@ namespace Hardware { namespace Protocols
 			std::vector<struct CanFile> canFiles;
 			std::map<CanHash,ConfigRequest> configRequests;
 			std::map<MfxUid,Address> pendingMfxBindings;
-
-			ControlID controlID;
 
 			static const uint8_t EmulateCS2VersionMajor = 4;
 			static const uint8_t EmulateCS2VersionMinor = 3;

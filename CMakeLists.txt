@@ -146,6 +146,8 @@ Hardware/MasterControl2.h
 Hardware/OpenDcc.h
 Hardware/Protocols/DccPpEx.cpp
 Hardware/Protocols/DccPpEx.h
+Hardware/Protocols/DecoderMfx.cpp
+Hardware/Protocols/DecoderMfx.h
 Hardware/Protocols/EsuCAN.cpp
 Hardware/Protocols/EsuCAN.h
 Hardware/Protocols/LocoNet.cpp

@@ -528,15 +528,15 @@ namespace Hardware { namespace Protocols
 			switch (command)
 			{
 				case CanCommandDiscovery:
-					ParseResponseDiscovery(buffer); // FIXME: This is a response, not a command. The function name is misleading.
+					ParseResponseDiscovery(buffer);
 					return;
 
 				case CanCommandMfxBind:
-					ParseResponseMfxBind(buffer); // FIXME: This is a response, not a command. The function name is misleading.
+					ParseResponseMfxBind(buffer);
 					return;
 
 				case CanCommandMfxVerify:
-					ParseResponseMfxVerify(buffer); // FIXME: This is a response, not a command. The function name is misleading.
+					ParseResponseMfxVerify(buffer);
 					return;
 
 				case CanCommandS88Event:
@@ -583,15 +583,15 @@ namespace Hardware { namespace Protocols
 				return;
 
 			case CanCommandDiscovery:
-				ParseResponseDiscovery(buffer);
+				ParseResponseDiscovery(buffer);  // FIXME: This is a response, not a command. The function name is misleading.
 				return;
 
 			case CanCommandMfxBind:
-				ParseResponseMfxBind(buffer);
+				ParseResponseMfxBind(buffer); // FIXME: This is a response, not a command. The function name is misleading.
 				return;
 
 			case CanCommandMfxVerify:
-				ParseResponseMfxVerify(buffer);
+				ParseResponseMfxVerify(buffer); // FIXME: This is a response, not a command. The function name is misleading.
 				return;
 
 			case CanCommandRequestConfigData:
@@ -736,10 +736,22 @@ namespace Hardware { namespace Protocols
 		const MfxUid mfxUid = ParseUid(buffer);
 		logger->Info(Languages::TextMfxLocoDetected, Utils::Integer::IntegerToHex(mfxUid, 8));
 
-		const DataModel::LocoConfig loco = manager->GetLocoByMfxUid(mfxUid);
-		const Address mfxSid = (loco.GetType() != LocoTypeLoco ? manager->GetFreeMfxSid() : loco.GetAddress());
-		pendingMfxBindings[mfxUid] = mfxSid;
+		const Address mfxSid = RegisterMfxDiscovery(mfxUid);
 		SendMfxBind(mfxUid, mfxSid);
+	}
+
+	Address MaerklinCANCommon::RegisterMfxDiscovery(const MfxUid mfxUid)
+	{
+		const DataModel::LocoConfig loco = manager->GetLocoByMfxUid(mfxUid);
+		const Address sid = (loco.GetType() != LocoTypeLoco ? manager->GetFreeMfxSid() : loco.GetAddress());
+		pendingMfxBindings[mfxUid] = sid;
+		return sid;
+	}
+
+	bool MaerklinCANCommon::IsPendingMfxBinding(const MfxUid mfxUid, const Address sid) const
+	{
+		const std::map<MfxUid,Address>::const_iterator pending = pendingMfxBindings.find(mfxUid);
+		return ((pending != pendingMfxBindings.end()) && (pending->second == sid));
 	}
 
 	void MaerklinCANCommon::SendMfxBind(const MfxUid mfxUid, const Address mfxSid)
@@ -774,14 +786,8 @@ namespace Hardware { namespace Protocols
 			return;
 		}
 		const MfxUid mfxUid = ParseUid(buffer);
-		const auto pending = pendingMfxBindings.find(mfxUid);
-		if (pending == pendingMfxBindings.end())
-		{
-			return;
-		}
-
 		const Address mfxSid = Utils::Integer::DataBigEndianToShort(buffer + 9);
-		if (pending->second != mfxSid)
+		if (!IsPendingMfxBinding(mfxUid, mfxSid))
 		{
 			return;
 		}
@@ -832,44 +838,16 @@ namespace Hardware { namespace Protocols
 		}
 
 		const MfxUid mfxUid = ParseUid(buffer);
-		const auto pending = pendingMfxBindings.find(mfxUid);
-		if (pending == pendingMfxBindings.end())
-		{
-			return;
-		}
-
 		const Address mfxSid = Utils::Integer::DataBigEndianToShort(buffer + 9);
-		const Address storedMfxSid = pending->second;
-		if (mfxSid != storedMfxSid)
+		if (!IsPendingMfxBinding(mfxUid, mfxSid))
 		{
 			return;
 		}
 
-		DataModel::LocoConfig loco = manager->GetLocoByMfxUid(mfxUid);
+		pendingMfxBindings.erase(mfxUid);
 
-		std::string result;
-		manager->LocoSave(loco.GetLocoID(),
-			loco.GetName().empty() ? "mfx loco " + std::to_string(mfxSid) : loco.GetName(),
-			controlID,
-			loco.GetMatchKey(),
-			ProtocolMFX,
-			mfxSid,
-			mfxUid,
-			loco.GetLocoID(),
-			loco.GetLength(),
-			loco.GetPushpull(),
-			loco.GetMaxSpeed(),
-			loco.GetTravelSpeed(),
-			loco.GetReducedSpeed(),
-			loco.GetCreepingSpeed(),
-			loco.GetPropulsion(),
-			loco.GetTrainType(),
-			loco.GetImage(),
-			loco.GetCs2Image(),
-			loco.GetFunctionStates(),
-			result);
-
-		pendingMfxBindings.erase(pending);
+		// Request reading the MFX data for the newly bound locomotive
+		ReadDecoderMfx(mfxSid);
 	}
 
 	void MaerklinCANCommon::ParseCommandSystem(const unsigned char* const buffer)
@@ -1472,9 +1450,18 @@ namespace Hardware { namespace Protocols
 		{
 			return;
 		}
-		CvNumber cv = Utils::Integer::DataBigEndianToShort(buffer + 9);
-		CvValue value = buffer[11];
-		logger->Info(Languages::TextProgramReadMfxValue, cv & 0x3FFFF, cv >> 6, value);
+		const CvNumber cv = Utils::Integer::DataBigEndianToShort(buffer + 9);
+		const CvValue value = buffer[11];
+		Address address;
+		Protocol protocol;
+		LocoType type;
+		ParseAddressProtocol(buffer, address, protocol, type);
+		logger->Debug("XXX {0} {1} {2} {3}", Utils::Utils::ProtocolToString(protocol), address, cv, value);
+		if (ParseResponseMfxLocoName(address, protocol, cv, value))
+		{
+			return;
+		}
+		logger->Info(Languages::TextProgramReadMfxValue, cv & 0x3FF, cv >> 10, value);
 		manager->ProgramValue(cv, value);
 	}
 

@@ -521,6 +521,11 @@ label {
 	width: 50px;
 }
 
+.disabled_integer {
+	width: 50px;
+	background-color: lightgray;
+}
+
 .checkbox {
 	width: 15px;
 }
