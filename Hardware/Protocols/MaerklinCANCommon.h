@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <atomic>
 #include <map>
+#include <mutex>
 
 #include "DataModel/AccessoryBase.h"
 #include "DataModel/LocoFunctions.h"
@@ -561,6 +562,7 @@ namespace Hardware { namespace Protocols
 			void SendPing();
 			void SendBootloaderCan();
 			void SendDiscovery();
+			void VerifyAllMfxLocos();
 			Address RegisterMfxDiscovery(const MfxUid mfxUid);
 			bool IsPendingMfxBinding(const MfxUid mfxUid, const Address sid) const;
 			void SendMfxBind(const MfxUid mfxUid, const Address sid);
@@ -583,6 +585,8 @@ namespace Hardware { namespace Protocols
 			std::vector<struct CanFile> canFiles;
 			std::map<CanHash,ConfigRequest> configRequests;
 			std::map<MfxUid,Address> pendingMfxBindings;
+			std::mutex pendingMfxVerificationsMutex;
+			std::map<MfxUid,Address> pendingMfxVerifications;
 
 			static const uint8_t EmulateCS2VersionMajor = 4;
 			static const uint8_t EmulateCS2VersionMinor = 3;

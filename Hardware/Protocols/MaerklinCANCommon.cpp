@@ -62,6 +62,7 @@ namespace Hardware { namespace Protocols
 			pingThread.join();
 		}
 		pendingMfxBindings.clear();
+		pendingMfxVerifications.clear();
 	}
 
 	void MaerklinCANCommon::Wait(const unsigned int duration) const
@@ -101,6 +102,9 @@ namespace Hardware { namespace Protocols
 				// Initiate it once after the booster is on so the Gleisbox can report new mfx UIDs.
 				if (!discoverySent && manager->Booster() == BoosterStateGo)
 				{
+					Wait(1);
+					VerifyAllMfxLocos();
+					Wait(1);
 					SendDiscovery();
 					discoverySent = true;
 				}
@@ -484,6 +488,21 @@ namespace Hardware { namespace Protocols
 		SendInternal(buffer);
 	}
 
+	void MaerklinCANCommon::VerifyAllMfxLocos()
+	{
+		// Verify only locomotives assigned to this controller.
+		const vector<std::pair<MfxUid,Address>> mfxLocos = manager->LocoMfxUidsSids(controlID);
+		for (const std::pair<MfxUid,Address>& mfxLoco : mfxLocos)
+		{
+			{
+				const std::lock_guard<std::mutex> lock(pendingMfxVerificationsMutex);
+				pendingMfxVerifications[mfxLoco.first] = mfxLoco.second;
+			}
+			SendMfxVerify(mfxLoco.first, mfxLoco.second);
+			Wait(1);
+		}
+	}
+
 	void MaerklinCANCommon::RequestLoks()
 	{
 		unsigned char buffer[CANCommandBufferLength];
@@ -839,6 +858,34 @@ namespace Hardware { namespace Protocols
 
 		const MfxUid mfxUid = ParseUid(buffer);
 		const Address mfxSid = Utils::Integer::DataBigEndianToShort(buffer + 9);
+		Address bindSid = AddressNone;
+		{
+			const std::lock_guard<std::mutex> lock(pendingMfxVerificationsMutex);
+			const std::map<MfxUid,Address>::iterator pending = pendingMfxVerifications.find(mfxUid);
+			if ((pending != pendingMfxVerifications.end())
+				&& ((mfxSid == AddressNone) || (pending->second == mfxSid)))
+			{
+				if (mfxSid == AddressNone)
+				{
+					bindSid = pending->second;
+				}
+				// Consume the initial verification before binding: never retry a failed post-bind verification.
+				pendingMfxVerifications.erase(pending);
+			}
+		}
+		if (mfxSid == AddressNone)
+		{
+			if (bindSid != AddressNone)
+			{
+				pendingMfxBindings[mfxUid] = bindSid;
+				SendMfxBind(mfxUid, bindSid);
+			}
+			else
+			{
+				pendingMfxBindings.erase(mfxUid);
+			}
+			return;
+		}
 		if (!IsPendingMfxBinding(mfxUid, mfxSid))
 		{
 			return;

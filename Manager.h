@@ -25,6 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 #include <sstream>
 #include <string>
 #include <iomanip>
+#include <utility>
 #include <vector>
 
 #include "Config.h"
@@ -117,6 +118,8 @@ class Manager
 			const std::string& matchKey) const;
 
 		const std::map<std::string,LocoID> LocoIdsByName() const;
+
+		const std::vector<std::pair<MfxUid,Address>> LocoMfxUidsSids(const ControlID controlID) const;
 
 		inline void LocoSave(const DataModel::Loco* loco) const
 		{

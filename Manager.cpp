@@ -918,6 +918,25 @@ const map<string,LocoID> Manager::LocoIdsByName() const
 	return out;
 }
 
+const vector<std::pair<MfxUid,Address>> Manager::LocoMfxUidsSids(const ControlID controlID) const
+{
+	vector<std::pair<MfxUid,Address>> out;
+	{
+		std::lock_guard<std::mutex> guard(locoMutex);
+		for (const std::pair<const LocoID,DataModel::Loco*>& l : locos)
+		{
+			Loco* loco = l.second;
+			if ((loco->GetProtocol() == ProtocolMFX)
+				&& (loco->GetAddress() != AddressNone)
+				&& (loco->GetControlID() == controlID))
+			{
+				out.emplace_back(loco->GetMfxUid(), loco->GetAddress());
+			}
+		}
+	}
+	return out;
+}
+
 bool Manager::LocoSave(LocoID locoID,
 	const string& name,
 	const ControlID controlID,
