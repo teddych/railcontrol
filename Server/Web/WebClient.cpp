@@ -698,6 +698,14 @@ namespace Server { namespace Web
 			{
 				HandleCvFields(arguments);
 			}
+			else if (cmd.compare("programreadmfx") == 0)
+			{
+				HandleProgramReadMfx(arguments);
+			}
+			else if (cmd.compare("programwritemfx") == 0)
+			{
+				HandleProgramWriteMfx(arguments);
+			}
 			else if (cmd.compare("clusterlist") == 0)
 			{
 				cluster.HandleClusterList();
@@ -2062,30 +2070,30 @@ namespace Server { namespace Web
 		const string image = ReformatLocoImage(postFile, 235, 100);
 		const string cs2image = ReformatLocoImage(postFile, 128, 48);
 
-			if (!manager.LocoSave(locoId,
-				name,
-				controlId,
-				matchKey,
-				protocol,
-				address,
-				0,
-				serverAddress,
-				length,
-				pushpull,
-				maxSpeed,
-				travelSpeed,
-				reducedSpeed,
-				creepingSpeed,
-				propulsion,
-				type,
-				image,
-				cs2image,
-				locoFunctions,
-				result))
-			{
-				ReplyResponse(ResponseError, result);
-				return;
-			}
+		DataModel::LocoConfig locoConfig(LocoTypeLoco);
+		locoConfig.SetLocoID(locoId);
+		locoConfig.SetName(name);
+		locoConfig.SetControlID(controlId);
+		locoConfig.SetMatchKey(matchKey);
+		locoConfig.SetProtocol(protocol);
+		locoConfig.SetAddress(address);
+		locoConfig.SetServerAddress(serverAddress);
+		locoConfig.SetLength(length);
+		locoConfig.SetPushpull(pushpull);
+		locoConfig.SetMaxSpeed(maxSpeed);
+		locoConfig.SetTravelSpeed(travelSpeed);
+		locoConfig.SetReducedSpeed(reducedSpeed);
+		locoConfig.SetCreepingSpeed(creepingSpeed);
+		locoConfig.SetPropulsion(propulsion);
+		locoConfig.SetTrainType(type);
+		locoConfig.SetImage(image);
+		locoConfig.SetCs2Image(cs2image);
+		locoConfig.SetFunctionStates(locoFunctions);
+		if ((!manager.LocoSave(locoConfig, result)))
+		{
+			ReplyResponse(ResponseError, result);
+			return;
+		}
 
 		ReplyResponse(ResponseInfo, Languages::TextLocoSaved, name);
 	}
@@ -3696,6 +3704,32 @@ namespace Server { namespace Web
 		return content;
 	}
 
+	HtmlTag WebClient::HtmlTagMfxFields(const ControlID controlID) const
+	{
+		HtmlTag content("div");
+		content.AddId("cv_fields_mfx");
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("addressmfx", Languages::TextAddress, 1, 1, 0x4000).AddChildTag(HtmlTagInputText("addresshexmfx", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
+		content.AddChildTag(HtmlTag("br"));
+		content.AddChildTag(HtmlTagInputTextWithLabel("namemfx", Languages::TextName));
+
+		const Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);
+		if ((capabilities & Hardware::CapabilityProgramMfxWrite))
+		{
+			HtmlTagButton writeButton(Languages::TextWrite, "programwritemfx");
+			writeButton.AddAttribute("onclick", "onClickProgramWrite('mfx');return false;");
+			writeButton.AddClass("wide_button");
+			content.AddChildTag(writeButton);
+		}
+		if ((capabilities & Hardware::CapabilityProgramMfxRead))
+		{
+			HtmlTagButton readButton(Languages::TextRead, "programreadmfx");
+			readButton.AddAttribute("onclick", "onClickProgramReadMfx();return false;");
+			readButton.AddClass("wide_button");
+			content.AddChildTag(readButton);
+		}
+		return content;
+	}
+
 	void WebClient::HandleCvFields(const map<string, string>& arguments)
 	{
 		ControlID controlID = static_cast<ControlID>(Utils::Utils::GetIntegerMapEntry(arguments, "control", ControlNone));
@@ -3707,14 +3741,10 @@ namespace Server { namespace Web
 	{
 		HtmlTag content;
 		content.AddChildTag(HtmlTagLabel(Languages::TextValue, "valueraw0"));
-		content.AddChildTag(HtmlTagInputBitValue("valueraw7"));
-		content.AddChildTag(HtmlTagInputBitValue("valueraw6"));
-		content.AddChildTag(HtmlTagInputBitValue("valueraw5"));
-		content.AddChildTag(HtmlTagInputBitValue("valueraw4"));
-		content.AddChildTag(HtmlTagInputBitValue("valueraw3"));
-		content.AddChildTag(HtmlTagInputBitValue("valueraw2"));
-		content.AddChildTag(HtmlTagInputBitValue("valueraw1"));
-		content.AddChildTag(HtmlTagInputBitValue("valueraw0"));
+		for (int bit = 7; bit >= 0; --bit)
+		{
+			content.AddChildTag(HtmlTagInputBitValue("valueraw" + to_string(bit)));
+		}
 		return content;
 	}
 
@@ -3736,6 +3766,19 @@ namespace Server { namespace Web
 		{
 			ReplyHtmlWithHeader(HtmlTag("p").AddContent(Languages::TextNoControlSupportsProgramming));
 			return;
+		}
+		std::map<ControlID, string> mfxControls;
+		for (const std::pair<const ControlID, string>& control : controls)
+		{
+			const Hardware::Capabilities capabilities = manager.GetCapabilities(control.first);
+			if ((capabilities & (Hardware::CapabilityProgramMfxRead | Hardware::CapabilityProgramMfxWrite)) != 0)
+			{
+				mfxControls.insert(control);
+			}
+		}
+		if (!mfxControls.empty())
+		{
+			tabMenu.AddChildTag(WebClientStatic::HtmlTagTabMenuItem("mfx", Languages::TextMfx));
 		}
 		/* FIXME: Tab MM and Tab DCC incomplete
 		unsigned int controlCountMm = 0;
@@ -3782,6 +3825,19 @@ namespace Server { namespace Web
 		rawContent.AddChildTag(programModeSelector);
 		rawContent.AddChildTag(HtmlTagCvFields(controlIdFirst, programMode));
 		programContent.AddChildTag(rawContent);
+
+		if (!mfxControls.empty())
+		{
+			const ControlID mfxControlIdFirst = mfxControls.begin()->first;
+			HtmlTag mfxContent("div");
+			mfxContent.AddId("tab_mfx");
+			mfxContent.AddClass("tab_content");
+			mfxContent.AddClass("narrow_label");
+			mfxContent.AddClass("hidden");
+			mfxContent.AddChildTag(WebClientStatic::HtmlTagControlProgrammer("controlmfx", mfxControls));
+			mfxContent.AddChildTag(HtmlTagMfxFields(mfxControlIdFirst));
+			programContent.AddChildTag(mfxContent);
+		}
 
 		/* FIXME: Tab MM incomplete
 		HtmlTag mmContent("div");
@@ -3870,6 +3926,18 @@ namespace Server { namespace Web
 				break;
 		}
 		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramDccDirectWrite, cv, value);
+	}
+
+	void WebClient::HandleProgramReadMfx(const map<string, string>& arguments)
+	{
+		const ControlID controlID = static_cast<ControlID>(Utils::Utils::GetIntegerMapEntry(arguments, "control"));
+		const Address address = static_cast<Address>(Utils::Utils::GetIntegerMapEntry(arguments, "addressmfx"));
+		manager.ProgramReadMfx(controlID, address);
+		ReplyHtmlWithHeaderAndParagraph(Languages::TextProgramMfxRead, address, 0, 0);
+	}
+
+	void WebClient::HandleProgramWriteMfx(__attribute__((unused)) const map<string, string>& arguments)
+	{
 	}
 
 	void WebClient::HandleUpdater(const map<string, string>& headers)

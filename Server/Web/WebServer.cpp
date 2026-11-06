@@ -35,9 +35,11 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/LocoConfig.h"
 #include "DataModel/LocoFunctions.h"
 #include "DataModel/ObjectIdentifier.h"
+#include "Hardware/Protocols/DecoderDataMfx.h"
 #include "Languages.h"
 #include "RailControl.h"
 #include "Utils/Network.h"
+#include "Utils/Utils.h"
 #include "Version.h"
 #include "Server/Web/WebClient.h"
 #include "Server/Web/WebServer.h"
@@ -695,7 +697,17 @@ namespace Server { namespace Web
 	void WebServer::ProgramValue(const CvNumber cv, const CvValue value)
 	{
 		const string command("cvvalue;cv=" + to_string(cv) + ";value=" + to_string(value));
-		AddUpdate(command, Languages::TextProgramReadValue , static_cast<int>(cv), static_cast<int>(value));
+		AddUpdate(command, Languages::TextProgramReadValue, static_cast<int>(cv), static_cast<int>(value));
+	}
+
+	void WebServer::DecoderDataMfx(const Hardware::Protocols::DecoderDataMfx& decoderDataMfx)
+	{
+		string name = Utils::Utils::UrlEncode(decoderDataMfx.name);
+		Utils::Utils::ReplaceString(name, ";", "%3B");
+		Utils::Utils::ReplaceString(name, "\r", "%0D");
+		Utils::Utils::ReplaceString(name, "\n", "%0A");
+		const string command("decoderdatamfx;address=" + to_string(decoderDataMfx.sid) + ";name=" + name);
+		AddUpdate(command, Languages::TextDecoderDataMfxReceived, decoderDataMfx.sid, decoderDataMfx.name);
 	}
 
 	void WebServer::AddUpdateInternal(const string& data)

@@ -122,6 +122,11 @@ namespace Hardware { namespace Protocols
 				MaerklinCANCommon::Accessory(protocol, address, state, on);
 			}
 
+			void ProgramReadMfx(const Address address) override
+			{
+				MaerklinCANCommon::ProgramReadMfx(address);
+			}
+
 			void ProgramRead(const ProgramMode mode,
 				const Address address,
 				const CvNumber cv) override
@@ -170,7 +175,7 @@ namespace Hardware { namespace Protocols
 					params->GetControlID(),
 					fullName,
 					shortName),
-				MaerklinCANCommon("affeaffe",
+				MaerklinCANCommon("affeaffa",
 					params->GetControlID(),
 					params->GetManager(),
 					IsCS2MainEmulation(params->GetArg2()),

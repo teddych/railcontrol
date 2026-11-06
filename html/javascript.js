@@ -347,7 +347,7 @@ function onClickAddresses(signal)
 	requestUpdateItem('addresses', url);
 }
 
-function onClickProgramRead(cv)
+function onClickProgramRead()
 {
 	var controlElement = document.getElementById('s_controlraw');
 	if (!controlElement)
@@ -393,6 +393,27 @@ function onClickProgramRead(cv)
 	update_valueraw();
 
 	var url = '?cmd=programread&control=' + control + '&mode=' + mode + '&address=' + address + '&cv=' + cv;
+	fireRequestAndForget(url);
+	return false;
+}
+
+function onClickProgramReadMfx()
+{
+	var controlElement = document.getElementById('s_controlmfx');
+	if (!controlElement)
+	{
+		return false;
+	}
+	var control = controlElement.value;
+
+	var addressElement = document.getElementById('addressmfx');
+	if (!addressElement)
+	{
+		return false;
+	}
+	var address = addressElement.value;
+
+	var url = '?cmd=programreadmfx&control=' + control + '&addressmfx=' + address;
 	fireRequestAndForget(url);
 	return false;
 }
@@ -1954,6 +1975,16 @@ function dataUpdate(event)
 		|| (command == 'layerdelete'))
 	{
 		loadLayerSelector();
+	}
+	else if (command == 'decoderdatamfx')
+	{
+		var addressElement = document.getElementById('addressmfx');
+		var nameElement = document.getElementById('namemfx');
+		if ((addressElement) && (nameElement) && (argumentMap.has('name'))
+			&& (parseInt(addressElement.value, 10) == parseInt(argumentMap.get('address'), 10)))
+		{
+			nameElement.value = decodeURIComponent(argumentMap.get('name'));
+		}
 	}
 	else if (command == 'cvvalue')
 	{

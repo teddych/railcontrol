@@ -937,33 +937,16 @@ const vector<std::pair<MfxUid,Address>> Manager::LocoMfxUidsSids(const ControlID
 	return out;
 }
 
-bool Manager::LocoSave(LocoID locoID,
-	const string& name,
-	const ControlID controlID,
-	const std::string& matchKey,
-	const Protocol protocol,
-	const Address address,
-	const MfxUid mfxUid,
-	const Address serverAddress,
-	const Length length,
-	const bool pushpull,
-	const Speed maxSpeed,
-	const Speed travelSpeed,
-	const Speed reducedSpeed,
-	const Speed creepingSpeed,
-	const Propulsion propulsion,
-	const TrainType type,
-	const string& image,
-	const string& cs2image,
-	const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
-	string& result)
+bool Manager::LocoSave(const DataModel::LocoConfig& locoConfig, string& result)
 {
-	if (!CheckControlLocoProtocolAddress(controlID, protocol, address, result))
+	if ((!CheckControlLocoProtocolAddress(locoConfig.GetControlID(), locoConfig.GetProtocol(), locoConfig.GetAddress(), result)))
 	{
 		return false;
 	}
 
-	const string newName = CheckObjectName(multipleUnits, multipleUnitMutex, MultipleUnitNone, CheckObjectName(locos, locoMutex, locoID, name.size() == 0 ? Languages::GetText(Languages::TextLoco) : name));
+	LocoID locoID = locoConfig.GetLocoID();
+	const string& name = locoConfig.GetName();
+	const string newName = CheckObjectName(multipleUnits, multipleUnitMutex, MultipleUnitNone, CheckObjectName(locos, locoMutex, locoID, name.empty() ? Languages::GetText(Languages::TextLoco) : name));
 
 	{
 		std::lock_guard<std::mutex> guard(locoMutex);
@@ -983,41 +966,41 @@ bool Manager::LocoSave(LocoID locoID,
 		locoID = loco->GetID();
 
 		loco->SetName(newName);
-		loco->SetControlID(controlID);
-		loco->SetMatchKey(matchKey);
-		loco->SetProtocol(protocol);
-		loco->SetAddress(address);
-		if (mfxUid != 0)
+		loco->SetControlID(locoConfig.GetControlID());
+		loco->SetMatchKey(locoConfig.GetMatchKey());
+		loco->SetProtocol(locoConfig.GetProtocol());
+		loco->SetAddress(locoConfig.GetAddress());
+		if ((locoConfig.GetMfxUid() != 0))
 		{
-			loco->SetMfxUid(mfxUid);
+			loco->SetMfxUid(locoConfig.GetMfxUid());
 		}
-		loco->SetServerAddress(serverAddress);
-		loco->SetLength(length);
-		loco->SetPushpull(pushpull);
-		loco->SetMaxSpeed(maxSpeed);
-		loco->SetTravelSpeed(travelSpeed);
-		loco->SetReducedSpeed(reducedSpeed);
-		loco->SetCreepingSpeed(creepingSpeed);
-		loco->SetPropulsion(propulsion);
-		loco->SetTrainType(type);
-		if (!image.empty())
+		loco->SetServerAddress(locoConfig.GetServerAddress());
+		loco->SetLength(locoConfig.GetLength());
+		loco->SetPushpull(locoConfig.GetPushpull());
+		loco->SetMaxSpeed(locoConfig.GetMaxSpeed());
+		loco->SetTravelSpeed(locoConfig.GetTravelSpeed());
+		loco->SetReducedSpeed(locoConfig.GetReducedSpeed());
+		loco->SetCreepingSpeed(locoConfig.GetCreepingSpeed());
+		loco->SetPropulsion(locoConfig.GetPropulsion());
+		loco->SetTrainType(locoConfig.GetTrainType());
+		if ((!locoConfig.GetImage().empty()))
 		{
-			loco->SetImage(image);
+			loco->SetImage(locoConfig.GetImage());
 		}
-		if (!cs2image.empty())
+		if ((!locoConfig.GetCs2Image().empty()))
 		{
-			loco->SetCs2Image(cs2image);
+			loco->SetCs2Image(locoConfig.GetCs2Image());
 		}
-		loco->ConfigureFunctions(locoFunctions);
+		loco->ConfigureFunctions(locoConfig.GetFunctionStates());
 
 		// save in db
 		LocoSave(loco);
 	}
 
 	std::lock_guard<std::mutex> guard(controlMutex);
-	for (auto& control : controls)
+	for (const std::pair<const ControlID,ControlInterface*>& control : controls)
 	{
-		control.second->LocoSettings(locoID, name, matchKey);
+		control.second->LocoSettings(locoID, name, locoConfig.GetMatchKey());
 	}
 	return true;
 }
@@ -5774,6 +5757,17 @@ void Manager::ProgramCheckBooster(const ProgramMode mode)
 	}
 }
 
+void Manager::ProgramReadMfx(const ControlID controlID, const Address address)
+{
+	ControlInterface* control = GetControl(controlID);
+	if ((!control))
+	{
+		return;
+	}
+	ProgramCheckBooster(ProgramModeMfx);
+	control->ProgramReadMfx(address);
+}
+
 void Manager::ProgramRead(const ControlID controlID, const ProgramMode mode, const Address address, const CvNumber cv)
 {
 	ControlInterface* control = GetControl(controlID);
@@ -5802,6 +5796,15 @@ void Manager::ProgramValue(const CvNumber cv, const CvValue value)
 	for (auto& control : controls)
 	{
 		control.second->ProgramValue(cv, value);;
+	}
+}
+
+void Manager::DecoderDataMfx(const Hardware::Protocols::DecoderDataMfx& decoderDataMfx)
+{
+	std::lock_guard<std::mutex> guard(controlMutex);
+	for (const std::pair<const ControlID,ControlInterface*>& control : controls)
+	{
+		control.second->DecoderDataMfx(decoderDataMfx);
 	}
 }
 

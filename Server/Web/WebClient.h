@@ -256,6 +256,7 @@ namespace Server { namespace Web
 
 			HtmlTag HtmlTagProgramModeSelector(const ControlID controlID, ProgramMode& mode) const;
 			HtmlTag HtmlTagCvFields(const ControlID controlID, const ProgramMode programMode) const;
+			HtmlTag HtmlTagMfxFields(const ControlID controlID) const;
 
 			HtmlTag HtmlTagInput8BitValueWithLabel() const;
 
@@ -331,6 +332,8 @@ namespace Server { namespace Web
 			void HandleProgramModeSelector(const std::map<std::string,std::string>& arguments);
 			void HandleProgramRead(const std::map<std::string,std::string>& arguments);
 			void HandleProgramWrite(const std::map<std::string,std::string>& arguments);
+			void HandleProgramReadMfx(const std::map<std::string,std::string>& arguments);
+			void HandleProgramWriteMfx(const std::map<std::string,std::string>& arguments);
 			void HandleCvFields(const std::map<std::string,std::string>& arguments);
 			void HandleNewPosition(const std::map<std::string,std::string>& arguments);
 			void HandleNewPositionInternal(const std::map<std::string,std::string>& arguments, std::string& result);

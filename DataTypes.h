@@ -292,6 +292,7 @@ enum ProgramMode : uint8_t
 };
 
 typedef uint16_t CvNumber;
+typedef uint8_t CvIndex;
 typedef uint8_t CvValue;
 
 enum Propulsion : uint8_t

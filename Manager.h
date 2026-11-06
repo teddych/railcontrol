@@ -37,6 +37,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/ObjectIdentifier.h"
 #include "Hardware/HardwareParams.h"
 #include "Hardware/LocoCache.h"
+#include "Hardware/Protocols/DecoderDataMfx.h"
 #include "Logger/Logger.h"
 #include "Storage/StorageHandler.h"
 
@@ -131,26 +132,7 @@ class Manager
 			storage->Save(*loco);
 		}
 
-		bool LocoSave(LocoID locoID,
-			const std::string& name,
-			const ControlID controlID,
-			const std::string& matchKey,
-			const Protocol protocol,
-			const Address address,
-			const MfxUid mfxUid,
-			const Address serverAddress,
-			const Length length,
-			const bool pushpull,
-			const Speed maxSpeed,
-			const Speed travelSpeed,
-			const Speed reducedSpeed,
-			const Speed creepingSpeed,
-			const Propulsion propulsion,
-			const TrainType type,
-			const std::string& image,
-			const std::string& cs2image,
-			const std::vector<DataModel::LocoFunctionEntry>& locoFunctions,
-			std::string& result);
+		bool LocoSave(const DataModel::LocoConfig& locoConfig, std::string& result);
 
 		bool LocoDelete(const LocoID locoID,
 			std::string& result);
@@ -759,9 +741,11 @@ class Manager
 		ControlID GetPossibleControlForAccessory() const;
 		ControlID GetPossibleControlForFeedback() const;
 
+		void ProgramReadMfx(const ControlID controlID, const Address address);
 		void ProgramRead(const ControlID controlID, const ProgramMode mode, const Address address, const CvNumber cv);
 		void ProgramWrite(const ControlID controlID, const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value);
 		void ProgramValue(const CvNumber cv, const CvValue value);
+		void DecoderDataMfx(const Hardware::Protocols::DecoderDataMfx& decoderDataMfx);
 
 		inline static void ProgramDccValueStatic(Manager* manager, const CvNumber cv, const CvValue value)
 		{

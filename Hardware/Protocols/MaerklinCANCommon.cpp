@@ -94,7 +94,7 @@ namespace Hardware { namespace Protocols
 		while (run && (!hasCs2Main || isCs2MainEmulation))
 		{
 			SendBootloaderCan();
-			Utils::Utils::SleepForMilliseconds(10);
+			Utils::Utils::SleepForMilliseconds(100);
 			SendPing();
 			if (isCs2MainEmulation)
 			{
@@ -105,11 +105,11 @@ namespace Hardware { namespace Protocols
 					Wait(1);
 					VerifyAllMfxLocos();
 					Wait(1);
-					SendDiscovery();
+//					SendDiscovery();
 					discoverySent = true;
 				}
 			}
-			Wait(10);
+			Wait(20);
 		}
 
 		if (run && hasCs2Main && !isCs2MainEmulation)
@@ -383,6 +383,11 @@ namespace Hardware { namespace Protocols
 		buffer[9] = state & 0x03;
 		buffer[10] = static_cast<unsigned char>(on);
 		SendInternal(buffer);
+	}
+
+	void MaerklinCANCommon::ProgramReadMfx(const Address address)
+	{
+		DecoderHandlerMfx::ReadMfxDecoder(address);
 	}
 
 	void MaerklinCANCommon::ProgramRead(const ProgramMode mode,
@@ -894,7 +899,7 @@ namespace Hardware { namespace Protocols
 		pendingMfxBindings.erase(mfxUid);
 
 		// Request reading the MFX data for the newly bound locomotive
-		ReadDecoderMfx(mfxSid);
+		ReadMfxDecoder(mfxSid);
 	}
 
 	void MaerklinCANCommon::ParseCommandSystem(const unsigned char* const buffer)
@@ -1503,8 +1508,8 @@ namespace Hardware { namespace Protocols
 		Protocol protocol;
 		LocoType type;
 		ParseAddressProtocol(buffer, address, protocol, type);
-		logger->Debug("XXX {0} {1} {2} {3}", Utils::Utils::ProtocolToString(protocol), address, cv, value);
-		if (ParseResponseMfxLocoName(address, protocol, cv, value))
+		logger->Debug("XXX {0} sid={1} cv={2} index={3} value={4}", Utils::Utils::ProtocolToString(protocol), address, cv & 0x3FF, cv >> 10, value);
+		if ((protocol == ProtocolMFX) && ParseMfxCVValue(address, cv, value))
 		{
 			return;
 		}

@@ -171,6 +171,7 @@ namespace Hardware
 
 			void SignalState(const ControlType controlType, const DataModel::Signal* signal) override;
 
+			void ProgramReadMfx(const Address address) override;
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv) override;
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 

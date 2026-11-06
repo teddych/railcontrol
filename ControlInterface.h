@@ -46,6 +46,11 @@ namespace DataModel
 namespace Hardware
 {
 	class HardwareParams;
+
+	namespace Protocols
+	{
+		class DecoderDataMfx;
+	}
 }
 
 class ControlInterface
@@ -383,6 +388,10 @@ class ControlInterface
 		{
 		}
 
+		virtual void ProgramReadMfx(__attribute__((unused)) const Address address)
+		{
+		}
+
 		virtual void ProgramRead(__attribute__((unused)) const ProgramMode mode,
 			__attribute__((unused)) const Address address, __attribute__((unused)) const CvNumber cv)
 		{
@@ -396,6 +405,10 @@ class ControlInterface
 
 		virtual void ProgramValue(__attribute__((unused)) const CvNumber cv,
 			__attribute__((unused)) const CvValue value)
+		{
+		}
+
+		virtual void DecoderDataMfx(__attribute__((unused)) const Hardware::Protocols::DecoderDataMfx& decoderDataMfx)
 		{
 		}
 

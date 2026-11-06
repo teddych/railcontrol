@@ -171,6 +171,11 @@ namespace Hardware
 			{
 			}
 
+			// read complete MFX decoder
+			virtual void ProgramReadMfx(__attribute__((unused)) const Address address)
+			{
+			}
+
 			// read CV value
 			virtual void ProgramRead(__attribute__((unused)) const ProgramMode mode,
 				__attribute__((unused)) const Address address,

@@ -581,6 +581,15 @@ namespace Hardware
 		}
 	}
 
+	void HardwareHandler::ProgramReadMfx(const Address address)
+	{
+		if ((!instance))
+		{
+			return;
+		}
+		instance->ProgramReadMfx(address);
+	}
+
 	void HardwareHandler::ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv)
 	{
 		if (!ProgramCheckValues(mode, cv))

@@ -20,48 +20,27 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
-#include <map>
 #include <string>
+#include <vector>
 
 #include "DataTypes.h"
-#include "Logger/Logger.h"
-
-class Manager;
 
 namespace Hardware { namespace Protocols
 {
-	class DecoderMfx
+	class DecoderDataMfx
 	{
-		protected:
-			DecoderMfx(Manager* manager, const ControlID controlID, Logger::Logger* logger);
-
-			virtual ~DecoderMfx() = default;
-
-			void ReadDecoderMfx(const Address mfxSid);
-
-			bool ParseResponseMfxLocoName(const Address address,
-				const Protocol protocol,
-				const CvNumber cv,
-				const CvValue value);
-
-			Manager* manager;
-			Logger::Logger* logger;
-			ControlID controlID;
-
-		private:
-			static const uint8_t MfxLocoNameCAType = 0x18;
-
-			struct MfxDecoder
-			{
-				std::string name;
-				MfxUid uid = 0;
-				uint8_t nameReadIndex = 0;
-			};
-
-			static std::string MfxFallbackName(const Address address);
-
-			void SaveMfxLoco(const MfxUid mfxUid, const Address sid, const std::string& name);
-
-			std::map<Address,MfxDecoder> mfxDecoders;
+		public:
+			Address sid = 0;
+			MfxUid uid = 0;
+			CvValue blockType = 0x01; // Initial block description CA type.
+			CvNumber blockStart = 0;
+			CvValue groupCount = 0;
+			CvValue caCount = 0;
+			CvValue caType = 0;
+			CvNumber readCv = 0;
+			CvIndex readIndex = 0;
+			std::string name;
+			std::vector<CvValue> blocks;
+			std::vector<CvValue>::size_type nextBlock = 0;
 	};
 }} // namespace

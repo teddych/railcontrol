@@ -316,28 +316,118 @@ namespace DataModel
 				return (locoID != LocoNone) && (type != LocoTypeNone);
 			}
 
+			inline void SetControlID(const ControlID controlID)
+			{
+				this->controlID = controlID;
+			}
+
+			inline void SetLocoID(const LocoID locoID)
+			{
+				this->locoID = locoID;
+			}
+
+			inline void SetProtocol(const Protocol protocol)
+			{
+				this->protocol = protocol;
+			}
+
+			inline void SetAddress(const Address address)
+			{
+				this->address = address;
+			}
+
+			inline void SetMfxUid(const MfxUid mfxUid)
+			{
+				this->mfxUid = mfxUid;
+			}
+
+			inline void SetServerAddress(const Address serverAddress)
+			{
+				this->serverAddress = serverAddress;
+			}
+
+			inline void SetName(const std::string& name)
+			{
+				this->name = name;
+			}
+
+			inline void SetMatchKey(const std::string& matchKey)
+			{
+				this->matchKey = matchKey;
+			}
+
+			inline void SetImage(const std::string& image)
+			{
+				this->image = image;
+			}
+
+			inline void SetCs2Image(const std::string& cs2image)
+			{
+				this->cs2image = cs2image;
+			}
+
+			inline void SetPushpull(const bool pushpull)
+			{
+				this->pushpull = pushpull;
+			}
+
+			inline void SetLength(const Length length)
+			{
+				this->length = length;
+			}
+
+			inline void SetMaxSpeed(const Speed maxSpeed)
+			{
+				this->maxSpeed = maxSpeed;
+			}
+
+			inline void SetTravelSpeed(const Speed travelSpeed)
+			{
+				this->travelSpeed = travelSpeed;
+			}
+
+			inline void SetReducedSpeed(const Speed reducedSpeed)
+			{
+				this->reducedSpeed = reducedSpeed;
+			}
+
+			inline void SetCreepingSpeed(const Speed creepingSpeed)
+			{
+				this->creepingSpeed = creepingSpeed;
+			}
+
+			inline void SetPropulsion(const Propulsion propulsion)
+			{
+				this->propulsion = propulsion;
+			}
+
+			inline void SetTrainType(const TrainType trainType)
+			{
+				this->trainType = trainType;
+			}
+
 		private:
 			const LocoType type;
-			const ControlID controlID;
-			const LocoID locoID;
-			const Protocol protocol;
-			const Address address;
-			const uint32_t mfxUid;
-			const Address serverAddress;
-			const std::string name;
-			const std::string matchKey;
+			ControlID controlID;
+			LocoID locoID;
+			Protocol protocol;
+			Address address;
+			uint32_t mfxUid;
+			Address serverAddress;
+			std::string name;
+			std::string matchKey;
 			const bool isInUse;
-			const std::string image;
-			const std::string cs2image;
+			std::string image;
+			std::string cs2image;
 			LocoFunctions functions;
-			const bool pushpull;
-			const Length length;
-			const Speed maxSpeed;
-			const Speed travelSpeed;
-			const Speed reducedSpeed;
-			const Speed creepingSpeed;
-			const Propulsion propulsion;
-			const TrainType trainType;
+			bool pushpull;
+			Length length;
+			Speed maxSpeed;
+			Speed travelSpeed;
+			Speed reducedSpeed;
+			Speed creepingSpeed;
+			Propulsion propulsion;
+			TrainType trainType;
 			const std::vector<LocoID> slaves;
 
 			const Speed speed;

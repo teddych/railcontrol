@@ -192,6 +192,7 @@ namespace Server { namespace Web
 
 			void CounterState(const DataModel::Counter* const counter) override;
 			void ProgramValue(const CvNumber cv, const CvValue value) override;
+			void DecoderDataMfx(const Hardware::Protocols::DecoderDataMfx& decoderDataMfx) override;
 
 			inline bool UpdateAvailable()
 			{

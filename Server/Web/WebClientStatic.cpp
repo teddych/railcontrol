@@ -380,7 +380,12 @@ namespace Server { namespace Web
 		{
 			return HtmlTagInputHidden("s_" + name, to_string(controlIdFirst));
 		}
-		return HtmlTagSelectWithLabel(name, Languages::TextControl, controls, controlIdFirst).AddAttribute("onchange", "loadProgramModeSelector();");
+		HtmlTagSelectWithLabel controlSelector(name, Languages::TextControl, controls, controlIdFirst);
+		if ((name.size() >= 3) && (name.compare(name.size() - 3, 3, "raw") == 0))
+		{
+			controlSelector.AddAttribute("onchange", "loadProgramModeSelector();");
+		}
+		return controlSelector;
 	}
 
 	vector<ObjectID> WebClientStatic::InterpretSlaveData(const string& prefix, const map<string, string>& arguments)
