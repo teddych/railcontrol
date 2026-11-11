@@ -3708,25 +3708,31 @@ namespace Server { namespace Web
 	{
 		HtmlTag content("div");
 		content.AddId("cv_fields_mfx");
-		content.AddChildTag(HtmlTagInputIntegerWithLabel("addressmfx", Languages::TextAddress, 1, 1, 0x4000).AddChildTag(HtmlTagInputText("addresshexmfx", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
-		content.AddChildTag(HtmlTag("br"));
-		content.AddChildTag(HtmlTagInputTextWithLabel("namemfx", Languages::TextName));
 
 		const Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);
+		/* FIXME: mfx write not implemented yet, so hide the button for now
 		if ((capabilities & Hardware::CapabilityProgramMfxWrite))
 		{
 			HtmlTagButton writeButton(Languages::TextWrite, "programwritemfx");
 			writeButton.AddAttribute("onclick", "onClickProgramWrite('mfx');return false;");
 			writeButton.AddClass("wide_button");
 			content.AddChildTag(writeButton);
-		}
+		}*/
 		if ((capabilities & Hardware::CapabilityProgramMfxRead))
 		{
 			HtmlTagButton readButton(Languages::TextRead, "programreadmfx");
 			readButton.AddAttribute("onclick", "onClickProgramReadMfx();return false;");
 			readButton.AddClass("wide_button");
 			content.AddChildTag(readButton);
+			content.AddChildTag(HtmlTag("br"));
 		}
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("addressmfx", Languages::TextAddress, 1, 1, 0x4000).AddChildTag(HtmlTagInputText("addresshexmfx", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
+		content.AddChildTag(HtmlTag("br"));
+		content.AddChildTag(HtmlTagInputTextWithLabel("manufacturermfx", Languages::TextManufacturer, "", HtmlTagInput::StyleReadOnly));
+		content.AddChildTag(HtmlTag("br"));
+		content.AddChildTag(HtmlTagInputTextWithLabel("productmfx", Languages::TextProduct, "", HtmlTagInput::StyleReadOnly));
+		content.AddChildTag(HtmlTag("br"));
+		content.AddChildTag(HtmlTagInputTextWithLabel("namemfx", Languages::TextName));
 		return content;
 	}
 

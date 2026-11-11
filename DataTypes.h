@@ -238,6 +238,12 @@ enum HardwareType : uint8_t
 	HardwareTypeSystemControl7 = 24
 };
 
+enum DccHardwareManufacturer : uint8_t
+{
+	DccHardwareManufacturerTrix = 131,
+	DccHardwareManufacturerESU = 151,
+};
+
 enum Automode : bool
 {
 	AutomodeNo = false,

@@ -82,6 +82,9 @@ namespace Hardware { namespace Protocols
 			case MfxDecoderBlockDecoderProperties:
 				switch (decoder.caType)
 				{
+					case MfxDecoderDecoderPropertiesCATypeManufacturer:
+						return ParseDecoderPropertiesManufacturer(decoder, cv, index, value);
+
 					case MfxDecoderDecoderPropertiesCATypeBlockTable:
 						return ParseDecoderPropertiesBlockTable(decoder, cv, index, value);
 
@@ -180,12 +183,53 @@ namespace Hardware { namespace Protocols
 		}
 	}
 
+	bool DecoderHandlerMfx::ParseDecoderPropertiesManufacturer(DecoderDataMfx& decoder,
+		const CvNumber cv,
+		const CvIndex index,
+		const CvValue value)
+	{
+		// Chapter 6.4.1: index 1-4 manufacturer ID, index 5-8 product ID, MSB first.
+		if (index == 0)
+		{
+			if (value != MfxDecoderDecoderPropertiesCATypeManufacturer)
+			{
+				return false;
+			}
+			decoder.manufacturer = 0;
+			decoder.product = 0;
+
+			// We ignore index 1-3 because they are always 0 for known manufacturers.
+			ReadCVValue(decoder, cv, 4);
+			return true;
+		}
+		else if (index <= 4)
+		{
+			decoder.manufacturer = (decoder.manufacturer << 8) | value;
+		}
+		else if (index <= 8)
+		{
+			decoder.product = (decoder.product << 8) | value;
+		}
+		else
+		{
+			return false;
+		}
+
+		if (index == 8)
+		{
+			ReadNextCA(decoder, cv);
+			return true;
+		}
+
+		ReadCVValue(decoder, cv, index + 1);
+		return true;
+	}
+
 	bool DecoderHandlerMfx::ParseDecoderPropertiesBlockTable(DecoderDataMfx& decoder,
 		const CvNumber cv,
 		const CvIndex index,
 		const CvValue value)
 	{
-		logger->Debug("Reading Block Table {0} sid={1} cv={2} index={3} value={4}", Utils::Utils::ProtocolToString(ProtocolMFX), decoder.sid, cv, index, value);
 		if (index == 0)
 		{
 			if (value != MfxDecoderDecoderPropertiesCATypeBlockTable)
@@ -246,7 +290,6 @@ namespace Hardware { namespace Protocols
 
 			if ((value == 0) || (index == 16))
 			{
-				logger->Debug("Loco name of mfx loco {0} is \"{1}\"", decoder.sid, decoder.name);
 				ReadNextCA(decoder, cv);
 				return true;
 			}

@@ -172,6 +172,8 @@ namespace Hardware { namespace Protocols
 			void ReadNextBlock(DecoderDataMfx& decoder);
 			bool ParseBlockDescription(DecoderDataMfx& decoder, const CvNumber cv,
 				const CvIndex index, const CvValue value);
+			bool ParseDecoderPropertiesManufacturer(DecoderDataMfx& decoder, const CvNumber cv,
+				const CvIndex index, const CvValue value);
 			bool ParseDecoderPropertiesBlockTable(DecoderDataMfx& decoder, const CvNumber cv,
 				const CvIndex index, const CvValue value);
 			bool ParseDecoderPropertiesLocoName(DecoderDataMfx& decoder, const CvNumber cv,

@@ -39,6 +39,8 @@ namespace Hardware { namespace Protocols
 			CvValue caType = 0;
 			CvNumber readCv = 0;
 			CvIndex readIndex = 0;
+			uint32_t manufacturer = 0; // Last byte is the DCC manufacturer ID.
+			uint32_t product = 0;
 			std::string name;
 			std::vector<CvValue> blocks;
 			std::vector<CvValue>::size_type nextBlock = 0;

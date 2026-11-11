@@ -706,7 +706,30 @@ namespace Server { namespace Web
 		Utils::Utils::ReplaceString(name, ";", "%3B");
 		Utils::Utils::ReplaceString(name, "\r", "%0D");
 		Utils::Utils::ReplaceString(name, "\n", "%0A");
-		const string command("decoderdatamfx;address=" + to_string(decoderDataMfx.sid) + ";name=" + name);
+
+		string manufacturer;
+		switch (decoderDataMfx.manufacturer)
+		{
+			case DccHardwareManufacturerTrix:
+				manufacturer = "Märklin/Trix";
+				break;
+
+			case DccHardwareManufacturerESU:
+				manufacturer = "ESU";
+				break;
+
+			default:
+				manufacturer = Languages::GetText(Languages::TextUnknown);
+				manufacturer += " (" + to_string(decoderDataMfx.manufacturer) + ")";
+				break;
+		}
+		manufacturer = Utils::Utils::UrlEncode(manufacturer);
+		Utils::Utils::ReplaceString(manufacturer, ";", "%3B");
+
+		const string command("decoderdatamfx;address=" + to_string(decoderDataMfx.sid)
+			+ ";manufacturer=" + manufacturer
+			+ ";product=" + to_string(decoderDataMfx.product)
+			+ ";name=" + name);
 		AddUpdate(command, Languages::TextDecoderDataMfxReceived, decoderDataMfx.sid, decoderDataMfx.name);
 	}
 

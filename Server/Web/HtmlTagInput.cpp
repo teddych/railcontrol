@@ -46,6 +46,7 @@ namespace Server { namespace Web
 
 			case StyleReadOnly:
 				AddAttribute("readonly");
+				AddAttribute("disabled");
 				break;
 
 			default:
