@@ -25,6 +25,8 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "DataTypes.h"
 
+// mfx decoder specification:   https://www.skrauss.de/modellbahn/Schienenformat.pdf
+
 namespace Hardware { namespace Protocols
 {
 	class DecoderDataMfx

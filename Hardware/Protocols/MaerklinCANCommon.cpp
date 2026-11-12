@@ -478,6 +478,16 @@ namespace Hardware { namespace Protocols
 		SendInternal(buffer);
 	}
 
+	void MaerklinCANCommon::IncrementMfxCounter()
+	{
+		++mfxCounter;
+		unsigned char buffer[CANCommandBufferLength];
+		CreateCommandHeader(buffer, CanCommandSystem, CanResponseCommand, 1);
+		buffer[9] = CanSubCommandMfxCounter;
+		Utils::Integer::ShortToDataBigEndian(mfxCounter, buffer + 10);
+		SendInternal(buffer);
+	}
+
 	void MaerklinCANCommon::SendBootloaderCan()
 	{
 		unsigned char buffer[CANCommandBufferLength];
@@ -504,7 +514,7 @@ namespace Hardware { namespace Protocols
 				pendingMfxVerifications[mfxLoco.first] = mfxLoco.second;
 			}
 			SendMfxVerify(mfxLoco.first, mfxLoco.second);
-			Wait(1);
+			Wait(5);
 		}
 	}
 
@@ -919,6 +929,10 @@ namespace Hardware { namespace Protocols
 			case CanSubCommandGo:
 				// system go
 				manager->Booster(ControlTypeHardware, BoosterStateGo);
+				return;
+
+			case CanSubCommandMfxCounter:
+				// we ignore mfx counter
 				return;
 		}
 	}

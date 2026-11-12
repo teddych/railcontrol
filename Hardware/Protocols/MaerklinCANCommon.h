@@ -37,7 +37,6 @@ along with RailControl; see the file LICENCE. If not see
 // CAN protocol specification:  https://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
 // Additions to CAN protocol:   http://www.mbernstein.de/modellbahn/can/bem.htm
 // Additions to CAN protocol:   https://modellbahn.mahrer.net/technisches/maerklin_can/
-// mfx decoder specification:   https://www.skrauss.de/modellbahn/Schienenformat.pdf
 
 namespace Hardware { namespace Protocols
 {
@@ -92,6 +91,7 @@ namespace Hardware { namespace Protocols
 				run(true),
 				uid(Utils::Integer::HexToInteger(uid)),
 				hash(CalcHash(this->uid)),
+				mfxCounter(0),
 				hasCs2Main(false),
 				isCs2MainEmulation(isCs2MainEmulation)
 			{
@@ -119,12 +119,16 @@ namespace Hardware { namespace Protocols
 
 			virtual void CacheUpdateSlaves() = 0;
 
+			void IncrementMfxCounter();
+
 
 			static const unsigned char CANCommandBufferLength = 13;
 
 			std::atomic_bool run;
 
 		private:
+			typedef uint16_t MfxCounter;
+
 			enum CanCommand : unsigned char
 			{
 				CanCommandSystem            = 0x00,
@@ -147,8 +151,9 @@ namespace Hardware { namespace Protocols
 
 			enum CanSubCommand : unsigned char
 			{
-				CanSubCommandStop = 0x00,
-				CanSubCommandGo   = 0x01
+				CanSubCommandStop       = 0x00,
+				CanSubCommandGo         = 0x01,
+				CanSubCommandMfxCounter = 0x09
 			};
 
 			enum CanResponse : unsigned char
@@ -458,6 +463,7 @@ namespace Hardware { namespace Protocols
 
 			CanUid uid;
 			CanHash hash;
+			MfxCounter mfxCounter;
 			std::atomic_bool hasCs2Main; // true if a CS2 main station is detected on the CAN bus
 			const bool isCs2MainEmulation; // true if this is a CS2 main station emulation (e.g. for a CS2 secondary station or an MS2)
 			std::thread receiverThread;

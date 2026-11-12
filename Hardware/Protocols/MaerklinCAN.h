@@ -160,6 +160,7 @@ namespace Hardware { namespace Protocols
 			void SetLocoIdOfMatchKey(const LocoID locoId, const std::string& matchKey) override
 			{
 				locoCache.SetLocoId(locoId, matchKey);
+				IncrementMfxCounter();
 			}
 
 			void SetMultipleUnitIdOfMatchKey(const LocoID locoId, const std::string& matchKey) override
