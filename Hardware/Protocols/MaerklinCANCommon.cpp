@@ -90,7 +90,7 @@ namespace Hardware { namespace Protocols
 
 		Wait(1);
 
-		bool discoverySent = false;
+		bool verifySent = false;
 		while (run && (!hasCs2Main || isCs2MainEmulation))
 		{
 			SendBootloaderCan();
@@ -100,13 +100,11 @@ namespace Hardware { namespace Protocols
 			{
 				// The MS2 starts discovery with a one-byte, zero-range request.
 				// Initiate it once after the booster is on so the Gleisbox can report new mfx UIDs.
-				if (!discoverySent && manager->Booster() == BoosterStateGo)
+				if (!verifySent && manager->Booster() == BoosterStateGo)
 				{
 					Wait(1);
 					VerifyAllMfxLocos();
-					Wait(1);
-//					SendDiscovery();
-					discoverySent = true;
+					verifySent = true;
 				}
 			}
 			Wait(20);
@@ -492,14 +490,6 @@ namespace Hardware { namespace Protocols
 	{
 		unsigned char buffer[CANCommandBufferLength];
 		CreateCommandHeader(buffer, CanCommandBootloaderCan, CanResponseCommand, 0);
-		SendInternal(buffer);
-	}
-
-	void MaerklinCANCommon::SendDiscovery()
-	{
-		unsigned char buffer[CANCommandBufferLength];
-		CreateCommandHeader(buffer, CanCommandDiscovery, CanResponseCommand, 1);
-		buffer[5] = 0; // mfx programming track discovery
 		SendInternal(buffer);
 	}
 
@@ -1522,7 +1512,6 @@ namespace Hardware { namespace Protocols
 		Protocol protocol;
 		LocoType type;
 		ParseAddressProtocol(buffer, address, protocol, type);
-		logger->Debug("XXX {0} sid={1} cv={2} index={3} value={4}", Utils::Utils::ProtocolToString(protocol), address, cv & 0x3FF, cv >> 10, value);
 		if ((protocol == ProtocolMFX) && ParseMfxCVValue(address, cv, value))
 		{
 			return;

@@ -447,7 +447,6 @@ namespace Hardware { namespace Protocols
 			void PingSender();
 			void SendPing();
 			void SendBootloaderCan();
-			void SendDiscovery();
 			void VerifyAllMfxLocos();
 			Address RegisterMfxDiscovery(const MfxUid mfxUid);
 			bool IsPendingMfxBinding(const MfxUid mfxUid, const Address sid) const;
