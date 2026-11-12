@@ -1979,9 +1979,26 @@ function dataUpdate(event)
 	else if (command == 'decoderdatamfx')
 	{
 		var addressElement = document.getElementById('addressmfx');
+		if ((!addressElement)
+			|| (parseInt(addressElement.value, 10) != parseInt(argumentMap.get('address'), 10)))
+		{
+			return;
+		}
+
+		var manufacturerElement = document.getElementById('manufacturermfx');
+		if ((manufacturerElement) && (argumentMap.has('manufacturer')))
+		{
+			manufacturerElement.value = decodeURIComponent(argumentMap.get('manufacturer'));
+		}
+
+		var productElement = document.getElementById('productmfx');
+		if ((productElement) && (argumentMap.has('product')))
+		{
+			productElement.value = '0x' + parseInt(argumentMap.get('product'), 10).toString(16).toUpperCase().padStart(8, '0');
+		}
+
 		var nameElement = document.getElementById('namemfx');
-		if ((addressElement) && (nameElement) && (argumentMap.has('name'))
-			&& (parseInt(addressElement.value, 10) == parseInt(argumentMap.get('address'), 10)))
+		if ((nameElement) && (argumentMap.has('name')))
 		{
 			nameElement.value = decodeURIComponent(argumentMap.get('name'));
 		}

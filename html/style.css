@@ -504,7 +504,7 @@ label {
 	width: 80px;
 }
 
-.function_line .integer {
+.function_line {
 	width: 30px;
 }
 
@@ -519,11 +519,14 @@ label {
 
 .integer {
 	width: 50px;
+	text-align: right;
 }
 
 .disabled_integer {
 	width: 50px;
 	background-color: lightgray;
+	border: solid 1px black;
+	text-align: right;
 }
 
 .checkbox {
