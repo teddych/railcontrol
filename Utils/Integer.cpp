@@ -27,7 +27,7 @@ namespace Utils
 {
 	int Integer::StringToInteger(const std::string& value, const int defaultValue)
 	{
-		size_t valueSize = value.length();
+		const size_t valueSize = value.length();
 		if (valueSize == 0)
 		{
 			return defaultValue;
@@ -35,7 +35,7 @@ namespace Utils
 
 		char* end;
 		const char* start = value.c_str();
-		long longValue = std::strtol(start, &end, 10);
+		const long longValue = std::strtol(start, &end, 10);
 		if (errno == ERANGE || start == end)
 		{
 			return defaultValue;
@@ -49,7 +49,7 @@ namespace Utils
 
 	int Integer::StringToInteger(const std::string& value, const int min, const int max)
 	{
-		int intValue = StringToInteger(value, min);
+		const int intValue = StringToInteger(value, min);
 
 		if (intValue < min)
 		{
@@ -66,7 +66,7 @@ namespace Utils
 
 	long Integer::HexToInteger(const std::string& value, const long defaultValue)
 	{
-		size_t valueSize = value.length();
+		const size_t valueSize = value.length();
 		if (valueSize == 0)
 		{
 			return defaultValue;
@@ -74,7 +74,7 @@ namespace Utils
 
 		char* end;
 		const char* start = value.c_str();
-		long longValue = std::strtol(start, &end, 16);
+		const long longValue = std::strtol(start, &end, 16);
 		if (errno == ERANGE || start == end)
 		{
 			return defaultValue;

@@ -3709,6 +3709,9 @@ namespace Server { namespace Web
 		HtmlTag content("div");
 		content.AddId("cv_fields_mfx");
 
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("addressmfx", Languages::TextAddress, 1, 1, 0x4000).AddChildTag(HtmlTagInputText("addresshexmfx", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
+		content.AddChildTag(HtmlTag("br"));
+
 		const Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);
 		/* FIXME: mfx write not implemented yet, so hide the button for now
 		if ((capabilities & Hardware::CapabilityProgramMfxWrite))
@@ -3726,8 +3729,6 @@ namespace Server { namespace Web
 			content.AddChildTag(readButton);
 			content.AddChildTag(HtmlTag("br"));
 		}
-		content.AddChildTag(HtmlTagInputIntegerWithLabel("addressmfx", Languages::TextAddress, 1, 1, 0x4000).AddChildTag(HtmlTagInputText("addresshexmfx", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
-		content.AddChildTag(HtmlTag("br"));
 		content.AddChildTag(HtmlTagInputTextWithLabel("manufacturermfx", Languages::TextManufacturer, "", HtmlTagInput::StyleReadOnly));
 		content.AddChildTag(HtmlTag("br"));
 		content.AddChildTag(HtmlTagInputTextWithLabel("productmfx", Languages::TextProduct, "", HtmlTagInput::StyleReadOnly));

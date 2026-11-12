@@ -178,7 +178,7 @@ namespace Utils
 		{
 			return defaultValue;
 		}
-		int intValue = Integer::StringToInteger(value);
+		const int intValue = Integer::StringToInteger(value);
 		return intValue != 0;
 	}
 
