@@ -480,7 +480,8 @@ namespace Hardware { namespace Protocols
 	{
 		++mfxCounter;
 		unsigned char buffer[CANCommandBufferLength];
-		CreateCommandHeader(buffer, CanCommandSystem, CanResponseCommand, 1);
+		// DLC 7: UID (4 bytes) + subcommand (1 byte) + counter (2 bytes)
+		CreateCommandHeader(buffer, CanCommandSystem, CanResponseCommand, 7);
 		buffer[9] = CanSubCommandMfxCounter;
 		Utils::Integer::ShortToDataBigEndian(mfxCounter, buffer + 10);
 		SendInternal(buffer);
