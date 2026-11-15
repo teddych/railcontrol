@@ -1994,7 +1994,7 @@ function dataUpdate(event)
 		var productElement = document.getElementById('productmfx');
 		if ((productElement) && (argumentMap.has('product')))
 		{
-			productElement.value = '0x' + parseInt(argumentMap.get('product'), 10).toString(16).toUpperCase().padStart(8, '0');
+			productElement.value = parseInt(argumentMap.get('product'), 10);
 		}
 
 		var nameElement = document.getElementById('namemfx');

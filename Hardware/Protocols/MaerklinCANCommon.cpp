@@ -900,7 +900,7 @@ namespace Hardware { namespace Protocols
 		pendingMfxBindings.erase(mfxUid);
 
 		// Request reading the MFX data for the newly bound locomotive
-		ReadMfxDecoder(mfxSid);
+		ReadMfxDecoder(mfxSid, mfxUid);
 	}
 
 	void MaerklinCANCommon::ParseCommandSystem(const unsigned char* const buffer)
@@ -1513,11 +1513,11 @@ namespace Hardware { namespace Protocols
 		Protocol protocol;
 		LocoType type;
 		ParseAddressProtocol(buffer, address, protocol, type);
+		logger->Info(Languages::TextProgramReadMfxValue, cv & 0x3FF, cv >> 10, value);
 		if ((protocol == ProtocolMFX) && ParseMfxCVValue(address, cv, value))
 		{
 			return;
 		}
-		logger->Info(Languages::TextProgramReadMfxValue, cv & 0x3FF, cv >> 10, value);
 		manager->ProgramValue(cv, value);
 	}
 

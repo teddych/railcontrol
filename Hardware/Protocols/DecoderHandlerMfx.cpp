@@ -34,11 +34,12 @@ namespace Hardware { namespace Protocols
 	{
 	}
 
-	void DecoderHandlerMfx::ReadMfxDecoder(const Address mfxSid)
+	void DecoderHandlerMfx::ReadMfxDecoder(const Address mfxSid, const MfxUid mfxUid)
 	{
 		mfxDecoders[mfxSid] = DecoderDataMfx();
 		DecoderDataMfx& decoder = mfxDecoders[mfxSid];
 		decoder.sid = mfxSid;
+		decoder.uid = mfxUid;
 		ReadCVValue(decoder, 0, 0);
 	}
 
@@ -97,6 +98,18 @@ namespace Hardware { namespace Protocols
 						return true;
 				}
 
+			case MfxDecoderBlockFunctionMapping:
+				switch (decoder.caType)
+				{
+					case MfxDecoderFunctionMappingCATypeSymbol:
+						return ParseFunctionMappingSymbol(decoder, cv, index, value);
+
+					default:
+						// Skip unsupported CAs, but continue reading the block.
+						ReadNextCA(decoder, cv);
+						return true;
+				}
+
 			default:
 				// Skip unsupported block, but continue reading the next block.
 				ReadNextBlock(decoder);
@@ -126,6 +139,7 @@ namespace Hardware { namespace Protocols
 			// Table entries omit the two zero low bits of the block address.
 			decoder.blockStart = static_cast<CvNumber>(decoder.blocks[decoder.nextBlock++]) * 4;
 			decoder.blockType = 0;
+			decoder.blockVersion = 0;
 			decoder.groupCount = 0;
 			decoder.caCount = 0;
 			ReadCVValue(decoder, decoder.blockStart, 0);
@@ -138,6 +152,8 @@ namespace Hardware { namespace Protocols
 
 		// propagate data
 		manager->DecoderDataMfx(decoder);
+
+		SaveMfxLoco(decoder);
 	}
 
 	bool DecoderHandlerMfx::ParseBlockDescription(DecoderDataMfx& decoder,
@@ -159,6 +175,17 @@ namespace Hardware { namespace Protocols
 
 			case 1:
 				decoder.blockType = value;
+				logger->Info(Languages::TextReadingMfxBlockType, decoder.blockType);
+				ReadCVValue(decoder, cv, 2);
+				return true;
+
+			case 2:
+				decoder.blockVersion = value;
+				if (decoder.blockType == MfxDecoderBlockFunctionMapping)
+				{
+					decoder.functionMappingVersion = value;
+				}
+				// Index 3 is always 0.
 				ReadCVValue(decoder, cv, 4);
 				return true;
 
@@ -299,6 +326,324 @@ namespace Hardware { namespace Protocols
 		return true;
 	}
 
+	bool DecoderHandlerMfx::ParseFunctionMappingSymbol(DecoderDataMfx& decoder,
+		const CvNumber cv,
+		const CvIndex index,
+		const CvValue value)
+	{
+		// Chapter 6.4.4, CA type 10: index 1 M GGGGGGG, index 2 S1, index 3 S2.
+		switch (index)
+		{
+			case 0:
+				if (value != MfxDecoderFunctionMappingCATypeSymbol)
+				{
+					return false;
+				}
+				decoder.functionMappings.push_back(DecoderDataMfxFunctionMapping());
+				ReadCVValue(decoder, cv, 1);
+				return true;
+
+			case 1:
+			{
+				DecoderDataMfxFunctionMapping& mapping = decoder.functionMappings.back();
+				mapping.type = ((value & 0x80) ? DataModel::LocoFunctionTypeMoment : DataModel::LocoFunctionTypePermanent);
+				mapping.group = value & 0x7F;
+				ReadCVValue(decoder, cv, 2);
+				return true;
+			}
+
+			case 2:
+				decoder.functionMappings.back().symbol1 = value;
+				ReadCVValue(decoder, cv, 3);
+				return true;
+
+			case 3:
+			{
+				DecoderDataMfxFunctionMapping& mapping = decoder.functionMappings.back();
+				mapping.symbol2 = value;
+				mapping.icon = MfxSymbolToLocoFunctionIcon(mapping.symbol1, mapping.symbol2);
+				if (mapping.icon == DataModel::LocoFunctionIconNone)
+				{
+					mapping.type = DataModel::LocoFunctionTypeNone;
+				}
+				ReadNextCA(decoder, cv);
+				return true;
+			}
+
+			default:
+				return false;
+		}
+	}
+
+	DataModel::LocoFunctionIcon DecoderHandlerMfx::MfxSymbolToLocoFunctionIcon(const CvValue symbol1,
+		const CvValue symbol2)
+	{
+		// Chapter 6.4.4: the function group G is not relevant, the symbol is defined by S1 and S2.
+		// The choice of icons is aligned with LocoFunctionMapCs2ToRailControl in MaerklinCANCommon.cpp.
+		switch (symbol1)
+		{
+			case 0x00:
+				return DataModel::LocoFunctionIconNone;
+
+			case 0x03: // head light
+				switch (symbol2)
+				{
+					case 0x40:
+						return DataModel::LocoFunctionIconCabLight2;
+
+					case 0x80:
+						return DataModel::LocoFunctionIconCabLight1;
+
+					default:
+						return DataModel::LocoFunctionIconLight;
+				}
+
+			case 0x04: // interior light
+				switch (symbol2)
+				{
+					case 0x04:
+						return DataModel::LocoFunctionIconInteriorLight2;
+
+					case 0x05:
+						return DataModel::LocoFunctionIconTableLight1;
+
+					case 0x06:
+						return DataModel::LocoFunctionIconTableLight2;
+
+					case 0x07:
+						return DataModel::LocoFunctionIconTableLight3;
+
+					default:
+						return DataModel::LocoFunctionIconInteriorLight1;
+				}
+
+			case 0x05: // exterior light
+				switch (symbol2)
+				{
+					case 0x01:
+						return DataModel::LocoFunctionIconLocomotiveNumberIndicator;
+
+					case 0x02:
+						return DataModel::LocoFunctionIconTrainDestinationIndicator;
+
+					case 0x03:
+						return DataModel::LocoFunctionIconEngineLight;
+
+					case 0x06:
+						return DataModel::LocoFunctionIconBlinkingLight;
+
+					case 0x07:
+						return DataModel::LocoFunctionIconStairsLight;
+
+					case 0x09:
+						return DataModel::LocoFunctionIconFireBox;
+
+					default:
+						return DataModel::LocoFunctionIconLight;
+				}
+
+			case 0x07: // sound
+				switch (symbol2)
+				{
+					case 0x01:
+						return DataModel::LocoFunctionIconBreak1;
+
+					case 0x02:
+						return DataModel::LocoFunctionIconPanto;
+
+					case 0x05:
+						return DataModel::LocoFunctionIconCoupler;
+
+					case 0x06:
+						return DataModel::LocoFunctionIconRailJoint;
+
+					case 0x08:
+						return DataModel::LocoFunctionIconWhistle2;
+
+					case 0x09:
+						return DataModel::LocoFunctionIconGearBox;
+
+					case 0x0A:
+						return DataModel::LocoFunctionIconSteamBlowOut;
+
+					case 0x0D:
+					case 0x10:
+						return DataModel::LocoFunctionIconShakingRust;
+
+					case 0x0E:
+						return DataModel::LocoFunctionIconGenerator;
+
+					case 0x0F:
+						return DataModel::LocoFunctionIconBufferPush;
+
+					case 0x11:
+						return DataModel::LocoFunctionIconMusic1;
+
+					case 0x13:
+						return DataModel::LocoFunctionIconSteamBlow;
+
+					case 0x14:
+						return DataModel::LocoFunctionIconEngine1;
+
+					case 0x2E:
+						return DataModel::LocoFunctionIconSand;
+
+					case 0x2F:
+						return DataModel::LocoFunctionIconNoBreak;
+
+					default:
+						return DataModel::LocoFunctionIconSoundGeneral;
+				}
+
+			case 0x08: // background sound
+				return DataModel::LocoFunctionIconRunning1;
+
+			case 0x09: // announcement
+				switch (symbol2)
+				{
+					case 0x02:
+						return DataModel::LocoFunctionIconStationAnnouncement2;
+
+					case 0x04:
+						return DataModel::LocoFunctionIconStationAnnouncement3;
+
+					case 0x05:
+						return DataModel::LocoFunctionIconSpeak;
+
+					default:
+						return DataModel::LocoFunctionIconStationAnnouncement1;
+				}
+
+			case 0x0A: // shunting mode
+				return DataModel::LocoFunctionIconShuntingMode;
+
+			case 0x0B: // direct control (inertia off)
+				return DataModel::LocoFunctionIconInertia;
+
+			case 0x20: // telex
+				switch (symbol2)
+				{
+					case 0x40:
+						return DataModel::LocoFunctionIconTelex2;
+
+					case 0x80:
+						return DataModel::LocoFunctionIconTelex1;
+
+					default:
+						return DataModel::LocoFunctionIconTelex12;
+				}
+
+			case 0x21:
+				return DataModel::LocoFunctionIconSmokeGenerator;
+
+			case 0x22: // pantograph
+				switch (symbol2)
+				{
+					case 0x40:
+						return DataModel::LocoFunctionIconPanto2;
+
+					case 0x80:
+						return DataModel::LocoFunctionIconPanto1;
+
+					default:
+						return DataModel::LocoFunctionIconPanto12;
+				}
+
+			case 0x23: // high beam
+				switch (symbol2)
+				{
+					case 0x40:
+						return DataModel::LocoFunctionIconHeadlightHighBeamReverse;
+
+					default:
+						return DataModel::LocoFunctionIconHeadlightHighBeamForward;
+				}
+
+			case 0x24:
+				return DataModel::LocoFunctionIconBell;
+
+			case 0x25:
+				return DataModel::LocoFunctionIconHorn1;
+
+			case 0x26:
+				return DataModel::LocoFunctionIconWhistle1;
+
+			case 0x27: // doors
+				return ((symbol2 == 0x01) ? DataModel::LocoFunctionIconCloseDoor : DataModel::LocoFunctionIconOpenDoor);
+
+			case 0x28:
+				return DataModel::LocoFunctionIconFan;
+
+			case 0x29: // pumps
+				switch (symbol2)
+				{
+					case 0x02:
+						return DataModel::LocoFunctionIconFan2;
+
+					case 0x04:
+						return DataModel::LocoFunctionIconFillWater;
+
+					case 0x05:
+						return DataModel::LocoFunctionIconWaterPump;
+
+					default:
+						return DataModel::LocoFunctionIconAirPump;
+				}
+
+			case 0x2A:
+				return DataModel::LocoFunctionIconShovelCoal;
+
+			case 0x2B: // crane
+				switch (symbol2)
+				{
+					case 0x01:
+						return DataModel::LocoFunctionIconUpDown1;
+
+					case 0x02:
+						return DataModel::LocoFunctionIconUpDown2;
+
+					case 0x03:
+						return DataModel::LocoFunctionIconTurnRight;
+
+					case 0x04:
+						return DataModel::LocoFunctionIconLeftRight;
+
+					case 0x05:
+						return DataModel::LocoFunctionIconCrane;
+
+					case 0x06:
+						return DataModel::LocoFunctionIconMagnet;
+
+					case 0x07:
+						return DataModel::LocoFunctionIconUp;
+
+					case 0x08:
+						return DataModel::LocoFunctionIconDown;
+
+					case 0x09:
+						return DataModel::LocoFunctionIconLeft;
+
+					case 0x0A:
+						return DataModel::LocoFunctionIconRight;
+
+					case 0x0C:
+						return DataModel::LocoFunctionIconTurnLeft;
+
+					default:
+						return DataModel::LocoFunctionIconCraneHook;
+				}
+
+			case 0x2C:
+				return ((symbol2 == 0x01) ? DataModel::LocoFunctionIconNoSound : DataModel::LocoFunctionIconUp);
+
+			case 0x02: // undefined
+			case 0x06: // mechanical function
+			case 0x1F: // user defined
+			default:
+				return DataModel::LocoFunctionIconDefault;
+		}
+	}
+
 	string DecoderHandlerMfx::MfxFallbackName(const Address address)
 	{
 		return "mfx loco " + std::to_string(address);
@@ -313,13 +658,30 @@ namespace Hardware { namespace Protocols
 
 	void DecoderHandlerMfx::SaveMfxLoco(const DecoderDataMfx& decoder)
 	{
-		DataModel::LocoConfig loco = manager->GetLocoByMfxUid(decoder.uid);
+		// Without UID (e.g. manual read via SID) the decoder can not be identified.
+		if (decoder.uid == 0)
+		{
+			return;
+		}
+
+		// Save decoder only as new loco if no loco with this mfx UID exists yet.
+		if (manager->GetLocoByMfxUid(decoder.uid).GetType() == LocoTypeLoco)
+		{
+			return;
+		}
+
+		DataModel::LocoConfig loco(LocoTypeLoco);
 		loco.SetName(decoder.name.empty() ? MfxFallbackName(decoder.sid) : decoder.name);
 		loco.SetControlID(controlID);
 		loco.SetProtocol(ProtocolMFX);
 		loco.SetAddress(decoder.sid);
 		loco.SetMfxUid(decoder.uid);
 		loco.SetServerAddress(loco.GetLocoID());
+		const std::vector<DataModel::LocoFunctionEntry> functions = decoder.GetLocoFunctions();
+		if (!functions.empty())
+		{
+			loco.SetFunctionStates(functions);
+		}
 		string result;
 		manager->LocoSave(loco, result);
 	}

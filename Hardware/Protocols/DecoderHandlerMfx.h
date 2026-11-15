@@ -38,7 +38,7 @@ namespace Hardware { namespace Protocols
 
 			virtual ~DecoderHandlerMfx() = default;
 
-			void ReadMfxDecoder(const Address mfxSid);
+			void ReadMfxDecoder(const Address mfxSid, const MfxUid mfxUid = 0);
 
 			bool ParseMfxCVValue(const Address mfxSid,
 				CvNumber cv,
@@ -178,8 +178,13 @@ namespace Hardware { namespace Protocols
 				const CvIndex index, const CvValue value);
 			bool ParseDecoderPropertiesLocoName(DecoderDataMfx& decoder, const CvNumber cv,
 				const CvIndex index, const CvValue value);
+			bool ParseFunctionMappingSymbol(DecoderDataMfx& decoder, const CvNumber cv,
+				const CvIndex index, const CvValue value);
 
 			static std::string MfxFallbackName(const Address address);
+
+			static DataModel::LocoFunctionIcon MfxSymbolToLocoFunctionIcon(const CvValue symbol1,
+				const CvValue symbol2);
 
 			void SaveMfxLoco(const DecoderDataMfx& decoder);
 

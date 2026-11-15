@@ -604,6 +604,7 @@ class Languages
 			TextReachedItsDestination,
 			TextRead,
 			TextReadingConfigFile,
+			TextReadingMfxBlockType,
 			TextReceivedAccessoryCommand,
 			TextReceivedDirectionCommand,
 			TextReceivedFunctionCommand,
