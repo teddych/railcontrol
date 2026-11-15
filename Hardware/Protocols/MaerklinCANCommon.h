@@ -62,7 +62,7 @@ namespace Hardware { namespace Protocols
 				const bool on);
 
 			void ProgramReadMfx(const Address address);
-			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv);
+			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv, const uint8_t count = 1);
 			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value);
 
 			static inline DataModel::LocoFunctionIcon MapLocoFunctionCs2ToRailControl(const uint8_t input)
@@ -82,6 +82,8 @@ namespace Hardware { namespace Protocols
 			}
 
 		protected:
+			void ReadMfxCVValue(const Address sid, const CvNumber cv, const CvIndex index, const uint8_t count) override;
+
 			inline MaerklinCANCommon(const std::string& uid,
 				ControlID controlID,
 				Manager* manager,

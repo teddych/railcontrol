@@ -44,6 +44,9 @@ namespace Hardware { namespace Protocols
 				CvNumber cv,
 				const CvValue value);
 
+			// Sends a mfx CV read request with count bytes to the hardware.
+			virtual void ReadMfxCVValue(const Address sid, const CvNumber cv, const CvIndex index, const uint8_t count) = 0;
+
 			Manager* manager;
 			Logger::Logger* logger;
 			ControlID controlID;
@@ -167,19 +170,28 @@ namespace Hardware { namespace Protocols
 				MfxDecoderMfxPlusCATypeCab = 0x1B
 			};
 
-			void ReadCVValue(DecoderDataMfx& decoder, const CvNumber cv, const CvIndex index);
-			void ReadNextCA(DecoderDataMfx& decoder, const CvNumber cv);
+			void ReadCVValue(DecoderDataMfx& decoder, const CvNumber cv, const CvIndex index, const uint8_t count = 1);
+
+			void ReadNextIndex(DecoderDataMfx& decoder);
+
+			void ReadNextCA(DecoderDataMfx& decoder);
+
 			void ReadNextBlock(DecoderDataMfx& decoder);
-			bool ParseBlockDescription(DecoderDataMfx& decoder, const CvNumber cv,
-				const CvIndex index, const CvValue value);
-			bool ParseDecoderPropertiesManufacturer(DecoderDataMfx& decoder, const CvNumber cv,
-				const CvIndex index, const CvValue value);
-			bool ParseDecoderPropertiesBlockTable(DecoderDataMfx& decoder, const CvNumber cv,
-				const CvIndex index, const CvValue value);
-			bool ParseDecoderPropertiesLocoName(DecoderDataMfx& decoder, const CvNumber cv,
-				const CvIndex index, const CvValue value);
-			bool ParseFunctionMappingSymbol(DecoderDataMfx& decoder, const CvNumber cv,
-				const CvIndex index, const CvValue value);
+
+			bool ParseBlockDescription(DecoderDataMfx& decoder,
+				const CvValue value);
+
+			bool ParseDecoderPropertiesManufacturer(DecoderDataMfx& decoder,
+				const CvValue value);
+
+			bool ParseDecoderPropertiesBlockTable(DecoderDataMfx& decoder,
+				const CvValue value);
+
+			bool ParseDecoderPropertiesLocoName(DecoderDataMfx& decoder,
+				const CvValue value);
+
+			bool ParseFunctionMappingSymbol(DecoderDataMfx& decoder,
+				const CvValue value);
 
 			static std::string MfxFallbackName(const Address address);
 

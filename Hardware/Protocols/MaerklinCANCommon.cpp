@@ -390,7 +390,8 @@ namespace Hardware { namespace Protocols
 
 	void MaerklinCANCommon::ProgramRead(const ProgramMode mode,
 		const Address address,
-		const CvNumber cv)
+		const CvNumber cv,
+		const uint8_t count)
 	{
 		Address addressInternal = address;
 		Protocol protocol = ProtocolNone;
@@ -413,8 +414,14 @@ namespace Hardware { namespace Protocols
 		CreateCommandHeader(buffer, CanCommandReadConfig, CanResponseCommand, 7);
 		CreateLocalIDLoco(buffer, protocol, addressInternal);
 		Utils::Integer::ShortToDataBigEndian(cv, buffer + 9);
-		buffer[11] = 1;
+		buffer[11] = count;
 		SendInternal(buffer);
+	}
+
+	void MaerklinCANCommon::ReadMfxCVValue(const Address sid, const CvNumber cv, const CvIndex index, const uint8_t count)
+	{
+		// The index is coded in the upper 6 bits of the CV number.
+		ProgramRead(ProgramModeMfx, sid, (static_cast<CvNumber>(index) << 10) | (cv & 0x3FF), count);
 	}
 
 	void MaerklinCANCommon::ProgramWrite(const ProgramMode mode,

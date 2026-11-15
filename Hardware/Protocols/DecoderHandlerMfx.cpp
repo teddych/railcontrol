@@ -40,7 +40,7 @@ namespace Hardware { namespace Protocols
 		DecoderDataMfx& decoder = mfxDecoders[mfxSid];
 		decoder.sid = mfxSid;
 		decoder.uid = mfxUid;
-		ReadCVValue(decoder, 0, 0);
+		ReadCVValue(decoder, 0, 0, 4);
 	}
 
 	bool DecoderHandlerMfx::ParseMfxCVValue(const Address mfxSid,
@@ -59,7 +59,8 @@ namespace Hardware { namespace Protocols
 
 		if ((index != decoder.readIndex) || (cv != decoder.readCv))
 		{
-			return false;
+			// While reading a decoder, ignore bytes of multibyte reads that are not needed anymore.
+			return (decoder.readCv <= 0x3FF);
 		}
 
 		// Chapter 6.3.1: index 0 identifies the CA, not the block.
@@ -70,7 +71,7 @@ namespace Hardware { namespace Protocols
 
 		if (decoder.caType == MfxDecoderCATypeBlockDescription)
 		{
-			return ParseBlockDescription(decoder, cv, index, value);
+			return ParseBlockDescription(decoder, value);
 		}
 
 		if (cv == decoder.blockStart)
@@ -84,17 +85,17 @@ namespace Hardware { namespace Protocols
 				switch (decoder.caType)
 				{
 					case MfxDecoderDecoderPropertiesCATypeManufacturer:
-						return ParseDecoderPropertiesManufacturer(decoder, cv, index, value);
+						return ParseDecoderPropertiesManufacturer(decoder, value);
 
 					case MfxDecoderDecoderPropertiesCATypeBlockTable:
-						return ParseDecoderPropertiesBlockTable(decoder, cv, index, value);
+						return ParseDecoderPropertiesBlockTable(decoder, value);
 
 					case MfxDecoderDecoderPropertiesCATypeLocoName:
-						return ParseDecoderPropertiesLocoName(decoder, cv, index, value);
+						return ParseDecoderPropertiesLocoName(decoder, value);
 
 					default:
 						// Skip unsupported CAs, but continue reading the block.
-						ReadNextCA(decoder, cv);
+						ReadNextCA(decoder);
 						return true;
 				}
 
@@ -102,11 +103,11 @@ namespace Hardware { namespace Protocols
 				switch (decoder.caType)
 				{
 					case MfxDecoderFunctionMappingCATypeSymbol:
-						return ParseFunctionMappingSymbol(decoder, cv, index, value);
+						return ParseFunctionMappingSymbol(decoder, value);
 
 					default:
 						// Skip unsupported CAs, but continue reading the block.
-						ReadNextCA(decoder, cv);
+						ReadNextCA(decoder);
 						return true;
 				}
 
@@ -117,15 +118,14 @@ namespace Hardware { namespace Protocols
 		}
 	}
 
-	void DecoderHandlerMfx::ReadNextCA(DecoderDataMfx& decoder,
-		const CvNumber cv)
+	void DecoderHandlerMfx::ReadNextCA(DecoderDataMfx& decoder)
 	{
 		// The description is followed by GG groups of LL CAs (chapter 6.3.1).
 		const CvNumber blockEnd = decoder.blockStart + 1 + (decoder.groupCount * decoder.caCount);
-		const CvNumber nextCv = cv + 1;
+		const CvNumber nextCv = decoder.readCv + 1;
 		if ((nextCv < blockEnd) && (nextCv <= 0x3FF))
 		{
-			ReadCVValue(decoder, nextCv, 0);
+			ReadCVValue(decoder, nextCv, 0, 4);
 			return;
 		}
 
@@ -142,7 +142,7 @@ namespace Hardware { namespace Protocols
 			decoder.blockVersion = 0;
 			decoder.groupCount = 0;
 			decoder.caCount = 0;
-			ReadCVValue(decoder, decoder.blockStart, 0);
+			ReadCVValue(decoder, decoder.blockStart, 0, 4);
 			return;
 		}
 
@@ -157,26 +157,25 @@ namespace Hardware { namespace Protocols
 	}
 
 	bool DecoderHandlerMfx::ParseBlockDescription(DecoderDataMfx& decoder,
-		const CvNumber cv,
-		const CvIndex index,
 		const CvValue value)
 	{
+		const CvIndex index = decoder.readIndex;
+
 		switch (index)
 		{
 			case 0:
-				if ((value != MfxDecoderCATypeBlockDescription)
-					|| (cv != decoder.blockStart)
-					|| ((cv & 0x03) != 0))
+				if ((decoder.readCv != decoder.blockStart)
+					|| ((decoder.readCv & 0x03) != 0))
 				{
 					return false;
 				}
-				ReadCVValue(decoder, cv, 1);
+				ReadNextIndex(decoder);
 				return true;
 
 			case 1:
 				decoder.blockType = value;
 				logger->Info(Languages::TextReadingMfxBlockType, decoder.blockType);
-				ReadCVValue(decoder, cv, 2);
+				ReadNextIndex(decoder);
 				return true;
 
 			case 2:
@@ -185,13 +184,20 @@ namespace Hardware { namespace Protocols
 				{
 					decoder.functionMappingVersion = value;
 				}
-				// Index 3 is always 0.
-				ReadCVValue(decoder, cv, 4);
+				ReadNextIndex(decoder);
+				return true;
+
+			case 3:
+				if (value != 0)
+				{
+					return false;
+				}
+				ReadNextIndex(decoder);
 				return true;
 
 			case 4:
 				decoder.groupCount = value;
-				ReadCVValue(decoder, cv, 5);
+				ReadNextIndex(decoder);
 				return true;
 
 			case 5:
@@ -202,7 +208,7 @@ namespace Hardware { namespace Protocols
 					return false;
 				}
 
-				ReadNextCA(decoder, cv);
+				ReadNextCA(decoder);
 				return true;
 
 			default:
@@ -211,23 +217,15 @@ namespace Hardware { namespace Protocols
 	}
 
 	bool DecoderHandlerMfx::ParseDecoderPropertiesManufacturer(DecoderDataMfx& decoder,
-		const CvNumber cv,
-		const CvIndex index,
 		const CvValue value)
 	{
+		const CvIndex index = decoder.readIndex;
+
 		// Chapter 6.4.1: index 1-4 manufacturer ID, index 5-8 product ID, MSB first.
 		if (index == 0)
 		{
-			if (value != MfxDecoderDecoderPropertiesCATypeManufacturer)
-			{
-				return false;
-			}
 			decoder.manufacturer = 0;
 			decoder.product = 0;
-
-			// We ignore index 1-3 because they are always 0 for known manufacturers.
-			ReadCVValue(decoder, cv, 4);
-			return true;
 		}
 		else if (index <= 4)
 		{
@@ -236,41 +234,36 @@ namespace Hardware { namespace Protocols
 		else if (index <= 8)
 		{
 			decoder.product = (decoder.product << 8) | value;
+
+			if (index == 8)
+			{
+				ReadNextCA(decoder);
+				return true;
+			}
 		}
 		else
 		{
 			return false;
 		}
 
-		if (index == 8)
-		{
-			ReadNextCA(decoder, cv);
-			return true;
-		}
-
-		ReadCVValue(decoder, cv, index + 1);
+		ReadNextIndex(decoder);
 		return true;
 	}
 
 	bool DecoderHandlerMfx::ParseDecoderPropertiesBlockTable(DecoderDataMfx& decoder,
-		const CvNumber cv,
-		const CvIndex index,
 		const CvValue value)
 	{
+		const CvIndex index = decoder.readIndex;
+
 		if (index == 0)
 		{
-			if (value != MfxDecoderDecoderPropertiesCATypeBlockTable)
-			{
-				return false;
-			}
-
-			ReadCVValue(decoder, cv, 1);
+			ReadNextIndex(decoder);
 			return true;
 		}
 
 		if (value == 0)
 		{
-			ReadNextCA(decoder, cv);
+			ReadNextCA(decoder);
 			return true;
 		}
 
@@ -285,15 +278,15 @@ namespace Hardware { namespace Protocols
 			return false; // Do not overflow the 6-bit index on an unterminated table.
 		}
 
-		ReadCVValue(decoder, cv, index + 1);
+		ReadNextIndex(decoder);
 		return true;
 	}
 
 	bool DecoderHandlerMfx::ParseDecoderPropertiesLocoName(DecoderDataMfx& decoder,
-		const CvNumber cv,
-		const CvIndex index,
 		const CvValue value)
 	{
+		const CvIndex index = decoder.readIndex;
+
 		if (index > 16)
 		{
 			return false;
@@ -301,11 +294,6 @@ namespace Hardware { namespace Protocols
 
 		if (index == 0)
 		{
-			if (value != MfxDecoderDecoderPropertiesCATypeLocoName)
-			{
-				mfxDecoders.erase(decoder.sid);
-				return false;
-			}
 			decoder.name.clear();
 		}
 		else
@@ -317,30 +305,26 @@ namespace Hardware { namespace Protocols
 
 			if ((value == 0) || (index == 16))
 			{
-				ReadNextCA(decoder, cv);
+				ReadNextCA(decoder);
 				return true;
 			}
 		}
 
-		ReadCVValue(decoder, cv, index + 1);
+		ReadNextIndex(decoder);
 		return true;
 	}
 
 	bool DecoderHandlerMfx::ParseFunctionMappingSymbol(DecoderDataMfx& decoder,
-		const CvNumber cv,
-		const CvIndex index,
 		const CvValue value)
 	{
+		const CvIndex index = decoder.readIndex;
+
 		// Chapter 6.4.4, CA type 10: index 1 M GGGGGGG, index 2 S1, index 3 S2.
 		switch (index)
 		{
 			case 0:
-				if (value != MfxDecoderFunctionMappingCATypeSymbol)
-				{
-					return false;
-				}
 				decoder.functionMappings.push_back(DecoderDataMfxFunctionMapping());
-				ReadCVValue(decoder, cv, 1);
+				ReadNextIndex(decoder);
 				return true;
 
 			case 1:
@@ -348,13 +332,13 @@ namespace Hardware { namespace Protocols
 				DecoderDataMfxFunctionMapping& mapping = decoder.functionMappings.back();
 				mapping.type = ((value & 0x80) ? DataModel::LocoFunctionTypeMoment : DataModel::LocoFunctionTypePermanent);
 				mapping.group = value & 0x7F;
-				ReadCVValue(decoder, cv, 2);
+				ReadNextIndex(decoder);
 				return true;
 			}
 
 			case 2:
 				decoder.functionMappings.back().symbol1 = value;
-				ReadCVValue(decoder, cv, 3);
+				ReadNextIndex(decoder);
 				return true;
 
 			case 3:
@@ -366,7 +350,7 @@ namespace Hardware { namespace Protocols
 				{
 					mapping.type = DataModel::LocoFunctionTypeNone;
 				}
-				ReadNextCA(decoder, cv);
+				ReadNextCA(decoder);
 				return true;
 			}
 
@@ -649,11 +633,23 @@ namespace Hardware { namespace Protocols
 		return "mfx loco " + std::to_string(address);
 	}
 
-	void DecoderHandlerMfx::ReadCVValue(DecoderDataMfx& decoder, const CvNumber cv, const CvIndex index)
+	void DecoderHandlerMfx::ReadCVValue(DecoderDataMfx& decoder, const CvNumber cv, const CvIndex index, const uint8_t count)
 	{
 		decoder.readCv = cv;
 		decoder.readIndex = index;
-		manager->ProgramRead(controlID, ProgramModeMfx, decoder.sid, (static_cast<CvNumber>(index) << 10) | cv);
+		ReadMfxCVValue(decoder.sid, cv, index, count);
+	}
+
+	void DecoderHandlerMfx::ReadNextIndex(DecoderDataMfx& decoder)
+	{
+		++decoder.readIndex;
+
+		// Multibyte reads always start at a multiple of 4 and read 4 indexes.
+		// Otherwise the index is already requested by a multibyte read: just wait for the value.
+		if ((decoder.readIndex & 0x03) == 0)
+		{
+			ReadMfxCVValue(decoder.sid, decoder.readCv, decoder.readIndex, 4);
+		}
 	}
 
 	void DecoderHandlerMfx::SaveMfxLoco(const DecoderDataMfx& decoder)
