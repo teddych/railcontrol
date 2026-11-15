@@ -251,6 +251,7 @@ class Languages
 			TextFeedbackDeleted,
 			TextFeedbackDoesNotExist,
 			TextFeedbackIsUsedByTrack,
+			TextFeedbackLocoAddress,
 			TextFeedbackSaved,
 			TextFeedbackStateIsOff,
 			TextFeedbackStateIsOn,

@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include <mutex>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -125,7 +126,10 @@ namespace DataModel
 				this->trackType = type;
 			}
 
-			bool SetFeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
+			// locoAddress: address of a loco detected on the feedback (e.g. by RailCom), AddressNone if unknown.
+			bool SetFeedbackState(const FeedbackID feedbackID,
+				const DataModel::Feedback::FeedbackState state,
+				const Address locoAddress = AddressNone);
 
 			inline DataModel::Feedback::FeedbackState GetStateDelayed() const
 			{
@@ -343,7 +347,9 @@ namespace DataModel
 
 			void StopAllSignals(const ObjectIdentifier& locoBaseIdentifier);
 
-			bool FeedbackStateInternal(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
+			bool FeedbackStateInternal(const FeedbackID feedbackID,
+				const DataModel::Feedback::FeedbackState state,
+				const Address locoAddress);
 			void OrderValidRoutes(std::vector<DataModel::Route*>& validRoutes) const;
 			SelectRouteApproach GetSelectRouteApproachCalculated() const;
 			bool ReleaseForceUnlocked(Logger::Logger* logger, const ObjectIdentifier& locoBaseIdentifier);
@@ -370,5 +376,6 @@ namespace DataModel
 			bool releaseWhenFree;
 			bool showName;
 			std::string displayName;
+			std::set<FeedbackID> occupiedFeedbacks;
 	};
 } // namespace DataModel

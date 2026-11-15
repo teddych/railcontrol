@@ -936,28 +936,36 @@ namespace Hardware
 			pin <<= 3;
 			pin += port;
 			++pin;
-			uint8_t type = buffer[9];
-			uint16_t value1 = Utils::Integer::DataLittleEndianToShort(buffer + 10);
-			DataModel::Feedback::FeedbackState state;
+			const uint8_t type = buffer[9];
+			const uint16_t value1 = Utils::Integer::DataLittleEndianToShort(buffer + 10);
 			switch (type)
 			{
 				case 0x01:
+				{
+					// Occupancy: bit 12 of value1 is set if occupied.
+					const DataModel::Feedback::FeedbackState state = static_cast<DataModel::Feedback::FeedbackState>((value1 >> 12) & 0x0001);
+					manager->FeedbackState(controlID, pin, state);
+					return;
+				}
+
+				case 0x11:
+				{
+					// RailCom: value1 and value2 contain the 1st and 2nd loco address (types 0x12 - 0x1F the further ones).
+					// Bits 14 and 15 contain the orientation of the loco.
+					// RailControl only stores one loco address per feedback, so only the 1st address is used.
+					const Address locoAddress = value1 & 0x3FFF;
+					if (locoAddress == AddressNone)
 					{
-					value1 >>= 12;
-					value1 &= 0x0001;
-					state = static_cast<DataModel::Feedback::FeedbackState>(value1);
-					break;
+						// No RailCom address does not mean that the feedback is free.
+						return;
+					}
+					manager->FeedbackState(controlID, pin, DataModel::Feedback::FeedbackStateOccupied, locoAddress);
+					return;
 				}
 
 				default:
-					{
-					state =
-					    (value1 > 0 ? DataModel::Feedback::FeedbackStateOccupied :
-					                  DataModel::Feedback::FeedbackStateFree);
-					break;
-				}
+					return;
 			}
-			manager->FeedbackState(controlID, pin, state);
 		}
 
 		void Z21::SendGetSerialNumber()

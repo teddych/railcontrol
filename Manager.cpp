@@ -731,6 +731,32 @@ LocoConfig Manager::GetLocoByMfxUid(const uint32_t mfxUid) const
 	return LocoConfig(LocoTypeNone);
 }
 
+DataModel::ObjectIdentifier Manager::GetLocoByDccAddress(const Address address) const
+{
+	std::lock_guard<std::mutex> guard(locoMutex);
+	for (const auto& entry : locos)
+	{
+		const Loco* loco = entry.second;
+		if (loco->GetAddress() != address)
+		{
+			continue;
+		}
+
+		switch (loco->GetProtocol())
+		{
+			case ProtocolDCC:
+			case ProtocolDCC14:
+			case ProtocolDCC28:
+			case ProtocolDCC128:
+				return DataModel::ObjectIdentifier(ObjectTypeLoco, loco->GetID());
+
+			default:
+				continue;
+		}
+	}
+	return DataModel::ObjectIdentifier();
+}
+
 Address Manager::GetFreeMfxSid()
 {
 	++lastMfxSid;
@@ -2175,12 +2201,13 @@ void Manager::FeedbackState(const ControlID controlID,
 	const FeedbackPin pin,
 	const FeedbackDevice device,
 	const FeedbackBus bus,
-	const DataModel::Feedback::FeedbackState state)
+	const DataModel::Feedback::FeedbackState state,
+	const Address locoAddress)
 {
 	Feedback* feedback = GetFeedback(controlID, pin, device, bus);
 	if (feedback)
 	{
-		feedback->SetState(logger, state);
+		feedback->SetState(logger, state, locoAddress);
 		return;
 	}
 

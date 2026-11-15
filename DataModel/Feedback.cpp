@@ -84,9 +84,12 @@ namespace DataModel
 	}
 
 	void Feedback::SetState(Logger::Logger* logger,
-		const FeedbackState newState)
+		const FeedbackState newState,
+		const Address newLocoAddress)
 	{
 		const FeedbackState state = static_cast<FeedbackState>(newState != inverted);
+		bool locoAddressChanged = false;
+		bool stateChanged = false;
 		{
 			std::lock_guard<std::mutex> Guard(updateMutex);
 			if (state == FeedbackStateFree)
@@ -99,17 +102,33 @@ namespace DataModel
 				return;
 			}
 
-			const unsigned char oldStateCounter = stateCounter;
+			stateChanged = (stateCounter == 0);
 			stateCounter = MaxStateCounter;
 
-			if (oldStateCounter > 0)
+			// The loco address can be reported while the feedback is already occupied.
+			if ((newLocoAddress != AddressNone) && (newLocoAddress != locoAddress))
 			{
-				return;
+				locoAddress = newLocoAddress;
+				locoAddressChanged = true;
 			}
 		}
 
+		if (locoAddressChanged)
+		{
+			logger->Info(Languages::TextFeedbackLocoAddress, GetName(), newLocoAddress);
+		}
+
+		if (!stateChanged)
+		{
+			if (locoAddressChanged)
+			{
+				UpdateTrackState(FeedbackStateOccupied, newLocoAddress);
+			}
+			return;
+		}
+
 		manager->FeedbackPublishState(this);
-		UpdateTrackState(FeedbackStateOccupied);
+		UpdateTrackState(FeedbackStateOccupied, newLocoAddress);
 
 		Route* route = manager->GetRoute(routeId);
 		if (route)
@@ -127,13 +146,13 @@ namespace DataModel
 		route->Execute(logger, objectIdentifier);
 	}
 
-	void Feedback::UpdateTrackState(const FeedbackState state)
+	void Feedback::UpdateTrackState(const FeedbackState state, const Address locoAddress)
 	{
 		if (!track)
 		{
 			return;
 		}
-		track->SetFeedbackState(GetID(), state);
+		track->SetFeedbackState(GetID(), state, locoAddress);
 	}
 
 	void Feedback::Debounce()
@@ -150,6 +169,7 @@ namespace DataModel
 			{
 				return;
 			}
+			locoAddress = AddressNone;
 		}
 		manager->FeedbackPublishState(this);
 		UpdateTrackState(FeedbackStateFree);

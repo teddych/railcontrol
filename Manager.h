@@ -103,6 +103,8 @@ class Manager
 
 		DataModel::LocoConfig GetLocoByMfxUid(const uint32_t mfxUid) const;
 
+		DataModel::ObjectIdentifier GetLocoByDccAddress(const Address address) const;
+
 		Address GetFreeMfxSid();
 
 		std::string GetLocoImage(const LocoID locoID) const;
@@ -317,18 +319,21 @@ class Manager
 		void AccessoryRemoveMatchKey(const AccessoryID accessoryId);
 
 		// feedback
+		// locoAddress: address of a loco detected on the feedback (e.g. by RailCom), AddressNone if unknown.
 		inline void FeedbackState(const ControlID controlID,
 			const FeedbackPin pin,
-			const DataModel::Feedback::FeedbackState state)
+			const DataModel::Feedback::FeedbackState state,
+			const Address locoAddress = AddressNone)
 		{
-			FeedbackState(controlID, pin, 0, 0, state);
+			FeedbackState(controlID, pin, 0, 0, state, locoAddress);
 		}
 
 		void FeedbackState(const ControlID controlID,
 			const FeedbackPin pin,
 			const FeedbackDevice device,
 			const FeedbackBus bus,
-			const DataModel::Feedback::FeedbackState state);
+			const DataModel::Feedback::FeedbackState state,
+			const Address locoAddress = AddressNone);
 
 		void FeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState state);
 		void FeedbackPublishState(const DataModel::Feedback* feedback);

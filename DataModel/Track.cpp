@@ -99,6 +99,10 @@ namespace DataModel
 				continue;
 			}
 			feedback->SetTrack(this);
+			if (feedback->GetState() == DataModel::Feedback::FeedbackStateOccupied)
+			{
+				occupiedFeedbacks.insert(feedbackID);
+			}
 			feedbacks.push_back(new Relation(manager,
 				ObjectIdentifier(ObjectTypeTrack, GetID()),
 				ObjectIdentifier(ObjectTypeFeedback, feedbackID),
@@ -153,6 +157,7 @@ namespace DataModel
 			feedbacks.pop_back();
 			delete feedbackRelation;
 		}
+		occupiedFeedbacks.clear();
 	}
 
 	void Track::AssignFeedbacks(const std::vector<DataModel::Relation*>& newFeedbacks)
@@ -165,6 +170,11 @@ namespace DataModel
 			if (feedback)
 			{
 				feedback->SetTrack(this);
+				if (feedback->GetState() == DataModel::Feedback::FeedbackStateOccupied)
+				{
+					// e.g. state restored at startup: location must not be handled again.
+					occupiedFeedbacks.insert(feedback->GetID());
+				}
 			}
 		}
 	}
@@ -338,18 +348,21 @@ namespace DataModel
 		return ret;
 	}
 
-	bool Track::SetFeedbackState(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState newTrackState)
+	bool Track::SetFeedbackState(const FeedbackID feedbackID,
+		const DataModel::Feedback::FeedbackState newTrackState,
+		const Address newLocoAddress)
 	{
 		{
 			std::lock_guard<std::mutex> Guard(updateMutex);
 			const DataModel::Feedback::FeedbackState oldTrackState = this->trackState;
 			const bool oldBlocked = blocked;
-			const bool ret = FeedbackStateInternal(feedbackID, newTrackState);
+			const ObjectIdentifier oldLocoBaseDelayed = locoBaseDelayed;
+			const bool ret = FeedbackStateInternal(feedbackID, newTrackState, newLocoAddress);
 			if (!ret)
 			{
 				return false;
 			}
-			if ((oldTrackState == newTrackState) && (oldBlocked == blocked))
+			if ((oldTrackState == newTrackState) && (oldBlocked == blocked) && (oldLocoBaseDelayed == locoBaseDelayed))
 			{
 				return true;
 			}
@@ -358,24 +371,43 @@ namespace DataModel
 		return true;
 	}
 
-	bool Track::FeedbackStateInternal(const FeedbackID feedbackID, const DataModel::Feedback::FeedbackState newTrackState)
+	bool Track::FeedbackStateInternal(const FeedbackID feedbackID,
+		const DataModel::Feedback::FeedbackState newTrackState,
+		const Address newLocoAddress)
 	{
 		if (newTrackState == DataModel::Feedback::FeedbackStateOccupied)
 		{
-			const bool ok = manager->LocationReached(GetLocoBaseDelayed(), feedbackID);
-			if (!ok)
+			// If the feedback has already been reported as occupied (e.g. loco address is reported later),
+			// the location has already been reached and must not be handled again.
+			const bool alreadyOccupied = !occupiedFeedbacks.insert(feedbackID).second;
+			if (!alreadyOccupied)
 			{
-				if ((!blocked) && manager->GetStopOnFeedbackInFreeTrack())
+				const bool ok = manager->LocationReached(GetLocoBaseDelayed(), feedbackID);
+				if (!ok)
 				{
-					manager->Booster(ControlTypeInternal, BoosterStateStop);
-					blocked = true;
+					if ((!blocked) && manager->GetStopOnFeedbackInFreeTrack())
+					{
+						manager->Booster(ControlTypeInternal, BoosterStateStop);
+						blocked = true;
+					}
 				}
+
+				this->trackState = DataModel::Feedback::FeedbackStateOccupied;
+				this->trackStateDelayed = DataModel::Feedback::FeedbackStateOccupied;
 			}
 
-			this->trackState = DataModel::Feedback::FeedbackStateOccupied;
-			this->trackStateDelayed = DataModel::Feedback::FeedbackStateOccupied;
+			if ((newLocoAddress != AddressNone) && (!locoBaseDelayed.IsSet()))
+			{
+				const ObjectIdentifier locoIdentifier = manager->GetLocoByDccAddress(newLocoAddress);
+				if (locoIdentifier.IsSet())
+				{
+					locoBaseDelayed = locoIdentifier;
+				}
+			}
 			return true;
 		}
+
+		occupiedFeedbacks.erase(feedbackID);
 
 		for (auto& feedbackRelation : feedbacks)
 		{

@@ -65,13 +65,15 @@ namespace DataModel
 				routeId(RouteNone),
 				inverted(false),
 				track(nullptr),
-				stateCounter(0)
+				stateCounter(0),
+				locoAddress(AddressNone)
 			{
 			}
 
 			inline Feedback(Manager* manager, const std::string& serialized)
 			:	manager(manager),
-				track(nullptr)
+				track(nullptr),
+				locoAddress(AddressNone)
 			{
 				Deserialize(serialized);
 			}
@@ -125,12 +127,19 @@ namespace DataModel
 				return inverted;
 			}
 
+			// locoAddress: address of a loco detected on this feedback (e.g. by RailCom), AddressNone if unknown.
 			void SetState(Logger::Logger* logger,
-				const FeedbackState state);
+				const FeedbackState state,
+				const Address locoAddress = AddressNone);
 
 			inline FeedbackState GetState() const
 			{
 				return static_cast<FeedbackState>(stateCounter > 0);
+			}
+
+			inline Address GetLocoAddress() const
+			{
+				return locoAddress;
 			}
 
 			inline bool CheckState(const FeedbackState state) const
@@ -221,7 +230,7 @@ namespace DataModel
 			Feedback& operator=(const Hardware::FeedbackCacheEntry& feedback);
 
 		private:
-			void UpdateTrackState(const FeedbackState state);
+			void UpdateTrackState(const FeedbackState state, const Address locoAddress = AddressNone);
 
 			static void ExecuteRouteStatic(DataModel::Route* route,
 				Logger::Logger* logger,
@@ -238,6 +247,7 @@ namespace DataModel
 			bool inverted;
 			Track* track;
 			unsigned char stateCounter;
+			Address locoAddress;
 			static const unsigned char MaxStateCounter = 10;
 			mutable std::mutex updateMutex;
 			std::string matchKey;
