@@ -483,6 +483,7 @@ const char* Languages::languages[MaxTexts][MaxLanguages] =
 /* TextLocoIsOnTrack */ { "{0} is on track {1}", "{0} ist auf Gleis {1}", "{0} está sobre vía {1}" } ,
 /* TextLocoIsReleased */ { "{0} is released", " {0} ist freigegeben", "{0} está desbloqueada" },
 /* TextLocoSaved */ { "Locomotive {0} saved", "Lokomotive {0} gespeichert", "Locomotora {0} guardado" },
+/* TextLocoSavedImageNotScaled */ { "Locomotive {0} saved. The image could not be scaled. No working installation of ImageMagick found.", "Lokomotive {0} gespeichert. Das Bild konnte nicht skaliert werden. Keine funktionierende Installation von ImageMagick gefunden.", "Locomotora {0} guardado. No se pudo escalar la imagen. No se encontró ninguna instalación funcional de ImageMagick." },
 /* TextLocoSpeedIs */ { "Speed of {0} is now {1}", "Die Geschwindigkeit von {0} ist {1}", "La velocidad de {0} está {1}" },
 /* TextLocoUpdated */ { "Locomotive {0} updated", "Lokomotive {0} aktualisiert", "Locomotora {0} actualizado" },
 /* TextLocos */ { "Locomotives", "Lokomotiven", "Locomotoras" },

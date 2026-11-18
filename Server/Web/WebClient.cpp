@@ -1945,13 +1945,16 @@ namespace Server { namespace Web
 
 	string WebClient::ReformatLocoImage(const string& image,
 		const unsigned int width,
-		const unsigned int height) const
+		const unsigned int height,
+		bool& success) const
 	{
+		success = true;
 		if (image.empty())
 		{
 			return image;
 		}
 
+		success = false;
 		char inputTemplate[] = "/tmp/railcontrol-loco-image-in-XXXXXX";
 		char outputTemplate[] = "/tmp/railcontrol-loco-image-out-XXXXXX";
 		const int inputFile = mkstemp(inputTemplate);
@@ -2006,7 +2009,13 @@ namespace Server { namespace Web
 
 		remove(inputTemplate);
 		remove(outputTemplate);
-		return reformattedImage.empty() ? image : reformattedImage;
+		if (reformattedImage.empty())
+		{
+			return image;
+		}
+
+		success = true;
+		return reformattedImage;
 	}
 
 	void WebClient::HandleLocoSave(const map<string, string>& arguments, const string& postFile)
@@ -2067,8 +2076,11 @@ namespace Server { namespace Web
 		}
 
 		string result;
-		const string image = ReformatLocoImage(postFile, 235, 100);
-		const string cs2image = ReformatLocoImage(postFile, 128, 48);
+		bool imageSuccess = true;
+		bool cs2ImageSuccess = true;
+		const string image = ReformatLocoImage(postFile, 235, 100, imageSuccess);
+		const string cs2image = ReformatLocoImage(postFile, 128, 48, cs2ImageSuccess);
+		const bool imageScaled = (imageSuccess && cs2ImageSuccess);
 
 		DataModel::LocoConfig locoConfig(LocoTypeLoco);
 		locoConfig.SetLocoID(locoId);
@@ -2092,6 +2104,13 @@ namespace Server { namespace Web
 		if ((!manager.LocoSave(locoConfig, result)))
 		{
 			ReplyResponse(ResponseError, result);
+			return;
+		}
+
+		if (!imageScaled)
+		{
+			logger->Warning(Languages::TextLocoSavedImageNotScaled, name);
+			ReplyResponse(ResponseWarning, Languages::TextLocoSavedImageNotScaled, name);
 			return;
 		}
 

@@ -229,7 +229,8 @@ namespace Server { namespace Web
 
 			std::string ReformatLocoImage(const std::string& image,
 				const unsigned int width,
-				const unsigned int height) const;
+				const unsigned int height,
+				bool& success) const;
 
 			void DeliverFile(const std::string& virtualFile);
 

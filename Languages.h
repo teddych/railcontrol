@@ -483,6 +483,7 @@ class Languages
 			TextLocoIsOnTrack,
 			TextLocoIsReleased,
 			TextLocoSaved,
+			TextLocoSavedImageNotScaled,
 			TextLocoSpeedIs,
 			TextLocoUpdated,
 			TextLocos,

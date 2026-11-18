@@ -20,6 +20,7 @@ make
 git
 libsqlite3-devel
 zlib-devel
+ImageMagick
 ```
 
 Después de instalar Cygwin se puede obtener el código fuente en una terminal de Cygwin con:
@@ -60,7 +61,7 @@ Existe una versión de Cygwin de 32 bits, pero ya no recibe soporte. Básicament
 En sistemas basados en Debian se pueden instalar las herramientas de desarrollo necesarias con el siguiente comando (puede variar en distribuciones Linux que no estén basadas en Debian):
 
 ```
-sudo apt-get install g++ binutils make git libsqlite3-dev zlib1g-dev
+sudo apt-get install g++ binutils make git libsqlite3-dev zlib1g-dev imagemagick
 ```
 
 Después de instalar las herramientas de desarrollo se puede obtener el código fuente con:
@@ -141,7 +142,7 @@ sudo xcode-select --install
 SQLite y zlib se pueden instalar con [Homebrew](https://brew.sh/):
 
 ```
-brew install sqlite zlib
+brew install sqlite zlib imagemagick
 ```
 
 Después de instalar las herramientas de desarrollo se puede obtener el código fuente con:
