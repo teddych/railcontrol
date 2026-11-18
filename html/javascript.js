@@ -688,6 +688,83 @@ function checkIntegerValue(name, min, max)
 	execFunctionByName('update_' + name);
 }
 
+function isValidIp(value)
+{
+	var parts = value.split('.');
+	if (parts.length != 4)
+	{
+		return false;
+	}
+	for (var i = 0; i < 4; ++i)
+	{
+		var part = parts[i];
+		if ((part.length == 0) || (part.length > 3) || !/^[0-9]+$/.test(part))
+		{
+			return false;
+		}
+		if ((part.length > 1) && (part[0] == '0'))
+		{
+			return false;
+		}
+		if (parseInt(part, 10) > 255)
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+function isIpInputValid(input)
+{
+	// values already stored in the database are accepted as long as they are not changed
+	if (input.value == input.defaultValue)
+	{
+		return true;
+	}
+	return isValidIp(input.value);
+}
+
+function checkIpValue(name)
+{
+	var input = document.getElementById(name);
+	if (!input)
+	{
+		return;
+	}
+
+	var filtered = input.value.replace(/[^0-9.]/g, '');
+	if (filtered != input.value)
+	{
+		input.value = filtered;
+	}
+
+	if (isIpInputValid(input))
+	{
+		input.classList.remove('ip_invalid');
+	}
+	else
+	{
+		input.classList.add('ip_invalid');
+	}
+}
+
+function checkIpInputsOfForm(form)
+{
+	var inputs = form.getElementsByClassName('ip');
+	for (var i = 0; i < inputs.length; ++i)
+	{
+		var input = inputs[i];
+		if (isIpInputValid(input))
+		{
+			continue;
+		}
+		input.classList.add('ip_invalid');
+		input.focus();
+		return false;
+	}
+	return true;
+}
+
 function incrementIntegerValue(name, max)
 {
 	var input = document.getElementById(name);
@@ -2544,6 +2621,10 @@ function submitEditForm()
 {
 	var body = '';
 	var form = document.getElementById('editform');
+	if (!checkIpInputsOfForm(form))
+	{
+		return false;
+	}
 	var hasFileInput = false;
 	var parameterCount = 0;
 	var prevCmd = '';

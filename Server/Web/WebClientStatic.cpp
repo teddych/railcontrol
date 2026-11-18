@@ -28,6 +28,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Server/Web/HtmlTagInputCheckboxWithLabel.h"
 #include "Server/Web/HtmlTagInputHidden.h"
 #include "Server/Web/HtmlTagInputIntegerWithLabel.h"
+#include "Server/Web/HtmlTagInputIpWithLabel.h"
 #include "Server/Web/HtmlTagInputTextWithLabel.h"
 #include "Server/Web/WebClientStatic.h"
 
@@ -40,15 +41,14 @@ using std::vector;
 
 namespace Server { namespace Web
 {
-	HtmlTag WebClientStatic::HtmlTagControlArgument(const unsigned char argNr, const ArgumentType type, const string& value)
+	HtmlTag WebClientStatic::HtmlTagControlArgument(const HardwareType hardwareType, const unsigned char argNr, const ArgumentType type, const string& value)
 	{
 		Languages::TextSelector argumentName;
 		string argumentNumber = "arg" + to_string(argNr);
 		switch (type)
 		{
 			case ArgumentTypeIpAddress:
-				argumentName = Languages::TextIPAddress;
-				break;
+				return HtmlTagInputIpWithLabel(argumentNumber, Languages::TextIPAddress, value.empty() ? DefaultIpAddress(hardwareType) : value);
 
 			case ArgumentTypeSerialPort:
 			{
@@ -95,6 +95,22 @@ namespace Server { namespace Web
 		return HtmlTagInputTextWithLabel(argumentNumber, argumentName, value);
 	}
 
+	string WebClientStatic::DefaultIpAddress(const HardwareType hardwareType)
+	{
+		switch (hardwareType)
+		{
+			case HardwareTypeCS2Tcp:
+			case HardwareTypeCS2Udp:
+				return "192.168.1.53";
+
+			case HardwareTypeZ21:
+				return "192.168.0.111";
+
+			default:
+				return "";
+		}
+	}
+
 	HtmlTag WebClientStatic::HtmlTagControlArguments(const HardwareType hardwareType, const string& arg1, const string& arg2, const string& arg3, const string& arg4, const string& arg5)
 	{
 		HtmlTag div;
@@ -103,23 +119,23 @@ namespace Server { namespace Web
 		Hardware::HardwareHandler::ArgumentTypesOfHardwareTypeAndHint(hardwareType, argumentTypes, hint);
 		if (argumentTypes.count(1) == 1)
 		{
-			div.AddChildTag(HtmlTagControlArgument(1, argumentTypes.at(1), arg1));
+			div.AddChildTag(HtmlTagControlArgument(hardwareType, 1, argumentTypes.at(1), arg1));
 		}
 		if (argumentTypes.count(2) == 1)
 		{
-			div.AddChildTag(HtmlTagControlArgument(2, argumentTypes.at(2), arg2));
+			div.AddChildTag(HtmlTagControlArgument(hardwareType, 2, argumentTypes.at(2), arg2));
 		}
 		if (argumentTypes.count(3) == 1)
 		{
-			div.AddChildTag(HtmlTagControlArgument(3, argumentTypes.at(3), arg3));
+			div.AddChildTag(HtmlTagControlArgument(hardwareType, 3, argumentTypes.at(3), arg3));
 		}
 		if (argumentTypes.count(4) == 1)
 		{
-			div.AddChildTag(HtmlTagControlArgument(4, argumentTypes.at(4), arg4));
+			div.AddChildTag(HtmlTagControlArgument(hardwareType, 4, argumentTypes.at(4), arg4));
 		}
 		if (argumentTypes.count(5) == 1)
 		{
-			div.AddChildTag(HtmlTagControlArgument(5, argumentTypes.at(5), arg5));
+			div.AddChildTag(HtmlTagControlArgument(hardwareType, 5, argumentTypes.at(5), arg5));
 		}
 		if (hint.size() > 0)
 		{

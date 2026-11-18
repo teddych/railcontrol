@@ -43,7 +43,9 @@ namespace Server { namespace Web
 			static HtmlTag HtmlTagSelectSelectRouteApproach(const DataModel::SelectRouteApproach selectRouteApproach,
 				const bool addDefault = true);
 
-			static HtmlTag HtmlTagControlArgument(const unsigned char argNr, const ArgumentType type, const std::string& value);
+			static HtmlTag HtmlTagControlArgument(const HardwareType hardwareType, const unsigned char argNr, const ArgumentType type, const std::string& value);
+			static std::string DefaultIpAddress(const HardwareType hardwareType);
+
 
 			template<class T>
 			static HtmlTag HtmlTagMatchKey(const std::map<std::string,T>& matchKeyMap,

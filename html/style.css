@@ -533,6 +533,10 @@ label {
 	width: 15px;
 }
 
+.ip_invalid {
+	background-color: #f88;
+}
+
 input {
 	display: inline-block;
 	width: 240px;
