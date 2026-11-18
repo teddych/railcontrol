@@ -2,12 +2,10 @@
 - Fahrstrassen mit unverschlossenen Objekten
 - Masseträgheit von Zügen simulieren
 - Bahnübergänge
+- Drehscheibe
 - Automatisches Umfahren des Zuges an der Endstation
 - Trotz freier Fahrt anhalten an Bahnsteigen
-- Lokbilder
 - Fahren nach Fahrplan
-- Formulare als POST-Request senden um maximale URL-Länge zu umgehen
-- Neuverbinden zu Zentrale bei Verbindungsabbruch
 - Anbinden von SPROG DCC
 - Anbinden von Zimo-Zentralen
 - Anbinden von BidiB-Zentralen
