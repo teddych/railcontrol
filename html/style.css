@@ -505,7 +505,7 @@ label {
 }
 
 .function_line {
-	width: 30px;
+	white-space: nowrap;
 }
 
 .narrow_label label {
@@ -628,6 +628,7 @@ input {
 
 .dropdown.show {
 	width: 100%;
+	z-index: 10;
 }
 
 .dropdown.show .dropdownentry {
