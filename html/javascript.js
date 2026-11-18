@@ -2521,6 +2521,10 @@ function addInfoBox(type, info)
 		case 'w': // warning
 			hidePopup();
 			className = 'infoboxwarning';
+			setTimeout(function()
+			{
+				deleteElement(id);
+			}, 10000);
 			break;
 
 		case 'e': // error
