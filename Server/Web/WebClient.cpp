@@ -230,10 +230,6 @@ namespace Server { namespace Web
 			if (uri.compare("/") == 0 && cmd.empty())
 			{
 				PrintMainHTML();
-				if (server.UpdateAvailable())
-				{
-					server.AddUpdate("warning", Languages::TextRailControlUpdateAvailable);
-				}
 			}
 			else if (cmd.compare("askshutdown") == 0)
 			{
@@ -3979,7 +3975,22 @@ namespace Server { namespace Web
 			return;
 		}
 
-		unsigned int updateID = Utils::Utils::GetIntegerMapEntry(headers, "Last-Event-ID", 1);
+		unsigned int updateID = Utils::Utils::GetIntegerMapEntry(headers, "Last-Event-ID", 0);
+		if (updateID == 0)
+		{
+			// new connection (not a reconnect): send update warning only to this client
+			updateID = 1;
+			if (server.UpdateAvailable())
+			{
+				const string warning = string("data: command=warning;status=") + Languages::GetText(Languages::TextRailControlUpdateAvailable) + "\r\n\r\n";
+				ret = connection->Send(warning);
+				if (ret < 0)
+				{
+					return;
+				}
+			}
+		}
+
 		while(run)
 		{
 			string s;
