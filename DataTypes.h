@@ -197,7 +197,7 @@ enum ArgumentType : uint8_t
 	ArgumentTypeIpAddress = 1,
 	ArgumentTypeSerialPort = 2,
 	ArgumentTypeS88Modules = 3,
-	ArgumentTypeMainSecundary = 4,
+	ArgumentTypeMainSecundary = 4, // not used anymore, but still reserved for old configurations
 	ArgumentTypeCS2MS2 = 5
 };
 

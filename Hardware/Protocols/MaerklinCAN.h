@@ -28,7 +28,6 @@ along with RailControl; see the file LICENCE. If not see
 #include "Hardware/LocoCache.h"
 #include "Hardware/Protocols/MaerklinCANCommon.h"
 #include "Logger/Logger.h"
-#include "Utils/Integer.h"
 
 // CAN protocol specification at http://streaming.maerklin.de/public-media/cs2/cs2CAN-Protokoll-2_0.pdf
 // Very interesting is also:
@@ -171,7 +170,8 @@ namespace Hardware { namespace Protocols
 		protected:
 			inline MaerklinCAN(const HardwareParams* params,
 				const std::string& fullName,
-				const std::string& shortName)
+				const std::string& shortName,
+				const bool cs2MainEmulation)
 			:	HardwareInterface(params->GetManager(),
 					params->GetControlID(),
 					fullName,
@@ -179,7 +179,7 @@ namespace Hardware { namespace Protocols
 				MaerklinCANCommon("affeaffa",
 					params->GetControlID(),
 					params->GetManager(),
-					IsCS2MainEmulation(params->GetArg2()),
+					cs2MainEmulation,
 					HardwareInterface::logger),
 				locoCache(params->GetControlID(), params->GetManager())
 			{
@@ -210,12 +210,6 @@ namespace Hardware { namespace Protocols
 			}
 
 		private:
-			static inline bool IsCS2MainEmulation(const std::string arg)
-			{
-				const int value = Utils::Integer::StringToInteger(arg, 0);
-				return (value != ArgumentTypeCS2MS2CS2MainDevice);
-			}
-
 			LocoCache locoCache;
 	};
 }} // namespace

@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Hardware/Protocols/MaerklinCAN.h"
 #include "Logger/Logger.h"
 #include "Network/Serial.h"
+#include "Utils/Integer.h"
 
 namespace Hardware
 {
@@ -45,6 +46,12 @@ namespace Hardware
 			}
 
 		private:
+			static inline bool IsCS2MainEmulation(const std::string& arg)
+			{
+				const int value = Utils::Integer::StringToInteger(arg, 0);
+				return (value != ArgumentTypeCS2MS2CS2MainDevice);
+			}
+
 			Network::Serial serialLine;
 
 			void Send(const unsigned char* buffer) override;

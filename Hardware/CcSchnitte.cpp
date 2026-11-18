@@ -33,7 +33,8 @@ namespace Hardware
 	CcSchnitte::CcSchnitte(const HardwareParams* params)
 	:	MaerklinCAN(params,
 			"CC-Schnitte / " + params->GetName() + " at serial port " + params->GetArg1(),
-			params->GetName()),
+			params->GetName(),
+			IsCS2MainEmulation(params->GetArg2())),
 		serialLine(HardwareInterface::logger, params->GetArg1(), B500000, 8, 'N', 1, true)
 	{
 		HardwareInterface::logger->Info(Languages::TextStarting, GetFullName());

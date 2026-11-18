@@ -26,10 +26,14 @@ namespace Hardware
 	CS2Udp::CS2Udp(const HardwareParams* params)
 	:	MaerklinCAN(params,
 			"Maerklin Central Station 2 (CS2) UDP / " + params->GetName() + " at IP " + params->GetArg1(),
-			params->GetName()),
+			params->GetName(),
+			false),
 		senderConnection(HardwareInterface::logger, params->GetArg1(), CS2SenderPort),
 		receiverConnection(HardwareInterface::logger, "0.0.0.0", CS2ReceiverPort)
 	{
+		// FIXME: 2026-11-18 arg2 (main/secondary device) is not used anymore / can be removed later
+		const_cast<HardwareParams*>(params)->SetArg2("");
+
 		HardwareInterface::logger->Info(Languages::TextStarting, GetFullName());
 
 		if (!senderConnection.IsConnected())

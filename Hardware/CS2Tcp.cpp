@@ -26,9 +26,13 @@ namespace Hardware
 	CS2Tcp::CS2Tcp(const HardwareParams* params)
 	:	MaerklinCAN(params,
 			"Maerklin Central Station 2 (CS2) TCP / " + params->GetName() + " at IP " + params->GetArg1(),
-			params->GetName()),
+			params->GetName(),
+			false),
 		connection(Network::TcpClient::GetTcpClientConnection(HardwareInterface::logger, params->GetArg1(), CS2Port))
 	{
+		// FIXME: 2026-11-18 arg2 (main/secondary device) is not used anymore / can be removed later
+		const_cast<HardwareParams*>(params)->SetArg2("");
+
 		HardwareInterface::logger->Info(Languages::TextStarting, GetFullName());
 
 		if (!connection.IsConnected())

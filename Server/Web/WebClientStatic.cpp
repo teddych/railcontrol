@@ -78,15 +78,6 @@ namespace Server { namespace Web
 				return HtmlTagInputIntegerWithLabel(argumentNumber, argumentName, valueInteger, 0, 62);
 			}
 
-			case ArgumentTypeMainSecundary:
-			{
-				argumentName = Languages::TextDeviceType;
-				map<string,string> mainSecondaryOptions;
-				mainSecondaryOptions[to_string(ArgumentTypeCS2MS2CS2MainDevice)] = Languages::Languages::GetText(Languages::Languages::TextCS2MainDevice);
-				mainSecondaryOptions[to_string(ArgumentTypeCS2MS2CS2SecondaryDevice)] = Languages::Languages::GetText(Languages::Languages::TextCS2SecondaryDevice);
-				return HtmlTagSelectWithLabel(argumentNumber, argumentName, mainSecondaryOptions, value);
-			}
-
 			case ArgumentTypeCS2MS2:
 			{
 				argumentName = Languages::TextDeviceType;
