@@ -57,104 +57,99 @@ namespace Hardware
 
 	void HardwareHandler::Init()
 	{
-		if (!params)
-		{
-			return;
-		}
-
-		const HardwareType type = params->GetHardwareType();
+		const HardwareType type = params.GetHardwareType();
 		switch(type)
 		{
 			case HardwareTypeVirtual:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Virtual(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Virtual(&params));
 				return;
 
 			case HardwareTypeCS2Udp:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Udp(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Udp(&params));
 				return;
 
 			case HardwareTypeM6051:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new M6051(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new M6051(&params));
 				return;
 
 			case HardwareTypeOpenDcc:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new OpenDcc(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new OpenDcc(&params));
 				return;
 
 			case HardwareTypeHsi88:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Hsi88(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Hsi88(&params));
 				return;
 
 			case HardwareTypeZ21:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Z21(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Z21(&params));
 				return;
 
 			case HardwareTypeCcSchnitte:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CcSchnitte(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CcSchnitte(&params));
 				return;
 
 			case HardwareTypeEcos:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Ecos(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Ecos(&params));
 				return;
 
 			case HardwareTypeCS2Tcp:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Tcp(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS2Tcp(&params));
 				return;
 
 			case HardwareTypeIntellibox:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Intellibox(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Intellibox(&params));
 				return;
 
 			case HardwareTypeMasterControl:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new MasterControl(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new MasterControl(&params));
 				return;
 
 			case HardwareTypeTwinCenter:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new TwinCenter(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new TwinCenter(&params));
 				return;
 
 			case HardwareTypeMasterControl2:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new MasterControl2(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new MasterControl2(&params));
 				return;
 
 			case HardwareTypeRedBox:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new RedBox(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new RedBox(&params));
 				return;
 
 			case HardwareTypeRektor:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Rektor(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Rektor(&params));
 				return;
 
 			case HardwareTypeDR5000:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new DR5000(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new DR5000(&params));
 				return;
 
 			case HardwareTypeCS1:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS1(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new CS1(&params));
 				return;
 
 			case HardwareTypeDccPpExTcp:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new DccPpExTcp(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new DccPpExTcp(&params));
 				return;
 
 			case HardwareTypeDccPpExSerial:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new DccPpExSerial(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new DccPpExSerial(&params));
 				return;
 
 			case HardwareTypeIntellibox2:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Intellibox2(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new Intellibox2(&params));
 				return;
 
 			case HardwareTypeLocoNetAdapter63120:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new LocoNetAdapter63120(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new LocoNetAdapter63120(&params));
 				return;
 
 			case HardwareTypeLocoNetAdapter63820:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new LocoNetAdapter63820(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new LocoNetAdapter63820(&params));
 				return;
 
 			case HardwareTypeSystemControl7:
-				instance = reinterpret_cast<Hardware::HardwareInterface*>(new SystemControl7(params));
+				instance = reinterpret_cast<Hardware::HardwareInterface*>(new SystemControl7(&params));
 				return;
 
 			case HardwareTypeNone:
@@ -173,11 +168,11 @@ namespace Hardware
 
 		delete(instance);
 		instance = nullptr;
-		params = nullptr;
 	}
 
 	void HardwareHandler::CheckHealth()
 	{
+		std::lock_guard<std::mutex> guard(handlerMutex);
 		if (instance)
 		{
 			if (!instance->NeedsRestart())

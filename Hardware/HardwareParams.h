@@ -30,8 +30,8 @@ namespace Hardware
 	{
 		public:
 			HardwareParams() = delete;
-			HardwareParams(const HardwareParams&) = delete;
-			HardwareParams& operator=(const HardwareParams&) = delete;
+			HardwareParams(const HardwareParams&) = default;
+			HardwareParams& operator=(const HardwareParams&) = default;
 
 			inline HardwareParams(ControlID controlID,
 				HardwareType hardwareType,

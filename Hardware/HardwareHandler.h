@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <mutex>
 #include <string>
 
 #include "ControlInterface.h"
@@ -42,13 +43,14 @@ namespace Hardware
 			inline HardwareHandler(const HardwareParams* params)
 			:	ControlInterface(ControlTypeHardware),
 				instance(nullptr),
-				params(nullptr)
+				params(*params)
 			{
-				Init(params);
+				Init();
 			}
 
 			inline ~HardwareHandler()
 			{
+				std::lock_guard<std::mutex> guard(handlerMutex);
 				Close();
 			}
 
@@ -63,8 +65,10 @@ namespace Hardware
 
 			inline void ReInit(const HardwareParams* params) override
 			{
+				std::lock_guard<std::mutex> guard(handlerMutex);
 				Close();
-				Init(params);
+				this->params = *params;
+				Init();
 				Start();
 			}
 
@@ -72,7 +76,7 @@ namespace Hardware
 
 			inline ControlID GetControlID() const
 			{
-				return params->GetControlID();
+				return params.GetControlID();
 			}
 
 			const std::string& GetName() const override;
@@ -202,15 +206,12 @@ namespace Hardware
 
 		private:
 			Hardware::HardwareInterface* instance;
-			const HardwareParams* params;
+
+			// own copy of the params, so that the params of the manager can be deleted independently
+			HardwareParams params;
+			std::mutex handlerMutex;
 
 			static const std::string Unknown;
-
-			inline void Init(const HardwareParams* params)
-			{
-				this->params = params;
-				Init();
-			}
 
 			void Init();
 
