@@ -1877,6 +1877,11 @@ function dataUpdate(event)
 		var state = argumentMap.get('status');
 		addInfoBox('w', state);
 	}
+	else if (command == 'error')
+	{
+		var state = argumentMap.get('status');
+		addInfoBox('e', state);
+	}
 	else if (command == 'booster')
 	{
 		elementName = 'skip_booster';

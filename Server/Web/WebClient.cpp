@@ -19,6 +19,7 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include <algorithm>
+#include <chrono>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>		//memset
@@ -3976,23 +3977,29 @@ namespace Server { namespace Web
 		}
 
 		unsigned int updateID = Utils::Utils::GetIntegerMapEntry(headers, "Last-Event-ID", 0);
+		// new connection (not a reconnect): send update error only to this client,
+		// delayed so that the client has finished loading the page
+		bool sendUpdateError = false;
 		if (updateID == 0)
 		{
-			// new connection (not a reconnect): send update warning only to this client
 			updateID = 1;
-			if (server.UpdateAvailable())
+			sendUpdateError = server.UpdateAvailable();
+		}
+		const std::chrono::steady_clock::time_point updateErrorTime = std::chrono::steady_clock::now() + std::chrono::seconds(5);
+
+		while(run)
+		{
+			if ((sendUpdateError) && (std::chrono::steady_clock::now() >= updateErrorTime))
 			{
-				const string warning = string("data: command=warning;status=") + Languages::GetText(Languages::TextRailControlUpdateAvailable) + "\r\n\r\n";
-				ret = connection->Send(warning);
+				sendUpdateError = false;
+				const string error = string("data: command=error;status=") + Languages::GetText(Languages::TextRailControlUpdateAvailable) + "\r\n\r\n";
+				ret = connection->Send(error);
 				if (ret < 0)
 				{
 					return;
 				}
 			}
-		}
 
-		while(run)
-		{
 			string s;
 			bool ok = server.NextUpdate(updateID, s);
 			if (!ok)
