@@ -120,6 +120,13 @@ namespace Hardware { namespace Protocols
 
 	void DecoderHandlerMfx::ReadNextCA(DecoderDataMfx& decoder)
 	{
+		// Multibyte reads always read 4 indexes: wait for the last requested index before requesting the next CA.
+		if ((decoder.readIndex & 0x03) != 0x03)
+		{
+			ReadNextIndex(decoder);
+			return;
+		}
+
 		// The description is followed by GG groups of LL CAs (chapter 6.3.1).
 		const CvNumber blockEnd = decoder.blockStart + 1 + (decoder.groupCount * decoder.caCount);
 		const CvNumber nextCv = decoder.readCv + 1;
@@ -134,6 +141,13 @@ namespace Hardware { namespace Protocols
 
 	void DecoderHandlerMfx::ReadNextBlock(DecoderDataMfx& decoder)
 	{
+		// Multibyte reads always read 4 indexes: wait for the last requested index before requesting the next block.
+		if ((decoder.readIndex & 0x03) != 0x03)
+		{
+			ReadNextIndex(decoder);
+			return;
+		}
+
 		if ((decoder.nextBlock < decoder.blocks.size()))
 		{
 			// Table entries omit the two zero low bits of the block address.
@@ -188,10 +202,7 @@ namespace Hardware { namespace Protocols
 				return true;
 
 			case 3:
-				if (value != 0)
-				{
-					return false;
-				}
+				// data not needed, but requested by the multibyte read
 				ReadNextIndex(decoder);
 				return true;
 
@@ -208,6 +219,12 @@ namespace Hardware { namespace Protocols
 					return false;
 				}
 
+				ReadNextCA(decoder);
+				return true;
+
+			case 6:
+			case 7:
+				// data not needed, but requested by the multibyte read
 				ReadNextCA(decoder);
 				return true;
 
@@ -234,12 +251,17 @@ namespace Hardware { namespace Protocols
 		else if (index <= 8)
 		{
 			decoder.product = (decoder.product << 8) | value;
-
 			if (index == 8)
 			{
 				ReadNextCA(decoder);
 				return true;
 			}
+		}
+		else if (index <= 11)
+		{
+			// Index 9-11 are requested by the multibyte read but not needed.
+			ReadNextCA(decoder);
+			return true;
 		}
 		else
 		{
@@ -261,6 +283,7 @@ namespace Hardware { namespace Protocols
 			return true;
 		}
 
+		// The table is terminated by 0.
 		if (value == 0)
 		{
 			ReadNextCA(decoder);
@@ -287,7 +310,8 @@ namespace Hardware { namespace Protocols
 	{
 		const CvIndex index = decoder.readIndex;
 
-		if (index > 16)
+		// Index 1-16 contain the name, index 17-19 are requested by the multibyte read but not needed.
+		if (index > 19)
 		{
 			return false;
 		}
@@ -298,12 +322,13 @@ namespace Hardware { namespace Protocols
 		}
 		else
 		{
-			if ((value >= 0x20) && (value != 0x7F))
+			if ((index <= 16) && (value >= 0x20) && (value != 0x7F))
 			{
 				decoder.name += static_cast<char>(value);
 			}
 
-			if ((value == 0) || (index == 16))
+			// The name is terminated by 0 or has a maximum of 16 characters.
+			if ((value == 0) || (index >= 16))
 			{
 				ReadNextCA(decoder);
 				return true;
