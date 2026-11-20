@@ -1183,7 +1183,8 @@ namespace Hardware { namespace Protocols
 				return;
 			}
 
-			// A zero-filled frame ends the lokinfo name, which may span several frames.
+			// The lokinfo name always spans two frames (16 bytes, zero padded),
+			++pendingRequest->second.frames;
 			bool endOfRequest = true;
 			for (size_t i = 0; i < 8; ++i)
 			{
@@ -1193,30 +1194,29 @@ namespace Hardware { namespace Protocols
 					break;
 				}
 			}
-			if (endOfRequest)
-			{
-				const string data = GetMs2LocoInfo(pendingRequest->second.data);
-				SendUncompressedFile(data, buffer + 5, requestHash);
-				configRequests.erase(pendingRequest);
-				return;
-			}
 			for (size_t i = 0;
 				i < 8 && buffer[5 + i] != 0 && pendingRequest->second.data.size() < 255;
 				++i)
 			{
 				pendingRequest->second.data += static_cast<char>(buffer[5 + i]);
 			}
+			if ((endOfRequest) || (pendingRequest->second.frames >= 2))
+			{
+				const string data = GetMs2LocoInfo(pendingRequest->second.data);
+				SendUncompressedFile(data, buffer + 5, requestHash);
+				configRequests.erase(pendingRequest);
+			}
 			return;
 		}
 
 		if (std::memcmp(buffer + 5, "loknamen", 8) == 0)
 		{
-			configRequests.emplace(requestHash, ConfigRequest{ConfigRequestLocoNames, string()});
+			configRequests.emplace(requestHash, ConfigRequest{ConfigRequestLocoNames, string(), 0});
 			return;
 		}
 		if (std::memcmp(buffer + 5, "lokinfo\0", 8) == 0)
 		{
-			configRequests.emplace(requestHash, ConfigRequest{ConfigRequestLocoInfo, string()});
+			configRequests.emplace(requestHash, ConfigRequest{ConfigRequestLocoInfo, string(), 0});
 			return;
 		}
 		if (std::memcmp(buffer + 5, "ldbver\0\0", 8) == 0)
@@ -1229,7 +1229,7 @@ namespace Hardware { namespace Protocols
 			data += "\n .jahr=" + std::to_string(localTime.tm_year + 1900);
 			data += "\n .anzahl=" + std::to_string(manager->NumberOfLocos());
 			configRequests.emplace(requestHash, ConfigRequest{ConfigRequestVersion,
-				string(reinterpret_cast<const char*>(buffer + 5), 8) + data + "\n"});
+				string(reinterpret_cast<const char*>(buffer + 5), 8) + data + "\n", 0});
 			return;
 		}
 
@@ -1253,7 +1253,7 @@ namespace Hardware { namespace Protocols
 			if (std::memcmp(buffer + 5, versionFile.name, 8) == 0)
 			{
 				configRequests.emplace(requestHash, ConfigRequest{ConfigRequestVersion,
-					string(reinterpret_cast<const char*>(buffer + 5), 8) + versionFile.data});
+					string(reinterpret_cast<const char*>(buffer + 5), 8) + versionFile.data, 0});
 				return;
 			}
 		}
@@ -1335,6 +1335,9 @@ namespace Hardware { namespace Protocols
 			CreateCommandHeader(sendBuffer, CanCommandRequestConfigData, CanResponseResponse, 8);
 			Utils::Utils::Copy8Bytes(fileName, sendBuffer + 5);
 			SendInternal(sendBuffer);
+
+			// The MS2 misses the first data packet if it is sent immediately.
+			Utils::Utils::SleepForMilliseconds(50);
 		}
 
 		const CanFileCrc crc = CalcCrc(data.data(), data.size());

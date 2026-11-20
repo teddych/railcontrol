@@ -296,6 +296,7 @@ namespace Hardware { namespace Protocols
 			{
 				ConfigRequestType type;
 				std::string data;
+				uint8_t frames; // number of follow-up frames received
 			};
 
 			void CreateCommandHeader(unsigned char* const buffer,
