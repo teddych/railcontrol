@@ -21,7 +21,9 @@ along with RailControl; see the file LICENCE. If not see
 #include "DataModel/LocoConfig.h"
 #include "Hardware/Protocols/DecoderHandlerMfx.h"
 #include "Manager.h"
+#include "Utils/Utils.h"
 #include <algorithm>
+#include <thread>
 
 using std::string;
 
@@ -36,17 +38,44 @@ namespace Hardware { namespace Protocols
 
 	void DecoderHandlerMfx::ReadMfxDecoder(const Address mfxSid, const MfxUid mfxUid)
 	{
+		std::lock_guard<std::mutex> lock(mfxDecodersMutex);
 		mfxDecoders[mfxSid] = DecoderDataMfx();
 		DecoderDataMfx& decoder = mfxDecoders[mfxSid];
 		decoder.sid = mfxSid;
 		decoder.uid = mfxUid;
-		ReadCVValue(decoder, 0, 0, 4);
+
+		// Reject read responses until reading is started.
+		decoder.readCv = 0x400;
+		decoder.readIndex = 0;
+
+		// Request the extended configuration before reading the decoder.
+		ProgramWrite(ProgramModeMfx, mfxSid, 0, MfxDecoderConfigurationLevel);
+
+		// Give the write time to take effect without blocking the calling (receiver) thread.
+		std::thread(&DecoderHandlerMfx::StartReadMfxDecoder, this, mfxSid).detach();
+	}
+
+	void DecoderHandlerMfx::StartReadMfxDecoder(const Address mfxSid)
+	{
+		Utils::Utils::SetThreadName("mfx Decoder Read");
+		Utils::Utils::SleepForMilliseconds(MfxDecoderConfigurationWaitMs);
+
+		std::lock_guard<std::mutex> lock(mfxDecodersMutex);
+		const std::map<Address,DecoderDataMfx>::iterator found = mfxDecoders.find(mfxSid);
+		if ((found == mfxDecoders.end()) || (found->second.readCv <= 0x3FF))
+		{
+			return; // Decoder removed or reading already started.
+		}
+
+		// Request reading the decoder properties.
+		ReadCVValue(found->second, 0, 0, 4);
 	}
 
 	bool DecoderHandlerMfx::ParseMfxCVValue(const Address mfxSid,
 		CvNumber cv,
 		const CvValue value)
 	{
+		std::lock_guard<std::mutex> lock(mfxDecodersMutex);
 		const std::map<Address,DecoderDataMfx>::iterator found = mfxDecoders.find(mfxSid);
 		if (found == mfxDecoders.end())
 		{
@@ -94,7 +123,6 @@ namespace Hardware { namespace Protocols
 						return ParseDecoderPropertiesLocoName(decoder, value);
 
 					default:
-						// Skip unsupported CAs, but continue reading the block.
 						ReadNextCA(decoder);
 						return true;
 				}
@@ -106,13 +134,11 @@ namespace Hardware { namespace Protocols
 						return ParseFunctionMappingSymbol(decoder, value);
 
 					default:
-						// Skip unsupported CAs, but continue reading the block.
 						ReadNextCA(decoder);
 						return true;
 				}
 
 			default:
-				// Skip unsupported block, but continue reading the next block.
 				ReadNextBlock(decoder);
 				return true;
 		}
@@ -160,14 +186,15 @@ namespace Hardware { namespace Protocols
 			return;
 		}
 
-		// No more blocks: reject responses until a new read is started.
-		decoder.readCv = 0x400;
-		decoder.readIndex = 0;
-
 		// propagate data
 		manager->DecoderDataMfx(decoder);
 
 		SaveMfxLoco(decoder);
+
+		// No more blocks: remove the decoder, late responses are not consumed anymore.
+		// decoder must not be used after this.
+		const Address sid = decoder.sid;
+		mfxDecoders.erase(sid);
 	}
 
 	bool DecoderHandlerMfx::ParseBlockDescription(DecoderDataMfx& decoder,
@@ -259,7 +286,7 @@ namespace Hardware { namespace Protocols
 		}
 		else if (index <= 11)
 		{
-			// Index 9-11 are requested by the multibyte read but not needed.
+			// data not needed, but requested by the multibyte read
 			ReadNextCA(decoder);
 			return true;
 		}

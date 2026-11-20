@@ -21,6 +21,7 @@ along with RailControl; see the file LICENCE. If not see
 #pragma once
 
 #include <map>
+#include <mutex>
 #include <string>
 
 #include "DataTypes.h"
@@ -45,13 +46,29 @@ namespace Hardware { namespace Protocols
 				const CvValue value);
 
 			// Sends a mfx CV read request with count bytes to the hardware.
-			virtual void ReadMfxCVValue(const Address sid, const CvNumber cv, const CvIndex index, const uint8_t count) = 0;
+			virtual void ReadMfxCVValue(const Address sid,
+				const CvNumber cv,
+				const CvIndex index,
+				const uint8_t count) = 0;
+
+			// Sends a CV write request to the hardware.
+			virtual void ProgramWrite(const ProgramMode mode,
+				const Address address,
+				const CvNumber cv,
+				const CvValue value) = 0;
 
 			Manager* manager;
 			Logger::Logger* logger;
 			ControlID controlID;
 
 		private:
+			// Value written to CV 0[0] before reading the decoder.
+			// The decoder then provides its extended configuration (e.g. block 04 version 2 with F0-F31).
+			static const CvValue MfxDecoderConfigurationLevel = 0x03;
+
+			// Time between the configuration level write and reading the decoder.
+			static const unsigned int MfxDecoderConfigurationWaitMs = 1000;
+
 			enum MfxDecoderBlock : CvValue
 			{
 				MfxDecoderBlockDecoderProperties = 0x01,
@@ -63,7 +80,12 @@ namespace Hardware { namespace Protocols
 				MfxDecoderBlockAdditionalProtocols = 0x07,
 				MfxDecoderBlockSoundSettings = 0x08,
 				MfxDecoderBlockSpecialOptions = 0x09,
-				MfxDecoderBlockMfxPlus = 0x0A
+				MfxDecoderBlockMfxPlus = 0x0A,
+				MfxDecoderBlockUnknown0B = 0x0B,
+				MfxDecoderBlockUnknown0C = 0x0C,
+				MfxDecoderBlockUnknown0D = 0x0D,
+				MfxDecoderBlockUnknown0E = 0x0E,
+				MfxDecoderBlockUnknown0F = 0x0F
 			};
 
 			// CA type 01 has the same meaning in every block.
@@ -200,6 +222,11 @@ namespace Hardware { namespace Protocols
 
 			void SaveMfxLoco(const DecoderDataMfx& decoder);
 
+			// Runs in a detached thread: waits and then starts reading the decoder.
+			void StartReadMfxDecoder(const Address mfxSid);
+
+			// Accessed by the receiver thread and the detached read threads.
 			std::map<Address,DecoderDataMfx> mfxDecoders;
+			std::mutex mfxDecodersMutex;
 	};
 }} // namespace

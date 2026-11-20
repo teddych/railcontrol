@@ -63,7 +63,7 @@ namespace Hardware { namespace Protocols
 
 			void ProgramReadMfx(const Address address);
 			void ProgramRead(const ProgramMode mode, const Address address, const CvNumber cv, const uint8_t count = 1);
-			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value);
+			void ProgramWrite(const ProgramMode mode, const Address address, const CvNumber cv, const CvValue value) override;
 
 			static inline DataModel::LocoFunctionIcon MapLocoFunctionCs2ToRailControl(const uint8_t input)
 			{
