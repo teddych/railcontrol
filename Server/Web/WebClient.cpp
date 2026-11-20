@@ -3724,7 +3724,7 @@ namespace Server { namespace Web
 		HtmlTag content("div");
 		content.AddId("cv_fields_mfx");
 
-		content.AddChildTag(HtmlTagInputIntegerWithLabel("addressmfx", Languages::TextAddress, 1, 1, 0x4000).AddChildTag(HtmlTagInputText("addresshexmfx", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
+		content.AddChildTag(HtmlTagInputIntegerWithLabel("addressmfxraw", Languages::TextAddress, 1, 1, 0x4000).AddChildTag(HtmlTagInputText("addressmfxhex", "0x01", HtmlTagInput::StyleReadOnly).AddClass("disabled_integer")));
 		content.AddChildTag(HtmlTag("br"));
 
 		const Hardware::Capabilities capabilities = manager.GetCapabilities(controlID);

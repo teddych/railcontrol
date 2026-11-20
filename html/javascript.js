@@ -406,7 +406,7 @@ function onClickProgramReadMfx()
 	}
 	var control = controlElement.value;
 
-	var addressElement = document.getElementById('addressmfx');
+	var addressElement = document.getElementById('addressmfxraw');
 	if (!addressElement)
 	{
 		return false;
@@ -886,6 +886,11 @@ function updateProgramHex(name)
 function update_addressraw()
 {
 	updateProgramHex('address');
+}
+
+function update_addressmfxraw()
+{
+	updateProgramHex('addressmfx');
 }
 
 function update_cvraw()
@@ -2055,7 +2060,7 @@ function dataUpdate(event)
 	}
 	else if (command == 'decoderdatamfx')
 	{
-		var addressElement = document.getElementById('addressmfx');
+		var addressElement = document.getElementById('addressmfxraw');
 		if ((!addressElement)
 			|| (parseInt(addressElement.value, 10) != parseInt(argumentMap.get('address'), 10)))
 		{
