@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <condition_variable>
 #include <map>
 #include <mutex>
 #include <sstream>
@@ -1106,11 +1107,13 @@ class Manager
 			DataModel::Track* track);
 
 		void InitLocos();
+		void InitLocosWorker();
+		void RequestInitLocos();
 
 		static inline void InitLocosStatic(Manager* manager)
 		{
-			Utils::Utils::SetThreadName("InitLocosStatic");
-			manager->InitLocos();
+			Utils::Utils::SetThreadName("InitLocos");
+			manager->InitLocosWorker();
 		}
 
 		void ProgramCheckBooster(const ProgramMode mode);
@@ -1199,6 +1202,11 @@ class Manager
 		std::thread controlCheckerThread;
 
 		volatile bool initLocosDone;
+		bool initLocosRun;
+		bool initLocosRequested;
+		std::mutex initLocosMutex;
+		std::condition_variable initLocosCondition;
+		std::thread initLocosThread;
 
 		bool serverEnabled;
 

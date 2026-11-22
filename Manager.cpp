@@ -71,6 +71,8 @@ Manager::Manager(Config& config)
 	debounceRun(false),
 	controlCheckerRun(false),
 	initLocosDone(false),
+	initLocosRun(true),
+	initLocosRequested(false),
 	serverEnabled(false),
 	unknownControl(Languages::GetText(Languages::TextControlDoesNotExist)),
 	unknownLoco(Languages::GetText(Languages::TextLocoDoesNotExist)),
@@ -232,7 +234,9 @@ Manager::Manager(Config& config)
 	controlCheckerThread = std::thread(&Manager::ControlCheckerWorker, this);
 
 	run = true;
-	InitLocos();
+	// InitLocos can take a long time (and may block on hardware),
+	// so do not block the constructor
+	initLocosThread = std::thread(InitLocosStatic, this);
 }
 
 Manager::~Manager()
@@ -251,6 +255,15 @@ Manager::~Manager()
 	Booster(ControlTypeInternal, BoosterStateStop);
 
 	run = false;
+	{
+		std::lock_guard<std::mutex> lock(initLocosMutex);
+		initLocosRun = false;
+	}
+	initLocosCondition.notify_one();
+	if (initLocosThread.joinable())
+	{
+		initLocosThread.join();
+	}
 	{
 		std::lock_guard<std::mutex> guard(controlMutex);
 		for (auto& control : controls)
@@ -345,14 +358,51 @@ void Manager::Booster(const ControlType controlType, const BoosterState state)
 		}
 	}
 
-	if (boosterState != BoosterStateGo || initLocosDone)
+	if (boosterState != BoosterStateGo)
 	{
 		return;
 	}
 
-	std::thread t(InitLocosStatic, this);
-	t.detach();
-	initLocosDone = true;
+	// Init locos once again after the booster has been turned on for the first time
+	{
+		std::lock_guard<std::mutex> lock(initLocosMutex);
+		if (initLocosDone)
+		{
+			return;
+		}
+		initLocosDone = true;
+		initLocosRequested = true;
+	}
+	initLocosCondition.notify_one();
+}
+
+void Manager::RequestInitLocos()
+{
+	{
+		std::lock_guard<std::mutex> lock(initLocosMutex);
+		initLocosRequested = true;
+	}
+	initLocosCondition.notify_one();
+}
+
+void Manager::InitLocosWorker()
+{
+	while (true)
+	{
+		{
+			std::unique_lock<std::mutex> lock(initLocosMutex);
+			while ((!initLocosRequested) && (initLocosRun))
+			{
+				initLocosCondition.wait(lock);
+			}
+			if (!initLocosRun)
+			{
+				return;
+			}
+			initLocosRequested = false;
+		}
+		InitLocos();
+	}
 }
 
 void Manager::InitLocos()
