@@ -102,6 +102,7 @@ namespace Network
 		private:
 			void Init();
 			void Close();
+			bool WaitForClearToSend(const int sendFileHandle);
 
 			Logger::Logger* logger;
 			const std::string tty;

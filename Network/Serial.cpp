@@ -20,10 +20,12 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <cerrno>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 #include <termios.h>
 
 #include "Network/Select.h"
 #include "Network/Serial.h"
+#include "Utils/Utils.h"
 
 namespace Network
 {
@@ -131,6 +133,14 @@ namespace Network
 		size_t written = 0;
 		while (written < size)
 		{
+			// With hardware flow control write() may block forever (e.g. on Cygwin even with O_NONBLOCK)
+			// if the other side does not assert CTS. So check CTS before writing.
+			if ((hardwareFlowControl) && (!WaitForClearToSend(sendFileHandle)))
+			{
+				errno = ETIMEDOUT;
+				return -1;
+			}
+
 			fd_set set;
 			FD_ZERO(&set);
 			FD_SET(sendFileHandle, &set);
@@ -163,6 +173,26 @@ namespace Network
 		}
 
 		return written;
+	}
+
+	bool Serial::WaitForClearToSend(const int sendFileHandle)
+	{
+		const unsigned int MaxWaitCycles = 10; // 10 * 100ms = 1s
+		for (unsigned int waitCycle = 0; waitCycle < MaxWaitCycles; ++waitCycle)
+		{
+			int status = 0;
+			if (ioctl(sendFileHandle, TIOCMGET, &status) == -1)
+			{
+				// status of modem lines not available, do not block sending
+				return true;
+			}
+			if ((status & TIOCM_CTS) != 0)
+			{
+				return true;
+			}
+			Utils::Utils::SleepForMilliseconds(100);
+		}
+		return false;
 	}
 
 	bool Serial::Receive(std::string& data, const size_t maxData, const unsigned int timeoutS, const unsigned int timeoutUS)
