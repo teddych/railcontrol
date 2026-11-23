@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>RailControl crawler</title>
+<style>html, body, iframe { margin: 0; padding: 0; border: 0; width: 100%; height: 100%; overflow: hidden; }</style>
+</head>
+<body>
+<iframe id="frame" name="frame" src="/"></iframe>
+<script>
+/*
+ * RailControl crawler API, used by tools/screenshots/screenshot_tool.py.
+ *
+ * This page is copied temporarily into the html directory of RailControl. It loads the
+ * RailControl main page in an iframe and offers the following asynchronous functions
+ * (all return promises) on window.rc:
+ *
+ *   rc.ready()                 waits until the main page (including layout) is loaded
+ *   rc.languages()             { current: key, languages: [ { key, code } ] }
+ *   rc.setLanguage(key)        switches the language with the real settings form
+ *   rc.discover(maxDepth)      [ { command, tab, url, depth } ] of all popups and tabs
+ *   rc.buttons()               [ { id, command } ] of all buttons of the main menu
+ *   rc.showButton(id)          makes the button visible, returns true on success
+ *   rc.restoreButtons()        hides the buttons made visible by showButton again
+ *   rc.show(url, tab, settle)  opens the popup, shows the tab, returns true on success
+ *   rc.close()                 closes the popup
+ *
+ * No form is ever submitted except the settings form to switch the language.
+ */
+(function()
+{
+	'use strict';
+
+	// Keys as defined in Languages::Language (Languages.h). Unknown keys fall back to "lang<key>".
+	var languageCodes = { '0': 'en', '1': 'de', '2': 'es' };
+
+	var frame = document.getElementById('frame');
+	var firstLoad = new Promise(function(resolve) { frame.onload = function() { resolve(); }; });
+
+	function sleep(ms)
+	{
+		return new Promise(function(resolve) { setTimeout(resolve, ms); });
+	}
+
+	function win()
+	{
+		return frame.contentWindow;
+	}
+
+	function doc()
+	{
+		return frame.contentDocument;
+	}
+
+	function popupElement()
+	{
+		return doc().getElementById('popup');
+	}
+
+	async function waitFor(condition, timeoutMs)
+	{
+		var start = Date.now();
+		while ((Date.now() - start) < timeoutMs)
+		{
+			if (condition())
+			{
+				return true;
+			}
+			await sleep(50);
+		}
+		return false;
+	}
+
+	async function ready()
+	{
+		await firstLoad;
+		await sleep(3000); // layout and loco controls are loaded asynchronously
+	}
+
+	async function reloadMainPage()
+	{
+		var loaded = new Promise(function(resolve) { frame.onload = function() { resolve(); }; });
+		win().location.reload();
+		await loaded;
+		await sleep(3000);
+	}
+
+	async function openPopup(url, settleMs)
+	{
+		var popup = popupElement();
+		popup.style.display = 'none';
+		popup.innerHTML = '';
+		win().loadPopup(url);
+		var ok = await waitFor(function() { return (popup.style.display === 'block') && (popup.innerHTML !== ''); }, 5000);
+		if (ok)
+		{
+			await sleep(settleMs);
+		}
+		return ok;
+	}
+
+	function close()
+	{
+		win().hidePopup();
+	}
+
+	function cmdOf(url)
+	{
+		var query = url.indexOf('?') >= 0 ? url.substring(url.indexOf('?') + 1) : '';
+		return new URLSearchParams(query).get('cmd');
+	}
+
+	// Prefer URLs referencing existing objects (non-zero ids) over "new object" URLs.
+	function scoreOf(url)
+	{
+		var query = url.substring(url.indexOf('?') + 1);
+		var score = 0;
+		new URLSearchParams(query).forEach(function(value, key)
+		{
+			if ((key !== 'cmd') && (value !== '') && (value !== '0'))
+			{
+				++score;
+			}
+		});
+		return score;
+	}
+
+	function extractPopupUrls(root)
+	{
+		var urls = [];
+		var patterns = [ /myUrl\s*=\s*'([^']*)'/g, /loadPopup\(\s*'([^']*)'/g ];
+		var elements = root.querySelectorAll('[onclick]');
+		for (var i = 0; i < elements.length; ++i)
+		{
+			var handler = elements[i].getAttribute('onclick');
+			for (var p = 0; p < patterns.length; ++p)
+			{
+				var pattern = patterns[p];
+				pattern.lastIndex = 0;
+				var match;
+				while ((match = pattern.exec(handler)) !== null)
+				{
+					var url = match[1];
+					var rest = handler.substring(match.index + match[0].length).trim();
+					if ((url.indexOf('/?cmd=') !== 0) || (rest.charAt(0) === '+'))
+					{
+						continue; // not a popup URL or URL built at runtime
+					}
+					urls.push(url);
+				}
+			}
+		}
+		return urls;
+	}
+
+	function tabNamesOfPopup()
+	{
+		var names = [];
+		var buttons = popupElement().querySelectorAll('.tab_button');
+		for (var i = 0; i < buttons.length; ++i)
+		{
+			var button = buttons[i];
+			if ((button.id.indexOf('tab_button_') !== 0) || button.classList.contains('hidden'))
+			{
+				continue;
+			}
+			names.push(button.id.substring('tab_button_'.length));
+		}
+		return names;
+	}
+
+	async function languages()
+	{
+		if (!(await openPopup('/?cmd=settingsedit', 300)))
+		{
+			throw new Error('settings popup could not be opened');
+		}
+		var current = doc().getElementById('s_language').value;
+		var entries = doc().querySelectorAll('#d_s_language .dropdownentry');
+		var list = [];
+		for (var i = 0; i < entries.length; ++i)
+		{
+			var key = entries[i].getAttribute('key');
+			list.push({ key: key, code: languageCodes[key] || ('lang' + key) });
+		}
+		close();
+		return { current: current, languages: list };
+	}
+
+	// Uses the real settings form so that all other settings keep their values.
+	async function setLanguage(key)
+	{
+		if (!(await openPopup('/?cmd=settingsedit', 300)))
+		{
+			throw new Error('settings popup could not be opened');
+		}
+		doc().getElementById('s_language').value = String(key);
+		win().submitEditForm();
+		await sleep(1500);
+		await reloadMainPage();
+	}
+
+	async function discover(maxDepth)
+	{
+		var entries = {}; // command -> { url, depth, visited }
+		var order = [];
+		var result = [];
+
+		function addCandidates(urls, depth)
+		{
+			for (var i = 0; i < urls.length; ++i)
+			{
+				var url = urls[i];
+				var command = cmdOf(url);
+				if (!command)
+				{
+					continue;
+				}
+				var entry = entries[command];
+				if (!entry)
+				{
+					entries[command] = { url: url, depth: depth, visited: false };
+					order.push(command);
+					continue;
+				}
+				if (!entry.visited && (scoreOf(url) > scoreOf(entry.url)))
+				{
+					entry.url = url;
+				}
+			}
+		}
+
+		addCandidates(extractPopupUrls(doc()), 1);
+
+		for (var index = 0; index < order.length; ++index)
+		{
+			var command = order[index];
+			var entry = entries[command];
+			entry.visited = true;
+			if (!(await openPopup(entry.url, 300)))
+			{
+				continue;
+			}
+			if (entry.depth < maxDepth)
+			{
+				addCandidates(extractPopupUrls(popupElement()), entry.depth + 1);
+			}
+			var tabs = tabNamesOfPopup();
+			if (tabs.length === 0)
+			{
+				result.push({ command: command, tab: '', url: entry.url, depth: entry.depth });
+			}
+			for (var t = 0; t < tabs.length; ++t)
+			{
+				result.push({ command: command, tab: tabs[t], url: entry.url, depth: entry.depth });
+			}
+			close();
+		}
+		return result;
+	}
+
+	async function show(url, tab, settleMs)
+	{
+		if (!(await openPopup(url, settleMs)))
+		{
+			return false;
+		}
+		if (tab)
+		{
+			if (!doc().getElementById('tab_button_' + tab))
+			{
+				return false;
+			}
+			win().ShowTab(tab);
+			await sleep(200);
+		}
+		return true;
+	}
+
+	// All buttons of the main menu (language independent icons)
+	async function buttons()
+	{
+		var result = [];
+		var elements = doc().querySelectorAll('.menu button[id]');
+		for (var i = 0; i < elements.length; ++i)
+		{
+			var id = elements[i].id;
+			var command = (id.indexOf('skip_') === 0) ? id.substring('skip_'.length) : id;
+			result.push({ id: id, command: command });
+		}
+		return result;
+	}
+
+	// Makes a button of the main menu visible (some are hidden depending on the window width)
+	var forcedVisible = [];
+
+	async function showButton(id)
+	{
+		var element = doc().getElementById(id);
+		if (!element)
+		{
+			return false;
+		}
+		for (var node = element; node && (node !== doc().body); node = node.parentElement)
+		{
+			if (win().getComputedStyle(node).display === 'none')
+			{
+				forcedVisible.push({ node: node, display: node.style.display });
+				node.style.display = 'inline-block';
+			}
+		}
+		await sleep(100);
+		return true;
+	}
+
+	async function restoreButtons()
+	{
+		while (forcedVisible.length > 0)
+		{
+			var entry = forcedVisible.pop();
+			entry.node.style.display = entry.display;
+		}
+	}
+
+	window.rc = {
+		ready: ready,
+		languages: languages,
+		setLanguage: setLanguage,
+		discover: discover,
+		buttons: buttons,
+		showButton: showButton,
+		restoreButtons: restoreButtons,
+		show: show,
+		close: async function() { close(); }
+	};
+})();
+</script>
+</body>
+</html>

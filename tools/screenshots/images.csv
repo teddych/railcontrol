@@ -1,0 +1,90 @@
+image;type;documentation;command;tab;url;notes
+control_list;popup;yes;controllist;;/?cmd=controllist;
+cs2_tcp_config;popup;yes;controledit;;manual;controledit of a control of type Märklin CS2 TCP: set url to /?cmd=controledit&control=<id>
+cs2_udp_config;popup;yes;controledit;;manual;controledit of a control of type Märklin CS2 UDP: set url to /?cmd=controledit&control=<id>
+feedback_basics;popup;yes;feedbackedit;main;/?cmd=feedbackedit&feedback=1;
+feedback_position;popup;yes;feedbackedit;position;/?cmd=feedbackedit&feedback=1;
+groups_basics;popup;yes;clusteredit;basic;/?cmd=clusteredit;
+groups_tracks;popup;yes;clusteredit;tracks;/?cmd=clusteredit;
+locomotives_basics;popup;yes;locoedit;basic;/?cmd=locoedit&loco=2;
+locomotives_functions;popup;yes;locoedit;functions;/?cmd=locoedit&loco=2;
+locomotives_automode;popup;yes;locoedit;automode;/?cmd=locoedit&loco=2;
+multipleunits_basics;popup;yes;multipleunitedit;basic;/?cmd=multipleunitedit;
+multipleunits_functions;popup;yes;multipleunitedit;functions;/?cmd=multipleunitedit;
+multipleunits_multipleunits;popup;yes;multipleunitedit;slaves;/?cmd=multipleunitedit;
+multipleunits_automode;popup;yes;multipleunitedit;automode;/?cmd=multipleunitedit;
+routes_basics;popup;yes;routeedit;basic;/?cmd=routeedit&route=1;
+routes_atlock;popup;yes;routeedit;relationatlock;/?cmd=routeedit&route=1;
+routes_atunlock;popup;yes;routeedit;relationatunlock;/?cmd=routeedit&route=1;
+routes_position;popup;yes;routeedit;position;/?cmd=routeedit&route=1;
+routes_automode;popup;yes;routeedit;automode;/?cmd=routeedit&route=1;
+settings;popup;yes;settingsedit;basic;/?cmd=settingsedit;
+signals_basics;popup;yes;signaledit;main;/?cmd=signaledit&signal=1;
+signals_addresses;popup;yes;signaledit;address;/?cmd=signaledit&signal=1;
+signals_position;popup;yes;signaledit;position;/?cmd=signaledit&signal=1;
+switches_basics;popup;yes;switchedit;main;/?cmd=switchedit&switch=0;
+switches_position;popup;yes;switchedit;position;/?cmd=switchedit&switch=0;
+texts_basics;popup;yes;textedit;main;/?cmd=textedit&text=0;
+texts_position;popup;yes;textedit;position;/?cmd=textedit&text=0;
+tracks_basics;popup;yes;trackedit;main;/?cmd=trackedit&track=1;
+tracks_position;popup;yes;trackedit;position;/?cmd=trackedit&track=1;
+tracks_feedbacks;popup;yes;trackedit;feedbacks;/?cmd=trackedit&track=1;
+track_signals;popup;yes;trackedit;signals;/?cmd=trackedit&track=1;
+tracks_automode;popup;yes;trackedit;automode;/?cmd=trackedit&track=1;
+counter_basics;popup;yes;counteredit;main;/?cmd=counteredit&counter=0;existing image in Documentation is 781x781 (125 % zoom)
+counter_position;popup;yes;counteredit;position;/?cmd=counteredit&counter=0;existing image in Documentation is 781x781 (125 % zoom)
+config_layers;other;yes;;;;not a popup: layout context menu (right click on empty layout area), created by hand
+cs2_config_can;external;no;;;;not RailControl: screenshot of the Märklin CS2, only in de
+cs2_config_ip;external;no;;;;not RailControl: screenshot of the Märklin CS2, only in de
+askshutdown;popup;missing;askshutdown;;/?cmd=askshutdown;
+settingsedit_startup;popup;missing;settingsedit;startup;/?cmd=settingsedit;
+settingsedit_feedback;popup;missing;settingsedit;feedback;/?cmd=settingsedit;
+settingsedit_accessory;popup;missing;settingsedit;accessory;/?cmd=settingsedit;
+settingsedit_automode;popup;missing;settingsedit;automode;/?cmd=settingsedit;
+program_raw;popup;missing;program;raw;/?cmd=program;
+program_mfx;popup;missing;program;mfx;/?cmd=program;
+locolist;popup;missing;locolist;;/?cmd=locolist;
+multipleunitlist;popup;missing;multipleunitlist;;/?cmd=multipleunitlist;
+layerlist;popup;missing;layerlist;;/?cmd=layerlist;
+tracklist;popup;missing;tracklist;;/?cmd=tracklist;
+clusterlist;popup;missing;clusterlist;;/?cmd=clusterlist;
+switchlist;popup;missing;switchlist;;/?cmd=switchlist;
+signallist;popup;missing;signallist;;/?cmd=signallist;
+accessorylist;popup;missing;accessorylist;;/?cmd=accessorylist;
+feedbacklist;popup;missing;feedbacklist;;/?cmd=feedbacklist;
+routelist;popup;missing;routelist;;/?cmd=routelist;
+counterlist;popup;missing;counterlist;;/?cmd=counterlist;
+textlist;popup;missing;textlist;;/?cmd=textlist;
+tracksetloco;popup;missing;tracksetloco;;/?cmd=tracksetloco&track=1;
+trackaskdelete;popup;excluded;trackaskdelete;;/?cmd=trackaskdelete&track=1;
+signalaskdelete;popup;excluded;signalaskdelete;;/?cmd=signalaskdelete&signal=1;
+accessoryedit_main;popup;missing;accessoryedit;main;/?cmd=accessoryedit&accessory=0;
+accessoryedit_position;popup;missing;accessoryedit;position;/?cmd=accessoryedit&accessory=0;
+routeedit_relationconditions;popup;missing;routeedit;relationconditions;/?cmd=routeedit&route=1;
+controlaskdelete;popup;excluded;controlaskdelete;;/?cmd=controlaskdelete&control=10;
+locoaskdelete;popup;excluded;locoaskdelete;;/?cmd=locoaskdelete&loco=2;
+layeredit;popup;missing;layeredit;;/?cmd=layeredit&layer=1;
+feedbackaskdelete;popup;excluded;feedbackaskdelete;;/?cmd=feedbackaskdelete&feedback=1;
+routeaskdelete;popup;excluded;routeaskdelete;;/?cmd=routeaskdelete&route=1;
+menu_askshutdown;button;mismatch;askshutdown;;;documentation: menu_quit.png [suggestion: the documentation uses menu_quit.png. Rename image 'menu_askshutdown' to 'menu_quit' in this list or rename the documentation file and its references to 'menu_askshutdown']
+menu_booster;button;yes;booster;;;
+menu_stopallimmediately;button;mismatch;stopallimmediately;;;documentation: menu_stop.png [suggestion: the documentation uses menu_stop.png. Rename image 'menu_stopallimmediately' to 'menu_stop' in this list or rename the documentation file and its references to 'menu_stopallimmediately']
+menu_stopall;button;mismatch;stopall;;;documentation: menu_signalred.png [suggestion: the documentation uses menu_signalred.png. Rename image 'menu_stopall' to 'menu_signalred' in this list or rename the documentation file and its references to 'menu_stopall']
+menu_startall;button;mismatch;startall;;;documentation: menu_signalgreen.png [suggestion: the documentation uses menu_signalgreen.png. Rename image 'menu_startall' to 'menu_signalgreen' in this list or rename the documentation file and its references to 'menu_startall']
+menu_fullscreen;button;yes;fullscreen;;;
+menu_settingsedit;button;mismatch;settingsedit;;;[suggestion: the documentation uses menu_settings.png. Rename image 'menu_settingsedit' to 'menu_settings' in this list or rename the documentation file and its references to 'menu_settingsedit']
+menu_program;button;yes;program;;;
+menu_showmenuconfig;button;mismatch;showmenuconfig;;;documentation: menu_menu.png [suggestion: the documentation uses menu_menu.png. Rename image 'menu_showmenuconfig' to 'menu_menu' in this list or rename the documentation file and its references to 'menu_showmenuconfig']
+menu_controllist;button;mismatch;controllist;;;[suggestion: the documentation uses menu_control.png. Rename image 'menu_controllist' to 'menu_control' in this list or rename the documentation file and its references to 'menu_controllist']
+menu_locolist;button;mismatch;locolist;;;[suggestion: the documentation uses menu_loco.png. Rename image 'menu_locolist' to 'menu_loco' in this list or rename the documentation file and its references to 'menu_locolist']
+menu_multipleunitlist;button;mismatch;multipleunitlist;;;[suggestion: the documentation uses menu_multipleunit.png. Rename image 'menu_multipleunitlist' to 'menu_multipleunit' in this list or rename the documentation file and its references to 'menu_multipleunitlist']
+menu_layerlist;button;mismatch;layerlist;;;[suggestion: the documentation uses menu_layer.png. Rename image 'menu_layerlist' to 'menu_layer' in this list or rename the documentation file and its references to 'menu_layerlist']
+menu_tracklist;button;mismatch;tracklist;;;[suggestion: the documentation uses menu_track.png. Rename image 'menu_tracklist' to 'menu_track' in this list or rename the documentation file and its references to 'menu_tracklist']
+menu_clusterlist;button;mismatch;clusterlist;;;documentation: menu_group.png [suggestion: the documentation uses menu_group.png. Rename image 'menu_clusterlist' to 'menu_group' in this list or rename the documentation file and its references to 'menu_clusterlist']
+menu_switchlist;button;mismatch;switchlist;;;[suggestion: the documentation uses menu_switch.png. Rename image 'menu_switchlist' to 'menu_switch' in this list or rename the documentation file and its references to 'menu_switchlist']
+menu_signallist;button;mismatch;signallist;;;[suggestion: the documentation uses menu_signal.png. Rename image 'menu_signallist' to 'menu_signal' in this list or rename the documentation file and its references to 'menu_signallist']
+menu_accessorylist;button;mismatch;accessorylist;;;[suggestion: the documentation uses menu_accessory.png. Rename image 'menu_accessorylist' to 'menu_accessory' in this list or rename the documentation file and its references to 'menu_accessorylist']
+menu_feedbacklist;button;mismatch;feedbacklist;;;[suggestion: the documentation uses menu_feedback.png. Rename image 'menu_feedbacklist' to 'menu_feedback' in this list or rename the documentation file and its references to 'menu_feedbacklist']
+menu_routelist;button;mismatch;routelist;;;[suggestion: the documentation uses menu_route.png. Rename image 'menu_routelist' to 'menu_route' in this list or rename the documentation file and its references to 'menu_routelist']
+menu_counterlist;button;mismatch;counterlist;;;[suggestion: the documentation uses menu_counter.png. Rename image 'menu_counterlist' to 'menu_counter' in this list or rename the documentation file and its references to 'menu_counterlist']
+menu_textlist;button;mismatch;textlist;;;[suggestion: the documentation uses menu_text.png. Rename image 'menu_textlist' to 'menu_text' in this list or rename the documentation file and its references to 'menu_textlist']
