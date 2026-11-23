@@ -1,5 +1,5 @@
 # Configuración de los itinerarios
-En la pantalla principal se puede ir a la configuración de los itinerarios con el icono ![](../menu_street.png).
+En la pantalla principal se puede ir a la configuración de los itinerarios con el icono ![](../menu_route.png).
 
 ## En general
 ### Modo manual

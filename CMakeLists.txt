@@ -624,7 +624,6 @@ set(DOCDATA
 	${PROJECT_SOURCE_DIR}/Documentation/menu_signal.png
 	${PROJECT_SOURCE_DIR}/Documentation/menu_signalred.png
 	${PROJECT_SOURCE_DIR}/Documentation/menu_stop.png
-	${PROJECT_SOURCE_DIR}/Documentation/menu_street.png
 	${PROJECT_SOURCE_DIR}/Documentation/menu_switch.png
 	${PROJECT_SOURCE_DIR}/Documentation/menu_text.png
 	${PROJECT_SOURCE_DIR}/Documentation/menu_track.png

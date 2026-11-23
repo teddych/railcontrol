@@ -1,5 +1,5 @@
 # Konfiguration der Fahrstraßen
-Im Hauptbildschirm kann man über das Icon ![](../menu_street.png) zur Konfiguration der Fahrstrassen gelangen.
+Im Hauptbildschirm kann man über das Icon ![](../menu_route.png) zur Konfiguration der Fahrstrassen gelangen.
 
 ## Grundlagen
 ### Manueller Betrieb

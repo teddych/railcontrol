@@ -1,6 +1,6 @@
 # Configuration of Routes
 
-On the main screen one can open the configuration of the routes with the icon ![](../menu_street.png).
+On the main screen one can open the configuration of the routes with the icon ![](../menu_route.png).
 
 ## Basics
 ### Manual Operation
