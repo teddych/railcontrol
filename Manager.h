@@ -1196,10 +1196,18 @@ class Manager
 		DataModel::Loco::NrOfTracksToReserve nrOfTracksToReserve;
 
 		volatile bool run;
-		volatile bool debounceRun;
+		// debounceRun and controlCheckerRun are protected by workerMutex,
+		// workerCondition wakes up the workers immediately on shutdown
+		bool debounceRun;
 		std::thread debounceThread;
-		volatile bool controlCheckerRun;
+		bool controlCheckerRun;
 		std::thread controlCheckerThread;
+		std::mutex workerMutex;
+		std::condition_variable workerCondition;
+		// held by DebounceWorker during a whole debounce pass and by FeedbackDelete before deleting a feedback,
+		// so that a feedback is never deleted while it is being debounced.
+		// Lock order: feedbackDebounceMutex before feedbackMutex
+		std::mutex feedbackDebounceMutex;
 
 		volatile bool initLocosDone;
 		bool initLocosRun;

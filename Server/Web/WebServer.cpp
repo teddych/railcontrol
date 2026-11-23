@@ -99,8 +99,9 @@ namespace Server { namespace Web
 	{
 		AddUpdate(Languages::TextShutdownRailControl);
 		TerminateTcpServer();
-		// stopping all clients
-		for (auto client : clients)
+		// stopping all clients: the update clients send the remaining updates (including the shutdown message),
+		// the other clients are woken up immediately
+		for (WebClient* client : clients)
 		{
 			client->Stop();
 		}

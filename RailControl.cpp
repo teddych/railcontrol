@@ -204,21 +204,23 @@ int main (int argc, char* argv[])
 		Manager m(config);
 
 		// wait for q or r followed by \n or SIGINT or SIGTERM
+		// poll every 100 ms so that a shutdown request is noticed quickly
+		// (a condition variable can not be used, because the shutdown request may come from a signal handler)
 		do
 		{
 			if (!isatty(STDIN_FILENO) || silent)
 			{
-				Utils::Utils::SleepForSeconds(1);
+				Utils::Utils::SleepForMilliseconds(100);
 			}
 			else
 			{
-				input = readFromStdIn(1, 0);
+				input = readFromStdIn(0, 100000);
 			}
 		} while ((input != 'q') && (input != 'r') && !isShutdownRunning());
 
 		logger->Info(Languages::TextShutdownRailControl);
 
-	}	// here the destructor of manager is called and RailControl is shut down
+	}	// here the destructor of Manager is called and RailControl is shut down
 
 	// read all chars in queue of STDIN
 	while (readFromStdIn(0, 1));

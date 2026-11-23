@@ -18,6 +18,7 @@ along with RailControl; see the file LICENCE. If not see
 <http://www.gnu.org/licenses/>.
 */
 
+#include <chrono>
 #include <iostream>
 #include <limits>
 #include <set>
@@ -246,10 +247,13 @@ Manager::~Manager()
 		Utils::Utils::SleepForSeconds(1);
 	}
 
-	controlCheckerRun = false;
+	{
+		std::lock_guard<std::mutex> lock(workerMutex);
+		controlCheckerRun = false;
+		debounceRun = false;
+	}
+	workerCondition.notify_all();
 	controlCheckerThread.join();
-
-	debounceRun = false;
 	debounceThread.join();
 
 	Booster(ControlTypeInternal, BoosterStateStop);
@@ -264,14 +268,23 @@ Manager::~Manager()
 	{
 		initLocosThread.join();
 	}
+
 	{
+		// Stop all controls in parallel, each Stop() can take about one second (select/receive timeouts)
 		std::lock_guard<std::mutex> guard(controlMutex);
-		for (auto& control : controls)
+		std::vector<std::thread> stopThreads;
+		stopThreads.reserve(controls.size());
+		for (std::pair<const ControlID,ControlInterface*>& control : controls)
 		{
-			control.second->Stop();
+			ControlInterface* controlInterface = control.second;
+			stopThreads.emplace_back([controlInterface] { controlInterface->Stop(); });
+		}
+		for (std::thread& stopThread : stopThreads)
+		{
+			stopThread.join();
 		}
 	}
-	Utils::Utils::SleepForSeconds(1);
+
 	{
 		std::lock_guard<std::mutex> guard(controlMutex);
 		for (auto& control : controls)
@@ -2546,6 +2559,9 @@ const map<string,FeedbackID> Manager::FeedbacksOfTrack(const TrackID trackID) co
 bool Manager::FeedbackDelete(const FeedbackID feedbackID,
 	string& result)
 {
+	// Wait until a running debounce pass has finished, the feedback could be in its snapshot.
+	// Has to be locked before feedbackMutex (same lock order as in DebounceWorker).
+	std::lock_guard<std::mutex> debounceGuard(feedbackDebounceMutex);
 	Feedback* feedback = nullptr;
 	{
 		std::lock_guard<std::mutex> guard(feedbackMutex);
@@ -4918,18 +4934,16 @@ bool Manager::LocoBaseStopAll()
 		for (auto& l : locos)
 		{
 			Loco* loco = l.second;
-			if (!loco->IsInManualMode())
+			if (loco->IsInManualMode())
 			{
 				continue;
 			}
 			loco->RequestManualMode();
 		}
 	}
-	bool anyLocosInAutoMode = true;
-	while (anyLocosInAutoMode && !isKillRunning())
+	while (!isKillRunning())
 	{
-		Utils::Utils::SleepForSeconds(1);
-		anyLocosInAutoMode = false;
+		bool anyLocosInAutoMode = false;
 		{
 			std::lock_guard<std::mutex> guard(multipleUnitMutex);
 			for (auto& m : multipleUnits)
@@ -4964,6 +4978,11 @@ bool Manager::LocoBaseStopAll()
 				anyLocosInAutoMode |= !locoInManualMode;
 			}
 		}
+		if (!anyLocosInAutoMode)
+		{
+			break;
+		}
+		Utils::Utils::SleepForSeconds(1);
 	}
 
 	// FIXME: why no mutex?
@@ -5716,22 +5735,30 @@ void Manager::DebounceWorker()
 {
 	Utils::Utils::SetThreadName(Languages::GetText(Languages::TextDebouncer));
 	logger->Info(Languages::TextDebounceThreadStarted);
+	std::unique_lock<std::mutex> lock(workerMutex);
 	while (debounceRun)
 	{
-		std::vector<Feedback*> feedbackSnapshot;
+		lock.unlock();
 		{
-			std::lock_guard<std::mutex> guard(feedbackMutex);
-			for (auto& feedback : feedbacks)
+			// Prevents FeedbackDelete from deleting a feedback of the snapshot during this pass
+			std::lock_guard<std::mutex> debounceGuard(feedbackDebounceMutex);
+			std::vector<Feedback*> feedbackSnapshot;
 			{
-				feedbackSnapshot.push_back(feedback.second);
+				std::lock_guard<std::mutex> guard(feedbackMutex);
+				feedbackSnapshot.reserve(feedbacks.size());
+				for (std::pair<const FeedbackID,Feedback*>& feedback : feedbacks)
+				{
+					feedbackSnapshot.push_back(feedback.second);
+				}
+			}
+			// Debounce feedback outside feedbackMutex; debounce can publish and update tracks.
+			for (Feedback* feedback : feedbackSnapshot)
+			{
+				feedback->Debounce();
 			}
 		}
-		// Debounce feedback outside feedbackMutex; debounce can publish and update tracks.
-		for (Feedback* feedback : feedbackSnapshot)
-		{
-			feedback->Debounce();
-		}
-		Utils::Utils::SleepForMilliseconds(250);
+		lock.lock();
+		workerCondition.wait_for(lock, std::chrono::milliseconds(250), [this] { return !debounceRun; });
 	}
 	logger->Info(Languages::TextDebounceThreadTerminated);
 }
@@ -5740,8 +5767,10 @@ void Manager::ControlCheckerWorker()
 {
 	Utils::Utils::SetThreadName(Languages::GetText(Languages::TextControlChecker));
 	logger->Info(Languages::TextControlCheckerThreadStarted);
+	std::unique_lock<std::mutex> lock(workerMutex);
 	while (controlCheckerRun)
 	{
+		lock.unlock();
 		{
 			std::lock_guard<std::mutex> guard(controlMutex);
 			for (auto& control : controls)
@@ -5749,7 +5778,8 @@ void Manager::ControlCheckerWorker()
 				control.second->CheckHealth();
 			}
 		}
-		Utils::Utils::SleepForSeconds(2);
+		lock.lock();
+		workerCondition.wait_for(lock, std::chrono::seconds(2), [this] { return !controlCheckerRun; });
 	}
 	logger->Info(Languages::TextControlCheckerThreadTerminated);
 }

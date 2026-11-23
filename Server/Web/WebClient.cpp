@@ -4023,6 +4023,25 @@ namespace Server { namespace Web
 				return;
 			}
 		}
+
+		// on shutdown send the remaining updates (e.g. the shutdown message) before closing the connection
+		string s;
+		while (server.NextUpdate(updateID, s))
+		{
+			string reply("id: ");
+			reply += to_string(updateID);
+			reply += "\r\n";
+			reply += s;
+			reply += "\r\n\r\n";
+
+			++updateID;
+
+			ret = connection->Send(reply);
+			if (ret < 0)
+			{
+				return;
+			}
+		}
 	}
 
 	HtmlTag WebClient::HtmlTagLocoSelector(const string& selector, const LocoID locoID) const

@@ -22,6 +22,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include <atomic>
 #include <cstring>
+#include <mutex>
 #include <string>
 
 #include "Utils/Network.h"
@@ -63,6 +64,10 @@ namespace Network
 
 			void Terminate() const;
 
+			// Shuts down the receiving direction of the connection.
+			// A thread waiting in Receive() returns immediately, sending is still possible.
+			void ShutdownReceive() const;
+
 			int Send(const unsigned char* buffer, const size_t bufferLength, const int flags = 0) const;
 
 			inline int Send(const char* buffer, const size_t bufferLength, const int flags = 0) const
@@ -99,6 +104,9 @@ namespace Network
 		private:
 			mutable int connectionSocket;
 			mutable std::atomic_bool connected;
+			// protects closing the socket against ShutdownReceive() from another thread,
+			// otherwise the socket number could already be reused by another socket
+			mutable std::mutex socketMutex;
 			struct sockaddr_storage address;
 	};
 }

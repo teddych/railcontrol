@@ -54,6 +54,8 @@ namespace Network
 			void Worker(int socket);
 
 			volatile bool run;
+			// pipe to wake up the worker threads waiting in select() on shutdown
+			int wakeupPipe[2];
 			std::vector<std::thread> serverThreads;
 			std::string error;
 			const std::string address;

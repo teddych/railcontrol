@@ -19,6 +19,7 @@ along with RailControl; see the file LICENCE. If not see
 */
 
 #include <arpa/inet.h>
+#include <sys/socket.h>   // shutdown
 #include <unistd.h>   // close & TEMP_FAILURE_RETRY;
 
 #include "Network/Select.h"
@@ -33,10 +34,21 @@ namespace Network
 {
 	void TcpConnection::Terminate() const
 	{
+		std::lock_guard<std::mutex> guard(socketMutex);
 		if (connected.exchange(false))
 		{
 			close(connectionSocket);
 		}
+	}
+
+	void TcpConnection::ShutdownReceive() const
+	{
+		std::lock_guard<std::mutex> guard(socketMutex);
+		if ((connectionSocket == 0) || (!connected))
+		{
+			return;
+		}
+		shutdown(connectionSocket, SHUT_RD);
 	}
 
 	int TcpConnection::Send(const unsigned char* buffer, const size_t bufferLength, const int flags) const

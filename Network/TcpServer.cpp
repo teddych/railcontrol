@@ -37,6 +37,7 @@ namespace Network
 		const unsigned short port,
 		const std::string& threadName)
 	:	run(false),
+		wakeupPipe{ -1, -1 },
 		error(""),
 		address(address),
 		port(port),
@@ -57,6 +58,12 @@ namespace Network
 		}
 
 		run = true;
+
+		if (pipe(wakeupPipe) != 0)
+		{
+			wakeupPipe[0] = -1;
+			wakeupPipe[1] = -1;
+		}
 
 		struct sockaddr_in6 serverAddr6;
 		memset(reinterpret_cast<char*>(&serverAddr6), 0, sizeof(serverAddr6));
@@ -137,11 +144,27 @@ namespace Network
 	{
 		run = false;
 
+		// wake up all worker threads waiting in select()
+		if (wakeupPipe[1] >= 0)
+		{
+			const char wakeup = 0;
+			__attribute__((unused)) ssize_t unused = write(wakeupPipe[1], &wakeup, sizeof(wakeup));
+		}
+
 		while (serverThreads.size())
 		{
 			std::thread& serverThread = serverThreads.back();
 			serverThread.join();
 			serverThreads.pop_back();
+		}
+
+		for (int& wakeupFd : wakeupPipe)
+		{
+			if (wakeupFd >= 0)
+			{
+				close(wakeupFd);
+				wakeupFd = -1;
+			}
 		}
 	}
 
@@ -152,6 +175,7 @@ namespace Network
 		struct timeval tv;
 		struct sockaddr_storage clientAddress;
 		socklen_t clientAddressLength = sizeof(clientAddress);
+		const int maxFd = ((wakeupPipe[0] > socket) ? wakeupPipe[0] : socket) + 1;
 		while (run == true)
 		{
 			// wait for connection and abort on shutdown
@@ -160,22 +184,28 @@ namespace Network
 			{
 				FD_ZERO(&set);
 				FD_SET(socket, &set);
+				if (wakeupPipe[0] >= 0)
+				{
+					FD_SET(wakeupPipe[0], &set);
+				}
 				tv.tv_sec = 1;
 				tv.tv_usec = 0;
-				ret = TEMP_FAILURE_RETRY(select(FD_SETSIZE, &set, NULL, NULL, &tv));
+				ret = TEMP_FAILURE_RETRY(select(maxFd, &set, NULL, NULL, &tv));
 
 				if (run == false)
 				{
+					close(socket);
 					return;
 				}
 			} while (ret == 0);
 
-			if (ret < 0)
+			if ((ret < 0) || (!FD_ISSET(socket, &set)))
 			{
 				continue;
 			}
 
 			// accept connection
+			clientAddressLength = sizeof(clientAddress);
 			int socketClient = accept(socket, reinterpret_cast<struct sockaddr*>(&clientAddress), &clientAddressLength);
 			if (socketClient < 0)
 			{

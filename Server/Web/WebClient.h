@@ -97,6 +97,8 @@ namespace Server { namespace Web
 			inline void Stop()
 			{
 				run = false;
+				// wake up the worker thread if it is waiting for data of the browser
+				connection->ShutdownReceive();
 			}
 
 			inline bool IsTerminated()
