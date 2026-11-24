@@ -1363,7 +1363,7 @@ bool Manager::MultipleUnitSave(MultipleUnitID multipleUnitID,
 		MultipleUnit* multipleUnit = GetMultipleUnitInternal(multipleUnitID);
 		if (!multipleUnit)
 		{
-			multipleUnit = CreateAndAddObject(multipleUnits, multipleUnitMutex);
+			multipleUnit = CreateAndAddObject(multipleUnits);
 		}
 
 		if (!multipleUnit)
