@@ -25,6 +25,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Network/Select.h"
 #include "Network/Serial.h"
+#include "Utils/Network.h"
 #include "Utils/Utils.h"
 
 namespace Network
@@ -37,6 +38,7 @@ namespace Network
 			logger->Error(Languages::TextUnableToOpenSerial, tty);
 			return;
 		}
+		Utils::Network::SetCloseOnExec(fileHandle);
 
 		struct termios options;
 		options.c_cflag = 0;

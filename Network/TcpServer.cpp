@@ -29,6 +29,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Network/Select.h"
 #include "Network/TcpServer.h"
+#include "Utils/Network.h"
 #include "Utils/Utils.h"
 
 namespace Network
@@ -64,6 +65,8 @@ namespace Network
 			wakeupPipe[0] = -1;
 			wakeupPipe[1] = -1;
 		}
+		Utils::Network::SetCloseOnExec(wakeupPipe[0]);
+		Utils::Network::SetCloseOnExec(wakeupPipe[1]);
 
 		struct sockaddr_in6 serverAddr6;
 		memset(reinterpret_cast<char*>(&serverAddr6), 0, sizeof(serverAddr6));
@@ -105,6 +108,7 @@ namespace Network
 			error = "Unable to create socket for tcp server. Unable to serve clients.";
 			return;
 		}
+		Utils::Network::SetCloseOnExec(serverSocket);
 
 		int on = 1;
 		int intResult = setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (const void*) &on, sizeof(on));
@@ -211,6 +215,7 @@ namespace Network
 			{
 				continue;
 			}
+			Utils::Network::SetCloseOnExec(socketClient);
 
 			// create client
 			TcpConnection* connection = new TcpConnection(socketClient, &clientAddress);

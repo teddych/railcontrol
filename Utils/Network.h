@@ -20,6 +20,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #pragma once
 
+#include <fcntl.h>
 #include <string>
 #include <sys/socket.h>
 #include <unistd.h>
@@ -38,5 +39,21 @@ namespace Utils
 			static bool CompareAddresses(const struct sockaddr_storage *a1, const struct sockaddr_storage *a);
 
 			static bool HostResolves(const std::string& host);
+
+			// Marks a file descriptor as close-on-exec, so that it is not
+			// inherited by a restarted RailControl (execv)
+			static inline void SetCloseOnExec(const int fd)
+			{
+				if (fd < 0)
+				{
+					return;
+				}
+				const int flags = fcntl(fd, F_GETFD);
+				if (flags < 0)
+				{
+					return;
+				}
+				fcntl(fd, F_SETFD, flags | FD_CLOEXEC);
+			}
 	};
 } // namespace Utils

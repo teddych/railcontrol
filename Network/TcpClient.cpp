@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Network/Select.h"
 #include "Network/TcpClient.h"
+#include "Utils/Network.h"
 
 namespace Network
 {
@@ -46,6 +47,7 @@ namespace Network
 			logger->Error(Languages::TextUnableToCreateTcpSocket, host, port);
 			return TcpConnection(0);
 		}
+		Utils::Network::SetCloseOnExec(sock);
 
 		ok = ConnectWithTimeout(sock, reinterpret_cast<struct sockaddr*>(addressPointer), sizeof(address));
 		if (ok < 0)

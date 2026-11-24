@@ -30,6 +30,7 @@ along with RailControl; see the file LICENCE. If not see
 #include "Network/Select.h"
 #include "Network/UdpClient.h"
 #include "Network/UdpServer.h"
+#include "Utils/Network.h"
 #include "Utils/Utils.h"
 
 namespace Network
@@ -42,7 +43,6 @@ namespace Network
 		error(""),
 		address(address),
 		port(port),
-		serverSocket(0),
 		threadName(threadName)
 	{
 	}
@@ -95,12 +95,13 @@ namespace Network
 
 	void UdpServer::SocketCreateBindListen(int family, struct sockaddr* address)
 	{
-		serverSocket = socket(family, SOCK_DGRAM, 0);
+		const int serverSocket = socket(family, SOCK_DGRAM, 0);
 		if (serverSocket < 0)
 		{
 			error = "Unable to create socket for udp server. Unable to serve clients.";
 			return;
 		}
+		Utils::Network::SetCloseOnExec(serverSocket);
 
 		int on = 1;
 		int intResult = setsockopt(serverSocket, SOL_SOCKET, SO_REUSEADDR, (const void*) &on, sizeof(on));
@@ -124,7 +125,8 @@ namespace Network
 			close(serverSocket);
 			return;
 		}
-		serverThreads.push_back(std::thread(&Network::UdpServer::Worker, this));
+		serverSockets.push_back(serverSocket);
+		serverThreads.push_back(std::thread(&Network::UdpServer::Worker, this, serverSocket));
 	}
 
 	void UdpServer::TerminateUdpServer()
@@ -137,14 +139,21 @@ namespace Network
 			serverThread.join();
 			serverThreads.pop_back();
 		}
-		for (auto client : clients)
+		for (UdpClient* client : clients)
 		{
 			delete client;
 		}
 		clients.clear();
+
+		// close server sockets after the clients are deleted, because clients send with them
+		for (int serverSocket : serverSockets)
+		{
+			close(serverSocket);
+		}
+		serverSockets.clear();
 	}
 
-	void UdpServer::Worker()
+	void UdpServer::Worker(const int serverSocket)
 	{
 		Utils::Utils::SetThreadName(threadName);
 		fd_set set;
@@ -177,13 +186,13 @@ namespace Network
 			unsigned char buffer[1472]; // 1472 = Max UDP data size
 			memset(reinterpret_cast<char*>(&clientAddress), 0, sizeof(clientAddressLength));
 			ssize_t size = recvfrom(serverSocket, buffer, sizeof(buffer), 0, reinterpret_cast<struct sockaddr*>(&clientAddress), &clientAddressLength);
-			UdpClient* client = GetClient(&clientAddress);
+			UdpClient* client = GetClient(&clientAddress, serverSocket);
 			client->Work(buffer, size);
 			CleanUpClients();
 		}
 	}
 
-	UdpClient* UdpServer::GetClient(const struct sockaddr_storage* clientAddress)
+	UdpClient* UdpServer::GetClient(const struct sockaddr_storage* clientAddress, const int serverSocket)
 	{
 		for (auto client : clients)
 		{
@@ -205,7 +214,7 @@ namespace Network
 			UdpClient* client = *it;
 			if (client->Terminated() || client->TimedOut())
 			{
-				clients.erase(it);
+				it = clients.erase(it);
 				delete client;
 			}
 			else

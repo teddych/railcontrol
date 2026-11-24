@@ -111,6 +111,11 @@ namespace Server { namespace CS2
 		{
 			udpServerThread.join();
 		}
+		if (udpServerSocket >= 0)
+		{
+			close(udpServerSocket);
+			udpServerSocket = -1;
+		}
 	}
 
 	void CS2Server::UdpSocketCreateBindListen(int family, struct sockaddr* address)
@@ -118,30 +123,31 @@ namespace Server { namespace CS2
 		udpServerSocket = socket(family, SOCK_DGRAM, 0);
 		if (udpServerSocket < 0)
 		{
-//			error = "Unable to create socket for udp server. Unable to serve clients.";
 			return;
 		}
+		Utils::Network::SetCloseOnExec(udpServerSocket);
 
 		int on = 1;
 		int intResult = setsockopt(udpServerSocket, SOL_SOCKET, SO_REUSEADDR, (const void*) &on, sizeof(on));
 		if (intResult < 0)
 		{
-//			error = "Unable to set tcp server socket option SO_REUSEADDR.";
 			close(udpServerSocket);
+			udpServerSocket = -1;
 			return;
 		}
 
 		intResult = bind(udpServerSocket, address, sizeof(struct sockaddr_in));
 		if (intResult < 0)
 		{
-//			error = "Unable to bind socket for udp server to port. Unable to serve clients.";
 			close(udpServerSocket);
+			udpServerSocket = -1;
 			return;
 		}
 
 		if (!runUdp)
 		{
 			close(udpServerSocket);
+			udpServerSocket = -1;
 			return;
 		}
 		udpServerThread = std::thread(&Server::CS2::CS2Server::UdpWorker, this);

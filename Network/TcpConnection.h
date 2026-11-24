@@ -33,6 +33,7 @@ namespace Network
 	{
 		public:
 			TcpConnection() = delete;
+			TcpConnection(const TcpConnection&) = delete;
 			TcpConnection& operator=(const TcpConnection&) = delete;
 
 			inline TcpConnection(int socket,
@@ -50,11 +51,14 @@ namespace Network
 				}
 			}
 
-			inline TcpConnection(const TcpConnection& other)
+			// moving transfers the ownership of the socket,
+			// so that the socket is closed exactly once
+			inline TcpConnection(TcpConnection&& other)
 			:	connectionSocket(other.connectionSocket),
-				connected(other.connected.load()),
+				connected(other.connected.exchange(false)),
 				address(other.address)
 			{
+				other.connectionSocket = 0;
 			}
 
 			inline ~TcpConnection()

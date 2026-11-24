@@ -24,6 +24,7 @@ along with RailControl; see the file LICENCE. If not see
 
 #include "Network/Select.h"
 #include "Network/UdpConnection.h"
+#include "Utils/Network.h"
 #include "Utils/Utils.h"
 
 namespace Network
@@ -74,6 +75,7 @@ namespace Network
 			logger->Error(Languages::TextUnableToCreateUdpSocket, server, port);
 			return;
 		}
+		Utils::Network::SetCloseOnExec(connectionSocket);
 
 		// setting receive timeout to 1s
 		struct timeval tv;

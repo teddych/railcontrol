@@ -58,19 +58,19 @@ namespace Network
 		private:
 			void SocketCreateBindListen(int family, struct sockaddr* address);
 
-			void Worker();
+			void Worker(const int serverSocket);
 
-			UdpClient* GetClient(const struct sockaddr_storage* clientAddress);
+			UdpClient* GetClient(const struct sockaddr_storage* clientAddress, const int serverSocket);
 
 			void CleanUpClients();
 
 			Logger::Logger* logger;
 			volatile bool run;
 			std::vector<std::thread> serverThreads;
+			std::vector<int> serverSockets;
 			std::string error;
 			const std::string address;
 			const unsigned short port;
-			int serverSocket;
 			const std::string threadName;
 	};
 }
