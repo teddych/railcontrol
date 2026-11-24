@@ -633,6 +633,11 @@ input {
 	width: calc(100% - 10px);
 }
 
+.loco_selector .dropdown.show .dropdownentry {
+	height: auto;
+	min-height: 14px;
+}
+
 .status {
 	position: absolute;
 	bottom: 0px;
