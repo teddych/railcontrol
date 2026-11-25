@@ -2707,16 +2707,25 @@ function submitEditForm()
 }
 
 var updateSliderAllowed = true;
+var locoSpeedPending = null;
 
 function locoSpeedSliderOnInput(locoId)
 {
+	locoSpeedPending = locoId;
 	if (!updateSliderAllowed)
 	{
 		return false;
 	}
+
 	setTimeout(function()
 	{
 		updateSliderAllowed = true;
+		if (locoSpeedPending !== null)
+		{
+			var pending = locoSpeedPending;
+			locoSpeedPending = null;
+			locoSpeedSliderOnInput(pending);
+		}
 	}, 200);
 	locoSpeedSliderOnChange(locoId);
 	updateSliderAllowed = false;
@@ -2730,6 +2739,8 @@ function locoSpeedSliderOnChange(locoId)
 	{
 		return false;
 	}
+
+	locoSpeedPending = null;
 	var url = '/?cmd=locospeed&loco=';
 	url += locoId;
 	url += '&speed=';
